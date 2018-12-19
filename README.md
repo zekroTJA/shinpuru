@@ -44,6 +44,8 @@ And yes, as you may notice, this bot currently depends on a MySql database. Actu
 - [go-yaml/yaml](https://github.com/go-yaml/yaml)
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
 
+Avatar of [御中元　魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
+
 ---
 
 Copyright (c) 2018 zekro Developmenr (Ringo Hoffmann).  
