@@ -2,7 +2,7 @@
     <img src="https://zekro.de/src/shinpuru_avi_circle.png" height="300" />
     <h1>~ シンプル ~</h1>
     <strong>
-        A siple multi purpose discord bot written in Go (discord.go)<br>
+        A simple multi purpose discord bot written in Go (discord.go)<br>
         with focus on stability and reliability
     </strong><br><br>
     <a href="https://dc.zekro.de"><img src="https://img.shields.io/discord/307084334198816769.svg?style=for-the-badge&logo=discord" /></a>&nbsp;
