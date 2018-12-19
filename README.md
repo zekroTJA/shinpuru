@@ -15,15 +15,15 @@
 
 ## Intro
 
-シンプル (shinpuru), a simple *(as th name says)*, multi purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as much features and commands as possible, just some commands and features I thought wich would be useful and which were the mostly used from my older Discord bots, like the [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
+シンプル (shinpuru), a simple *(as the name says)*, multi purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as much features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
 
-Also, I want to use this project as chance for me, to get some deeper into Go and larger Go project structures. In a later development state, this bol will detach zekroBot 2.
+Also, I want to use this project as chance for me, to get some deeper into Go and larger Go project structures. In a later development state, this bot will detach zekroBot 2.
 
 ---
 
 # Development state
 
-This project is in a verry early development state, so, currently, the bot is not available as 24/7 version. If you want to use this bot by yourself, pull the code by cloning the repository or download the assets as zip [here](https://github.com/zekroTJA/shinpuru/archive/master.zip).
+This project is in a very early development state, so, currently, the bot is not available as 24/7 version. If you want to use this bot by yourself, pull the code by cloning the repository or download the assets as zip [here](https://github.com/zekroTJA/shinpuru/archive/master.zip).
 
 Then, get all dependencies and build the binary. After that, generate a config by starting the bot, fill in your data and go on ;)
 
