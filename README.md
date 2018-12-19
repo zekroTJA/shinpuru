@@ -1,4 +1,5 @@
 <div align="center">
+    <img src="https://zekro.de/src/shinpuru_avi_circeled.png" />
     <h1>~ シンプル ~</h1>
     <strong>
         A siple multi purpose discord bot written in Go (discord.go)<br>
