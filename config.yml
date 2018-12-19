@@ -1,0 +1,10 @@
+discord:
+  token: ""
+  generalprefix: sp!
+  ownerid: ""
+
+database:
+  host: ""
+  user: ""
+  password: ""
+  database: ""
