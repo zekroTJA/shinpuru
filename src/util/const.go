@@ -21,6 +21,7 @@ const (
 
 	ColorEmbedError   = 0xd32f2f
 	ColorEmbedDefault = 0xffc107
+	ColorEmbedUpdated = 0xcddc39
 
 	AutoNick = "シンプル"
 	StdMotd  = "closed beta version"

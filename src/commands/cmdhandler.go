@@ -1,18 +1,23 @@
 package commands
 
 import (
+	"../core"
 	"../util"
 )
 
 type CmdHandler struct {
 	registeredCmds         map[string]Command
 	registeredCmdInstances []Command
+	db                     core.Database
+	config                 *core.Config
 }
 
-func NewCmdHandler() *CmdHandler {
+func NewCmdHandler(db core.Database, config *core.Config) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
+		db:                     db,
+		config:                 config,
 	}
 }
 
