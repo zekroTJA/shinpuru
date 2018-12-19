@@ -20,7 +20,7 @@ func SendEmbedError(s *discordgo.Session, chanID, content string, title ...strin
 func SendEmbed(s *discordgo.Session, chanID, content string, title string, color int) (*discordgo.Message, error) {
 	emb := &discordgo.MessageEmbed{
 		Description: content,
-		Color:       ColorEmbedError,
+		Color:       color,
 	}
 	emb.Title = title
 	if color == 0 {

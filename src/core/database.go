@@ -9,6 +9,7 @@ type Database interface {
 	Close()
 
 	GetGuildPrefix(guildID string) (string, error)
+	SetGuildPrefix(guildID, newPrefix string) error
 	GetMemberPermissionLevel(guildID string, memberID string) (int, error)
 }
 

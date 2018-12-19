@@ -38,6 +38,19 @@ func (m *MySql) GetGuildPrefix(guildID string) (string, error) {
 	return prefix, err
 }
 
+func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
+	res, err := m.DB.Exec("UPDATE guilds SET prefix = ? WHERE guildID = ?", newPrefix, guildID)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		_, err := m.DB.Exec("INSERT INTO guilds (guildID, prefix) VALUES (?, ?)", guildID, newPrefix)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
 func (m *MySql) GetMemberPermissionLevel(guildID string, memberID string) (int, error) {
 	var permLvl int
 	err := m.DB.QueryRow("SELECT permlvl FROM guildmembers WHERE guilduserBlob = ?",

@@ -69,9 +69,10 @@ func main() {
 	// COMMAND REGISTRATION //
 	//////////////////////////
 
-	cmdHandler := commands.NewCmdHandler()
+	cmdHandler := commands.NewCmdHandler(database, config)
 	cmdHandler.RegisterCommand(new(commands.CmdTest))
 	cmdHandler.RegisterCommand(new(commands.CmdHelp))
+	cmdHandler.RegisterCommand(new(commands.CmdPrefix))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
