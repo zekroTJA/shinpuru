@@ -29,8 +29,8 @@ Then, get all dependencies and build the binary. After that, generate a config b
 
 ```
 $ git clone https://github.com/zekroTJA/shinpuru.git
-$ bash ./installdeps.sh
-$ go build -o shinpuru ./src/
+$ bash ./scripts/installdeps.sh
+$ go build -o shinpuru ./
 $ ./shinpuru -c yourconfig.yaml
 ```
 
