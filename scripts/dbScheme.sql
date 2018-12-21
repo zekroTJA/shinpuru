@@ -14,3 +14,10 @@ CREATE TABLE `guilds` (
   `guildID` text NOT NULL,
   `prefix` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `permissions`;
+CREATE TABLE `permissions` (
+  `roleID` text NOT NULL,
+  `guildID` text NOT NULL,
+  `permission` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

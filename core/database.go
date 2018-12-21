@@ -10,6 +10,10 @@ type Database interface {
 
 	GetGuildPrefix(guildID string) (string, error)
 	SetGuildPrefix(guildID, newPrefix string) error
+
+	GetGuildPermissions(guildID string) (map[string]int, error)
+	SetGuildRolePermission(guildID, roleID string, permLvL int) error
+
 	GetMemberPermissionLevel(guildID string, memberID string) (int, error)
 }
 
