@@ -86,7 +86,22 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		}
 		err = cmdInstance.Exec(cmdArgs)
 		if err != nil {
-			util.SendEmbedError(s, channel.ID, fmt.Sprintf("Failed executing command: ```\n%s\n```", err.Error()), "Command execution failed")
+			emb := &discordgo.MessageEmbed{
+				Color:       util.ColorEmbedError,
+				Title:       "Command execution failed",
+				Description: fmt.Sprintf("Failed executing command: ```\n%s\n```", err.Error()),
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: "This is kind of an unexpected error and means that something is not right in order. Please contact me (zekro#9131) " +
+						"and show me this error (screenshot). <3",
+				},
+			}
+			_, err := s.ChannelMessageSendEmbed(channel.ID, emb)
+			if err != nil {
+				util.Log.Error("An error occured sending command error message: ", err)
+			}
+		}
+		if l.config.CommandLogging {
+			util.Log.Infof("Executed Command: %s[%s]@%s[%s] - %s", e.Author.Username, e.Author.ID, guild.Name, guild.ID, e.Message.Content)
 		}
 	}
 }

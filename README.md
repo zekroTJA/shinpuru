@@ -45,7 +45,7 @@ And yes, as you may notice, this bot currently depends on a MySql database. Actu
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
 - [op/go-logging](https://github.com/op/go-logging)
 
-Avatar of [御中元　魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
+Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
 
 ---
 
