@@ -16,8 +16,9 @@ type ConfigDatabase struct {
 }
 
 type Config struct {
-	Discord  *ConfigDiscord
-	Database *ConfigDatabase
+	Discord        *ConfigDiscord
+	Database       *ConfigDatabase
+	CommandLogging bool
 }
 
 type ConfigParser interface {
@@ -32,6 +33,7 @@ func NewDefaultConfig() *Config {
 			GeneralPrefix: "sp!",
 			OwnerID:       "",
 		},
-		Database: new(ConfigDatabase),
+		Database:       new(ConfigDatabase),
+		CommandLogging: true,
 	}
 }

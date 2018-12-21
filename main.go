@@ -73,6 +73,7 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdTest))
 	cmdHandler.RegisterCommand(new(commands.CmdHelp))
 	cmdHandler.RegisterCommand(new(commands.CmdPrefix))
+	cmdHandler.RegisterCommand(new(commands.CmdPerms))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
