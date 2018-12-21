@@ -91,7 +91,8 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 				Title:       "Command execution failed",
 				Description: fmt.Sprintf("Failed executing command: ```\n%s\n```", err.Error()),
 				Footer: &discordgo.MessageEmbedFooter{
-					Text: "This is kind of an unexpected error and means that something is not right in order. Please contact me (zekro#9131) " +
+					Text: "This is kind of an unexpected error and means that something is not right in order. " +
+						"Does the bot has the right permissions? If there is no issue with the permissions, please contact me (zekro#9131) " +
 						"and show me this error (screenshot). <3",
 				},
 			}
