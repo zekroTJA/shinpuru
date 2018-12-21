@@ -1,6 +1,9 @@
 package commands
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type CmdTest struct {
 }
@@ -26,6 +29,7 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
+	time.Sleep(10 * time.Second)
 	fmt.Println("JUST A TEST, BRO")
 	return nil
 }

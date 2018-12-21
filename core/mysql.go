@@ -41,6 +41,9 @@ func (m *MySql) GetGuildPrefix(guildID string) (string, error) {
 func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
 	res, err := m.DB.Exec("UPDATE guilds SET prefix = ? WHERE guildID = ?", newPrefix, guildID)
 	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
 		_, err := m.DB.Exec("INSERT INTO guilds (guildID, prefix) VALUES (?, ?)", guildID, newPrefix)
 		if err != nil {
 			return err
@@ -59,4 +62,40 @@ func (m *MySql) GetMemberPermissionLevel(guildID string, memberID string) (int, 
 		err = ErrDatabaseNotFound
 	}
 	return permLvl, err
+}
+
+func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
+	results := make(map[string]int)
+	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
+		guildID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var roleID string
+		var permission int
+		err := rows.Scan(&roleID, &permission)
+		if err != nil {
+			return nil, err
+		}
+		results[roleID] = permission
+	}
+	return results, nil
+}
+
+func (m *MySql) SetGuildRolePermission(guildID, roleID string, permLvL int) error {
+	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
+		permLvL, roleID, guildID)
+	if err != nil {
+		return err
+	}
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
+			roleID, guildID, permLvL)
+		return err
+	}
+	return nil
 }

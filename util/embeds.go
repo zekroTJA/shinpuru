@@ -1,8 +1,6 @@
 package util
 
 import (
-	"time"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -27,13 +25,4 @@ func SendEmbed(s *discordgo.Session, chanID, content string, title string, color
 		emb.Color = ColorEmbedDefault
 	}
 	return s.ChannelMessageSendEmbed(chanID, emb)
-}
-
-func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration time.Duration) {
-	if msg == nil {
-		return
-	}
-	time.AfterFunc(duration, func() {
-		s.ChannelMessageDelete(msg.ChannelID, msg.ID)
-	})
 }
