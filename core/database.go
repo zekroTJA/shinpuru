@@ -1,6 +1,10 @@
 package core
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 var ErrDatabaseNotFound = errors.New("value not found")
 
@@ -14,7 +18,7 @@ type Database interface {
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
-	GetMemberPermissionLevel(guildID string, memberID string) (int, error)
+	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
 }
 
 func IsErrDatabaseNotFound(err error) bool {

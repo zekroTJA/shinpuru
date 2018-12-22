@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -54,14 +55,22 @@ func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
 	return err
 }
 
-func (m *MySql) GetMemberPermissionLevel(guildID string, memberID string) (int, error) {
-	var permLvl int
-	err := m.DB.QueryRow("SELECT permlvl FROM guildmembers WHERE guilduserBlob = ?",
-		guildID+"-"+memberID).Scan(&permLvl)
-	if err == sql.ErrNoRows {
-		err = ErrDatabaseNotFound
+func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
+	guildPerms, err := m.GetGuildPermissions(guildID)
+	if err != nil {
+		return 0, err
 	}
-	return permLvl, err
+	member, err := s.GuildMember(guildID, memberID)
+	if err != nil {
+		return 0, err
+	}
+	maxPermLvl := 0
+	for _, rID := range member.Roles {
+		if lvl, ok := guildPerms[rID]; ok && lvl > maxPermLvl {
+			maxPermLvl = lvl
+		}
+	}
+	return maxPermLvl, err
 }
 
 func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
