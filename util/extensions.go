@@ -110,3 +110,38 @@ func FetchMember(s *discordgo.Session, guildID, resolvable string) (*discordgo.M
 
 	return nil, errors.New("could not be fetched")
 }
+
+func FetchChannel(s *discordgo.Session, guildID, resolvable string) (*discordgo.Channel, error) {
+	guild, err := s.Guild(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	checkFuncs := []func(*discordgo.Channel, string) bool{
+		func(r *discordgo.Channel, resolvable string) bool {
+			return r.ID == resolvable
+		},
+		func(r *discordgo.Channel, resolvable string) bool {
+			return r.Name == resolvable
+		},
+		func(r *discordgo.Channel, resolvable string) bool {
+			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
+		},
+		func(r *discordgo.Channel, resolvable string) bool {
+			return strings.HasPrefix(strings.ToLower(r.Name), strings.ToLower(resolvable))
+		},
+		func(r *discordgo.Channel, resolvable string) bool {
+			return strings.Contains(strings.ToLower(r.Name), strings.ToLower(resolvable))
+		},
+	}
+
+	for _, checkFunc := range checkFuncs {
+		for _, c := range guild.Channels {
+			if checkFunc(c, resolvable) {
+				return c, nil
+			}
+		}
+	}
+
+	return nil, errors.New("could not be fetched")
+}
