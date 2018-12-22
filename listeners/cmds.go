@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/commands"
+	"github.com/zekroTJA/shinpuru/core"
+	"github.com/zekroTJA/shinpuru/util"
 )
 
 type ListenerCmds struct {
@@ -79,7 +79,8 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		} else if e.Author.ID == guild.OwnerID {
 			permLvl = 10
 		} else {
-			permLvl, err = l.db.GetMemberPermissionLevel(e.GuildID, e.Author.ID)
+			permLvl, err = l.db.GetMemberPermissionLevel(s, e.GuildID, e.Author.ID)
+			fmt.Println(permLvl, err)
 		}
 
 		if err != nil && !core.IsErrDatabaseNotFound(err) {
