@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/core"
+	"github.com/zekroTJA/shinpuru/util"
 )
 
 type CmdHandler struct {

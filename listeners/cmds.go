@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/commands"
+	"github.com/zekroTJA/shinpuru/core"
+	"github.com/zekroTJA/shinpuru/util"
 )
 
 type ListenerCmds struct {
