@@ -28,9 +28,10 @@ This project is in a very early development state, so, currently, the bot is not
 Then, get all dependencies and build the binary. After that, generate a config by starting the bot, fill in your data and go on ;)
 
 ```
-$ git clone https://github.com/zekroTJA/shinpuru.git
-$ bash ./scripts/installdeps.sh
-$ go build -o shinpuru ./
+$ git clone https://github.com/zekroTJA/shinpuru.git src/github.com/zekroTJA/shinpuru
+$ export GOPATH=$PWD
+$ cd src/github.com/zekroTJA/shinpuru
+$ bash scripts/build.sh
 $ ./shinpuru -c yourconfig.yaml
 ```
 
