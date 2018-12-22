@@ -9,7 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"../util"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 var embedColors = map[string]int{

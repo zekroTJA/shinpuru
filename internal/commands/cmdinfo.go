@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"../util"
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdInfo struct {
