@@ -93,6 +93,12 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 		}
 	} else {
 		content := strings.Join(f.Args(), " ")
+		if len(content) < 1 {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				"Please enter something you want to say :wink:")
+			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+			return err
+		}
 		embColor, ok := embedColors[strings.ToLower(*fcolor)]
 		if !ok {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
