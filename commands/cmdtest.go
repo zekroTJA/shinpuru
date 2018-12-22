@@ -28,6 +28,6 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println("JUST A TEST, BRO")
+	fmt.Println(args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID))
 	return nil
 }
