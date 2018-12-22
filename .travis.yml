@@ -2,6 +2,18 @@ language: go
 
 go:
   - tip
-
 script:
   - bash scripts/travis.sh
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: NV7pHZdsYW5e+mkzvQtYVHgdBNw+5nEbL1sLTy/OKVcTKGMDKefCoQObYF11MEqftUnp6dLlReTzJjMD/Fe6w1gYcnUdIdOxf7P2qtks3L8lfasMVDKMr8L5Zr0zQfx3fANx5XjFVkzL+FJvMnc5poBMXKLurzAO4tu7fROYv90CKidNKYw8T3grFE6yLHT70+V7jeOiZB6N+gOH9//bL/eokbNh2DGLmKnSIkhUqRYGMOdiFbupK4RByLjXZimPIR0gKt2FCxzXkiTWJo9fmRrDWqtn/1/gKy/sgV2NQHT0ZEwhQOB3Q1TuLbEqSz0c7v40YnYaxcfAuLhDvAF0qn0AmxE0eIcNEVmWxVNo3yFyoSU4EwVFsVkufVwMOq6tKCWI/4XagqwpEo5oDPuQHpIhUFBLVdkah5PI4zau2dShhm8ZIvdA9SUXwtUrCUZGW37S/XsxkCyL2rXcclmg5ZQ8C9qVTAxfQzmDyqTYlVJzzZF4fxh4Is4ztXm8EonIlP8O/TNh+ZgPITuvKQ0Ld1nBBaufA8YVgphDaHTuZUfmQDsIpWx1mT3nxvH/NGlXqfL4GISHpkQaAWp80rmgim34uFiHCZ6U8ZPrFULviV2DWutd9vPvgWgKLQQyWHIoCukKUhRs7bY3vIwYgg50YAQNrMgXhgNBhq87FkQbkzA=
+  file:
+    - builds/shinpuru_linux_arm
+    - builds/shinpuru_linux_amd64
+    - builds/shinpuru_darwin_amd64
+    - builds/shinpuru_windows_amd64.exe
+  on:
+    tags: true
