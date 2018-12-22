@@ -16,10 +16,19 @@ import (
 
 var (
 	configLocation = flag.String("c", "config.yml", "The location of the main config file")
+
+	ldAppVersion = "TESTBUILD"
+	ldAppCommit  = "TESTBUILD"
 )
 
 func main() {
+	util.AppVersion = ldAppVersion
+	util.AppCommit = ldAppCommit
+
 	flag.Parse()
+	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
+	util.Log.Info("© zekro Development (Ringo Hoffmann)")
+	util.Log.Info("Covered by MIT Licence")
 	util.Log.Info("Starting up...")
 
 	cfgParser := new(core.YAMLConfigParser)
