@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"../commands"
@@ -50,7 +51,13 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		return
 	}
 
-	contSplit := strings.Fields(e.Message.Content)
+	re := regexp.MustCompile(`(?:[^\s"]+|"[^"]*")+`)
+	contSplit := re.FindAllString(e.Message.Content, -1)
+	for i, k := range contSplit {
+		if strings.Contains(k, "\"") {
+			contSplit[i] = strings.Replace(k, "\"", "", -1)
+		}
+	}
 	invoke := contSplit[0][len(pre):]
 	invoke = strings.ToLower(invoke)
 
