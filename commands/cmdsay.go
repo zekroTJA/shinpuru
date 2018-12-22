@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"strings"
@@ -69,31 +70,48 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 	fcolor := f.String("c", "orange", "color")
 	ftitle := f.String("t", "", "title")
 	ffooter := f.String("f", "", "footer")
-	// fraw := f.String("raw", "", "raw embed from json (see [Discord docs](https://discordapp.com/developers/docs/resources/channel#embed-object))")
+	fraw := f.Bool("raw", false, "parses following content as raw embed from json (see https://discordapp.com/developers/docs/resources/channel#embed-object)")
 	f.Parse(args.Args)
-	description := strings.Join(f.Args(), " ")
 
-	embColor, ok := embedColors[strings.ToLower(*fcolor)]
-	if !ok {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			fmt.Sprintf("Sorry, but I don't know the color `%s`. Please enter `help say` to get a list of valid colors.", *fcolor))
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+	authorField := &discordgo.MessageEmbedAuthor{
+		IconURL: args.User.AvatarURL(""),
+		Name:    args.User.Username,
 	}
 
-	emb := &discordgo.MessageEmbed{
-		Title: *ftitle,
-		Color: embColor,
-		Author: &discordgo.MessageEmbedAuthor{
-			IconURL: args.User.AvatarURL(""),
-			Name:    args.User.Username,
-		},
-		Description: description,
-	}
+	var emb *discordgo.MessageEmbed
+	if *fraw {
+		offset := strings.IndexRune(args.Message.Content, '{')
+		content := args.Message.Content[offset:]
+		err := json.Unmarshal([]byte(content), &emb)
+		emb.Author = authorField
+		if err != nil {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("Failed parsing message embed from input: ```\n%s\n```", err.Error())+
+					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object")
+			util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+			return err
+		}
+	} else {
+		content := strings.Join(f.Args(), " ")
+		embColor, ok := embedColors[strings.ToLower(*fcolor)]
+		if !ok {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("Sorry, but I don't know the color `%s`. Please enter `help say` to get a list of valid colors.", *fcolor))
+			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+			return err
+		}
 
-	if *ffooter != "" {
-		emb.Footer = &discordgo.MessageEmbedFooter{
-			Text: *ffooter,
+		emb = &discordgo.MessageEmbed{
+			Title:       *ftitle,
+			Color:       embColor,
+			Author:      authorField,
+			Description: content,
+		}
+
+		if *ffooter != "" {
+			emb.Footer = &discordgo.MessageEmbedFooter{
+				Text: *ffooter,
+			}
 		}
 	}
 
