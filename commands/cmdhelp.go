@@ -55,7 +55,7 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 		for cat, catCmds := range cmds {
 			commandHelpLines := ""
 			for _, c := range catCmds {
-				commandHelpLines += fmt.Sprintf("`%s` - *%s*\n", c.GetInvokes()[0], c.GetDescription())
+				commandHelpLines += fmt.Sprintf("`%s` - *%s* `[%d]`\n", c.GetInvokes()[0], c.GetDescription(), c.GetPermission())
 			}
 			emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 				Name:  cat,
