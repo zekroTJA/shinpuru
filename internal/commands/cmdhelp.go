@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"../util"
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdHelp struct {

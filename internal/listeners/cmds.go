@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
-	"../commands"
-	"../core"
-	"../util"
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerCmds struct {
