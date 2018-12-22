@@ -1,7 +1,17 @@
 #!/bin/bash
 
-OS="linux"
-ARCH="amd64"
+TAG=$(git describe --tags)
+if [ "$TAG" == "" ]; then
+    TAG="untagged"
+fi
 
-(env GOOS=$OS GOARCH=$ARCH \
-    go build -o shinpuru_${OS}_$ARCH)
+COMMIT=$(git rev-parse HEAD)
+
+echo "Getting dependencies..."
+go get -v -t ./...
+
+echo "Building..."
+go build \
+    -ldflags "-X main.ldAppVersion=$TAG -X main.ldAppCommit=$COMMIT"
+
+wait
