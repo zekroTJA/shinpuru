@@ -89,6 +89,7 @@ func main() {
 
 	session.AddHandler(listeners.NewListenerReady(config).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
+	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 
 	err = session.Open()
 	if err != nil {
