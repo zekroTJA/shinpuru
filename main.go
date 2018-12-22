@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/listeners"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/commands"
+	"github.com/zekroTJA/shinpuru/core"
+	"github.com/zekroTJA/shinpuru/listeners"
+	"github.com/zekroTJA/shinpuru/util"
 
 	"github.com/bwmarrin/discordgo"
 )
