@@ -2,6 +2,9 @@ language: go
 
 go:
   - tip
+
+go_import_path: github.com/zekroTJA/shinpuru
+
 script:
   - bash scripts/travis.sh
 

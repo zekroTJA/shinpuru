@@ -5,8 +5,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"../core"
-	"../util"
+	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdPrefix struct {
