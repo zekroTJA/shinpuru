@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"../util"
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdClear struct {
