@@ -1,3 +1,4 @@
 .vsc/*
 .vscode/*
 private.*
+build/*

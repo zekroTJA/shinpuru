@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"../util"
 	"github.com/bwmarrin/discordgo"
 )
@@ -44,6 +46,11 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			&discordgo.MessageEmbedField{
 				Name:  "Repository",
 				Value: "[github.com/zekrotja/shinpuru](https://github.com/zekrotja/shinpuru)",
+			},
+			&discordgo.MessageEmbedField{
+				Name: "Version",
+				Value: fmt.Sprintf("This instance is running on version **%s** (commit hash `%s`)",
+					util.AppVersion, util.AppCommit),
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Licence",
