@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"../util"
 	"github.com/bwmarrin/discordgo"
 )
@@ -35,8 +33,7 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 		Color: util.ColorEmbedDefault,
 		Title: "Info",
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png",
-				args.Session.State.User.ID, args.Session.State.User.Avatar),
+			URL: args.Session.State.User.AvatarURL(""),
 		},
 		Description: "シンプル (shinpuru), a simple *(as the name says)*, multi purpose Discord Bot written in Go, " +
 			"using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. " +

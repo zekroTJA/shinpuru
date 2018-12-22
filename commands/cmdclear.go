@@ -60,7 +60,6 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		if len(args.Args) >= 2 {
 			memb, err = util.FetchMember(args.Session, args.Guild.ID, args.Args[1])
 			if err != nil {
-				fmt.Println(err)
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					"Sorry, but the member can not be found on this guild. :cry:")
 				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
