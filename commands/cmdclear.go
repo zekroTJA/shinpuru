@@ -35,8 +35,6 @@ func (c *CmdClear) GetPermission() int {
 }
 
 func (c *CmdClear) Exec(args *CommandArgs) error {
-	args.Session.ChannelMessageDelete(args.Channel.ID, args.Message.ID)
-
 	var msgsStructs []*discordgo.Message
 	var err error
 

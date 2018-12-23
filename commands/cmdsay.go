@@ -64,8 +64,6 @@ func (c *CmdSay) GetPermission() int {
 }
 
 func (c *CmdSay) Exec(args *CommandArgs) error {
-	args.Session.ChannelMessageDelete(args.Channel.ID, args.Message.ID)
-
 	f := flag.NewFlagSet("sayflags", flag.ContinueOnError)
 	fcolor := f.String("c", "orange", "color")
 	ftitle := f.String("t", "", "title")

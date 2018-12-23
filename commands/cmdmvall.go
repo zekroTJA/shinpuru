@@ -34,8 +34,6 @@ func (c *CmdMvall) GetPermission() int {
 }
 
 func (c *CmdMvall) Exec(args *CommandArgs) error {
-	args.Session.ChannelMessageDelete(args.Channel.ID, args.Message.ID)
-
 	if len(args.Args) < 1 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Please enter a voice channel as argument.")
