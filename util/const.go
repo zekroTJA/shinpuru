@@ -22,7 +22,10 @@ const (
 	ColorEmbedError   = 0xd32f2f
 	ColorEmbedDefault = 0xffc107
 	ColorEmbedUpdated = 0x8bc34a
+	ColorEmbedGray    = 0xb0bec5
 
 	AutoNick = "シンプル"
 	StdMotd  = "closed beta version"
+
+	SettingPresence = "PRESENCE"
 )

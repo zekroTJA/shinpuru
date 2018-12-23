@@ -1,9 +1,5 @@
 package commands
 
-import (
-	"fmt"
-)
-
 type CmdTest struct {
 }
 
@@ -28,6 +24,6 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println(args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID))
-	return nil
+	_, err := args.Session.UserUpdateStatus("dnd")
+	return err
 }
