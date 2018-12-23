@@ -26,4 +26,6 @@ const (
 
 	AutoNick = "シンプル"
 	StdMotd  = "closed beta version"
+
+	SettingPresence = "PRESENCE"
 )

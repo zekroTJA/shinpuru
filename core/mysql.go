@@ -108,3 +108,28 @@ func (m *MySql) SetGuildRolePermission(guildID, roleID string, permLvL int) erro
 	}
 	return nil
 }
+
+func (m *MySql) GetSetting(setting string) (string, error) {
+	var value string
+	err := m.DB.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return value, err
+}
+
+func (m *MySql) SetSetting(setting, value string) error {
+	res, err := m.DB.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
