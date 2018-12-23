@@ -35,7 +35,6 @@ func (c *CmdPerms) GetPermission() int {
 }
 
 func (c *CmdPerms) Exec(args *CommandArgs) error {
-	args.Session.ChannelMessageDelete(args.Channel.ID, args.Message.ID)
 	db := args.CmdHandler.db
 
 	if len(args.Args) == 0 {
