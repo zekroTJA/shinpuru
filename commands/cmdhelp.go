@@ -35,8 +35,6 @@ func (c *CmdHelp) GetPermission() int {
 }
 
 func (c *CmdHelp) Exec(args *CommandArgs) error {
-	args.Session.ChannelMessageDelete(args.Channel.ID, args.Message.ID)
-
 	emb := &discordgo.MessageEmbed{
 		Color:  util.ColorEmbedDefault,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
