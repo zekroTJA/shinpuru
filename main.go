@@ -89,6 +89,7 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdInfo))
 	cmdHandler.RegisterCommand(new(commands.CmdSay))
 	cmdHandler.RegisterCommand(new(commands.CmdQuote))
+	cmdHandler.RegisterCommand(new(commands.CmdGame))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
@@ -99,7 +100,7 @@ func main() {
 		util.Log.Fatal("Failed creating Discord bot session:", err)
 	}
 
-	session.AddHandler(listeners.NewListenerReady(config).Handler)
+	session.AddHandler(listeners.NewListenerReady(config, database).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 

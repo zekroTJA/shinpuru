@@ -9,11 +9,13 @@ import (
 
 type ListenerReady struct {
 	config *core.Config
+	db     core.Database
 }
 
-func NewListenerReady(config *core.Config) *ListenerReady {
+func NewListenerReady(config *core.Config, db core.Database) *ListenerReady {
 	return &ListenerReady{
 		config: config,
+		db:     db,
 	}
 }
 
@@ -24,6 +26,15 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		e.User.ID, util.InvitePermission)
 
 	s.UpdateStatus(0, util.StdMotd)
+
+	rawPresence, err := l.db.GetSetting(util.SettingPresence)
+	if err == nil {
+		presence, err := util.UnmarshalPresence(rawPresence)
+		if err == nil {
+			s.UpdateStatusComplex(presence.ToUpdateStatusData())
+		}
+	}
+
 	for _, g := range e.Guilds {
 		if err := s.GuildMemberNickname(g.ID, "@me", util.AutoNick); err != nil {
 			util.Log.Errorf("Failed updating nickname on guild %s (%s): %s", g.Name, g.ID, err)
