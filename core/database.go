@@ -19,6 +19,9 @@ type Database interface {
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
 	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
+
+	GetSetting(setting string) (string, error)
+	SetSetting(setting, value string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {
