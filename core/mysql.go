@@ -55,6 +55,31 @@ func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
 	return err
 }
 
+func (m *MySql) GetGuildAutoRole(guildID string) (string, error) {
+	var autorole string
+	err := m.DB.QueryRow("SELECT autorole FROM guilds WHERE guildID = ?", guildID).Scan(&autorole)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return autorole, err
+}
+
+func (m *MySql) SetGuildAutoRole(guildID, autoRoleID string) error {
+	res, err := m.DB.Exec("UPDATE guilds SET autorole = ? WHERE guildID = ?", autoRoleID, guildID)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO guilds (guildID, autorole) VALUES (?, ?)", guildID, autoRoleID)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
 func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
