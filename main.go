@@ -90,6 +90,7 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdSay))
 	cmdHandler.RegisterCommand(new(commands.CmdQuote))
 	cmdHandler.RegisterCommand(new(commands.CmdGame))
+	cmdHandler.RegisterCommand(new(commands.CmdAutorole))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
@@ -103,6 +104,7 @@ func main() {
 	session.AddHandler(listeners.NewListenerReady(config, database).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
+	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 
 	err = session.Open()
 	if err != nil {
