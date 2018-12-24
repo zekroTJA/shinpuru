@@ -90,6 +90,7 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdSay))
 	cmdHandler.RegisterCommand(new(commands.CmdQuote))
 	cmdHandler.RegisterCommand(new(commands.CmdGame))
+	cmdHandler.RegisterCommand(new(commands.CmdAutorole))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
