@@ -13,9 +13,10 @@ type AcceptMessage struct {
 	*discordgo.Message
 	Session     *discordgo.Session
 	Embed       *discordgo.MessageEmbed
-	AcceptFunc  func(*discordgo.Message) error
-	DeclineFUnc func(*discordgo.Message) error
-	embedUnsub  func()
+	UserID      string
+	AcceptFunc  func(*discordgo.Message)
+	DeclineFunc func(*discordgo.Message)
+	eventUnsub  func()
 }
 
 func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
@@ -24,8 +25,26 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 		return nil, err
 	}
 	am.Message = msg
-	am.embedUnsub = am.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
-
+	err = am.Session.MessageReactionAdd(chanID, msg.ID, acceptMessageEmoteAccept)
+	err = am.Session.MessageReactionAdd(chanID, msg.ID, acceptMessageEmoteDecline)
+	if err != nil {
+		return nil, err
+	}
+	am.eventUnsub = am.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+		if e.MessageID != msg.ID || e.UserID == s.State.User.ID || (am.UserID != "" && am.UserID != e.UserID) {
+			return
+		}
+		if e.Emoji.Name != acceptMessageEmoteAccept && e.Emoji.Name != acceptMessageEmoteDecline {
+			return
+		}
+		switch e.Emoji.Name {
+		case acceptMessageEmoteAccept:
+			am.AcceptFunc(msg)
+		case acceptMessageEmoteDecline:
+			am.DeclineFunc(msg)
+		}
+		am.eventUnsub()
+		am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
 	})
 	return am, nil
 }
