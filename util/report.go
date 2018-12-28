@@ -18,7 +18,7 @@ type Report struct {
 
 func (r *Report) AsEmbed() *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
-		Title: "Report " + r.ID.Base64(),
+		Title: "Report " + r.ID.String(),
 		Color: ColorEmbedDefault,
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{

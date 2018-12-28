@@ -90,7 +90,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "ID",
-					Value: repID.Base64(),
+					Value: repID.String(),
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Type",
@@ -121,7 +121,9 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 			} else {
 				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
-				// TODO: Send message into modlog channel -> required modlog definition sub command
+				if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
+					args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
+				}
 			}
 		},
 	}
