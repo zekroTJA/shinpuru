@@ -2,9 +2,7 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/util"
+	"time"
 )
 
 type CmdTest struct {
@@ -31,20 +29,6 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	am := &util.AcceptMessage{
-		Session: args.Session,
-		Embed: &discordgo.MessageEmbed{
-			Color:       util.ColorEmbedDefault,
-			Description: "Test :^)",
-		},
-		UserID: args.User.ID,
-		AcceptFunc: func(m *discordgo.Message) {
-			fmt.Println("accepted")
-		},
-		DeclineFunc: func(m *discordgo.Message) {
-			fmt.Println("declined")
-		},
-	}
-	am.Send(args.Channel.ID)
+	fmt.Println(time.Now(), time.Now().Unix())
 	return nil
 }

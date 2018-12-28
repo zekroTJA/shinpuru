@@ -11,12 +11,13 @@ const (
 
 type AcceptMessage struct {
 	*discordgo.Message
-	Session     *discordgo.Session
-	Embed       *discordgo.MessageEmbed
-	UserID      string
-	AcceptFunc  func(*discordgo.Message)
-	DeclineFunc func(*discordgo.Message)
-	eventUnsub  func()
+	Session        *discordgo.Session
+	Embed          *discordgo.MessageEmbed
+	UserID         string
+	DeleteMsgAfter bool
+	AcceptFunc     func(*discordgo.Message)
+	DeclineFunc    func(*discordgo.Message)
+	eventUnsub     func()
 }
 
 func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
@@ -39,12 +40,20 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 		}
 		switch e.Emoji.Name {
 		case acceptMessageEmoteAccept:
-			am.AcceptFunc(msg)
+			if am.AcceptFunc != nil {
+				am.AcceptFunc(msg)
+			}
 		case acceptMessageEmoteDecline:
-			am.DeclineFunc(msg)
+			if am.DeclineFunc != nil {
+				am.DeclineFunc(msg)
+			}
 		}
 		am.eventUnsub()
-		am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
+		if am.DeleteMsgAfter {
+			am.Session.ChannelMessageDelete(chanID, msg.ID)
+		} else {
+			am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
+		}
 	})
 	return am, nil
 }
