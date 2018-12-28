@@ -111,7 +111,7 @@ func FetchMember(s *discordgo.Session, guildID, resolvable string) (*discordgo.M
 	return nil, errors.New("could not be fetched")
 }
 
-func FetchChannel(s *discordgo.Session, guildID, resolvable string) (*discordgo.Channel, error) {
+func FetchChannel(s *discordgo.Session, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
 	guild, err := s.Guild(guildID)
 	if err != nil {
 		return nil, err
@@ -137,6 +137,11 @@ func FetchChannel(s *discordgo.Session, guildID, resolvable string) (*discordgo.
 
 	for _, checkFunc := range checkFuncs {
 		for _, c := range guild.Channels {
+			if len(condition) > 0 && condition[0] != nil {
+				if !condition[0](c) {
+					continue
+				}
+			}
 			if checkFunc(c, resolvable) {
 				return c, nil
 			}
