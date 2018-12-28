@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/zekroTJA/shinpuru/util"
+
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -157,4 +159,14 @@ func (m *MySql) SetSetting(setting, value string) error {
 		return err
 	}
 	return err
+}
+
+func (m *MySql) AddReport(rep *util.Report) error {
+	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
+	return err
+}
+
+func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
+	return nil, nil
 }
