@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/zekroTJA/shinpuru/util"
+
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -30,54 +32,59 @@ func (m *MySql) Close() {
 	}
 }
 
-func (m *MySql) GetGuildPrefix(guildID string) (string, error) {
-	var prefix string
-	err := m.DB.QueryRow("SELECT prefix FROM guilds WHERE guildID = ?", guildID).Scan(&prefix)
+func (m *MySql) getGuildSetting(guildID, key string) (string, error) {
+	var value string
+	err := m.DB.QueryRow("SELECT "+key+" FROM guilds WHERE guildID = ?", guildID).Scan(&value)
 	if err == sql.ErrNoRows {
 		err = ErrDatabaseNotFound
 	}
-	return prefix, err
+	return value, err
+}
+
+func (m *MySql) setGuildSetting(guildID, key string, value string) error {
+	res, err := m.DB.Exec("UPDATE guilds SET "+key+" = ? WHERE guildID = ?", value, guildID)
+	if err != nil {
+		return err
+	}
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO guilds (guildID, "+key+") VALUES (?, ?)", guildID, value)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *MySql) GetGuildPrefix(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "prefix")
+	return val, err
 }
 
 func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
-	res, err := m.DB.Exec("UPDATE guilds SET prefix = ? WHERE guildID = ?", newPrefix, guildID)
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO guilds (guildID, prefix) VALUES (?, ?)", guildID, newPrefix)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-	return err
+	return m.setGuildSetting(guildID, "prefix", newPrefix)
 }
 
 func (m *MySql) GetGuildAutoRole(guildID string) (string, error) {
-	var autorole string
-	err := m.DB.QueryRow("SELECT autorole FROM guilds WHERE guildID = ?", guildID).Scan(&autorole)
-	if err == sql.ErrNoRows {
-		err = ErrDatabaseNotFound
-	}
-	return autorole, err
+	val, err := m.getGuildSetting(guildID, "autorole")
+	return val, err
 }
 
 func (m *MySql) SetGuildAutoRole(guildID, autoRoleID string) error {
-	res, err := m.DB.Exec("UPDATE guilds SET autorole = ? WHERE guildID = ?", autoRoleID, guildID)
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO guilds (guildID, autorole) VALUES (?, ?)", guildID, autoRoleID)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-	return err
+	return m.setGuildSetting(guildID, "autorole", autoRoleID)
+}
+
+func (m *MySql) GetGuildModLog(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "modlogchanID")
+	return val, err
+}
+
+func (m *MySql) SetGuildModLog(guildID, chanID string) error {
+	return m.setGuildSetting(guildID, "modlogchanID", chanID)
 }
 
 func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
@@ -157,4 +164,15 @@ func (m *MySql) SetSetting(setting, value string) error {
 		return err
 	}
 	return err
+}
+
+func (m *MySql) AddReport(rep *util.Report) error {
+	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
+	return err
+}
+
+// TODO: functionality
+func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
+	return nil, nil
 }
