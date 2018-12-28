@@ -121,6 +121,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 			} else {
 				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
+				// TODO: Send message into modlog channel -> required modlog definition sub command
 			}
 		},
 	}

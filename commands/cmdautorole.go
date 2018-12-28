@@ -25,7 +25,7 @@ func (c *CmdAutorole) GetHelp() string {
 }
 
 func (c *CmdAutorole) GetGroup() string {
-	return GroupEtc
+	return GroupGuildConfig
 }
 
 func (c *CmdAutorole) GetPermission() int {

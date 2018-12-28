@@ -18,4 +18,5 @@ const (
 	GroupChat        = "CHAT"
 	GroupEtc         = "ETC"
 	GroupGeneral     = "GENERAL"
+	GroupGuildConfig = "GUILD CONFIG"
 )
