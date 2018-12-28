@@ -7,6 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/bwmarrin/snowflake"
+
 	"github.com/zekroTJA/shinpuru/commands"
 	"github.com/zekroTJA/shinpuru/core"
 	"github.com/zekroTJA/shinpuru/listeners"
@@ -91,10 +93,18 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdQuote))
 	cmdHandler.RegisterCommand(new(commands.CmdGame))
 	cmdHandler.RegisterCommand(new(commands.CmdAutorole))
+	cmdHandler.RegisterCommand(new(commands.CmdReport))
+	cmdHandler.RegisterCommand(new(commands.CmdModlog))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
 	//////////////////////////
+
+	snowflake.Epoch = util.DefEpoche
+	err = util.SetupSnowflakeNodes()
+	if err != nil {
+		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
+	}
 
 	session, err := discordgo.New("Bot " + config.Discord.Token)
 	if err != nil {

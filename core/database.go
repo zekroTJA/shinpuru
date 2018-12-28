@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/util"
 )
 
 var ErrDatabaseNotFound = errors.New("value not found")
@@ -18,8 +19,14 @@ type Database interface {
 	GetGuildAutoRole(guildID string) (string, error)
 	SetGuildAutoRole(guildID, autoRoleID string) error
 
+	GetGuildModLog(guildID string) (string, error)
+	SetGuildModLog(guildID, chanID string) error
+
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
+
+	AddReport(rep *util.Report) error
+	GetReportsGuild(guildID string) ([]*util.Report, error)
 
 	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
 

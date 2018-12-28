@@ -55,10 +55,13 @@ func (c *CmdMvall) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	toVC, err := util.FetchChannel(args.Session, args.Guild.ID, strings.Join(args.Args, " "))
+	toVC, err := util.FetchChannel(args.Session, args.Guild.ID, strings.Join(args.Args, " "),
+		func(c *discordgo.Channel) bool {
+			return c.Type == discordgo.ChannelTypeGuildVoice
+		})
 	if err != nil {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"The channel you have passed could not be found.")
+			"Could not find any voice channel passing the resolvable.")
 		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 		return err
 	}

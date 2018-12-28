@@ -26,7 +26,7 @@ func (c *CmdPrefix) GetHelp() string {
 }
 
 func (c *CmdPrefix) GetGroup() string {
-	return GroupGuildAdmin
+	return GroupGuildConfig
 }
 
 func (c *CmdPrefix) GetPermission() int {

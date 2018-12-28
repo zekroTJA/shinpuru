@@ -1,5 +1,10 @@
 package commands
 
+import (
+	"fmt"
+	"time"
+)
+
 type CmdTest struct {
 }
 
@@ -24,6 +29,6 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	_, err := args.Session.UserUpdateStatus("dnd")
-	return err
+	fmt.Println(time.Now(), time.Now().Unix())
+	return nil
 }
