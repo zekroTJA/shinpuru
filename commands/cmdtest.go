@@ -1,8 +1,9 @@
 package commands
 
 import (
-	"fmt"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 type CmdTest struct {
@@ -29,6 +30,9 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println(time.Now(), time.Now().Unix())
+	args.Session.ChannelMessageSendEmbed(args.Channel.ID, &discordgo.MessageEmbed{
+		Description: "HURENSOHN",
+		Timestamp:   time.Now().Format(time.RFC3339),
+	})
 	return nil
 }
