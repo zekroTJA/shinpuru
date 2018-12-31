@@ -8,15 +8,16 @@ import (
 )
 
 type MessageCollectorOptions struct {
-	MaxMessages int
-	MaxMatches  int
-	Timeout     time.Duration
-	DeleteAfter bool
+	MaxMessages        int
+	MaxMatches         int
+	Timeout            time.Duration
+	DeleteMatchesAfter bool
 }
 
 type MessageCollector struct {
 	CollectedMessages []*discordgo.Message
 	CollectedMatches  []*discordgo.Message
+	Closed            bool
 	channelID         string
 	session           *discordgo.Session
 	options           *MessageCollectorOptions
@@ -46,10 +47,16 @@ func NewMessageCollector(s *discordgo.Session, channelID string, filter func(*di
 			return
 		}
 		mc.CollectedMessages = append(mc.CollectedMessages, msg.Message)
+		if mc.onCollected != nil {
+			mc.onCollected(msg.Message, mc)
+		}
 		if mc.filter(msg.Message) {
 			mc.CollectedMatches = append(mc.CollectedMatches, msg.Message)
+			if mc.onMatched != nil {
+				mc.onMatched(msg.Message, mc)
+			}
 		}
-		if mc.options.MaxMessages != 0 && len(mc.CollectedMatches) >= mc.options.MaxMatches {
+		if mc.options.MaxMessages != 0 && len(mc.CollectedMessages) >= mc.options.MaxMessages {
 			mc.Close("maxMessagesReached")
 		} else if mc.options.MaxMatches != 0 && len(mc.CollectedMatches) >= mc.options.MaxMatches {
 			mc.Close("maxMatchesReached")
@@ -65,11 +72,20 @@ func NewMessageCollector(s *discordgo.Session, channelID string, filter func(*di
 }
 
 func (mc *MessageCollector) Close(reason string) {
+	if mc.Closed {
+		return
+	}
 	if mc.eventUnsub != nil {
 		mc.eventUnsub()
 	}
 	if mc.onClosed != nil {
 		mc.onClosed(reason, mc)
+	}
+	mc.Closed = true
+	if mc.options.DeleteMatchesAfter {
+		for _, msg := range mc.CollectedMatches {
+			mc.session.ChannelMessageDelete(mc.channelID, msg.ID)
+		}
 	}
 }
 
