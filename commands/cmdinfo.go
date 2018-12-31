@@ -11,7 +11,7 @@ type CmdInfo struct {
 }
 
 func (c *CmdInfo) GetInvokes() []string {
-	return []string{"info", "information", "description", "credits"}
+	return []string{"info", "information", "description", "credits", "version"}
 }
 
 func (c *CmdInfo) GetDescription() string {
