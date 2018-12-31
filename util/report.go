@@ -24,7 +24,7 @@ func (r *Report) GetTimestamp() time.Time {
 func (r *Report) AsEmbed() *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Title: "Case " + r.ID.String(),
-		Color: ColorEmbedDefault,
+		Color: ReportColors[r.Type],
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
 				Inline: true,
