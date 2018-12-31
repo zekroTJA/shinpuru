@@ -1,6 +1,8 @@
 package util
 
 import (
+	"errors"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -21,6 +23,9 @@ type AcceptMessage struct {
 }
 
 func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
+	if am.Session == nil {
+		return nil, errors.New("session is not defined")
+	}
 	msg, err := am.Session.ChannelMessageSendEmbed(chanID, am.Embed)
 	if err != nil {
 		return nil, err

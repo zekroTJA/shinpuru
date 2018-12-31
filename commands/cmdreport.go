@@ -41,7 +41,7 @@ func (c *CmdReport) GetPermission() int {
 }
 
 func (c *CmdReport) Exec(args *CommandArgs) error {
-	if len(args.Args) < 2 {
+	if len(args.Args) < 1 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Invalid command arguments. Please use `help report` to see how to use this command.")
 		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
@@ -54,11 +54,39 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 		return err
 	}
+
+	if len(args.Args) == 1 {
+		emb := &discordgo.MessageEmbed{
+			Color: util.ColorEmbedDefault,
+			Title: fmt.Sprintf("Reports for %s#%s",
+				victim.User.Username, victim.User.Discriminator),
+		}
+		reps, err := args.CmdHandler.db.GetReportsGuild(args.Guild.ID)
+		if err != nil {
+			return err
+		}
+		if len(reps) == 0 {
+			emb.Description = "This user has a white west. :ok_hand:"
+		} else {
+			emb.Fields = make([]*discordgo.MessageEmbedField, len(reps))
+			for i, r := range reps {
+				if r.VictimID == victim.User.ID {
+					emb.Fields[i] = r.AsEmbedField()
+				}
+			}
+		}
+		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+		return err
+	}
+
 	msgOffset := 1
 	repType, err := strconv.Atoi(args.Args[1])
+	maxType := len(util.ReportTypes) - 1
+	minType := 2
+	if repType == 0 {
+		repType = minType
+	}
 	if err == nil {
-		maxType := len(util.ReportTypes) - 1
-		minType := 2
 		if repType < minType || repType > maxType {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", minType, maxType)+
