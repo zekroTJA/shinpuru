@@ -96,7 +96,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 
 	multipleMsgs := ""
 	if len(msgs) > 1 {
-		multipleMsgs = "'s"
+		multipleMsgs = "s"
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,

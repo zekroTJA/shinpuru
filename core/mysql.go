@@ -172,7 +172,19 @@ func (m *MySql) AddReport(rep *util.Report) error {
 	return err
 }
 
-// TODO: functionality
 func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
-	return nil, nil
+	rows, err := m.DB.Query("SELECT * FROM reports WHERE guildID = ?", guildID)
+	var results []*util.Report
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		rep := new(util.Report)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, rep)
+	}
+	return results, nil
 }

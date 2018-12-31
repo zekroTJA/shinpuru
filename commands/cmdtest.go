@@ -2,7 +2,9 @@ package commands
 
 import (
 	"fmt"
-	"time"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/util"
 )
 
 type CmdTest struct {
@@ -29,6 +31,27 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println(time.Now(), time.Now().Unix())
+	filter := func(m *discordgo.Message) bool {
+		return m.Author.ID == args.User.ID && m.Content == "a"
+	}
+	options := &util.MessageCollectorOptions{
+		MaxMatches:         3,
+		DeleteMatchesAfter: true,
+	}
+	mc, err := util.NewMessageCollector(args.Session, args.Channel.ID, filter, options)
+	if err != nil {
+		return err
+	}
+
+	mc.OnColelcted(func(msg *discordgo.Message, c *util.MessageCollector) {
+		fmt.Println("Collected: ", msg.Content)
+	})
+	mc.OnMatched(func(msg *discordgo.Message, c *util.MessageCollector) {
+		fmt.Println("Matched: ", msg.Content)
+	})
+	mc.OnClosed(func(reason string, c *util.MessageCollector) {
+		fmt.Println(reason, len(c.CollectedMessages), len(c.CollectedMatches))
+	})
+
 	return nil
 }
