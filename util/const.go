@@ -37,3 +37,10 @@ var ReportTypes = []string{
 	"WARN",
 	"AD",
 }
+
+var ReportColors = []int{
+	0xD81B60,
+	0xe53935,
+	0xFB8C00,
+	0x8E24AA,
+}
