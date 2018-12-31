@@ -107,7 +107,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       util.ColorEmbedDefault,
+			Color:       util.ReportColors[repType],
 			Title:       "Report Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -144,9 +144,8 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 			}
 			err = args.CmdHandler.db.AddReport(rep)
 			if err != nil {
-				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
+				util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed creating report: ```\n"+err.Error()+"\n```")
-				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 			} else {
 				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
 				if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
@@ -156,7 +155,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		},
 	}
 
-	acceptMsg.Send(args.Channel.ID)
+	_, err = acceptMsg.Send(args.Channel.ID)
 
-	return nil
+	return err
 }
