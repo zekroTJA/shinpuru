@@ -37,9 +37,18 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 		return nil, err
 	}
 	am.eventUnsub = am.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
-		if e.MessageID != msg.ID || e.UserID == s.State.User.ID || (am.UserID != "" && am.UserID != e.UserID) {
+		if e.MessageID != msg.ID {
 			return
 		}
+
+		if e.UserID != am.Session.State.User.ID {
+			am.Session.MessageReactionRemove(am.ChannelID, am.ID, e.Emoji.Name, e.UserID)
+		}
+
+		if e.UserID == s.State.User.ID || (am.UserID != "" && am.UserID != e.UserID) {
+			return
+		}
+
 		if e.Emoji.Name != acceptMessageEmoteAccept && e.Emoji.Name != acceptMessageEmoteDecline {
 			return
 		}
