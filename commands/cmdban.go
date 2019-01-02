@@ -93,12 +93,6 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 				VictimID:   victim.User.ID,
 				Msg:        repMsg,
 			}
-			err = args.Session.GuildBanCreateWithReason(args.Guild.ID, victim.User.ID, repMsg, 7)
-			if err != nil {
-				util.SendEmbedError(args.Session, args.Channel.ID,
-					"Failed creating ban: ```\n"+err.Error()+"\n```")
-				return
-			}
 			err = args.CmdHandler.db.AddReport(rep)
 			if err != nil {
 				util.SendEmbedError(args.Session, args.Channel.ID,
@@ -108,6 +102,16 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 			args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
 			if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
 				args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
+			}
+			dmChan, err := args.Session.UserChannelCreate(victim.User.ID)
+			if err == nil {
+				args.Session.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
+			}
+			err = args.Session.GuildBanCreateWithReason(args.Guild.ID, victim.User.ID, repMsg, 7)
+			if err != nil {
+				util.SendEmbedError(args.Session, args.Channel.ID,
+					"Failed creating ban: ```\n"+err.Error()+"\n```")
+				return
 			}
 		},
 	}
