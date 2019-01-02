@@ -68,10 +68,10 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		if len(reps) == 0 {
 			emb.Description = "This user has a white west. :ok_hand:"
 		} else {
-			emb.Fields = make([]*discordgo.MessageEmbedField, len(reps))
-			for i, r := range reps {
+			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
+			for _, r := range reps {
 				if r.VictimID == victim.User.ID {
-					emb.Fields[i] = r.AsEmbedField()
+					emb.Fields = append(emb.Fields, r.AsEmbedField())
 				}
 			}
 		}
@@ -150,6 +150,10 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
 				if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
 					args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
+				}
+				dmChan, err := args.Session.UserChannelCreate(victim.User.ID)
+				if err == nil {
+					args.Session.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
 				}
 			}
 		},
