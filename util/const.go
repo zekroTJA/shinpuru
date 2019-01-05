@@ -23,6 +23,7 @@ const (
 	ColorEmbedDefault = 0xffc107
 	ColorEmbedUpdated = 0x8bc34a
 	ColorEmbedGray    = 0xb0bec5
+	ColorEmbedOrange  = 0xfb8c00
 
 	AutoNick  = "シンプル"
 	StdMotd   = "closed beta version"
