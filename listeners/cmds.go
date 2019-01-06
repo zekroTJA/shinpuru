@@ -75,9 +75,9 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 
 		var permLvl = 0
 		if e.Author.ID == l.config.Discord.OwnerID {
-			permLvl = 1000
+			permLvl = util.PermLvlBotOwner
 		} else if e.Author.ID == guild.OwnerID {
-			permLvl = 10
+			permLvl = util.PermLvlGuildOwner
 		} else {
 			permLvl, err = l.db.GetMemberPermissionLevel(s, e.GuildID, e.Author.ID)
 			fmt.Println(permLvl, err)
