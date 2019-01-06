@@ -22,7 +22,7 @@ func (c *CmdProfile) GetDescription() string {
 }
 
 func (c *CmdProfile) GetHelp() string {
-	return ""
+	return "`profile (<userResolvable>)` - get user info"
 }
 
 func (c *CmdProfile) GetGroup() string {
