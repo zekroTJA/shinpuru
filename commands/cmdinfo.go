@@ -11,7 +11,7 @@ type CmdInfo struct {
 }
 
 func (c *CmdInfo) GetInvokes() []string {
-	return []string{"info", "information", "description", "credits", "version"}
+	return []string{"info", "information", "description", "credits", "version", "invite"}
 }
 
 func (c *CmdInfo) GetDescription() string {
@@ -31,6 +31,8 @@ func (c *CmdInfo) GetPermission() int {
 }
 
 func (c *CmdInfo) Exec(args *CommandArgs) error {
+	invLink := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
+		args.Session.State.User.ID, util.InvitePermission)
 	emb := &discordgo.MessageEmbed{
 		Color: util.ColorEmbedDefault,
 		Title: "Info",
@@ -55,6 +57,11 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			&discordgo.MessageEmbedField{
 				Name:  "Licence",
 				Value: "Covered by [MIT Licence](https://github.com/zekroTJA/shinpuru/blob/master/LICENCE).",
+			},
+			&discordgo.MessageEmbedField{
+				Name: "Invite",
+				Value: fmt.Sprintf("[Invite Link](%s).\n```\n%s\n```",
+					invLink, invLink),
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Development state",
