@@ -1,8 +1,6 @@
 package listeners
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/util"
 
@@ -45,5 +43,4 @@ func (l *ListenerVote) Handler(s *discordgo.Session, e *discordgo.MessageReactio
 		}
 		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.Name, e.UserID)
 	}
-	fmt.Println(util.VotesRunning)
 }

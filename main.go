@@ -99,6 +99,7 @@ func main() {
 	cmdHandler.RegisterCommand(new(commands.CmdBan))
 	cmdHandler.RegisterCommand(new(commands.CmdVote))
 	cmdHandler.RegisterCommand(new(commands.CmdProfile))
+	cmdHandler.RegisterCommand(new(commands.CmdId))
 
 	//////////////////////////
 	// BOT SESSION CREATION //
