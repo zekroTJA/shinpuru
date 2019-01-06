@@ -30,6 +30,11 @@ const (
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
 
 	SettingPresence = "PRESENCE"
+
+	DiscordAPIEndpoint = "https://discordapp.com/api"
+
+	PermLvlBotOwner   = 1000
+	PermLvlGuildOwner = 10
 )
 
 var ReportTypes = []string{

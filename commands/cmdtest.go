@@ -1,5 +1,12 @@
 package commands
 
+import (
+	"fmt"
+
+	"github.com/zekroTJA/shinpuru/core"
+	"github.com/zekroTJA/shinpuru/util"
+)
+
 type CmdTest struct {
 }
 
@@ -24,7 +31,9 @@ func (c *CmdTest) GetPermission() int {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	// t := make([]int, 0)
-	// fmt.Println(t[1])
+	resp, _ := core.HTTPRequest("GET", util.DiscordAPIEndpoint+"/users/"+args.User.ID, map[string]string{
+		"Authorization": "Bot " + args.CmdHandler.config.Discord.Token,
+	}, nil)
+	fmt.Println(resp.BodyAsMap())
 	return nil
 }
