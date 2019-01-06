@@ -81,6 +81,10 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 			return err
 		}
+		err = args.CmdHandler.db.DeleteVote(vote.ID)
+		if err != nil {
+			return err
+		}
 		return vote.Close(args.Session)
 	}
 
@@ -120,6 +124,10 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 	}
 	vote.MsgID = msg.ID
 	err = vote.AddReactions(args.Session)
+	if err != nil {
+		return err
+	}
+	err = args.CmdHandler.db.AddUpdateVote(vote)
 	if err != nil {
 		return err
 	}

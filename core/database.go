@@ -32,6 +32,11 @@ type Database interface {
 
 	GetSetting(setting string) (string, error)
 	SetSetting(setting, value string) error
+
+	GetVotes() (map[string]*util.Vote, error)
+	// SetVotes(votes []*util.Vote) error
+	AddUpdateVote(votes *util.Vote) error
+	DeleteVote(voteID string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

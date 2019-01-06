@@ -38,7 +38,10 @@ func (l *ListenerVote) Handler(s *discordgo.Session, e *discordgo.MessageReactio
 			}
 		}
 		if tick > -1 {
-			v.Tick(s, e.UserID, tick)
+			go func() {
+				v.Tick(s, e.UserID, tick)
+				l.db.AddUpdateVote(v)
+			}()
 		}
 		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.Name, e.UserID)
 	}
