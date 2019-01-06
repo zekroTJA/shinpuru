@@ -40,4 +40,11 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 			util.Log.Errorf("Failed updating nickname on guild %s (%s): %s", g.Name, g.ID, err)
 		}
 	}
+
+	votes, err := l.db.GetVotes()
+	if err != nil {
+		util.Log.Error("Failed getting votes from DB: ", err)
+	} else {
+		util.VotesRunning = votes
+	}
 }

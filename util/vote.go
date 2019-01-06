@@ -61,10 +61,10 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 	if err != nil {
 		return nil, err
 	}
-	openStr := "Open"
+	title := "Open Vote"
 	color := ColorEmbedDefault
 	if closed {
-		openStr = "Closed"
+		title = "Vote closed"
 		color = ColorEmbedOrange
 	}
 
@@ -76,19 +76,19 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 			totalTicks[t.Tick]++
 		}
 	}
-	ticksStr := v.Description + "\n\n"
+	description := v.Description + "\n\n"
 	for i, p := range v.Possibilities {
-		ticksStr += fmt.Sprintf("%s    %s  -  `%d`\n", VoteEmotes[i], p, totalTicks[i])
+		description += fmt.Sprintf("%s    %s  -  `%d`\n", VoteEmotes[i], p, totalTicks[i])
 	}
 
 	return &discordgo.MessageEmbed{
-		Color: color,
-		Title: openStr + " Vote",
+		Color:       color,
+		Title:       title,
+		Description: description,
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: creator.AvatarURL("16x16"),
 			Name:    creator.Username + "#" + creator.Discriminator,
 		},
-		Description: ticksStr,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: "VoteID: " + v.ID,
 		},
@@ -130,5 +130,9 @@ func (v *Vote) Close(s *discordgo.Session) error {
 		return err
 	}
 	_, err = s.ChannelMessageEditEmbed(v.ChannelID, v.MsgID, emb)
+	if err != nil {
+		return err
+	}
+	err = s.MessageReactionsRemoveAll(v.ChannelID, v.MsgID)
 	return err
 }

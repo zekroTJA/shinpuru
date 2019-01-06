@@ -188,3 +188,65 @@ func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
 	}
 	return results, nil
 }
+
+func (m *MySql) GetVotes() (map[string]*util.Vote, error) {
+	rows, err := m.DB.Query("SELECT * FROM votes")
+	results := make(map[string]*util.Vote)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var voteID, rawData string
+		err := rows.Scan(&voteID, &rawData)
+		if err != nil {
+			util.Log.Error("An error occured reading vote from database: ", err)
+			continue
+		}
+		vote, err := util.VoteUnmarshal(rawData)
+		if err != nil {
+			m.DeleteVote(rawData)
+		} else {
+			results[vote.ID] = vote
+		}
+	}
+	return results, err
+}
+
+func (m *MySql) AddUpdateVote(vote *util.Vote) error {
+	rawData, err := vote.Marshal()
+	if err != nil {
+		return err
+	}
+	res, err := m.DB.Exec("UPDATE votes SET data = ? WHERE ID = ?", rawData, vote.ID)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO votes (ID, data) VALUES (?, ?)", vote.ID, rawData)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *MySql) DeleteVote(voteID string) error {
+	_, err := m.DB.Exec("DELETE FROM votes WHERE ID = ?", voteID)
+	return err
+}
+
+// func (m *MySql) SetVotes(updatedVotes []*util.Vote) error {
+// 	dbVotes, err := m.GetVotes()
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	toDelete := make(map[string]*util.Vote)
+// 	for _, dbV := range dbVotes {
+
+// 	}
+
+// 	return nil
+// }
