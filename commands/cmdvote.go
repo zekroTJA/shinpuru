@@ -20,7 +20,8 @@ func (c *CmdVote) GetDescription() string {
 }
 
 func (c *CmdVote) GetHelp() string {
-	return ""
+	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
+		"`vote close (<VoteID>)` - close"
 }
 
 func (c *CmdVote) GetGroup() string {
