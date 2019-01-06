@@ -3,6 +3,7 @@ package util
 import (
 	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,6 +15,22 @@ func EnsureNotEmpty(str, def string) string {
 		return def
 	}
 	return str
+}
+
+func BoolAsString(cond bool, ifTrue, ifFalse string) string {
+	if cond {
+		return ifTrue
+	}
+	return ifFalse
+}
+
+func GetDiscordSnowflakeCreationTime(snowflake string) (time.Time, error) {
+	sfI, err := strconv.ParseInt(snowflake, 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+	timestamp := (sfI >> 22) + 1420070400000
+	return time.Unix(timestamp/1000, timestamp), nil
 }
 
 func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration time.Duration) {

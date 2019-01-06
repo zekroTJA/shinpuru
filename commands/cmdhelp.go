@@ -14,7 +14,7 @@ type CmdHelp struct {
 }
 
 func (c *CmdHelp) GetInvokes() []string {
-	return []string{"help", "h", "?"}
+	return []string{"help", "h", "?", "man"}
 }
 
 func (c *CmdHelp) GetDescription() string {
