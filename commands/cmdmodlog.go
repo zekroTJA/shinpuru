@@ -9,6 +9,7 @@ import (
 )
 
 type CmdModlog struct {
+	PermLvl int
 }
 
 func (c *CmdModlog) GetInvokes() []string {
@@ -29,7 +30,11 @@ func (c *CmdModlog) GetGroup() string {
 }
 
 func (c *CmdModlog) GetPermission() int {
-	return 6
+	return c.PermLvl
+}
+
+func (c *CmdModlog) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdModlog) Exec(args *CommandArgs) error {

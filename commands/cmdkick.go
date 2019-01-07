@@ -10,6 +10,7 @@ import (
 )
 
 type CmdKick struct {
+	PermLvl int
 }
 
 func (c *CmdKick) GetInvokes() []string {
@@ -29,7 +30,11 @@ func (c *CmdKick) GetGroup() string {
 }
 
 func (c *CmdKick) GetPermission() int {
-	return 6
+	return c.PermLvl
+}
+
+func (c *CmdKick) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdKick) Exec(args *CommandArgs) error {

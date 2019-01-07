@@ -82,24 +82,35 @@ func main() {
 	//////////////////////////
 
 	cmdHandler := commands.NewCmdHandler(database, config)
-	cmdHandler.RegisterCommand(new(commands.CmdTest))
-	cmdHandler.RegisterCommand(new(commands.CmdHelp))
-	cmdHandler.RegisterCommand(new(commands.CmdPrefix))
-	cmdHandler.RegisterCommand(new(commands.CmdPerms))
-	cmdHandler.RegisterCommand(new(commands.CmdClear))
-	cmdHandler.RegisterCommand(new(commands.CmdMvall))
-	cmdHandler.RegisterCommand(new(commands.CmdInfo))
-	cmdHandler.RegisterCommand(new(commands.CmdSay))
-	cmdHandler.RegisterCommand(new(commands.CmdQuote))
-	cmdHandler.RegisterCommand(new(commands.CmdGame))
-	cmdHandler.RegisterCommand(new(commands.CmdAutorole))
-	cmdHandler.RegisterCommand(new(commands.CmdReport))
-	cmdHandler.RegisterCommand(new(commands.CmdModlog))
-	cmdHandler.RegisterCommand(new(commands.CmdKick))
-	cmdHandler.RegisterCommand(new(commands.CmdBan))
-	cmdHandler.RegisterCommand(new(commands.CmdVote))
-	cmdHandler.RegisterCommand(new(commands.CmdProfile))
-	cmdHandler.RegisterCommand(new(commands.CmdId))
+
+	cmdHandler.RegisterCommand(&commands.CmdTest{})
+	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
+	cmdHandler.RegisterCommand(&commands.CmdPerms{PermLvl: 10})
+	cmdHandler.RegisterCommand(&commands.CmdClear{PermLvl: 8})
+	cmdHandler.RegisterCommand(&commands.CmdMvall{PermLvl: 5})
+	cmdHandler.RegisterCommand(&commands.CmdInfo{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdSay{PermLvl: 3})
+	cmdHandler.RegisterCommand(&commands.CmdQuote{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdGame{PermLvl: 999})
+	cmdHandler.RegisterCommand(&commands.CmdAutorole{PermLvl: 9})
+	cmdHandler.RegisterCommand(&commands.CmdReport{PermLvl: 5})
+	cmdHandler.RegisterCommand(&commands.CmdModlog{PermLvl: 6})
+	cmdHandler.RegisterCommand(&commands.CmdKick{PermLvl: 6})
+	cmdHandler.RegisterCommand(&commands.CmdBan{PermLvl: 8})
+	cmdHandler.RegisterCommand(&commands.CmdVote{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdProfile{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
+
+	if config.Permissions != nil {
+		cmdHandler.UpdateCommandPermissions(config.Permissions.CustomCmdPermissions)
+		if config.Permissions.BotOwnerLevel > 0 {
+			util.PermLvlBotOwner = config.Permissions.BotOwnerLevel
+		}
+		if config.Permissions.GuildOwnerLevel > 0 {
+			util.PermLvlGuildOwner = config.Permissions.GuildOwnerLevel
+		}
+	}
 
 	//////////////////////////
 	// BOT SESSION CREATION //

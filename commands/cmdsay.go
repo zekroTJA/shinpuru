@@ -26,6 +26,7 @@ var embedColors = map[string]int{
 }
 
 type CmdSay struct {
+	PermLvl int
 }
 
 func (c *CmdSay) GetInvokes() []string {
@@ -60,7 +61,11 @@ func (c *CmdSay) GetGroup() string {
 }
 
 func (c *CmdSay) GetPermission() int {
-	return 3
+	return c.PermLvl
+}
+
+func (c *CmdSay) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdSay) Exec(args *CommandArgs) error {

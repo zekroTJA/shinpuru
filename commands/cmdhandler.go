@@ -35,3 +35,11 @@ func (c *CmdHandler) GetCommand(invoke string) (Command, bool) {
 	cmd, ok := c.registeredCmds[invoke]
 	return cmd, ok
 }
+
+func (c *CmdHandler) UpdateCommandPermissions(perms map[string]int) {
+	for k, v := range perms {
+		if cmd, ok := c.registeredCmds[k]; ok {
+			cmd.SetPermission(v)
+		}
+	}
+}
