@@ -19,14 +19,9 @@ import (
 
 var (
 	configLocation = flag.String("c", "config.yml", "The location of the main config file")
-
-	ldAppVersion = "TESTBUILD"
-	ldAppCommit  = "TESTBUILD"
 )
 
 func main() {
-	util.AppVersion = ldAppVersion
-	util.AppCommit = ldAppCommit
 
 	flag.Parse()
 	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
@@ -83,7 +78,6 @@ func main() {
 
 	cmdHandler := commands.NewCmdHandler(database, config)
 
-	cmdHandler.RegisterCommand(&commands.CmdTest{})
 	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
 	cmdHandler.RegisterCommand(&commands.CmdPerms{PermLvl: 10})
@@ -101,6 +95,10 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdVote{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdProfile{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
+
+	if util.Release == "TRUE" {
+		cmdHandler.RegisterCommand(&commands.CmdTest{})
+	}
 
 	if config.Permissions != nil {
 		cmdHandler.UpdateCommandPermissions(config.Permissions.CustomCmdPermissions)

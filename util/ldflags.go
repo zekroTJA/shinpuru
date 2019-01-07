@@ -1,6 +1,7 @@
 package util
 
 var (
-	AppVersion = ""
-	AppCommit  = ""
+	AppVersion = "TESTING BUILD"
+	AppCommit  = "TESTING BUILD"
+	Release    = ""
 )
