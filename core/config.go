@@ -15,9 +15,16 @@ type ConfigDatabase struct {
 	Database string
 }
 
+type ConfigPermissions struct {
+	BotOwnerLevel        int
+	GuildOwnerLevel      int
+	CustomCmdPermissions map[string]int
+}
+
 type Config struct {
 	Discord        *ConfigDiscord
 	Database       *ConfigDatabase
+	Permissions    *ConfigPermissions
 	CommandLogging bool
 }
 
@@ -33,7 +40,14 @@ func NewDefaultConfig() *Config {
 			GeneralPrefix: "sp!",
 			OwnerID:       "",
 		},
-		Database:       new(ConfigDatabase),
+		Database: new(ConfigDatabase),
+		Permissions: &ConfigPermissions{
+			BotOwnerLevel:   1000,
+			GuildOwnerLevel: 10,
+			CustomCmdPermissions: map[string]int{
+				"cmdinvoke": 0,
+			},
+		},
 		CommandLogging: true,
 	}
 }

@@ -30,6 +30,8 @@ func (c *CmdTest) GetPermission() int {
 	return 999
 }
 
+func (c *CmdTest) SetPermission(permLvl int) {}
+
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	resp, _ := core.HTTPRequest("GET", util.DiscordAPIEndpoint+"/users/"+args.User.ID, map[string]string{
 		"Authorization": "Bot " + args.CmdHandler.config.Discord.Token,

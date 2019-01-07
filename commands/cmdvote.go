@@ -9,6 +9,7 @@ import (
 )
 
 type CmdVote struct {
+	PermLvl int
 }
 
 func (c *CmdVote) GetInvokes() []string {
@@ -29,7 +30,11 @@ func (c *CmdVote) GetGroup() string {
 }
 
 func (c *CmdVote) GetPermission() int {
-	return 0
+	return c.PermLvl
+}
+
+func (c *CmdVote) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdVote) Exec(args *CommandArgs) error {
