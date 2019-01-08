@@ -16,8 +16,8 @@ func NewCmdHandler(db core.Database, config *core.Config) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
-		db:                     db,
-		config:                 config,
+		db:     db,
+		config: config,
 	}
 }
 

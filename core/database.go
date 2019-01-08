@@ -37,6 +37,9 @@ type Database interface {
 	// SetVotes(votes []*util.Vote) error
 	AddUpdateVote(votes *util.Vote) error
 	DeleteVote(voteID string) error
+
+	GetMuteRoles() (map[string]string, error)
+	SetMuteRole(guildID, roleID string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

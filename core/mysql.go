@@ -250,3 +250,23 @@ func (m *MySql) DeleteVote(voteID string) error {
 
 // 	return nil
 // }
+
+func (m *MySql) GetMuteRoles() (map[string]string, error) {
+	rows, err := m.DB.Query("SELECT guildID, muteRoleID FROM guilds")
+	results := make(map[string]string)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var guildID, roleID string
+		err = rows.Scan(&guildID, &roleID)
+		if err != nil {
+			results[guildID] = roleID
+		}
+	}
+	return results, nil
+}
+
+func (m *MySql) SetMuteRole(guildID, roleID string) error {
+	return m.setGuildSetting(guildID, "muteRoleID", roleID)
+}
