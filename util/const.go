@@ -38,9 +38,11 @@ var (
 	PermLvlBotOwner   = 1000
 	PermLvlGuildOwner = 10
 
-	ReportTypes = []string{
+	ReportTypesReserved = 3
+	ReportTypes         = []string{
 		"KICK",
 		"BAN",
+		"MUTE",
 		"WARN",
 		"AD",
 	}
@@ -48,6 +50,7 @@ var (
 	ReportColors = []int{
 		0xD81B60,
 		0xe53935,
+		0x009688,
 		0xFB8C00,
 		0x8E24AA,
 	}

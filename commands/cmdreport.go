@@ -30,7 +30,7 @@ func (c *CmdReport) GetHelp() string {
 	}
 	return "`report <userResolvable> [<type>] <reason>` - report a user *(if type is empty, its defaultly 0 = warn)*\n" +
 		"\n**TYPES:**\n" + strings.Join(repTypes, "\n") +
-		"\nTypes `BAN` and `KICK` are reserved for bands and kicks executed with this bot."
+		"\nTypes `BAN`, `KICK` and `MUTE` are reserved for bands and kicks executed with this bot."
 }
 
 func (c *CmdReport) GetGroup() string {
@@ -87,7 +87,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 	msgOffset := 1
 	repType, err := strconv.Atoi(args.Args[1])
 	maxType := len(util.ReportTypes) - 1
-	minType := 2
+	minType := util.ReportTypesReserved
 	if repType == 0 {
 		repType = minType
 	}
