@@ -27,6 +27,7 @@ type Database interface {
 
 	AddReport(rep *util.Report) error
 	GetReportsGuild(guildID string) ([]*util.Report, error)
+	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
 
 	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
 

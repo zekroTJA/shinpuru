@@ -29,6 +29,7 @@ const (
 	StdMotd   = "closed beta version"
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
 
+	MutedRoleName   = "shinpuru-muted"
 	SettingPresence = "PRESENCE"
 
 	DiscordAPIEndpoint = "https://discordapp.com/api"
