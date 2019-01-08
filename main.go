@@ -22,7 +22,10 @@ var (
 )
 
 func main() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4e938a10281d929cf421e5a933c45b0a113c5227
 	flag.Parse()
 	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
 	util.Log.Info("© zekro Development (Ringo Hoffmann)")
@@ -96,7 +99,7 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdProfile{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
 
-	if util.Release == "TRUE" {
+	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 
