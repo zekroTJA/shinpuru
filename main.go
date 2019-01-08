@@ -130,6 +130,7 @@ func main() {
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
+	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 
 	err = session.Open()
 	if err != nil {

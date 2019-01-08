@@ -267,6 +267,11 @@ func (m *MySql) GetMuteRoles() (map[string]string, error) {
 	return results, nil
 }
 
+func (m *MySql) GetMuteRoleGuild(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "muteRoleID")
+	return val, err
+}
+
 func (m *MySql) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
