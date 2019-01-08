@@ -189,6 +189,30 @@ func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
 	return results, nil
 }
 
+func (m *MySql) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
+	query := fmt.Sprintf(`SELECT * FROM reports WHERE guildID = "%s"`, guildID)
+	if memberID != "" {
+		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
+	}
+	if repType != -1 {
+		query += fmt.Sprintf(` AND type = %d`, repType)
+	}
+	rows, err := m.DB.Query(query)
+	var results []*util.Report
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		rep := new(util.Report)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, rep)
+	}
+	return results, nil
+}
+
 func (m *MySql) GetVotes() (map[string]*util.Vote, error) {
 	rows, err := m.DB.Query("SELECT * FROM votes")
 	results := make(map[string]*util.Vote)
