@@ -24,6 +24,15 @@ func BoolAsString(cond bool, ifTrue, ifFalse string) string {
 	return ifFalse
 }
 
+func IndexOfStrArray(str string, arr []string) int {
+	for i, v := range arr {
+		if v == str {
+			return i
+		}
+	}
+	return -1
+}
+
 func GetDiscordSnowflakeCreationTime(snowflake string) (time.Time, error) {
 	sfI, err := strconv.ParseInt(snowflake, 10, 64)
 	if err != nil {
