@@ -39,6 +39,7 @@ type Database interface {
 	DeleteVote(voteID string) error
 
 	GetMuteRoles() (map[string]string, error)
+	GetMuteRoleGuild(guildID string) (string, error)
 	SetMuteRole(guildID, roleID string) error
 }
 
