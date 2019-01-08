@@ -31,8 +31,12 @@ for BUILD in ${BUILDS[*]}; do
 
     echo "Building ${OS}_$ARCH..."
     (env GOOS=$OS GOARCH=$ARCH \
-        go build -o ${BUILDPATH}/${BUILDNAME}_${OS}_$ARCH \
-        -ldflags "-X main.ldAppVersion=$TAG -X main.ldAppCommit=$COMMIT")
+        go build \
+            -o ${BUILDPATH}/${BUILDNAME}_${OS}_$ARCH \
+            -ldflags " \
+                -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
+                -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
+                -X github.com/zekroTJA/shinpuru/util.Release=TRUE")
 
     if [ "$OS" = "windows" ]; then
         mv ${BUILDPATH}/${BUILDNAME}_windows_$ARCH $BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
