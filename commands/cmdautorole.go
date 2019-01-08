@@ -9,6 +9,7 @@ import (
 )
 
 type CmdAutorole struct {
+	PermLvl int
 }
 
 func (c *CmdAutorole) GetInvokes() []string {
@@ -29,7 +30,11 @@ func (c *CmdAutorole) GetGroup() string {
 }
 
 func (c *CmdAutorole) GetPermission() int {
-	return 9
+	return c.PermLvl
+}
+
+func (c *CmdAutorole) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdAutorole) Exec(args *CommandArgs) error {

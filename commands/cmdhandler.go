@@ -16,8 +16,8 @@ func NewCmdHandler(db core.Database, config *core.Config) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
-		db:                     db,
-		config:                 config,
+		db:     db,
+		config: config,
 	}
 }
 
@@ -34,4 +34,12 @@ func (c *CmdHandler) RegisterCommand(cmd Command) {
 func (c *CmdHandler) GetCommand(invoke string) (Command, bool) {
 	cmd, ok := c.registeredCmds[invoke]
 	return cmd, ok
+}
+
+func (c *CmdHandler) UpdateCommandPermissions(perms map[string]int) {
+	for k, v := range perms {
+		if cmd, ok := c.registeredCmds[k]; ok {
+			cmd.SetPermission(v)
+		}
+	}
 }

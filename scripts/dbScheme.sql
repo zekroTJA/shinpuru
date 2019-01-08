@@ -8,7 +8,8 @@ CREATE TABLE `guilds` (
   `guildID` text NOT NULL,
   `prefix` text NOT NULL,
   `autorole` text NOT NULL,
-  `modlogchanID` text NOT NULL
+  `modlogchanID` text NOT NULL,
+  `muteRoleID` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `permissions`;

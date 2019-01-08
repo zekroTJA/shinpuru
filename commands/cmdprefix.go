@@ -10,6 +10,7 @@ import (
 )
 
 type CmdPrefix struct {
+	PermLvl int
 }
 
 func (c *CmdPrefix) GetInvokes() []string {
@@ -30,7 +31,11 @@ func (c *CmdPrefix) GetGroup() string {
 }
 
 func (c *CmdPrefix) GetPermission() int {
-	return 10
+	return c.PermLvl
+}
+
+func (c *CmdPrefix) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdPrefix) Exec(args *CommandArgs) error {
