@@ -11,6 +11,7 @@ import (
 )
 
 type CmdHelp struct {
+	PermLvl int
 }
 
 func (c *CmdHelp) GetInvokes() []string {
@@ -31,7 +32,11 @@ func (c *CmdHelp) GetGroup() string {
 }
 
 func (c *CmdHelp) GetPermission() int {
-	return 0
+	return c.PermLvl
+}
+
+func (c *CmdHelp) SetPermission(permLvl int) {
+	c.PermLvl = permLvl
 }
 
 func (c *CmdHelp) Exec(args *CommandArgs) error {

@@ -29,24 +29,30 @@ const (
 	StdMotd   = "closed beta version"
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
 
+	MutedRoleName   = "shinpuru-muted"
 	SettingPresence = "PRESENCE"
 
 	DiscordAPIEndpoint = "https://discordapp.com/api"
-
-	PermLvlBotOwner   = 1000
-	PermLvlGuildOwner = 10
 )
 
-var ReportTypes = []string{
-	"KICK",
-	"BAN",
-	"WARN",
-	"AD",
-}
+var (
+	PermLvlBotOwner   = 1000
+	PermLvlGuildOwner = 10
 
-var ReportColors = []int{
-	0xD81B60,
-	0xe53935,
-	0xFB8C00,
-	0x8E24AA,
-}
+	ReportTypesReserved = 3
+	ReportTypes         = []string{
+		"KICK",
+		"BAN",
+		"MUTE",
+		"WARN",
+		"AD",
+	}
+
+	ReportColors = []int{
+		0xD81B60,
+		0xe53935,
+		0x009688,
+		0xFB8C00,
+		0x8E24AA,
+	}
+)

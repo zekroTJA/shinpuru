@@ -6,6 +6,7 @@ type Command interface {
 	GetHelp() string
 	GetGroup() string
 	GetPermission() int
+	SetPermission(permLvl int)
 	Exec(args *CommandArgs) error
 }
 

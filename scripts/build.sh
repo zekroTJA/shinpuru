@@ -11,7 +11,9 @@ echo "Getting dependencies..."
 go get -v -t ./...
 
 echo "Building..."
-go build \
-    -ldflags "-X main.ldAppVersion=$TAG -X main.ldAppCommit=$COMMIT"
+go build -ldflags " \
+    -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
+    -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
+    -X github.com/zekroTJA/shinpuru/util.Release=TRUE"
 
 wait

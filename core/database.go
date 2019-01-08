@@ -27,6 +27,7 @@ type Database interface {
 
 	AddReport(rep *util.Report) error
 	GetReportsGuild(guildID string) ([]*util.Report, error)
+	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
 
 	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
 
@@ -37,6 +38,10 @@ type Database interface {
 	// SetVotes(votes []*util.Vote) error
 	AddUpdateVote(votes *util.Vote) error
 	DeleteVote(voteID string) error
+
+	GetMuteRoles() (map[string]string, error)
+	GetMuteRoleGuild(guildID string) (string, error)
+	SetMuteRole(guildID, roleID string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {
