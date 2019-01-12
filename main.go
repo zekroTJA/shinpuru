@@ -111,6 +111,8 @@ func main() {
 		}
 	}
 
+	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())
+
 	//////////////////////////
 	// BOT SESSION CREATION //
 	//////////////////////////
