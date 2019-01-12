@@ -30,6 +30,6 @@ func (c *CmdTest) GetPermission() int {
 func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println(args.Message.MentionRoles)
+	fmt.Println(args.Args[1:])
 	return nil
 }
