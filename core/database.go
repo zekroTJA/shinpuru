@@ -22,6 +22,9 @@ type Database interface {
 	GetGuildModLog(guildID string) (string, error)
 	SetGuildModLog(guildID, chanID string) error
 
+	GetGuildVoiceLog(guildID string) (string, error)
+	SetGuildVoiceLog(guildID, chanID string) error
+
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
