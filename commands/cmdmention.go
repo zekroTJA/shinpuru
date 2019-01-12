@@ -15,7 +15,7 @@ type CmdMention struct {
 }
 
 func (c *CmdMention) GetInvokes() []string {
-	return []string{"ment", "m", "mention", "mentions"}
+	return []string{"ment", "mnt", "mention", "mentions"}
 }
 
 func (c *CmdMention) GetDescription() string {
