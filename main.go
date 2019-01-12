@@ -96,6 +96,7 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdMute{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdMention{PermLvl: 4})
+	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
