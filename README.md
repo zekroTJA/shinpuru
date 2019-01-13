@@ -3,7 +3,6 @@
     <h1>~ シンプル ~</h1>
     <strong>
         A simple multi purpose discord bot written in Go (discord.go)<br>
-        with focus on stability and reliability
     </strong><br><br>
     <a href="https://dc.zekro.de"><img height="28" src="https://img.shields.io/discord/307084334198816769.svg?style=for-the-badge&logo=discord" /></a>&nbsp;
     <a href="https://github.com/zekroTJA/shinpuru/releases"><img height="28" src="https://img.shields.io/github/tag/zekroTJA/shinpuru.svg?style=for-the-badge"/></a>&nbsp;
@@ -58,5 +57,5 @@ Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_i
 
 ---
 
-Copyright (c) 2018 zekro Developmenr (Ringo Hoffmann).  
+Copyright (c) 2018 zekro Development (Ringo Hoffmann).  
 Covered by MIT Licence.
