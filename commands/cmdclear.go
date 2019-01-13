@@ -46,7 +46,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 	if len(args.Args) == 0 {
 		msgsStructs, err = args.Session.ChannelMessages(args.Channel.ID, 1, "", "", "")
 	} else {
-		var memb *discordgo.Member
+		var member *discordgo.Member
 		n, err := strconv.Atoi(args.Args[0])
 		if err != nil {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
@@ -61,7 +61,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		}
 
 		if len(args.Args) >= 2 {
-			memb, err = util.FetchMember(args.Session, args.Guild.ID, args.Args[1])
+			member, err = util.FetchMember(args.Session, args.Guild.ID, args.Args[1])
 			if err != nil {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					"Sorry, but the member can not be found on this guild. :cry:")
@@ -74,9 +74,9 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 			return err
 		}
 
-		if memb != nil {
+		if member != nil {
 			for _, m := range msgsStructsUnsorted {
-				if m.Author.ID == memb.User.ID {
+				if m.Author.ID == member.User.ID {
 					msgsStructs = append(msgsStructs, m)
 				}
 			}
