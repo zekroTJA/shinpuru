@@ -84,9 +84,15 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 	var emb *discordgo.MessageEmbed
 	if *fraw {
 		offset := strings.IndexRune(args.Message.Content, '{')
+		if offset < 0 || offset >= len(args.Message.Content) {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				"Wrong JSON format. The JSON object must start with `{`."+
+					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object")
+			util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+			return err
+		}
 		content := args.Message.Content[offset:]
 		err := json.Unmarshal([]byte(content), &emb)
-		emb.Author = authorField
 		if err != nil {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Failed parsing message embed from input: ```\n%s\n```", err.Error())+
@@ -94,6 +100,7 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 			util.DeleteMessageLater(args.Session, msg, 30*time.Second)
 			return err
 		}
+		emb.Author = authorField
 	} else {
 		content := strings.Join(f.Args(), " ")
 		if len(content) < 1 {
