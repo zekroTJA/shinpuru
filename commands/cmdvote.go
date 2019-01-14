@@ -62,7 +62,6 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					vids = append(vids, v.ID)
 				}
 			}
-			fmt.Println(vids)
 			if len(vids) > 1 {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					fmt.Sprintf("You have open more votes than 1. Please select the ID of the vote to close it: ```\n%s\n```", strings.Join(vids, "\n")))
