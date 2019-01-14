@@ -80,7 +80,6 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			permLvl = util.PermLvlGuildOwner
 		} else {
 			permLvl, err = l.db.GetMemberPermissionLevel(s, e.GuildID, e.Author.ID)
-			fmt.Println(permLvl, err)
 		}
 
 		if err != nil && !core.IsErrDatabaseNotFound(err) {
