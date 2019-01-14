@@ -19,7 +19,7 @@ func (c *CmdQuote) GetInvokes() []string {
 }
 
 func (c *CmdQuote) GetDescription() string {
-	return "quote a messgage from any chat"
+	return "quote a message from any chat"
 }
 
 func (c *CmdQuote) GetHelp() string {
