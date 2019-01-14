@@ -85,7 +85,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	}
 
 	if len(quoteMsg.Content) < 1 {
-		msgSearchEmb.Description = "Found messages contect is empty. Maybe, it is an embed message itself, which can not be quoted."
+		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
 		msgSearchEmb.Color = util.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
