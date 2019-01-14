@@ -2,9 +2,6 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/zekroTJA/shinpuru/core"
-	"github.com/zekroTJA/shinpuru/util"
 )
 
 type CmdTest struct {
@@ -33,9 +30,6 @@ func (c *CmdTest) GetPermission() int {
 func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	resp, _ := core.HTTPRequest("GET", util.DiscordAPIEndpoint+"/users/"+args.User.ID, map[string]string{
-		"Authorization": "Bot " + args.CmdHandler.config.Discord.Token,
-	}, nil)
-	fmt.Println(resp.BodyAsMap())
+	fmt.Println(args.Args[1:])
 	return nil
 }

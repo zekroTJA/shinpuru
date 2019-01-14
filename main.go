@@ -95,6 +95,8 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdProfile{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdMute{PermLvl: 4})
+	cmdHandler.RegisterCommand(&commands.CmdMention{PermLvl: 4})
+	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -109,6 +111,8 @@ func main() {
 			util.PermLvlGuildOwner = config.Permissions.GuildOwnerLevel
 		}
 	}
+
+	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())
 
 	//////////////////////////
 	// BOT SESSION CREATION //

@@ -62,7 +62,6 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					vids = append(vids, v.ID)
 				}
 			}
-			fmt.Println(vids)
 			if len(vids) > 1 {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					fmt.Sprintf("You have open more votes than 1. Please select the ID of the vote to close it: ```\n%s\n```", strings.Join(vids, "\n")))
@@ -75,13 +74,8 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 				return err
 			}
 		}
-		permlvls, err := args.CmdHandler.db.GetGuildPermissions(args.Guild.ID)
-		if err != nil {
-			return err
-		}
-		permlvl, _ := permlvls[args.User.ID]
-		fmt.Println(permlvls, permlvl)
-		if vote.CreatorID != args.User.ID && permlvl < 6 && args.User.ID != args.Guild.OwnerID {
+		permLvl, err := args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+		if vote.CreatorID != args.User.ID && permLvl <= 5 && args.User.ID != args.Guild.OwnerID {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"You do not have the permission to close another ones votes.")
 			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
