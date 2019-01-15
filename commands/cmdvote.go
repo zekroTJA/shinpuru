@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -104,6 +105,18 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		}
 		split[i] = strings.Trim(e, " \t")
 	}
+
+	var imgLink string
+	description := split[0]
+	imgRx := regexp.MustCompile(`!\[\]\(([\w:\/\/\.&?%!-]+)\)`)
+	rxResult := imgRx.FindAllStringSubmatch(description, 1)
+	if len(rxResult) > 0 {
+		if len(rxResult[0]) == 2 {
+			description = strings.Replace(description, rxResult[0][0], "", 1)
+			imgLink = rxResult[0][1]
+		}
+	}
+
 	vote := &util.Vote{
 		ID:            args.Message.ID,
 		MsgID:         "",
@@ -112,6 +125,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		ChannelID:     args.Channel.ID,
 		Description:   split[0],
 		Possibilities: split[1:],
+		ImageURL:      imgLink,
 		Ticks:         make([]*util.VoteTick, 0),
 	}
 	emb, err := vote.AsEmbed(args.Session, false)

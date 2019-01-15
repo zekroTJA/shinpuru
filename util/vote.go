@@ -22,6 +22,7 @@ type Vote struct {
 	GuildID       string
 	ChannelID     string
 	Description   string
+	ImageURL      string
 	Possibilities []string
 	Ticks         []*VoteTick
 }
@@ -76,12 +77,13 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 			totalTicks[t.Tick]++
 		}
 	}
+
 	description := v.Description + "\n\n"
 	for i, p := range v.Possibilities {
 		description += fmt.Sprintf("%s    %s  -  `%d`\n", VoteEmotes[i], p, totalTicks[i])
 	}
 
-	return &discordgo.MessageEmbed{
+	emb := &discordgo.MessageEmbed{
 		Color:       color,
 		Title:       title,
 		Description: description,
@@ -92,7 +94,15 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: "VoteID: " + v.ID,
 		},
-	}, nil
+	}
+
+	if v.ImageURL != "" {
+		emb.Image = &discordgo.MessageEmbedImage{
+			URL: v.ImageURL,
+		}
+	}
+
+	return emb, nil
 }
 
 func (v *Vote) AddReactions(s *discordgo.Session) error {
