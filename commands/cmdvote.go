@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/util"
 )
 
@@ -23,7 +24,7 @@ func (c *CmdVote) GetDescription() string {
 
 func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
-		"`vote close (<VoteID>)` - close"
+		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
 }
 
 func (c *CmdVote) GetGroup() string {
@@ -40,53 +41,99 @@ func (c *CmdVote) SetPermission(permLvl int) {
 
 func (c *CmdVote) Exec(args *CommandArgs) error {
 
-	if len(args.Args) > 0 && strings.ToLower(args.Args[0]) == "close" {
-		var vote *util.Vote
-		if len(args.Args) > 1 {
-			vid := args.Args[1]
-			for _, v := range util.VotesRunning {
-				if v.GuildID == args.Guild.ID && v.ID == vid {
-					vote = v
+	if len(args.Args) > 0 {
+		switch strings.ToLower(args.Args[0]) {
+
+		case "close":
+			var vote *util.Vote
+			if len(args.Args) > 1 {
+				if strings.ToLower(args.Args[1]) == "all" {
+					var i int
+					for _, v := range util.VotesRunning {
+						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+							go func(vC *util.Vote) {
+								args.CmdHandler.db.DeleteVote(vC.ID)
+								vC.Close(args.Session)
+							}(v)
+							i++
+						}
+					}
+					msg, err := util.SendEmbed(args.Session, args.Channel.ID, fmt.Sprintf("Closed %d votes.", i), "", 0)
+					util.DeleteMessageLater(args.Session, msg, 5*time.Second)
+					return err
+				}
+				vid := args.Args[1]
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.ID == vid {
+						vote = v
+					}
+				}
+				if vote == nil {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
+					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+					return err
+				}
+			} else {
+				vids := make([]string, 0)
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+						vote = v
+						vids = append(vids, v.ID)
+					}
+				}
+				if len(vids) > 1 {
+					emb := &discordgo.MessageEmbed{
+						Description: "You have open more votes than 1. Please select the ID of the vote to close it:",
+						Color:       util.ColorEmbedError,
+						Fields:      make([]*discordgo.MessageEmbedField, 0),
+					}
+					for _, v := range util.VotesRunning {
+						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+							emb.Fields = append(emb.Fields, v.AsField())
+						}
+					}
+					msg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+					util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+					return err
+				} else if vote == nil {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.")
+					util.DeleteMessageLater(args.Session, msg, 12*time.Second)
+					return err
 				}
 			}
-			if vote == nil {
+			permLvl, err := args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+			if vote.CreatorID != args.User.ID && permLvl <= 5 && args.User.ID != args.Guild.OwnerID {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
-				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+					"You do not have the permission to close another ones votes.")
+				util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 				return err
 			}
-		} else {
-			vids := make([]string, 0)
+			err = args.CmdHandler.db.DeleteVote(vote.ID)
+			if err != nil {
+				return err
+			}
+			return vote.Close(args.Session)
+
+		case "list":
+			emb := &discordgo.MessageEmbed{
+				Description: "Your open votes on this guild:",
+				Color:       util.ColorEmbedDefault,
+				Fields:      make([]*discordgo.MessageEmbedField, 0),
+			}
 			for _, v := range util.VotesRunning {
 				if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-					vote = v
-					vids = append(vids, v.ID)
+					emb.Fields = append(emb.Fields, v.AsField())
 				}
 			}
-			if len(vids) > 1 {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					fmt.Sprintf("You have open more votes than 1. Please select the ID of the vote to close it: ```\n%s\n```", strings.Join(vids, "\n")))
-				util.DeleteMessageLater(args.Session, msg, 30*time.Second)
-				return err
-			} else if vote == nil {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.")
-				util.DeleteMessageLater(args.Session, msg, 12*time.Second)
-				return err
+			if len(emb.Fields) == 0 {
+				emb.Description = "You do'nt have any open votes on this guild."
 			}
-		}
-		permLvl, err := args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
-		if vote.CreatorID != args.User.ID && permLvl <= 5 && args.User.ID != args.Guild.OwnerID {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"You do not have the permission to close another ones votes.")
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+			_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
 			return err
 		}
-		err = args.CmdHandler.db.DeleteVote(vote.ID)
-		if err != nil {
-			return err
-		}
-		return vote.Close(args.Session)
+
 	}
 
 	split := strings.Split(strings.Join(args.Args, " "), "|")

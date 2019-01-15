@@ -144,7 +144,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](https://discordapp.com/channels/%s/%s/%s)*", args.Guild.ID, quoteMsg.ChannelID, quoteMsg.ID),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg)),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
 		},
