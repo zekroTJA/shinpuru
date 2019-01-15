@@ -105,6 +105,22 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 	return emb, nil
 }
 
+func (v *Vote) AsField() *discordgo.MessageEmbedField {
+	shortenedDescription := v.Description
+	if len(shortenedDescription) > 200 {
+		shortenedDescription = shortenedDescription[200:] + "..."
+	}
+	return &discordgo.MessageEmbedField{
+		Name: "VID: " + v.ID,
+		Value: fmt.Sprintf("**Description:** %s\n`%d votes`\n[*jump to msg*](%s)",
+			shortenedDescription, len(v.Ticks), GetMessageLink(&discordgo.Message{
+				ID:        v.MsgID,
+				ChannelID: v.ChannelID,
+				GuildID:   v.GuildID,
+			})),
+	}
+}
+
 func (v *Vote) AddReactions(s *discordgo.Session) error {
 	for i := 0; i < len(v.Possibilities); i++ {
 		err := s.MessageReactionAdd(v.ChannelID, v.MsgID, VoteEmotes[i])
