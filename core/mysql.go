@@ -96,6 +96,15 @@ func (m *MySql) SetGuildVoiceLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "voicelogchanID", chanID)
 }
 
+func (m *MySql) GetGuildNotifyRole(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "notifyRoleID")
+	return val, err
+}
+
+func (m *MySql) SetGuildNotifyRole(guildID, roleID string) error {
+	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
+}
+
 func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
