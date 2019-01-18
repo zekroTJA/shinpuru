@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -31,6 +32,10 @@ func IndexOfStrArray(str string, arr []string) int {
 		}
 	}
 	return -1
+}
+
+func GetMessageLink(msg *discordgo.Message) string {
+	return fmt.Sprintf("https://discordapp.com/channels/%s/%s/%s", msg.GuildID, msg.ChannelID, msg.ID)
 }
 
 func GetDiscordSnowflakeCreationTime(snowflake string) (time.Time, error) {
