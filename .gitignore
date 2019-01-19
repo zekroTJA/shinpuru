@@ -3,3 +3,4 @@
 private.*
 build/*
 *.exe
+*.db

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `prefix` text NOT NULL,
   `autorole` text NOT NULL,
   `modlogchanID` text NOT NULL,
+  `voicelogchanID` text NOT NULL,
   `muteRoleID` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

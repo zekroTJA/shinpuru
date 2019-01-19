@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `prefix` text NOT NULL DEFAULT '',
   `autorole` text NOT NULL DEFAULT '',
   `modlogchanID` text NOT NULL DEFAULT '',
+  `voicelogchanID` text NOT NULL DEFAULT '',
   `muteRoleID` text NOT NULL DEFAULT ''
 );
 

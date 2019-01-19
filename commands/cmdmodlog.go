@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -22,7 +23,8 @@ func (c *CmdModlog) GetDescription() string {
 
 func (c *CmdModlog) GetHelp() string {
 	return "`modlog` - set this channel as modlog channel\n" +
-		"`modlog <chanResolvable>` - set any text channel as mod log channel"
+		"`modlog <chanResolvable>` - set any text channel as mod log channel\n" +
+		"`modlog reset` - reset mod log channel"
 }
 
 func (c *CmdModlog) GetGroup() string {
@@ -60,6 +62,20 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 			},
 		}
 		_, err := acceptMsg.Send(args.Channel.ID)
+		return err
+	}
+
+	if strings.ToLower(args.Args[0]) == "reset" {
+		err := args.CmdHandler.db.SetGuildModLog(args.Guild.ID, "")
+		if err != nil {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				"Failed reseting mod log channel: ```\n"+err.Error()+"\n```")
+			util.DeleteMessageLater(args.Session, msg, 15*time.Second)
+			return err
+		}
+		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+			"Modlog channel reset.", "", util.ColorEmbedUpdated)
+		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
 		return err
 	}
 
