@@ -133,11 +133,13 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Guild Joined",
-				Value: joinedTime.Format(time.RFC1123),
+				Value: util.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
+					"*failed parsing timestamp*"),
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Account Created",
-				Value: createdTime.Format(time.RFC1123),
+				Value: util.EnsureNotEmpty(createdTime.Format(time.RFC1123),
+					"*failed parsing timestamp*"),
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Permission Level",
