@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -33,6 +34,7 @@ func (l *ListenerVoiceUpdate) sendVLCMessage(s *discordgo.Session, channelID, us
 			Name:    user.Username + "#" + user.Discriminator,
 			IconURL: user.AvatarURL("16x16"),
 		},
+		Timestamp: time.Now().Format(time.RFC3339),
 	})
 }
 
