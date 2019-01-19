@@ -97,6 +97,7 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdMute{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdMention{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -135,6 +136,7 @@ func main() {
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
+	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
 
 	err = session.Open()
 	if err != nil {
