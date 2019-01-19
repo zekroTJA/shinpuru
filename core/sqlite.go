@@ -2,8 +2,11 @@ package core
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/zekroTJA/shinpuru/util"
 
@@ -15,6 +18,26 @@ type Sqlite struct {
 	DB *sql.DB
 }
 
+func (m *Sqlite) setup() {
+	if SqliteDbSchemeB64 == "" {
+		util.Log.Warning("sqlite database scheme was not set on compiling. Database can not be checked for structure changes!")
+		return
+	}
+	scheme, err := base64.StdEncoding.DecodeString(SqliteDbSchemeB64)
+	if err != nil {
+		util.Log.Fatal("failed decoding base64 database scheme: ", err)
+		return
+	}
+	for _, query := range strings.Split(string(scheme), ";") {
+		if ok, _ := regexp.MatchString(`\w`, query); ok {
+			_, err = m.DB.Exec(query)
+			if err != nil {
+				util.Log.Error("Failed executing setup database query: ", err)
+			}
+		}
+	}
+}
+
 func (m *Sqlite) Connect(credentials ...interface{}) error {
 	var err error
 	creds := credentials[0].(*ConfigDatabase)
@@ -23,6 +46,7 @@ func (m *Sqlite) Connect(credentials ...interface{}) error {
 	}
 	dsn := fmt.Sprintf("file:database.db")
 	m.DB, err = sql.Open("sqlite3", dsn)
+	m.setup()
 	return err
 }
 

@@ -9,6 +9,11 @@ import (
 
 var ErrDatabaseNotFound = errors.New("value not found")
 
+var (
+	MySqlDbSchemeB64  = ""
+	SqliteDbSchemeB64 = ""
+)
+
 type Database interface {
 	Connect(credentials ...interface{}) error
 	Close()

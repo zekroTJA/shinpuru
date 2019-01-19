@@ -2,8 +2,11 @@ package core
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/zekroTJA/shinpuru/util"
 
@@ -15,6 +18,27 @@ type MySql struct {
 	DB *sql.DB
 }
 
+func (m *MySql) setup() {
+	if MySqlDbSchemeB64 == "" {
+		util.Log.Warning("MySql database scheme was not set on compiling. Database can not be checked for structure changes!")
+		return
+	}
+	scheme, err := base64.StdEncoding.DecodeString(MySqlDbSchemeB64)
+	if err != nil {
+		util.Log.Fatal("failed decoding base64 database scheme: ", err)
+		return
+	}
+	for _, query := range strings.Split(string(scheme), ";") {
+		if ok, _ := regexp.MatchString(`\w`, query); ok {
+			fmt.Println(query)
+			_, err = m.DB.Exec(query)
+			if err != nil {
+				util.Log.Errorf("Failed executing setup database query '%s': %s", query, err.Error())
+			}
+		}
+	}
+}
+
 func (m *MySql) Connect(credentials ...interface{}) error {
 	var err error
 	creds := credentials[0].(*ConfigDatabase)
@@ -23,6 +47,7 @@ func (m *MySql) Connect(credentials ...interface{}) error {
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", creds.User, creds.Password, creds.Host, creds.Database)
 	m.DB, err = sql.Open("mysql", dsn)
+	m.setup()
 	return err
 }
 
