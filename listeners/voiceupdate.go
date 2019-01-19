@@ -49,6 +49,12 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 	if err != nil || voiceLogChan == "" {
 		return
 	}
+	_, err = s.Channel(voiceLogChan)
+	if err != nil {
+		fmt.Println("reset vlog chan")
+		l.db.SetGuildVoiceLog(e.GuildID, "")
+		return
+	}
 	if vsOld == nil || (vsOld != nil && vsOld.ChannelID == "") {
 		newChan, err := s.Channel(e.ChannelID)
 		if err != nil {
