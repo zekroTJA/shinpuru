@@ -41,7 +41,7 @@ func (m *MySql) setup() {
 
 func (m *MySql) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*ConfigDatabase)
+	creds := credentials[0].(*ConfigDatabaseCreds)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}

@@ -19,6 +19,8 @@ const (
 		0x20000000 | // MANAGE WEBHOOKS
 		0x40000000 // MANAGE EMOJIS
 
+	ConfigVersion = 3
+
 	ColorEmbedError   = 0xd32f2f
 	ColorEmbedDefault = 0xffc107
 	ColorEmbedUpdated = 0x8bc34a
