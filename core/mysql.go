@@ -140,6 +140,9 @@ func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, m
 		return 0, err
 	}
 	maxPermLvl := 0
+	if lvl, ok := guildPerms[guildID]; ok {
+		maxPermLvl = lvl
+	}
 	for _, rID := range member.Roles {
 		if lvl, ok := guildPerms[rID]; ok && lvl > maxPermLvl {
 			maxPermLvl = lvl
