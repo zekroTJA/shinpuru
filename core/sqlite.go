@@ -40,11 +40,11 @@ func (m *Sqlite) setup() {
 
 func (m *Sqlite) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*ConfigDatabase)
+	creds := credentials[0].(*ConfigDatabaseFile)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
-	dsn := fmt.Sprintf("file:database.db")
+	dsn := fmt.Sprintf("file:" + creds.DBFile)
 	m.DB, err = sql.Open("sqlite3", dsn)
 	m.setup()
 	return err
