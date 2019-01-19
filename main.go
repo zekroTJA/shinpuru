@@ -65,7 +65,7 @@ func main() {
 	// DATABASE LOGIN //
 	////////////////////
 
-	database := new(core.Sqlite)
+	database := new(core.MySql)
 	if err := database.Connect(config.Database); err != nil {
 		util.Log.Fatal("Failed connecting to database:", err)
 	}

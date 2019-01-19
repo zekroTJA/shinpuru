@@ -5,6 +5,8 @@ BUILDPATH="./build"
 BUILDNAME="shinpuru"
 #########
 
+source scripts/getsqlschemes.bash
+
 TAG=$(git describe --tags)
 if [ "$TAG" == "" ]; then
     TAG="untagged"
@@ -36,7 +38,8 @@ for BUILD in ${BUILDS[*]}; do
             -ldflags " \
                 -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
                 -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
-                -X github.com/zekroTJA/shinpuru/util.Release=TRUE")
+                -X github.com/zekroTJA/shinpuru/util.Release=TRUE \
+                $SQLLDFLAGS")
 
     if [ "$OS" = "windows" ]; then
         mv ${BUILDPATH}/${BUILDNAME}_windows_$ARCH $BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
