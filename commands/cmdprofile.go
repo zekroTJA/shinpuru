@@ -76,18 +76,16 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	permLvls, err := args.CmdHandler.db.GetGuildPermissions(args.Guild.ID)
-	if err != nil {
-		return err
-	}
-
-	permLvl := 0
+	var permLvl int
 	if member.User.ID == args.CmdHandler.config.Discord.OwnerID {
 		permLvl = util.PermLvlBotOwner
 	} else if member.User.ID == args.Guild.OwnerID {
 		permLvl = util.PermLvlGuildOwner
 	} else {
-		permLvl, _ = permLvls[member.User.ID]
+		permLvl, err = args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, member.User.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	var repsOnRecord int
@@ -132,12 +130,14 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 				Value: "```\n" + member.User.ID + "\n```",
 			},
 			&discordgo.MessageEmbedField{
-				Name:  "Guild Joined",
-				Value: joinedTime.Format(time.RFC1123),
+				Name: "Guild Joined",
+				Value: util.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
+					"*failed parsing timestamp*"),
 			},
 			&discordgo.MessageEmbedField{
-				Name:  "Account Created",
-				Value: createdTime.Format(time.RFC1123),
+				Name: "Account Created",
+				Value: util.EnsureNotEmpty(createdTime.Format(time.RFC1123),
+					"*failed parsing timestamp*"),
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Permission Level",

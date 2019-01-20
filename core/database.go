@@ -9,6 +9,11 @@ import (
 
 var ErrDatabaseNotFound = errors.New("value not found")
 
+var (
+	MySqlDbSchemeB64  = ""
+	SqliteDbSchemeB64 = ""
+)
+
 type Database interface {
 	Connect(credentials ...interface{}) error
 	Close()
@@ -21,6 +26,9 @@ type Database interface {
 
 	GetGuildModLog(guildID string) (string, error)
 	SetGuildModLog(guildID, chanID string) error
+
+	GetGuildVoiceLog(guildID string) (string, error)
+	SetGuildVoiceLog(guildID, chanID string) error
 
 	GetGuildNotifyRole(guildID string) (string, error)
 	SetGuildNotifyRole(guildID, roleID string) error

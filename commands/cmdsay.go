@@ -44,7 +44,7 @@ func (c *CmdSay) GetHelp() string {
 		colors[i] = k
 		i++
 	}
-	return "`say [flags] <message>`\n\n**Flags:** ```\n" +
+	return "`say [flags] <message>`\n\n**Flags:** \n```\n" +
 		"-c string\n" +
 		"	color (default \"orange\")\n" +
 		"-f string\n" +
