@@ -21,4 +21,5 @@ assignees: zekroTJA
 > Enter stepwise how to reproduce the bug.
 
 ## Images & Logs
-> Here you can attach images *(please as [embeded image](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#images))* and crash reports or log lines *(please **not as image** - use [code blocks](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code) instead)*.
+> Here you can embed images or crash logs or command lines.
+> Please use embeded markdown images and code blocks for that.
