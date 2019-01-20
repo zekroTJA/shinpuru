@@ -8,6 +8,16 @@ go_import_path: github.com/zekroTJA/shinpuru
 script:
   - bash scripts/travis.sh
 
+after_success: |
+  if [ -n "$GITHUB_TOKEN" ]; then
+    git clone https://zekroTJA:$GITHUB_TOKEN@github.com/zekroTJA/shinpuru.wiki.git
+    mv docs/commandsManual.md shinpuru.wiki/Commands.md
+    cd shinpuru.wiki
+    git add .
+    git -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
+    git push
+  fi
+
 deploy:
   provider: releases
   skip_cleanup: true

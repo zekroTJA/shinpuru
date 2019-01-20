@@ -22,6 +22,7 @@ type Vote struct {
 	GuildID       string
 	ChannelID     string
 	Description   string
+	ImageURL      string
 	Possibilities []string
 	Ticks         []*VoteTick
 }
@@ -76,12 +77,13 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 			totalTicks[t.Tick]++
 		}
 	}
+
 	description := v.Description + "\n\n"
 	for i, p := range v.Possibilities {
 		description += fmt.Sprintf("%s    %s  -  `%d`\n", VoteEmotes[i], p, totalTicks[i])
 	}
 
-	return &discordgo.MessageEmbed{
+	emb := &discordgo.MessageEmbed{
 		Color:       color,
 		Title:       title,
 		Description: description,
@@ -92,7 +94,31 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: "VoteID: " + v.ID,
 		},
-	}, nil
+	}
+
+	if v.ImageURL != "" {
+		emb.Image = &discordgo.MessageEmbedImage{
+			URL: v.ImageURL,
+		}
+	}
+
+	return emb, nil
+}
+
+func (v *Vote) AsField() *discordgo.MessageEmbedField {
+	shortenedDescription := v.Description
+	if len(shortenedDescription) > 200 {
+		shortenedDescription = shortenedDescription[200:] + "..."
+	}
+	return &discordgo.MessageEmbedField{
+		Name: "VID: " + v.ID,
+		Value: fmt.Sprintf("**Description:** %s\n`%d votes`\n[*jump to msg*](%s)",
+			shortenedDescription, len(v.Ticks), GetMessageLink(&discordgo.Message{
+				ID:        v.MsgID,
+				ChannelID: v.ChannelID,
+				GuildID:   v.GuildID,
+			})),
+	}
 }
 
 func (v *Vote) AddReactions(s *discordgo.Session) error {

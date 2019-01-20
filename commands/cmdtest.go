@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"fmt"
+	"errors"
 )
 
 type CmdTest struct {
@@ -30,6 +30,5 @@ func (c *CmdTest) GetPermission() int {
 func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	fmt.Println(args.Args[1:])
-	return nil
+	return errors.New("test error")
 }

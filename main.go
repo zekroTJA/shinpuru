@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/snowflake"
@@ -38,20 +38,24 @@ func main() {
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(*configLocation)
 		if err != nil {
-			log.Fatal("Config file was not found and failed creating default config:", err)
+			util.Log.Fatal("Config file was not found and failed creating default config:", err)
 		}
 		err = cfgParser.Encode(cfgFile, core.NewDefaultConfig())
 		if err != nil {
-			log.Fatal("Config file was not found and failed writing to new config file:", err)
+			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
 		}
-		log.Fatal("Config file was not found. Created default config file. Please open it and enter your configuration.")
+		util.Log.Fatal("Config file was not found. Created default config file. Please open it and enter your configuration.")
 	} else if err != nil {
-		log.Fatal("Failed opening config file:", err)
+		util.Log.Fatal("Failed opening config file:", err)
 	}
 
 	config, err := cfgParser.Decode(cfgFile)
 	if err != nil {
 		util.Log.Fatal("Failed decoding config file:", err)
+	}
+
+	if config.Version < util.ConfigVersion {
+		util.Log.Fatalf("Config file structure is outdated and must be re-created. Just rename your config and start the bot to recreate the latest valid version of the config.")
 	}
 
 	if config.Discord.OwnerID == "" {
@@ -65,8 +69,16 @@ func main() {
 	// DATABASE LOGIN //
 	////////////////////
 
-	database := new(core.MySql)
-	if err := database.Connect(config.Database); err != nil {
+	var database core.Database
+	switch strings.ToLower(config.Database.Type) {
+	case "mysql", "mariadb":
+		database = new(core.MySql)
+		err = database.Connect(config.Database.MySql)
+	case "sqlite", "sqlite3":
+		database = new(core.Sqlite)
+		err = database.Connect(config.Database.Sqlite)
+	}
+	if err != nil {
 		util.Log.Fatal("Failed connecting to database:", err)
 	}
 	util.Log.Info("Connected to database")
@@ -97,6 +109,8 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdMute{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdMention{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
+	cmdHandler.RegisterCommand(&commands.CmdBug{PermLvl: 0})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -113,6 +127,10 @@ func main() {
 	}
 
 	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())
+	err = cmdHandler.ExportCommandManual("docs/commandsManual.md")
+	if err != nil {
+		util.Log.Error("Failed creating command manual: ", err)
+	}
 
 	//////////////////////////
 	// BOT SESSION CREATION //
@@ -135,6 +153,7 @@ func main() {
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
+	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
 
 	err = session.Open()
 	if err != nil {

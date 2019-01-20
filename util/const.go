@@ -19,11 +19,16 @@ const (
 		0x20000000 | // MANAGE WEBHOOKS
 		0x40000000 // MANAGE EMOJIS
 
+	ConfigVersion = 3
+
 	ColorEmbedError   = 0xd32f2f
 	ColorEmbedDefault = 0xffc107
 	ColorEmbedUpdated = 0x8bc34a
 	ColorEmbedGray    = 0xb0bec5
 	ColorEmbedOrange  = 0xfb8c00
+	ColorEmbedGreen   = 0x8BC34A
+	ColorEmbedCyan    = 0x00BCD4
+	ColorEmbedYellow  = 0xFFC107
 
 	AutoNick  = "シンプル"
 	StdMotd   = "closed beta version"

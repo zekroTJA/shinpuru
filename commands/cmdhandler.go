@@ -1,6 +1,14 @@
 package commands
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
+	"sort"
+	"strings"
+	"time"
+
 	"github.com/zekroTJA/shinpuru/core"
 	"github.com/zekroTJA/shinpuru/util"
 )
@@ -46,4 +54,60 @@ func (c *CmdHandler) UpdateCommandPermissions(perms map[string]int) {
 
 func (c *CmdHandler) GetCommandListLen() int {
 	return len(c.registeredCmdInstances)
+}
+
+func (c *CmdHandler) ExportCommandManual(fileName string) error {
+	document := "> Auto generated command manual | " + time.Now().Format(time.RFC1123) + "\n\n" +
+		"# Command List\n\n"
+
+	cmdCats := make(map[string][]Command)
+	cmdDetails := "# Command Details\n\n"
+
+	for _, cmd := range c.registeredCmdInstances {
+		if cat, ok := cmdCats[cmd.GetGroup()]; !ok {
+			cmdCats[cmd.GetGroup()] = []Command{cmd}
+		} else {
+			cmdCats[cmd.GetGroup()] = append(cat, cmd)
+		}
+	}
+
+	catKeys := make([]string, len(cmdCats))
+	i := 0
+	for cat := range cmdCats {
+		catKeys[i] = cat
+		i++
+	}
+	sort.Strings(catKeys)
+	cmdCatsSorted := make(map[string][]Command)
+	for _, cat := range catKeys {
+		cmdCatsSorted[cat] = cmdCats[cat]
+		document += fmt.Sprintf("## %s\n", cat)
+		cmdDetails += fmt.Sprintf("## %s\n\n", cat)
+		for _, cmd := range cmdCats[cat] {
+			document += fmt.Sprintf("- [%s](#%s)\n", cmd.GetInvokes()[0], cmd.GetInvokes()[0])
+			aliases := strings.Join(cmd.GetInvokes()[1:], ", ")
+			help := strings.Replace(cmd.GetHelp(), "\n", "  \n", -1)
+			cmdDetails += fmt.Sprintf(
+				"### %s\n\n"+
+					"> %s\n\n"+
+					"| | |\n"+
+					"|---|---|\n"+
+					"| Permission | %d |\n"+
+					"| Group | %s |\n"+
+					"| Aliases | %s |\n\n"+
+					"**Usage**  \n"+
+					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetPermission(), cmd.GetGroup(), aliases, help)
+		}
+		document += "\n"
+	}
+
+	document += cmdDetails
+
+	filePath := path.Dir(fileName)
+	if filePath != "." && filePath != "/" {
+		if err := os.MkdirAll(filePath, os.ModeDir); err != nil {
+			return err
+		}
+	}
+	return ioutil.WriteFile(fileName, []byte(document), 0644)
 }

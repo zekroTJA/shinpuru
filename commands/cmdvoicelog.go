@@ -9,54 +9,54 @@ import (
 	"github.com/zekroTJA/shinpuru/util"
 )
 
-type CmdModlog struct {
+type CmdVoicelog struct {
 	PermLvl int
 }
 
-func (c *CmdModlog) GetInvokes() []string {
-	return []string{"modlog", "setmodlog", "modlogchan", "ml"}
+func (c *CmdVoicelog) GetInvokes() []string {
+	return []string{"voicelog", "setvoicelog", "voicelogchan", "vl"}
 }
 
-func (c *CmdModlog) GetDescription() string {
+func (c *CmdVoicelog) GetDescription() string {
 	return "set the mod log channel for a guild"
 }
 
-func (c *CmdModlog) GetHelp() string {
-	return "`modlog` - set this channel as modlog channel\n" +
-		"`modlog <chanResolvable>` - set any text channel as mod log channel\n" +
-		"`modlog reset` - reset mod log channel"
+func (c *CmdVoicelog) GetHelp() string {
+	return "`voicelog` - set this channel as voicelog channel\n" +
+		"`voicelog <chanResolvable>` - set any text channel as voicelog channel\n" +
+		"`voicelog reset` - reset voice log channel"
 }
 
-func (c *CmdModlog) GetGroup() string {
+func (c *CmdVoicelog) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdModlog) GetPermission() int {
+func (c *CmdVoicelog) GetPermission() int {
 	return c.PermLvl
 }
 
-func (c *CmdModlog) SetPermission(permLvl int) {
+func (c *CmdVoicelog) SetPermission(permLvl int) {
 	c.PermLvl = permLvl
 }
 
-func (c *CmdModlog) Exec(args *CommandArgs) error {
+func (c *CmdVoicelog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		acceptMsg := &util.AcceptMessage{
 			Session: args.Session,
 			Embed: &discordgo.MessageEmbed{
 				Color:       util.ColorEmbedDefault,
-				Description: "Do you want to set this channel as modlog channel?",
+				Description: "Do you want to set this channel as voicelog channel?",
 			},
 			UserID:         args.User.ID,
 			DeleteMsgAfter: true,
 			AcceptFunc: func(msg *discordgo.Message) {
-				err := args.CmdHandler.db.SetGuildModLog(args.Guild.ID, args.Channel.ID)
+				err := args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, args.Channel.ID)
 				if err != nil {
 					util.SendEmbedError(args.Session, args.Channel.ID,
-						"Failed setting modlog channel: ```\n"+err.Error()+"\n```")
+						"Failed setting voicelog channel: ```\n"+err.Error()+"\n```")
 				} else {
 					msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-						"Set this channel as modlog channel.", "", util.ColorEmbedUpdated)
+						"Set this channel as voicelog channel.", "", util.ColorEmbedUpdated)
 					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 				}
 			},
@@ -66,15 +66,15 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 	}
 
 	if strings.ToLower(args.Args[0]) == "reset" {
-		err := args.CmdHandler.db.SetGuildModLog(args.Guild.ID, "")
+		err := args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, "")
 		if err != nil {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Failed reseting mod log channel: ```\n"+err.Error()+"\n```")
+				"Failed reseting voice log channel: ```\n"+err.Error()+"\n```")
 			util.DeleteMessageLater(args.Session, msg, 15*time.Second)
 			return err
 		}
 		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			"Modlog channel reset.", "", util.ColorEmbedUpdated)
+			"Voicelog channel reset.", "", util.ColorEmbedUpdated)
 		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
 		return err
 	}
@@ -88,12 +88,12 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 		return err
 	}
-	err = args.CmdHandler.db.SetGuildModLog(args.Guild.ID, mlChan.ID)
+	err = args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, mlChan.ID)
 	if err != nil {
 		return err
 	}
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Set <#%s> as modlog channel.", mlChan.ID), "", util.ColorEmbedUpdated)
+		fmt.Sprintf("Set <#%s> as voicelog channel.", mlChan.ID), "", util.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 	return err
 }

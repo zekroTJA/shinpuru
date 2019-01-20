@@ -8,11 +8,21 @@ type ConfigDiscord struct {
 	OwnerID       string
 }
 
-type ConfigDatabase struct {
+type ConfigDatabaseCreds struct {
 	Host     string
 	User     string
 	Password string
 	Database string
+}
+
+type ConfigDatabaseFile struct {
+	DBFile string
+}
+
+type ConfigDatabaseType struct {
+	Type   string
+	MySql  *ConfigDatabaseCreds
+	Sqlite *ConfigDatabaseFile
 }
 
 type ConfigPermissions struct {
@@ -22,8 +32,9 @@ type ConfigPermissions struct {
 }
 
 type Config struct {
+	Version        int `yaml:"configVersionPleaseDoNotChange"`
 	Discord        *ConfigDiscord
-	Database       *ConfigDatabase
+	Database       *ConfigDatabaseType
 	Permissions    *ConfigPermissions
 	CommandLogging bool
 }
@@ -35,12 +46,19 @@ type ConfigParser interface {
 
 func NewDefaultConfig() *Config {
 	return &Config{
+		Version: 3,
 		Discord: &ConfigDiscord{
 			Token:         "",
 			GeneralPrefix: "sp!",
 			OwnerID:       "",
 		},
-		Database: new(ConfigDatabase),
+		Database: &ConfigDatabaseType{
+			Type:  "sqlite",
+			MySql: new(ConfigDatabaseCreds),
+			Sqlite: &ConfigDatabaseFile{
+				DBFile: "shinpuru.sqlite3.db",
+			},
+		},
 		Permissions: &ConfigPermissions{
 			BotOwnerLevel:   1000,
 			GuildOwnerLevel: 10,

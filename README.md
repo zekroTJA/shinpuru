@@ -35,6 +35,13 @@ This project is in a very early development state, so, currently, the bot is not
 
 Then, get all dependencies and build the binary. After that, generate a config by starting the bot, fill in your data and go on ;)
 
+## Compiling
+
+For compiling, you will need:
+- git
+- go
+- gcc (if you are on windows, use the [TDM-GCC toolchain](https://sourceforge.net/projects/tdm-gcc/))
+
 ```
 $ git clone https://github.com/zekroTJA/shinpuru.git src/github.com/zekroTJA/shinpuru
 $ export GOPATH=$PWD
@@ -43,7 +50,9 @@ $ bash scripts/build.sh
 $ ./shinpuru -c yourconfig.yaml
 ```
 
-And yes, as you may notice, this bot currently depends on a MySql database. Actually, I want to make this bot also compatible with SqLite or MongoDB, but this will take a while until this is most priority. ^^
+**Important:** For getting shinpuru working properly, you will need to use the bild script. If you are on windows, execute it in the git bash or with WSL.
+
+The bot currently supports MySql and SQLite as database.
 
 ---
 
@@ -52,6 +61,7 @@ And yes, as you may notice, this bot currently depends on a MySql database. Actu
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
 - [go-yaml/yaml](https://github.com/go-yaml/yaml)
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
+- [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
 - [op/go-logging](https://github.com/op/go-logging)
 
 Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).

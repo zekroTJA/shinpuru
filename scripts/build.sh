@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source scripts/getsqlschemes.bash
+
 TAG=$(git describe --tags)
 if [ "$TAG" == "" ]; then
     TAG="untagged"
@@ -14,6 +16,7 @@ echo "Building..."
 go build -ldflags " \
     -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
     -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
-    -X github.com/zekroTJA/shinpuru/util.Release=TRUE"
+    -X github.com/zekroTJA/shinpuru/util.Release=TRUE \
+    $SQLLDFLAGS"
 
 wait
