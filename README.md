@@ -21,7 +21,7 @@
 
 ---
 
-## Invite
+# Invite
 
 Here you can choose between the stable or canary version of shinpuru:
 
@@ -31,7 +31,7 @@ Here you can choose between the stable or canary version of shinpuru:
 
 > **Attention**<br>The canary version runs on the latest build pushed to the dev branch and can contain bugs! Also the canary version is running on a seperate database which is not included in my daily database backup.
 
-## Intro
+# Intro
 
 シンプル (shinpuru), a simple *(as the name says)*, multi purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as much features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
 
@@ -45,7 +45,7 @@ This project is in a very early development state, so, currently, the bot is not
 
 Then, get all dependencies and build the binary. After that, generate a config by starting the bot, fill in your data and go on ;)
 
-## Compiling
+# Compiling
 
 For compiling, you will need:
 - git
