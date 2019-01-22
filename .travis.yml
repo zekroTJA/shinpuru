@@ -12,10 +12,9 @@ after_success: |
   if [ -n "$GITHUB_TOKEN" ]; then
     git clone https://zekroTJA:$GITHUB_TOKEN@github.com/zekroTJA/shinpuru.wiki.git
     mv docs/commandsManual.md shinpuru.wiki/Commands.md
-    cd shinpuru.wiki
-    git add .
-    git -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
-    git push
+    git -C ./shinpuru.wiki add .
+    git -C ./shinpuru.wiki -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
+    git -C ./shinpuru.wiki push
   fi
 
 deploy:
