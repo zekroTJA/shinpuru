@@ -17,6 +17,7 @@ go build -ldflags " \
     -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
     -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
     -X github.com/zekroTJA/shinpuru/util.Release=TRUE \
-    $SQLLDFLAGS"
+    $SQLLDFLAGS" \
+    ./cmd/shinpuru
 
 wait
