@@ -60,6 +60,11 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 					util.AppVersion, util.AppCommit),
 			},
 			&discordgo.MessageEmbedField{
+				Name: "Discord API Wrapper",
+				Value: fmt.Sprintf("[discordgo](https://github.com/bwmarrin/discordgo) v.%s",
+					discordgo.VERSION),
+			},
+			&discordgo.MessageEmbedField{
 				Name:  "Licence",
 				Value: "Covered by [MIT Licence](https://github.com/zekroTJA/shinpuru/blob/master/LICENCE).",
 			},
@@ -77,12 +82,13 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 				Value: "- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)\n" +
 					"- [go-yaml/yaml](https://github.com/go-yaml/yaml)\n" +
 					"- [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)\n" +
+					"- [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)\n" +
 					"- [op/go-logging](https://github.com/op/go-logging)\n\n" +
 					"Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).",
 			},
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "© 2018 zekro Development (Ringo Hoffmann)",
+			Text: "© 2018-2019 zekro Development (Ringo Hoffmann)",
 		},
 	}
 	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
