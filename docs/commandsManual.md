@@ -1,4 +1,4 @@
-> Auto generated command manual | Tue, 22 Jan 2019 13:18:13 CET
+> Auto generated command manual | Tue, 22 Jan 2019 16:22:37 CET
 
 # Command List
 
@@ -67,7 +67,7 @@
 	title  
 ```  
 **Colors:**  
-violet, blue, orange, black, red, pink, yellow, white, cyan, green
+red, pink, cyan, orange, black, violet, blue, green, yellow, white
 
 ### quote
 
