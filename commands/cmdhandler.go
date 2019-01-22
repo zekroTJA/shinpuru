@@ -105,7 +105,7 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 
 	filePath := path.Dir(fileName)
 	if filePath != "." && filePath != "/" {
-		if err := os.MkdirAll(filePath, 0644); err != nil {
+		if err := os.MkdirAll(filePath, 0744); err != nil {
 			return err
 		}
 	}
