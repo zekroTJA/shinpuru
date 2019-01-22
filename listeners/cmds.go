@@ -26,6 +26,8 @@ func NewListenerCmd(config *core.Config, db core.Database, cmdHandler *commands.
 }
 
 func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate) {
+	util.StatsMessagesAnalysed++
+
 	if e.Message.Author.ID == s.State.User.ID {
 		return
 	}
@@ -107,6 +109,9 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 				util.Log.Error("An error occured sending command error message: ", err)
 			}
 		}
+
+		util.StatsCommandsExecuted++
+
 		if l.config.CommandLogging {
 			util.Log.Infof("Executed Command: %s[%s]@%s[%s] - %s", e.Author.Username, e.Author.ID, guild.Name, guild.ID, e.Message.Content)
 		}

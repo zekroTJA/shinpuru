@@ -111,6 +111,7 @@ func main() {
 	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
 	cmdHandler.RegisterCommand(&commands.CmdBug{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})

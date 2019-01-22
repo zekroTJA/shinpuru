@@ -1,4 +1,4 @@
-> Auto generated command manual | Sun, 20 Jan 2019 16:22:05 CET
+> Auto generated command manual | Tue, 22 Jan 2019 11:06:58 CET
 
 # Command List
 
@@ -11,6 +11,7 @@
 - [user](#user)
 - [id](#id)
 - [bug](#bug)
+- [stats](#stats)
 - [test](#test)
 
 ## GENERAL
@@ -66,7 +67,7 @@
 	title  
 ```  
 **Colors:**  
-green, yellow, orange, white, black, red, cyan, blue, pink, violet
+blue, cyan, white, red, violet, yellow, orange, black, pink, green
 
 ### quote
 
@@ -135,6 +136,19 @@ green, yellow, orange, white, black, red, cyan, blue, pink, violet
 
 **Usage**  
 `bug`
+
+### stats
+
+> dispaly some stats like uptime or guilds/user count
+
+| | |
+|---|---|
+| Permission | 0 |
+| Group | ETC |
+| Aliases | uptime, numbers |
+
+**Usage**  
+`stats`
 
 ### test
 
