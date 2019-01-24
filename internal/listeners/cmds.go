@@ -112,7 +112,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 
 		util.StatsCommandsExecuted++
 
-		if l.config.CommandLogging {
+		if l.config.Logging.CommandLogging {
 			util.Log.Infof("Executed Command: %s[%s]@%s[%s] - %s", e.Author.Username, e.Author.ID, guild.Name, guild.ID, e.Message.Content)
 		}
 	}

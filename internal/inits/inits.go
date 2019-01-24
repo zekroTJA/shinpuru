@@ -111,10 +111,6 @@ func InitCommandHandler(config *core.Config, database core.Database) *commands.C
 	}
 
 	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())
-	err := cmdHandler.ExportCommandManual("docs/commandsManual.md")
-	if err != nil {
-		util.Log.Error("Failed creating command manual: ", err)
-	}
 
 	return cmdHandler
 }

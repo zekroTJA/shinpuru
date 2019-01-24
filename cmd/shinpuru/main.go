@@ -22,6 +22,9 @@ func main() {
 	util.Log.Info("Starting up...")
 
 	config := inits.InitConfig(*flagConfigLocation, new(core.YAMLConfigParser))
+
+	util.SetLogLevel(config.Logging.LogLevel)
+
 	database := inits.InitDatabase(config.Database)
 	cmdHandler := inits.InitCommandHandler(config, database)
 	inits.InitDiscordBotSession(config, database, cmdHandler)
