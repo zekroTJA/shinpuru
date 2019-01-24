@@ -1,14 +1,15 @@
 
-cloc|github.com/AlDanial/cloc v 1.74  T=0.50 s (112.0 files/s, 9166.0 lines/s)
+cloc|github.com/AlDanial/cloc v 1.74  T=1.00 s (71.0 files/s, 6191.0 lines/s)
 --- | ---
 
 Language|files|blank|comment|code
 :-------|-------:|-------:|-------:|-------:
-Go|48|569|25|3765
-Bourne Shell|4|18|2|56
-Markdown|1|18|0|44
-SQL|1|6|0|44
-Markdown|1|18|0|44
-YAML|2|4|0|32
+Go|56|688|23|4626
+Markdown|4|146|0|374
+YAML|3|15|38|81
+SQL|2|11|0|72
+Bourne Shell|4|22|2|67
+JSON|1|0|0|18
+Bourne Again Shell|1|2|0|6
 --------|--------|--------|--------|--------
-SUM:|56|615|27|3941
+SUM:|71|884|63|5244
