@@ -1,0 +1,64 @@
+# This just marks the version of the config.
+# This is essential for figuring out if the config
+# structure has changed with an update and if the config
+# will be not validly parsed.
+configVersionPleaseDoNotChange: 4
+
+# Discord stuff
+discord:
+  # Your bot's token you will get from https://discordapp.com/developers/applications
+  token:          MzI4NTc5NjU2MzIyMjUyODAx.DySqfg.6ZZznoZ6A6ZfeM2PiKSyQup05MI # example
+  # The standart token which will be always usable on all guilds
+  generalprefix:  sp!
+  # Your Discord ID if you are the host of this bot
+  ownerid:        221905671296253953
+
+# Database stuff.
+database:
+  # Currently, this bot supports MySql (MariaDB) and SQLite3
+  # Just enter here which you want to use
+  type:           mysql
+  # Config for MySql
+  mysql:
+    # Host adress (IP or DNS name) of the server
+    # where the DB ist located
+    host:         127.0.0.1
+    # Username of the account the bot should use.
+    # It is recommendet to create an extra account
+    # for the bot with the name 'shinpuru'
+    user:         shinpuru
+    # The Password for connecting to the database account
+    password:     5up3rb4dp455w0rd
+    # The name of the database, which is recommendet 
+    # to be be 'shinpuru'
+    database:     shinpuru
+  # SQLite configuration
+  sqlite:
+    # The file location of the SQLite database file
+    # (absolute or relative)
+    dbfile:       shinpuru.sqlite3.db
+
+# Some logger settings
+logging:
+  # Enable or disable if command executions should be logged
+  commandlogging: true
+  # Set the log level of the logger.
+  # Log levels can be found here:
+  # https://github.com/op/go-logging/blob/master/level.go#L20
+  loglevel:       4
+
+# General command permission settings
+permissions:
+  # Here you can set custom permission levels for each
+  # command by using the main prefix of the command
+  # (see help command)
+  customcmdpermissions:
+    user:          0
+  # Here you can set a custom level for the host of this
+  # bot (probably you). You wil lautomatically have this
+  # permission level on every guild.
+  botownerlevel:   1000
+  # Here you can set the permission level for guild owners,
+  # which will have this level automatically on each guild
+  # they own.
+  guildownerlevel: 10
