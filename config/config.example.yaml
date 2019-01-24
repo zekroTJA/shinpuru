@@ -2,7 +2,7 @@
 # This is essential for figuring out if the config
 # structure has changed with an update and if the config
 # will be not validly parsed.
-configVersionPleaseDoNotChange: 3
+configVersionPleaseDoNotChange: 4
 
 # Discord stuff
 discord:
@@ -38,9 +38,14 @@ database:
     # (absolute or relative)
     dbfile:       shinpuru.sqlite3.db
 
-# Enable or disable if commands should be displayed
-# in stdout
-commandlogging:   true
+# Some logger settings
+logging:
+  # Enable or disable if command executions should be logged
+  commandlogging: true
+  # Set the log level of the logger.
+  # Log levels can be found here:
+  # https://github.com/op/go-logging/blob/master/level.go#L20
+  loglevel:       4
 
 # General command permission settings
 permissions:

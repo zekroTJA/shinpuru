@@ -49,4 +49,7 @@ for BUILD in ${BUILDS[*]}; do
 
 done
 
+echo "Exporting commands manual..."
+go run ./cmd/cmdman -o ./docs/commandsManual.md
+
 wait

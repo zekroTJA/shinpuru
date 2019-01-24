@@ -31,12 +31,17 @@ type ConfigPermissions struct {
 	CustomCmdPermissions map[string]int
 }
 
-type Config struct {
-	Version        int `yaml:"configVersionPleaseDoNotChange"`
-	Discord        *ConfigDiscord
-	Database       *ConfigDatabaseType
-	Permissions    *ConfigPermissions
+type ConfigLogging struct {
 	CommandLogging bool
+	LogLevel       int
+}
+
+type Config struct {
+	Version     int `yaml:"configVersionPleaseDoNotChange"`
+	Discord     *ConfigDiscord
+	Database    *ConfigDatabaseType
+	Permissions *ConfigPermissions
+	Logging     *ConfigLogging
 }
 
 type ConfigParser interface {
@@ -46,7 +51,7 @@ type ConfigParser interface {
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Version: 3,
+		Version: 4,
 		Discord: &ConfigDiscord{
 			Token:         "",
 			GeneralPrefix: "sp!",
@@ -66,6 +71,9 @@ func NewDefaultConfig() *Config {
 				"cmdinvoke": 0,
 			},
 		},
-		CommandLogging: true,
+		Logging: &ConfigLogging{
+			CommandLogging: true,
+			LogLevel:       4,
+		},
 	}
 }
