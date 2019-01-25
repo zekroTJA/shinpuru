@@ -91,7 +91,6 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 				select {
 				case fmsg := <-results:
 					i++
-					fmt.Println(i, loopLen)
 					if i >= loopLen {
 						return
 					}
@@ -144,7 +143,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg)),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg, args.Guild.ID)),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
 		},
