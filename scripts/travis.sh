@@ -39,12 +39,17 @@ for BUILD in ${BUILDS[*]}; do
                 -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
                 -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
                 -X github.com/zekroTJA/shinpuru/util.Release=TRUE \
-                $SQLLDFLAGS")
+                $SQLLDFLAGS" \
+                ./cmd/shinpuru)
+            
 
     if [ "$OS" = "windows" ]; then
         mv ${BUILDPATH}/${BUILDNAME}_windows_$ARCH $BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
     fi
 
 done
+
+echo "Exporting commands manual..."
+go run ./cmd/cmdman -o ./docs/commandsManual.md
 
 wait
