@@ -36,9 +36,9 @@ for BUILD in ${BUILDS[*]}; do
         go build \
             -o ${BUILDPATH}/${BUILDNAME}_${OS}_$ARCH \
             -ldflags " \
-                -X github.com/zekroTJA/shinpuru/util.AppVersion=$TAG \
-                -X github.com/zekroTJA/shinpuru/util.AppCommit=$COMMIT \
-                -X github.com/zekroTJA/shinpuru/util.Release=TRUE \
+                -X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$TAG \
+                -X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$COMMIT \
+                -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE \
                 $SQLLDFLAGS" \
                 ./cmd/shinpuru)
             

@@ -39,6 +39,12 @@ Also, I want to use this project as chance for me, to get some deeper into Go an
 
 ---
 
+# Command list 
+
+In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find a automatically generated list of all commands and their manuals.
+
+---
+
 # Development state
 
 This project is in a very early development state, so, currently, the bot is not available as 24/7 version. If you want to use this bot by yourself, pull the code by cloning the repository or download the assets as zip [here](https://github.com/zekroTJA/shinpuru/archive/master.zip).
@@ -47,22 +53,7 @@ Then, get all dependencies and build the binary. After that, generate a config b
 
 # Compiling
 
-For compiling, you will need:
-- git
-- go
-- gcc (if you are on windows, use the [TDM-GCC toolchain](https://sourceforge.net/projects/tdm-gcc/))
-
-```
-$ git clone https://github.com/zekroTJA/shinpuru.git src/github.com/zekroTJA/shinpuru
-$ export GOPATH=$PWD
-$ cd src/github.com/zekroTJA/shinpuru
-$ bash scripts/build.sh
-$ ./shinpuru -c yourconfig.yaml
-```
-
-**Important:** For getting shinpuru working properly, you will need to use the bild script. If you are on windows, execute it in the git bash or with WSL.
-
-The bot currently supports MySql and SQLite as database.
+Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Self-Compiling).
 
 ---
 
