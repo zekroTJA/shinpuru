@@ -1,0 +1,21 @@
+[submodule "vendor/github.com/bwmarrin/discordgo"]
+	path = vendor/github.com/bwmarrin/discordgo
+	url = https://github.com/bwmarrin/discordgo
+[submodule "vendor/github.com/bwmarrin/snowflake"]
+	path = vendor/github.com/bwmarrin/snowflake
+	url = https://github.com/bwmarrin/snowflake
+[submodule "vendor/github.com/go-sql-driver/mysql"]
+	path = vendor/github.com/go-sql-driver/mysql
+	url = https://github.com/go-sql-driver/mysql.git
+[submodule "vendor/github.com/gorilla/websocket"]
+	path = vendor/github.com/gorilla/websocket
+	url = https://github.com/gorilla/websocket.git
+[submodule "vendor/github.com/mattn/go-sqlite3"]
+	path = vendor/github.com/mattn/go-sqlite3
+	url = https://github.com/mattn/go-sqlite3.git
+[submodule "vendor/github.com/op/go-logging"]
+	path = vendor/github.com/op/go-logging
+	url = https://github.com/op/go-logging.git
+[submodule "vendor/gopkg.in/yaml.v2"]
+	path = vendor/gopkg.in/yaml.v2
+	url = https://gopkg.in/yaml.v2.git

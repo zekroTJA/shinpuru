@@ -29,6 +29,9 @@ after_success: |
   if [ "$TRAVIS_BRANCH" == "dev" ]; then
     ssh mgr@zekro.de bash updateShinpuruCanary
   fi
+  if [ ! -z $TRAVIS_TAG ]; then
+    ssh mgr@zekro.de bash updateShinpuru $TRAVIS_TAG
+  fi
 
 deploy:
   provider: releases
