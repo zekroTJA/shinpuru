@@ -91,7 +91,6 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 				select {
 				case fmsg := <-results:
 					i++
-					fmt.Println(i, loopLen)
 					if i >= loopLen {
 						return
 					}
@@ -124,7 +123,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if len(quoteMsg.Content) < 1 {
+	if len(quoteMsg.Content) < 1 && len(quoteMsg.Attachments) < 1 {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
 		msgSearchEmb.Color = util.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
@@ -144,12 +143,23 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg)),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg, args.Guild.ID)),
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
+
+	if len(quoteMsg.Attachments) > 0 {
+		att := quoteMsg.Attachments[0]
+		msgSearchEmb.Image = &discordgo.MessageEmbedImage{
+			URL:      att.URL,
+			ProxyURL: att.ProxyURL,
+			Height:   att.Height,
+			Width:    att.Width,
+		}
+	}
+
 	args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 	return nil
 }
