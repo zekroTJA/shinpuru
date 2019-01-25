@@ -123,7 +123,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if len(quoteMsg.Content) < 1 {
+	if len(quoteMsg.Content) < 1 && len(quoteMsg.Attachments) < 1 {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
 		msgSearchEmb.Color = util.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
@@ -149,6 +149,17 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
+
+	if len(quoteMsg.Attachments) > 0 {
+		att := quoteMsg.Attachments[0]
+		msgSearchEmb.Image = &discordgo.MessageEmbedImage{
+			URL:      att.URL,
+			ProxyURL: att.ProxyURL,
+			Height:   att.Height,
+			Width:    att.Width,
+		}
+	}
+
 	args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 	return nil
 }
