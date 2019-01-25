@@ -69,5 +69,5 @@ Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_i
 
 ---
 
-Copyright (c) 2018 zekro Developmenr (Ringo Hoffmann).  
+Copyright (c) 2018-2019 zekro Developmenr (Ringo Hoffmann).  
 Covered by MIT Licence.
