@@ -69,8 +69,8 @@ func InitDatabase(databaseCfg *core.ConfigDatabaseType) core.Database {
 	return database
 }
 
-func InitCommandHandler(config *core.Config, database core.Database) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(database, config)
+func InitCommandHandler(config *core.Config, database core.Database, twitchNotifyWorker *core.TwitchNotifyWorker) *commands.CmdHandler {
+	cmdHandler := commands.NewCmdHandler(database, config, twitchNotifyWorker)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
@@ -95,6 +95,7 @@ func InitCommandHandler(config *core.Config, database core.Database) *commands.C
 	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
 	cmdHandler.RegisterCommand(&commands.CmdBug{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -147,4 +148,24 @@ func InitDiscordBotSession(config *core.Config, database core.Database, cmdHandl
 
 	util.Log.Info("Shutting down...")
 	session.Close()
+}
+
+func InitTwitchNotifyer(config *core.Config, db core.Database) *core.TwitchNotifyWorker {
+	if config.Etc == nil || config.Etc.TwitchAppID == "" {
+		return nil
+	}
+
+	tnw := core.NewTwitchNotifyWorker(config.Etc.TwitchAppID,
+		listeners.NewListenerTwitchNotify(config, db).Handler)
+
+	notifies, err := db.GetAllTwitchNotifies()
+	if err == nil {
+		for _, notify := range notifies {
+			if u, err := tnw.GetUser(notify.TwitchUserID, core.TwitchNotifyIdentID); err == nil {
+				tnw.AddUser(u)
+			}
+		}
+	}
+
+	return tnw
 }

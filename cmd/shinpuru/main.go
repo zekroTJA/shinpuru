@@ -26,6 +26,7 @@ func main() {
 	util.SetLogLevel(config.Logging.LogLevel)
 
 	database := inits.InitDatabase(config.Database)
-	cmdHandler := inits.InitCommandHandler(config, database)
+	tnw := inits.InitTwitchNotifyer(config, database)
+	cmdHandler := inits.InitCommandHandler(config, database, tnw)
 	inits.InitDiscordBotSession(config, database, cmdHandler)
 }
