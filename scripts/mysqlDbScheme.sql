@@ -41,3 +41,9 @@ CREATE TABLE IF NOT EXISTS `votes` (
   `ID` text NOT NULL,
   `data` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `twitchnotify` (
+  `guildID` text NOT NULL,
+  `channelID` text NOT NULL,
+  `twitchUserID` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -36,12 +36,17 @@ type ConfigLogging struct {
 	LogLevel       int
 }
 
+type ConfigEtc struct {
+	TwitchAppID string
+}
+
 type Config struct {
 	Version     int `yaml:"configVersionPleaseDoNotChange"`
 	Discord     *ConfigDiscord
 	Database    *ConfigDatabaseType
 	Permissions *ConfigPermissions
 	Logging     *ConfigLogging
+	Etc         *ConfigEtc
 }
 
 type ConfigParser interface {
@@ -75,5 +80,6 @@ func NewDefaultConfig() *Config {
 			CommandLogging: true,
 			LogLevel:       4,
 		},
+		Etc: new(ConfigEtc),
 	}
 }

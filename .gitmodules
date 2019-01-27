@@ -19,3 +19,6 @@
 [submodule "vendor/gopkg.in/yaml.v2"]
 	path = vendor/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2.git
+[submodule "vendor/github.com/generaltso/vibrant"]
+	path = vendor/github.com/generaltso/vibrant
+	url = https://github.com/generaltso/vibrant.git
