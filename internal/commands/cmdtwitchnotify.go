@@ -125,6 +125,14 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			},
 		},
 		AcceptFunc: func(m *discordgo.Message) {
+			err = tnw.AddUser(tUser)
+			if err != nil {
+				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Maximum count of registered Twitch accounts has been reached.")
+				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+				return
+			}
+
 			err = args.CmdHandler.db.SetTwitchNotify(&core.TwitchNotifyDBEntry{
 				ChannelID:    args.Channel.ID,
 				GuildID:      args.Guild.ID,
@@ -136,7 +144,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 				util.DeleteMessageLater(args.Session, msg, 30*time.Second)
 				return
 			}
-			tnw.AddUser(tUser)
+
 			msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
 				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", util.ColorEmbedUpdated)
 			util.DeleteMessageLater(args.Session, msg, 8*time.Second)

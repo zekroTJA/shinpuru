@@ -177,8 +177,12 @@ func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotif
 	return data.Data[0], nil
 }
 
-func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) {
+func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) error {
+	if len(w.users) >= 1000 {
+		return errors.New("max reached")
+	}
 	w.users[u.ID] = u
+	return nil
 }
 
 func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.MessageEmbed {
