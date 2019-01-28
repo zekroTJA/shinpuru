@@ -19,6 +19,9 @@
 [submodule "vendor/gopkg.in/yaml.v2"]
 	path = vendor/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2.git
-[submodule "vendor/github.com/generaltso/vibrant"]
-	path = vendor/github.com/generaltso/vibrant
-	url = https://github.com/generaltso/vibrant.git
+[submodule "vendor/github.com/generaltso/sadbox"]
+	path = vendor/github.com/generaltso/sadbox
+	url = https://github.com/generaltso/sadbox
+[submodule "vendor/github.com/nfnt/resize"]
+	path = vendor/github.com/nfnt/resize
+	url = https://github.com/nfnt/resize
