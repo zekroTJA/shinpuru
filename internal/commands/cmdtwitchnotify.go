@@ -138,7 +138,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			}
 			tnw.AddUser(tUser)
 			msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-				fmt.Sprintf("You will nwo get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", util.ColorEmbedUpdated)
+				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", util.ColorEmbedUpdated)
 			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		},
 		DeclineFunc: func(m *discordgo.Message) {
