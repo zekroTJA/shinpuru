@@ -54,3 +54,11 @@ func (r *HTTPResponse) ParseJSONBody(v interface{}) error {
 	err := decoder.Decode(v)
 	return err
 }
+
+func HTTPGetFile(uri string) (io.Reader, error) {
+	resp, err := http.Get(uri)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, err
+}
