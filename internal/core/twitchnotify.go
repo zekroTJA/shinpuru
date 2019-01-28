@@ -3,10 +3,17 @@ package core
 import (
 	"errors"
 	"fmt"
+	"image"
+	"strings"
 	"time"
+
+	"github.com/generaltso/vibrant"
+	"github.com/zekroTJA/shinpuru/internal/util"
+
+	"github.com/bwmarrin/discordgo"
 )
 
-const clockDuration = 10 * time.Second
+const clockDuration = 60 * time.Second
 
 const (
 	TwitchNotifyIdentLogin = "login"
@@ -25,6 +32,8 @@ type TwitchNotifyData struct {
 	StartedAt    string   `json:"started_at"`
 	Language     string   `json:"language"`
 	ThumbnailURL string   `json:"thumbnail_url"`
+
+	GameName string
 }
 
 type TwitchNotifyUser struct {
@@ -41,6 +50,7 @@ type TwitchNotifyWorker struct {
 	clientID          string
 	pastResponses     []*TwitchNotifyData
 	goneOnlineHandler TwitchNotifyHandler
+	gameIDCache       map[string]string
 }
 
 type TwitchNotifyDBEntry struct {
@@ -54,6 +64,7 @@ func NewTwitchNotifyWorker(clientID string, goneOnlineHandler TwitchNotifyHandle
 		users:             make(map[string]*TwitchNotifyUser),
 		clientID:          clientID,
 		goneOnlineHandler: goneOnlineHandler,
+		gameIDCache:       make(map[string]string),
 	}
 
 	timer := time.NewTicker(clockDuration)
@@ -74,7 +85,6 @@ func (w *TwitchNotifyWorker) handler() error {
 	if len(w.users) < 1 {
 		return nil
 	}
-	fmt.Println("-------------- NOTIFY HANDLER --------------")
 	urlParam := ""
 	for uID := range w.users {
 		urlParam += "&user_id=" + uID
@@ -105,6 +115,33 @@ func (w *TwitchNotifyWorker) handler() error {
 		}
 		if !wasPresent {
 			user, _ := w.users[cData.UserID]
+			if gameName, ok := w.gameIDCache[cData.GameID]; !ok {
+				res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/games?id="+cData.GameID, map[string]string{
+					"Client-ID": w.clientID,
+				}, nil)
+				if err == nil {
+					var body struct {
+						Data []*struct {
+							Name string `json:"name"`
+						} `json:"data"`
+					}
+					if res.ParseJSONBody(&body) == nil && &body != nil && len(body.Data) > 0 {
+						name := body.Data[0].Name
+						w.gameIDCache[cData.GameID] = name
+						cData.GameName = name
+					}
+				} else {
+					util.Log.Error("failed requesting game name: ", err)
+				}
+			} else {
+				cData.GameName = gameName
+			}
+
+			if cData.GameID == "" {
+				cData.GameName = "game not found"
+			}
+
+			cData.ThumbnailURL = strings.Replace(cData.ThumbnailURL, "{width}x{height}", "1280x720", 1)
 			w.goneOnlineHandler(cData, user)
 		}
 	}
@@ -141,4 +178,33 @@ func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotif
 
 func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) {
 	w.users[u.ID] = u
+}
+
+func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.MessageEmbed {
+	emb := &discordgo.MessageEmbed{
+		Title:       u.DisplayName + " just started streaming!",
+		Description: fmt.Sprintf("**%s**\n`%s`", d.Title, d.GameName),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: u.AviURL,
+		},
+		Image: &discordgo.MessageEmbedImage{
+			URL:    d.ThumbnailURL,
+			Width:  1280,
+			Height: 720,
+		},
+	}
+
+	if body, err := HTTPGetFile(u.AviURL); err == nil {
+		if imgData, _, err := image.Decode(body); err == nil {
+			if palette, err := vibrant.NewPaletteFromImage(imgData); err == nil {
+				for name, swatch := range palette.ExtractAwesome() {
+					if name == "Vibrant" {
+						emb.Color = int(swatch.Color)
+					}
+				}
+			}
+		}
+	}
+
+	return emb
 }

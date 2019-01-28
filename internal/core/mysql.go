@@ -316,7 +316,7 @@ func (m *MySql) GetMuteRoles() (map[string]string, error) {
 	for rows.Next() {
 		var guildID, roleID string
 		err = rows.Scan(&guildID, &roleID)
-		if err != nil {
+		if err == nil {
 			results[guildID] = roleID
 		}
 	}
@@ -371,8 +371,12 @@ func (m *MySql) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	return err
 }
 
-func (m *MySql) GetAllTwitchNotifies() ([]*TwitchNotifyDBEntry, error) {
-	rows, err := m.DB.Query("SELECT twitchUserID, guildID, channelID FROM twitchnotify")
+func (m *MySql) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error) {
+	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
+	if twitchUserID != "" {
+		query += " WHERE twitchUserID = " + twitchUserID
+	}
+	rows, err := m.DB.Query(query)
 	results := make([]*TwitchNotifyDBEntry, 0)
 	if err != nil {
 		return nil, err
@@ -380,7 +384,7 @@ func (m *MySql) GetAllTwitchNotifies() ([]*TwitchNotifyDBEntry, error) {
 	for rows.Next() {
 		t := new(TwitchNotifyDBEntry)
 		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID)
-		if err != nil {
+		if err == nil {
 			results = append(results, t)
 		}
 	}

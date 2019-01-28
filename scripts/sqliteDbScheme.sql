@@ -43,4 +43,4 @@ CREATE TABLE IF NOT EXISTS `twitchnotify` (
   `guildID` text NOT NULL DEFAULT '',
   `channelID` text NOT NULL DEFAULT '',
   `twitchUserID` text NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);

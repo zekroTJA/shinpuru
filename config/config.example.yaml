@@ -28,7 +28,7 @@ database:
     # for the bot with the name 'shinpuru'
     user:         shinpuru
     # The Password for connecting to the database account
-    password:     5up3rb4dp455w0rd
+    password:     5up3rb4dp455w0rd # example
     # The name of the database, which is recommendet 
     # to be be 'shinpuru'
     database:     shinpuru
@@ -62,3 +62,11 @@ permissions:
   # which will have this level automatically on each guild
   # they own.
   guildownerlevel: 10
+
+# Miscellaneous  settings
+etc:
+  # If you want to use the Twitch notification feature of this
+  # bot, you need to create a Twitch App for requesting the API:
+  # https://glass.twitch.tv/console/apps
+  # Create an app and paste the Client ID here (NOT THE SECRET!)
+  twitchappid: tu761eecqd8yv0z0wv9zmi4an9ptgs # example
