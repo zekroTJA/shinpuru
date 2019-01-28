@@ -39,6 +39,7 @@ type TwitchNotifyData struct {
 type TwitchNotifyUser struct {
 	ID          string `json:"id"`
 	DisplayName string `json:"display_name"`
+	LoginName   string `json:"login"`
 	AviURL      string `json:"profile_image_url"`
 }
 
@@ -183,6 +184,7 @@ func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) {
 func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.MessageEmbed {
 	emb := &discordgo.MessageEmbed{
 		Title:       u.DisplayName + " just started streaming!",
+		URL:         "https://twitch.tv/" + u.LoginName,
 		Description: fmt.Sprintf("**%s**\n`%s`", d.Title, d.GameName),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: u.AviURL,
