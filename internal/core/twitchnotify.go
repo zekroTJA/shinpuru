@@ -33,7 +33,7 @@ type TwitchNotifyData struct {
 	Language     string   `json:"language"`
 	ThumbnailURL string   `json:"thumbnail_url"`
 
-	GameName string
+	Game *TwitchNotifyGame
 }
 
 type TwitchNotifyUser struct {
@@ -41,6 +41,12 @@ type TwitchNotifyUser struct {
 	DisplayName string `json:"display_name"`
 	LoginName   string `json:"login"`
 	AviURL      string `json:"profile_image_url"`
+}
+
+type TwitchNotifyGame struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	IconURL string `json:"box_art_url"`
 }
 
 type TwitchNotifyHandler func(*TwitchNotifyData, *TwitchNotifyUser)
@@ -51,7 +57,7 @@ type TwitchNotifyWorker struct {
 	clientID          string
 	pastResponses     []*TwitchNotifyData
 	goneOnlineHandler TwitchNotifyHandler
-	gameIDCache       map[string]string
+	gameIDCache       map[string]*TwitchNotifyGame
 }
 
 type TwitchNotifyDBEntry struct {
@@ -60,12 +66,16 @@ type TwitchNotifyDBEntry struct {
 	TwitchUserID string
 }
 
+func (g *TwitchNotifyGame) formatIconURL(res string) {
+	g.IconURL = strings.Replace(g.IconURL, "{width}x{height}", res, 1)
+}
+
 func NewTwitchNotifyWorker(clientID string, goneOnlineHandler TwitchNotifyHandler) *TwitchNotifyWorker {
 	worker := &TwitchNotifyWorker{
 		users:             make(map[string]*TwitchNotifyUser),
 		clientID:          clientID,
 		goneOnlineHandler: goneOnlineHandler,
-		gameIDCache:       make(map[string]string),
+		gameIDCache:       make(map[string]*TwitchNotifyGame),
 	}
 
 	timer := time.NewTicker(clockDuration)
@@ -116,30 +126,31 @@ func (w *TwitchNotifyWorker) handler() error {
 		}
 		if !wasPresent {
 			user, _ := w.users[cData.UserID]
-			if gameName, ok := w.gameIDCache[cData.GameID]; !ok {
+			if game, ok := w.gameIDCache[cData.GameID]; !ok {
 				res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/games?id="+cData.GameID, map[string]string{
 					"Client-ID": w.clientID,
 				}, nil)
 				if err == nil {
 					var body struct {
-						Data []*struct {
-							Name string `json:"name"`
-						} `json:"data"`
+						Data []*TwitchNotifyGame `json:"data"`
 					}
 					if res.ParseJSONBody(&body) == nil && &body != nil && len(body.Data) > 0 {
-						name := body.Data[0].Name
-						w.gameIDCache[cData.GameID] = name
-						cData.GameName = name
+						game = body.Data[0]
+						game.formatIconURL("50x70")
+						w.gameIDCache[cData.GameID] = game
+						cData.Game = game
 					}
 				} else {
 					util.Log.Error("failed requesting game name: ", err)
 				}
 			} else {
-				cData.GameName = gameName
+				cData.Game = game
 			}
 
 			if cData.GameID == "" {
-				cData.GameName = "game not found"
+				cData.Game = &TwitchNotifyGame{
+					Name: "game not found",
+				}
 			}
 
 			cData.ThumbnailURL = strings.Replace(cData.ThumbnailURL, "{width}x{height}", "1280x720", 1)
@@ -189,7 +200,7 @@ func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.M
 	emb := &discordgo.MessageEmbed{
 		Title:       u.DisplayName + " just started streaming!",
 		URL:         "https://twitch.tv/" + u.LoginName,
-		Description: fmt.Sprintf("**%s**\n`%s`", d.Title, d.GameName),
+		Description: fmt.Sprintf("**%s**\n\nCurrent viewers: `%d`", d.Title, d.ViewerCount),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: u.AviURL,
 		},
@@ -197,6 +208,10 @@ func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.M
 			URL:    d.ThumbnailURL,
 			Width:  1280,
 			Height: 720,
+		},
+		Footer: &discordgo.MessageEmbedFooter{
+			IconURL: d.Game.IconURL,
+			Text:    "Playing " + d.Game.Name,
 		},
 	}
 
