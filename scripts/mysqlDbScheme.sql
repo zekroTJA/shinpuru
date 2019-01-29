@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `autorole` text NOT NULL,
   `modlogchanID` text NOT NULL,
   `voicelogchanID` text NOT NULL,
-  `muteRoleID` text NOT NULL
+  `muteRoleID` text NOT NULL,
+  `ghostPingMsg` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `permissions` (

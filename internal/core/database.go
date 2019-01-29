@@ -33,6 +33,9 @@ type Database interface {
 	GetGuildNotifyRole(guildID string) (string, error)
 	SetGuildNotifyRole(guildID, roleID string) error
 
+	GetGuildGhostpingMsg(guildID string) (string, error)
+	SetGuildGhostpingMsg(guildID, msg string) error
+
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
