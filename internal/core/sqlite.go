@@ -129,6 +129,15 @@ func (m *Sqlite) SetGuildNotifyRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
 }
 
+func (m *Sqlite) GetGuildGhostpingMsg(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "ghostPingMsg")
+	return val, err
+}
+
+func (m *Sqlite) SetGuildGhostpingMsg(guildID, msg string) error {
+	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
+}
+
 func (m *Sqlite) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {

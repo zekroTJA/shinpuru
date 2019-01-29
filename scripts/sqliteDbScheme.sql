@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `autorole` text NOT NULL DEFAULT '',
   `modlogchanID` text NOT NULL DEFAULT '',
   `voicelogchanID` text NOT NULL DEFAULT '',
-  `muteRoleID` text NOT NULL DEFAULT ''
+  `muteRoleID` text NOT NULL DEFAULT '',
+  `ghostPingMsg` text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS `permissions` (
