@@ -1,7 +1,10 @@
 package commands
 
 import (
-	"errors"
+	"fmt"
+	"time"
+
+	"github.com/zekroTJA/shinpuru/pkg/timedmap"
 )
 
 type CmdTest struct {
@@ -30,5 +33,10 @@ func (c *CmdTest) GetPermission() int {
 func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	return errors.New("test error")
+	t := timedmap.New(1 * time.Second)
+	t.Set("test", "hey", 1*time.Second)
+	time.AfterFunc(2*time.Second, func() {
+		fmt.Println(t.GetValue("test").(string))
+	})
+	return nil
 }
