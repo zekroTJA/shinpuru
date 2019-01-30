@@ -128,3 +128,14 @@ func (tm *TimedMap) Refresh(key interface{}, d time.Duration) error {
 func (tm *TimedMap) Size() int {
 	return len(tm.container)
 }
+
+// StopCleaner stops the cleaner go routine and timer.
+// This should always be called after exiting a scope
+// where TimedMap is used that the data can be cleaned
+// up correctly.
+func (tm *TimedMap) StopCleaner() {
+	go func() {
+		tm.cleanerStopChan <- true
+	}()
+	tm.cleaner.Stop()
+}
