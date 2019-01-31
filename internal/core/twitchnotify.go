@@ -13,7 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const clockDuration = 10 * time.Second
+const clockDuration = 60 * time.Second
 
 const (
 	TwitchNotifyIdentLogin = "login"
