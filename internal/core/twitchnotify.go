@@ -158,7 +158,7 @@ func (w *TwitchNotifyWorker) handler() error {
 		}
 	}
 
-	w.pastResponses = data.Data
+	copy(w.pastResponses, data.Data)
 
 	return nil
 }

@@ -28,3 +28,6 @@
 [submodule "vendor/github.com/nfnt/resize"]
 	path = vendor/github.com/nfnt/resize
 	url = https://github.com/nfnt/resize
+[submodule "vendor/github.com/zekroTJA/timedmap"]
+	path = vendor/github.com/zekroTJA/timedmap
+	url = https://github.com/zekroTJA/timedmap
