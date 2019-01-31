@@ -13,7 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const clockDuration = 60 * time.Second
+const clockDuration = 10 * time.Second
 
 const (
 	TwitchNotifyIdentLogin = "login"
@@ -176,6 +176,7 @@ func (w *TwitchNotifyWorker) handler() error {
 		}
 	}
 
+	w.pastResponses = make([]*TwitchNotifyData, len(data.Data))
 	copy(w.pastResponses, data.Data)
 
 	return nil
