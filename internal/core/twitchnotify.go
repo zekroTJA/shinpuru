@@ -52,12 +52,13 @@ type TwitchNotifyGame struct {
 type TwitchNotifyHandler func(*TwitchNotifyData, *TwitchNotifyUser)
 
 type TwitchNotifyWorker struct {
-	timer             *time.Ticker
-	users             map[string]*TwitchNotifyUser
-	clientID          string
-	pastResponses     []*TwitchNotifyData
-	goneOnlineHandler TwitchNotifyHandler
-	gameIDCache       map[string]*TwitchNotifyGame
+	timer              *time.Ticker
+	users              map[string]*TwitchNotifyUser
+	clientID           string
+	pastResponses      []*TwitchNotifyData
+	wentOnlineHandler  TwitchNotifyHandler
+	wentOfflineHandler TwitchNotifyHandler
+	gameIDCache        map[string]*TwitchNotifyGame
 }
 
 type TwitchNotifyDBEntry struct {
@@ -70,12 +71,13 @@ func (g *TwitchNotifyGame) formatIconURL(res string) {
 	g.IconURL = strings.Replace(g.IconURL, "{width}x{height}", res, 1)
 }
 
-func NewTwitchNotifyWorker(clientID string, goneOnlineHandler TwitchNotifyHandler) *TwitchNotifyWorker {
+func NewTwitchNotifyWorker(clientID string, wentOnlineHandler TwitchNotifyHandler, wentOfflineHandler TwitchNotifyHandler) *TwitchNotifyWorker {
 	worker := &TwitchNotifyWorker{
-		users:             make(map[string]*TwitchNotifyUser),
-		clientID:          clientID,
-		goneOnlineHandler: goneOnlineHandler,
-		gameIDCache:       make(map[string]*TwitchNotifyGame),
+		users:              make(map[string]*TwitchNotifyUser),
+		clientID:           clientID,
+		wentOnlineHandler:  wentOnlineHandler,
+		wentOfflineHandler: wentOfflineHandler,
+		gameIDCache:        make(map[string]*TwitchNotifyGame),
 	}
 
 	timer := time.NewTicker(clockDuration)
@@ -118,13 +120,14 @@ func (w *TwitchNotifyWorker) handler() error {
 	}
 
 	for _, cData := range data.Data {
-		var wasPresent bool
+		var isStillOffline bool
 		for _, pData := range w.pastResponses {
 			if cData.ID == pData.ID {
-				wasPresent = true
+				isStillOffline = true
 			}
 		}
-		if !wasPresent {
+
+		if !isStillOffline {
 			user, _ := w.users[cData.UserID]
 			if game, ok := w.gameIDCache[cData.GameID]; !ok {
 				res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/games?id="+cData.GameID, map[string]string{
@@ -154,7 +157,22 @@ func (w *TwitchNotifyWorker) handler() error {
 			}
 
 			cData.ThumbnailURL = strings.Replace(cData.ThumbnailURL, "{width}x{height}", "1280x720", 1)
-			w.goneOnlineHandler(cData, user)
+			w.wentOnlineHandler(cData, user)
+		}
+	}
+
+	for _, pData := range w.pastResponses {
+		var isStillOnline bool
+		for _, cData := range data.Data {
+			if pData.ID == cData.ID {
+				isStillOnline = true
+			}
+		}
+
+		if !isStillOnline {
+			if w.wentOfflineHandler != nil {
+				w.wentOfflineHandler(pData, nil)
+			}
 		}
 	}
 
