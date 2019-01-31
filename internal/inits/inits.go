@@ -154,8 +154,9 @@ func InitTwitchNotifyer(session *discordgo.Session, config *core.Config, db core
 		return nil
 	}
 
+	listener := listeners.NewListenerTwitchNotify(session, config, db)
 	tnw := core.NewTwitchNotifyWorker(config.Etc.TwitchAppID,
-		listeners.NewListenerTwitchNotify(session, config, db).Handler)
+		listener.HandlerWentOnline, listener.HandlerWentOffline)
 
 	notifies, err := db.GetAllTwitchNotifies("")
 	if err == nil {
