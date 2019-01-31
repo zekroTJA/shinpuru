@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/pkg/timedmap"
+	"github.com/zekroTJA/timedmap"
 )
 
 type CmdTest struct {
