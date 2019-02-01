@@ -33,12 +33,17 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 		return
 	}
 
-	l.msgCache.Set(e.ID, e, gpDelay)
+	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
 	if !l.deleteHandlerAdded {
 		s.AddHandler(func(_ *discordgo.Session, eDel *discordgo.MessageDelete) {
 			v := l.msgCache.GetValue(eDel.ID)
 			if v == nil {
+				return
+			}
+
+			deletedMsg, ok := v.(*discordgo.Message)
+			if !ok {
 				return
 			}
 
@@ -52,13 +57,15 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 
 			uPinged := e.Mentions[0]
 
-			gpMsg = strings.Replace(gpMsg, "{pinger}", e.Author.Mention(), -1)
+			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
-			gpMsg = strings.Replace(gpMsg, "{msg}", e.Content, -1)
+			gpMsg = strings.Replace(gpMsg, "{msg}", deletedMsg.Content, -1)
 
 			s.ChannelMessageSend(e.ChannelID, gpMsg)
 
 			l.msgCache.Remove(eDel.ID)
 		})
+
+		l.deleteHandlerAdded = true
 	}
 }
