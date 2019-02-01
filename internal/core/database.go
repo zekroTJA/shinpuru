@@ -33,6 +33,9 @@ type Database interface {
 	GetGuildNotifyRole(guildID string) (string, error)
 	SetGuildNotifyRole(guildID, roleID string) error
 
+	GetGuildGhostpingMsg(guildID string) (string, error)
+	SetGuildGhostpingMsg(guildID, msg string) error
+
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
@@ -46,13 +49,18 @@ type Database interface {
 	SetSetting(setting, value string) error
 
 	GetVotes() (map[string]*util.Vote, error)
-	// SetVotes(votes []*util.Vote) error
+
 	AddUpdateVote(votes *util.Vote) error
 	DeleteVote(voteID string) error
 
 	GetMuteRoles() (map[string]string, error)
 	GetMuteRoleGuild(guildID string) (string, error)
 	SetMuteRole(guildID, roleID string) error
+
+	GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error)
+	GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error)
+	SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error
+	DeleteTwitchNotify(twitchUserID, guildID string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

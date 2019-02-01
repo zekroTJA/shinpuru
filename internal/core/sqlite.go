@@ -129,6 +129,15 @@ func (m *Sqlite) SetGuildNotifyRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
 }
 
+func (m *Sqlite) GetGuildGhostpingMsg(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "ghostPingMsg")
+	return val, err
+}
+
+func (m *Sqlite) SetGuildGhostpingMsg(guildID, msg string) error {
+	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
+}
+
 func (m *Sqlite) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
@@ -306,20 +315,6 @@ func (m *Sqlite) DeleteVote(voteID string) error {
 	return err
 }
 
-// func (m *Sqlite) SetVotes(updatedVotes []*util.Vote) error {
-// 	dbVotes, err := m.GetVotes()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	toDelete := make(map[string]*util.Vote)
-// 	for _, dbV := range dbVotes {
-
-// 	}
-
-// 	return nil
-// }
-
 func (m *Sqlite) GetMuteRoles() (map[string]string, error) {
 	rows, err := m.DB.Query("SELECT guildID, muteRoleID FROM guilds")
 	results := make(map[string]string)
@@ -329,7 +324,7 @@ func (m *Sqlite) GetMuteRoles() (map[string]string, error) {
 	for rows.Next() {
 		var guildID, roleID string
 		err = rows.Scan(&guildID, &roleID)
-		if err != nil {
+		if err == nil {
 			results[guildID] = roleID
 		}
 	}
@@ -343,4 +338,63 @@ func (m *Sqlite) GetMuteRoleGuild(guildID string) (string, error) {
 
 func (m *Sqlite) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
+}
+
+func (m *Sqlite) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error) {
+	t := &TwitchNotifyDBEntry{
+		TwitchUserID: twitchUserID,
+		GuildID:      guildID,
+	}
+	err := m.DB.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
+		twitchUserID, guildID).Scan(&t.ChannelID)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return t, err
+}
+
+func (m *Sqlite) SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error {
+	res, err := m.DB.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
+		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
+	if err != nil {
+		return err
+	}
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
+			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *Sqlite) DeleteTwitchNotify(twitchUserID, guildID string) error {
+	_, err := m.DB.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
+	return err
+}
+
+func (m *Sqlite) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error) {
+	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
+	if twitchUserID != "" {
+		query += " WHERE twitchUserID = " + twitchUserID
+	}
+	rows, err := m.DB.Query(query)
+	results := make([]*TwitchNotifyDBEntry, 0)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		t := new(TwitchNotifyDBEntry)
+		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID)
+		if err == nil {
+			results = append(results, t)
+		}
+	}
+	return results, nil
 }
