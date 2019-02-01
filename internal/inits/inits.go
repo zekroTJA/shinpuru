@@ -69,8 +69,8 @@ func InitDatabase(databaseCfg *core.ConfigDatabaseType) core.Database {
 	return database
 }
 
-func InitCommandHandler(config *core.Config, database core.Database) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(database, config)
+func InitCommandHandler(config *core.Config, database core.Database, twitchNotifyWorker *core.TwitchNotifyWorker) *commands.CmdHandler {
+	cmdHandler := commands.NewCmdHandler(database, config, twitchNotifyWorker)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
@@ -95,6 +95,8 @@ func InitCommandHandler(config *core.Config, database core.Database) *commands.C
 	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
 	cmdHandler.RegisterCommand(&commands.CmdBug{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
+	cmdHandler.RegisterCommand(&commands.CmdGhostping{PermLvl: 3})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -115,17 +117,14 @@ func InitCommandHandler(config *core.Config, database core.Database) *commands.C
 	return cmdHandler
 }
 
-func InitDiscordBotSession(config *core.Config, database core.Database, cmdHandler *commands.CmdHandler) {
+func InitDiscordBotSession(session *discordgo.Session, config *core.Config, database core.Database, cmdHandler *commands.CmdHandler) {
 	snowflake.Epoch = util.DefEpoche
 	err := util.SetupSnowflakeNodes()
 	if err != nil {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 	}
 
-	session, err := discordgo.New("Bot " + config.Discord.Token)
-	if err != nil {
-		util.Log.Fatal("Failed creating Discord bot session:", err)
-	}
+	session.Token = "Bot " + config.Discord.Token
 
 	session.AddHandler(listeners.NewListenerReady(config, database).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
@@ -134,6 +133,7 @@ func InitDiscordBotSession(config *core.Config, database core.Database, cmdHandl
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
+	session.AddHandler(listeners.NewListenerGhostPing(database).Handler)
 
 	err = session.Open()
 	if err != nil {
@@ -147,4 +147,27 @@ func InitDiscordBotSession(config *core.Config, database core.Database, cmdHandl
 
 	util.Log.Info("Shutting down...")
 	session.Close()
+}
+
+func InitTwitchNotifyer(session *discordgo.Session, config *core.Config, db core.Database) *core.TwitchNotifyWorker {
+	if config.Etc == nil || config.Etc.TwitchAppID == "" {
+		return nil
+	}
+
+	listener := listeners.NewListenerTwitchNotify(session, config, db)
+	tnw := core.NewTwitchNotifyWorker(config.Etc.TwitchAppID,
+		listener.HandlerWentOnline, listener.HandlerWentOffline)
+
+	notifies, err := db.GetAllTwitchNotifies("")
+	if err == nil {
+		for _, notify := range notifies {
+			if u, err := tnw.GetUser(notify.TwitchUserID, core.TwitchNotifyIdentID); err == nil {
+				tnw.AddUser(u)
+			}
+		}
+	} else {
+		util.Log.Error("failed getting Twitch notify entreis: ", err)
+	}
+
+	return tnw
 }

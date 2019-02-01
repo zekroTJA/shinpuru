@@ -18,14 +18,16 @@ type CmdHandler struct {
 	registeredCmdInstances []Command
 	db                     core.Database
 	config                 *core.Config
+	tnw                    *core.TwitchNotifyWorker
 }
 
-func NewCmdHandler(db core.Database, config *core.Config) *CmdHandler {
+func NewCmdHandler(db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
 		db:                     db,
 		config:                 config,
+		tnw:                    tnw,
 	}
 }
 

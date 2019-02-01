@@ -116,8 +116,7 @@ func (v *Vote) AsField() *discordgo.MessageEmbedField {
 			shortenedDescription, len(v.Ticks), GetMessageLink(&discordgo.Message{
 				ID:        v.MsgID,
 				ChannelID: v.ChannelID,
-				GuildID:   v.GuildID,
-			})),
+			}, v.GuildID)),
 	}
 }
 
