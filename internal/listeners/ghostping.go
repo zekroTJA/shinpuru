@@ -47,10 +47,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 				return
 			}
 
-			gpMsg, err := l.db.GetGuildGhostpingMsg(e.GuildID)
+			gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 			if err != nil {
 				if !core.IsErrDatabaseNotFound(err) {
-					util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", e.GuildID, err.Error())
+					util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", deletedMsg.GuildID, err.Error())
 				}
 				return
 			}
