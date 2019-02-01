@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 
+	"github.com/bwmarrin/discordgo"
+
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 
@@ -21,11 +23,17 @@ func main() {
 	util.Log.Info("Covered by MIT Licence")
 	util.Log.Info("Starting up...")
 
+	session, err := discordgo.New("")
+	if err != nil {
+		util.Log.Fatal(err)
+	}
+
 	config := inits.InitConfig(*flagConfigLocation, new(core.YAMLConfigParser))
 
 	util.SetLogLevel(config.Logging.LogLevel)
 
 	database := inits.InitDatabase(config.Database)
-	cmdHandler := inits.InitCommandHandler(config, database)
-	inits.InitDiscordBotSession(config, database, cmdHandler)
+	tnw := inits.InitTwitchNotifyer(session, config, database)
+	cmdHandler := inits.InitCommandHandler(config, database, tnw)
+	inits.InitDiscordBotSession(session, config, database, cmdHandler)
 }
