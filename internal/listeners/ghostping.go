@@ -61,7 +61,7 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{msg}", deletedMsg.Content, -1)
 
-			s.ChannelMessageSend(e.ChannelID, gpMsg)
+			s.ChannelMessageSend(deletedMsg.ChannelID, gpMsg)
 
 			l.msgCache.Remove(eDel.ID)
 		})
