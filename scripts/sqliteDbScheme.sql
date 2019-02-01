@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `autorole` text NOT NULL DEFAULT '',
   `modlogchanID` text NOT NULL DEFAULT '',
   `voicelogchanID` text NOT NULL DEFAULT '',
-  `muteRoleID` text NOT NULL DEFAULT ''
+  `muteRoleID` text NOT NULL DEFAULT '',
+  `ghostPingMsg` text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -37,4 +38,10 @@ CREATE TABLE IF NOT EXISTS `starboard` (
 CREATE TABLE IF NOT EXISTS `votes` (
   `ID` text NOT NULL DEFAULT '',
   `data` mediumtext NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS `twitchnotify` (
+  `guildID` text NOT NULL DEFAULT '',
+  `channelID` text NOT NULL DEFAULT '',
+  `twitchUserID` text NOT NULL DEFAULT ''
 );
