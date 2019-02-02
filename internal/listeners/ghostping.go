@@ -55,7 +55,7 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 				return
 			}
 
-			uPinged := e.Mentions[0]
+			uPinged := deletedMsg.Mentions[0]
 
 			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
