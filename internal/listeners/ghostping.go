@@ -1,6 +1,7 @@
 package listeners
 
 import (
+	"regexp"
 	"strings"
 	"time"
 
@@ -33,6 +34,8 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 		return
 	}
 
+	rx := regexp.MustCompile(`(@here)|(@everyone)`)
+
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
 	if !l.deleteHandlerAdded {
@@ -56,6 +59,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 			}
 
 			uPinged := deletedMsg.Mentions[0]
+
+			deletedMsg.Content = rx.ReplaceAllStringFunc(deletedMsg.Content, func(s string) string {
+				return "`" + s + "`"
+			})
 
 			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
