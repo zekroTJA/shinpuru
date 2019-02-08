@@ -139,7 +139,7 @@ black, cyan, orange, violet, blue, green, yellow, white, red, pink
 
 ### stats
 
-> dispaly some stats like uptime or guilds/user count
+> display some stats like uptime or guilds/user count
 
 | | |
 |---|---|
@@ -167,7 +167,7 @@ black, cyan, orange, violet, blue, green, yellow, white, red, pink
 
 ### help
 
-> dispaly list of command or get help for a specific command
+> display list of command or get help for a specific command
 
 | | |
 |---|---|

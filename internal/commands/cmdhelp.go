@@ -19,7 +19,7 @@ func (c *CmdHelp) GetInvokes() []string {
 }
 
 func (c *CmdHelp) GetDescription() string {
-	return "dispaly list of command or get help for a specific command"
+	return "display list of command or get help for a specific command"
 }
 
 func (c *CmdHelp) GetHelp() string {
