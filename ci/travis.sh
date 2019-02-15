@@ -25,6 +25,7 @@ BUILDS=( \
     'darwin;amd64' \
 )
 
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 dep ensure
 
 for BUILD in ${BUILDS[*]}; do
