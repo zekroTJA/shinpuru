@@ -53,8 +53,8 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 	usedCPUs := runtime.NumCPU()
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
-	usedHeap := memStats.HeapInuse / 1024
-	usedStack := memStats.StackInuse / 1024
+	usedHeap := util.ByteCountFormatter(memStats.HeapInuse)
+	usedStack := util.ByteCountFormatter(memStats.StackInuse)
 
 	emb := &discordgo.MessageEmbed{
 		Color: util.ColorEmbedDefault,
@@ -78,7 +78,7 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 			&discordgo.MessageEmbedField{
 				Name: "Runtime Stats",
 				Value: fmt.Sprintf("Running Go Routines: **%d**\nUsed CPU Threads: **%d**\n"+
-					"Used Heap: **%d kiB**\nUsed Stack: **%d** kiB", nGoroutines, usedCPUs, usedHeap, usedStack),
+					"Used Heap: **%s**\nUsed Stack: **%s**", nGoroutines, usedCPUs, usedHeap, usedStack),
 			},
 		},
 	}
