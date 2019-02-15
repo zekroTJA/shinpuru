@@ -33,6 +33,18 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 		return
 	}
 
+	userMentions := make([]*discordgo.User, 0)
+	for _, ment := range e.Mentions {
+		if !ment.Bot {
+			userMentions = append(userMentions, ment)
+		}
+	}
+	e.Mentions = userMentions
+
+	if len(e.Mentions) == 0 {
+		return
+	}
+
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
 	if !l.deleteHandlerAdded {
@@ -47,6 +59,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 				return
 			}
 
+			if deletedMsg.Author.ID == s.State.User.ID {
+				return
+			}
+
 			gpMsg, err := l.db.GetGuildGhostpingMsg(e.GuildID)
 			if err != nil {
 				if !core.IsErrDatabaseNotFound(err) {
@@ -56,6 +72,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 			}
 
 			uPinged := e.Mentions[0]
+
+			if uPinged.Bot {
+				return
+			}
 
 			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
