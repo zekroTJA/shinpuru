@@ -1,6 +1,7 @@
 package listeners
 
 import (
+	"regexp"
 	"strings"
 	"time"
 
@@ -44,6 +45,7 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 	if len(e.Mentions) == 0 {
 		return
 	}
+	rx := regexp.MustCompile(`(@here)|(@everyone)`)
 
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
@@ -63,15 +65,19 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 				return
 			}
 
-			gpMsg, err := l.db.GetGuildGhostpingMsg(e.GuildID)
+			gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 			if err != nil {
 				if !core.IsErrDatabaseNotFound(err) {
-					util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", e.GuildID, err.Error())
+					util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", deletedMsg.GuildID, err.Error())
 				}
 				return
 			}
 
-			uPinged := e.Mentions[0]
+			uPinged := deletedMsg.Mentions[0]
+
+			deletedMsg.Content = rx.ReplaceAllStringFunc(deletedMsg.Content, func(s string) string {
+				return "`" + s + "`"
+			})
 
 			if uPinged.Bot {
 				return
@@ -81,7 +87,7 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
 			gpMsg = strings.Replace(gpMsg, "{msg}", deletedMsg.Content, -1)
 
-			s.ChannelMessageSend(e.ChannelID, gpMsg)
+			s.ChannelMessageSend(deletedMsg.ChannelID, gpMsg)
 
 			l.msgCache.Remove(eDel.ID)
 		})
