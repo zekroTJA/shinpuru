@@ -18,6 +18,13 @@ func EnsureNotEmpty(str, def string) string {
 	return str
 }
 
+// unfinished
+// func ByteCountFormatter(bc int) string {
+// 	if bc < 1024 {
+// 		return fmt.Sprintf("%d B", )
+// 	}
+// }
+
 func BoolAsString(cond bool, ifTrue, ifFalse string) string {
 	if cond {
 		return ifTrue
