@@ -5,7 +5,7 @@ BUILDPATH="./bin"
 BUILDNAME="shinpuru"
 #########
 
-source scripts/getsqlschemes.bash
+SQLLDFLAGS=$(bash ./scripts/getsqlschemes.bash)
 
 TAG=$(git describe --tags)
 if [ "$TAG" == "" ]; then
