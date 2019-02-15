@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # STATICS
-BUILDPATH="./build"
+BUILDPATH="./bin"
 BUILDNAME="shinpuru"
 #########
 
