@@ -1,4 +1,4 @@
-> Auto generated command manual | Thu, 24 Jan 2019 09:36:22 CET
+> Auto generated command manual | Fri, 15 Feb 2019 14:29:25 CET
 
 # Command List
 
@@ -6,6 +6,8 @@
 - [say](#say)
 - [quote](#quote)
 - [vote](#vote)
+- [twitch](#twitch)
+- [ghost](#ghost)
 
 ## ETC
 - [user](#user)
@@ -67,7 +69,7 @@
 	title  
 ```  
 **Colors:**  
-black, cyan, orange, violet, blue, green, yellow, white, red, pink
+red, pink, blue, cyan, green, black, violet, yellow, orange, white
 
 ### quote
 
@@ -95,6 +97,48 @@ black, cyan, orange, violet, blue, green, yellow, white, red, pink
 **Usage**  
 `vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote  
 `vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes
+
+### twitch
+
+> Get notifications in channels when someone goes live on twitch
+
+| | |
+|---|---|
+| Permission | 5 |
+| Group | CHAT |
+| Aliases | tn, twitchnotify |
+
+**Usage**  
+`twitch` - list all currently monitored twitch channels  
+`twitch <twitchUsername>` - get notified in the current channel when the streamer goes online  
+`twitch remove <twitchUsername>` - remove monitor
+
+### ghost
+
+> Send a message when someone ghost pinged a member
+
+| | |
+|---|---|
+| Permission | 3 |
+| Group | CHAT |
+| Aliases | gp, ghostping, gping |
+
+**Usage**  
+`ghost` - display current ghost ping settings  
+`ghost set (<msgPattern>)` - Set a ghost ping message pattern. If no 2nd argument is provided, the default pattern will be used.  
+`ghost reset` - reset message and disable ghost ping warnings  
+  
+Usable variables in message pattern:  
+- `{pinger}` - mention of the user sent the ghost ping  
+- `{pinged}` - mention of the user got ghost pinged  
+- `{msg}` - the content of the message which ghost pinged  
+  
+Default message pattern:  
+```  
+{pinger} ghost pinged {pinged} with message:  
+  
+{msg}  
+```
 
 ## ETC
 
