@@ -25,6 +25,8 @@ BUILDS=( \
     'darwin;amd64' \
 )
 
+dep ensure
+
 for BUILD in ${BUILDS[*]}; do
 
     IFS=';' read -ra SPLIT <<< "$BUILD"
