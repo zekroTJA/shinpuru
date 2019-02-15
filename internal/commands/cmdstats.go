@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -48,6 +49,13 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 		guildUsers += g.MemberCount
 	}
 
+	nGoroutines := runtime.NumGoroutine()
+	usedCPUs := runtime.NumCPU()
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+	usedHeap := memStats.HeapInuse / 1024
+	usedStack := memStats.StackInuse / 1024
+
 	emb := &discordgo.MessageEmbed{
 		Color: util.ColorEmbedDefault,
 		Title: "shinpuru Global Stats",
@@ -66,6 +74,11 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 				Name: "Guilds & Members",
 				Value: fmt.Sprintf("Serving **%d** guilds with **%d** members in total.",
 					len(args.Session.State.Guilds), guildUsers),
+			},
+			&discordgo.MessageEmbedField{
+				Name: "Runtime Stats",
+				Value: fmt.Sprintf("Running Go Routines: **%d**\nUsed CPU Threads: **%d**\n"+
+					"Used Heap: **%d kiB**\nUsed Stack: **%d** kiB", nGoroutines, usedCPUs, usedHeap, usedStack),
 			},
 		},
 	}
