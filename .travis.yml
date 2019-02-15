@@ -9,7 +9,7 @@ addons:
   ssh_known_hosts: zekro.de
 
 script:
-  - bash scripts/travis.sh
+  - bash ./ci/travis.sh
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_37839d6e8267_key -iv $encrypted_37839d6e8267_iv
