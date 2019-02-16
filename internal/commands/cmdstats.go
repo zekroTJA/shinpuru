@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,7 +18,7 @@ func (c *CmdStats) GetInvokes() []string {
 }
 
 func (c *CmdStats) GetDescription() string {
-	return "dispaly some stats like uptime or guilds/user count"
+	return "display some stats like uptime or guilds/user count"
 }
 
 func (c *CmdStats) GetHelp() string {
@@ -48,6 +49,13 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 		guildUsers += g.MemberCount
 	}
 
+	nGoroutines := runtime.NumGoroutine()
+	usedCPUs := runtime.NumCPU()
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+	usedHeap := util.ByteCountFormatter(memStats.HeapInuse)
+	usedStack := util.ByteCountFormatter(memStats.StackInuse)
+
 	emb := &discordgo.MessageEmbed{
 		Color: util.ColorEmbedDefault,
 		Title: "shinpuru Global Stats",
@@ -66,6 +74,11 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 				Name: "Guilds & Members",
 				Value: fmt.Sprintf("Serving **%d** guilds with **%d** members in total.",
 					len(args.Session.State.Guilds), guildUsers),
+			},
+			&discordgo.MessageEmbedField{
+				Name: "Runtime Stats",
+				Value: fmt.Sprintf("Running Go Routines: **%d**\nUsed CPU Threads: **%d**\n"+
+					"Used Heap: **%s**\nUsed Stack: **%s**", nGoroutines, usedCPUs, usedHeap, usedStack),
 			},
 		},
 	}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source scripts/getsqlschemes.bash
+SQLLDFLAGS=$(bash ./scripts/getsqlschemes.bash)
 
 TAG=$(git describe --tags)
 if [ "$TAG" == "" ]; then
