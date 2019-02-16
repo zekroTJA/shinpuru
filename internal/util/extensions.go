@@ -18,6 +18,23 @@ func EnsureNotEmpty(str, def string) string {
 	return str
 }
 
+func ByteCountFormatter(bc uint64) string {
+	f1k := float64(1024)
+	if bc < 1024 {
+		return fmt.Sprintf("%d B", bc)
+	}
+	if bc < 1024*1024 {
+		return fmt.Sprintf("%.3f kiB", float64(bc)/f1k)
+	}
+	if bc < 1024*1024*1024 {
+		return fmt.Sprintf("%.3f MiB", float64(bc)/f1k/f1k)
+	}
+	if bc < 1024*1024*1024*1024 {
+		return fmt.Sprintf("%.3f GiB", float64(bc)/f1k/f1k/f1k)
+	}
+	return fmt.Sprintf("%.3f TiB", float64(bc)/f1k/f1k/f1k/f1k)
+}
+
 func BoolAsString(cond bool, ifTrue, ifFalse string) string {
 	if cond {
 		return ifTrue
