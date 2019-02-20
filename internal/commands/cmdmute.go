@@ -139,6 +139,13 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		return err
 	}
 
+	if victim.User.ID == args.User.ID {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not mute yourself...")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	}
+
 	muteRoleID, err := args.CmdHandler.db.GetMuteRoleGuild(args.Guild.ID)
 	if core.IsErrDatabaseNotFound(err) {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
