@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -40,6 +41,7 @@ type Database interface {
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
 	AddReport(rep *util.Report) error
+	DeleteReport(id snowflake.ID) error
 	GetReportsGuild(guildID string) ([]*util.Report, error)
 	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
 

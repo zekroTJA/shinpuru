@@ -75,6 +75,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 
 			uPinged := deletedMsg.Mentions[0]
 
+			if uPinged.ID == deletedMsg.Author.ID {
+				return
+			}
+
 			deletedMsg.Content = rx.ReplaceAllStringFunc(deletedMsg.Content, func(s string) string {
 				return "[@]" + s[1:]
 			})
