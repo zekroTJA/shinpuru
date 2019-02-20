@@ -8,3 +8,4 @@ A list of honor for all people found some bugs in shinpuru. ❤️
 | [nanderLP](https://github.com/nanderLP) | | - [#41](https://github.com/zekroTJA/shinpuru/issues/43) |
 | [error2507](https://github.com/error2507) | | - [#01](https://github.com/zekroTJA/shinpuru/pull/1)<br> - [#02](https://github.com/zekroTJA/shinpuru/pull/2)<br> - [#29](https://github.com/zekroTJA/shinpuru/issues/29) |
 | [Ron31](https://github.com/Ron31) | | - [#32](https://github.com/zekroTJA/shinpuru/pull/32) |
+| [DarkAmy](https://github.com/DarkAmy) | | - [#46](https://github.com/zekroTJA/shinpuru/issues/46) |
