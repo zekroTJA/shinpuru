@@ -233,6 +233,18 @@ func (m *MySql) DeleteReport(id snowflake.ID) error {
 	return err
 }
 
+func (m *MySql) GetReport(id snowflake.ID) (*util.Report, error) {
+	rep := new(util.Report)
+
+	row := m.DB.QueryRow("SELECT * FROM reports WHERE id = ?", id)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+
+	return rep, err
+}
+
 func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
 	rows, err := m.DB.Query("SELECT * FROM reports WHERE guildID = ?", guildID)
 	var results []*util.Report
