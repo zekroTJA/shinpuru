@@ -1,5 +1,5 @@
-GO  	= $(shell which go)
-DEP 	= $(shell which dep)
+GO  	= go
+DEP 	= dep
 
 PACKAGE = github.com/zekroTJA/shinpuru
 GOPATH  = $(CURDIR)/.gopath
@@ -21,7 +21,7 @@ SQLLDFLAGS = $(shell bash ./scripts/getsqlschemes.bash)
 
 .PHONY: _make installdeps cleanup _finish
 
-_make: $(WDIR) $(BIN) cleanup _finish
+_make: $(WDIR) $(BIN) cleanup _finish run
 
 $(WDIR):
 	@echo [ INFO ] creating working directory '$@'...
@@ -50,3 +50,6 @@ _finish:
 	@echo ------------------------------------------------------------------------------
 	@echo [ INFO ] Build successful.
 	@echo [ INFO ] Your build is located at '$(BIN)'
+
+run:
+	(env GOPATH=$(CURDIR)/../../../.. $(GO) run -v ./cmd/shinpuru -c ./config/private.config.yaml)
