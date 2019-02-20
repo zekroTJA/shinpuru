@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -224,6 +225,11 @@ func (m *MySql) SetSetting(setting, value string) error {
 func (m *MySql) AddReport(rep *util.Report) error {
 	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
+	return err
+}
+
+func (m *MySql) DeleteReport(id snowflake.ID) error {
+	_, err := m.DB.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 

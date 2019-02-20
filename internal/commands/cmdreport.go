@@ -52,6 +52,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		return err
 	}
+
 	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
@@ -91,6 +92,14 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 	if repType == 0 {
 		repType = minType
 	}
+
+	if victim.User.ID == args.User.ID {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not report yourself...")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	}
+
 	if err == nil {
 		if repType < minType || repType > maxType {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
