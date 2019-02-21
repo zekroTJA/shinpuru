@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/commands"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -18,14 +20,16 @@ const (
 
 type ListenerGhostPing struct {
 	db                 core.Database
+	cmdHandler         *commands.CmdHandler
 	deleteHandlerAdded bool
 	msgCache           *timedmap.TimedMap
 }
 
-func NewListenerGhostPing(db core.Database) *ListenerGhostPing {
+func NewListenerGhostPing(db core.Database, cmdHandler *commands.CmdHandler) *ListenerGhostPing {
 	return &ListenerGhostPing{
-		db:       db,
-		msgCache: timedmap.New(gpTick),
+		db:         db,
+		cmdHandler: cmdHandler,
+		msgCache:   timedmap.New(gpTick),
 	}
 }
 
@@ -51,6 +55,11 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 
 	if !l.deleteHandlerAdded {
 		s.AddHandler(func(_ *discordgo.Session, eDel *discordgo.MessageDelete) {
+			if l.cmdHandler.GetNotifiedCommandMsgs().Contains(eDel.ID) {
+				l.cmdHandler.GetNotifiedCommandMsgs().Remove(eDel.ID)
+				return
+			}
+
 			v := l.msgCache.GetValue(eDel.ID)
 			if v == nil {
 				return

@@ -92,6 +92,19 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
 			return
 		}
+
+		if len(e.Message.Mentions) > 0 {
+			userMentions := 0
+			for _, m := range e.Message.Mentions {
+				if !m.Bot {
+					userMentions++
+				}
+			}
+			if userMentions > 0 {
+				l.cmdHandler.AddNotifiedCommandMsg(e.Message.ID)
+			}
+		}
+
 		s.ChannelMessageDelete(channel.ID, e.Message.ID)
 		err = cmdInstance.Exec(cmdArgs)
 		if err != nil {
