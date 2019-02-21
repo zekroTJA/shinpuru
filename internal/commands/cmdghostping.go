@@ -28,8 +28,10 @@ func (c *CmdGhostping) GetHelp() string {
 		"`ghost set (<msgPattern>)` - Set a ghost ping message pattern. If no 2nd argument is provided, the default pattern will be used.\n" +
 		"`ghost reset` - reset message and disable ghost ping warnings\n\n" +
 		"Usable variables in message pattern:\n" +
-		"- `{pinger}` - mention of the user sent the ghost ping\n" +
-		"- `{pinged}` - mention of the user got ghost pinged\n" +
+		"- `{@pinger}` - mention of the user sent the ghost ping\n" +
+		"- `{pinger}` - username#discriminator of the user sent the ghost ping\n" +
+		"- `{@pinged}` - mention of the user got ghost pinged\n" +
+		"- `{pinged}` - username#discriminator of the user got ghost pinged\n" +
 		"- `{msg}` - the content of the message which ghost pinged\n\n" +
 		"Default message pattern:\n```\n" + defMsgPattern + "\n```"
 }

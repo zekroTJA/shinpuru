@@ -96,8 +96,10 @@ func (l *ListenerGhostPing) Handler(s *discordgo.Session, e *discordgo.MessageCr
 				return
 			}
 
-			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.Mention(), -1)
-			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.Mention(), -1)
+			gpMsg = strings.Replace(gpMsg, "{@pinger}", deletedMsg.Author.Mention(), -1)
+			gpMsg = strings.Replace(gpMsg, "{@pinged}", uPinged.Mention(), -1)
+			gpMsg = strings.Replace(gpMsg, "{pinger}", deletedMsg.Author.String(), -1)
+			gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.String(), -1)
 			gpMsg = strings.Replace(gpMsg, "{msg}", deletedMsg.Content, -1)
 
 			s.ChannelMessageSend(deletedMsg.ChannelID, gpMsg)
