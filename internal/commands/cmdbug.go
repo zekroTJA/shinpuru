@@ -52,7 +52,7 @@ func (c *CmdBug) Exec(args *CommandArgs) error {
 			},
 			&discordgo.MessageEmbedField{
 				Name:  "Bug Hunters",
-				Value: "Much :heart: to all [**bug hunters**](https://github.com/zekroTJA/shinpuru/blob/master/bughunters.md).",
+				Value: "Much :heart: to all [**bug hunters**](https://github.com/zekroTJA/shinpuru/blob/dev/bughunters.md).",
 			},
 		},
 	}
