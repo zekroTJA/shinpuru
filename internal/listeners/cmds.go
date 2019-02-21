@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
@@ -89,7 +90,8 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			return
 		}
 		if permLvl < cmdInstance.GetPermission() {
-			util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
+			errMsg, _ := util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
+			util.DeleteMessageLater(s, errMsg, 8*time.Second)
 			return
 		}
 
