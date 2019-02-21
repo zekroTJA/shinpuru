@@ -161,6 +161,15 @@ func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, m
 	return maxPermLvl, err
 }
 
+func (m *MySql) GetGuildJdoodleKey(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "jdoodleToken")
+	return val, err
+}
+
+func (m *MySql) SetGuildJdoodleKey(guildID, key string) error {
+	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
 func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
 	results := make(map[string]int)
 	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",

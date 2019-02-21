@@ -196,6 +196,15 @@ func (m *Sqlite) SetGuildRolePermission(guildID, roleID string, permLvL int) err
 	return nil
 }
 
+func (m *Sqlite) GetGuildJdoodleKey(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "jdoodleToken")
+	return val, err
+}
+
+func (m *Sqlite) SetGuildJdoodleKey(guildID, key string) error {
+	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
 func (m *Sqlite) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.DB.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)

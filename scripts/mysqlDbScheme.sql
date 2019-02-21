@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `modlogchanID` text NOT NULL,
   `voicelogchanID` text NOT NULL,
   `muteRoleID` text NOT NULL,
-  `ghostPingMsg` text NOT NULL
+  `ghostPingMsg` text NOT NULL,
+  `jdoodleToken` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `permissions` (

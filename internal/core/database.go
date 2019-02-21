@@ -40,6 +40,9 @@ type Database interface {
 	GetGuildPermissions(guildID string) (map[string]int, error)
 	SetGuildRolePermission(guildID, roleID string, permLvL int) error
 
+	GetGuildJdoodleKey(guildID string) (string, error)
+	SetGuildJdoodleKey(guildID, key string) error
+
 	AddReport(rep *util.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*util.Report, error)

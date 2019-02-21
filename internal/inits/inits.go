@@ -97,6 +97,7 @@ func InitCommandHandler(config *core.Config, database core.Database, twitchNotif
 	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
 	cmdHandler.RegisterCommand(&commands.CmdGhostping{PermLvl: 3})
+	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
