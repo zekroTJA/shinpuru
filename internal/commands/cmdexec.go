@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
+	"net/http"
 	"strings"
 	"time"
 
@@ -12,6 +15,8 @@ import (
 const (
 	apiIDLen  = 32
 	apiKeyLen = 64
+
+	apiUrl = "https://api.jdoodle.com/v1/credit-spent"
 )
 
 type CmdExec struct {
@@ -117,7 +122,25 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 				}
 			}
 
-			err := args.CmdHandler.db.SetGuildJdoodleKey(args.Guild.ID, clientID+"#"+token)
+			bodyBuffer, _ := json.Marshal(map[string]string{
+				"clientId":     clientID,
+				"clientSecret": token,
+			})
+			res, err := http.Post(apiUrl, "application/json", bytes.NewReader(bodyBuffer))
+			if err != nil {
+				util.SendEmbedError(args.Session, dmChan.ID,
+					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
+				return
+			}
+
+			if res.StatusCode != 200 {
+				util.SendEmbedError(args.Session, dmChan.ID,
+					"Sorry, but it seems like your entered credentials are not correct. Please try again entering your **clientID** or exit with `cancel`:")
+				state = 0
+				return
+			}
+
+			err = args.CmdHandler.db.SetGuildJdoodleKey(args.Guild.ID, clientID+"#"+token)
 			if err != nil {
 				util.SendEmbedError(args.Session, dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
