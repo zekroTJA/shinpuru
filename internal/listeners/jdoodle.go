@@ -11,8 +11,6 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 
-	"github.com/zekroTJA/timedmap"
-
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -42,12 +40,11 @@ var (
 		"c#":         "csharp",
 	}
 
-	apiUrl = "https://api.jdoodle.com/v1/execute"
+	apiURL = "https://api.jdoodle.com/v1/execute"
 )
 
 type ListenerJdoodle struct {
-	db         core.Database
-	runnedMsgs *timedmap.TimedMap
+	db core.Database
 }
 
 type jdoodleRequestBody struct {
@@ -69,8 +66,7 @@ type jdoodleResponseResult struct {
 
 func NewListenerJdoodle(db core.Database) *ListenerJdoodle {
 	return &ListenerJdoodle{
-		db:         db,
-		runnedMsgs: timedmap.New(timeMapCleanupInterval),
+		db: db,
 	}
 }
 
@@ -143,13 +139,13 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 			return
 		}
 
-		if l.runnedMsgs.Contains(eReact.MessageID) {
-			msg, _ := util.SendEmbedError(s, eReact.ChannelID, "You can only execute this message's code once a day.")
-			util.DeleteMessageLater(s, msg, 6*time.Second)
+		s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
+		removeHandler()
+
+		resMsg, err := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", util.ColorEmbedGray)
+		if err != nil {
 			return
 		}
-
-		l.runnedMsgs.Set(eReact.MessageID, struct{}{}, timeMapExpireTime)
 
 		requestBody := &jdoodleRequestBody{
 			ClientID:     jdCredsSplit[0],
@@ -161,15 +157,11 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		bodyBuffer, err := json.Marshal(requestBody)
 		if err != nil {
 			unexpectedError(s, eReact.ChannelID, err)
-			s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-			removeHandler()
 			return
 		}
-		req, err := http.NewRequest("POST", apiUrl, bytes.NewReader(bodyBuffer))
+		req, err := http.NewRequest("POST", apiURL, bytes.NewReader(bodyBuffer))
 		if err != nil {
 			unexpectedError(s, eReact.ChannelID, err)
-			s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-			removeHandler()
 			return
 		}
 		req.Header.Add("Content-Type", "application/json")
@@ -177,8 +169,6 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			unexpectedError(s, eReact.ChannelID, err)
-			s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-			removeHandler()
 			return
 		}
 
@@ -186,24 +176,29 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		if res.StatusCode != 200 {
 			errBody := new(jdoodleResponseError)
 			err = dec.Decode(errBody)
+
 			if err != nil {
 				unexpectedError(s, eReact.ChannelID, err)
-				s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-				removeHandler()
 				return
 			}
-			msg, _ := util.SendEmbedError(s, eReact.ChannelID,
-				fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error))
-			util.DeleteMessageLater(s, msg, 10*time.Second)
+
+			s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, &discordgo.MessageEmbed{
+				Color:       util.ColorEmbedError,
+				Title:       "Execution Error",
+				Description: fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error),
+			})
+			util.DeleteMessageLater(s, resMsg, 15*time.Second)
+
 		} else {
+
 			result := new(jdoodleResponseResult)
 			err = dec.Decode(result)
+
 			if err != nil {
 				unexpectedError(s, eReact.ChannelID, err)
-				s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-				removeHandler()
 				return
 			}
+
 			emb := &discordgo.MessageEmbed{
 				Color: util.ColorEmbedCyan,
 				Title: "Compilation Result",
@@ -227,11 +222,9 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 					Text: "Provided by jdoodle.com",
 				},
 			}
-			s.ChannelMessageSendEmbed(eReact.ChannelID, emb)
-		}
 
-		s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
-		removeHandler()
+			s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb)
+		}
 	})
 
 	time.AfterFunc(removeHandlerTimeout, func() {
