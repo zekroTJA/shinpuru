@@ -135,6 +135,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
 	session.AddHandler(listeners.NewListenerGhostPing(database, cmdHandler).Handler)
+	session.AddHandler(listeners.NewListenerJdoodle(database).Handler)
 
 	err = session.Open()
 	if err != nil {
