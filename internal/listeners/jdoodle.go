@@ -27,7 +27,7 @@ var (
 
 	embRx = regexp.MustCompile("```([\\w\\+\\#]+)(\\n|\\s)((.|\\n)*)```")
 
-	langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
+	langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
 		"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
 		"verilog", "cobol", "dart", "yabasic", "clojure", "nodejs", "scheme", "forth", "prolog", "octave", "coffeescript", "icon", "fsharp", "nasm",
 		"gccasm", "intercal", "unlambda", "picolisp", "spidermonkey", "rhino", "bc", "clisp", "elixir", "factor", "falcon", "fantom", "pike", "smalltalk",
@@ -38,6 +38,8 @@ var (
 		"javascript": "nodejs",
 		"c++":        "cpp",
 		"c#":         "csharp",
+		"python":     "python3",
+		"py":         "python3",
 	}
 
 	apiURL = "https://api.jdoodle.com/v1/execute"
@@ -91,6 +93,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 
 	lang := strings.ToLower(strings.Trim(matches[1], " \t"))
 	cont := strings.Trim(matches[3], " \t")
+	embLang := lang
 
 	if lang == "" || cont == "" {
 		return
@@ -139,7 +142,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 			return
 		}
 
-		s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
+		s.MessageReactionsRemoveAll(eReact.ChannelID, eReact.MessageID)
 		removeHandler()
 
 		resMsg, err := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", util.ColorEmbedGray)
@@ -203,6 +206,10 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 				Color: util.ColorEmbedCyan,
 				Title: "Compilation Result",
 				Fields: []*discordgo.MessageEmbedField{
+					&discordgo.MessageEmbedField{
+						Name:  "Code",
+						Value: fmt.Sprintf("```%s\n%s\n```", embLang, cont),
+					},
 					&discordgo.MessageEmbedField{
 						Name:  "Output",
 						Value: "```\n" + result.Output + "\n```",
