@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -195,6 +196,15 @@ func (m *Sqlite) SetGuildRolePermission(guildID, roleID string, permLvL int) err
 	return nil
 }
 
+func (m *Sqlite) GetGuildJdoodleKey(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "jdoodleToken")
+	return val, err
+}
+
+func (m *Sqlite) SetGuildJdoodleKey(guildID, key string) error {
+	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
 func (m *Sqlite) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.DB.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
@@ -224,6 +234,23 @@ func (m *Sqlite) AddReport(rep *util.Report) error {
 	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
 	return err
+}
+
+func (m *Sqlite) DeleteReport(id snowflake.ID) error {
+	_, err := m.DB.Exec("DELETE FROM reports WHERE id = ?", id)
+	return err
+}
+
+func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
+	rep := new(util.Report)
+
+	row := m.DB.QueryRow("SELECT * FROM reports WHERE id = ?", id)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+
+	return rep, err
 }
 
 func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {

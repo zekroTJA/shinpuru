@@ -97,6 +97,7 @@ func InitCommandHandler(config *core.Config, database core.Database, twitchNotif
 	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
 	cmdHandler.RegisterCommand(&commands.CmdGhostping{PermLvl: 3})
+	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
@@ -133,7 +134,8 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
-	session.AddHandler(listeners.NewListenerGhostPing(database).Handler)
+	session.AddHandler(listeners.NewListenerGhostPing(database, cmdHandler).Handler)
+	session.AddHandler(listeners.NewListenerJdoodle(database).Handler)
 
 	err = session.Open()
 	if err != nil {

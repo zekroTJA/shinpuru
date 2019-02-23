@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `modlogchanID` text NOT NULL DEFAULT '',
   `voicelogchanID` text NOT NULL DEFAULT '',
   `muteRoleID` text NOT NULL DEFAULT '',
-  `ghostPingMsg` text NOT NULL DEFAULT ''
+  `ghostPingMsg` text NOT NULL DEFAULT '',
+  `jdoodleToken` text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS `permissions` (

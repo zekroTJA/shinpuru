@@ -60,4 +60,6 @@ var (
 		0xFB8C00,
 		0x8E24AA,
 	}
+
+	ReportRevokedColor = 0x9C27B0
 )
