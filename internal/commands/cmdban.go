@@ -52,6 +52,25 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 		return err
 	}
 
+	if victim.User.ID == args.User.ID {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not ban yourself...")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	}
+
+	authorMemb, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
+	if err != nil {
+		return err
+	}
+
+	if util.RolePosDiff(victim, authorMemb, args.Guild) >= 0 {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can only ban members with lower permissions than yours.")
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
 	repMsg := strings.Join(args.Args[1:], " ")
 	var repType int
 	for i, v := range util.ReportTypes {

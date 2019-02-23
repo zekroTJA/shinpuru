@@ -50,6 +50,10 @@ func (c *CmdBug) Exec(args *CommandArgs) error {
 					"\n*This will be transformed into an issue on GitHub later.*:\n" +
 					":link:  [**Google Form**](https://docs.google.com/forms/d/e/1FAIpQLScKnY2FUDqmLVg2TjdBqSAyL-LlD55y7h5JcqsT887KwLPkIg/viewform?usp=sf_link)",
 			},
+			&discordgo.MessageEmbedField{
+				Name:  "Bug Hunters",
+				Value: "Much :heart: to all [**bug hunters**](https://github.com/zekroTJA/shinpuru/blob/dev/bughunters.md).",
+			},
 		},
 	}
 	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)

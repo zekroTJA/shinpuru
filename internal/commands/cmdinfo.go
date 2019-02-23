@@ -69,6 +69,10 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 					invLink, invLink),
 			},
 			&discordgo.MessageEmbedField{
+				Name:  "Bug Hunters",
+				Value: "Much :heart: to all [**bug hunters**](https://github.com/zekroTJA/shinpuru/blob/dev/bughunters.md).",
+			},
+			&discordgo.MessageEmbedField{
 				Name:  "Development state",
 				Value: "You can see current tasks [here](https://github.com/zekroTJA/shinpuru/projects).",
 			},

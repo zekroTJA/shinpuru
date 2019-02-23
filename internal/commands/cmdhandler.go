@@ -9,8 +9,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/timedmap"
+
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/util"
+)
+
+const (
+	notifiedCmdsCleanupDelay = 5 * time.Minute
+	notifiedCmdsExpireTime   = 6 * time.Hour
 )
 
 type CmdHandler struct {
@@ -19,6 +26,7 @@ type CmdHandler struct {
 	db                     core.Database
 	config                 *core.Config
 	tnw                    *core.TwitchNotifyWorker
+	notifiedCmdMsgs        *timedmap.TimedMap
 }
 
 func NewCmdHandler(db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker) *CmdHandler {
@@ -28,6 +36,7 @@ func NewCmdHandler(db core.Database, config *core.Config, tnw *core.TwitchNotify
 		db:                     db,
 		config:                 config,
 		tnw:                    tnw,
+		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 	}
 }
 
@@ -112,4 +121,12 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 		}
 	}
 	return ioutil.WriteFile(fileName, []byte(document), 0644)
+}
+
+func (c *CmdHandler) AddNotifiedCommandMsg(msgID string) {
+	c.notifiedCmdMsgs.Set(msgID, struct{}{}, notifiedCmdsExpireTime)
+}
+
+func (c *CmdHandler) GetNotifiedCommandMsgs() *timedmap.TimedMap {
+	return c.notifiedCmdMsgs
 }
