@@ -34,6 +34,6 @@ func main() {
 
 	database := inits.InitDatabase(config.Database)
 	tnw := inits.InitTwitchNotifyer(session, config, database)
-	cmdHandler := inits.InitCommandHandler(config, database, tnw)
+	cmdHandler := inits.InitCommandHandler(session, config, database, tnw)
 	inits.InitDiscordBotSession(session, config, database, cmdHandler)
 }

@@ -43,6 +43,9 @@ type Database interface {
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
 
+	GetGuildBackup(guildID string) (bool, error)
+	SetGuildBackup(guildID string, enabled bool) error
+
 	AddReport(rep *util.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*util.Report, error)
@@ -67,6 +70,11 @@ type Database interface {
 	GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error)
 	SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
+
+	AddBackup(guildID, fileID string) error
+	DeleteBackup(guildID, fileID string) error
+	GetBackups(guildID string) ([]*BackupEntry, error)
+	GetBackupGuilds() ([]string, error)
 }
 
 func IsErrDatabaseNotFound(err error) bool {
