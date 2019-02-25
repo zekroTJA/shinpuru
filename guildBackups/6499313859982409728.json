@@ -1,0 +1,366 @@
+{
+  "id": "",
+  "guild": {
+    "name": "5w4gg3rn4ut_5t4t10n",
+    "afk_channel_id": "",
+    "afk_timeout": 300,
+    "verification_level": 0,
+    "default_message_notifications": 1
+  },
+  "channels": [
+    {
+      "id": "526196711962705927",
+      "name": "Text Channels",
+      "topic": "",
+      "type": 4,
+      "nsfw": false,
+      "position": 0,
+      "bitrate": 64000,
+      "user_limit": 0,
+      "parent_id": "",
+      "permission_overwrites": null
+    },
+    {
+      "id": "526196711962705929",
+      "name": "general",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 0,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "526196711962705927",
+      "permission_overwrites": null
+    },
+    {
+      "id": "526196711962705931",
+      "name": "Voice Channels",
+      "topic": "",
+      "type": 4,
+      "nsfw": false,
+      "position": 0,
+      "bitrate": 64000,
+      "user_limit": 0,
+      "parent_id": "",
+      "permission_overwrites": null
+    },
+    {
+      "id": "526196711962705933",
+      "name": "General",
+      "topic": "",
+      "type": 2,
+      "nsfw": false,
+      "position": 0,
+      "bitrate": 64000,
+      "user_limit": 0,
+      "parent_id": "526196711962705931",
+      "permission_overwrites": null
+    },
+    {
+      "id": "526197776954949632",
+      "name": "test",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 1,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "526196711962705927",
+      "permission_overwrites": null
+    },
+    {
+      "id": "528213537743437845",
+      "name": "modlog",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 3,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "526196711962705927",
+      "permission_overwrites": null
+    },
+    {
+      "id": "528216780494077964",
+      "name": "test",
+      "topic": "",
+      "type": 2,
+      "nsfw": false,
+      "position": 1,
+      "bitrate": 64000,
+      "user_limit": 0,
+      "parent_id": "526196711962705931",
+      "permission_overwrites": null
+    },
+    {
+      "id": "529839656104099850",
+      "name": "starboard",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 4,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "526196711962705927",
+      "permission_overwrites": null
+    },
+    {
+      "id": "531462556770893835",
+      "name": "zekroBot",
+      "topic": "",
+      "type": 4,
+      "nsfw": false,
+      "position": 2,
+      "bitrate": 64000,
+      "user_limit": 0,
+      "parent_id": "",
+      "permission_overwrites": null
+    },
+    {
+      "id": "531462557236461579",
+      "name": "commands",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 5,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "531462556770893835",
+      "permission_overwrites": null
+    },
+    {
+      "id": "531462558306009088",
+      "name": "cmdlog",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 6,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "531462556770893835",
+      "permission_overwrites": null
+    },
+    {
+      "id": "531462558960320523",
+      "name": "voicelog",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 7,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "531462556770893835",
+      "permission_overwrites": null
+    },
+    {
+      "id": "532125943867768832",
+      "name": "test2",
+      "topic": "",
+      "type": 0,
+      "nsfw": false,
+      "position": 2,
+      "bitrate": 0,
+      "user_limit": 0,
+      "parent_id": "526196711962705927",
+      "permission_overwrites": null
+    }
+  ],
+  "roles": [
+    {
+      "id": "526197428244709376",
+      "name": "devBot2",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 12,
+      "permissions": 2080894073
+    },
+    {
+      "id": "526589639256047628",
+      "name": "Member",
+      "mentionable": true,
+      "hoist": false,
+      "color": 0,
+      "position": 10,
+      "permissions": 104324161
+    },
+    {
+      "id": "528217059226681345",
+      "name": "Admin",
+      "mentionable": false,
+      "hoist": false,
+      "color": 15277667,
+      "position": 9,
+      "permissions": 104324169
+    },
+    {
+      "id": "531112805101862922",
+      "name": "Bot",
+      "mentionable": false,
+      "hoist": true,
+      "color": 15844367,
+      "position": 8,
+      "permissions": 2146958583
+    },
+    {
+      "id": "531462555873312772",
+      "name": "zekroBot",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 7,
+      "permissions": 2146958455
+    },
+    {
+      "id": "532125806374420490",
+      "name": "shinpuru-muted",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 6,
+      "permissions": 0
+    },
+    {
+      "id": "533459747786063883",
+      "name": "TestNotify",
+      "mentionable": false,
+      "hoist": false,
+      "color": 3447003,
+      "position": 5,
+      "permissions": 104324161
+    },
+    {
+      "id": "533627020257525790",
+      "name": "Notify",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 4,
+      "permissions": 0
+    },
+    {
+      "id": "536172960982237194",
+      "name": "shinpuru",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 3,
+      "permissions": 2080894065
+    },
+    {
+      "id": "536925926211059722",
+      "name": "shinpuru Canary",
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 2,
+      "permissions": 2080894065
+    },
+    {
+      "id": "547716780546719746",
+      "name": "p1",
+      "mentionable": false,
+      "hoist": false,
+      "color": 1752220,
+      "position": 11,
+      "permissions": 104324161
+    },
+    {
+      "id": "547716826935853057",
+      "name": "p3",
+      "mentionable": false,
+      "hoist": false,
+      "color": 10181046,
+      "position": 1,
+      "permissions": 104324161
+    }
+  ],
+  "members": [
+    {
+      "id": "221905671296253953",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "547716780546719746",
+        "526589639256047628"
+      ]
+    },
+    {
+      "id": "378492270795554816",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922"
+      ]
+    },
+    {
+      "id": "388848585879584778",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922",
+        "531462555873312772"
+      ]
+    },
+    {
+      "id": "419837472046841866",
+      "nick": "シンプル",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "526197428244709376",
+        "531112805101862922"
+      ]
+    },
+    {
+      "id": "455819141245304832",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "547716826935853057"
+      ]
+    },
+    {
+      "id": "497298504008466434",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922"
+      ]
+    },
+    {
+      "id": "515835160009244692",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922"
+      ]
+    },
+    {
+      "id": "524847123875889153",
+      "nick": "シンプル",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922",
+        "536172960982237194"
+      ]
+    },
+    {
+      "id": "536916384026722314",
+      "nick": "シンプル",
+      "deaf": false,
+      "mute": false,
+      "roles": [
+        "531112805101862922",
+        "536925926211059722"
+      ]
+    }
+  ]
+}

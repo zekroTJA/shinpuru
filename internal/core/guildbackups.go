@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -45,15 +46,16 @@ type BackupGuild struct {
 }
 
 type BackupChannel struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Topic     string `json:"topic"`
-	Type      int    `json:"type"`
-	NSFW      bool   `json:"nsfw"`
-	Position  int    `json:"position"`
-	Bitrate   int    `json:"bitrate"`
-	UserLimit int    `json:"user_limit"`
-	ParentID  string `json:"parent_id"`
+	ID                   string                           `json:"id"`
+	Name                 string                           `json:"name"`
+	Topic                string                           `json:"topic"`
+	Type                 int                              `json:"type"`
+	NSFW                 bool                             `json:"nsfw"`
+	Position             int                              `json:"position"`
+	Bitrate              int                              `json:"bitrate"`
+	UserLimit            int                              `json:"user_limit"`
+	ParentID             string                           `json:"parent_id"`
+	PermissionOverwrites []*discordgo.PermissionOverwrite `json:"permission_overwrites"`
 }
 
 type BackupRole struct {
@@ -140,6 +142,9 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	for _, r := range g.Roles {
+		if r.ID == guildID {
+			continue
+		}
 		backup.Roles = append(backup.Roles, &BackupRole{
 			Color:       r.Color,
 			Hoist:       r.Hoist,
@@ -218,4 +223,191 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	return err
+}
+
+func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
+	f, err := os.Open(backupLocation + "/" + fileID + ".json")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	var backup BackupObject
+
+	dec := json.NewDecoder(f)
+	err = dec.Decode(&backup)
+	if err != nil {
+		return err
+	}
+
+	if bck.session == nil {
+		return errors.New("session is nil")
+	}
+
+	// EDIT GUILD
+	_verificationLevel := discordgo.VerificationLevel(backup.Guild.VerificationLevel)
+	_, err = bck.session.GuildEdit(guildID, discordgo.GuildParams{
+		Name:                        backup.Guild.Name,
+		AfkChannelID:                backup.Guild.AfkChannelID,
+		AfkTimeout:                  backup.Guild.AfkTimeout,
+		VerificationLevel:           &_verificationLevel,
+		DefaultMessageNotifications: backup.Guild.DefaultMessageNotifications,
+	})
+	if err != nil {
+		return err
+	}
+
+	// backup ID - created ID
+	ids := make(map[string]string)
+	channelsPos := make(map[string]int)
+	orderedRoles := make([]*discordgo.Role, len(backup.Roles))
+
+	// CREATE ROLES
+	for _, r := range backup.Roles {
+		roles, err := bck.session.GuildRoles(guildID)
+		if err != nil {
+			return err
+		}
+
+		var rObj *discordgo.Role
+		for _, crObj := range roles {
+			if crObj.ID == r.ID {
+				rObj = crObj
+			}
+		}
+
+		if rObj == nil {
+			rObj, err = bck.session.GuildRoleCreate(guildID)
+		}
+		_, err = bck.session.GuildRoleEdit(guildID, rObj.ID, r.Name, r.Color,
+			r.Hoist, r.Permissions, r.Mentionable)
+		if err != nil {
+			return err
+		}
+
+		ids[r.ID] = rObj.ID
+		fmt.Println(r.Position, len(orderedRoles))
+		orderedRoles[r.Position-1] = rObj
+	}
+
+	// RE-POSITION ROLES
+	_, err = bck.session.GuildRoleReorder(guildID, orderedRoles)
+	if err != nil {
+		return err
+	}
+
+	// CREATE CATEGORIES
+	for _, c := range backup.Channels {
+		if c.Type != int(discordgo.ChannelTypeGuildCategory) {
+			continue
+		}
+		cObj, _ := bck.session.Channel(c.ID)
+		if cObj != nil && cObj.GuildID != guildID {
+			cObj = nil
+		}
+
+		for _, po := range c.PermissionOverwrites {
+			po.ID = ids[po.ID]
+		}
+
+		if cObj == nil {
+			cObj, err = bck.session.GuildChannelCreateComplex(guildID,
+				discordgo.GuildChannelCreateData{
+					Name:                 c.Name,
+					PermissionOverwrites: c.PermissionOverwrites,
+					Type:                 discordgo.ChannelTypeGuildCategory,
+				})
+		} else {
+			_, err = bck.session.ChannelEditComplex(cObj.ID,
+				&discordgo.ChannelEdit{
+					Name:                 c.Name,
+					PermissionOverwrites: c.PermissionOverwrites,
+				})
+		}
+		if err != nil {
+			return err
+		}
+		ids[c.ID] = cObj.ID
+		channelsPos[cObj.ID] = c.Position
+	}
+
+	// CREATE CHANNELS AND ADD TO CATEGORIES
+	for _, c := range backup.Channels {
+		if c.Type == int(discordgo.ChannelTypeGuildCategory) {
+			continue
+		}
+
+		cObj, _ := bck.session.Channel(c.ID)
+		if cObj != nil && cObj.GuildID != guildID {
+			cObj = nil
+		}
+
+		for _, po := range c.PermissionOverwrites {
+			po.ID = ids[po.ID]
+		}
+
+		if cObj == nil {
+			cObj, err = bck.session.GuildChannelCreateComplex(guildID,
+				discordgo.GuildChannelCreateData{
+					Bitrate:              c.Bitrate,
+					NSFW:                 c.NSFW,
+					Name:                 c.Name,
+					ParentID:             ids[c.ParentID],
+					PermissionOverwrites: c.PermissionOverwrites,
+					Topic:                c.Topic,
+					Type:                 discordgo.ChannelType(c.Type),
+					UserLimit:            c.UserLimit,
+				})
+		} else {
+			_, err = bck.session.ChannelEditComplex(cObj.ID,
+				&discordgo.ChannelEdit{
+					Bitrate:              c.Bitrate,
+					NSFW:                 c.NSFW,
+					Name:                 c.Name,
+					ParentID:             ids[c.ParentID],
+					PermissionOverwrites: c.PermissionOverwrites,
+					Topic:                c.Topic,
+					UserLimit:            c.UserLimit,
+				})
+		}
+		if err != nil {
+			return err
+		}
+
+		channelsPos[cObj.ID] = c.Position
+	}
+
+	// RE-POSITION CHANNELS
+	for cID, pos := range channelsPos {
+		_, err = bck.session.ChannelEditComplex(cID, &discordgo.ChannelEdit{
+			Position: pos,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// UPDATE MEMBERS
+	for _, m := range backup.Members {
+		mObj, _ := bck.session.GuildMember(guildID, m.ID)
+
+		newRoles := make([]string, len(m.Roles))
+		for i, r := range m.Roles {
+			newRoles[i] = ids[r]
+		}
+
+		if mObj != nil {
+			err = bck.session.GuildMemberEdit(guildID, m.ID, newRoles)
+			if err != nil {
+				return err
+			}
+
+			err = bck.session.GuildMemberNickname(guildID, m.ID, m.Nick)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

@@ -26,6 +26,7 @@ func (c *CmdTest) GetPermission() int {
 func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	return args.CmdHandler.bck.BackupGuild(args.Guild.ID)
+	// fmt.Println(args.Session.Channel("549575608074502174"))
+	return args.CmdHandler.bck.RestoreBackup(args.Guild.ID, "6499313859982409728")
 	// return nil
 }
