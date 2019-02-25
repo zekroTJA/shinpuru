@@ -3,6 +3,7 @@ package util
 import "github.com/bwmarrin/snowflake"
 
 var ReportNodes []*snowflake.Node
+var BackupNode *snowflake.Node
 
 func SetupSnowflakeNodes() error {
 	ReportNodes = make([]*snowflake.Node, len(ReportTypes))
@@ -13,5 +14,8 @@ func SetupSnowflakeNodes() error {
 			return err
 		}
 	}
-	return nil
+
+	BackupNode, err = snowflake.NewNode(100)
+
+	return err
 }

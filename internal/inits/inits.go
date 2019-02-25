@@ -69,8 +69,8 @@ func InitDatabase(databaseCfg *core.ConfigDatabaseType) core.Database {
 	return database
 }
 
-func InitCommandHandler(config *core.Config, database core.Database, twitchNotifyWorker *core.TwitchNotifyWorker) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(database, config, twitchNotifyWorker)
+func InitCommandHandler(s *discordgo.Session, config *core.Config, database core.Database, twitchNotifyWorker *core.TwitchNotifyWorker) *commands.CmdHandler {
+	cmdHandler := commands.NewCmdHandler(s, database, config, twitchNotifyWorker)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
@@ -98,6 +98,7 @@ func InitCommandHandler(config *core.Config, database core.Database, twitchNotif
 	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
 	cmdHandler.RegisterCommand(&commands.CmdGhostping{PermLvl: 3})
 	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
+	cmdHandler.RegisterCommand(&commands.CmdBackup{PermLvl: 9})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})

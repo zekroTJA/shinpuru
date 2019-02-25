@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 
@@ -168,6 +169,19 @@ func (m *MySql) GetGuildJdoodleKey(guildID string) (string, error) {
 
 func (m *MySql) SetGuildJdoodleKey(guildID, key string) error {
 	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
+func (m *MySql) GetGuildBackup(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "backup")
+	return val != "", err
+}
+
+func (m *MySql) SetGuildBackup(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "backup", val)
 }
 
 func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
@@ -425,4 +439,61 @@ func (m *MySql) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntr
 		}
 	}
 	return results, nil
+}
+
+func (m *MySql) AddBackup(guildID, fileID string) error {
+	timestamp := time.Now().Unix()
+	_, err := m.DB.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
+	return err
+}
+
+func (m *MySql) DeleteBackup(guildID, fileID string) error {
+	_, err := m.DB.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
+	return err
+}
+
+func (m *MySql) GetBackups(guildID string) ([]*BackupEntry, error) {
+	rows, err := m.DB.Query("SELECT * FROM backups WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	backups := make([]*BackupEntry, 0)
+	for rows.Next() {
+		be := new(BackupEntry)
+		var timeStampUnix int64
+		err = rows.Scan(&be.GuildID, &timeStampUnix, &be.FileID)
+		if err != nil {
+			return nil, err
+		}
+		be.Timestamp = time.Unix(timeStampUnix, 0)
+		backups = append(backups, be)
+	}
+
+	return backups, nil
+}
+
+func (m *MySql) GetBackupGuilds() ([]string, error) {
+	rows, err := m.DB.Query("SELECT guildID FROM guilds WHERE backup = '1'")
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	guilds := make([]string, 0)
+	for rows.Next() {
+		var s string
+		err = rows.Scan(&s)
+		if err != nil {
+			return nil, err
+		}
+		guilds = append(guilds, s)
+	}
+
+	return guilds, err
 }
