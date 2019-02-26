@@ -19,9 +19,9 @@ COMMIT     = $(shell git rev-parse HEAD)
 
 SQLLDFLAGS = $(shell bash ./scripts/getsqlschemes.bash)
 
-.PHONY: _make installdeps cleanup _finish
+.PHONY: _make installdeps cleanup _finish run
 
-_make: $(WDIR) $(BIN) cleanup _finish run
+_make: $(WDIR) $(BIN) cleanup _finish
 
 $(WDIR):
 	@echo [ INFO ] creating working directory '$@'...
