@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -11,12 +12,16 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
+const (
+	timeFormat = time.RFC1123
+)
+
 type CmdBackup struct {
 	PermLvl int
 }
 
 func (c *CmdBackup) GetInvokes() []string {
-	return []string{"backup", "bckp", "guildbackup"}
+	return []string{"backup", "backups", "bckp", "guildbackup"}
 }
 
 func (c *CmdBackup) GetDescription() string {
@@ -48,6 +53,8 @@ func (c *CmdBackup) Exec(args *CommandArgs) error {
 			return c.switchStatus(args, true)
 		case "d", "disable":
 			return c.switchStatus(args, false)
+		case "r", "restore":
+			return c.restore(args)
 		default:
 			return c.list(args)
 		}
@@ -90,7 +97,7 @@ func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, stri
 		strBackups := make([]string, len(backups))
 
 		for i, b := range backups {
-			strBackups[i] = fmt.Sprintf("`%d` - %s - *`(ID: %s)`*", i, b.Timestamp.Format(time.RFC1123), b.FileID)
+			strBackups[i] = fmt.Sprintf("`%d` - %s - (ID: `%s`)", i, b.Timestamp.Format(timeFormat), b.FileID)
 		}
 
 		strBackupAll = strings.Join(strBackups, "\n")
@@ -129,4 +136,115 @@ func (c *CmdBackup) list(args *CommandArgs) error {
 
 	_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
 	return err
+}
+
+func (c *CmdBackup) restore(args *CommandArgs) error {
+	if len(args.Args) < 2 {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, "Please specify the index or the ID of the backup, you want to restore.")
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
+	backups, _, err := c.getBackupsList(args)
+	if err != nil {
+		return err
+	}
+
+	i, err := strconv.ParseInt(args.Args[1], 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if i < 0 {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, "Argument must be an index between 0 and 9 or a snowflake ID.")
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
+	var backup *core.BackupEntry
+
+	if i < 10 {
+		if int64(len(backups)-1) < i {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("There are only %d (index 0 to %d) backups you can chose from.", len(backups), len(backups)-1))
+			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+			return err
+		}
+		backup = backups[i]
+	} else {
+		for _, b := range backups {
+			if b.FileID == args.Args[1] {
+				backup = b
+			}
+		}
+	}
+
+	if backup == nil {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("Could not find any backup by this specifier: ```\n%s\n```", args.Args[1]))
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
+	accMsg := &util.AcceptMessage{
+		Session:        args.Session,
+		DeleteMsgAfter: true,
+		UserID:         args.User.ID,
+		Embed: &discordgo.MessageEmbed{
+			Color: util.ColorEmbedOrange,
+			Description: fmt.Sprintf(":warning:  **WARNING**  :warning:\n\n"+
+				"By pressing :white_check_mark:, the structure of this guild will be **reset** to the selected backup:\n\n"+
+				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
+		},
+		DeclineFunc: func(m *discordgo.Message) {
+			cMsg, _ := util.SendEmbedError(args.Session, args.Channel.ID, "Canceled.")
+			util.DeleteMessageLater(args.Session, cMsg, 6*time.Second)
+		},
+		AcceptFunc: func(m *discordgo.Message) {
+			c.proceedRestore(args, backup.FileID)
+		},
+	}
+
+	_, err = accMsg.Send(args.Channel.ID)
+	return err
+}
+
+func (c *CmdBackup) proceedRestore(args *CommandArgs, fileID string) {
+	statusChan := make(chan string)
+	errorsChan := make(chan error)
+
+	statusMsg, _ := args.Session.ChannelMessageSendEmbed(args.Channel.ID,
+		&discordgo.MessageEmbed{
+			Color:       util.ColorEmbedGray,
+			Description: "initializing backup restoring...",
+		})
+
+	if statusMsg != nil {
+		go func() {
+			for {
+				select {
+				case status, ok := <-statusChan:
+					if !ok {
+						continue
+					}
+					args.Session.ChannelMessageEditEmbed(statusMsg.ChannelID, statusMsg.ID, &discordgo.MessageEmbed{
+						Color:       util.ColorEmbedGray,
+						Description: status + "...",
+					})
+				case err, ok := <-errorsChan:
+					if !ok || err == nil {
+						continue
+					}
+					util.SendEmbedError(args.Session, args.Channel.ID,
+						"An unexpected error occured while restoring backup (process will not be aborted): ```\n"+err.Error()+"\n```")
+				}
+			}
+		}()
+	}
+
+	err := args.CmdHandler.bck.RestoreBackup(args.Guild.ID, fileID, statusChan, errorsChan)
+	if err != nil {
+		util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("An unexpected error occured while restoring backup: ```\n%s\n```", err.Error()))
+	}
 }

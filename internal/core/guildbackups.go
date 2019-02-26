@@ -3,7 +3,6 @@ package core
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -74,6 +73,18 @@ type BackupMember struct {
 	Deaf  bool     `json:"deaf"`
 	Mute  bool     `json:"mute"`
 	Roles []string `json:"roles"`
+}
+
+func asyncWriteStatus(c chan string, status string) {
+	go func() {
+		c <- status
+	}()
+}
+
+func asyncWriteError(c chan error, err error) {
+	go func() {
+		c <- err
+	}()
 }
 
 func NewGuildBackups(s *discordgo.Session, db Database) *GuildBackups {
@@ -225,7 +236,17 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	return err
 }
 
-func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
+func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan string, errorsC chan error) error {
+	defer func() {
+		close(statusC)
+		close(errorsC)
+	}()
+
+	if bck.session == nil {
+		return errors.New("session is nil")
+	}
+
+	asyncWriteStatus(statusC, "reading backup file")
 	f, err := os.Open(backupLocation + "/" + fileID + ".json")
 	if err != nil {
 		return err
@@ -245,6 +266,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 	}
 
 	// EDIT GUILD
+	asyncWriteStatus(statusC, "editing guild")
 	_verificationLevel := discordgo.VerificationLevel(backup.Guild.VerificationLevel)
 	_, err = bck.session.GuildEdit(guildID, discordgo.GuildParams{
 		Name:                        backup.Guild.Name,
@@ -263,6 +285,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 	orderedRoles := make([]*discordgo.Role, len(backup.Roles))
 
 	// CREATE ROLES
+	asyncWriteStatus(statusC, "updating and creating roles")
 	for _, r := range backup.Roles {
 		roles, err := bck.session.GuildRoles(guildID)
 		if err != nil {
@@ -282,21 +305,23 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 		_, err = bck.session.GuildRoleEdit(guildID, rObj.ID, r.Name, r.Color,
 			r.Hoist, r.Permissions, r.Mentionable)
 		if err != nil {
-			return err
+			asyncWriteError(errorsC, err)
+			continue
 		}
 
 		ids[r.ID] = rObj.ID
-		fmt.Println(r.Position, len(orderedRoles))
 		orderedRoles[r.Position-1] = rObj
 	}
 
 	// RE-POSITION ROLES
+	asyncWriteStatus(statusC, "re-position roles")
 	_, err = bck.session.GuildRoleReorder(guildID, orderedRoles)
 	if err != nil {
-		return err
+		asyncWriteError(errorsC, err)
 	}
 
 	// CREATE CATEGORIES
+	asyncWriteStatus(statusC, "updating and creating categories")
 	for _, c := range backup.Channels {
 		if c.Type != int(discordgo.ChannelTypeGuildCategory) {
 			continue
@@ -325,13 +350,15 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 				})
 		}
 		if err != nil {
-			return err
+			asyncWriteError(errorsC, err)
+			continue
 		}
 		ids[c.ID] = cObj.ID
 		channelsPos[cObj.ID] = c.Position
 	}
 
 	// CREATE CHANNELS AND ADD TO CATEGORIES
+	asyncWriteStatus(statusC, "updating and creating channels")
 	for _, c := range backup.Channels {
 		if c.Type == int(discordgo.ChannelTypeGuildCategory) {
 			continue
@@ -371,13 +398,15 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 				})
 		}
 		if err != nil {
-			return err
+			asyncWriteError(errorsC, err)
+			continue
 		}
 
 		channelsPos[cObj.ID] = c.Position
 	}
 
 	// RE-POSITION CHANNELS
+	asyncWriteStatus(statusC, "re-positioning channels")
 	for cID, pos := range channelsPos {
 		_, err = bck.session.ChannelEditComplex(cID, &discordgo.ChannelEdit{
 			Position: pos,
@@ -388,6 +417,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 	}
 
 	// UPDATE MEMBERS
+	asyncWriteStatus(statusC, "updating members")
 	for _, m := range backup.Members {
 		mObj, _ := bck.session.GuildMember(guildID, m.ID)
 
@@ -399,14 +429,37 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string) error {
 		if mObj != nil {
 			err = bck.session.GuildMemberEdit(guildID, m.ID, newRoles)
 			if err != nil {
-				return err
+				asyncWriteError(errorsC, err)
+				continue
 			}
 
 			err = bck.session.GuildMemberNickname(guildID, m.ID, m.Nick)
 			if err != nil {
-				return err
+				asyncWriteError(errorsC, err)
+				continue
 			}
 		}
+	}
+
+	return nil
+}
+
+func (bck *GuildBackups) HardFlush(guildID string) error {
+	if bck.session == nil {
+		return errors.New("session is nil")
+	}
+
+	g, err := bck.session.Guild(guildID)
+	if err != nil {
+		return err
+	}
+
+	for _, r := range g.Roles {
+		bck.session.GuildRoleDelete(guildID, r.ID)
+	}
+
+	for _, c := range g.Channels {
+		bck.session.ChannelDelete(c.ID)
 	}
 
 	return nil
