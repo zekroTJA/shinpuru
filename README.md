@@ -75,6 +75,10 @@ Annoyed from ghost pings *(messages with mentions, which were deleted, so you on
 ![](https://i.zekro.de/firefox_2019-02-22_15-26-56.png)
 ![](https://i.zekro.de/firefox_2019-02-22_15-27-39.png)
 
+## Guild Backups
+
+You want to be prepared for each emergency? Just enable the auto-backup system of shinpuru with the [`backup`](https://github.com/zekroTJA/shinpuru/wiki/Commands#backup) command. Then, a full backup of all of the guilds roles, channels, members and guild settings will be saved every 12 hours. The last 10 backups are saved, so you have access to backups for the last 5 days. Of course, you can also automatically restore saved backups by using the `backup restore` command.
+
 ## Twitch Notifications
 
 With the Twitch Notification System, you can stay up to date which channels are currently live on Twitch! Just enter the command [`!wtitch <twitchUserName>`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitch) in a channel to set up the system. Then, every time, the channel goes live, a message will be posted to this channel, which will be automatically removed, when the channel goes offline on Twitch.  
