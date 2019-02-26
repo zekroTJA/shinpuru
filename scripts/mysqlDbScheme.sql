@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `voicelogchanID` text NOT NULL,
   `muteRoleID` text NOT NULL,
   `ghostPingMsg` text NOT NULL,
-  `jdoodleToken` text NOT NULL
+  `jdoodleToken` text NOT NULL,
+  `backup` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -48,4 +49,10 @@ CREATE TABLE IF NOT EXISTS `twitchnotify` (
   `guildID` text NOT NULL,
   `channelID` text NOT NULL,
   `twitchUserID` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `backups` (
+  `guildID` text NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
+  `fileID` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

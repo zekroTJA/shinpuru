@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+
 	"github.com/zekroTJA/timedmap"
 
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -26,16 +28,18 @@ type CmdHandler struct {
 	db                     core.Database
 	config                 *core.Config
 	tnw                    *core.TwitchNotifyWorker
+	bck                    *core.GuildBackups
 	notifiedCmdMsgs        *timedmap.TimedMap
 }
 
-func NewCmdHandler(db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
 		db:                     db,
 		config:                 config,
 		tnw:                    tnw,
+		bck:                    core.NewGuildBackups(s, db),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 	}
 }

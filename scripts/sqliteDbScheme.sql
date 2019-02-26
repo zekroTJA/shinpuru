@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `voicelogchanID` text NOT NULL DEFAULT '',
   `muteRoleID` text NOT NULL DEFAULT '',
   `ghostPingMsg` text NOT NULL DEFAULT '',
-  `jdoodleToken` text NOT NULL DEFAULT ''
+  `jdoodleToken` text NOT NULL DEFAULT '',
+  `backup` text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -45,4 +46,10 @@ CREATE TABLE IF NOT EXISTS `twitchnotify` (
   `guildID` text NOT NULL DEFAULT '',
   `channelID` text NOT NULL DEFAULT '',
   `twitchUserID` text NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS `backups` (
+  `guildID` text NOT NULL DEFAULT '',
+  `timestamp` bigint(20) NOT NULL DEFAULT 0,
+  `fileID` text NOT NULL DEFAULT ''
 );
