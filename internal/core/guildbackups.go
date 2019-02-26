@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	tickRate       = 1 * time.Minute // 12 * time.Hour
+	tickRate       = 12 * time.Hour
 	backupLocation = "./guildBackups"
 )
 
