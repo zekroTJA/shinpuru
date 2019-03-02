@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `muteRoleID` text NOT NULL,
   `ghostPingMsg` text NOT NULL,
   `jdoodleToken` text NOT NULL,
-  `backup` text NOT NULL
+  `backup` text NOT NULL,
+  `inviteBlock` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `permissions` (

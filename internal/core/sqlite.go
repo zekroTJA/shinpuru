@@ -451,6 +451,19 @@ func (m *Sqlite) DeleteBackup(guildID, fileID string) error {
 	return err
 }
 
+func (m *Sqlite) GetGuildInviteBlock(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "inviteBlock")
+	return val != "", err
+}
+
+func (m *Sqlite) SetGuildInviteBlock(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "inviteBlock", val)
+}
+
 func (m *Sqlite) GetBackups(guildID string) ([]*BackupEntry, error) {
 	rows, err := m.DB.Query("SELECT * FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
