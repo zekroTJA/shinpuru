@@ -46,6 +46,9 @@ type Database interface {
 	GetGuildBackup(guildID string) (bool, error)
 	SetGuildBackup(guildID string, enabled bool) error
 
+	GetGuildInviteBlock(guildID string) (bool, error)
+	SetGuildInviteBlock(guildID string, enabled bool) error
+
 	AddReport(rep *util.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*util.Report, error)

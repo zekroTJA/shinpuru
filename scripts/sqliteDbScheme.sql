@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `muteRoleID` text NOT NULL DEFAULT '',
   `ghostPingMsg` text NOT NULL DEFAULT '',
   `jdoodleToken` text NOT NULL DEFAULT '',
-  `backup` text NOT NULL DEFAULT ''
+  `backup` text NOT NULL DEFAULT '',
+  `inviteBlock` text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS `permissions` (
