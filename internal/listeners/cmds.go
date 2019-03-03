@@ -76,19 +76,13 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			User:       e.Author,
 		}
 
-		var permLvl = 0
-		if e.Author.ID == l.config.Discord.OwnerID {
-			permLvl = util.PermLvlBotOwner
-		} else if e.Author.ID == guild.OwnerID {
-			permLvl = util.PermLvlGuildOwner
-		} else {
-			permLvl, err = l.db.GetMemberPermissionLevel(s, e.GuildID, e.Author.ID)
-		}
+		permLvl, err := l.cmdHandler.GetPermissionLevel(s, guild.ID, e.Author.ID)
 
 		if err != nil && !core.IsErrDatabaseNotFound(err) {
 			util.SendEmbedError(s, channel.ID, fmt.Sprintf("Failed getting permission from database: ```\n%s\n```", err.Error()), "Permission Error")
 			return
 		}
+
 		if permLvl < cmdInstance.GetPermission() {
 			errMsg, _ := util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
 			util.DeleteMessageLater(s, errMsg, 8*time.Second)

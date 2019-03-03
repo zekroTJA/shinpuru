@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,7 +23,8 @@ func (c *CmdInviteBlock) GetDescription() string {
 }
 
 func (c *CmdInviteBlock) GetHelp() string {
-	return "`inv <enable|disable>`"
+	return "`inv enable <permLvL>` - enable invite link blocking for members with permission level below passed level\n" +
+		"`inv disable` - disable link blocking"
 }
 
 func (c *CmdInviteBlock) GetGroup() string {
@@ -44,51 +46,78 @@ func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 
 	switch strings.ToLower(args.Args[0]) {
 	case "enable", "e", "on":
-		return c.swtitchStatus(args, true)
+		return c.enable(args)
 	case "disable", "d", "off":
-		return c.swtitchStatus(args, false)
+		return c.disable(args)
 	default:
 		return c.printStatus(args)
 	}
 }
 
 func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
-	enabled, err := args.CmdHandler.db.GetGuildInviteBlock(args.Guild.ID)
+	status, err := args.CmdHandler.db.GetGuildInviteBlock(args.Guild.ID)
 	if err != nil && !core.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
 	strStat := "disabled"
 	color := util.ColorEmbedOrange
-	if enabled {
-		strStat = "enabled"
+	if status != "" {
+		strStat = "enabled (*for members with permission level < " + status + "*)"
 		color = util.ColorEmbedGreen
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Discord invite link blocing is currently **%s** on this guild.\n\n"+
+		fmt.Sprintf("Discord invite link blocking is currently **%s** on this guild.\n\n"+
 			"*You can enable or disable this with the command `inv enable` or `inv disable`*.", strStat),
 		"", color)
 	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 	return err
 }
 
-func (c *CmdInviteBlock) swtitchStatus(args *CommandArgs, enable bool) error {
-	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, enable)
+func (c *CmdInviteBlock) enable(args *CommandArgs) error {
+	if len(args.Args) < 2 {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a permission level, which members must have to be allowed to send guild invites.")
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
+	lvl := args.Args[1]
+
+	if i, err := strconv.Atoi(lvl); err != nil {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a valid number as permission level.")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	} else if i < 1 {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Permission level should be larger than 0.")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	}
+
+	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, lvl)
 	if err != nil {
 		return err
 	}
 
-	strStat := "will **no more be blocked** now"
-	color := util.ColorEmbedOrange
-	if enable {
-		strStat = "will now **be blocked**"
-		color = util.ColorEmbedGreen
+	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Enabled invite link blocking for members with a permission "+
+			"level below `%s`.", lvl), "", 0)
+	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+	return err
+}
+
+func (c *CmdInviteBlock) disable(args *CommandArgs) error {
+	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, "")
+	if err != nil {
+		return err
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Discord invite links %s on this guild.", strStat),
-		"", color)
+		"Discord invite links will **no more be blocked** on this guild now.",
+		"", 0)
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 	return err
 }

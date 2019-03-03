@@ -184,17 +184,12 @@ func (m *MySql) SetGuildBackup(guildID string, enabled bool) error {
 	return m.setGuildSetting(guildID, "backup", val)
 }
 
-func (m *MySql) GetGuildInviteBlock(guildID string) (bool, error) {
-	val, err := m.getGuildSetting(guildID, "inviteBlock")
-	return val != "", err
+func (m *MySql) GetGuildInviteBlock(guildID string) (string, error) {
+	return m.getGuildSetting(guildID, "inviteBlock")
 }
 
-func (m *MySql) SetGuildInviteBlock(guildID string, enabled bool) error {
-	var val string
-	if enabled {
-		val = "1"
-	}
-	return m.setGuildSetting(guildID, "inviteBlock", val)
+func (m *MySql) SetGuildInviteBlock(guildID string, data string) error {
+	return m.setGuildSetting(guildID, "inviteBlock", data)
 }
 
 func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
