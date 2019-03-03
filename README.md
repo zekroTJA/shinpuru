@@ -82,12 +82,6 @@ With the Twitch Notification System, you can stay up to date which channels are 
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-29-02.png)
 
-## Voice Logging
-
-Missing Teamspeaks voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
-
-![](https://i.zekro.de/firefox_2019-02-22_15-32-58.png)
-
 ## Code Execution
 
 shinpuru is able to compile embeded code in messages on the fly, just by klicking a reacton under the message containing the code. The code will be sent to [jdoodle's](https://jdoodle.com) API, will be executed and the output will be displayed in the discord channel!
@@ -95,6 +89,18 @@ shinpuru is able to compile embeded code in messages on the fly, just by klickin
 ![](https://i.zekro.de/firefox_2019-02-22_15-36-36.png)
 
 For setting up this system, use the [`exec setup`](https://github.com/zekroTJA/shinpuru/wiki/Commands#exec) command. Then, the bot will request your jdoodle's API credentials in DM *(because we don't want you to send you credentials into a public guilds text chat)*. Then, the system will be set up and exabled on your guild. Your credentials will only be used for your guild, so every guild is responsible for their credentials. That also means, if you have an advanced jdoodle plan, you can use this accounts credentials, of course, for your guild.
+
+## Invite Link Blocking
+
+By using the [`inv`](https://github.com/zekroTJA/shinpuru/wiki/Commands#inv) command, you can set up a guild wide blocking for Discord Guild Invite Links. You can pass a minimum permission level users need to have to be allowed to send Invite Links. If users with a permission level below that, the messages including Invite Links will be deleted.
+
+The system detects obvious invite links like `discord.gg/<InvID>` or `discordapp.com/invite/<InvID>`. Also, links which redirect to a Discord Invite link using the [`location` header](https://tools.ietf.org/html/rfc2616#section-14.30) or some sort of HTML redirection methods, like link shorteners do, for example, will be blocked.
+
+## Voice Logging
+
+Missing Teamspeaks voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
+
+![](https://i.zekro.de/firefox_2019-02-22_15-32-58.png)
 
 ---
 
