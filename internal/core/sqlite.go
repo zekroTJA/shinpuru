@@ -451,17 +451,12 @@ func (m *Sqlite) DeleteBackup(guildID, fileID string) error {
 	return err
 }
 
-func (m *Sqlite) GetGuildInviteBlock(guildID string) (bool, error) {
-	val, err := m.getGuildSetting(guildID, "inviteBlock")
-	return val != "", err
+func (m *Sqlite) GetGuildInviteBlock(guildID string) (string, error) {
+	return m.getGuildSetting(guildID, "inviteBlock")
 }
 
-func (m *Sqlite) SetGuildInviteBlock(guildID string, enabled bool) error {
-	var val string
-	if enabled {
-		val = "1"
-	}
-	return m.setGuildSetting(guildID, "inviteBlock", val)
+func (m *Sqlite) SetGuildInviteBlock(guildID string, data string) error {
+	return m.setGuildSetting(guildID, "inviteBlock", data)
 }
 
 func (m *Sqlite) GetBackups(guildID string) ([]*BackupEntry, error) {
