@@ -31,11 +31,19 @@ func NewListenerInviteBlock(db core.Database, cmdHandler *commands.CmdHandler) *
 	}
 }
 
-func (l *ListenerInviteBlock) Handler(s *discordgo.Session, e *discordgo.MessageCreate) {
-	cont := e.Content
+func (l *ListenerInviteBlock) HandlerMessageSend(s *discordgo.Session, e *discordgo.MessageCreate) {
+	l.invokeCheck(s, e.Message)
+}
+
+func (l *ListenerInviteBlock) HandlerMessageEdit(s *discordgo.Session, e *discordgo.MessageUpdate) {
+	l.invokeCheck(s, e.Message)
+}
+
+func (l *ListenerInviteBlock) invokeCheck(s *discordgo.Session, msg *discordgo.Message) {
+	cont := msg.Content
 
 	if l.checkForInviteLink(cont) {
-		l.detected(s, e)
+		l.detected(s, msg)
 		return
 	}
 
@@ -47,7 +55,7 @@ func (l *ListenerInviteBlock) Handler(s *discordgo.Session, e *discordgo.Message
 			return
 		}
 		if match {
-			l.detected(s, e)
+			l.detected(s, msg)
 		}
 	}
 }
@@ -69,7 +77,7 @@ func (l *ListenerInviteBlock) followLink(link string) (bool, error) {
 	return l.checkForInviteLink(resp.Request.URL.String()), nil
 }
 
-func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.MessageCreate) error {
+func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Message) error {
 	_lvl, err := l.db.GetGuildInviteBlock(e.GuildID)
 	if core.IsErrDatabaseNotFound(err) {
 		return nil
