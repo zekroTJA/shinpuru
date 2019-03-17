@@ -9,6 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/timedmap"
+	"golang.org/x/time/rate"
+
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,9 +20,11 @@ import (
 )
 
 const (
-	timeMapCleanupInterval = 5 * time.Minute
-	timeMapExpireTime      = 24 * time.Hour
 	removeHandlerTimeout   = 3 * time.Minute
+	limitTMCleanupInterval = 30 * time.Second // 10 * time.Minute
+	limitTMLifetime        = 24 * time.Hour
+	limitBurst             = 2                // 5
+	limitRate              = float64(1) / 900 // one token per 15 minutes
 )
 
 var (
@@ -46,7 +51,8 @@ var (
 )
 
 type ListenerJdoodle struct {
-	db core.Database
+	db     core.Database
+	limits *timedmap.TimedMap
 }
 
 type jdoodleRequestBody struct {
@@ -68,7 +74,8 @@ type jdoodleResponseResult struct {
 
 func NewListenerJdoodle(db core.Database) *ListenerJdoodle {
 	return &ListenerJdoodle{
-		db: db,
+		db:     db,
+		limits: timedmap.New(limitTMCleanupInterval),
 	}
 }
 
@@ -139,6 +146,11 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		}
 
 		if eReact.Emoji.Name != runReactionEmoji {
+			return
+		}
+
+		if !l.checkLimit(eReact.UserID) {
+			s.MessageReactionRemove(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name, eReact.UserID)
 			return
 		}
 
@@ -238,6 +250,16 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		s.MessageReactionsRemoveAll(e.ChannelID, e.ID)
 		removeHandler()
 	})
+}
+
+func (l *ListenerJdoodle) checkLimit(userID string) bool {
+	limiter, ok := l.limits.GetValue(userID).(*rate.Limiter)
+	if !ok || limiter == nil {
+		limiter = rate.NewLimiter(rate.Limit(limitRate), limitBurst)
+		l.limits.Set(userID, limiter, limitTMLifetime)
+	}
+
+	return limiter.Allow()
 }
 
 func unexpectedError(s *discordgo.Session, chanID string, err error) {
