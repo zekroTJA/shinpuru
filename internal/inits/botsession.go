@@ -23,6 +23,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	session.Token = "Bot " + config.Discord.Token
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(database, cmdHandler)
+	listenerGhostPing := listeners.NewListenerGhostPing(database, cmdHandler)
 
 	session.AddHandler(listeners.NewListenerReady(config, database).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
@@ -31,8 +32,10 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
-	session.AddHandler(listeners.NewListenerGhostPing(database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerJdoodle(database).Handler)
+
+	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
+	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
 	session.AddHandler(listenerInviteBlock.HandlerMessageSend)
 	session.AddHandler(listenerInviteBlock.HandlerMessageEdit)
 
