@@ -1,10 +1,6 @@
 package inits
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/commands"
@@ -43,12 +39,4 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	if err != nil {
 		util.Log.Fatal("Failed connecting Discord bot session:", err)
 	}
-
-	util.Log.Info("Started event loop. Stop with CTRL-C...")
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
-
-	util.Log.Info("Shutting down...")
-	session.Close()
 }
