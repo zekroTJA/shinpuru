@@ -9,3 +9,4 @@ cloc . \
 	--exclude-dir=vendor \
 	--md > ./cloc.md
 	
+git add ./cloc.md
