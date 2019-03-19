@@ -13,7 +13,7 @@ func InitDatabase(databaseCfg *core.ConfigDatabaseType) core.Database {
 
 	switch strings.ToLower(databaseCfg.Type) {
 	case "mysql", "mariadb":
-		database = new(core.MySql)
+		database = new(core.MySQL)
 		err = database.Connect(databaseCfg.MySql)
 	case "sqlite", "sqlite3":
 		database = new(core.Sqlite)

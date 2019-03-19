@@ -16,11 +16,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type MySql struct {
+type MySQL struct {
 	DB *sql.DB
 }
 
-func (m *MySql) setup() {
+func (m *MySQL) setup() {
 	if MySqlDbSchemeB64 == "" {
 		util.Log.Warning("MySql database scheme was not set on compiling. Database can not be checked for structure changes!")
 		return
@@ -41,7 +41,7 @@ func (m *MySql) setup() {
 	}
 }
 
-func (m *MySql) Connect(credentials ...interface{}) error {
+func (m *MySQL) Connect(credentials ...interface{}) error {
 	var err error
 	creds := credentials[0].(*ConfigDatabaseCreds)
 	if creds == nil {
@@ -53,13 +53,13 @@ func (m *MySql) Connect(credentials ...interface{}) error {
 	return err
 }
 
-func (m *MySql) Close() {
+func (m *MySQL) Close() {
 	if m.DB != nil {
 		m.DB.Close()
 	}
 }
 
-func (m *MySql) getGuildSetting(guildID, key string) (string, error) {
+func (m *MySQL) getGuildSetting(guildID, key string) (string, error) {
 	var value string
 	err := m.DB.QueryRow("SELECT "+key+" FROM guilds WHERE guildID = ?", guildID).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -68,7 +68,7 @@ func (m *MySql) getGuildSetting(guildID, key string) (string, error) {
 	return value, err
 }
 
-func (m *MySql) setGuildSetting(guildID, key string, value string) error {
+func (m *MySQL) setGuildSetting(guildID, key string, value string) error {
 	res, err := m.DB.Exec("UPDATE guilds SET "+key+" = ? WHERE guildID = ?", value, guildID)
 	if err != nil {
 		return err
@@ -87,61 +87,61 @@ func (m *MySql) setGuildSetting(guildID, key string, value string) error {
 	return err
 }
 
-func (m *MySql) GetGuildPrefix(guildID string) (string, error) {
+func (m *MySQL) GetGuildPrefix(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "prefix")
 	return val, err
 }
 
-func (m *MySql) SetGuildPrefix(guildID, newPrefix string) error {
+func (m *MySQL) SetGuildPrefix(guildID, newPrefix string) error {
 	return m.setGuildSetting(guildID, "prefix", newPrefix)
 }
 
-func (m *MySql) GetGuildAutoRole(guildID string) (string, error) {
+func (m *MySQL) GetGuildAutoRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "autorole")
 	return val, err
 }
 
-func (m *MySql) SetGuildAutoRole(guildID, autoRoleID string) error {
+func (m *MySQL) SetGuildAutoRole(guildID, autoRoleID string) error {
 	return m.setGuildSetting(guildID, "autorole", autoRoleID)
 }
 
-func (m *MySql) GetGuildModLog(guildID string) (string, error) {
+func (m *MySQL) GetGuildModLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "modlogchanID")
 	return val, err
 }
 
-func (m *MySql) SetGuildModLog(guildID, chanID string) error {
+func (m *MySQL) SetGuildModLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "modlogchanID", chanID)
 }
 
-func (m *MySql) GetGuildVoiceLog(guildID string) (string, error) {
+func (m *MySQL) GetGuildVoiceLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "voicelogchanID")
 	return val, err
 }
 
-func (m *MySql) SetGuildVoiceLog(guildID, chanID string) error {
+func (m *MySQL) SetGuildVoiceLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "voicelogchanID", chanID)
 }
 
-func (m *MySql) GetGuildNotifyRole(guildID string) (string, error) {
+func (m *MySQL) GetGuildNotifyRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "notifyRoleID")
 	return val, err
 }
 
-func (m *MySql) SetGuildNotifyRole(guildID, roleID string) error {
+func (m *MySQL) SetGuildNotifyRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
 }
 
-func (m *MySql) GetGuildGhostpingMsg(guildID string) (string, error) {
+func (m *MySQL) GetGuildGhostpingMsg(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "ghostPingMsg")
 	return val, err
 }
 
-func (m *MySql) SetGuildGhostpingMsg(guildID, msg string) error {
+func (m *MySQL) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
+func (m *MySQL) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
 		return 0, err
@@ -162,37 +162,7 @@ func (m *MySql) GetMemberPermissionLevel(s *discordgo.Session, guildID string, m
 	return maxPermLvl, err
 }
 
-func (m *MySql) GetGuildJdoodleKey(guildID string) (string, error) {
-	val, err := m.getGuildSetting(guildID, "jdoodleToken")
-	return val, err
-}
-
-func (m *MySql) SetGuildJdoodleKey(guildID, key string) error {
-	return m.setGuildSetting(guildID, "jdoodleToken", key)
-}
-
-func (m *MySql) GetGuildBackup(guildID string) (bool, error) {
-	val, err := m.getGuildSetting(guildID, "backup")
-	return val != "", err
-}
-
-func (m *MySql) SetGuildBackup(guildID string, enabled bool) error {
-	var val string
-	if enabled {
-		val = "1"
-	}
-	return m.setGuildSetting(guildID, "backup", val)
-}
-
-func (m *MySql) GetGuildInviteBlock(guildID string) (string, error) {
-	return m.getGuildSetting(guildID, "inviteBlock")
-}
-
-func (m *MySql) SetGuildInviteBlock(guildID string, data string) error {
-	return m.setGuildSetting(guildID, "inviteBlock", data)
-}
-
-func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
+func (m *MySQL) GetGuildPermissions(guildID string) (map[string]int, error) {
 	results := make(map[string]int)
 	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
@@ -211,7 +181,7 @@ func (m *MySql) GetGuildPermissions(guildID string) (map[string]int, error) {
 	return results, nil
 }
 
-func (m *MySql) SetGuildRolePermission(guildID, roleID string, permLvL int) error {
+func (m *MySQL) SetGuildRolePermission(guildID, roleID string, permLvL int) error {
 	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
 		permLvL, roleID, guildID)
 	if err != nil {
@@ -228,7 +198,29 @@ func (m *MySql) SetGuildRolePermission(guildID, roleID string, permLvL int) erro
 	return nil
 }
 
-func (m *MySql) GetSetting(setting string) (string, error) {
+func (m *MySQL) GetGuildJdoodleKey(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "jdoodleToken")
+	return val, err
+}
+
+func (m *MySQL) SetGuildJdoodleKey(guildID, key string) error {
+	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
+func (m *MySQL) GetGuildBackup(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "backup")
+	return val != "", err
+}
+
+func (m *MySQL) SetGuildBackup(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "backup", val)
+}
+
+func (m *MySQL) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.DB.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -237,7 +229,7 @@ func (m *MySql) GetSetting(setting string) (string, error) {
 	return value, err
 }
 
-func (m *MySql) SetSetting(setting, value string) error {
+func (m *MySQL) SetSetting(setting, value string) error {
 	res, err := m.DB.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
 	if ar, err := res.RowsAffected(); ar == 0 {
 		if err != nil {
@@ -253,18 +245,18 @@ func (m *MySql) SetSetting(setting, value string) error {
 	return err
 }
 
-func (m *MySql) AddReport(rep *util.Report) error {
+func (m *MySQL) AddReport(rep *util.Report) error {
 	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
 	return err
 }
 
-func (m *MySql) DeleteReport(id snowflake.ID) error {
+func (m *MySQL) DeleteReport(id snowflake.ID) error {
 	_, err := m.DB.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 
-func (m *MySql) GetReport(id snowflake.ID) (*util.Report, error) {
+func (m *MySQL) GetReport(id snowflake.ID) (*util.Report, error) {
 	rep := new(util.Report)
 
 	row := m.DB.QueryRow("SELECT * FROM reports WHERE id = ?", id)
@@ -276,8 +268,8 @@ func (m *MySql) GetReport(id snowflake.ID) (*util.Report, error) {
 	return rep, err
 }
 
-func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
-	rows, err := m.DB.Query("SELECT * FROM reports WHERE guildID = ?", guildID)
+func (m *MySQL) GetReportsGuild(guildID string) ([]*util.Report, error) {
+	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = ?", guildID)
 	var results []*util.Report
 	if err != nil {
 		return nil, err
@@ -293,8 +285,8 @@ func (m *MySql) GetReportsGuild(guildID string) ([]*util.Report, error) {
 	return results, nil
 }
 
-func (m *MySql) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
-	query := fmt.Sprintf(`SELECT * FROM reports WHERE guildID = "%s"`, guildID)
+func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
+	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = "%s"`, guildID)
 	if memberID != "" {
 		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
 	}
@@ -317,8 +309,8 @@ func (m *MySql) GetReportsFiltered(guildID, memberID string, repType int) ([]*ut
 	return results, nil
 }
 
-func (m *MySql) GetVotes() (map[string]*util.Vote, error) {
-	rows, err := m.DB.Query("SELECT * FROM votes")
+func (m *MySQL) GetVotes() (map[string]*util.Vote, error) {
+	rows, err := m.DB.Query("SELECT id, data FROM votes")
 	results := make(map[string]*util.Vote)
 	if err != nil {
 		return nil, err
@@ -340,17 +332,17 @@ func (m *MySql) GetVotes() (map[string]*util.Vote, error) {
 	return results, err
 }
 
-func (m *MySql) AddUpdateVote(vote *util.Vote) error {
+func (m *MySQL) AddUpdateVote(vote *util.Vote) error {
 	rawData, err := vote.Marshal()
 	if err != nil {
 		return err
 	}
-	res, err := m.DB.Exec("UPDATE votes SET data = ? WHERE ID = ?", rawData, vote.ID)
+	res, err := m.DB.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
 	if ar, err := res.RowsAffected(); ar == 0 {
 		if err != nil {
 			return err
 		}
-		_, err := m.DB.Exec("INSERT INTO votes (ID, data) VALUES (?, ?)", vote.ID, rawData)
+		_, err := m.DB.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
 		if err != nil {
 			return err
 		}
@@ -360,12 +352,12 @@ func (m *MySql) AddUpdateVote(vote *util.Vote) error {
 	return err
 }
 
-func (m *MySql) DeleteVote(voteID string) error {
-	_, err := m.DB.Exec("DELETE FROM votes WHERE ID = ?", voteID)
+func (m *MySQL) DeleteVote(voteID string) error {
+	_, err := m.DB.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
 }
 
-func (m *MySql) GetMuteRoles() (map[string]string, error) {
+func (m *MySQL) GetMuteRoles() (map[string]string, error) {
 	rows, err := m.DB.Query("SELECT guildID, muteRoleID FROM guilds")
 	results := make(map[string]string)
 	if err != nil {
@@ -381,16 +373,16 @@ func (m *MySql) GetMuteRoles() (map[string]string, error) {
 	return results, nil
 }
 
-func (m *MySql) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *MySQL) GetMuteRoleGuild(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *MySql) SetMuteRole(guildID, roleID string) error {
+func (m *MySQL) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
-func (m *MySql) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error) {
+func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error) {
 	t := &TwitchNotifyDBEntry{
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
@@ -403,9 +395,9 @@ func (m *MySql) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEn
 	return t, err
 }
 
-func (m *MySql) SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error {
+func (m *MySQL) SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error {
 	res, err := m.DB.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
-		twitchNotify.TwitchUserID, twitchNotify.GuildID)
+		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
 		return err
 	}
@@ -424,12 +416,12 @@ func (m *MySql) SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error {
 	return err
 }
 
-func (m *MySql) DeleteTwitchNotify(twitchUserID, guildID string) error {
+func (m *MySQL) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	_, err := m.DB.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
 	return err
 }
 
-func (m *MySql) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error) {
+func (m *MySQL) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error) {
 	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
@@ -449,18 +441,26 @@ func (m *MySql) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntr
 	return results, nil
 }
 
-func (m *MySql) AddBackup(guildID, fileID string) error {
+func (m *MySQL) AddBackup(guildID, fileID string) error {
 	timestamp := time.Now().Unix()
 	_, err := m.DB.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
 	return err
 }
 
-func (m *MySql) DeleteBackup(guildID, fileID string) error {
+func (m *MySQL) DeleteBackup(guildID, fileID string) error {
 	_, err := m.DB.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
 	return err
 }
 
-func (m *MySql) GetBackups(guildID string) ([]*BackupEntry, error) {
+func (m *MySQL) GetGuildInviteBlock(guildID string) (string, error) {
+	return m.getGuildSetting(guildID, "inviteBlock")
+}
+
+func (m *MySQL) SetGuildInviteBlock(guildID string, data string) error {
+	return m.setGuildSetting(guildID, "inviteBlock", data)
+}
+
+func (m *MySQL) GetBackups(guildID string) ([]*BackupEntry, error) {
 	rows, err := m.DB.Query("SELECT * FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -484,7 +484,7 @@ func (m *MySql) GetBackups(guildID string) ([]*BackupEntry, error) {
 	return backups, nil
 }
 
-func (m *MySql) GetBackupGuilds() ([]string, error) {
+func (m *MySQL) GetBackupGuilds() ([]string, error) {
 	rows, err := m.DB.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound

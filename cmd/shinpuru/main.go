@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -33,7 +36,21 @@ func main() {
 	util.SetLogLevel(config.Logging.LogLevel)
 
 	database := inits.InitDatabase(config.Database)
+	defer func() {
+		util.Log.Info("Shutting down database connection...")
+		database.Close()
+	}()
+
 	tnw := inits.InitTwitchNotifyer(session, config, database)
 	cmdHandler := inits.InitCommandHandler(session, config, database, tnw)
 	inits.InitDiscordBotSession(session, config, database, cmdHandler)
+	defer func() {
+		util.Log.Info("Shutting down bot session...")
+		session.Close()
+	}()
+
+	util.Log.Info("Started event loop. Stop with CTRL-C...")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
 }
