@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   `jdoodleToken` text NOT NULL,
   `backup` text NOT NULL,
   `inviteBlock` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `roleID` text NOT NULL,
   `guildID` text NOT NULL,
   `permission` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `reports` (
@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `executorID` text NOT NULL,
   `victimID` text NOT NULL,
   `msg` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `settings` (
   `iid` int(11) NOT NULL AUTO_INCREMENT,
   `setting` text NOT NULL,
   `value` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `starboard` (
@@ -48,14 +48,14 @@ CREATE TABLE IF NOT EXISTS `starboard` (
   `chanID` text NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `minimum` int(11) NOT NULL DEFAULT '5',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `votes` (
   `iid` int(11) NOT NULL AUTO_INCREMENT,
   `id` text NOT NULL,
   `data` mediumtext NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `twitchnotify` (
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `twitchnotify` (
   `guildID` text NOT NULL,
   `channelID` text NOT NULL,
   `twitchUserID` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `backups` (
@@ -71,5 +71,5 @@ CREATE TABLE IF NOT EXISTS `backups` (
   `guildID` text NOT NULL,
   `timestamp` bigint(20) NOT NULL,
   `fileID` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`iid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
