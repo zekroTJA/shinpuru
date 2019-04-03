@@ -17,7 +17,9 @@ func main() {
 	flag.Parse()
 
 	config := new(core.Config)
-	database := new(core.MySql)
+
+	database := new(core.MySQL)
+
 	cmdHandler := inits.InitCommandHandler(nil, config, database, nil)
 	if err := cmdHandler.ExportCommandManual(*flagExportFile); err != nil {
 		util.Log.Fatal("Failed exporting command manual: ", err)
