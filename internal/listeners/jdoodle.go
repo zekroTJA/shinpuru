@@ -214,6 +214,8 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 				return
 			}
 
+			executor, _ := s.GuildMember(eReact.GuildID, eReact.UserID)
+
 			emb := &discordgo.MessageEmbed{
 				Color: util.ColorEmbedCyan,
 				Title: "Compilation Result",
@@ -237,9 +239,12 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 						Inline: true,
 					},
 				},
-				Footer: &discordgo.MessageEmbedFooter{
-					Text: "Provided by jdoodle.com",
-				},
+			}
+
+			if executor != nil {
+				emb.Footer = &discordgo.MessageEmbedFooter{
+					Text: "Executed by " + executor.User.String(),
+				}
 			}
 
 			s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb)
