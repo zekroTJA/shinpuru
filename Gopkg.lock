@@ -95,6 +95,14 @@
   revision = "74369b46fc6756741c016591724fd1cb8e26845f"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9fdc2b55e8e0fafe4b41884091e51e77344f7dc511c5acedcfd98200003bff90"
+  name = "golang.org/x/time"
+  packages = ["rate"]
+  pruneopts = "UT"
+  revision = "9d24e82272b4f38b78bc8cff74fa936d31ccd8ef"
+
+[[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
@@ -121,6 +129,7 @@
     "github.com/mattn/go-sqlite3",
     "github.com/op/go-logging",
     "github.com/zekroTJA/timedmap",
+    "golang.org/x/time/rate",
     "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"

@@ -71,6 +71,28 @@ func (c *CmdHandler) GetCommandListLen() int {
 	return len(c.registeredCmdInstances)
 }
 
+func (c *CmdHandler) GetPermissionLevel(s *discordgo.Session, guildID, userID string) (int, error) {
+	guild, err := s.Guild(guildID)
+	if err != nil {
+		return 0, err
+	}
+
+	var permLvl = 0
+	if userID == c.config.Discord.OwnerID {
+		permLvl = util.PermLvlBotOwner
+	} else if userID == guild.OwnerID {
+		permLvl = util.PermLvlGuildOwner
+	} else {
+		permLvl, err = c.db.GetMemberPermissionLevel(s, guildID, userID)
+	}
+
+	if err != nil && !core.IsErrDatabaseNotFound(err) {
+		return 0, err
+	}
+
+	return permLvl, nil
+}
+
 func (c *CmdHandler) ExportCommandManual(fileName string) error {
 	document := "> Auto generated command manual | " + time.Now().Format(time.RFC1123) + "\n\n" +
 		"# Command List\n\n"
