@@ -23,10 +23,12 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 	if err != nil && !core.IsErrDatabaseNotFound(err) {
 		util.Log.Errorf("Failed getting autorole for guild '%s' from database: %s", e.GuildID, err.Error())
 	}
-	err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, autoRoleID)
-	if err != nil && strings.Contains(err.Error(), `{"code": 10011, "message": "Unknown Role"}`) {
-		l.db.SetGuildAutoRole(e.GuildID, "")
-	} else if err != nil {
-		util.Log.Errorf("Failed setting autorole for member '%s': %s", e.User.ID, err.Error())
+	if autoRoleID != "" {
+		err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, autoRoleID)
+		if err != nil && strings.Contains(err.Error(), `{"code": 10011, "message": "Unknown Role"}`) {
+			l.db.SetGuildAutoRole(e.GuildID, "")
+		} else if err != nil {
+			util.Log.Errorf("Failed setting autorole for member '%s': %s", e.User.ID, err.Error())
+		}
 	}
 }
