@@ -22,7 +22,8 @@ func (c *CmdAutorole) GetDescription() string {
 
 func (c *CmdAutorole) GetHelp() string {
 	return "`autorole` - display currently set autorole\n" +
-		"`autorole <roleResolvable>` - set an auto role for the current guild"
+		"`autorole <roleResolvable>` - set an auto role for the current guild\n" +
+		"`autorole reset` - disable autorole"
 }
 
 func (c *CmdAutorole) GetGroup() string {
