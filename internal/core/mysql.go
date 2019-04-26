@@ -259,7 +259,7 @@ func (m *MySQL) DeleteReport(id snowflake.ID) error {
 func (m *MySQL) GetReport(id snowflake.ID) (*util.Report, error) {
 	rep := new(util.Report)
 
-	row := m.DB.QueryRow("SELECT * FROM reports WHERE id = ?", id)
+	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE id = ?", id)
 	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -461,7 +461,7 @@ func (m *MySQL) SetGuildInviteBlock(guildID string, data string) error {
 }
 
 func (m *MySQL) GetBackups(guildID string) ([]*BackupEntry, error) {
-	rows, err := m.DB.Query("SELECT * FROM backups WHERE guildID = ?", guildID)
+	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
 	}
