@@ -94,6 +94,10 @@ func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, stri
 			return backups[i].Timestamp.Before(backups[j].Timestamp)
 		})
 
+		if len(backups) > 10 {
+			backups = backups[0:10]
+		}
+
 		strBackups := make([]string, len(backups))
 
 		for i, b := range backups {

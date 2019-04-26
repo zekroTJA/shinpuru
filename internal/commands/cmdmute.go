@@ -59,6 +59,20 @@ func (c *CmdMute) Exec(args *CommandArgs) error {
 }
 
 func (c *CmdMute) setup(args *CommandArgs) error {
+	var muteRole *discordgo.Role
+	var err error
+
+	if len(args.Args) > 0 {
+		muteRole, err = util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+		if err != nil {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				"Role could not be fetched by passed identifier.")
+			util.DeleteMessageLater(args.Session, msg, 5*time.Second)
+			return err
+		}
+
+	}
+
 	acmsg := &util.AcceptMessage{
 		Session: args.Session,
 		Embed: &discordgo.MessageEmbed{
@@ -71,10 +85,11 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			var muteRole *discordgo.Role
-			for _, r := range args.Guild.Roles {
-				if r.Name == util.MutedRoleName {
-					muteRole = r
+			if muteRole == nil {
+				for _, r := range args.Guild.Roles {
+					if r.Name == util.MutedRoleName {
+						muteRole = r
+					}
 				}
 			}
 
@@ -126,7 +141,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 		},
 	}
 
-	_, err := acmsg.Send(args.Channel.ID)
+	_, err = acmsg.Send(args.Channel.ID)
 	return err
 }
 
