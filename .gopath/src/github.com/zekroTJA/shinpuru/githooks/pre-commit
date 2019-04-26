@@ -1,0 +1,12 @@
+#!/bin/bash
+
+which cloc &> /dev/null || {
+	echo "cloc command not found"
+	exit 0
+}
+
+cloc . \
+	--exclude-dir=vendor \
+	--md > ./cloc.md
+	
+git add ./cloc.md

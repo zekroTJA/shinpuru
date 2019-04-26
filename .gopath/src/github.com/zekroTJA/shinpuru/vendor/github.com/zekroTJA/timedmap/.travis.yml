@@ -1,0 +1,7 @@
+language: go
+
+go:
+  - tip
+
+script:
+  - bash scripts/coveralls-test.sh
