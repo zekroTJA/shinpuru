@@ -42,10 +42,7 @@ func (c *CmdMute) SetPermission(permLvl int) {
 
 func (c *CmdMute) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Use `help mute` to get info how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return c.displayMuteRole(args)
 	}
 
 	switch args.Args[0] {
@@ -62,8 +59,10 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 	var muteRole *discordgo.Role
 	var err error
 
-	if len(args.Args) > 0 {
-		muteRole, err = util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+	desc := "Following, a rolen with the name `shinpuru-muted` will be created *(if not existend yet)* and set as mute role."
+
+	if len(args.Args) > 1 {
+		muteRole, err = util.FetchRole(args.Session, args.Guild.ID, args.Args[1])
 		if err != nil {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"Role could not be fetched by passed identifier.")
@@ -71,6 +70,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 			return err
 		}
 
+		desc = fmt.Sprintf("Follwoing, the role %s will be set as mute role.", muteRole.Mention())
 	}
 
 	acmsg := &util.AcceptMessage{
@@ -78,9 +78,8 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 		Embed: &discordgo.MessageEmbed{
 			Color: util.ColorEmbedDefault,
 			Title: "Warning",
-			Description: "The follwoing will create a role with the name `shinpuru-muted` and will " +
-				"set every channels *(which is visible to the bot)* permission for this role to " +
-				"disallow write messages!",
+			Description: desc + " Also, all channels *(which the bot has access to)* will be permission-overwritten that " +
+				"members with this role will not be able to write in these channels anymore.",
 		},
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
@@ -94,7 +93,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 			}
 
 			if muteRole == nil {
-				muteRole, err := args.Session.GuildRoleCreate(args.Guild.ID)
+				muteRole, err = args.Session.GuildRoleCreate(args.Guild.ID)
 				if err != nil {
 					msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
 						"Failed creating mute role: ```\n"+err.Error()+"\n```")
@@ -311,5 +310,24 @@ func (c *CmdMute) list(args *CommandArgs) error {
 	emb.Description = ""
 
 	_, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, msg.ID, emb)
+	return err
+}
+
+func (c *CmdMute) displayMuteRole(args *CommandArgs) error {
+	roleID, err := args.CmdHandler.db.GetMuteRoleGuild(args.Guild.ID)
+	if err != nil {
+		return err
+	}
+
+	if roleID == "" {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Mute role is currently unset.")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err
+	}
+
+	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Role <@&%s> is currently set as mute role.", roleID), "", 0)
+	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 	return err
 }
