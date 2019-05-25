@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -65,15 +64,12 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	fmt.Println(util.RolePosDiff(victim, authorMemb, args.Guild))
 	if util.RolePosDiff(victim, authorMemb, args.Guild) >= 0 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"You can only kick members with lower permissions than yours.")
 		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		return err
 	}
-
-	return errors.New("canceled")
 
 	repMsg := strings.Join(args.Args[1:], " ")
 	var repType int
