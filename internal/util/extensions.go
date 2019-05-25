@@ -75,14 +75,14 @@ func RolePosDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild)
 
 	for _, r := range m1.Roles {
 		p := rolePositions[r]
-		if p < m1MaxPos || m1MaxPos == -1 {
+		if p > m1MaxPos || m1MaxPos == -1 {
 			m1MaxPos = p
 		}
 	}
 
 	for _, r := range m2.Roles {
 		p := rolePositions[r]
-		if p < m2MaxPos || m2MaxPos == -1 {
+		if p > m2MaxPos || m2MaxPos == -1 {
 			m2MaxPos = p
 		}
 	}
