@@ -1,0 +1,24 @@
+configVersionPleaseDoNotChange: 4
+discord:
+  token: "NDE5ODM3NDcyMDQ2ODQxODY2.XQ4MxA.vR0jHSNHMZ4QhB_CN0zcME4SNtU"
+  generalprefix: sp!
+  ownerid: ""
+database:
+  type: sqlite
+  mysql:
+    host: ""
+    user: ""
+    password: ""
+    database: ""
+  sqlite:
+    dbfile: shinpuru.sqlite3.db
+permissions:
+  botownerlevel: 1000
+  guildownerlevel: 10
+  customcmdpermissions:
+    cmdinvoke: 0
+logging:
+  commandlogging: true
+  loglevel: 4
+etc:
+  twitchappid: ""

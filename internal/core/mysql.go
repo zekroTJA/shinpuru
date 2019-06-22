@@ -2,14 +2,12 @@ package core
 
 import (
 	"database/sql"
-	"encoding/base64"
 	"errors"
 	"fmt"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -21,23 +19,91 @@ type MySQL struct {
 }
 
 func (m *MySQL) setup() {
-	if MySqlDbSchemeB64 == "" {
-		util.Log.Warning("MySql database scheme was not set on compiling. Database can not be checked for structure changes!")
-		return
-	}
-	scheme, err := base64.StdEncoding.DecodeString(MySqlDbSchemeB64)
-	if err != nil {
-		util.Log.Fatal("failed decoding base64 database scheme: ", err)
-		return
-	}
-	for _, query := range strings.Split(string(scheme), ";") {
-		if ok, _ := regexp.MatchString(`\w`, query); ok {
-			fmt.Println(query)
-			_, err = m.DB.Exec(query)
-			if err != nil {
-				util.Log.Errorf("Failed executing setup database query '%s': %s", query, err.Error())
-			}
-		}
+	mErr := multierror.New(nil)
+
+	_, err := m.DB.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL," +
+		"`prefix` text NOT NULL," +
+		"`autorole` text NOT NULL," +
+		"`modlogchanID` text NOT NULL," +
+		"`voicelogchanID` text NOT NULL," +
+		"`muteRoleID` text NOT NULL," +
+		"`ghostPingMsg` text NOT NULL," +
+		"`jdoodleToken` text NOT NULL," +
+		"`backup` text NOT NULL," +
+		"`inviteBlock` text NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`roleID` text NOT NULL," +
+		"`guildID` text NOT NULL," +
+		"`permission` int(11) NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`id` text NOT NULL," +
+		"`type` int(11) NOT NULL," +
+		"`guildID` text NOT NULL," +
+		"`executorID` text NOT NULL," +
+		"`victimID` text NOT NULL," +
+		"`msg` text NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`setting` text NOT NULL," +
+		"`value` text NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL," +
+		"`chanID` text NOT NULL," +
+		"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
+		"`minimum` int(11) NOT NULL DEFAULT '5'," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`id` text NOT NULL," +
+		"`data` mediumtext NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL," +
+		"`channelID` text NOT NULL," +
+		"`twitchUserID` text NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL," +
+		"`timestamp` bigint(20) NOT NULL," +
+		"`fileID` text NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	if mErr.Len() > 0 {
+		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
 }
 
