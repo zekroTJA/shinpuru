@@ -16,6 +16,7 @@ import (
 
 var (
 	flagConfigLocation = flag.String("c", "config.yml", "The location of the main config file")
+	flagDocker         = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
 )
 
 func main() {
@@ -32,6 +33,13 @@ func main() {
 	}
 
 	config := inits.InitConfig(*flagConfigLocation, new(core.YAMLConfigParser))
+
+	if *flagDocker {
+		if config.Database.Sqlite == nil {
+			config.Database.Sqlite = new(core.ConfigDatabaseFile)
+		}
+		config.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
+	}
 
 	util.SetLogLevel(config.Logging.LogLevel)
 
