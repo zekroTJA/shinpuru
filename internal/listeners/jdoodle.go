@@ -239,12 +239,13 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 						Inline: true,
 					},
 				},
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: strings.ToUpper(lang),
+				},
 			}
 
 			if executor != nil {
-				emb.Footer = &discordgo.MessageEmbedFooter{
-					Text: "Executed by " + executor.User.String(),
-				}
+				emb.Footer.Text += " | Executed by " + executor.User.String()
 			}
 
 			s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb)
