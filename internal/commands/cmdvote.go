@@ -24,6 +24,7 @@ func (c *CmdVote) GetDescription() string {
 
 func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
+		"`vote list` - display currentltly running votes\n" +
 		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
 }
 
@@ -114,7 +115,11 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			if err != nil {
 				return err
 			}
-			return vote.Close(args.Session)
+			err = vote.Close(args.Session)
+			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+				"Vote closed.", "", util.ColorEmbedGreen)
+			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+			return err
 
 		case "list":
 			emb := &discordgo.MessageEmbed{
