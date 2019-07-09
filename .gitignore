@@ -4,5 +4,4 @@ private.*
 bin/*
 *.exe
 *.db
-guildBackups/*
-vendor/*
+vendor/
