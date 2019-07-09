@@ -1,0 +1,16 @@
+.vsc/*
+.vscode/*
+private.*
+bin/*
+*.exe
+*.db
+guildBackups/*
+vendor/*
+bin/
+*.md
+githooks/*
+docs/*
+scripts/*
+ci/*
+.github/*
+Gopkg.lock
