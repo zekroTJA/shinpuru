@@ -172,7 +172,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	}
 
 	repType := util.IndexOfStrArray("MUTE", util.ReportTypes)
-	repID := util.ReportNodes[repType].Generate()
+	repID := util.NodesReport[repType].Generate()
 
 	var roleExists bool
 	for _, r := range args.Guild.Roles {
