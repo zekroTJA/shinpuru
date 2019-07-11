@@ -186,7 +186,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return err
 	}
 
-	backupID := util.BackupNode.Generate()
+	backupID := util.NodeBackup.Generate()
 	backupFileName := backupLocation + "/" + backupID.String() + ".json"
 
 	f, err := os.Create(backupFileName)

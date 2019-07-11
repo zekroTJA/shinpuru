@@ -50,6 +50,9 @@ func main() {
 	}()
 
 	tnw := inits.InitTwitchNotifyer(session, config, database)
+
+	_ = inits.InitLTCTimer()
+
 	cmdHandler := inits.InitCommandHandler(session, config, database, tnw)
 	inits.InitDiscordBotSession(session, config, database, cmdHandler)
 	defer func() {

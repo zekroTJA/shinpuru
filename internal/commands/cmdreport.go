@@ -126,7 +126,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		return err
 	}
 	repMsg := strings.Join(args.Args[msgOffset:], " ")
-	repID := util.ReportNodes[repType].Generate()
+	repID := util.NodesReport[repType].Generate()
 
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{

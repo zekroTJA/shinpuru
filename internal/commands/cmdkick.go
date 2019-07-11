@@ -78,7 +78,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 			repType = i
 		}
 	}
-	repID := util.ReportNodes[repType].Generate()
+	repID := util.NodesReport[repType].Generate()
 
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
