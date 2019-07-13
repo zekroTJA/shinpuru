@@ -1,33 +1,37 @@
-package util
+package core
 
-import "time"
+import (
+	"time"
 
-type LTCHandler func(now time.Time)
+	"github.com/zekroTJA/shinpuru/internal/util"
+)
 
-type LTCTimer struct {
+type LCHandler func(now time.Time)
+
+type LCTimer struct {
 	ticker   *time.Ticker
-	handlers map[string]LTCHandler
+	handlers map[string]LCHandler
 
 	stopChan chan bool
 }
 
-func NewLTCTimer(each time.Duration) *LTCTimer {
-	return &LTCTimer{
+func NewLTCTimer(each time.Duration) *LCTimer {
+	return &LCTimer{
 		ticker:   time.NewTicker(each),
-		handlers: make(map[string]LTCHandler),
+		handlers: make(map[string]LCHandler),
 		stopChan: make(chan bool, 1),
 	}
 }
 
-func (t *LTCTimer) OnTick(handler LTCHandler) func() {
-	uid := NodeLTCHandler.Generate().String()
+func (t *LCTimer) OnTick(handler LCHandler) func() {
+	uid := util.NodeLCHandler.Generate().String()
 	t.handlers[uid] = handler
 	return func() {
 		delete(t.handlers, uid)
 	}
 }
 
-func (t *LTCTimer) OnTickOnce(handler LTCHandler) func() {
+func (t *LCTimer) OnTickOnce(handler LCHandler) func() {
 	var unreg func()
 	unreg = t.OnTick(func(now time.Time) {
 		handler(now)
@@ -36,7 +40,7 @@ func (t *LTCTimer) OnTickOnce(handler LTCHandler) func() {
 	return unreg
 }
 
-func (t *LTCTimer) AfterTime(after time.Time, handler LTCHandler) func() {
+func (t *LCTimer) AfterTime(after time.Time, handler LCHandler) func() {
 	return t.OnTickOnce(func(now time.Time) {
 		if now.After(after) {
 			handler(now)
@@ -44,12 +48,12 @@ func (t *LTCTimer) AfterTime(after time.Time, handler LTCHandler) func() {
 	})
 }
 
-func (t *LTCTimer) AfterDuration(after time.Duration, handler LTCHandler) func() {
+func (t *LCTimer) AfterDuration(after time.Duration, handler LCHandler) func() {
 	afterTime := time.Now().Add(after)
 	return t.AfterTime(afterTime, handler)
 }
 
-func (t *LTCTimer) Start() {
+func (t *LCTimer) Start() {
 	go func() {
 		for {
 			select {
@@ -68,7 +72,7 @@ func (t *LTCTimer) Start() {
 	}()
 }
 
-func (t *LTCTimer) Stop() {
+func (t *LCTimer) Stop() {
 	go func() {
 		t.stopChan <- true
 	}()

@@ -137,6 +137,64 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			}
 			_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
 			return err
+
+		case "expire":
+			if len(args.Args) < 2 {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Please cpecify a expire duration!")
+				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+				return err
+			}
+
+			expireDuration, err := time.ParseDuration(args.Args[1])
+			if err != nil {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Invalid duration format. Please take a look "+
+						"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.")
+				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+				return err
+			}
+
+			var vote *util.Vote
+			if len(args.Args) > 2 {
+				vid := args.Args[2]
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.ID == vid {
+						vote = v
+					}
+				}
+				if vote == nil {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
+					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+					return err
+				}
+			} else {
+				votes := make([]*util.Vote, 0)
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+						votes = append(votes, v)
+					}
+				}
+				if len(votes) == 0 {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						"There is no open vote on this guild created by you.")
+					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+					return err
+				}
+
+				vote = votes[len(votes)-1]
+			}
+
+			vote.SetExpire(args.Session, expireDuration)
+			if err = args.CmdHandler.db.AddUpdateVote(vote); err != nil {
+				return err
+			}
+
+			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+				fmt.Sprintf("Vote will expire at %s.", vote.Expires.Format("01/02 15:04 MST")), "", util.ColorEmbedGreen)
+			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+			return err
 		}
 
 	}

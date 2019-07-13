@@ -4,7 +4,7 @@ import "github.com/bwmarrin/snowflake"
 
 var NodesReport []*snowflake.Node
 var NodeBackup *snowflake.Node
-var NodeLTCHandler *snowflake.Node
+var NodeLCHandler *snowflake.Node
 
 func SetupSnowflakeNodes() error {
 	NodesReport = make([]*snowflake.Node, len(ReportTypes))
@@ -17,7 +17,7 @@ func SetupSnowflakeNodes() error {
 	}
 
 	NodeBackup, err = snowflake.NewNode(100)
-	NodeLTCHandler, err = snowflake.NewNode(110)
+	NodeLCHandler, err = snowflake.NewNode(110)
 
 	return err
 }
