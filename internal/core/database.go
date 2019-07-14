@@ -78,6 +78,13 @@ type Database interface {
 	DeleteBackup(guildID, fileID string) error
 	GetBackups(guildID string) ([]*BackupEntry, error)
 	GetBackupGuilds() ([]string, error)
+
+	AddTag(tag *util.Tag) error
+	EditTag(tag *util.Tag) error
+	GetTagByID(id snowflake.ID) (*util.Tag, error)
+	GetTagByIdent(ident string, guildID string) (*util.Tag, error)
+	GetGuildTags(guildID string) ([]*util.Tag, error)
+	DeleteTag(id snowflake.ID) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {
