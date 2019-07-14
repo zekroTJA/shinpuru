@@ -80,6 +80,9 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 	}
 	repID := util.NodesReport[repType].Generate()
 
+	var attachment string
+	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
 			Color:       util.ReportColors[repType],
@@ -104,18 +107,22 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 					Value: repMsg,
 				},
 			},
+			Image: &discordgo.MessageEmbedImage{
+				URL: attachment,
+			},
 		},
 		Session:        args.Session,
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
 			rep := &util.Report{
-				ID:         repID,
-				Type:       repType,
-				GuildID:    args.Guild.ID,
-				ExecutorID: args.User.ID,
-				VictimID:   victim.User.ID,
-				Msg:        repMsg,
+				ID:            repID,
+				Type:          repType,
+				GuildID:       args.Guild.ID,
+				ExecutorID:    args.User.ID,
+				VictimID:      victim.User.ID,
+				Msg:           repMsg,
+				AttachmehtURL: attachment,
 			}
 			err = args.CmdHandler.db.AddReport(rep)
 			if err != nil {

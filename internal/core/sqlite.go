@@ -52,7 +52,8 @@ func (m *Sqlite) setup() {
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
 		"`victimID` text NOT NULL DEFAULT ''," +
-		"`msg` text NOT NULL DEFAULT ''" +
+		"`msg` text NOT NULL DEFAULT ''," +
+		"`attachment` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -312,8 +313,8 @@ func (m *Sqlite) SetSetting(setting, value string) error {
 }
 
 func (m *Sqlite) AddReport(rep *util.Report) error {
-	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
-		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
+	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
@@ -325,8 +326,8 @@ func (m *Sqlite) DeleteReport(id snowflake.ID) error {
 func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
 	rep := new(util.Report)
 
-	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE id = ?", id)
-	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
 	}
@@ -335,14 +336,14 @@ func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
 }
 
 func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {
-	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = ?", guildID)
+	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = ?", guildID)
 	var results []*util.Report
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		rep := new(util.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
 		}
@@ -352,7 +353,7 @@ func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {
 }
 
 func (m *Sqlite) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
-	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = "%s"`, guildID)
+	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = "%s"`, guildID)
 	if memberID != "" {
 		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
 	}
@@ -366,7 +367,7 @@ func (m *Sqlite) GetReportsFiltered(guildID, memberID string, repType int) ([]*u
 	}
 	for rows.Next() {
 		rep := new(util.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
 		}
