@@ -188,8 +188,6 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		return listVotes(args)
 	}
 
-	fmt.Println(args.Args)
-
 	split := strings.Split(strings.Join(args.Args, " "), "|")
 	if len(split) < 3 || len(split) > 11 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
@@ -209,12 +207,15 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	var imgLink string
 	description := split[0]
-	imgRx := regexp.MustCompile(`!\[\]\(([\w:\/\/\.&?%!-]+)\)`)
-	rxResult := imgRx.FindAllStringSubmatch(description, 1)
-	if len(rxResult) > 0 {
-		if len(rxResult[0]) == 2 {
-			description = strings.Replace(description, rxResult[0][0], "", 1)
-			imgLink = rxResult[0][1]
+
+	if len(args.Message.Attachments) > 0 {
+		imgLink = args.Message.Attachments[0].URL
+	} else {
+		imgRx := regexp.MustCompile(`https?:\/\/(\w+\.)+(\w+)(\/\w+)*[\w?=&#]*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp)`)
+		rxResult := imgRx.FindString(description)
+		if rxResult != "" {
+			description = strings.Replace(description, rxResult, "", 1)
+			imgLink = rxResult
 		}
 	}
 
@@ -224,7 +225,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		CreatorID:     args.User.ID,
 		GuildID:       args.Guild.ID,
 		ChannelID:     args.Channel.ID,
-		Description:   split[0],
+		Description:   description,
 		Possibilities: split[1:],
 		ImageURL:      imgLink,
 		Ticks:         make([]*util.VoteTick, 0),
