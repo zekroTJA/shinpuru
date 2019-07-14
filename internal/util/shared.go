@@ -13,7 +13,7 @@ func ExtractImageURLFromMessage(text string, attachments []*discordgo.MessageAtt
 	if len(attachments) > 0 {
 		imgLink = attachments[0].URL
 	} else {
-		imgRx := regexp.MustCompile(`https?:\/\/(\w+\.)+(\w+)(\/\w+)*[\w?=&#]*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp)`)
+		imgRx := regexp.MustCompile(`https?:\/\/([\w-]+\.)+([\w-]+)(\/[\w-]+)*.*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp)`)
 		rxResult := imgRx.FindString(text)
 		if rxResult != "" {
 			text = strings.Replace(text, rxResult, "", 1)
