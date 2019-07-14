@@ -25,6 +25,7 @@ func (c *CmdVote) GetDescription() string {
 func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
 		"`vote list` - display currentltly running votes\n" +
+		"`vote expire <duration> (<voteID>)` - set expire to last created (or specified) vote\n" +
 		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
 }
 
@@ -122,23 +123,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			return err
 
 		case "list":
-			emb := &discordgo.MessageEmbed{
-				Description: "Your open votes on this guild:",
-				Color:       util.ColorEmbedDefault,
-				Fields:      make([]*discordgo.MessageEmbedField, 0),
-			}
-			for _, v := range util.VotesRunning {
-				if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-					emb.Fields = append(emb.Fields, v.AsField())
-				}
-			}
-			if len(emb.Fields) == 0 {
-				emb.Description = "You do'nt have any open votes on this guild."
-			}
-			_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
-			return err
+			return listVotes(args)
 
-		case "expire":
+		case "expire", "expires":
 			if len(args.Args) < 2 {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					"Please cpecify a expire duration!")
@@ -197,7 +184,11 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			return err
 		}
 
+	} else {
+		return listVotes(args)
 	}
+
+	fmt.Println(args.Args)
 
 	split := strings.Split(strings.Join(args.Args, " "), "|")
 	if len(split) < 3 || len(split) > 11 {
@@ -257,4 +248,22 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 	}
 	util.VotesRunning[vote.ID] = vote
 	return nil
+}
+
+func listVotes(args *CommandArgs) error {
+	emb := &discordgo.MessageEmbed{
+		Description: "Your open votes on this guild:",
+		Color:       util.ColorEmbedDefault,
+		Fields:      make([]*discordgo.MessageEmbedField, 0),
+	}
+	for _, v := range util.VotesRunning {
+		if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+			emb.Fields = append(emb.Fields, v.AsField())
+		}
+	}
+	if len(emb.Fields) == 0 {
+		emb.Description = "You don't have any open votes on this guild."
+	}
+	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	return err
 }
