@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -205,19 +204,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		split[i] = strings.Trim(e, " \t")
 	}
 
-	var imgLink string
-	description := split[0]
-
-	if len(args.Message.Attachments) > 0 {
-		imgLink = args.Message.Attachments[0].URL
-	} else {
-		imgRx := regexp.MustCompile(`https?:\/\/(\w+\.)+(\w+)(\/\w+)*[\w?=&#]*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp)`)
-		rxResult := imgRx.FindString(description)
-		if rxResult != "" {
-			description = strings.Replace(description, rxResult, "", 1)
-			imgLink = rxResult
-		}
-	}
+	description, imgLink := util.ExtractImageURLFromMessage(split[0], args.Message.Attachments)
 
 	vote := &util.Vote{
 		ID:            args.Message.ID,
