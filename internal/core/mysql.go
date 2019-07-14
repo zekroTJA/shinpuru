@@ -103,6 +103,19 @@ func (m *MySQL) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`id` text NOT NULL," +
+		"`ident` text NOT NULL," +
+		"`creatorID` text NOT NULL," +
+		"`guildID` text NOT NULL," +
+		"`content` text NOT NULL," +
+		"`created` bigint(20) NOT NULL," +
+		"`lastEdit` bigint(20) NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -571,4 +584,102 @@ func (m *MySQL) GetBackupGuilds() ([]string, error) {
 	}
 
 	return guilds, err
+}
+
+func (m *MySQL) AddTag(tag *util.Tag) error {
+	_, err := m.DB.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
+		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
+	return err
+}
+
+func (m *MySQL) EditTag(tag *util.Tag) error {
+	_, err := m.DB.Exec("UPDATE tags SET "+
+		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
+		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *MySQL) GetTagByID(id snowflake.ID) (*util.Tag, error) {
+	tag := new(util.Tag)
+	var timestampCreated int64
+	var timestampLastEdit int64
+
+	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE id = ?", id)
+
+	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+		&tag.Content, &timestampCreated, &timestampLastEdit)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tag.Created = time.Unix(timestampCreated, 0)
+	tag.LastEdit = time.Unix(timestampLastEdit, 0)
+
+	return tag, nil
+}
+
+func (m *MySQL) GetTagByIdent(ident string, guildID string) (*util.Tag, error) {
+	tag := new(util.Tag)
+	var timestampCreated int64
+	var timestampLastEdit int64
+
+	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE ident = ? AND guildID = ?", ident, guildID)
+
+	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+		&tag.Content, &timestampCreated, &timestampLastEdit)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tag.Created = time.Unix(timestampCreated, 0)
+	tag.LastEdit = time.Unix(timestampLastEdit, 0)
+
+	return tag, nil
+}
+
+func (m *MySQL) GetGuildTags(guildID string) ([]*util.Tag, error) {
+	rows, err := m.DB.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tags := make([]*util.Tag, 0)
+	var timestampCreated int64
+	var timestampLastEdit int64
+	for rows.Next() {
+		tag := new(util.Tag)
+		err = rows.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+			&tag.Content, &timestampCreated, &timestampLastEdit)
+		if err != nil {
+			return nil, err
+		}
+		tag.Created = time.Unix(timestampCreated, 0)
+		tag.LastEdit = time.Unix(timestampLastEdit, 0)
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
+
+func (m *MySQL) DeleteTag(id snowflake.ID) error {
+	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
 }

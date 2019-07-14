@@ -38,6 +38,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *core.Config, db core.Database
 	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
 	cmdHandler.RegisterCommand(&commands.CmdBackup{PermLvl: 9})
 	cmdHandler.RegisterCommand(&commands.CmdInviteBlock{PermLvl: 6})
+	cmdHandler.RegisterCommand(&commands.CmdTag{PermLvl: 3})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
