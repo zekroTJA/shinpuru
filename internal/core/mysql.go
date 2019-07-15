@@ -35,7 +35,7 @@ func (m *MySQL) setup() {
 		"`backup` text NOT NULL," +
 		"`inviteBlock` text NOT NULL," +
 		"`joinMsg` text NOT NULL," +
-		"`leaveMsg` text NOT NULL" +
+		"`leaveMsg` text NOT NULL," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
