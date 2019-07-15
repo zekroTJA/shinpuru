@@ -26,7 +26,12 @@ func (c *CmdTag) GetDescription() string {
 }
 
 func (c *CmdTag) GetHelp() string {
-	return ""
+	return "`tag` - Display all created tags on the current guild\n" +
+		"`tag create <identifier> <content>` - Create a tag\n" +
+		"`tag edit <identifier|ID> <content>` - Edit a tag\n" +
+		"`tag delete <identifier|ID>` - Delete a tag\n" +
+		"`tag raw <identifier|ID>` - Display tags content as raw markdown\n" +
+		"`tag <identifier|ID>` - Display tag"
 }
 
 func (c *CmdTag) GetGroup() string {
@@ -69,6 +74,9 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 
 	switch strings.ToLower(args.Args[0]) {
 	case "create", "add":
+		if err, ok := checkPermission(args, 3); !ok || err != nil {
+			return err
+		}
 		return c.addTag(args, db)
 	case "edit":
 		return c.editTag(args, db)
@@ -261,4 +269,20 @@ func printNotPermitted(args *CommandArgs, t string) error {
 		fmt.Sprintf("You are not permitted to %s this tag.", t))
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 	return err
+}
+
+func checkPermission(args *CommandArgs, reqiredLevel int) (error, bool) {
+	lvl, err := args.CmdHandler.GetPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+	if err != nil {
+		return err, false
+	}
+
+	if lvl < reqiredLevel {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You are not permitted to use this command.")
+		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+		return err, false
+	}
+
+	return nil, true
 }
