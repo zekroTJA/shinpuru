@@ -11,7 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-const reserved = "create add edit delete remove rem raw"
+var reserved = []string{"create", "add", "edit", "delete", "remove", "rem", "raw"}
 
 type CmdTag struct {
 	PermLvl int
@@ -96,11 +96,13 @@ func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
 
 	ident := strings.ToLower(args.Args[1])
 
-	if strings.Contains(reserved, ident) {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"A tag sub command can not be used as tag identifier.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+	for _, r := range reserved {
+		if r == ident {
+			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				"A tag sub command can not be used as tag identifier.")
+			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+			return err
+		}
 	}
 
 	tag, err := db.GetTagByIdent(ident, args.Guild.ID)
