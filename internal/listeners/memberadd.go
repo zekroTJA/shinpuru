@@ -31,4 +31,11 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 			util.Log.Errorf("Failed setting autorole for member '%s': %s", e.User.ID, err.Error())
 		}
 	}
+
+	chanID, msg, err := l.db.GetGuildJoinMsg(e.GuildID)
+	if err == nil && msg != "" && chanID != "" {
+		msg = strings.Replace(msg, "[user]", e.User.Username, -1)
+		msg = strings.Replace(msg, "[ment]", e.User.Mention(), -1)
+		util.SendEmbed(s, chanID, msg, "", 0)
+	}
 }

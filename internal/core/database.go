@@ -49,6 +49,12 @@ type Database interface {
 	GetGuildInviteBlock(guildID string) (string, error)
 	SetGuildInviteBlock(guildID string, data string) error
 
+	GetGuildJoinMsg(guildID string) (string, string, error)
+	SetGuildJoinMsg(guildID string, msg string, channelID string) error
+
+	GetGuildLeaveMsg(guildID string) (string, string, error)
+	SetGuildLeaveMsg(guildID string, msg string, channelID string) error
+
 	AddReport(rep *util.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*util.Report, error)

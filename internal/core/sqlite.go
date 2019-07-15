@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
@@ -33,7 +34,9 @@ func (m *Sqlite) setup() {
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
 		"`backup` text NOT NULL DEFAULT ''," +
-		"`inviteBlock` text NOT NULL DEFAULT ''" +
+		"`inviteBlock` text NOT NULL DEFAULT ''," +
+		"`joinMsg` text NOT NULL DEFAULT ''," +
+		"`leaveMsg` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -537,6 +540,40 @@ func (m *Sqlite) GetGuildInviteBlock(guildID string) (string, error) {
 
 func (m *Sqlite) SetGuildInviteBlock(guildID string, data string) error {
 	return m.setGuildSetting(guildID, "inviteBlock", data)
+}
+
+func (m *Sqlite) GetGuildJoinMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "joinMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *Sqlite) SetGuildJoinMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", channelID, msg))
+}
+
+func (m *Sqlite) GetGuildLeaveMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "leaveMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *Sqlite) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
 func (m *Sqlite) GetBackups(guildID string) ([]*BackupEntry, error) {
