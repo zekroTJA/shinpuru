@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -33,6 +34,8 @@ func (m *MySQL) setup() {
 		"`jdoodleToken` text NOT NULL," +
 		"`backup` text NOT NULL," +
 		"`inviteBlock` text NOT NULL," +
+		"`joinMsg` text NOT NULL," +
+		"`leaveMsg` text NOT NULL" +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -538,6 +541,40 @@ func (m *MySQL) GetGuildInviteBlock(guildID string) (string, error) {
 
 func (m *MySQL) SetGuildInviteBlock(guildID string, data string) error {
 	return m.setGuildSetting(guildID, "inviteBlock", data)
+}
+
+func (m *MySQL) GetGuildJoinMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "joinMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *MySQL) SetGuildJoinMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", channelID, msg))
+}
+
+func (m *MySQL) GetGuildLeaveMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "leaveMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *MySQL) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
 func (m *MySQL) GetBackups(guildID string) ([]*BackupEntry, error) {

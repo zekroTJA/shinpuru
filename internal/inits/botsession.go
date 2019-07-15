@@ -25,6 +25,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
+	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
