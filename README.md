@@ -128,7 +128,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
 - [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
 - [op/go-logging](https://github.com/op/go-logging)
-
+- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
+- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
+- [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
 
 Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
 
