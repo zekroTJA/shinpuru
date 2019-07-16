@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
@@ -33,7 +34,9 @@ func (m *Sqlite) setup() {
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
 		"`backup` text NOT NULL DEFAULT ''," +
-		"`inviteBlock` text NOT NULL DEFAULT ''" +
+		"`inviteBlock` text NOT NULL DEFAULT ''," +
+		"`joinMsg` text NOT NULL DEFAULT ''," +
+		"`leaveMsg` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -52,7 +55,8 @@ func (m *Sqlite) setup() {
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
 		"`victimID` text NOT NULL DEFAULT ''," +
-		"`msg` text NOT NULL DEFAULT ''" +
+		"`msg` text NOT NULL DEFAULT ''," +
+		"`attachment` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -99,6 +103,18 @@ func (m *Sqlite) setup() {
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`timestamp` bigint(20) NOT NULL DEFAULT 0," +
 		"`fileID` text NOT NULL DEFAULT ''" +
+		");")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		"`id` text NOT NULL DEFAULT ''," +
+		"`ident` text NOT NULL DEFAULT ''," +
+		"`creatorID` text NOT NULL DEFAULT ''," +
+		"`guildID` text NOT NULL DEFAULT ''," +
+		"`content` text NOT NULL DEFAULT ''," +
+		"`created` bigint(20) NOT NULL DEFAULT 0," +
+		"`lastEdit` bigint(20) NOT NULL DEFAULT 0" +
 		");")
 	mErr.Append(err)
 
@@ -312,8 +328,8 @@ func (m *Sqlite) SetSetting(setting, value string) error {
 }
 
 func (m *Sqlite) AddReport(rep *util.Report) error {
-	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg) VALUES (?, ?, ?, ?, ?, ?)",
-		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg)
+	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
@@ -325,8 +341,8 @@ func (m *Sqlite) DeleteReport(id snowflake.ID) error {
 func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
 	rep := new(util.Report)
 
-	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE id = ?", id)
-	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
 	}
@@ -335,14 +351,14 @@ func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
 }
 
 func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {
-	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = ?", guildID)
+	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = ?", guildID)
 	var results []*util.Report
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		rep := new(util.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
 		}
@@ -352,7 +368,7 @@ func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {
 }
 
 func (m *Sqlite) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
-	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg FROM reports WHERE guildID = "%s"`, guildID)
+	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = "%s"`, guildID)
 	if memberID != "" {
 		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
 	}
@@ -366,7 +382,7 @@ func (m *Sqlite) GetReportsFiltered(guildID, memberID string, repType int) ([]*u
 	}
 	for rows.Next() {
 		rep := new(util.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
 		}
@@ -526,6 +542,40 @@ func (m *Sqlite) SetGuildInviteBlock(guildID string, data string) error {
 	return m.setGuildSetting(guildID, "inviteBlock", data)
 }
 
+func (m *Sqlite) GetGuildJoinMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "joinMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *Sqlite) SetGuildJoinMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", channelID, msg))
+}
+
+func (m *Sqlite) GetGuildLeaveMsg(guildID string) (string, string, error) {
+	data, err := m.getGuildSetting(guildID, "leaveMsg")
+	if err != nil {
+		return "", "", err
+	}
+	if data == "" {
+		return "", "", nil
+	}
+
+	i := strings.Index(data, "|")
+	return data[:i], data[i+1:], nil
+}
+
+func (m *Sqlite) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
+	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
+}
+
 func (m *Sqlite) GetBackups(guildID string) ([]*BackupEntry, error) {
 	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
@@ -570,4 +620,102 @@ func (m *Sqlite) GetBackupGuilds() ([]string, error) {
 	}
 
 	return guilds, err
+}
+
+func (m *Sqlite) AddTag(tag *util.Tag) error {
+	_, err := m.DB.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
+		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
+	return err
+}
+
+func (m *Sqlite) EditTag(tag *util.Tag) error {
+	_, err := m.DB.Exec("UPDATE tags SET "+
+		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
+		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *Sqlite) GetTagByID(id snowflake.ID) (*util.Tag, error) {
+	tag := new(util.Tag)
+	var timestampCreated int64
+	var timestampLastEdit int64
+
+	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE id = ?", id)
+
+	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+		&tag.Content, &timestampCreated, &timestampLastEdit)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tag.Created = time.Unix(timestampCreated, 0)
+	tag.LastEdit = time.Unix(timestampLastEdit, 0)
+
+	return tag, nil
+}
+
+func (m *Sqlite) GetTagByIdent(ident string, guildID string) (*util.Tag, error) {
+	tag := new(util.Tag)
+	var timestampCreated int64
+	var timestampLastEdit int64
+
+	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE ident = ? AND guildID = ?", ident, guildID)
+
+	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+		&tag.Content, &timestampCreated, &timestampLastEdit)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tag.Created = time.Unix(timestampCreated, 0)
+	tag.LastEdit = time.Unix(timestampLastEdit, 0)
+
+	return tag, nil
+}
+
+func (m *Sqlite) GetGuildTags(guildID string) ([]*util.Tag, error) {
+	rows, err := m.DB.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+		"WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	tags := make([]*util.Tag, 0)
+	var timestampCreated int64
+	var timestampLastEdit int64
+	for rows.Next() {
+		tag := new(util.Tag)
+		err = rows.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
+			&tag.Content, &timestampCreated, &timestampLastEdit)
+		if err != nil {
+			return nil, err
+		}
+		tag.Created = time.Unix(timestampCreated, 0)
+		tag.LastEdit = time.Unix(timestampLastEdit, 0)
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
+
+func (m *Sqlite) DeleteTag(id snowflake.ID) error {
+	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
 }

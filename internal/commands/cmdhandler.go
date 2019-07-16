@@ -25,20 +25,24 @@ const (
 type CmdHandler struct {
 	registeredCmds         map[string]Command
 	registeredCmdInstances []Command
-	db                     core.Database
-	config                 *core.Config
-	tnw                    *core.TwitchNotifyWorker
-	bck                    *core.GuildBackups
-	notifiedCmdMsgs        *timedmap.TimedMap
+
+	db     core.Database
+	config *core.Config
+	tnw    *core.TwitchNotifyWorker
+	bck    *core.GuildBackups
+	lct    *core.LCTimer
+
+	notifiedCmdMsgs *timedmap.TimedMap
 }
 
-func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *CmdHandler {
 	return &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
 		db:                     db,
 		config:                 config,
 		tnw:                    tnw,
+		lct:                    lct,
 		bck:                    core.NewGuildBackups(s, db),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 	}

@@ -101,7 +101,11 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			}
 		}
 
-		s.ChannelMessageDelete(channel.ID, e.Message.ID)
+		if len(e.Message.Attachments) > 0 {
+			defer s.ChannelMessageDelete(channel.ID, e.Message.ID)
+		} else {
+			s.ChannelMessageDelete(channel.ID, e.Message.ID)
+		}
 		err = cmdInstance.Exec(cmdArgs)
 		if err != nil {
 			emb := &discordgo.MessageEmbed{
