@@ -12,6 +12,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+type VoteState int
+
+const (
+	VoteStateOpen VoteState = iota
+	VoteStateClosed
+	VoteStateExpired
+)
+
 var VotesRunning = map[string]*Vote{}
 
 var VoteEmotes = strings.Fields("\u0031\u20E3 \u0032\u20E3 \u0033\u20E3 \u0034\u20E3 \u0035\u20E3 \u0036\u20E3 \u0037\u20E3 \u0038\u20E3 \u0039\u20E3 \u0030\u20E3")
@@ -59,16 +67,26 @@ func (v *Vote) Marshal() (string, error) {
 	return res, nil
 }
 
-func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmbed, error) {
+func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo.MessageEmbed, error) {
+	state := VoteStateOpen
+	if len(voteState) > 0 {
+		state = voteState[0]
+	}
+
 	creator, err := s.User(v.CreatorID)
 	if err != nil {
 		return nil, err
 	}
 	title := "Open Vote"
 	color := ColorEmbedDefault
-	if closed {
+
+	switch state {
+	case VoteStateClosed:
 		title = "Vote closed"
 		color = ColorEmbedOrange
+	case VoteStateExpired:
+		title = "Vote expired"
+		color = ColorEmbedViolett
 	}
 
 	totalTicks := make(map[int]int)
@@ -86,7 +104,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 	}
 
 	footerText := fmt.Sprintf("ID: %s", v.ID)
-	if (v.Expires != time.Time{}) {
+	if (v.Expires != time.Time{} && state == VoteStateOpen) {
 		footerText = fmt.Sprintf("%s | Expires: %s", footerText, v.Expires.Format("01/02 15:04 MST"))
 	}
 
@@ -153,7 +171,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 		UserID: userID,
 		Tick:   tick,
 	})
-	emb, err := v.AsEmbed(s, false)
+	emb, err := v.AsEmbed(s)
 	if err != nil {
 		return err
 	}
@@ -164,7 +182,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
 	v.Expires = time.Now().Add(d)
 
-	emb, err := v.AsEmbed(s, false)
+	emb, err := v.AsEmbed(s)
 	if err != nil {
 		return err
 	}
@@ -173,9 +191,9 @@ func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
 	return err
 }
 
-func (v *Vote) Close(s *discordgo.Session) error {
+func (v *Vote) Close(s *discordgo.Session, voteState VoteState) error {
 	delete(VotesRunning, v.ID)
-	emb, err := v.AsEmbed(s, true)
+	emb, err := v.AsEmbed(s, voteState)
 	if err != nil {
 		return err
 	}

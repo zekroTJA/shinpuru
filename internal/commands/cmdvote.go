@@ -54,7 +54,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
 							go func(vC *util.Vote) {
 								args.CmdHandler.db.DeleteVote(vC.ID)
-								vC.Close(args.Session)
+								vC.Close(args.Session, util.VoteStateClosed)
 							}(v)
 							i++
 						}
@@ -115,7 +115,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			if err != nil {
 				return err
 			}
-			err = vote.Close(args.Session)
+			err = vote.Close(args.Session, util.VoteStateClosed)
 			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 				"Vote closed.", "", util.ColorEmbedGreen)
 			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
@@ -217,7 +217,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		ImageURL:      imgLink,
 		Ticks:         make([]*util.VoteTick, 0),
 	}
-	emb, err := vote.AsEmbed(args.Session, false)
+	emb, err := vote.AsEmbed(args.Session)
 	if err != nil {
 		return err
 	}

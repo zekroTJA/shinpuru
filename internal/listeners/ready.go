@@ -55,7 +55,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		l.lct.OnTick(func(now time.Time) {
 			for _, v := range util.VotesRunning {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
-					v.Close(s)
+					v.Close(s, util.VoteStateExpired)
 					if err = l.db.DeleteVote(v.ID); err != nil {
 						util.Log.Errorf("Failed updating vote with ID %s: %s", v.ID, err.Error())
 					}
