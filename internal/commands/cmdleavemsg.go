@@ -49,7 +49,6 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	if err != nil && err != core.ErrDatabaseNotFound {
 		return err
 	}
-	fmt.Println(msg, chanID)
 
 	var resTxt string
 
@@ -77,25 +76,23 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if len(args.Args) < 2 {
-		rmsg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.")
-		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
-		return err
-	}
-
 	argsJoined := strings.Join(args.Args[1:], " ")
 
 	switch strings.ToLower(args.Args[0]) {
 
 	case "msg", "message", "text":
-		fmt.Println("SET", argsJoined, chanID)
+		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
+			return err
+		}
 		if err = db.SetGuildLeaveMsg(args.Guild.ID, chanID, argsJoined); err != nil {
 			return err
 		}
 		resTxt = "Leave message set."
 
 	case "chan", "channel", "ch":
+		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
+			return err
+		}
 		ch, err := util.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
@@ -131,4 +128,14 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 		resTxt, "", 0)
 	util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 	return err
+}
+
+func (c *CmdLeaveMsg) checkReqArgs(args *CommandArgs, req int) (bool, error) {
+	if len(args.Args) < req {
+		rmsg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.")
+		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
+		return false, err
+	}
+	return false, nil
 }
