@@ -2,20 +2,24 @@ package util
 
 import "github.com/bwmarrin/snowflake"
 
-var ReportNodes []*snowflake.Node
-var BackupNode *snowflake.Node
+var NodesReport []*snowflake.Node
+var NodeBackup *snowflake.Node
+var NodeLCHandler *snowflake.Node
+var NodeTags *snowflake.Node
 
 func SetupSnowflakeNodes() error {
-	ReportNodes = make([]*snowflake.Node, len(ReportTypes))
+	NodesReport = make([]*snowflake.Node, len(ReportTypes))
 	var err error
 	for i := range ReportTypes {
-		ReportNodes[i], err = snowflake.NewNode(int64(i))
+		NodesReport[i], err = snowflake.NewNode(int64(i))
 		if err != nil {
 			return err
 		}
 	}
 
-	BackupNode, err = snowflake.NewNode(100)
+	NodeBackup, err = snowflake.NewNode(100)
+	NodeLCHandler, err = snowflake.NewNode(110)
+	NodeTags, err = snowflake.NewNode(120)
 
 	return err
 }

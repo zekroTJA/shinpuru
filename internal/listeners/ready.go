@@ -1,6 +1,8 @@
 package listeners
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -10,12 +12,14 @@ import (
 type ListenerReady struct {
 	config *core.Config
 	db     core.Database
+	lct    *core.LCTimer
 }
 
-func NewListenerReady(config *core.Config, db core.Database) *ListenerReady {
+func NewListenerReady(config *core.Config, db core.Database, lct *core.LCTimer) *ListenerReady {
 	return &ListenerReady{
 		config: config,
 		db:     db,
+		lct:    lct,
 	}
 }
 
@@ -26,6 +30,8 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		e.User.ID, util.InvitePermission)
 
 	s.UpdateStatus(0, util.StdMotd)
+
+	l.lct.Start()
 
 	rawPresence, err := l.db.GetSetting(util.SettingPresence)
 	if err == nil {
@@ -46,5 +52,15 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		util.Log.Error("Failed getting votes from DB: ", err)
 	} else {
 		util.VotesRunning = votes
+		l.lct.OnTick(func(now time.Time) {
+			for _, v := range util.VotesRunning {
+				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
+					v.Close(s, util.VoteStateExpired)
+					if err = l.db.DeleteVote(v.ID); err != nil {
+						util.Log.Errorf("Failed updating vote with ID %s: %s", v.ID, err.Error())
+					}
+				}
+			}
+		})
 	}
 }

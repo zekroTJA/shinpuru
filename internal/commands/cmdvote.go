@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -25,6 +24,7 @@ func (c *CmdVote) GetDescription() string {
 func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
 		"`vote list` - display currentltly running votes\n" +
+		"`vote expire <duration> (<voteID>)` - set expire to last created (or specified) vote\n" +
 		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
 }
 
@@ -54,7 +54,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
 							go func(vC *util.Vote) {
 								args.CmdHandler.db.DeleteVote(vC.ID)
-								vC.Close(args.Session)
+								vC.Close(args.Session, util.VoteStateClosed)
 							}(v)
 							i++
 						}
@@ -115,30 +115,76 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			if err != nil {
 				return err
 			}
-			err = vote.Close(args.Session)
+			err = vote.Close(args.Session, util.VoteStateClosed)
 			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 				"Vote closed.", "", util.ColorEmbedGreen)
 			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 			return err
 
 		case "list":
-			emb := &discordgo.MessageEmbed{
-				Description: "Your open votes on this guild:",
-				Color:       util.ColorEmbedDefault,
-				Fields:      make([]*discordgo.MessageEmbedField, 0),
+			return listVotes(args)
+
+		case "expire", "expires":
+			if len(args.Args) < 2 {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Please cpecify a expire duration!")
+				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+				return err
 			}
-			for _, v := range util.VotesRunning {
-				if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-					emb.Fields = append(emb.Fields, v.AsField())
+
+			expireDuration, err := time.ParseDuration(args.Args[1])
+			if err != nil {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Invalid duration format. Please take a look "+
+						"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.")
+				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+				return err
+			}
+
+			var vote *util.Vote
+			if len(args.Args) > 2 {
+				vid := args.Args[2]
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.ID == vid {
+						vote = v
+					}
 				}
+				if vote == nil {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
+					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+					return err
+				}
+			} else {
+				votes := make([]*util.Vote, 0)
+				for _, v := range util.VotesRunning {
+					if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+						votes = append(votes, v)
+					}
+				}
+				if len(votes) == 0 {
+					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+						"There is no open vote on this guild created by you.")
+					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+					return err
+				}
+
+				vote = votes[len(votes)-1]
 			}
-			if len(emb.Fields) == 0 {
-				emb.Description = "You do'nt have any open votes on this guild."
+
+			vote.SetExpire(args.Session, expireDuration)
+			if err = args.CmdHandler.db.AddUpdateVote(vote); err != nil {
+				return err
 			}
-			_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+
+			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+				fmt.Sprintf("Vote will expire at %s.", vote.Expires.Format("01/02 15:04 MST")), "", util.ColorEmbedGreen)
+			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 			return err
 		}
 
+	} else {
+		return listVotes(args)
 	}
 
 	split := strings.Split(strings.Join(args.Args, " "), "|")
@@ -158,16 +204,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		split[i] = strings.Trim(e, " \t")
 	}
 
-	var imgLink string
-	description := split[0]
-	imgRx := regexp.MustCompile(`!\[\]\(([\w:\/\/\.&?%!-]+)\)`)
-	rxResult := imgRx.FindAllStringSubmatch(description, 1)
-	if len(rxResult) > 0 {
-		if len(rxResult[0]) == 2 {
-			description = strings.Replace(description, rxResult[0][0], "", 1)
-			imgLink = rxResult[0][1]
-		}
-	}
+	description, imgLink := util.ExtractImageURLFromMessage(split[0], args.Message.Attachments)
 
 	vote := &util.Vote{
 		ID:            args.Message.ID,
@@ -175,12 +212,12 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		CreatorID:     args.User.ID,
 		GuildID:       args.Guild.ID,
 		ChannelID:     args.Channel.ID,
-		Description:   split[0],
+		Description:   description,
 		Possibilities: split[1:],
 		ImageURL:      imgLink,
 		Ticks:         make([]*util.VoteTick, 0),
 	}
-	emb, err := vote.AsEmbed(args.Session, false)
+	emb, err := vote.AsEmbed(args.Session)
 	if err != nil {
 		return err
 	}
@@ -199,4 +236,22 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 	}
 	util.VotesRunning[vote.ID] = vote
 	return nil
+}
+
+func listVotes(args *CommandArgs) error {
+	emb := &discordgo.MessageEmbed{
+		Description: "Your open votes on this guild:",
+		Color:       util.ColorEmbedDefault,
+		Fields:      make([]*discordgo.MessageEmbedField, 0),
+	}
+	for _, v := range util.VotesRunning {
+		if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+			emb.Fields = append(emb.Fields, v.AsField())
+		}
+	}
+	if len(emb.Fields) == 0 {
+		emb.Description = "You don't have any open votes on this guild."
+	}
+	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	return err
 }

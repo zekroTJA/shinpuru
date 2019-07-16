@@ -78,15 +78,12 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			},
 			&discordgo.MessageEmbedField{
 				Name: "3rd Party Dependencies and Credits",
-				Value: "- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)\n" +
-					"- [go-yaml/yaml](https://github.com/go-yaml/yaml)\n" +
-					"- [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)\n" +
-					"- [op/go-logging](https://github.com/op/go-logging)\n\n" +
+				Value: "[Here](https://github.com/zekroTJA/shinpuru/blob/master/README.md#third-party-dependencies) you can find a list of all dependencies used.\n" +
 					"Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).",
 			},
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "© 2018 zekro Development (Ringo Hoffmann)",
+			Text: "© 2018-2019 zekro Development (Ringo Hoffmann)",
 		},
 	}
 	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)

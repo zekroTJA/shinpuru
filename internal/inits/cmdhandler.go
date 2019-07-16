@@ -7,14 +7,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitCommandHandler(s *discordgo.Session, config *core.Config, database core.Database, twitchNotifyWorker *core.TwitchNotifyWorker) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(s, database, config, twitchNotifyWorker)
+func InitCommandHandler(s *discordgo.Session, cfg *core.Config, db core.Database, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *commands.CmdHandler {
+	cmdHandler := commands.NewCmdHandler(s, db, cfg, tnw, lct)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
 	cmdHandler.RegisterCommand(&commands.CmdPerms{PermLvl: 10})
 	cmdHandler.RegisterCommand(&commands.CmdClear{PermLvl: 8})
-	cmdHandler.RegisterCommand(&commands.CmdMvall{PermLvl: 5})
+	cmdHandler.RegisterCommand(&commands.CmdMvall{PermLvl: 4})
 	cmdHandler.RegisterCommand(&commands.CmdInfo{PermLvl: 0})
 	cmdHandler.RegisterCommand(&commands.CmdSay{PermLvl: 3})
 	cmdHandler.RegisterCommand(&commands.CmdQuote{PermLvl: 0})
@@ -38,18 +38,21 @@ func InitCommandHandler(s *discordgo.Session, config *core.Config, database core
 	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
 	cmdHandler.RegisterCommand(&commands.CmdBackup{PermLvl: 9})
 	cmdHandler.RegisterCommand(&commands.CmdInviteBlock{PermLvl: 6})
+	cmdHandler.RegisterCommand(&commands.CmdTag{PermLvl: 0})
+	cmdHandler.RegisterCommand(&commands.CmdJoinMsg{PermLvl: 4})
+	cmdHandler.RegisterCommand(&commands.CmdLeaveMsg{PermLvl: 4})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 
-	if config.Permissions != nil {
-		cmdHandler.UpdateCommandPermissions(config.Permissions.CustomCmdPermissions)
-		if config.Permissions.BotOwnerLevel > 0 {
-			util.PermLvlBotOwner = config.Permissions.BotOwnerLevel
+	if cfg.Permissions != nil {
+		cmdHandler.UpdateCommandPermissions(cfg.Permissions.CustomCmdPermissions)
+		if cfg.Permissions.BotOwnerLevel > 0 {
+			util.PermLvlBotOwner = cfg.Permissions.BotOwnerLevel
 		}
-		if config.Permissions.GuildOwnerLevel > 0 {
-			util.PermLvlGuildOwner = config.Permissions.GuildOwnerLevel
+		if cfg.Permissions.GuildOwnerLevel > 0 {
+			util.PermLvlGuildOwner = cfg.Permissions.GuildOwnerLevel
 		}
 	}
 

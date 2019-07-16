@@ -50,8 +50,11 @@ func main() {
 	}()
 
 	tnw := inits.InitTwitchNotifyer(session, config, database)
-	cmdHandler := inits.InitCommandHandler(session, config, database, tnw)
-	inits.InitDiscordBotSession(session, config, database, cmdHandler)
+
+	lct := inits.InitLTCTimer()
+
+	cmdHandler := inits.InitCommandHandler(session, config, database, tnw, lct)
+	inits.InitDiscordBotSession(session, config, database, cmdHandler, lct)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()

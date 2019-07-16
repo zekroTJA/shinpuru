@@ -9,7 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *core.Config, database core.Database, cmdHandler *commands.CmdHandler) {
+func InitDiscordBotSession(session *discordgo.Session, config *core.Config, database core.Database, cmdHandler *commands.CmdHandler, lct *core.LCTimer) {
 	snowflake.Epoch = util.DefEpoche
 	err := util.SetupSnowflakeNodes()
 	if err != nil {
@@ -21,10 +21,11 @@ func InitDiscordBotSession(session *discordgo.Session, config *core.Config, data
 	listenerInviteBlock := listeners.NewListenerInviteBlock(database, cmdHandler)
 	listenerGhostPing := listeners.NewListenerGhostPing(database, cmdHandler)
 
-	session.AddHandler(listeners.NewListenerReady(config, database).Handler)
+	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
 	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
+	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)
 	session.AddHandler(listeners.NewListenerVote(database).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)

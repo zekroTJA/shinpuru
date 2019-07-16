@@ -7,8 +7,17 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+)
+
+type VoteState int
+
+const (
+	VoteStateOpen VoteState = iota
+	VoteStateClosed
+	VoteStateExpired
 )
 
 var VotesRunning = map[string]*Vote{}
@@ -23,6 +32,7 @@ type Vote struct {
 	ChannelID     string
 	Description   string
 	ImageURL      string
+	Expires       time.Time
 	Possibilities []string
 	Ticks         []*VoteTick
 }
@@ -57,16 +67,26 @@ func (v *Vote) Marshal() (string, error) {
 	return res, nil
 }
 
-func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmbed, error) {
+func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo.MessageEmbed, error) {
+	state := VoteStateOpen
+	if len(voteState) > 0 {
+		state = voteState[0]
+	}
+
 	creator, err := s.User(v.CreatorID)
 	if err != nil {
 		return nil, err
 	}
 	title := "Open Vote"
 	color := ColorEmbedDefault
-	if closed {
+
+	switch state {
+	case VoteStateClosed:
 		title = "Vote closed"
 		color = ColorEmbedOrange
+	case VoteStateExpired:
+		title = "Vote expired"
+		color = ColorEmbedViolett
 	}
 
 	totalTicks := make(map[int]int)
@@ -83,6 +103,11 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 		description += fmt.Sprintf("%s    %s  -  `%d`\n", VoteEmotes[i], p, totalTicks[i])
 	}
 
+	footerText := fmt.Sprintf("ID: %s", v.ID)
+	if (v.Expires != time.Time{} && state == VoteStateOpen) {
+		footerText = fmt.Sprintf("%s | Expires: %s", footerText, v.Expires.Format("01/02 15:04 MST"))
+	}
+
 	emb := &discordgo.MessageEmbed{
 		Color:       color,
 		Title:       title,
@@ -92,7 +117,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, closed bool) (*discordgo.MessageEmb
 			Name:    creator.Username + "#" + creator.Discriminator,
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "VoteID: " + v.ID,
+			Text: footerText,
 		},
 	}
 
@@ -110,10 +135,16 @@ func (v *Vote) AsField() *discordgo.MessageEmbedField {
 	if len(shortenedDescription) > 200 {
 		shortenedDescription = shortenedDescription[200:] + "..."
 	}
+
+	expiresTxt := "never"
+	if (v.Expires != time.Time{}) {
+		expiresTxt = v.Expires.Format("01/02 15:04 MST")
+	}
+
 	return &discordgo.MessageEmbedField{
 		Name: "VID: " + v.ID,
-		Value: fmt.Sprintf("**Description:** %s\n`%d votes`\n[*jump to msg*](%s)",
-			shortenedDescription, len(v.Ticks), GetMessageLink(&discordgo.Message{
+		Value: fmt.Sprintf("**Description:** %s\n**Expires:** %s\n`%d votes`\n[*jump to msg*](%s)",
+			shortenedDescription, expiresTxt, len(v.Ticks), GetMessageLink(&discordgo.Message{
 				ID:        v.MsgID,
 				ChannelID: v.ChannelID,
 			}, v.GuildID)),
@@ -140,7 +171,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 		UserID: userID,
 		Tick:   tick,
 	})
-	emb, err := v.AsEmbed(s, false)
+	emb, err := v.AsEmbed(s)
 	if err != nil {
 		return err
 	}
@@ -148,9 +179,21 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 	return err
 }
 
-func (v *Vote) Close(s *discordgo.Session) error {
+func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
+	v.Expires = time.Now().Add(d)
+
+	emb, err := v.AsEmbed(s)
+	if err != nil {
+		return err
+	}
+	_, err = s.ChannelMessageEditEmbed(v.ChannelID, v.MsgID, emb)
+
+	return err
+}
+
+func (v *Vote) Close(s *discordgo.Session, voteState VoteState) error {
 	delete(VotesRunning, v.ID)
-	emb, err := v.AsEmbed(s, true)
+	emb, err := v.AsEmbed(s, voteState)
 	if err != nil {
 		return err
 	}
