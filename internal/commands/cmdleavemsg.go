@@ -125,7 +125,7 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	}
 
 	rmsg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		resTxt, "", 0)
+		resTxt, "", util.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 	return err
 }
@@ -137,5 +137,5 @@ func (c *CmdLeaveMsg) checkReqArgs(args *CommandArgs, req int) (bool, error) {
 		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 		return false, err
 	}
-	return false, nil
+	return true, nil
 }
