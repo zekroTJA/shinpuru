@@ -130,7 +130,7 @@ func (m *MySQL) Connect(credentials ...interface{}) error {
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", creds.User, creds.Password, creds.Host, creds.Database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci", creds.User, creds.Password, creds.Host, creds.Database)
 	m.DB, err = sql.Open("mysql", dsn)
 	m.setup()
 	return err

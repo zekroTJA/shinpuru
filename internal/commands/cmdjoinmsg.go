@@ -82,6 +82,7 @@ func (c *CmdJoinMsg) Exec(args *CommandArgs) error {
 
 	case "msg", "message", "text":
 		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
+			fmt.Println(ok, err)
 			return err
 		}
 		if err = db.SetGuildJoinMsg(args.Guild.ID, chanID, argsJoined); err != nil {
@@ -137,5 +138,5 @@ func (c *CmdJoinMsg) checkReqArgs(args *CommandArgs, req int) (bool, error) {
 		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 		return false, err
 	}
-	return false, nil
+	return true, nil
 }
