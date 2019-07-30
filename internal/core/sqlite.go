@@ -118,6 +118,14 @@ func (m *Sqlite) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
+		"`iid`  INTEGER PRIMARY KEY AUTOINCREMENT," +
+		"`sessionkey` text NOT NULL DEFAULT ''," +
+		"`userID` text NOT NULL DEFAULT ''," +
+		"`expires` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -714,6 +722,50 @@ func (m *Sqlite) GetGuildTags(guildID string) ([]*util.Tag, error) {
 
 func (m *Sqlite) DeleteTag(id snowflake.ID) error {
 	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *Sqlite) SetSession(key, userID string, expires time.Time) error {
+	res, err := m.DB.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *Sqlite) GetSession(key string) (string, error) {
+	var userID string
+	var expires time.Time
+	err := m.DB.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
+		Scan(&userID, &expires)
+
+	if err == sql.ErrNoRows {
+		return "", ErrDatabaseNotFound
+	}
+	if err != nil {
+		return "", err
+	}
+
+	if expires.Before(time.Now()) {
+		return "", ErrDatabaseNotFound
+	}
+
+	return userID, nil
+}
+
+func (m *Sqlite) DeleteSession(userID string) error {
+	_, err := m.DB.Exec("DELETE FROM sessions WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}

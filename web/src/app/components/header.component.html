@@ -1,0 +1,8 @@
+<div id="header" class="container-fluid">
+    <img id="sp-logo" class="avatar" src="/assets/shinpuru-logo.png" />
+    <h1 id="heading" class="ml-3">SHINPURU</h1>
+    <div *ngIf="selfUser" id="user-info" class="d-flex">
+        <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
+        <img class="avatar" [(src)]="selfUser.avatar_url" />
+    </div>
+</div>
