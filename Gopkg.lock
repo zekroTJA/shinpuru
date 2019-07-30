@@ -42,12 +42,48 @@
   version = "v1.4.1"
 
 [[projects]]
+  digest = "1:586ea76dbd0374d6fb649a91d70d652b7fe0ccffb8910a77468e7702e7901f3d"
+  name = "github.com/go-stack/stack"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a"
+  version = "v1.8.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e4f5819333ac698d294fe04dbf640f84719658d5c7ce195b10060cc37292ce79"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2a8bb927dd31d8daada140a5d09578521ce5c36a"
+
+[[projects]]
   digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
   name = "github.com/gorilla/websocket"
   packages = ["."]
   pruneopts = "UT"
   revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
   version = "v1.4.0"
+
+[[projects]]
+  digest = "1:823dc0f8e4cdad8d91e6aba4cdd985a035596a8aa02e9d2abf1bec347894c41f"
+  name = "github.com/klauspost/compress"
+  packages = [
+    "flate",
+    "gzip",
+    "zlib",
+  ]
+  pruneopts = "UT"
+  revision = "23256797d1e4ccac36fad828362cdfef5b3aeb90"
+  version = "v1.7.4"
+
+[[projects]]
+  digest = "1:923c4d7194b42e054b2eb8a6c62824ac55e23ececc1c7e48d4da69c971c55954"
+  name = "github.com/klauspost/cpuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "05a8198c0f5a27739aec358908d7e12c64ce6eb7"
+  version = "v1.2.1"
 
 [[projects]]
   digest = "1:4a49346ca45376a2bba679ca0e83bec949d780d4e927931317904bad482943ec"
@@ -75,6 +111,72 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d6efa822e9b1e35da4653e912128933143d37d2358eebe2b35c1a5f60e028bd0"
+  name = "github.com/qiangxue/fasthttp-routing"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6ccdc2a18d8712f842de50ddcb8c9a3d025ddc71"
+
+[[projects]]
+  digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
+  name = "github.com/valyala/bytebufferpool"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:15ad8a80098fcc7a194b9db6b26d74072a852e4faa957848c8118193d3c69230"
+  name = "github.com/valyala/fasthttp"
+  packages = [
+    ".",
+    "fasthttputil",
+    "stackless",
+  ]
+  pruneopts = "UT"
+  revision = "e5f51c11919d4f66400334047b897ef0a94c6f3c"
+  version = "v20180529"
+
+[[projects]]
+  branch = "master"
+  digest = "1:40fdfd6ab85ca32b6935853bbba35935dcb1d796c8135efd85947566c76e662e"
+  name = "github.com/xdg/scram"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7eeb5667e42c09cb51bf7b7c28aea8c56767da90"
+
+[[projects]]
+  branch = "master"
+  digest = "1:f5c1d04bc09c644c592b45b9f0bad4030521b1a7d11c7dadbb272d9439fa6e8e"
+  name = "github.com/xdg/stringprep"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "73f8eece6fdcd902c185bf651de50f3828bed5ed"
+
+[[projects]]
+  digest = "1:ac006642697f5fece84acb7ad32a97a225f6a83addcf4636ffb3a40523595bec"
+  name = "github.com/zekroTJA/myrunes"
+  packages = [
+    "internal/auth",
+    "internal/database",
+    "internal/objects",
+    "internal/static",
+    "pkg/random",
+  ]
+  pruneopts = "UT"
+  revision = "275b97e2d668bce2e1f5136e1548092e2b3eb7fa"
+  version = "1.3.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:1df446de680c06291652db165a18d90bc8f4c45c977ed14caf2e01f75f489720"
+  name = "github.com/zekroTJA/ratelimit"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "219ca33049a5eca0248c92c9641e318276aeb61c"
+
+[[projects]]
+  branch = "master"
   digest = "1:c2e7ff2572bbe0c1982f2c9bfc1c6def863b5bf43b84012bd627382fa287c7bd"
   name = "github.com/zekroTJA/timedmap"
   packages = ["."]
@@ -82,12 +184,52 @@
   revision = "8fefa6c9e7e6afedd5e19fe9973ceaa4e00322e0"
 
 [[projects]]
+  digest = "1:721dfafdcdef689834240d27526505237b230b7dea54df28ec299ab182cfbd1f"
+  name = "go.mongodb.org/mongo-driver"
+  packages = [
+    "bson",
+    "bson/bsoncodec",
+    "bson/bsonrw",
+    "bson/bsontype",
+    "bson/primitive",
+    "event",
+    "internal",
+    "mongo",
+    "mongo/options",
+    "mongo/readconcern",
+    "mongo/readpref",
+    "mongo/writeconcern",
+    "tag",
+    "version",
+    "x/bsonx",
+    "x/bsonx/bsoncore",
+    "x/mongo/driver",
+    "x/mongo/driver/auth",
+    "x/mongo/driver/auth/internal/gssapi",
+    "x/mongo/driver/session",
+    "x/mongo/driver/topology",
+    "x/mongo/driver/uuid",
+    "x/network/address",
+    "x/network/command",
+    "x/network/compressor",
+    "x/network/connection",
+    "x/network/connstring",
+    "x/network/description",
+    "x/network/result",
+    "x/network/wiremessage",
+  ]
+  pruneopts = "UT"
+  revision = "0d1270edf53072da4da781b76d2e1db58831152f"
+  version = "v1.0.4"
+
+[[projects]]
   branch = "master"
-  digest = "1:e29c6fd0d02e2eef9fe4594b8baaf884ed54c03fd3b2d465a416a9cb49d6c609"
+  digest = "1:ff6672a58db94da8b3fe9d59f4279a62ee8f0d8a79131332205eb622bb0fc9e3"
   name = "golang.org/x/crypto"
   packages = [
     "internal/subtle",
     "nacl/secretbox",
+    "pbkdf2",
     "poly1305",
     "salsa20/salsa",
   ]
@@ -96,11 +238,34 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:382bb5a7fb4034db3b6a2d19e5a4a6bcf52f4750530603c01ca18a172fa3089b"
+  name = "golang.org/x/sync"
+  packages = ["semaphore"]
+  pruneopts = "UT"
+  revision = "112230192c580c3556b8cee6403af37a4fc5f28c"
+
+[[projects]]
+  branch = "master"
   digest = "1:9289797869517c73400e7b5a93beefbfc86e06f56e3ab03f38fb0d575e685277"
   name = "golang.org/x/sys"
   packages = ["cpu"]
   pruneopts = "UT"
   revision = "d432491b91382bba9c2a91776aa47c9430183a6f"
+
+[[projects]]
+  digest = "1:1093f2eb4b344996604f7d8b29a16c5b22ab9e1b25652140d3fede39f640d5cd"
+  name = "golang.org/x/text"
+  packages = [
+    "internal/gen",
+    "internal/triegen",
+    "internal/ucd",
+    "transform",
+    "unicode/cldr",
+    "unicode/norm",
+  ]
+  pruneopts = "UT"
+  revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
+  version = "v0.3.2"
 
 [[projects]]
   branch = "master"
@@ -136,6 +301,10 @@
     "github.com/go-sql-driver/mysql",
     "github.com/mattn/go-sqlite3",
     "github.com/op/go-logging",
+    "github.com/qiangxue/fasthttp-routing",
+    "github.com/valyala/fasthttp",
+    "github.com/zekroTJA/myrunes/internal/database",
+    "github.com/zekroTJA/ratelimit",
     "github.com/zekroTJA/timedmap",
     "golang.org/x/time/rate",
     "gopkg.in/yaml.v2",

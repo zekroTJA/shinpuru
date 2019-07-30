@@ -4,6 +4,10 @@ RUN apt-get update -y &&\
     apt-get install -y \
         git
 
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
+        apt-get install -y nodejs &&\
+        npm install -g @angular/cli
+
 ENV PATH="${GOPATH}/bin:${PATH}"
 
 RUN go get -u github.com/golang/dep/cmd/dep
@@ -22,6 +26,10 @@ RUN go build -v -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$(git rev-parse HEAD) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
         ./cmd/shinpuru/*.go
+
+RUN cd ./web &&\
+        npm i &&\
+        ng build --prod=true
 
 CMD ./bin/shinpuru \
         -c /etc/config/config.yml \

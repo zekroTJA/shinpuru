@@ -5,3 +5,5 @@ bin/*
 *.exe
 *.db
 vendor/
+web/node_modules/
+web/dist/

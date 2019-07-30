@@ -119,6 +119,15 @@ func (m *MySQL) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`sessionkey` text NOT NULL," +
+		"`userID` text NOT NULL," +
+		"`expires` timestamp NOT NULL," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -130,7 +139,8 @@ func (m *MySQL) Connect(credentials ...interface{}) error {
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci", creds.User, creds.Password, creds.Host, creds.Database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci&parseTime=true",
+		creds.User, creds.Password, creds.Host, creds.Database)
 	m.DB, err = sql.Open("mysql", dsn)
 	m.setup()
 	return err
@@ -715,6 +725,54 @@ func (m *MySQL) GetGuildTags(guildID string) ([]*util.Tag, error) {
 
 func (m *MySQL) DeleteTag(id snowflake.ID) error {
 	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *MySQL) SetSession(key, userID string, expires time.Time) error {
+	res, err := m.DB.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
+	if err != sql.ErrNoRows && err != nil {
+		return err
+	}
+
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *MySQL) GetSession(key string) (string, error) {
+	var userID string
+	var expires time.Time
+	err := m.DB.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
+		Scan(&userID, &expires)
+
+	if err == sql.ErrNoRows {
+		return "", ErrDatabaseNotFound
+	}
+	if err != nil {
+		return "", err
+	}
+
+	if expires.Before(time.Now()) {
+		return "", ErrDatabaseNotFound
+	}
+
+	return userID, nil
+}
+
+func (m *MySQL) DeleteSession(userID string) error {
+	_, err := m.DB.Exec("DELETE FROM sessions WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}

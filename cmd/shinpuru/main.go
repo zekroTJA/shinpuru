@@ -10,6 +10,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
+	"github.com/zekroTJA/shinpuru/internal/webserver"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
@@ -48,6 +49,9 @@ func main() {
 		util.Log.Info("Shutting down database connection...")
 		database.Close()
 	}()
+
+	ws := webserver.NewWebServer(database, session, config.WebServer, config.Discord.ClientID, config.Discord.ClientSecret)
+	go ws.ListenAndServeBlocking()
 
 	tnw := inits.InitTwitchNotifyer(session, config, database)
 

@@ -1,11 +1,15 @@
 package core
 
-import "io"
+import (
+	"io"
+)
 
 type ConfigDiscord struct {
 	Token         string
 	GeneralPrefix string
 	OwnerID       string
+	ClientID      string
+	ClientSecret  string
 }
 
 type ConfigDatabaseCreds struct {
@@ -40,6 +44,18 @@ type ConfigEtc struct {
 	TwitchAppID string
 }
 
+type ConfigWS struct {
+	Addr       string       `json:"addr"`
+	TLS        *ConfigWSTLS `json:"tls"`
+	PublicAddr string       `json:"publicaddr"`
+}
+
+type ConfigWSTLS struct {
+	Enabled bool   `json:"enabled"`
+	Cert    string `json:"certfile"`
+	Key     string `json:"keyfile"`
+}
+
 type Config struct {
 	Version     int `yaml:"configVersionPleaseDoNotChange"`
 	Discord     *ConfigDiscord
@@ -47,6 +63,7 @@ type Config struct {
 	Permissions *ConfigPermissions
 	Logging     *ConfigLogging
 	Etc         *ConfigEtc
+	WebServer   *ConfigWS
 }
 
 type ConfigParser interface {
@@ -56,11 +73,9 @@ type ConfigParser interface {
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Version: 4,
+		Version: 5,
 		Discord: &ConfigDiscord{
-			Token:         "",
 			GeneralPrefix: "sp!",
-			OwnerID:       "",
 		},
 		Database: &ConfigDatabaseType{
 			Type:  "sqlite",
@@ -81,5 +96,12 @@ func NewDefaultConfig() *Config {
 			LogLevel:       4,
 		},
 		Etc: new(ConfigEtc),
+		WebServer: &ConfigWS{
+			Addr:       ":8080",
+			PublicAddr: "https://example.com:8080",
+			TLS: &ConfigWSTLS{
+				Enabled: false,
+			},
+		},
 	}
 }
