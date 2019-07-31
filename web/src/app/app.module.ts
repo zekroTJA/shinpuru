@@ -12,6 +12,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { HomeComponent } from './routes/home/home.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
+import { GuildComponent } from './routes/guild/guild.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     ToastComponent,
     HomeComponent,
     SpinnerComponent,
+    GuildComponent,
   ],
   imports: [NgbModule, BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],

@@ -104,6 +104,8 @@ func (ws *WebServer) registerHandlers() {
 	guilds := api.Group("/guilds")
 	guilds.
 		Get("", ws.handlerGuildsGet)
+	guilds.
+		Get("/<id>", ws.handlerGuildsGetGuild)
 }
 
 func (ws *WebServer) ListenAndServeBlocking() error {

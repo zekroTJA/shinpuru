@@ -15,7 +15,6 @@ export class SpinnerComponent implements OnInit {
   constructor(public spinnerService: SpinnerService) {}
 
   ngOnInit() {
-    console.log(this.started);
     if (this.started) {
       this.spinnerService.start(this.id);
     }

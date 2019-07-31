@@ -1,0 +1,12 @@
+<div>
+    <app-spinner id="spinner-load-guild" [started]="true"></app-spinner>
+    <div *ngIf="guild">
+        <div id="heading-container">
+            <img [src]="guild.icon ? guild.icon_url : '/assets/dc-logo.svg'"/>
+            <div>
+                <h3>{{ guild.name }}</h3>
+                <p class="embeded">{{ guild.id }}</p>
+            </div>
+        </div>
+    </div>
+</div>
