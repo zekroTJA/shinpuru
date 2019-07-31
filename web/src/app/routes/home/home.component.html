@@ -1,0 +1,12 @@
+<div id="" class="">
+    <app-spinner id="spinner-load-guilds" [started]="true"></app-spinner>
+    <div class="container-fluid d-flex">
+        <div *ngFor="let g of guilds" class="guild-container">
+            <img [src]="g.icon ? g.icon_url : '/assets/dc-logo.svg'"/>
+            <div class="info-container">
+                <h1>{{ g.name }}</h1>
+                <p>{{ g.member_count }} members</p>
+            </div>
+        </div>
+    </div>
+</div>

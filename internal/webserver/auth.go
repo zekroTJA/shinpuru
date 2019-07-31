@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -20,12 +22,14 @@ const (
 )
 
 type Auth struct {
-	db core.Database
+	db      core.Database
+	session *discordgo.Session
 }
 
-func NewAuth(db core.Database) *Auth {
+func NewAuth(db core.Database, s *discordgo.Session) *Auth {
 	return &Auth{
-		db: db,
+		db:      db,
+		session: s,
 	}
 }
 
@@ -92,6 +96,10 @@ func (auth *Auth) LoginFailedHandler(ctx *routing.Context, status int, msg strin
 }
 
 func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
+	if u, _ := auth.session.User(uid); u == nil {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
 	ctx.Set("uid", uid)
 
 	sessionKey, err := auth.createSessionKey()
