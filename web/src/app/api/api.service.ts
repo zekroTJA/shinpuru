@@ -49,4 +49,10 @@ export class APIService {
         catchError(this.errorChatcher)
       );
   }
+
+  public getGuild(id: string): Observable<Guild> {
+    return this.http
+      .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
+      .pipe(catchError(this.errorChatcher));
+  }
 }

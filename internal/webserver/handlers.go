@@ -49,3 +49,20 @@ func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 		Data: guilds,
 	}, fasthttp.StatusOK)
 }
+
+func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("id")
+
+	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, GuildFromGuild(guild), fasthttp.StatusOK)
+}
