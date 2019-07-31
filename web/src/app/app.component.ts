@@ -1,6 +1,7 @@
 /** @format */
 
 import { Component } from '@angular/core';
+import { ToastService } from './components/toast/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'shinpuru Web Interface';
+
+  constructor(public toasts: ToastService) {}
 }

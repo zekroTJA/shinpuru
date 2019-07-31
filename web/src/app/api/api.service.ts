@@ -2,9 +2,11 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { User } from './api.models';
+import { User, ListReponse, Guild } from './api.models';
 import { environment } from 'src/environments/environment';
+import { ToastService } from '../components/toast/toast.service';
 
 /** @format */
 
@@ -17,11 +19,34 @@ export class APIService {
     withCredentials: true,
   };
 
-  constructor(private http: HttpClient) {
+  private errorChatcher = (err) => {
+    console.error(err);
+    this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    return of(null);
+  };
+
+  constructor(private http: HttpClient, private toasts: ToastService) {
     this.rootURL = environment.production ? '' : 'http://localhost:8080';
   }
 
   public getSelfUser(): Observable<User> {
-    return this.http.get<User>(this.rootURL + '/api/me', this.defopts);
+    return this.http.get<User>(this.rootURL + '/api/me', this.defopts).pipe(
+      catchError((err) => {
+        if (err.status !== 401) {
+          return this.errorChatcher(err);
+        }
+      })
+    );
+  }
+
+  public getGuilds(): Observable<Guild[]> {
+    return this.http
+      .get<ListReponse<Guild>>(this.rootURL + '/api/guilds', this.defopts)
+      .pipe(
+        map((lr) => {
+          return lr.data;
+        }),
+        catchError(this.errorChatcher)
+      );
   }
 }

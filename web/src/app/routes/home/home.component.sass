@@ -1,0 +1,32 @@
+@import '../../../sass/vars'
+@import '../../../sass/mixins'
+    
+.guild-container
+    display: flex
+    background-color: $c-nqblack
+    width: fit-content
+    min-width: 300px
+    height: 60px
+    margin-right: 20px
+    border-radius: 5px
+    overflow: hidden
+    cursor: pointer
+
+    +transition25(all)
+
+    &:hover
+        transform: scale(1.03)
+        box-shadow: 0px 7px 0px 0px rgba(0,0,0,0.3);
+
+    img
+        width: 60px
+        height: 60px
+        border-radius: 5px 0 0 5px
+
+    .info-container
+        padding: 10px 10px
+
+        h1
+            font-size: 18px
+        p
+            font-size: 14px

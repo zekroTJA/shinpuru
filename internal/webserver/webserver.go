@@ -72,7 +72,7 @@ func NewWebServer(db core.Database, s *discordgo.Session, config *core.ConfigWS,
 		Handler: ws.router.HandleRequest,
 	}
 
-	ws.auth = NewAuth(db)
+	ws.auth = NewAuth(db, s)
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
 		clientID,
@@ -100,6 +100,10 @@ func (ws *WebServer) registerHandlers() {
 	api := ws.router.Group("/api")
 	api.
 		Get("/me", ws.handlerGetMe)
+
+	guilds := api.Group("/guilds")
+	guilds.
+		Get("", ws.handlerGuildsGet)
 }
 
 func (ws *WebServer) ListenAndServeBlocking() error {

@@ -20,3 +20,32 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
 }
+
+func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guilds := make([]*GuildReduced, len(ws.session.State.Guilds))
+	i := 0
+	for _, g := range ws.session.State.Guilds {
+		if g.MemberCount < 10000 {
+			for _, m := range g.Members {
+				if m.User.ID == userID {
+					guilds[i] = GuildReducedFromGuild(g)
+					i++
+					break
+				}
+			}
+		} else {
+			if gm, _ := ws.session.GuildMember(g.ID, userID); gm != nil {
+				guilds[i] = GuildReducedFromGuild(g)
+				i++
+			}
+		}
+	}
+	guilds = guilds[:i]
+
+	return jsonResponse(ctx, &ListResponse{
+		N:    i,
+		Data: guilds,
+	}, fasthttp.StatusOK)
+}

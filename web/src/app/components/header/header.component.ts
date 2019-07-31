@@ -1,8 +1,8 @@
 /** @format */
 
 import { Component } from '@angular/core';
-import { APIService } from '../api/api.service';
-import { User } from '../api/api.models';
+import { APIService } from '../../api/api.service';
+import { User } from '../../api/api.models';
 
 @Component({
   selector: 'app-header',
