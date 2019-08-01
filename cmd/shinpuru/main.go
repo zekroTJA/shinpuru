@@ -50,9 +50,6 @@ func main() {
 		database.Close()
 	}()
 
-	ws := webserver.NewWebServer(database, session, config.WebServer, config.Discord.ClientID, config.Discord.ClientSecret)
-	go ws.ListenAndServeBlocking()
-
 	tnw := inits.InitTwitchNotifyer(session, config, database)
 
 	lct := inits.InitLTCTimer()
@@ -63,6 +60,10 @@ func main() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
+
+	ws := webserver.NewWebServer(database, session, cmdHandler, config.WebServer, config.Discord.ClientID, config.Discord.ClientSecret)
+	go ws.ListenAndServeBlocking()
+	util.Log.Info("Web server running on address %s (%s)...", config.WebServer.Addr, config.WebServer.PublicAddr)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)

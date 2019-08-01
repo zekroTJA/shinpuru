@@ -3,15 +3,62 @@
     
 #heading-container
     display: flex
+    margin-bottom: 20px
 
     img
         width: 50px
         height: 50px
         +round
 
-    div
-        margin-left: 20px !important
+    *
+        margin-right: 20px !important
         +my-auto
 
-        p
-            font-size: 14px
+    p
+        font-size: 14px
+
+
+#user-info
+    width: 100%
+    background-color: $c-nqblack
+    display: flex
+    border-radius: 5px
+    padding: 10px
+    height: 100px
+
+    +hover-btn(1.01)
+
+    p.embeded
+        font-size: 14px
+
+    img
+        border-radius: 5px
+        height: 100%
+        margin-right: 20px
+
+    .permlvl
+        margin-right: 0
+        margin-left: auto
+        width: 100px
+        border-radius: 5px
+        display: flex
+        
+        div
+            text-align: center
+            width: 100%
+            +my-auto
+
+            p
+                margin-bottom: 0
+
+            .pl-title
+                font-size: 11px
+
+            .pl-lvl
+                font-size: 22px
+                font-weight: bold
+
+
+@media only screen and (max-width: 700px)
+    #user-info
+        height: fit-content

@@ -57,7 +57,13 @@ export interface Guild {
   joined_at: string;
   member_count: number;
 
+  self_member?: Member;
+
   roles?: Role[];
   members?: Member[];
   channels?: Channel[];
+}
+
+export interface PermLvlResponse {
+  lvl: number;
 }

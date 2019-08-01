@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 
@@ -43,16 +44,17 @@ type WebServer struct {
 	server *fasthttp.Server
 	router *routing.Router
 
-	db      core.Database
-	rlm     *RateLimitManager
-	auth    *Auth
-	dcoauth *discordoauth.DiscordOAuth
-	session *discordgo.Session
+	db         core.Database
+	rlm        *RateLimitManager
+	auth       *Auth
+	dcoauth    *discordoauth.DiscordOAuth
+	session    *discordgo.Session
+	cmdhandler *commands.CmdHandler
 
 	config *core.ConfigWS
 }
 
-func NewWebServer(db core.Database, s *discordgo.Session, config *core.ConfigWS, clientID, clientSecret string) (ws *WebServer) {
+func NewWebServer(db core.Database, s *discordgo.Session, cmd *commands.CmdHandler, config *core.ConfigWS, clientID, clientSecret string) (ws *WebServer) {
 	ws = new(WebServer)
 
 	if !strings.HasPrefix(config.PublicAddr, "http") {
@@ -66,6 +68,7 @@ func NewWebServer(db core.Database, s *discordgo.Session, config *core.ConfigWS,
 	ws.config = config
 	ws.db = db
 	ws.session = s
+	ws.cmdhandler = cmd
 	ws.rlm = NewRateLimitManager()
 	ws.router = routing.New()
 	ws.server = &fasthttp.Server{
@@ -103,6 +106,9 @@ func (ws *WebServer) registerHandlers() {
 
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
+
+	api.
+		Get("/permlvl/<id>", ws.handlerGetPermissionLevel)
 
 	guilds := api.Group("/guilds")
 	guilds.

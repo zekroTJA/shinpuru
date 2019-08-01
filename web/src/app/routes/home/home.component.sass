@@ -16,11 +16,7 @@
     overflow: hidden
     cursor: pointer
 
-    +transition25(all)
-
-    &:hover
-        transform: scale(1.03)
-        box-shadow: 0px 7px 0px 0px rgba(0,0,0,0.3);
+    +hover-btn
 
     img
         width: 60px
@@ -34,4 +30,4 @@
             font-size: 18px
         p
             font-size: 14px
-            color: #BDBDBD
+            color: $c-font-gray

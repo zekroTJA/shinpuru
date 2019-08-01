@@ -1,12 +1,42 @@
 <div>
     <app-spinner id="spinner-load-guild" [started]="true"></app-spinner>
     <div *ngIf="guild">
+
         <div id="heading-container">
             <img [src]="guild.icon ? guild.icon_url : '/assets/dc-logo.svg'"/>
-            <div>
-                <h3>{{ guild.name }}</h3>
-                <p class="embeded">{{ guild.id }}</p>
+            <h3>{{ guild.name }}</h3>
+            <p class="embeded">{{ guild.id }}</p>
+        </div>
+
+        <div id="user-info" class="mb-4">
+            <img [src]="guild.self_member.avatar_url"/>
+            <div class="info-container">
+                <div class="d-flex overflow-wrap">
+                    <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
+                    <p class="embeded">{{ guild.self_member.user.id }}</p>
+                </div>
+                <div class="d-flex">
+                    <div *ngFor="let r of userRoles">
+                        <app-rolebadge [role]="r"></app-rolebadge>
+                    </div>
+                </div>
+            </div>
+            <div 
+                class="permlvl"
+                [style.background-color]="permLvlColor(permLvl)"
+            >
+                <div>
+                    <p class="pl-title">PERMISSION<br />LEVEL</p>
+                    <p class="pl-lvl">{{ permLvl }}</p>
+                </div>
             </div>
         </div>
+
+        <h4>GUILD MEMBERS</h4>
+        <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
+        <div id="users-container" class="d-flex overflow-wrap mt-3">
+            <app-member *ngFor="let m of members" [member]="m"></app-member>
+        </div>
+
     </div>
 </div>

@@ -1,4 +1,4 @@
-=transition25($prop)
+=transition25($prop: all)
     transition: $prop .25s ease-in-out
 
 =my-auto
@@ -11,3 +11,11 @@
 
 =round
     border-radius: 50%
+
+=hover-btn($scale: 1.03, $shadowlen: 7px)
+    cursor: pointer
+    +transition25(all)
+
+    &:hover
+        transform: scale($scale)
+        box-shadow: 0px $shadowlen 0px 0px rgba(0,0,0,0.3);
