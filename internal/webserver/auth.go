@@ -122,3 +122,15 @@ func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
 	ctx.Abort()
 	return nil
 }
+
+func (auth *Auth) LogOutHandler(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	auth.db.DeleteSession(userID)
+
+	cookie := "__session=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; HttpOnly"
+	ctx.Response.Header.Set("Set-Cookie", cookie)
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+
+}

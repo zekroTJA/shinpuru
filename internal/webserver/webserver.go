@@ -101,6 +101,9 @@ func (ws *WebServer) registerHandlers() {
 	api.
 		Get("/me", ws.handlerGetMe)
 
+	api.
+		Post("/logout", ws.auth.LogOutHandler)
+
 	guilds := api.Group("/guilds")
 	guilds.
 		Get("", ws.handlerGuildsGet)

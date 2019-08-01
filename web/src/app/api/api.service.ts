@@ -29,6 +29,12 @@ export class APIService {
     this.rootURL = environment.production ? '' : 'http://localhost:8080';
   }
 
+  public logout(): Observable<any> {
+    return this.http
+      .post<any>(this.rootURL + '/api/logout', this.defopts)
+      .pipe(catchError(this.errorChatcher));
+  }
+
   public getSelfUser(): Observable<User> {
     return this.http.get<User>(this.rootURL + '/api/me', this.defopts).pipe(
       catchError((err) => {

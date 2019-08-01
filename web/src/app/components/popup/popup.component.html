@@ -1,0 +1,9 @@
+<div class="popup">
+    <div *ngFor="let e of elements" class="element" (click)="e.action()">
+        <ng-template [ngIf]="isTemplate(e)" [ngIfElse]="text">
+            <ng-template [ngTemplateOutlet]="e.el"></ng-template>
+        </ng-template>
+
+        <ng-template #text>{{ e.el }}</ng-template>
+    </div>
+</div>

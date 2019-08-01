@@ -1,8 +1,17 @@
 <div id="header" class="container-fluid">
     <img id="sp-logo" class="avatar" src="/assets/shinpuru-logo.png" />
-    <h1 id="heading" class="ml-3">SHINPURU</h1>
+    <h1 class="ml-3">SHINPURU</h1>
     <div *ngIf="selfUser" id="user-info" class="d-flex">
+        <app-popup *ngIf="popupVisible" class="logout-popup" [elements]="popupElements" (closing)="popupClose($event)"></app-popup>
+        <a class="logout-btn" (click)="popupVisible = true">&#9660;</a>
         <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
         <img class="avatar" [(src)]="selfUser.avatar_url" />
     </div>
 </div>
+
+<ng-template #logout>
+    <div class="popup-entry">
+        <img src="/assets/logout.svg"/>
+        <p>logout</p>
+    </div>
+</ng-template>
