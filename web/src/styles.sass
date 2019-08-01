@@ -34,6 +34,18 @@ button
         background-color: darken($c-blurple, 5)
         transform: translateY(-2px)
 
+hr
+    border-top: 3px solid $c-nqblack !important
+
+input[type=text]
+    background-color: transparent
+    border-style: none
+    border-bottom: solid 1px white
+    color: white
+    +transition25
+
+    &:focus
+        border-bottom: solid 3px white
 
 //-----------------------------------
 
@@ -41,4 +53,8 @@ button
     padding: 2px 5px
     background-color: rgba(0, 0, 0, .4)
     width: fit-content
+    height: fit-content
     border-radius: 5px
+
+.overflow-wrap
+    flex-wrap: wrap

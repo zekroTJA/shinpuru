@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { User, ListReponse, Guild } from './api.models';
+import { User, ListReponse, Guild, PermLvlResponse } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 
@@ -60,5 +60,19 @@ export class APIService {
     return this.http
       .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
       .pipe(catchError(this.errorChatcher));
+  }
+
+  public getPermissionLvl(guildID: string): Observable<number> {
+    return this.http
+      .get<PermLvlResponse>(
+        this.rootURL + '/api/permlvl/' + guildID,
+        this.defopts
+      )
+      .pipe(
+        map((r) => {
+          return r.lvl;
+        }),
+        catchError(this.errorChatcher)
+      );
   }
 }

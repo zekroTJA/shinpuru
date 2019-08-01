@@ -17,9 +17,18 @@ type User struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
+type Member struct {
+	*discordgo.Member
+
+	AvatarURL string `json:"avatar_url"`
+}
+
 type Guild struct {
 	*discordgo.Guild
-	IconURL string `json:"icon_url"`
+
+	SelfMember *Member   `json:"self_member"`
+	IconURL    string    `json:"icon_url"`
+	Members    []*Member `json:"members"`
 }
 
 type GuildReduced struct {
@@ -33,10 +42,21 @@ type GuildReduced struct {
 	MemberCount int                 `json:"member_count"`
 }
 
-func GuildFromGuild(g *discordgo.Guild) *Guild {
+type PermissionLvlResponse struct {
+	Level int `json:"lvl"`
+}
+
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
+	membs := make([]*Member, len(g.Members))
+	for i, m := range g.Members {
+		membs[i] = MemberFromMember(m)
+	}
+
 	return &Guild{
-		Guild:   g,
-		IconURL: getIconURL(g.ID, g.Icon),
+		Guild:      g,
+		SelfMember: MemberFromMember(m),
+		Members:    membs,
+		IconURL:    getIconURL(g.ID, g.Icon),
 	}
 }
 
@@ -50,6 +70,13 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 		OwnerID:     g.OwnerID,
 		JoinedAt:    g.JoinedAt,
 		MemberCount: g.MemberCount,
+	}
+}
+
+func MemberFromMember(m *discordgo.Member) *Member {
+	return &Member{
+		Member:    m,
+		AvatarURL: m.User.AvatarURL(""),
 	}
 }
 

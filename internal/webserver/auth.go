@@ -69,7 +69,6 @@ func (auth *Auth) checkAuth(ctx *routing.Context) error {
 	path := string(ctx.Path())
 
 	if strings.HasPrefix(path, "/api") {
-		fmt.Println("unauthorized")
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 	}
 

@@ -1,0 +1,9 @@
+<!-- TODO: Display bot badge, set color from top role -->
+
+<div class="member-container">
+    <img [src]="member.avatar_url"/>
+    <div>
+        <p>{{ member.nick || member.user.username }}</p>
+        <p class="tag">{{ member.user.username }}#{{ member.user.discriminator }}</p>
+    </div>
+</div>

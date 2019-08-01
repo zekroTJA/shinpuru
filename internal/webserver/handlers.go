@@ -55,7 +55,8 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 
 	guildID := ctx.Param("id")
 
-	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+	memb, _ := ws.session.GuildMember(guildID, userID)
+	if memb == nil {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
@@ -64,5 +65,20 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, GuildFromGuild(guild), fasthttp.StatusOK)
+	return jsonResponse(ctx, GuildFromGuild(guild, memb), fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetPermissionLevel(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("id")
+
+	permLvl, err := ws.cmdhandler.GetPermissionLevel(ws.session, guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	return jsonResponse(ctx, &PermissionLvlResponse{
+		Level: permLvl,
+	}, fasthttp.StatusOK)
 }

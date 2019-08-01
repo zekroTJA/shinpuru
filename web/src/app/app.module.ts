@@ -14,6 +14,8 @@ import { HomeComponent } from './routes/home/home.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { GuildComponent } from './routes/guild/guild.component';
 import { PopupComponent } from './components/popup/popup.component';
+import { RoleBadgeComponent } from './components/rolebadge/rolebadge.component';
+import { MemberComponent } from './components/member/member.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,8 @@ import { PopupComponent } from './components/popup/popup.component';
     SpinnerComponent,
     GuildComponent,
     PopupComponent,
+    RoleBadgeComponent,
+    MemberComponent,
   ],
   imports: [NgbModule, BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
