@@ -32,6 +32,7 @@ export interface Member {
   guild_id: string;
   joined_at: string;
   nick: string;
+  avatar_url?: string;
   roles: string[];
 }
 
