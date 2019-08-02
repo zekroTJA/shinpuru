@@ -40,6 +40,7 @@ func main() {
 			config.Database.Sqlite = new(core.ConfigDatabaseFile)
 		}
 		config.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
+		config.WebServer.Addr = ":8080"
 	}
 
 	util.SetLogLevel(config.Logging.LogLevel)
