@@ -1,0 +1,29 @@
+<div class="report-container">
+    <div clsas="row">
+        <div class="col-1 p-0">
+            <h4>Executor</h4>
+            <!-- <div *ngIf="executor;else executorid" class="d-flex">
+                <img class="avi" [src]="executor?.avatar_url"/>
+                <div>
+                    <p>{{ executor?.user.username }}#{{ executor?.user.discriminator }}</p>
+                    <p class="small">{{ report.executor_id }}</p>
+                </div>
+            </div>
+            <ng-template #executorid><p>{{ report.executor_id }}</p></ng-template> -->
+        </div>
+        <div class="col p-0">
+            <h4>Victim</h4>
+            <!-- <div *ngIf="executor;else victimid" class="d-flex">
+                <img class="avi" [src]="victim?.avatar_url"/>
+                <div>
+                    <p>{{ victim?.user.username }}#{{ victim?.user.discriminator }}</p>
+                    <p class="small">{{ report.victim_id }}</p>
+                </div>
+            </div>
+            <ng-template #victimid><p>{{ report.victim_id }}</p></ng-template> -->
+        </div>
+    </div>
+
+    <h4 class="mt-4">Created</h4>
+    <p>Created {{ dateFormat(report.created, 'yyyy.mm.dd - hh:MM:ss Z') }}</p>
+</div>

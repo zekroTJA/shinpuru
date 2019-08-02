@@ -2,7 +2,7 @@
 
 import { Component, Input } from '@angular/core';
 import { Role } from 'src/app/api/api.models';
-import { toHexClr } from 'src/app/ts/utils';
+import { toHexClr } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-rolebadge',

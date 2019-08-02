@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './routes/login/login.component';
 import { HomeComponent } from './routes/home/home.component';
 import { GuildComponent } from './routes/guild/guild.component';
+import { MemberRouteComponent } from './routes/member/member.component';
 const routes: Routes = [
   {
     path: '',
@@ -22,6 +23,15 @@ const routes: Routes = [
   {
     path: 'guilds/:id',
     component: GuildComponent,
+  },
+  {
+    path: 'guilds/:guildid/:memberid',
+    component: MemberRouteComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '/guilds',
+    pathMatch: 'full',
   },
 ];
 

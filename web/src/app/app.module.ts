@@ -16,6 +16,8 @@ import { GuildComponent } from './routes/guild/guild.component';
 import { PopupComponent } from './components/popup/popup.component';
 import { RoleBadgeComponent } from './components/rolebadge/rolebadge.component';
 import { MemberComponent } from './components/member/member.component';
+import { MemberRouteComponent } from './routes/member/member.component';
+import { ReportComponent } from './components/report/report.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,8 @@ import { MemberComponent } from './components/member/member.component';
     PopupComponent,
     RoleBadgeComponent,
     MemberComponent,
+    MemberRouteComponent,
+    ReportComponent,
   ],
   imports: [NgbModule, BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
