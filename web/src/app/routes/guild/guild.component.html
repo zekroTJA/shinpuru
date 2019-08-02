@@ -10,7 +10,7 @@
 
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>
-            <div class="info-container">
+            <a class="info-container" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
                 <div class="d-flex overflow-wrap">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
                     <p class="embeded">{{ guild.self_member.user.id }}</p>
@@ -20,7 +20,7 @@
                         <app-rolebadge [role]="r"></app-rolebadge>
                     </div>
                 </div>
-            </div>
+            </a>
             <div 
                 class="permlvl"
                 [style.background-color]="permLvlColor(permLvl)"
@@ -35,7 +35,7 @@
         <h4>GUILD MEMBERS</h4>
         <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
         <div id="users-container" class="d-flex overflow-wrap mt-3">
-            <app-member *ngFor="let m of members" [member]="m"></app-member>
+            <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
         </div>
 
     </div>

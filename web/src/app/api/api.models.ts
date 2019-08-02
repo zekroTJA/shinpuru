@@ -14,6 +14,7 @@ export interface User {
   verified: boolean;
   bot: boolean;
   avatar_url: string;
+  created_at?: string;
 }
 
 export interface Role {
@@ -33,6 +34,7 @@ export interface Member {
   joined_at: string;
   nick: string;
   roles: string[];
+  created_at?: string;
 }
 
 export interface Channel {
@@ -66,4 +68,16 @@ export interface Guild {
 
 export interface PermLvlResponse {
   lvl: number;
+}
+
+export interface Report {
+  id: string;
+  type: number;
+  type_name?: string;
+  guild_id: string;
+  executor_id: string;
+  victim_id: string;
+  message: string;
+  attachment_url: string;
+  created?: string;
 }

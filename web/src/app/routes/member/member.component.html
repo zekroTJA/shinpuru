@@ -1,0 +1,45 @@
+<div>
+    <app-spinner id="spinner-load-member" [started]="true"></app-spinner>
+    <div *ngIf="member && guild">
+
+        <div id="heading-container">
+            <img [src]="member.avatar_url"/>
+            <div>
+                <div class="d-flex">
+                    <h3>{{ member.user.username }}#{{ member.user.discriminator }}</h3>
+                    <p class="embeded">{{ member.user.id }}</p>
+                </div>
+                <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
+        </div>
+
+        <h4 class="mt-4">General User Information</h4>
+        <table id="general-user-info" class="mt-2">
+            <tbody>
+                <tr>
+                    <th>Permission Level</th>
+                    <td><p class="embeded" [style.background-color]="permLvlColor(permLvl)">{{ permLvl }}</p></td>
+                </tr>
+                <tr>
+                    <th>Joined Guild</th>
+                    <td>{{ dateFormat(member.joined_at, "ddd, mmm dS, yyyy - hh:MM:ss Z") }}</td>
+                </tr>
+                <tr>
+                    <th>Created Account</th>
+                    <td>{{ dateFormat(member.created_at, "ddd, mmm dS, yyyy - hh:MM:ss Z") }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4 class="mt-4 mb-2">Reports</h4>
+        <app-spinner id="spinner-load-reports" [started]="true"></app-spinner>
+        <div>
+            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+        </div>
+
+    </div>
+</div>

@@ -4,7 +4,14 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { User, ListReponse, Guild, PermLvlResponse } from './api.models';
+import {
+  User,
+  ListReponse,
+  Guild,
+  PermLvlResponse,
+  Member,
+  Report,
+} from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 
@@ -62,10 +69,19 @@ export class APIService {
       .pipe(catchError(this.errorChatcher));
   }
 
-  public getPermissionLvl(guildID: string): Observable<number> {
+  public getGuildMember(guildID: string, memberID: string): Observable<Member> {
+    return this.http
+      .get<Member>(
+        this.rootURL + '/api/guilds/' + guildID + '/' + memberID,
+        this.defopts
+      )
+      .pipe(catchError(this.errorChatcher));
+  }
+
+  public getPermissionLvl(guildID: string, userID: string): Observable<number> {
     return this.http
       .get<PermLvlResponse>(
-        this.rootURL + '/api/permlvl/' + guildID,
+        this.rootURL + '/api/permlvl/' + guildID + '/' + userID,
         this.defopts
       )
       .pipe(
@@ -74,5 +90,23 @@ export class APIService {
         }),
         catchError(this.errorChatcher)
       );
+  }
+
+  public getReports(guildID: string, memberID: string): Observable<Report[]> {
+    return this.http
+      .get<ListReponse<Report>>(
+        this.rootURL + '/api/reports/' + guildID + '/' + memberID,
+        this.defopts
+      )
+      .pipe(
+        map((lr) => lr.data),
+        catchError(this.errorChatcher)
+      );
+  }
+
+  public getReport(reportID: string): Observable<Report> {
+    return this.http
+      .get<Report>(this.rootURL + '/api/reports/' + reportID, this.defopts)
+      .pipe(catchError(this.errorChatcher));
   }
 }

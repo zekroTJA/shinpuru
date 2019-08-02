@@ -5,6 +5,8 @@ import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
 import { Guild, Role, Member } from 'src/app/api/api.models';
+import { utils } from 'protractor';
+import { permLvlColor } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-guild',
@@ -15,6 +17,8 @@ export class GuildComponent {
   public guild: Guild;
   public permLvl: number;
   public members: Member[];
+
+  public permLvlColor = permLvlColor;
 
   constructor(
     public api: APIService,
@@ -27,10 +31,12 @@ export class GuildComponent {
       this.members = this.guild.members.filter(
         (m) => m.user.id !== this.guild.self_member.user.id
       );
+      this.api
+        .getPermissionLvl(guildID, guild.self_member.user.id)
+        .subscribe((lvl) => {
+          this.permLvl = lvl;
+        });
       this.spinner.stop('spinner-load-guild');
-    });
-    this.api.getPermissionLvl(guildID).subscribe((lvl) => {
-      this.permLvl = lvl;
     });
   }
 
@@ -39,24 +45,6 @@ export class GuildComponent {
     return this.guild.roles
       .filter((r) => userRoleIDs.includes(r.id))
       .sort((a, b) => b.position - a.position);
-  }
-
-  public permLvlColor(lvl: number): string {
-    if (lvl < 1) {
-      return '#424242';
-    } else if (lvl < 3) {
-      return '#0288D1';
-    } else if (lvl < 5) {
-      return '#689F38';
-    } else if (lvl < 7) {
-      return '#FFA000';
-    } else if (lvl < 9) {
-      return '#E64A19';
-    } else if (lvl < 11) {
-      return '#d32f2f';
-    }
-
-    return '#F50057';
   }
 
   public searchInput(e: any) {
