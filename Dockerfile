@@ -31,6 +31,8 @@ RUN cd ./web &&\
         npm i &&\
         ng build --prod=true
 
+EXPOSE 8080
+
 CMD ./bin/shinpuru \
         -c /etc/config/config.yml \
         -docker
