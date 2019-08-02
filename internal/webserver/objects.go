@@ -2,6 +2,9 @@ package webserver
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -14,13 +17,15 @@ type ListResponse struct {
 type User struct {
 	*discordgo.User
 
-	AvatarURL string `json:"avatar_url"`
+	AvatarURL string    `json:"avatar_url"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Member struct {
 	*discordgo.Member
 
-	AvatarURL string `json:"avatar_url"`
+	AvatarURL string    `json:"avatar_url"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Guild struct {
@@ -44,6 +49,13 @@ type GuildReduced struct {
 
 type PermissionLvlResponse struct {
 	Level int `json:"lvl"`
+}
+
+type Report struct {
+	*util.Report
+
+	TypeName string    `json:"type_name"`
+	Created  time.Time `json:"created"`
 }
 
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
@@ -74,9 +86,20 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 }
 
 func MemberFromMember(m *discordgo.Member) *Member {
+	created, _ := util.GetDiscordSnowflakeCreationTime(m.User.ID)
 	return &Member{
 		Member:    m,
 		AvatarURL: m.User.AvatarURL(""),
+		CreatedAt: created,
+	}
+}
+
+func ReportFromReport(r *util.Report) *Report {
+	rtype := util.ReportTypes[r.Type]
+	return &Report{
+		Report:   r,
+		TypeName: rtype,
+		Created:  r.GetTimestamp(),
 	}
 }
 

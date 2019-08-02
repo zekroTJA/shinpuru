@@ -1,8 +1,13 @@
 package webserver
 
 import (
+	"github.com/zekroTJA/shinpuru/internal/core"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
@@ -13,9 +18,12 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
+	created, _ := util.GetDiscordSnowflakeCreationTime(user.ID)
+
 	res := &User{
 		User:      user,
 		AvatarURL: user.AvatarURL(""),
+		CreatedAt: created,
 	}
 
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
@@ -68,12 +76,37 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 	return jsonResponse(ctx, GuildFromGuild(guild, memb), fasthttp.StatusOK)
 }
 
+func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	var memb *discordgo.Member
+
+	if memb, _ = ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	memb, _ = ws.session.GuildMember(guildID, memberID)
+	if memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	return jsonResponse(ctx, MemberFromMember(memb), fasthttp.StatusOK)
+}
+
 func (ws *WebServer) handlerGetPermissionLevel(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	guildID := ctx.Param("id")
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
 
-	permLvl, err := ws.cmdhandler.GetPermissionLevel(ws.session, guildID, userID)
+	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	permLvl, err := ws.cmdhandler.GetPermissionLevel(ws.session, guildID, memberID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
@@ -81,4 +114,54 @@ func (ws *WebServer) handlerGetPermissionLevel(ctx *routing.Context) error {
 	return jsonResponse(ctx, &PermissionLvlResponse{
 		Level: permLvl,
 	}, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	reps, err := ws.db.GetReportsFiltered(guildID, memberID, -1)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	resReps := make([]*Report, 0)
+	if reps != nil {
+		resReps = make([]*Report, len(reps))
+		for i, r := range reps {
+			resReps[i] = ReportFromReport(r)
+		}
+	}
+
+	return jsonResponse(ctx, &ListResponse{
+		N:    len(resReps),
+		Data: resReps,
+	}, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
+	// userID := ctx.Get("uid").(string)
+
+	_id := ctx.Param("id")
+
+	id, err := snowflake.ParseString(_id)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	rep, err := ws.db.GetReport(id)
+	if err == core.ErrDatabaseNotFound {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusOK)
 }
