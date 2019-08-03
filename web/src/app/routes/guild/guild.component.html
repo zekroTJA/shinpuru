@@ -38,5 +38,11 @@
             <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
         </div>
 
+        <h4 class="mt-4 mb-2">MOD LOG</h4>
+
+        <div>
+            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+        </div>
+
     </div>
 </div>

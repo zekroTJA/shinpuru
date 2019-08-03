@@ -7,6 +7,7 @@
             <div>
                 <div class="d-flex">
                     <h3>{{ member.user.username }}#{{ member.user.discriminator }}</h3>
+                    <p *ngIf="member.user.bot" class="bot-tag">BOT</p>
                     <p class="embeded">{{ member.user.id }}</p>
                 </div>
                 <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
@@ -22,7 +23,12 @@
             <tbody>
                 <tr>
                     <th>Permission Level</th>
-                    <td><p class="embeded" [style.background-color]="permLvlColor(permLvl)">{{ permLvl }}</p></td>
+                    <td>
+                        <p *ngIf="permLvl !== undefined; else permlvlspinner" class="embeded" [style.background-color]="permLvlColor(permLvl)">{{ permLvl }}</p>
+                        <ng-template #permlvlspinner>
+                            <app-spinner id="spinner-load-permlvl" [started]="true" [small]="true"></app-spinner>
+                        </ng-template>
+                    </td>
                 </tr>
                 <tr>
                     <th>Joined Guild</th>
@@ -35,10 +41,14 @@
             </tbody>
         </table>
 
-        <h4 class="mt-4 mb-2">Reports</h4>
-        <app-spinner id="spinner-load-reports" [started]="true"></app-spinner>
+        <div class="d-flex mt-4 mb-2">
+            <h4>Reports</h4>
+            <p *ngIf="reports.length >= 0" class="reports-count">{{ reports.length }}</p>
+        </div>
+        <app-spinner *ngIf="!reports" id="spinner-load-reports" [started]="true"></app-spinner>
         <div>
-            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+            <i *ngIf="reports.length === 0">{{ member.user.username }} has a white west! 👌</i>
+            <app-report *ngFor="let rep of reports" [report]="rep" [victim]="member"></app-report>
         </div>
 
     </div>

@@ -28,3 +28,7 @@ export function permLvlColor(lvl: number): string {
 
   return '#F50057';
 }
+
+export function clone<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v)) as T;
+}

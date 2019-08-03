@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
-import { Guild, Role, Member } from 'src/app/api/api.models';
+import { Guild, Role, Member, Report } from 'src/app/api/api.models';
 import { utils } from 'protractor';
 import { permLvlColor } from 'src/app/utils/utils';
 
@@ -17,6 +17,7 @@ export class GuildComponent {
   public guild: Guild;
   public permLvl: number;
   public members: Member[];
+  public reports: Report[];
 
   public permLvlColor = permLvlColor;
 
@@ -37,6 +38,10 @@ export class GuildComponent {
           this.permLvl = lvl;
         });
       this.spinner.stop('spinner-load-guild');
+    });
+
+    this.api.getReports(guildID).subscribe((reports) => {
+      this.reports = reports;
     });
   }
 

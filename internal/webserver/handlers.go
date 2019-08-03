@@ -1,11 +1,13 @@
 package webserver
 
 import (
+	"sort"
+
 	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
-	"github.com/qiangxue/fasthttp-routing"
+	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
@@ -122,11 +124,21 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	guildID := ctx.Param("guildid")
 	memberID := ctx.Param("memberid")
 
+	sortBy := string(ctx.QueryArgs().Peek("sortBy"))
+
 	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	reps, err := ws.db.GetReportsFiltered(guildID, memberID, -1)
+	var reps []*util.Report
+	var err error
+
+	if memberID != "" {
+		reps, err = ws.db.GetReportsFiltered(guildID, memberID, -1)
+	} else {
+		reps, err = ws.db.GetReportsGuild(guildID)
+	}
+
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
@@ -137,6 +149,12 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 		for i, r := range reps {
 			resReps[i] = ReportFromReport(r)
 		}
+	}
+
+	if sortBy == "created" {
+		sort.SliceStable(resReps, func(i, j int) bool {
+			return resReps[i].Created.After(resReps[j].Created)
+		})
 	}
 
 	return jsonResponse(ctx, &ListResponse{
