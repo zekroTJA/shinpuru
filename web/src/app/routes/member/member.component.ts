@@ -54,13 +54,13 @@ export class MemberRouteComponent {
       this.reports = reports || [];
     });
 
-    let remWatcher: NodeJS.Timer;
-    remWatcher = setInterval(() => {
-      if (this.guild && this.member && this.reports) {
-        this.spinner.stop('spinner-load-reports');
-        clearInterval(remWatcher);
-      }
-    }, 100);
+    // let remWatcher: NodeJS.Timer;
+    // remWatcher = setInterval(() => {
+    //   if (this.guild && this.member && this.reports) {
+    //     this.spinner.stop('spinner-load-reports');
+    //     clearInterval(remWatcher);
+    //   }
+    // }, 100);
   }
 
   public get memberRoles(): Role[] {

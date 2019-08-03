@@ -11,12 +11,19 @@ import { SpinnerService } from './spinner.service';
 export class SpinnerComponent implements OnInit {
   @Input() public id: string;
   @Input() public started = false;
+  @Input() public small: boolean;
+
+  public className = 'spinner-border';
 
   constructor(public spinnerService: SpinnerService) {}
 
   ngOnInit() {
     if (this.started) {
       this.spinnerService.start(this.id);
+    }
+
+    if (this.small) {
+      this.className = 'spinner-border spinner-border-sm';
     }
   }
 }

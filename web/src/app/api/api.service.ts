@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   User,
   ListReponse,
@@ -14,6 +14,7 @@ import {
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
+import { clone } from '../utils/utils';
 
 /** @format */
 
@@ -69,13 +70,17 @@ export class APIService {
       .pipe(catchError(this.errorChatcher));
   }
 
-  public getGuildMember(guildID: string, memberID: string): Observable<Member> {
+  public getGuildMember(
+    guildID: string,
+    memberID: string,
+    ignoreError: boolean = false
+  ): Observable<Member> {
     return this.http
       .get<Member>(
         this.rootURL + '/api/guilds/' + guildID + '/' + memberID,
         this.defopts
       )
-      .pipe(catchError(this.errorChatcher));
+      .pipe(catchError(ignoreError ? (err) => of(null) : this.errorChatcher));
   }
 
   public getPermissionLvl(guildID: string, userID: string): Observable<number> {
@@ -92,16 +97,23 @@ export class APIService {
       );
   }
 
-  public getReports(guildID: string, memberID: string): Observable<Report[]> {
-    return this.http
-      .get<ListReponse<Report>>(
-        this.rootURL + '/api/reports/' + guildID + '/' + memberID,
-        this.defopts
-      )
-      .pipe(
-        map((lr) => lr.data),
-        catchError(this.errorChatcher)
-      );
+  public getReports(
+    guildID: string,
+    memberID: string = null
+  ): Observable<Report[]> {
+    const uri = memberID
+      ? this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/reports'
+      : this.rootURL + '/api/guilds/' + guildID + '/reports';
+
+    const opts = {
+      withCredentials: this.defopts.withCredentials,
+      params: new HttpParams().set('sortBy', 'created'),
+    };
+
+    return this.http.get<ListReponse<Report>>(uri, opts).pipe(
+      map((lr) => lr.data),
+      catchError(this.errorChatcher)
+    );
   }
 
   public getReport(reportID: string): Observable<Report> {

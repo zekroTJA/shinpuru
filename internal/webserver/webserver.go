@@ -108,21 +108,23 @@ func (ws *WebServer) registerHandlers() {
 		Post("/logout", ws.auth.LogOutHandler)
 
 	api.
-		Get("/permlvl/<guildid>/<memberid>", ws.handlerGetPermissionLevel)
+		Get("/permlvl/<guildid:[0-9]+>/<memberid:[0-9]+>", ws.handlerGetPermissionLevel)
 
 	guilds := api.Group("/guilds")
 	guilds.
 		Get("", ws.handlerGuildsGet)
 	guilds.
-		Get("/<id>", ws.handlerGuildsGetGuild)
+		Get("/<id:[0-9]+>", ws.handlerGuildsGetGuild)
 	guilds.
-		Get("/<guildid>/<memberid>", ws.handlerGuildsGetMember)
+		Get("/<guildid:[0-9]+>/reports", ws.handlerGetReports)
+	guilds.
+		Get("/<guildid:[0-9]+>/<memberid>", ws.handlerGuildsGetMember)
+	guilds.
+		Get("/<guildid:[0-9]+>/<memberid>/reports", ws.handlerGetReports)
 
 	reports := api.Group("/reports")
 	reports.
-		Get("/<id>", ws.handlerGetReport)
-	reports.
-		Get("/<guildid>/<memberid>", ws.handlerGetReports)
+		Get("/<id:[0-9]+>", ws.handlerGetReport)
 }
 
 func (ws *WebServer) ListenAndServeBlocking() error {
