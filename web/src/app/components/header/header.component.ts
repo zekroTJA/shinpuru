@@ -4,6 +4,7 @@ import { Component, ViewChild, TemplateRef, OnInit } from '@angular/core';
 import { APIService } from '../../api/api.service';
 import { User } from '../../api/api.models';
 import { PopupElement } from '../popup/popup.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -18,7 +19,7 @@ export class HeaderComponent implements OnInit {
   public popupVisible = false;
   public popupElements = [];
 
-  constructor(private api: APIService) {
+  constructor(private api: APIService, public router: Router) {
     this.api.getSelfUser().subscribe((user) => {
       this.selfUser = user;
     });
@@ -32,6 +33,12 @@ export class HeaderComponent implements OnInit {
         action: this.logout.bind(this),
       } as PopupElement,
     ];
+  }
+
+  public get routes(): string[][] {
+    const rts = this.router.url.split('/').filter((e) => e.length > 0);
+    let path = '';
+    return rts.map((r) => [r, (path += '/' + r)]);
   }
 
   public popupClose(e: any) {
