@@ -18,6 +18,8 @@ import { RoleBadgeComponent } from './components/rolebadge/rolebadge.component';
 import { MemberComponent } from './components/member/member.component';
 import { MemberRouteComponent } from './routes/member/member.component';
 import { ReportComponent } from './components/report/report.component';
+import { SpoilerComponent } from './components/spoiler/spoiler.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -33,8 +35,15 @@ import { ReportComponent } from './components/report/report.component';
     MemberComponent,
     MemberRouteComponent,
     ReportComponent,
+    SpoilerComponent,
   ],
-  imports: [NgbModule, BrowserModule, AppRoutingModule, HttpClientModule],
+  imports: [
+    NgbModule,
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

@@ -32,15 +32,22 @@
             </div>
         </div>
 
-        <h4>GUILD MEMBERS</h4>
-        <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
-        <div id="users-container" class="d-flex overflow-wrap mt-3">
-            <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+        <div class="d-flex">
+            <h4>GUILD MEMBERS</h4>
+            <app-spoiler class="ml-3" [(ngModel)]="guildToggle"></app-spoiler>
+        </div>
+        <div *ngIf="guildToggle">
+            <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
+            <div id="users-container" class="d-flex overflow-wrap mt-3">
+                <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+            </div>
         </div>
 
-        <h4 class="mt-4 mb-2">MOD LOG</h4>
-
-        <div>
+        <div class="d-flex mt-4 mb-2">
+            <h4>MOD LOG</h4>
+            <app-spoiler class="ml-3" [(ngModel)]="modlogToggle"></app-spoiler>
+        </div>
+        <div *ngIf="modlogToggle">
             <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
         </div>
 

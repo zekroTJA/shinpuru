@@ -5,7 +5,6 @@ import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
 import { Guild, Role, Member, Report } from 'src/app/api/api.models';
-import { utils } from 'protractor';
 import { permLvlColor } from 'src/app/utils/utils';
 
 @Component({
@@ -20,6 +19,9 @@ export class GuildComponent {
   public reports: Report[];
 
   public permLvlColor = permLvlColor;
+
+  public guildToggle = false;
+  public modlogToggle = false;
 
   constructor(
     public api: APIService,
