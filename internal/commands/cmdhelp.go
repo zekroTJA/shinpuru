@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 )
 
 type CmdHelp struct {
-	PermLvl int
 }
 
 func (c *CmdHelp) GetInvokes() []string {
@@ -31,12 +29,8 @@ func (c *CmdHelp) GetGroup() string {
 	return GroupGeneral
 }
 
-func (c *CmdHelp) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdHelp) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdHelp) GetDomainName() string {
+	return "sp.etc.help"
 }
 
 func (c *CmdHelp) Exec(args *CommandArgs) error {
@@ -58,7 +52,7 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 		for cat, catCmds := range cmds {
 			commandHelpLines := ""
 			for _, c := range catCmds {
-				commandHelpLines += fmt.Sprintf("`%s` - *%s* `[%d]`\n", c.GetInvokes()[0], c.GetDescription(), c.GetPermission())
+				commandHelpLines += fmt.Sprintf("`%s` - *%s* `[%s]`\n", c.GetInvokes()[0], c.GetDescription(), c.GetDomainName())
 			}
 			emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 				Name:  cat,
@@ -86,8 +80,8 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 				Inline: true,
 			},
 			&discordgo.MessageEmbedField{
-				Name:   "Permission Lvl",
-				Value:  strconv.Itoa(cmd.GetPermission()),
+				Name:   "Domain Name",
+				Value:  cmd.GetDomainName(),
 				Inline: true,
 			},
 			&discordgo.MessageEmbedField{

@@ -12,7 +12,6 @@ import (
 )
 
 type CmdTwitchNotify struct {
-	PermLvl int
 }
 
 func (c *CmdTwitchNotify) GetInvokes() []string {
@@ -33,12 +32,8 @@ func (c *CmdTwitchNotify) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdTwitchNotify) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdTwitchNotify) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdTwitchNotify) GetDomainName() string {
+	return "sp.chat.twitch"
 }
 
 func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {

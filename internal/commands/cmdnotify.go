@@ -12,7 +12,6 @@ import (
 )
 
 type CmdNotify struct {
-	PermLvl int
 }
 
 func (c *CmdNotify) GetInvokes() []string {
@@ -32,12 +31,8 @@ func (c *CmdNotify) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdNotify) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdNotify) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdNotify) GetDomainName() string {
+	return "sp.guild.mod.notify"
 }
 
 func (c *CmdNotify) Exec(args *CommandArgs) error {
@@ -88,11 +83,11 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 	}
 
 	if strings.ToLower(args.Args[0]) == "setup" {
-		permLvl, err := args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+		ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
 		}
-		if permLvl < 6 && args.User.ID != args.Guild.OwnerID && args.User.ID != args.CmdHandler.config.Discord.OwnerID {
+		if !ok {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"Sorry, but you do'nt have the permission to setup the notify role.")
 			util.DeleteMessageLater(args.Session, msg, 10*time.Second)

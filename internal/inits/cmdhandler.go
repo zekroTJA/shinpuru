@@ -10,50 +10,40 @@ import (
 func InitCommandHandler(s *discordgo.Session, cfg *core.Config, db core.Database, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *commands.CmdHandler {
 	cmdHandler := commands.NewCmdHandler(s, db, cfg, tnw, lct)
 
-	cmdHandler.RegisterCommand(&commands.CmdHelp{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdPrefix{PermLvl: 10})
-	cmdHandler.RegisterCommand(&commands.CmdPerms{PermLvl: 10})
-	cmdHandler.RegisterCommand(&commands.CmdClear{PermLvl: 8})
-	cmdHandler.RegisterCommand(&commands.CmdMvall{PermLvl: 4})
-	cmdHandler.RegisterCommand(&commands.CmdInfo{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdSay{PermLvl: 3})
-	cmdHandler.RegisterCommand(&commands.CmdQuote{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdGame{PermLvl: 999})
-	cmdHandler.RegisterCommand(&commands.CmdAutorole{PermLvl: 9})
-	cmdHandler.RegisterCommand(&commands.CmdReport{PermLvl: 5})
-	cmdHandler.RegisterCommand(&commands.CmdModlog{PermLvl: 6})
-	cmdHandler.RegisterCommand(&commands.CmdKick{PermLvl: 6})
-	cmdHandler.RegisterCommand(&commands.CmdBan{PermLvl: 8})
-	cmdHandler.RegisterCommand(&commands.CmdVote{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdProfile{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdId{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdMute{PermLvl: 4})
-	cmdHandler.RegisterCommand(&commands.CmdMention{PermLvl: 4})
-	cmdHandler.RegisterCommand(&commands.CmdNotify{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdVoicelog{PermLvl: 6})
-	cmdHandler.RegisterCommand(&commands.CmdBug{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdStats{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{PermLvl: 5})
-	cmdHandler.RegisterCommand(&commands.CmdGhostping{PermLvl: 3})
-	cmdHandler.RegisterCommand(&commands.CmdExec{PermLvl: 5})
-	cmdHandler.RegisterCommand(&commands.CmdBackup{PermLvl: 9})
-	cmdHandler.RegisterCommand(&commands.CmdInviteBlock{PermLvl: 6})
-	cmdHandler.RegisterCommand(&commands.CmdTag{PermLvl: 0})
-	cmdHandler.RegisterCommand(&commands.CmdJoinMsg{PermLvl: 4})
-	cmdHandler.RegisterCommand(&commands.CmdLeaveMsg{PermLvl: 4})
+	cmdHandler.RegisterCommand(&commands.CmdHelp{})
+	cmdHandler.RegisterCommand(&commands.CmdPrefix{})
+	cmdHandler.RegisterCommand(&commands.CmdPerms{})
+	cmdHandler.RegisterCommand(&commands.CmdClear{})
+	cmdHandler.RegisterCommand(&commands.CmdMvall{})
+	cmdHandler.RegisterCommand(&commands.CmdInfo{})
+	cmdHandler.RegisterCommand(&commands.CmdSay{})
+	cmdHandler.RegisterCommand(&commands.CmdQuote{})
+	cmdHandler.RegisterCommand(&commands.CmdGame{})
+	cmdHandler.RegisterCommand(&commands.CmdAutorole{})
+	cmdHandler.RegisterCommand(&commands.CmdReport{})
+	cmdHandler.RegisterCommand(&commands.CmdModlog{})
+	cmdHandler.RegisterCommand(&commands.CmdKick{})
+	cmdHandler.RegisterCommand(&commands.CmdBan{})
+	cmdHandler.RegisterCommand(&commands.CmdVote{})
+	cmdHandler.RegisterCommand(&commands.CmdProfile{})
+	cmdHandler.RegisterCommand(&commands.CmdId{})
+	cmdHandler.RegisterCommand(&commands.CmdMute{})
+	cmdHandler.RegisterCommand(&commands.CmdMention{})
+	cmdHandler.RegisterCommand(&commands.CmdNotify{})
+	cmdHandler.RegisterCommand(&commands.CmdVoicelog{})
+	cmdHandler.RegisterCommand(&commands.CmdBug{})
+	cmdHandler.RegisterCommand(&commands.CmdStats{})
+	cmdHandler.RegisterCommand(&commands.CmdTwitchNotify{})
+	cmdHandler.RegisterCommand(&commands.CmdGhostping{})
+	cmdHandler.RegisterCommand(&commands.CmdExec{})
+	cmdHandler.RegisterCommand(&commands.CmdBackup{})
+	cmdHandler.RegisterCommand(&commands.CmdInviteBlock{})
+	cmdHandler.RegisterCommand(&commands.CmdTag{})
+	cmdHandler.RegisterCommand(&commands.CmdJoinMsg{})
+	cmdHandler.RegisterCommand(&commands.CmdLeaveMsg{})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
-	}
-
-	if cfg.Permissions != nil {
-		cmdHandler.UpdateCommandPermissions(cfg.Permissions.CustomCmdPermissions)
-		if cfg.Permissions.BotOwnerLevel > 0 {
-			util.PermLvlBotOwner = cfg.Permissions.BotOwnerLevel
-		}
-		if cfg.Permissions.GuildOwnerLevel > 0 {
-			util.PermLvlGuildOwner = cfg.Permissions.GuildOwnerLevel
-		}
 	}
 
 	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())

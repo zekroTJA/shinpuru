@@ -5,8 +5,7 @@ type Command interface {
 	GetDescription() string
 	GetHelp() string
 	GetGroup() string
-	GetPermission() int
-	SetPermission(permLvl int)
+	GetDomainName() string
 	Exec(args *CommandArgs) error
 }
 
