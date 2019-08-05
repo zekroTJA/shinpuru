@@ -19,11 +19,9 @@ func (c *CmdTest) GetGroup() string {
 	return GroupEtc
 }
 
-func (c *CmdTest) GetPermission() int {
-	return 999
+func (c *CmdTest) GetDomainName() string {
+	return "sp.test"
 }
-
-func (c *CmdTest) SetPermission(permLvl int) {}
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	// fmt.Println(args.Session.Channel("549575608074502174"))

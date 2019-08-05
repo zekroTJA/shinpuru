@@ -10,7 +10,6 @@ import (
 )
 
 type CmdVote struct {
-	PermLvl int
 }
 
 func (c *CmdVote) GetInvokes() []string {
@@ -32,14 +31,9 @@ func (c *CmdVote) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdVote) GetPermission() int {
-	return c.PermLvl
+func (c *CmdVote) GetDomainName() string {
+	return "sp.chat.vote"
 }
-
-func (c *CmdVote) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
-}
-
 func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	if len(args.Args) > 0 {
@@ -104,17 +98,20 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					return err
 				}
 			}
-			permLvl, err := args.CmdHandler.db.GetMemberPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
-			if vote.CreatorID != args.User.ID && permLvl <= 5 && args.User.ID != args.Guild.OwnerID {
+
+			ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".close")
+			if vote.CreatorID != args.User.ID && !ok && args.User.ID != args.Guild.OwnerID {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					"You do not have the permission to close another ones votes.")
 				util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 				return err
 			}
+
 			err = args.CmdHandler.db.DeleteVote(vote.ID)
 			if err != nil {
 				return err
 			}
+
 			err = vote.Close(args.Session, util.VoteStateClosed)
 			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 				"Vote closed.", "", util.ColorEmbedGreen)

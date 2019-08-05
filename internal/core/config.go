@@ -29,12 +29,6 @@ type ConfigDatabaseType struct {
 	Sqlite *ConfigDatabaseFile
 }
 
-type ConfigPermissions struct {
-	BotOwnerLevel        int
-	GuildOwnerLevel      int
-	CustomCmdPermissions map[string]int
-}
-
 type ConfigLogging struct {
 	CommandLogging bool
 	LogLevel       int
@@ -57,13 +51,12 @@ type ConfigWSTLS struct {
 }
 
 type Config struct {
-	Version     int `yaml:"configVersionPleaseDoNotChange"`
-	Discord     *ConfigDiscord
-	Database    *ConfigDatabaseType
-	Permissions *ConfigPermissions
-	Logging     *ConfigLogging
-	Etc         *ConfigEtc
-	WebServer   *ConfigWS
+	Version   int `yaml:"configVersionPleaseDoNotChange"`
+	Discord   *ConfigDiscord
+	Database  *ConfigDatabaseType
+	Logging   *ConfigLogging
+	Etc       *ConfigEtc
+	WebServer *ConfigWS
 }
 
 type ConfigParser interface {
@@ -82,13 +75,6 @@ func NewDefaultConfig() *Config {
 			MySql: new(ConfigDatabaseCreds),
 			Sqlite: &ConfigDatabaseFile{
 				DBFile: "shinpuru.sqlite3.db",
-			},
-		},
-		Permissions: &ConfigPermissions{
-			BotOwnerLevel:   1000,
-			GuildOwnerLevel: 10,
-			CustomCmdPermissions: map[string]int{
-				"cmdinvoke": 0,
 			},
 		},
 		Logging: &ConfigLogging{

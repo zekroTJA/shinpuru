@@ -10,7 +10,6 @@ import (
 )
 
 type CmdAutorole struct {
-	PermLvl int
 }
 
 func (c *CmdAutorole) GetInvokes() []string {
@@ -31,12 +30,8 @@ func (c *CmdAutorole) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdAutorole) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdAutorole) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdAutorole) GetDomainName() string {
+	return "sp.guild.config.autorole"
 }
 
 func (c *CmdAutorole) Exec(args *CommandArgs) error {

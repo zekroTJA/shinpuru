@@ -10,7 +10,6 @@ import (
 )
 
 type CmdBan struct {
-	PermLvl int
 }
 
 func (c *CmdBan) GetInvokes() []string {
@@ -29,12 +28,8 @@ func (c *CmdBan) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdBan) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdBan) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdBan) GetDomainName() string {
+	return "sp.guild.mod.ban"
 }
 
 func (c *CmdBan) Exec(args *CommandArgs) error {
