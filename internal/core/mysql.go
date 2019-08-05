@@ -44,7 +44,7 @@ func (m *MySQL) setup() {
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`roleID` text NOT NULL," +
 		"`guildID` text NOT NULL," +
-		"`permission` int(11) NOT NULL," +
+		"`permission` text NOT NULL," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -224,29 +224,32 @@ func (m *MySQL) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *MySQL) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
+func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (PermissionArray, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	member, err := s.GuildMember(guildID, memberID)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	maxPermLvl := 0
-	if lvl, ok := guildPerms[guildID]; ok {
-		maxPermLvl = lvl
-	}
+
+	var res PermissionArray
 	for _, rID := range member.Roles {
-		if lvl, ok := guildPerms[rID]; ok && lvl > maxPermLvl {
-			maxPermLvl = lvl
+		if p, ok := guildPerms[rID]; ok {
+			if res == nil {
+				res = p
+			} else {
+				res = res.Merge(p)
+			}
 		}
 	}
-	return maxPermLvl, err
+
+	return res, nil
 }
 
-func (m *MySQL) GetGuildPermissions(guildID string) (map[string]int, error) {
-	results := make(map[string]int)
+func (m *MySQL) GetGuildPermissions(guildID string) (map[string]PermissionArray, error) {
+	results := make(map[string]PermissionArray)
 	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
 	if err != nil {
@@ -254,19 +257,20 @@ func (m *MySQL) GetGuildPermissions(guildID string) (map[string]int, error) {
 	}
 	for rows.Next() {
 		var roleID string
-		var permission int
+		var permission string
 		err := rows.Scan(&roleID, &permission)
 		if err != nil {
 			return nil, err
 		}
-		results[roleID] = permission
+		results[roleID] = strings.Split(permission, ",")
 	}
 	return results, nil
 }
 
-func (m *MySQL) SetGuildRolePermission(guildID, roleID string, permLvL int) error {
+func (m *MySQL) SetGuildRolePermission(guildID, roleID string, p PermissionArray) error {
+	pStr := strings.Join(p, ",")
 	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
-		permLvL, roleID, guildID)
+		pStr, roleID, guildID)
 	if err != nil {
 		return err
 	}
@@ -275,7 +279,7 @@ func (m *MySQL) SetGuildRolePermission(guildID, roleID string, permLvL int) erro
 			return err
 		}
 		_, err := m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
-			roleID, guildID, permLvL)
+			roleID, guildID, pStr)
 		return err
 	}
 	return nil

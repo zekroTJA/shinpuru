@@ -11,7 +11,6 @@ import (
 )
 
 type CmdMvall struct {
-	PermLvl int
 }
 
 func (c *CmdMvall) GetInvokes() []string {
@@ -30,12 +29,8 @@ func (c *CmdMvall) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdMvall) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdMvall) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdMvall) GetDomainName() string {
+	return "sp.guild.mod.mvall"
 }
 
 func (c *CmdMvall) Exec(args *CommandArgs) error {

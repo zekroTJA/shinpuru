@@ -11,7 +11,6 @@ import (
 )
 
 type CmdMute struct {
-	PermLvl int
 }
 
 func (c *CmdMute) GetInvokes() []string {
@@ -33,12 +32,8 @@ func (c *CmdMute) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdMute) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdMute) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdMute) GetDomainName() string {
+	return "sp.guild.mod.mute"
 }
 
 func (c *CmdMute) Exec(args *CommandArgs) error {

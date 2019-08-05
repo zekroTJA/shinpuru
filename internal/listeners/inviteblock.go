@@ -3,7 +3,6 @@ package listeners
 import (
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -78,28 +77,23 @@ func (l *ListenerInviteBlock) followLink(link string) (bool, error) {
 }
 
 func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Message) error {
-	_lvl, err := l.db.GetGuildInviteBlock(e.GuildID)
+	enabled, err := l.db.GetGuildInviteBlock(e.GuildID)
 	if core.IsErrDatabaseNotFound(err) {
 		return nil
 	}
 	if err != nil {
 		return err
 	}
-	if _lvl == "" {
+	if enabled == "" {
 		return nil
 	}
 
-	mustPermLvl, err := strconv.Atoi(_lvl)
+	ok, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "sp.guild.mod.inviteblock.send")
 	if err != nil {
 		return err
 	}
 
-	uPermLvl, err := l.cmdHandler.GetPermissionLevel(s, e.GuildID, e.Author.ID)
-	if err != nil {
-		return err
-	}
-
-	if uPermLvl >= mustPermLvl {
+	if ok {
 		return nil
 	}
 

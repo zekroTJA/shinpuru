@@ -10,7 +10,6 @@ import (
 )
 
 type CmdKick struct {
-	PermLvl int
 }
 
 func (c *CmdKick) GetInvokes() []string {
@@ -29,12 +28,8 @@ func (c *CmdKick) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdKick) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdKick) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdKick) GetDomainName() string {
+	return "sp.guild.mod.kick"
 }
 
 func (c *CmdKick) Exec(args *CommandArgs) error {
