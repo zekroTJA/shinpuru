@@ -15,9 +15,13 @@ export class GuildComponent {
   public guild: Guild;
   public members: Member[];
   public reports: Report[];
+  public allowed: string[];
+
+  public guildSettingsAllowed: string[] = [];
 
   public guildToggle = false;
   public modlogToggle = false;
+  public guildSettingsToggle = false;
 
   constructor(
     public api: APIService,
@@ -30,6 +34,14 @@ export class GuildComponent {
       this.members = this.guild.members.filter(
         (m) => m.user.id !== this.guild.self_member.user.id
       );
+      this.api
+        .getPermissionsAllowed(guildID, guild.self_member.user.id)
+        .subscribe((allowed) => {
+          this.allowed = allowed;
+          this.guildSettingsAllowed = this.allowed.filter((a) =>
+            a.startsWith('sp.guild.config')
+          );
+        });
       this.spinner.stop('spinner-load-guild');
     });
 
@@ -61,5 +73,9 @@ export class GuildComponent {
             m.user.id.includes(val))
       );
     }
+  }
+
+  public guildSettingsContains(str: string): boolean {
+    return this.guildSettingsAllowed.includes(str);
   }
 }

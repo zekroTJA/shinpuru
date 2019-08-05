@@ -82,7 +82,14 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 
 	perm, err := c.db.GetMemberPermission(s, guildID, userID)
 
-	perm = perm.Merge(core.PermissionArray{"+sp.etc.*", "+sp.chat.*"})
+	perm = perm.Merge(core.PermissionArray{
+		"+sp.etc.*",
+		"+sp.chat.*",
+		"-sp.chat.tag.create",
+		"-sp.chat.tag.delete",
+		"-sp.chat.vote.close",
+		"-sp.guild.mod.inviteblock.send",
+	})
 
 	if err != nil && !core.IsErrDatabaseNotFound(err) {
 		return nil, err
@@ -162,4 +169,8 @@ func (c *CmdHandler) AddNotifiedCommandMsg(msgID string) {
 
 func (c *CmdHandler) GetNotifiedCommandMsgs() *timedmap.TimedMap {
 	return c.notifiedCmdMsgs
+}
+
+func (c *CmdHandler) GetCmdInstances() []Command {
+	return c.registeredCmdInstances
 }

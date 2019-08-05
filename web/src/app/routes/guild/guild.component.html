@@ -42,5 +42,15 @@
             <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
         </div>
 
+        <div *ngIf="guildSettingsAllowed && guildSettingsAllowed.length" class="d-flex mt-4 mb-2">
+            <h4>GUILD SETTINGS</h4>
+            <app-spoiler class="ml-3" [(ngModel)]="guildSettingsToggle"></app-spoiler>
+        </div>
+        <div *ngIf="guildSettingsToggle">
+            <div *ngIf="guildSettingsContains('sp.guild.config.prefix')">
+                <h5>Prefix</h5>
+                <input type="text" />
+            </div>
+        </div>
     </div>
 </div>

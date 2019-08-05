@@ -183,3 +183,38 @@ func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusOK)
 }
+
+func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
+	// userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	perms, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
+	if core.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	cmds := ws.cmdhandler.GetCmdInstances()
+
+	allowed := make([]string, len(cmds))
+	i := 0
+	for _, cmd := range cmds {
+		if core.PermissionCheck(cmd.GetDomainName(), perms) {
+			allowed[i] = cmd.GetDomainName()
+			i++
+		}
+	}
+
+	return jsonResponse(ctx, &ListResponse{
+		N:    i,
+		Data: allowed[:i],
+	}, fasthttp.StatusOK)
+}
+
+// func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
+
+// }

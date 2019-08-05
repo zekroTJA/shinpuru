@@ -60,6 +60,18 @@ type Report struct {
 	Created  time.Time `json:"created"`
 }
 
+type GuildSettings struct {
+	Prefix              string                          `json:"prefix"`
+	Perms               map[string]core.PermissionArray `json:"perms"`
+	AutoRole            string                          `json:"autorole"`
+	ModLogChannel       string                          `json:"modlogchannel"`
+	VoiceLogChannel     string                          `json:"voicelogchannel"`
+	JoinMessageChannel  string                          `json:"joinmessagechannel"`
+	JoinMessageText     string                          `json:"joinmessagetext"`
+	LeaveMessageChannel string                          `json:"leavemessagechannel"`
+	LeaveMessageText    string                          `json:"leavemessagetext"`
+}
+
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
 	membs := make([]*Member, len(g.Members))
 	for i, m := range g.Members {
