@@ -242,11 +242,11 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.JoinMessageChannel, gs.JoinMessageText, err = ws.db.GetGuildJoinMsg(guildID); err != nil {
+	if gs.JoinMessageText, gs.JoinMessageChannel, err = ws.db.GetGuildJoinMsg(guildID); err != nil {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.LeaveMessageChannel, gs.LeaveMessageText, err = ws.db.GetGuildLeaveMsg(guildID); err != nil {
+	if gs.LeaveMessageText, gs.LeaveMessageChannel, err = ws.db.GetGuildLeaveMsg(guildID); err != nil {
 		return errInternalOrNotFound(ctx, err)
 	}
 
@@ -272,6 +272,10 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 		}
 
+		if gs.AutoRole == "__RESET__" {
+			gs.AutoRole = ""
+		}
+
 		if err = ws.db.SetGuildAutoRole(guildID, gs.AutoRole); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		}
@@ -282,6 +286,10 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if gs.ModLogChannel == "__RESET__" {
+			gs.ModLogChannel = ""
 		}
 
 		if err = ws.db.SetGuildModLog(guildID, gs.ModLogChannel); err != nil {
@@ -296,6 +304,10 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 		}
 
+		if gs.Prefix == "__RESET__" {
+			gs.Prefix = ""
+		}
+
 		if err = ws.db.SetGuildPrefix(guildID, gs.Prefix); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		}
@@ -308,7 +320,45 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 		}
 
+		if gs.VoiceLogChannel == "__RESET__" {
+			gs.VoiceLogChannel = ""
+		}
+
 		if err = ws.db.SetGuildVoiceLog(guildID, gs.VoiceLogChannel); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	if gs.JoinMessageChannel != "" && gs.JoinMessageText != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.joinmsg"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if gs.JoinMessageChannel == "__RESET__" && gs.JoinMessageText == "__RESET__" {
+			gs.JoinMessageChannel = ""
+			gs.JoinMessageText = ""
+		}
+
+		if err = ws.db.SetGuildJoinMsg(guildID, gs.JoinMessageText, gs.JoinMessageChannel); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	if gs.LeaveMessageChannel != "" && gs.LeaveMessageText != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.leavemsg"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if gs.LeaveMessageChannel == "__RESET__" && gs.LeaveMessageText == "__RESET__" {
+			gs.LeaveMessageChannel = ""
+			gs.LeaveMessageText = ""
+		}
+
+		if err = ws.db.SetGuildLeaveMsg(guildID, gs.LeaveMessageText, gs.LeaveMessageChannel); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		}
 	}

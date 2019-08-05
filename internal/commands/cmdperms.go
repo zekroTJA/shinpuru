@@ -57,8 +57,8 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		}
 
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			msgstr+"\n*Guild owners does always have perm LvL 10 and the owner of the bot has everywhere perm LvL 999.*",
-			"Permission Level for this Guild", 0)
+			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild.*`, `sp.chat.*` and `sp.etc.*` "+
+				"and the owner of the bot has everywhere permissions over `sp.*`.", "Permission settings for this guild", 0)
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		multipleRoles = "'s"
 	}
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Set permission level `%s` for role%s %s.",
+		fmt.Sprintf("Set permission `%s` for role%s %s.",
 			perm, multipleRoles, strings.Join(rolesIds, ", ")),
 		"", util.ColorEmbedUpdated)
 
