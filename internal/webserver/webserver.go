@@ -107,9 +107,6 @@ func (ws *WebServer) registerHandlers() {
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
 
-	api.
-		Get("/permissions/<guildid:[0-9]+>/<memberid:[0-9]+>", ws.handlerGetPermissions)
-
 	guilds := api.Group("/guilds")
 	guilds.
 		Get("", ws.handlerGuildsGet)
@@ -117,10 +114,16 @@ func (ws *WebServer) registerHandlers() {
 		Get("/<id:[0-9]+>", ws.handlerGuildsGetGuild)
 	guilds.
 		Get("/<guildid:[0-9]+>/reports", ws.handlerGetReports)
-	guilds.
-		Get("/<guildid:[0-9]+>/<memberid>", ws.handlerGuildsGetMember)
-	guilds.
-		Get("/<guildid:[0-9]+>/<memberid>/reports", ws.handlerGetReports)
+
+	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
+	member.
+		Get("", ws.handlerGuildsGetMember)
+	member.
+		Get("/reports", ws.handlerGetReports)
+	member.
+		Get("/permissions", ws.handlerGetPermissions)
+	member.
+		Get("/permissions/allowed", ws.handlerGetPermissionsAllowed)
 
 	reports := api.Group("/reports")
 	reports.

@@ -44,7 +44,7 @@ export class MemberRouteComponent {
       }
     });
 
-    this.api.getPermissionLvl(guildID, memberID).subscribe((perm) => {
+    this.api.getPermissions(guildID, memberID).subscribe((perm) => {
       this.perm = perm;
     });
 

@@ -83,19 +83,36 @@ export class APIService {
       .pipe(catchError(ignoreError ? (err) => of(null) : this.errorChatcher));
   }
 
-  public getPermissionLvl(
-    guildID: string,
-    userID: string
-  ): Observable<string[]> {
+  public getPermissions(guildID: string, userID: string): Observable<string[]> {
     return this.http
       .get<PermissionResponse>(
-        this.rootURL + '/api/permissions/' + guildID + '/' + userID,
+        this.rootURL + '/api/guilds/' + guildID + '/' + userID + '/permissions',
         this.defopts
       )
       .pipe(
         map((r) => {
           return r.permissions;
         }),
+        catchError(this.errorChatcher)
+      );
+  }
+
+  public getPermissionsAllowed(
+    guildID: string,
+    userID: string
+  ): Observable<string[]> {
+    return this.http
+      .get<ListReponse<string>>(
+        this.rootURL +
+          '/api/guilds/' +
+          guildID +
+          '/' +
+          userID +
+          '/permissions/allowed',
+        this.defopts
+      )
+      .pipe(
+        map((l) => l.data),
         catchError(this.errorChatcher)
       );
   }
