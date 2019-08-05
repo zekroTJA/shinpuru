@@ -10,7 +10,6 @@ import (
 )
 
 type CmdVoicelog struct {
-	PermLvl int
 }
 
 func (c *CmdVoicelog) GetInvokes() []string {
@@ -31,12 +30,8 @@ func (c *CmdVoicelog) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdVoicelog) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdVoicelog) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdVoicelog) GetDomainName() string {
+	return "sp.guild.config.voicelog"
 }
 
 func (c *CmdVoicelog) Exec(args *CommandArgs) error {

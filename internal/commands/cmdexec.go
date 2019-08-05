@@ -20,7 +20,6 @@ const (
 )
 
 type CmdExec struct {
-	PermLvl int
 }
 
 func (c *CmdExec) GetInvokes() []string {
@@ -40,12 +39,8 @@ func (c *CmdExec) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdExec) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdExec) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdExec) GetDomainName() string {
+	return "sp.chat.exec"
 }
 
 func (c *CmdExec) Exec(args *CommandArgs) error {

@@ -11,7 +11,6 @@ import (
 )
 
 type CmdMention struct {
-	PermLvl int
 }
 
 func (c *CmdMention) GetInvokes() []string {
@@ -29,15 +28,11 @@ func (c *CmdMention) GetHelp() string {
 }
 
 func (c *CmdMention) GetGroup() string {
-	return GroupGeneral
+	return GroupModeration
 }
 
-func (c *CmdMention) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdMention) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdMention) GetDomainName() string {
+	return "sp.guild.mod.ment"
 }
 
 func (c *CmdMention) Exec(args *CommandArgs) error {

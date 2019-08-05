@@ -12,7 +12,6 @@ import (
 const defMsgPattern = "{pinger} ghost pinged {pinged} with message:\n\n{msg}"
 
 type CmdGhostping struct {
-	PermLvl int
 }
 
 func (c *CmdGhostping) GetInvokes() []string {
@@ -37,15 +36,11 @@ func (c *CmdGhostping) GetHelp() string {
 }
 
 func (c *CmdGhostping) GetGroup() string {
-	return GroupChat
+	return GroupModeration
 }
 
-func (c *CmdGhostping) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdGhostping) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdGhostping) GetDomainName() string {
+	return "sp.guild.mod.ghostping"
 }
 
 func (c *CmdGhostping) Exec(args *CommandArgs) error {

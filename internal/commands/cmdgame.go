@@ -9,7 +9,6 @@ import (
 )
 
 type CmdGame struct {
-	PermLvl int
 }
 
 func (c *CmdGame) GetInvokes() []string {
@@ -29,12 +28,8 @@ func (c *CmdGame) GetGroup() string {
 	return GroupGlobalAdmin
 }
 
-func (c *CmdGame) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdGame) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdGame) GetDomainName() string {
+	return "sp.game"
 }
 
 func (c *CmdGame) Exec(args *CommandArgs) error {

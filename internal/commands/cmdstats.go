@@ -29,12 +29,8 @@ func (c *CmdStats) GetGroup() string {
 	return GroupEtc
 }
 
-func (c *CmdStats) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdStats) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdStats) GetDomainName() string {
+	return "sp.etc.stats"
 }
 
 func (c *CmdStats) Exec(args *CommandArgs) error {
