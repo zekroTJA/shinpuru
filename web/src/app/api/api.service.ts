@@ -11,6 +11,7 @@ import {
   Member,
   Report,
   PermissionResponse,
+  GuildSettings,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -27,7 +28,7 @@ export class APIService {
     withCredentials: true,
   };
 
-  private errorChatcher = (err) => {
+  private errorCatcher = (err) => {
     console.error(err);
     this.toasts.push(err.message, 'Request Error', 'error', 10000);
     return of(null);
@@ -40,14 +41,14 @@ export class APIService {
   public logout(): Observable<any> {
     return this.http
       .post<any>(this.rootURL + '/api/logout', this.defopts)
-      .pipe(catchError(this.errorChatcher));
+      .pipe(catchError(this.errorCatcher));
   }
 
   public getSelfUser(): Observable<User> {
     return this.http.get<User>(this.rootURL + '/api/me', this.defopts).pipe(
       catchError((err) => {
         if (err.status !== 401) {
-          return this.errorChatcher(err);
+          return this.errorCatcher(err);
         }
       })
     );
@@ -60,14 +61,14 @@ export class APIService {
         map((lr) => {
           return lr.data;
         }),
-        catchError(this.errorChatcher)
+        catchError(this.errorCatcher)
       );
   }
 
   public getGuild(id: string): Observable<Guild> {
     return this.http
       .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
-      .pipe(catchError(this.errorChatcher));
+      .pipe(catchError(this.errorCatcher));
   }
 
   public getGuildMember(
@@ -80,7 +81,7 @@ export class APIService {
         this.rootURL + '/api/guilds/' + guildID + '/' + memberID,
         this.defopts
       )
-      .pipe(catchError(ignoreError ? (err) => of(null) : this.errorChatcher));
+      .pipe(catchError(ignoreError ? (err) => of(null) : this.errorCatcher));
   }
 
   public getPermissions(guildID: string, userID: string): Observable<string[]> {
@@ -93,7 +94,7 @@ export class APIService {
         map((r) => {
           return r.permissions;
         }),
-        catchError(this.errorChatcher)
+        catchError(this.errorCatcher)
       );
   }
 
@@ -113,7 +114,7 @@ export class APIService {
       )
       .pipe(
         map((l) => l.data),
-        catchError(this.errorChatcher)
+        catchError(this.errorCatcher)
       );
   }
 
@@ -132,13 +133,22 @@ export class APIService {
 
     return this.http.get<ListReponse<Report>>(uri, opts).pipe(
       map((lr) => lr.data),
-      catchError(this.errorChatcher)
+      catchError(this.errorCatcher)
     );
   }
 
   public getReport(reportID: string): Observable<Report> {
     return this.http
       .get<Report>(this.rootURL + '/api/reports/' + reportID, this.defopts)
-      .pipe(catchError(this.errorChatcher));
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettings(guildID: string): Observable<GuildSettings> {
+    return this.http
+      .get<GuildSettings>(
+        this.rootURL + '/api/guilds/' + guildID + '/settings',
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
   }
 }

@@ -37,15 +37,23 @@ button
 hr
     border-top: 3px solid $c-nqblack !important
 
-input[type=text]
+input
     background-color: transparent
     border-style: none
-    border-bottom: solid 1px white
     color: white
     +transition25
+    
+    &[type=text]
+        border-bottom: solid 1px white
 
-    &:focus
-        border-bottom: solid 3px white
+        &:focus
+            border-bottom: solid 3px white
+
+select
+    background-color: $c-nqblack
+    border: solid 1px white
+    color: white
+    +transition25
 
 //-----------------------------------
 

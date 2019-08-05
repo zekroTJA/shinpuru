@@ -47,9 +47,21 @@
             <app-spoiler class="ml-3" [(ngModel)]="guildSettingsToggle"></app-spoiler>
         </div>
         <div *ngIf="guildSettingsToggle">
-            <div *ngIf="guildSettingsContains('sp.guild.config.prefix')">
+            <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">
                 <h5>Prefix</h5>
-                <input type="text" />
+                <div class="d-flex">
+                    <input type="text" [(ngModel)]="settings.prefix" placeholder="unset"/>
+                    <button (click)="settings.prefix = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.autorole')" class="settingsTile">
+                <h5>Autorole</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.autorole">
+                        <option *ngFor="let r of guild.roles" [ngValue]="r.id">{{ r.name }}</option>
+                    </select>
+                    <button (click)="settings.autorole = '__RESET__'">RESET</button>
+                </div>
             </div>
         </div>
     </div>

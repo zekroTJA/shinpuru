@@ -13,7 +13,7 @@ func (p PermissionArray) Update(npdn string) PermissionArray {
 	i := 0
 	add := true
 	for _, cp := range p {
-		if cp[1:] == npdn[1:] {
+		if len(cp) > 0 && cp[1:] == npdn[1:] {
 			add = false
 			if cp[0] != npdn[0] {
 				continue
