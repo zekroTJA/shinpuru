@@ -5,7 +5,6 @@ import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
 import { Guild, Role, Member, Report } from 'src/app/api/api.models';
-import { permLvlColor } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-guild',
@@ -14,11 +13,8 @@ import { permLvlColor } from 'src/app/utils/utils';
 })
 export class GuildComponent {
   public guild: Guild;
-  public permLvl: number;
   public members: Member[];
   public reports: Report[];
-
-  public permLvlColor = permLvlColor;
 
   public guildToggle = false;
   public modlogToggle = false;
@@ -34,11 +30,6 @@ export class GuildComponent {
       this.members = this.guild.members.filter(
         (m) => m.user.id !== this.guild.self_member.user.id
       );
-      this.api
-        .getPermissionLvl(guildID, guild.self_member.user.id)
-        .subscribe((lvl) => {
-          this.permLvl = lvl;
-        });
       this.spinner.stop('spinner-load-guild');
     });
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core"
+
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -47,8 +49,8 @@ type GuildReduced struct {
 	MemberCount int                 `json:"member_count"`
 }
 
-type PermissionLvlResponse struct {
-	Level int `json:"lvl"`
+type PermissionsResponse struct {
+	Permissions core.PermissionArray `json:"permissions"`
 }
 
 type Report struct {

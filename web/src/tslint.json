@@ -13,6 +13,7 @@
       "app",
       "kebab-case"
     ],
-    "variable-name": false
+    "variable-name": false,
+    "semicolon": false
   }
 }

@@ -22,15 +22,6 @@
         <table id="general-user-info" class="mt-2">
             <tbody>
                 <tr>
-                    <th>Permission Level</th>
-                    <td>
-                        <p *ngIf="permLvl !== undefined; else permlvlspinner" class="embeded" [style.background-color]="permLvlColor(permLvl)">{{ permLvl }}</p>
-                        <ng-template #permlvlspinner>
-                            <app-spinner id="spinner-load-permlvl" [started]="true" [small]="true"></app-spinner>
-                        </ng-template>
-                    </td>
-                </tr>
-                <tr>
                     <th>Joined Guild</th>
                     <td>{{ dateFormat(member.joined_at, "ddd, mmm dS, yyyy - hh:MM:ss Z") }}</td>
                 </tr>
@@ -38,12 +29,32 @@
                     <th>Created Account</th>
                     <td>{{ dateFormat(member.created_at, "ddd, mmm dS, yyyy - hh:MM:ss Z") }}</td>
                 </tr>
+                <tr>
+                    <th>Permissions</th>
+                    <td>
+                        <app-spinner id="spinner-load-permissions" *ngIf="!perm; else permsview" [started]="true" [small]="true"></app-spinner>
+                        <ng-template #permsview>
+                            <div class="d-flex overflow-wrap">
+                                <p 
+                                    *ngFor="let p of getPerms(true)" 
+                                    class="permissions embeded allowed"
+                                >{{ p }}</p>
+                            </div>
+                            <div class="d-flex overflow-wrap">
+                                <p 
+                                    *ngFor="let p of getPerms(false)" 
+                                    class="permissions embeded disallowed"
+                                >{{ p }}</p>
+                            </div>
+                        </ng-template>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
         <div class="d-flex mt-4 mb-2">
             <h4>Reports</h4>
-            <p *ngIf="reports.length >= 0" class="reports-count">{{ reports.length }}</p>
+            <p *ngIf="reports.length" class="reports-count">{{ reports.length }}</p>
         </div>
         <app-spinner *ngIf="!reports" id="spinner-load-reports" [started]="true"></app-spinner>
         <div>

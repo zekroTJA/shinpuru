@@ -67,8 +67,8 @@ export interface Guild {
   channels?: Channel[];
 }
 
-export interface PermLvlResponse {
-  lvl: number;
+export interface PermissionResponse {
+  permissions: number;
 }
 
 export interface Report {
