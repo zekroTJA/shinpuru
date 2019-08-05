@@ -278,6 +278,11 @@ func (m *MySQL) GetGuildPermissions(guildID string) (map[string]PermissionArray,
 }
 
 func (m *MySQL) SetGuildRolePermission(guildID, roleID string, p PermissionArray) error {
+	if len(p) == 0 {
+		_, err := m.DB.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
+		return err
+	}
+
 	pStr := strings.Join(p, ",")
 	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
 		pStr, roleID, guildID)

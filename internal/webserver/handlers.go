@@ -63,7 +63,7 @@ func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	guildID := ctx.Param("id")
+	guildID := ctx.Param("guildid")
 
 	memb, _ := ws.session.GuildMember(guildID, userID)
 	if memb == nil {
@@ -215,6 +215,103 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
-// func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
+	gs := new(GuildSettings)
 
-// }
+	guildID := ctx.Param("guildid")
+
+	var err error
+
+	if gs.Prefix, err = ws.db.GetGuildPrefix(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.Perms, err = ws.db.GetGuildPermissions(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.AutoRole, err = ws.db.GetGuildAutoRole(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.ModLogChannel, err = ws.db.GetGuildModLog(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.VoiceLogChannel, err = ws.db.GetGuildVoiceLog(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.JoinMessageChannel, gs.JoinMessageText, err = ws.db.GetGuildJoinMsg(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	if gs.LeaveMessageChannel, gs.LeaveMessageText, err = ws.db.GetGuildLeaveMsg(guildID); err != nil {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	return jsonResponse(ctx, gs, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	var err error
+
+	gs := new(GuildSettings)
+	if err = parseJSONBody(ctx, gs); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if gs.AutoRole != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.autorole"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if err = ws.db.SetGuildAutoRole(guildID, gs.AutoRole); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	if gs.ModLogChannel != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.modlog"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if err = ws.db.SetGuildModLog(guildID, gs.ModLogChannel); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	if gs.Prefix != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.prefix"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if err = ws.db.SetGuildPrefix(guildID, gs.Prefix); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	if gs.VoiceLogChannel != "" {
+		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.voicelog"); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		} else if !ok {
+			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+		}
+
+		if err = ws.db.SetGuildVoiceLog(guildID, gs.VoiceLogChannel); err != nil {
+			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}

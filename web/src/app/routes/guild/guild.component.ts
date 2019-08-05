@@ -4,7 +4,13 @@ import { Component } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
-import { Guild, Role, Member, Report } from 'src/app/api/api.models';
+import {
+  Guild,
+  Role,
+  Member,
+  Report,
+  GuildSettings,
+} from 'src/app/api/api.models';
 
 @Component({
   selector: 'app-guild',
@@ -16,6 +22,7 @@ export class GuildComponent {
   public members: Member[];
   public reports: Report[];
   public allowed: string[];
+  public settings: GuildSettings;
 
   public guildSettingsAllowed: string[] = [];
 
@@ -43,6 +50,10 @@ export class GuildComponent {
           );
         });
       this.spinner.stop('spinner-load-guild');
+    });
+
+    this.api.getGuildSettings(guildID).subscribe((settings) => {
+      this.settings = settings;
     });
 
     this.api.getReports(guildID).subscribe((reports) => {

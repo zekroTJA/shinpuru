@@ -82,3 +82,15 @@ export interface Report {
   attachment_url: string;
   created?: string;
 }
+
+export interface GuildSettings {
+  prefix: string;
+  perms: Map<string, string[]>;
+  autorole: string;
+  modlogchannel: string;
+  voicelogchannel: string;
+  joinmessagechannel: string;
+  joinmessagetext: string;
+  leavemessagechannel: string;
+  leavemessagetext: string;
+}

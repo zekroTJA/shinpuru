@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/zekroTJA/shinpuru/internal/core"
+
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -131,4 +133,11 @@ func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	ctx.SendFile("./web/dist/web/index.html")
 	ctx.Abort()
 	return nil
+}
+
+func errInternalOrNotFound(ctx *routing.Context, err error) error {
+	if core.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 }
