@@ -108,7 +108,7 @@ func (ws *WebServer) registerHandlers() {
 		Post("/logout", ws.auth.LogOutHandler)
 
 	api.
-		Get("/permlvl/<guildid:[0-9]+>/<memberid:[0-9]+>", ws.handlerGetPermissionLevel)
+		Get("/permissions/<guildid:[0-9]+>/<memberid:[0-9]+>", ws.handlerGetPermissions)
 
 	guilds := api.Group("/guilds")
 	guilds.

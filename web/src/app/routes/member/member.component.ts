@@ -6,7 +6,6 @@ import { ActivatedRoute } from '@angular/router';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { Member, Guild, Role, Report } from 'src/app/api/api.models';
 import dateFormat from 'dateformat';
-import { permLvlColor } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-member-route',
@@ -16,12 +15,11 @@ import { permLvlColor } from 'src/app/utils/utils';
 export class MemberRouteComponent {
   public member: Member;
   public guild: Guild;
-  public permLvl: number;
+  public perm: string[];
 
   public reports: Report[] = [];
 
   public dateFormat = dateFormat;
-  public permLvlColor = permLvlColor;
 
   constructor(
     public api: APIService,
@@ -46,8 +44,8 @@ export class MemberRouteComponent {
       }
     });
 
-    this.api.getPermissionLvl(guildID, memberID).subscribe((permLvl) => {
-      this.permLvl = permLvl;
+    this.api.getPermissionLvl(guildID, memberID).subscribe((perm) => {
+      this.perm = perm;
     });
 
     this.api.getReports(guildID, memberID).subscribe((reports) => {
@@ -68,5 +66,9 @@ export class MemberRouteComponent {
       .filter((r) => this.member.roles.includes(r.id))
       .sort((a, b) => b.position - a.position);
     return rls;
+  }
+
+  public getPerms(allowed: boolean): string[] {
+    return this.perm.filter((p) => p.startsWith(allowed ? '+' : '-'));
   }
 }

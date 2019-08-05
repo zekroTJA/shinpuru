@@ -98,7 +98,7 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	return jsonResponse(ctx, MemberFromMember(memb), fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetPermissionLevel(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -108,13 +108,13 @@ func (ws *WebServer) handlerGetPermissionLevel(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	permLvl, err := ws.cmdhandler.GetPermissionLevel(ws.session, guildID, memberID)
+	perm, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
-	return jsonResponse(ctx, &PermissionLvlResponse{
-		Level: permLvl,
+	return jsonResponse(ctx, &PermissionsResponse{
+		Permissions: perm,
 	}, fasthttp.StatusOK)
 }
 

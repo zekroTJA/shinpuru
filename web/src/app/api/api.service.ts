@@ -8,9 +8,9 @@ import {
   User,
   ListReponse,
   Guild,
-  PermLvlResponse,
   Member,
   Report,
+  PermissionResponse,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -83,15 +83,18 @@ export class APIService {
       .pipe(catchError(ignoreError ? (err) => of(null) : this.errorChatcher));
   }
 
-  public getPermissionLvl(guildID: string, userID: string): Observable<number> {
+  public getPermissionLvl(
+    guildID: string,
+    userID: string
+  ): Observable<string[]> {
     return this.http
-      .get<PermLvlResponse>(
-        this.rootURL + '/api/permlvl/' + guildID + '/' + userID,
+      .get<PermissionResponse>(
+        this.rootURL + '/api/permissions/' + guildID + '/' + userID,
         this.defopts
       )
       .pipe(
         map((r) => {
-          return r.lvl;
+          return r.permissions;
         }),
         catchError(this.errorChatcher)
       );
