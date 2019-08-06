@@ -94,3 +94,8 @@ export interface GuildSettings {
   leavemessagechannel: string;
   leavemessagetext: string;
 }
+
+export interface PermissionsUpdate {
+  perm: string;
+  role_ids: string[];
+}

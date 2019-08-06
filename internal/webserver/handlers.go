@@ -1,7 +1,9 @@
 package webserver
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/zekroTJA/shinpuru/internal/core"
 
@@ -360,6 +362,70 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 
 		if err = ws.db.SetGuildLeaveMsg(guildID, gs.LeaveMessageText, gs.LeaveMessageChannel); err != nil {
 			return errInternalOrNotFound(ctx, err)
+		}
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	var perms map[string]core.PermissionArray
+	var err error
+
+	if perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+		return errInternalOrNotFound(ctx, err)
+	}
+
+	return jsonResponse(ctx, perms, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	update := new(PermissionsUpdate)
+	if err := parseJSONBody(ctx, update); err != nil {
+		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
+	}
+
+	sperm := update.Perm[1:]
+	if !strings.HasPrefix(sperm, "sp.guild") && !strings.HasPrefix(sperm, "sp.etc") && !strings.HasPrefix(sperm, "sp.chat") {
+		return jsonError(ctx, fmt.Errorf("you can only give permissions over the domains 'sp.guild', 'sp.etc' and 'sp.chat'"), fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	perms, err := ws.db.GetGuildPermissions(guildID)
+	if err != nil {
+		if core.IsErrDatabaseNotFound(err) {
+			return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+		}
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	for _, roleID := range update.RoleIDs {
+		rperms, ok := perms[roleID]
+		if !ok {
+			rperms = make(core.PermissionArray, 0)
+		}
+
+		rperms = rperms.Update(update.Perm)
+
+		if err = ws.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 	}
 

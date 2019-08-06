@@ -12,6 +12,7 @@ import {
   Report,
   PermissionResponse,
   GuildSettings,
+  PermissionsUpdate,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -159,6 +160,30 @@ export class APIService {
       .post(
         this.rootURL + '/api/guilds/' + guildID + '/settings',
         settings,
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildPermissions(
+    guildID: string
+  ): Observable<Map<string, string[]>> {
+    return this.http
+      .get<Permissions>(
+        this.rootURL + '/api/guilds/' + guildID + '/permissions',
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildPermissions(
+    guildID: string,
+    update: PermissionsUpdate
+  ): Observable<any> {
+    return this.http
+      .post(
+        this.rootURL + '/api/guilds/' + guildID + '/permissions',
+        update,
         this.defopts
       )
       .pipe(catchError(this.errorCatcher));

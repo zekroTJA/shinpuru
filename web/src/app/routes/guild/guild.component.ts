@@ -13,6 +13,13 @@ import {
   Channel,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
+import { toHexClr } from '../../utils/utils';
+
+interface Perms {
+  id: string;
+  role: Role;
+  perms: string[];
+}
 
 @Component({
   selector: 'app-guild',
@@ -29,9 +36,15 @@ export class GuildComponent {
 
   public guildSettingsAllowed: string[] = [];
 
+  public addPermissionPerm: string;
+  public addPermissionRoles: string[] = [''];
+
   public guildToggle = false;
   public modlogToggle = false;
   public guildSettingsToggle = false;
+  public permissionsToggle = true;
+
+  public toHexClr = toHexClr;
 
   constructor(
     public api: APIService,
@@ -121,5 +134,44 @@ export class GuildComponent {
 
   public channelsByType(a: Channel[], type: number): Channel[] {
     return a.filter((c) => c.type === type);
+  }
+
+  public fetchGuildPermissions() {
+    this.api.getGuildPermissions(this.guild.id).subscribe((perms) => {
+      this.settings.perms = perms;
+    });
+  }
+
+  public getRoleByID(roleID: string): Role {
+    return this.guild.roles.find((r) => r.id === roleID);
+  }
+
+  public objectAsArray(obj: any): Perms[] {
+    if (!obj) {
+      return [];
+    }
+
+    return Object.keys(obj).map<Perms>((k) => {
+      return { id: k, role: this.getRoleByID(k), perms: obj[k] };
+    });
+  }
+
+  public removePermission(p: Perms, perm: string) {
+    const prefix = perm.startsWith('+') ? '-' : '+';
+    perm = prefix + perm.substr(1);
+    this.api
+      .postGuildPermissions(this.guild.id, { role_ids: [p.id], perm })
+      .subscribe(() => {
+        this.fetchGuildPermissions();
+      });
+  }
+
+  public inputAddPermissionRole(val: string, i: number) {
+    console.log(val);
+    const wasEmpty = this.addPermissionRoles[i] === '';
+    this.addPermissionRoles[i] = val;
+    if (i + 1 === this.addPermissionRoles.length && wasEmpty) {
+      this.addPermissionRoles.push('');
+    }
   }
 }
