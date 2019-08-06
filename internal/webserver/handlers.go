@@ -222,31 +222,31 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 
 	var err error
 
-	if gs.Prefix, err = ws.db.GetGuildPrefix(guildID); err != nil {
+	if gs.Prefix, err = ws.db.GetGuildPrefix(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.Perms, err = ws.db.GetGuildPermissions(guildID); err != nil {
+	if gs.Perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.AutoRole, err = ws.db.GetGuildAutoRole(guildID); err != nil {
+	if gs.AutoRole, err = ws.db.GetGuildAutoRole(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.ModLogChannel, err = ws.db.GetGuildModLog(guildID); err != nil {
+	if gs.ModLogChannel, err = ws.db.GetGuildModLog(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.VoiceLogChannel, err = ws.db.GetGuildVoiceLog(guildID); err != nil {
+	if gs.VoiceLogChannel, err = ws.db.GetGuildVoiceLog(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.JoinMessageText, gs.JoinMessageChannel, err = ws.db.GetGuildJoinMsg(guildID); err != nil {
+	if gs.JoinMessageText, gs.JoinMessageChannel, err = ws.db.GetGuildJoinMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.LeaveMessageText, gs.LeaveMessageChannel, err = ws.db.GetGuildLeaveMsg(guildID); err != nil {
+	if gs.LeaveMessageText, gs.LeaveMessageChannel, err = ws.db.GetGuildLeaveMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 

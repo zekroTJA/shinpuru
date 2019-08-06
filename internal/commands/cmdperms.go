@@ -57,8 +57,8 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		}
 
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild.*`, `sp.chat.*` and `sp.etc.*` "+
-				"and the owner of the bot has everywhere permissions over `sp.*`.", "Permission settings for this guild", 0)
+			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild`, `sp.chat` and `sp.etc` "+
+				"and the owner of the bot has everywhere permissions over `sp`.*", "Permission settings for this guild", 0)
 		return err
 	}
 

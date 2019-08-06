@@ -15,7 +15,6 @@ import {
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
-import { clone } from '../utils/utils';
 
 /** @format */
 
@@ -147,6 +146,19 @@ export class APIService {
     return this.http
       .get<GuildSettings>(
         this.rootURL + '/api/guilds/' + guildID + '/settings',
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettings(
+    guildID: string,
+    settings: GuildSettings
+  ): Observable<any> {
+    return this.http
+      .post(
+        this.rootURL + '/api/guilds/' + guildID + '/settings',
+        settings,
         this.defopts
       )
       .pipe(catchError(this.errorCatcher));

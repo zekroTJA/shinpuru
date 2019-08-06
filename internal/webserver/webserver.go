@@ -95,7 +95,7 @@ func (ws *WebServer) registerHandlers() {
 	// rlUsersCreate := ws.rlm.GetHandler(15*time.Second, 1)
 	// rlPageCreate := ws.rlm.GetHandler(5*time.Second, 5)
 
-	ws.router.Use(ws.addHeaders, ws.auth.checkAuth, ws.handlerFiles)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.auth.checkAuth, ws.handlerFiles)
 
 	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
 	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
@@ -116,7 +116,8 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/reports", ws.handlerGetReports)
 	guild.
-		Get("/settings", ws.handlerGetGuildSettings)
+		Get("/settings", ws.handlerGetGuildSettings).
+		Post(ws.handlerPostGuildSettings)
 
 	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
 	member.
