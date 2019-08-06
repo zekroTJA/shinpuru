@@ -82,6 +82,10 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 
 	perm, err := c.db.GetMemberPermission(s, guildID, userID)
 
+	if err != nil && !core.IsErrDatabaseNotFound(err) {
+		return nil, err
+	}
+
 	perm = perm.Merge(core.PermissionArray{
 		"+sp.etc.*",
 		"+sp.chat.*",
@@ -90,10 +94,6 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		"-sp.chat.vote.close",
 		"-sp.guild.mod.inviteblock.send",
 	})
-
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
-		return nil, err
-	}
 
 	return perm, nil
 }

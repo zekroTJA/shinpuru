@@ -118,6 +118,9 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/settings", ws.handlerGetGuildSettings).
 		Post(ws.handlerPostGuildSettings)
+	guild.
+		Get("/permissions", ws.handlerGetGuildPermissions).
+		Post(ws.handlerPostGuildPermissions)
 
 	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
 	member.

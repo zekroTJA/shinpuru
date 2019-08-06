@@ -2,12 +2,14 @@
     <app-spinner id="spinner-load-guild" [started]="true"></app-spinner>
     <div *ngIf="guild">
 
+        <!-- HEADING -->
         <div id="heading-container">
             <img [src]="guild.icon ? guild.icon_url : '/assets/dc-logo.svg'"/>
             <h3>{{ guild.name }}</h3>
             <p class="embeded">{{ guild.id }}</p>
         </div>
 
+        <!-- LOGGED IN MEMBER INFO -->
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>
             <a class="info-container" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
@@ -15,7 +17,7 @@
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
                     <p class="embeded">{{ guild.self_member.user.id }}</p>
                 </div>
-                <div class="d-flex">
+                <div class="d-flex mt-2">
                     <div *ngFor="let r of userRoles">
                         <app-rolebadge [role]="r"></app-rolebadge>
                     </div>
@@ -23,8 +25,9 @@
             </a>
         </div>
 
+        <!-- GUILD MEMBERS -->
         <div class="d-flex">
-            <app-spoiler [(ngModel)]="guildToggle"><h4 class="ml-3">GUILD MEMBER</h4></app-spoiler>
+            <app-spoiler [(ngModel)]="guildToggle"><h4 class="ml-3">GUILD MEMBERS</h4></app-spoiler>
         </div>
         <div *ngIf="guildToggle">
             <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
@@ -33,6 +36,7 @@
             </div>
         </div>
 
+        <!-- MOD LOG -->
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="modlogToggle"><h4 class="ml-3">MOD LOG</h4></app-spoiler>
         </div>
@@ -41,6 +45,7 @@
             <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
         </div>
 
+        <!-- GUILD SETTINGS -->
         <div *ngIf="guildSettingsAllowed && guildSettingsAllowed.length" class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
         </div>
@@ -128,6 +133,32 @@
                 </div>
             </div>
             <button class="btn-save" (click)="saveGuildSettings()">SAVE SETTINGS</button>
+        </div>
+
+        <!-- PERMISSION SETTINGS -->
+        <div *ngIf="guildSettingsContains('sp.guild.config.perms')" class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">PERMISSIONS</h4></app-spoiler>
+        </div>
+        <div *ngIf="permissionsToggle">
+            <div class="d-flex mb-3">
+                <p class="mb-0 mr-2">sp.</p>
+                <input type="text" placeholder="chat.vote.*" class="mr-2"/>
+                <select *ngFor="let _ of addPermissionRoles; index as i" class="mr-2" (input)="inputAddPermissionRole(getSelectedValue($event), i)">
+                    <!-- <option [ngValue]="">[empty]</option> -->
+                    <option *ngFor="let r of guild.roles" [ngValue]="r.id">{{ r.name }}</option>
+                </select>
+            </div>
+            <div *ngFor="let p of objectAsArray(settings?.perms)" class="permission-view">
+                <p class="embeded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
+                <ul>
+                    <li *ngFor="let perm of p.perms">
+                        <div class="d-flex">
+                            <p class="embeded" [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'">{{ perm }}</p>
+                            <a class="remove-btn" (click)="removePermission(p, perm)"></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

@@ -72,6 +72,11 @@ type GuildSettings struct {
 	LeaveMessageText    string                          `json:"leavemessagetext"`
 }
 
+type PermissionsUpdate struct {
+	Perm    string   `json:"perm"`
+	RoleIDs []string `json:"role_ids"`
+}
+
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
 	membs := make([]*Member, len(g.Members))
 	for i, m := range g.Members {
