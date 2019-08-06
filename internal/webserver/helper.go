@@ -96,7 +96,7 @@ func (ws *WebServer) addHeaders(ctx *routing.Context) error {
 	if util.Release != "TRUE" {
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "http://localhost:8081")
 		ctx.Response.Header.Set("Access-Control-Allow-Headers", "authorization, content-type, set-cookie, cookie, server")
-		ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS")
+		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
 	}
 
@@ -132,6 +132,14 @@ func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 
 	ctx.SendFile("./web/dist/web/index.html")
 	ctx.Abort()
+	return nil
+}
+
+func (ws *WebServer) optionsHandler(ctx *routing.Context) error {
+	if string(ctx.Method()) == "OPTIONS" {
+		ctx.SetStatusCode(fasthttp.StatusOK)
+		ctx.Abort()
+	}
 	return nil
 }
 

@@ -58,7 +58,7 @@
         </div>
         <app-spinner *ngIf="!reports" id="spinner-load-reports" [started]="true"></app-spinner>
         <div>
-            <i *ngIf="reports.length === 0">{{ member.user.username }} has a white west! 👌</i>
+            <i *ngIf="reports.length === 0">{{ member.user.username }} has a white vest! 👌</i>
             <app-report *ngFor="let rep of reports" [report]="rep" [victim]="member"></app-report>
         </div>
 

@@ -1,8 +1,8 @@
-<div>
+<div class="d-flex cursor-pointer" (click)="toggle()">
     <img 
         [style.transform]="rotation" 
         class="arrow-btn" 
         src="/assets/arrow.svg" 
-        (click)="toggle()"
     />
+    <ng-content></ng-content>
 </div>

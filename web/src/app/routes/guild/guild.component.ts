@@ -10,7 +10,9 @@ import {
   Member,
   Report,
   GuildSettings,
+  Channel,
 } from 'src/app/api/api.models';
+import { ToastService } from 'src/app/components/toast/toast.service';
 
 @Component({
   selector: 'app-guild',
@@ -23,6 +25,7 @@ export class GuildComponent {
   public reports: Report[];
   public allowed: string[];
   public settings: GuildSettings;
+  public updatedSettings: GuildSettings = {} as GuildSettings;
 
   public guildSettingsAllowed: string[] = [];
 
@@ -33,7 +36,8 @@ export class GuildComponent {
   constructor(
     public api: APIService,
     public spinner: SpinnerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toasts: ToastService
   ) {
     const guildID = this.route.snapshot.paramMap.get('id');
     this.api.getGuild(guildID).subscribe((guild) => {
@@ -88,5 +92,34 @@ export class GuildComponent {
 
   public guildSettingsContains(str: string): boolean {
     return this.guildSettingsAllowed.includes(str);
+  }
+
+  public saveGuildSettings() {
+    console.log(this.updatedSettings);
+    this.api
+      .postGuildSettings(this.guild.id, this.updatedSettings)
+      .subscribe((res) => {
+        if (res.code === 200) {
+          this.toasts.push(
+            'Guild settings updated.',
+            'Guild Settings Update',
+            'success',
+            6000,
+            true
+          );
+        }
+      });
+  }
+
+  public getSelectedValue(e: any): string {
+    const t = e.target;
+    return t.options[t.selectedIndex].value
+      .split(' ')
+      .slice(1)
+      .join(' ');
+  }
+
+  public channelsByType(a: Channel[], type: number): Channel[] {
+    return a.filter((c) => c.type === type);
   }
 }

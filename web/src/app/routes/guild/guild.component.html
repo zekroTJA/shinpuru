@@ -24,8 +24,7 @@
         </div>
 
         <div class="d-flex">
-            <h4>GUILD MEMBERS</h4>
-            <app-spoiler class="ml-3" [(ngModel)]="guildToggle"></app-spoiler>
+            <app-spoiler [(ngModel)]="guildToggle"><h4 class="ml-3">GUILD MEMBER</h4></app-spoiler>
         </div>
         <div *ngIf="guildToggle">
             <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
@@ -35,34 +34,100 @@
         </div>
 
         <div class="d-flex mt-4 mb-2">
-            <h4>MOD LOG</h4>
-            <app-spoiler class="ml-3" [(ngModel)]="modlogToggle"></app-spoiler>
+            <app-spoiler [(ngModel)]="modlogToggle"><h4 class="ml-3">MOD LOG</h4></app-spoiler>
         </div>
         <div *ngIf="modlogToggle">
+            <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
             <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
         </div>
 
         <div *ngIf="guildSettingsAllowed && guildSettingsAllowed.length" class="d-flex mt-4 mb-2">
-            <h4>GUILD SETTINGS</h4>
-            <app-spoiler class="ml-3" [(ngModel)]="guildSettingsToggle"></app-spoiler>
+            <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
         </div>
         <div *ngIf="guildSettingsToggle">
             <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">
                 <h5>Prefix</h5>
                 <div class="d-flex">
-                    <input type="text" [(ngModel)]="settings.prefix" placeholder="unset"/>
-                    <button (click)="settings.prefix = '__RESET__'">RESET</button>
+                    <input type="text" [(ngModel)]="settings.prefix" (input)="updatedSettings.prefix = $event.target.value" placeholder="unset"/>
+                    <button (click)="settings.prefix = ''; updatedSettings.prefix = '__RESET__'">RESET</button>
                 </div>
             </div>
             <div *ngIf="guildSettingsContains('sp.guild.config.autorole')" class="settingsTile">
                 <h5>Autorole</h5>
                 <div class="d-flex">
-                    <select [(ngModel)]="settings.autorole">
+                    <select [(ngModel)]="settings.autorole" (input)="updatedSettings.autorole = getSelectedValue($event)">
                         <option *ngFor="let r of guild.roles" [ngValue]="r.id">{{ r.name }}</option>
                     </select>
-                    <button (click)="settings.autorole = '__RESET__'">RESET</button>
+                    <button (click)="settings.autorole = '__RESET__'; updatedSettings.autorole = '__RESET__'">RESET</button>
                 </div>
             </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.modlog')" class="settingsTile">
+                <h5>Modlog Channel</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.modlogchannel" (input)="updatedSettings.modlogchannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <button (click)="settings.modlogchannel = '__RESET__'; updatedSettings.modlogchannel = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.voicelog')" class="settingsTile">
+                <h5>Voicelog Channel</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.voicelogchannel" (input)="updatedSettings.voicelogchannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <button (click)="settings.voicelogchannel = '__RESET__'; updatedSettings.voicelogchannel = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.joinmsg')" class="settingsTile">
+                <h5>Join Message</h5>
+                <i>
+                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the joined user.
+                </i>
+                <div class="d-flex mt-3">
+                    <select [(ngModel)]="settings.joinmessagechannel" (input)="updatedSettings.joinmessagechannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        [(ngModel)]="settings.joinmessagetext" 
+                        (input)="updatedSettings.joinmessagetext = $event.target.value" 
+                        placeholder="message text"
+                        class="ml-3 message-inpt"
+                    />
+                    <button (click)="
+                        settings.joinmessagechannel = ''; 
+                        settings.joinmessagetext = ''; 
+                        updatedSettings.joinmessagechannel = '__RESET__';
+                        updatedSettings.joinmessagetext = '__RESET__';
+                    ">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.leavemsg')" class="settingsTile">
+                <h5>Leave Message</h5>
+                <i>
+                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the left user.
+                </i>
+                <div class="d-flex mt-3">
+                    <select [(ngModel)]="settings.leavemessagechannel" (input)="updatedSettings.leavemessagechannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        [(ngModel)]="settings.leavemessagetext" 
+                        (input)="updatedSettings.leavemessagetext = $event.target.value" 
+                        placeholder="message text"
+                        class="ml-3 message-inpt"
+                    />
+                    <button (click)="
+                        settings.leavemessagechannel = ''; 
+                        settings.leavemessagetext = ''; 
+                        updatedSettings.leavemessagechannel = '__RESET__';
+                        updatedSettings.leavemessagetext = '__RESET__';
+                    ">RESET</button>
+                </div>
+            </div>
+            <button class="btn-save" (click)="saveGuildSettings()">SAVE SETTINGS</button>
         </div>
     </div>
 </div>
