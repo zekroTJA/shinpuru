@@ -140,13 +140,20 @@
             <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">PERMISSIONS</h4></app-spoiler>
         </div>
         <div *ngIf="permissionsToggle">
-            <div class="d-flex mb-3">
-                <p class="mb-0 mr-2">sp.</p>
-                <input type="text" placeholder="chat.vote.*" class="mr-2"/>
-                <select *ngFor="let _ of addPermissionRoles; index as i" class="mr-2" (input)="inputAddPermissionRole(getSelectedValue($event), i)">
-                    <!-- <option [ngValue]="">[empty]</option> -->
-                    <option *ngFor="let r of guild.roles" [ngValue]="r.id">{{ r.name }}</option>
-                </select>
+            <div class="mb-3 add-permission d-flex">
+                <div>
+                    <h6>Add Permission Rule</h6>
+                    <div class="d-flex my-2">
+                        <select [(ngModel)]="addPermissionAllow" class="mr-2">
+                            <option [ngValue]="true">allow (+)</option>
+                            <option [ngValue]="false">deny (-)</option>
+                        </select>
+                        <p class="mb-0 mr-2">sp.</p>
+                        <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/>
+                    </div>
+                    <app-tags [available]="guild.roles" [formatter]="roleNameFormatter" placeholder="role name" [(ngModel)]="addPermissionRoles"></app-tags>
+                </div>
+                <button class="ml-auto mb-auto" (click)="addPermissionRule()">ADD RULE</button>
             </div>
             <div *ngFor="let p of objectAsArray(settings?.perms)" class="permission-view">
                 <p class="embeded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
