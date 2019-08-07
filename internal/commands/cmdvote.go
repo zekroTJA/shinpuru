@@ -24,7 +24,7 @@ func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
 		"`vote list` - display currentltly running votes\n" +
 		"`vote expire <duration> (<voteID>)` - set expire to last created (or specified) vote\n" +
-		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
+		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes `[sp.chat.vote.close]`"
 }
 
 func (c *CmdVote) GetGroup() string {
