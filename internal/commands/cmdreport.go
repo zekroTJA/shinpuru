@@ -70,13 +70,15 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 			Color: util.ColorEmbedDefault,
 			Title: fmt.Sprintf("Reports for %s#%s",
 				victim.User.Username, victim.User.Discriminator),
+			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
+				args.CmdHandler.config.WebServer.PublicAddr, args.Guild.ID, victim.User.ID),
 		}
 		reps, err := args.CmdHandler.db.GetReportsGuild(args.Guild.ID)
 		if err != nil {
 			return err
 		}
 		if len(reps) == 0 {
-			emb.Description = "This user has a white west. :ok_hand:"
+			emb.Description += "\n\nThis user has a white west. :ok_hand:"
 		} else {
 			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
 			for _, r := range reps {

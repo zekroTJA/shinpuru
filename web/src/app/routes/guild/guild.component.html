@@ -140,7 +140,11 @@
             <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">PERMISSIONS</h4></app-spoiler>
         </div>
         <div *ngIf="permissionsToggle">
-            <div class="mb-3 add-permission d-flex">
+            <i>
+                <a href="https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md" target="_blank" class="link">Here</a> you can find the documentation about how the 
+                permission system works.
+            </i>
+            <div class="mb-3 mt-2 add-permission d-flex">
                 <div>
                     <h6>Add Permission Rule</h6>
                     <div class="d-flex my-2">
