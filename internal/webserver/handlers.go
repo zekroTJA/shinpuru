@@ -431,3 +431,128 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
+
+func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	repReq := new(ReportRequest)
+	if err := parseJSONBody(ctx, repReq); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not report yourself"), fasthttp.StatusBadRequest)
+	}
+
+	if repReq.Type >= len(util.ReportTypes) || repReq.Type < util.ReportTypesReserved || len(repReq.Reason) < 3 {
+		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
+	}
+
+	if repReq.Attachment != "" && util.ImgUrlSRx.MatchString(repReq.Attachment) {
+		return jsonError(ctx,
+			fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4."),
+			fasthttp.StatusBadRequest)
+	}
+
+	repID := util.NodesReport[repReq.Type].Generate()
+
+	rep := &util.Report{
+		AttachmehtURL: repReq.Attachment,
+		ExecutorID:    userID,
+		GuildID:       guildID,
+		Msg:           repReq.Reason,
+		Type:          repReq.Type,
+		VictimID:      memberID,
+		ID:            repID,
+	}
+
+	if err := ws.db.AddReport(rep); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+}
+
+func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not kick yourself"), fasthttp.StatusBadRequest)
+	}
+
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	executor, err := ws.session.GuildMember(guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	victim, err := ws.session.GuildMember(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if util.RolePosDiff(victim, executor, guild) >= 0 {
+		return jsonError(ctx, fmt.Errorf("you can not kick members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
+	}
+
+	if len(req.Reason) < 3 {
+		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
+	}
+
+	if req.Attachment != "" && util.ImgUrlSRx.MatchString(req.Attachment) {
+		return jsonError(ctx,
+			fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4."),
+			fasthttp.StatusBadRequest)
+	}
+
+	repID := util.NodesReport[0].Generate()
+
+	rep := &util.Report{
+		AttachmehtURL: req.Attachment,
+		ExecutorID:    userID,
+		GuildID:       guildID,
+		Msg:           req.Reason,
+		Type:          0,
+		VictimID:      memberID,
+		ID:            repID,
+	}
+
+	if err = ws.db.AddReport(rep); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.session.GuildMemberDelete(guildID, memberID); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+}

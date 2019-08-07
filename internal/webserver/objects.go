@@ -77,6 +77,17 @@ type PermissionsUpdate struct {
 	RoleIDs []string `json:"role_ids"`
 }
 
+type ReasonRequest struct {
+	Reason     string `json:"reason"`
+	Attachment string `json:"attachment"`
+}
+
+type ReportRequest struct {
+	*ReasonRequest
+
+	Type int `json:"type"`
+}
+
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
 	membs := make([]*Member, len(g.Members))
 	for i, m := range g.Members {
