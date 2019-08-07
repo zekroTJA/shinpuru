@@ -99,3 +99,12 @@ export interface PermissionsUpdate {
   perm: string;
   role_ids: string[];
 }
+
+export interface ReasonRequest {
+  reason: string;
+  attachment: string;
+}
+
+export interface ReportRequest extends ReasonRequest {
+  type: number;
+}
