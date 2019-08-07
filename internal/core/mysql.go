@@ -572,6 +572,10 @@ func (m *MySQL) GetGuildJoinMsg(guildID string) (string, string, error) {
 	}
 
 	i := strings.Index(data, "|")
+	if i < 0 || len(data) < i+1 {
+		return "", "", nil
+	}
+
 	return data[:i], data[i+1:], nil
 }
 
@@ -589,6 +593,10 @@ func (m *MySQL) GetGuildLeaveMsg(guildID string) (string, string, error) {
 	}
 
 	i := strings.Index(data, "|")
+	if i < 0 || len(data) < i+1 {
+		return "", "", nil
+	}
+
 	return data[:i], data[i+1:], nil
 }
 
