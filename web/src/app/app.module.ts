@@ -20,6 +20,7 @@ import { MemberRouteComponent } from './routes/member/member.component';
 import { ReportComponent } from './components/report/report.component';
 import { SpoilerComponent } from './components/spoiler/spoiler.component';
 import { FormsModule } from '@angular/forms';
+import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { FormsModule } from '@angular/forms';
     MemberRouteComponent,
     ReportComponent,
     SpoilerComponent,
+    TagsInputComponent,
   ],
   imports: [
     NgbModule,

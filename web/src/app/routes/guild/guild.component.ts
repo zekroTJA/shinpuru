@@ -37,12 +37,13 @@ export class GuildComponent {
   public guildSettingsAllowed: string[] = [];
 
   public addPermissionPerm: string;
-  public addPermissionRoles: string[] = [''];
+  public addPermissionRoles: Role[] = [];
+  public addPermissionAllow = true;
 
   public guildToggle = false;
   public modlogToggle = false;
   public guildSettingsToggle = false;
-  public permissionsToggle = true;
+  public permissionsToggle = false;
 
   public toHexClr = toHexClr;
 
@@ -126,10 +127,14 @@ export class GuildComponent {
 
   public getSelectedValue(e: any): string {
     const t = e.target;
-    return t.options[t.selectedIndex].value
-      .split(' ')
-      .slice(1)
-      .join(' ');
+    const val = t.options[t.selectedIndex].value;
+    if (val.match(/\d+:\s.+/g)) {
+      return val
+        .split(' ')
+        .slice(1)
+        .join(' ');
+    }
+    return val;
   }
 
   public channelsByType(a: Channel[], type: number): Channel[] {
@@ -166,12 +171,40 @@ export class GuildComponent {
       });
   }
 
-  public inputAddPermissionRole(val: string, i: number) {
-    console.log(val);
-    const wasEmpty = this.addPermissionRoles[i] === '';
-    this.addPermissionRoles[i] = val;
-    if (i + 1 === this.addPermissionRoles.length && wasEmpty) {
-      this.addPermissionRoles.push('');
+  public roleNameFormatter(r: Role): string {
+    return r.name;
+  }
+
+  public addPermissionRule() {
+    if (!this.addPermissionPerm || this.addPermissionRoles.length === 0) {
+      return;
     }
+
+    if (!this.addPermissionPerm.match(/(chat|guild|etc)\..+/g)) {
+      this.toasts.push(
+        'You can only manage permissions over the domains "sp.guild", "sp.etc" and "sp.chat".',
+        'Error',
+        'error',
+        8000,
+        true
+      );
+      return;
+    }
+
+    this.api
+      .postGuildPermissions(this.guild.id, {
+        perm: `${this.addPermissionAllow ? '+' : '-'}sp.${
+          this.addPermissionPerm
+        }`,
+        role_ids: this.addPermissionRoles.map((r) => r.id),
+      })
+      .subscribe((res) => {
+        if (res.code === 200) {
+          this.addPermissionAllow = true;
+          this.addPermissionPerm = '';
+          this.addPermissionRoles = [];
+          this.fetchGuildPermissions();
+        }
+      });
   }
 }

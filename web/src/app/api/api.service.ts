@@ -169,7 +169,7 @@ export class APIService {
     guildID: string
   ): Observable<Map<string, string[]>> {
     return this.http
-      .get<Permissions>(
+      .get<Map<string, string[]>>(
         this.rootURL + '/api/guilds/' + guildID + '/permissions',
         this.defopts
       )
