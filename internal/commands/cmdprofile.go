@@ -100,6 +100,8 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,
 		Title: fmt.Sprintf("Info about member %s#%s", member.User.Username, member.User.Discriminator),
+		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users profile in the web interface.",
+			args.CmdHandler.config.WebServer.PublicAddr, args.Guild.ID, member.User.ID),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: member.User.AvatarURL(""),
 		},

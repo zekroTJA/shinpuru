@@ -31,7 +31,8 @@ func (c *CmdPerms) GetHelp() string {
 		"`sp!ban`, you can do this by disallowing the specific domain name `-sp.guild.mod.ban`.\n\n" +
 		"Keep in mind:\n" +
 		"`-` and `+` of the same domain always results in a disallow.\n" +
-		"Higher level rules (like `sp.guild.config.*`) always override lower level rules (like `sp.guild.*`)."
+		"Higher level rules (like `sp.guild.config.*`) always override lower level rules (like `sp.guild.*`).\n\n" +
+		"[**Here**](https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md) you can find further information about the permission system."
 }
 
 func (c *CmdPerms) GetGroup() string {
