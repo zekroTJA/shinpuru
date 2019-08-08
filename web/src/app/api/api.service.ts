@@ -13,6 +13,8 @@ import {
   PermissionResponse,
   GuildSettings,
   PermissionsUpdate,
+  ReportRequest,
+  ReasonRequest,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -184,6 +186,48 @@ export class APIService {
       .post(
         this.rootURL + '/api/guilds/' + guildID + '/permissions',
         update,
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postReport(
+    guildID: string,
+    memberID: string,
+    rep: ReportRequest
+  ): Observable<Report> {
+    return this.http
+      .post<Report>(
+        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/reports',
+        rep,
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postKick(
+    guildID: string,
+    memberID: string,
+    rep: ReasonRequest
+  ): Observable<Report> {
+    return this.http
+      .post<Report>(
+        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/kick',
+        rep,
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postBan(
+    guildID: string,
+    memberID: string,
+    rep: ReasonRequest
+  ): Observable<Report> {
+    return this.http
+      .post<Report>(
+        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/ban',
+        rep,
         this.defopts
       )
       .pipe(catchError(this.errorCatcher));

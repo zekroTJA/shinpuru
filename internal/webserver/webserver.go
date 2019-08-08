@@ -126,11 +126,16 @@ func (ws *WebServer) registerHandlers() {
 	member.
 		Get("", ws.handlerGuildsGetMember)
 	member.
-		Get("/reports", ws.handlerGetReports)
+		Get("/reports", ws.handlerGetReports).
+		Post(ws.handlerPostGuildMemberReport)
 	member.
 		Get("/permissions", ws.handlerGetPermissions)
 	member.
 		Get("/permissions/allowed", ws.handlerGetPermissionsAllowed)
+	member.
+		Post("/kick", ws.handlerPostGuildMemberKick)
+	member.
+		Post("/ban", ws.handlerPostGuildMemberBan)
 
 	reports := api.Group("/reports")
 	reports.
