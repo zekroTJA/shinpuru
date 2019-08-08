@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/shared"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -123,7 +124,6 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		return err
 	}
 	repMsg := strings.Join(args.Args[msgOffset:], " ")
-	repID := util.NodesReport[repType].Generate()
 
 	var attachment string
 	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
@@ -138,10 +138,6 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 					Name: "Victim",
 					Value: fmt.Sprintf("<@%s> (%s#%s)",
 						victim.User.ID, victim.User.Username, victim.User.Discriminator),
-				},
-				&discordgo.MessageEmbedField{
-					Name:  "ID",
-					Value: repID.String(),
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Type",
@@ -160,28 +156,21 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep := &util.Report{
-				ID:            repID,
-				Type:          repType,
-				GuildID:       args.Guild.ID,
-				ExecutorID:    args.User.ID,
-				VictimID:      victim.User.ID,
-				Msg:           repMsg,
-				AttachmehtURL: attachment,
-			}
-			err = args.CmdHandler.db.AddReport(rep)
+			rep, err := shared.PushReport(
+				args.Session,
+				args.CmdHandler.db,
+				args.Guild.ID,
+				args.User.ID,
+				victim.User.ID,
+				repMsg,
+				attachment,
+				repType)
+
 			if err != nil {
 				util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed creating report: ```\n"+err.Error()+"\n```")
 			} else {
 				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
-				if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
-					args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
-				}
-				dmChan, err := args.Session.UserChannelCreate(victim.User.ID)
-				if err == nil {
-					args.Session.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
-				}
 			}
 		},
 	}

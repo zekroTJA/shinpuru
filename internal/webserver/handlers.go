@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/zekroTJA/shinpuru/internal/shared"
+
 	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/bwmarrin/discordgo"
@@ -430,4 +432,169 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	repReq := new(ReportRequest)
+	if err := parseJSONBody(ctx, repReq); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not report yourself"), fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := repReq.Validate(ctx); !ok {
+		return err
+	}
+
+	rep, err := shared.PushReport(
+		ws.session,
+		ws.db,
+		guildID,
+		userID,
+		memberID,
+		repReq.Reason,
+		repReq.Attachment,
+		repReq.Type)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+}
+
+func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not kick yourself"), fasthttp.StatusBadRequest)
+	}
+
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	executor, err := ws.session.GuildMember(guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	victim, err := ws.session.GuildMember(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if util.RolePosDiff(victim, executor, guild) >= 0 {
+		return jsonError(ctx, fmt.Errorf("you can not kick members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := req.Validate(ctx); !ok {
+		return err
+	}
+
+	rep, err := shared.PushKick(
+		ws.session,
+		ws.db,
+		guildID,
+		userID,
+		memberID,
+		req.Reason,
+		req.Attachment)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+}
+
+func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not ban yourself"), fasthttp.StatusBadRequest)
+	}
+
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	executor, err := ws.session.GuildMember(guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	victim, err := ws.session.GuildMember(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if util.RolePosDiff(victim, executor, guild) >= 0 {
+		return jsonError(ctx, fmt.Errorf("you can not ban members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := req.Validate(ctx); !ok {
+		return err
+	}
+
+	rep, err := shared.PushBan(
+		ws.session,
+		ws.db,
+		guildID,
+		userID,
+		memberID,
+		req.Reason,
+		req.Attachment)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
 }

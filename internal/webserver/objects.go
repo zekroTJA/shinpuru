@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/qiangxue/fasthttp-routing"
+
+	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -75,6 +78,31 @@ type GuildSettings struct {
 type PermissionsUpdate struct {
 	Perm    string   `json:"perm"`
 	RoleIDs []string `json:"role_ids"`
+}
+
+type ReasonRequest struct {
+	Reason     string `json:"reason"`
+	Attachment string `json:"attachment"`
+}
+
+type ReportRequest struct {
+	*ReasonRequest
+
+	Type int `json:"type"`
+}
+
+func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
+	if len(req.Reason) < 3 {
+		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
+	}
+
+	if req.Attachment != "" && !util.ImgUrlSRx.MatchString(req.Attachment) {
+		return false, jsonError(ctx,
+			fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4."),
+			fasthttp.StatusBadRequest)
+	}
+
+	return true, nil
 }
 
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {

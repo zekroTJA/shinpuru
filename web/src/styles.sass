@@ -58,6 +58,23 @@ select
 
 //-----------------------------------
 
+.bg-red
+    background-color: $c-red
+    &:hover
+        background-color: darken($c-red, 5)
+
+.bg-orange
+    background-color: $c-orange
+    &:hover
+        background-color: darken($c-orange, 5)
+
+.bg-green
+    background-color: $c-green
+    &:hover
+        background-color: darken($c-green, 5)
+
+//-----------------------------------
+
 .embeded
     padding: 2px 5px
     background-color: rgba(0, 0, 0, .4)
@@ -92,3 +109,10 @@ select
 .link
     color: $c-blurple !important
     text-decoration: underline !important
+
+.dark-modal .modal-content
+      background-color: #292b2c
+      color: white
+    
+.dark-modal .close
+    color: white
