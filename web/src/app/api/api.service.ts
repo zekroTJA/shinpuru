@@ -218,4 +218,18 @@ export class APIService {
       )
       .pipe(catchError(this.errorCatcher));
   }
+
+  public postBan(
+    guildID: string,
+    memberID: string,
+    rep: ReasonRequest
+  ): Observable<Report> {
+    return this.http
+      .post<Report>(
+        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/ban',
+        rep,
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
 }

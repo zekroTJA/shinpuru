@@ -130,14 +130,17 @@ export class MemberRouteComponent {
             })
             .subscribe((resRep) => {
               if (resRep) {
-                this.router.navigate(['../'], { relativeTo: this.route });
-                this.toasts.push(
-                  'Member kicked.',
-                  'Executed',
-                  'success',
-                  5000,
-                  true
-                );
+                this.router
+                  .navigate(['../'], { relativeTo: this.route })
+                  .then(() => {
+                    this.toasts.push(
+                      'Member kicked.',
+                      'Executed',
+                      'success',
+                      5000,
+                      true
+                    );
+                  });
               }
             });
         }
@@ -149,7 +152,28 @@ export class MemberRouteComponent {
   public ban() {
     this.openModal(this.modalBan)
       .then((res) => {
-        console.log(res);
+        if (res && this.checkReason()) {
+          this.api
+            .postBan(this.guild.id, this.member.user.id, {
+              attachment: this.repModalAttachment,
+              reason: this.repModalReason,
+            })
+            .subscribe((resRep) => {
+              if (resRep) {
+                this.router
+                  .navigate(['../'], { relativeTo: this.route })
+                  .then(() => {
+                    this.toasts.push(
+                      'Member banned.',
+                      'Executed',
+                      'success',
+                      5000,
+                      true
+                    );
+                  });
+              }
+            });
+        }
         this.clearReportModalModels();
       })
       .catch(() => this.clearReportModalModels());

@@ -113,16 +113,16 @@
             </tbody>
         </table>
 
-        <div class="mt-4 mb-2">
+        <div *ngIf="member.user.id !== guild.self_member.user.id" class="mt-4 mb-2">
             <h4>Moderation</h4>
             <div class="mod-buttons">
-                <button *ngIf="hasPermission('sp.guild.mod.kick')" (click)="report()">
+                <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
                     REPORT
                 </button>
                 <button *ngIf="hasPermission('sp.guild.mod.kick')" class="bg-orange" (click)="kick()">
                     KICK
                 </button>
-                <button *ngIf="hasPermission('sp.guild.mod.kick')" class="bg-red" (click)="ban()">
+                <button *ngIf="hasPermission('sp.guild.mod.ban')" class="bg-red" (click)="ban()">
                     BAN
                 </button>
             </div>
