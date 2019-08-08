@@ -2,7 +2,7 @@
 
 ## Preamble
 
-Before version 0.14, shinpurus permission system was based on permission leves. Every command had its own, predefined level which a user must had at least to perform this command. Because this system is unflexible and hardly static, I've decided to step over to a domain based permission system.
+Before version 0.14, shinpurus permission system was based on permission levels. Every command had its own, predefined level which a user must had at least to perform this command. Because this system is unflexible and hardly static, I've decided to step over to a domain based permission system.
 
 ## Domain Based Permissions
 
