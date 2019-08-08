@@ -7,6 +7,9 @@ IMAGE_NAME="zekro/shinpuru"
 BRANCH=$TRAVIS_BRANCH
 TAG=$TRAVIS_TAG
 
+echo "TRAVIS_TAG '$TRAVIS_TAG'"
+echo "TRAVIS_BRANCH '$TRAVIS_BRANCH'"
+
 DTAG=""
 
 if ! [ -z $TAG ]; then
@@ -25,7 +28,9 @@ else
     esac
 fi
 
-IMGAE="$IMAGE_NAME:$DTAG"
+IMAGE="$IMAGE_NAME:$DTAG"
+
+echo "IMAGE '$IMAGE'"
 
 docker build . -t $IMAGE
 
