@@ -35,9 +35,9 @@ after_success: |
 
   if [ "$TRAVIS_BRANCH" == "dev" ]; then
     ssh mgr@zekro.de \
-      cd docker &&\
+      "cd docker &&\
       docker-compose pull shinpuru-canary &&\ 
-      docker-compose up -d shinpuru-canary
+      docker-compose up -d shinpuru-canary"
   fi
 
 deploy:
