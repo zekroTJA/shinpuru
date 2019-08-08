@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/shared"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -234,32 +236,21 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		return err
 	}
 
-	reason := "no reason set"
-	if len(args.Args) > 1 {
-		reason = strings.Join(args.Args[1:], " ")
-	}
+	rep, err := shared.PushMute(
+		args.Session,
+		args.CmdHandler.db,
+		args.Guild.ID,
+		args.User.ID,
+		victim.User.ID,
+		strings.Join(args.Args[1:], " "),
+		"",
+		muteRoleID)
 
-	rep := &util.Report{
-		ID:         repID,
-		Type:       repType,
-		GuildID:    args.Guild.ID,
-		ExecutorID: args.User.ID,
-		VictimID:   victim.User.ID,
-		Msg:        reason,
-	}
-	err = args.CmdHandler.db.AddReport(rep)
 	if err != nil {
-		util.SendEmbedError(args.Session, args.Channel.ID,
+		_, err = util.SendEmbedError(args.Session, args.Channel.ID,
 			"Failed creating report: ```\n"+err.Error()+"\n```")
 	} else {
-		args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
-		if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
-			args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
-		}
-		dmChan, err := args.Session.UserChannelCreate(victim.User.ID)
-		if err == nil {
-			args.Session.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
-		}
+		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
 	}
 
 	return err

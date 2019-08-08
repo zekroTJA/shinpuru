@@ -134,6 +134,8 @@ func (ws *WebServer) registerHandlers() {
 		Get("/permissions/allowed", ws.handlerGetPermissionsAllowed)
 	member.
 		Post("/kick", ws.handlerPostGuildMemberKick)
+	member.
+		Post("/ban", ws.handlerPostGuildMemberBan)
 
 	reports := api.Group("/reports")
 	reports.
