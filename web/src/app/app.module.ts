@@ -21,6 +21,7 @@ import { ReportComponent } from './components/report/report.component';
 import { SpoilerComponent } from './components/spoiler/spoiler.component';
 import { FormsModule } from '@angular/forms';
 import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
+import { SettingsComponent } from './routes/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
     ReportComponent,
     SpoilerComponent,
     TagsInputComponent,
+    SettingsComponent,
   ],
   imports: [
     NgbModule,

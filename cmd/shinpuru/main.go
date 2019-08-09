@@ -62,7 +62,7 @@ func main() {
 		session.Close()
 	}()
 
-	ws := webserver.NewWebServer(database, session, cmdHandler, config.WebServer, config.Discord.ClientID, config.Discord.ClientSecret)
+	ws := webserver.NewWebServer(database, session, cmdHandler, config, config.Discord.ClientID, config.Discord.ClientSecret)
 	go ws.ListenAndServeBlocking()
 	util.Log.Info("Web server running on address %s (%s)...", config.WebServer.Addr, config.WebServer.PublicAddr)
 

@@ -6,6 +6,7 @@ import { LoginComponent } from './routes/login/login.component';
 import { HomeComponent } from './routes/home/home.component';
 import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
+import { SettingsComponent } from './routes/settings/settings.component';
 const routes: Routes = [
   {
     path: '',
@@ -27,6 +28,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/:memberid',
     component: MemberRouteComponent,
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
   },
   {
     path: '**',

@@ -24,6 +24,7 @@ type User struct {
 
 	AvatarURL string    `json:"avatar_url"`
 	CreatedAt time.Time `json:"created_at"`
+	BotOwner  bool      `json:"bot_owner"`
 }
 
 type Member struct {

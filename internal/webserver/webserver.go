@@ -51,18 +51,18 @@ type WebServer struct {
 	session    *discordgo.Session
 	cmdhandler *commands.CmdHandler
 
-	config *core.ConfigWS
+	config *core.Config
 }
 
-func NewWebServer(db core.Database, s *discordgo.Session, cmd *commands.CmdHandler, config *core.ConfigWS, clientID, clientSecret string) (ws *WebServer) {
+func NewWebServer(db core.Database, s *discordgo.Session, cmd *commands.CmdHandler, config *core.Config, clientID, clientSecret string) (ws *WebServer) {
 	ws = new(WebServer)
 
-	if !strings.HasPrefix(config.PublicAddr, "http") {
+	if !strings.HasPrefix(config.WebServer.PublicAddr, "http") {
 		protocol := "http"
-		if config.TLS != nil && config.TLS.Enabled {
+		if config.WebServer.TLS != nil && config.WebServer.TLS.Enabled {
 			protocol += "s"
 		}
-		config.PublicAddr = fmt.Sprintf("%s://%s", protocol, config.PublicAddr)
+		config.WebServer.PublicAddr = fmt.Sprintf("%s://%s", protocol, config.WebServer.PublicAddr)
 	}
 
 	ws.config = config
@@ -80,7 +80,7 @@ func NewWebServer(db core.Database, s *discordgo.Session, cmd *commands.CmdHandl
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
 		clientID,
 		clientSecret,
-		config.PublicAddr+endpointAuthCB,
+		config.WebServer.PublicAddr+endpointAuthCB,
 		ws.auth.LoginFailedHandler,
 		ws.auth.LoginSuccessHandler,
 	)
@@ -103,9 +103,13 @@ func (ws *WebServer) registerHandlers() {
 	api := ws.router.Group("/api")
 	api.
 		Get("/me", ws.handlerGetMe)
-
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
+
+	settings := api.Group("/settings")
+	settings.
+		Get("/presence", ws.handlerGetPresence).
+		Post(ws.handlerPostPresence)
 
 	guilds := api.Group("/guilds")
 	guilds.
@@ -143,14 +147,14 @@ func (ws *WebServer) registerHandlers() {
 }
 
 func (ws *WebServer) ListenAndServeBlocking() error {
-	tls := ws.config.TLS
+	tls := ws.config.WebServer.TLS
 
 	if tls.Enabled {
 		if tls.Cert == "" || tls.Key == "" {
 			return errors.New("cert file and key file must be specified")
 		}
-		return ws.server.ListenAndServeTLS(ws.config.Addr, tls.Cert, tls.Key)
+		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
 	}
 
-	return ws.server.ListenAndServe(ws.config.Addr)
+	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
 }
