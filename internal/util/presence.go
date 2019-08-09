@@ -2,18 +2,24 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
 
+const (
+	PresenceSeperator = "|||"
+	validStatus       = "dnd online idle"
+)
+
 type Presence struct {
-	Game   string
-	Status string
+	Game   string `json:"game"`
+	Status string `json:"status"`
 }
 
 func UnmarshalPresence(raw string) (*Presence, error) {
-	split := strings.Split(raw, "|||")
+	split := strings.Split(raw, PresenceSeperator)
 	if len(split) < 2 {
 		return nil, errors.New("invalid format")
 	}
@@ -34,4 +40,17 @@ func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 		},
 		Status: p.Status,
 	}
+}
+
+func (p *Presence) Validate() error {
+	if strings.Contains(p.Game, PresenceSeperator) {
+		return fmt.Errorf("`%s` is used as seperator for the settings saving so it can not be contained in the actual message.",
+			PresenceSeperator)
+	}
+
+	if !strings.Contains(validStatus, p.Status) {
+		return fmt.Errorf("invalid status")
+	}
+
+	return nil
 }

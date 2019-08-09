@@ -15,6 +15,7 @@ export interface User {
   bot: boolean;
   avatar_url: string;
   created_at?: string;
+  bot_owner?: boolean;
 }
 
 export interface Role {
@@ -107,4 +108,9 @@ export interface ReasonRequest {
 
 export interface ReportRequest extends ReasonRequest {
   type: number;
+}
+
+export interface Presence {
+  game: string;
+  status: string;
 }
