@@ -13,7 +13,7 @@ import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 export class HomeComponent {
   public guilds: Guild[] = [];
 
-  constructor(public api: APIService, public spinner: SpinnerService) {
+  constructor(private api: APIService, public spinner: SpinnerService) {
     this.api.getGuilds().subscribe((guilds) => {
       this.guilds = guilds;
       this.spinner.stop('spinner-load-guilds');

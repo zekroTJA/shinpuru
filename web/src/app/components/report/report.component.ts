@@ -20,7 +20,7 @@ export class ReportComponent implements OnInit {
 
   public dateFormat = dateFormat;
 
-  constructor(public api: APIService) {}
+  constructor(private api: APIService) {}
 
   ngOnInit() {
     this.api

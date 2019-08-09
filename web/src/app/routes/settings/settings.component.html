@@ -1,0 +1,27 @@
+<div>
+    <h3>PRESENCE</h3>
+    <app-spinner *ngIf="!presence; else presenceTemp" [started]="true"></app-spinner>
+    <ng-template #presenceTemp>
+        <div class="d-flex mt-3">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Game</th>
+                        <td>
+                            <input type="text" [(ngModel)]="presence.game" class=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <select [(ngModel)]="presence.status" class="my-3">
+                            <option ngValue="online">online</option>
+                            <option ngValue="dnd">do not disturb</option>
+                            <option ngValue="idle">idle</option>
+                        </select>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="bg-green ml-auto mb-auto" (click)="updatePresence()">UPDATE PRESENCE</button>
+        </div>
+    </ng-template>
+</div>

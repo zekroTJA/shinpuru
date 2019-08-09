@@ -39,7 +39,7 @@ export class MemberRouteComponent {
   public repModalAttachment = '';
 
   constructor(
-    public api: APIService,
+    private api: APIService,
     public spinner: SpinnerService,
     public modal: NgbModal,
     public toasts: ToastService,
