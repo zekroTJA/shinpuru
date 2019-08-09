@@ -30,6 +30,7 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 		User:      user,
 		AvatarURL: user.AvatarURL(""),
 		CreatedAt: created,
+		BotOwner:  userID == ws.config.Discord.OwnerID,
 	}
 
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
@@ -394,6 +395,12 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 
 	guildID := ctx.Param("guildid")
 
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
 	update := new(PermissionsUpdate)
 	if err := parseJSONBody(ctx, update); err != nil {
 		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
@@ -402,12 +409,6 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	sperm := update.Perm[1:]
 	if !strings.HasPrefix(sperm, "sp.guild") && !strings.HasPrefix(sperm, "sp.etc") && !strings.HasPrefix(sperm, "sp.chat") {
 		return jsonError(ctx, fmt.Errorf("you can only give permissions over the domains 'sp.guild', 'sp.etc' and 'sp.chat'"), fasthttp.StatusBadRequest)
-	}
-
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
-		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
-	} else if !ok {
-		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 	}
 
 	perms, err := ws.db.GetGuildPermissions(guildID)
@@ -441,15 +442,15 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	repReq := new(ReportRequest)
-	if err := parseJSONBody(ctx, repReq); err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
 	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	repReq := new(ReportRequest)
+	if err := parseJSONBody(ctx, repReq); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
 	if memberID == userID {
@@ -484,15 +485,15 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	req := new(ReasonRequest)
-	if err := parseJSONBody(ctx, req); err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
 	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
 	if memberID == userID {
@@ -545,15 +546,15 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	req := new(ReasonRequest)
-	if err := parseJSONBody(ctx, req); err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
 	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
 	if memberID == userID {
@@ -597,4 +598,59 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+}
+
+func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
+	presenceRaw, err := ws.db.GetSetting(util.SettingPresence)
+	if err != nil {
+		if core.IsErrDatabaseNotFound(err) {
+			return jsonResponse(ctx, &util.Presence{
+				Game:   util.StdMotd,
+				Status: "online",
+			}, fasthttp.StatusOK)
+		}
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	presence, err := util.UnmarshalPresence(presenceRaw)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, presence, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.game"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	presence := new(util.Presence)
+	if err := parseJSONBody(ctx, presence); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if strings.Contains(presence.Game, util.PresenceSeperator) {
+		return jsonError(ctx,
+			fmt.Errorf("'%s' is used as seperator for the presence settings save and can not be used in the actual game message",
+				util.PresenceSeperator), fasthttp.StatusBadRequest)
+	}
+
+	if err := presence.Validate(); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if err := ws.db.SetSetting(util.SettingPresence, presence.Marshal()); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err := ws.session.UpdateStatusComplex(presence.ToUpdateStatusData()); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, presence, fasthttp.StatusOK)
 }

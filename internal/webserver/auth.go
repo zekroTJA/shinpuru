@@ -86,10 +86,6 @@ func (auth *Auth) checkAuth(ctx *routing.Context) error {
 	return nil
 }
 
-func (auth *Auth) LoginHandler(ctx *routing.Context) error {
-	return nil
-}
-
 func (auth *Auth) LoginFailedHandler(ctx *routing.Context, status int, msg string) error {
 	return jsonResponse(ctx, nil, fasthttp.StatusUnauthorized)
 }

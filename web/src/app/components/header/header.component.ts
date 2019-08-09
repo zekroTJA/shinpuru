@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('logout') private logoutTemplate: TemplateRef<any>;
+  @ViewChild('settings') private settingsTemplate: TemplateRef<any>;
 
   public selfUser: User;
 
@@ -22,17 +23,21 @@ export class HeaderComponent implements OnInit {
   constructor(private api: APIService, public router: Router) {
     this.api.getSelfUser().subscribe((user) => {
       this.selfUser = user;
+      if (user.bot_owner) {
+        this.popupElements.push({
+          el: this.settingsTemplate,
+          action: this.settings.bind(this),
+        } as PopupElement);
+      }
     });
   }
 
   ngOnInit() {
     console.log(this.logoutTemplate);
-    this.popupElements = [
-      {
-        el: this.logoutTemplate,
-        action: this.logout.bind(this),
-      } as PopupElement,
-    ];
+    this.popupElements.push({
+      el: this.logoutTemplate,
+      action: this.logout.bind(this),
+    } as PopupElement);
   }
 
   public get routes(): string[][] {
@@ -51,5 +56,9 @@ export class HeaderComponent implements OnInit {
     this.api.logout().subscribe(() => {
       window.location.assign('/');
     });
+  }
+
+  private settings() {
+    this.router.navigate(['/settings']);
   }
 }

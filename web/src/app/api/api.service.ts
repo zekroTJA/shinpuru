@@ -15,6 +15,7 @@ import {
   PermissionsUpdate,
   ReportRequest,
   ReasonRequest,
+  Presence,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -230,6 +231,18 @@ export class APIService {
         rep,
         this.defopts
       )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getPresence(): Observable<Presence> {
+    return this.http
+      .get<Presence>(this.rootURL + '/api/settings/presence', this.defopts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postPresence(p: Presence): Observable<Presence> {
+    return this.http
+      .post<Presence>(this.rootURL + '/api/settings/presence', p, this.defopts)
       .pipe(catchError(this.errorCatcher));
   }
 }

@@ -68,16 +68,19 @@ func (c *CmdHandler) GetCommandListLen() int {
 }
 
 func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (core.PermissionArray, error) {
-	guild, err := s.Guild(guildID)
-	if err != nil {
-		return nil, err
-	}
-
 	if userID == c.config.Discord.OwnerID {
 		return core.PermissionArray{"+sp.*"}, nil
 	}
-	if userID == guild.OwnerID {
-		return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+
+	if guildID != "" {
+		guild, err := s.Guild(guildID)
+		if err != nil {
+			return core.PermissionArray{}, nil
+		}
+
+		if userID == guild.OwnerID {
+			return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+		}
 	}
 
 	perm, err := c.db.GetMemberPermission(s, guildID, userID)
