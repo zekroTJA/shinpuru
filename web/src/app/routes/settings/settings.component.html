@@ -24,4 +24,36 @@
             <button class="bg-green ml-auto mb-auto" (click)="updatePresence()">UPDATE PRESENCE</button>
         </div>
     </ng-template>
+
+    <h3 class="mt-4">Guild Invite</h3>
+    <app-spinner *ngIf="!inviteSettings; else inviteTemp" [started]="true"></app-spinner>
+    <ng-template #inviteTemp>
+        <div class="d-flex mt-3">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Guild</th>
+                        <td>
+                            <select [(ngModel)]="inviteSettingsFields.guild_id" class="my-3">
+                                <option *ngFor="let g of guilds" [ngValue]="g.id">{{ g.name }}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Message</th>
+                        <td>
+                            <input type="text" [(ngModel)]="inviteSettingsFields.message" class=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Invite Code</th>
+                        <td>
+                            <input type="text" [(ngModel)]="inviteSettingsFields.invite_code" class=""/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="bg-green ml-auto mb-auto" (click)="updateInvite()">UPDATE INVITE</button>
+        </div>
+    </ng-template>
 </div>

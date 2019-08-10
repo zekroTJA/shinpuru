@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qiangxue/fasthttp-routing"
+	routing "github.com/qiangxue/fasthttp-routing"
 
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -92,6 +92,18 @@ type ReportRequest struct {
 	Type int `json:"type"`
 }
 
+type InviteSettingsRequest struct {
+	GuildID    string `json:"guild_id"`
+	Messsage   string `json:"message"`
+	InviteCode string `json:"invite_code"`
+}
+
+type InviteSettingsResponse struct {
+	Guild     *Guild `json:"guild"`
+	InviteURL string `json:"invite_url"`
+	Message   string `json:"message"`
+}
+
 func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 	if len(req.Reason) < 3 {
 		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
@@ -134,6 +146,10 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 }
 
 func MemberFromMember(m *discordgo.Member) *Member {
+	if m == nil {
+		return nil
+	}
+
 	created, _ := util.GetDiscordSnowflakeCreationTime(m.User.ID)
 	return &Member{
 		Member:    m,

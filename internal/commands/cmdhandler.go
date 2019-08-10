@@ -78,6 +78,20 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 			return core.PermissionArray{}, nil
 		}
 
+		member, _ := s.GuildMember(guildID, userID)
+
+		if member != nil {
+			for _, r := range guild.Roles {
+				if r.Permissions&0x8 != 0 {
+					for _, mrID := range member.Roles {
+						if r.ID == mrID {
+							return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+						}
+					}
+				}
+			}
+		}
+
 		if userID == guild.OwnerID {
 			return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
 		}

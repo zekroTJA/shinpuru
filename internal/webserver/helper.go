@@ -149,3 +149,10 @@ func errInternalOrNotFound(ctx *routing.Context, err error) error {
 	}
 	return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 }
+
+func errInternalIgnoreNotFound(ctx *routing.Context, err error) (bool, error) {
+	if core.IsErrDatabaseNotFound(err) {
+		return false, jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	return true, jsonError(ctx, err, fasthttp.StatusInternalServerError)
+}

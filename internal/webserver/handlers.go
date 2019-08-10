@@ -654,3 +654,161 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, presence, fasthttp.StatusOK)
 }
+
+func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
+	var guildID, message, inviteCode string
+	var err error
+
+	if guildID, err = ws.db.GetSetting(util.SettingWIInviteGuildID); err != nil {
+		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
+			return err
+		}
+	}
+
+	if guildID == "" {
+		return jsonResponse(ctx, &InviteSettingsResponse{
+			Guild:     nil,
+			InviteURL: "",
+			Message:   "",
+		}, fasthttp.StatusOK)
+	}
+
+	if message, err = ws.db.GetSetting(util.SettingWIInviteText); err != nil {
+		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
+			return err
+		}
+	}
+
+	if inviteCode, err = ws.db.GetSetting(util.SettingWIInviteCode); err != nil {
+		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
+			return err
+		}
+	}
+
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	invites, err := ws.session.GuildInvites(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if inviteCode != "" {
+		for _, inv := range invites {
+			if inv.Inviter.ID == ws.session.State.User.ID && !inv.Revoked {
+				inviteCode = inv.Code
+				break
+			}
+		}
+	}
+
+	if inviteCode == "" {
+		var channel *discordgo.Channel
+		for _, c := range guild.Channels {
+			if c.Type == discordgo.ChannelTypeGuildText {
+				channel = c
+			}
+		}
+		if channel == nil {
+			return jsonError(ctx, fmt.Errorf("could not find any channel to create invite for"), fasthttp.StatusConflict)
+		}
+
+		invite, err := ws.session.ChannelInviteCreate(channel.ID, discordgo.Invite{
+			Temporary: false,
+		})
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+
+		inviteCode = invite.Code
+		if err = ws.db.SetSetting(util.SettingWIInviteCode, inviteCode); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+	}
+
+	res := &InviteSettingsResponse{
+		Guild:     GuildFromGuild(guild, nil),
+		Message:   message,
+		InviteURL: fmt.Sprintf("https://discord.gg/%s", inviteCode),
+	}
+
+	return jsonResponse(ctx, res, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.noguildinvite"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	req := new(InviteSettingsRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if req.GuildID == "" {
+		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
+	}
+
+	guild, err := ws.session.Guild(req.GuildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if req.InviteCode != "" {
+		invites, err := ws.session.GuildInvites(req.GuildID)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+
+		var valid bool
+		for _, inv := range invites {
+			if inv.Code == req.InviteCode && !inv.Revoked {
+				valid = true
+				break
+			}
+		}
+
+		if !valid {
+			return jsonError(ctx, fmt.Errorf("invalid invite code"), fasthttp.StatusBadRequest)
+		}
+	} else {
+		var channel *discordgo.Channel
+		for _, c := range guild.Channels {
+			if c.Type == discordgo.ChannelTypeGuildText {
+				channel = c
+			}
+		}
+		if channel == nil {
+			return jsonError(ctx, fmt.Errorf("could not find any channel to create invite for"), fasthttp.StatusConflict)
+		}
+
+		invite, err := ws.session.ChannelInviteCreate(channel.ID, discordgo.Invite{
+			Temporary: false,
+		})
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+
+		req.InviteCode = invite.Code
+	}
+
+	if err = ws.db.SetSetting(util.SettingWIInviteCode, req.InviteCode); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetSetting(util.SettingWIInviteGuildID, req.GuildID); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetSetting(util.SettingWIInviteText, req.Messsage); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
