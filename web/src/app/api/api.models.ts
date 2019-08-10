@@ -114,3 +114,15 @@ export interface Presence {
   game: string;
   status: string;
 }
+
+export interface InviteSettingsRequest {
+  guild_id: string;
+  message: string;
+  invite_code?: string;
+}
+
+export interface InviteSettingsResponse {
+  guild: Guild;
+  invite_url: string;
+  message: string;
+}

@@ -16,6 +16,8 @@ import {
   ReportRequest,
   ReasonRequest,
   Presence,
+  InviteSettingsResponse,
+  InviteSettingsRequest,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -243,6 +245,21 @@ export class APIService {
   public postPresence(p: Presence): Observable<Presence> {
     return this.http
       .post<Presence>(this.rootURL + '/api/settings/presence', p, this.defopts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getInviteSettings(): Observable<InviteSettingsResponse> {
+    return this.http
+      .get<InviteSettingsResponse>(
+        this.rootURL + '/api/settings/noguildinvite',
+        this.defopts
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postInviteSettings(s: InviteSettingsRequest): Observable<any> {
+    return this.http
+      .post(this.rootURL + '/api/settings/noguildinvite', s, this.defopts)
       .pipe(catchError(this.errorCatcher));
   }
 }

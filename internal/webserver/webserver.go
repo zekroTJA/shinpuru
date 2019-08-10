@@ -110,6 +110,9 @@ func (ws *WebServer) registerHandlers() {
 	settings.
 		Get("/presence", ws.handlerGetPresence).
 		Post(ws.handlerPostPresence)
+	settings.
+		Get("/noguildinvite", ws.handlerGetInviteSettings).
+		Post(ws.handlerPostInviteSettings)
 
 	guilds := api.Group("/guilds")
 	guilds.

@@ -2,7 +2,7 @@
 
 import { Component } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import { Guild } from 'src/app/api/api.models';
+import { Guild, InviteSettingsResponse } from 'src/app/api/api.models';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 
 @Component({
@@ -12,11 +12,20 @@ import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 })
 export class HomeComponent {
   public guilds: Guild[] = [];
+  public inviteSettings: InviteSettingsResponse;
 
   constructor(private api: APIService, public spinner: SpinnerService) {
     this.api.getGuilds().subscribe((guilds) => {
       this.guilds = guilds;
-      this.spinner.stop('spinner-load-guilds');
+
+      if (this.guilds.length < 1) {
+        this.api.getInviteSettings().subscribe((inviteSettings) => {
+          this.inviteSettings = inviteSettings;
+          this.spinner.stop('spinner-load-guilds');
+        });
+      } else {
+        this.spinner.stop('spinner-load-guilds');
+      }
     });
   }
 }
