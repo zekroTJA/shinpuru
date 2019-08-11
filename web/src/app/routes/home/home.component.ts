@@ -14,7 +14,7 @@ export class HomeComponent {
   public guilds: Guild[] = [];
   public inviteSettings: InviteSettingsResponse;
 
-  constructor(private api: APIService, public spinner: SpinnerService) {
+  constructor(private api: APIService, private spinner: SpinnerService) {
     this.api.getGuilds().subscribe((guilds) => {
       this.guilds = guilds;
 

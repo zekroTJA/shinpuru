@@ -73,4 +73,23 @@ export class SettingsComponent {
       }
     });
   }
+
+  public resetInvite() {
+    this.inviteSettingsFields = {
+      guild_id: '',
+      invite_code: '',
+      message: '',
+    };
+    this.api.postInviteSettings(this.inviteSettingsFields).subscribe((res) => {
+      if (res.code === 200) {
+        this.toasts.push(
+          'Reset guild invite.',
+          'Updated',
+          'success',
+          6000,
+          true
+        );
+      }
+    });
+  }
 }

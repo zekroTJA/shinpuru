@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
   public popupVisible = false;
   public popupElements = [];
 
-  constructor(private api: APIService, public router: Router) {
+  constructor(private api: APIService, private router: Router) {
     this.api.getSelfUser().subscribe((user) => {
       this.selfUser = user;
       if (user.bot_owner) {
