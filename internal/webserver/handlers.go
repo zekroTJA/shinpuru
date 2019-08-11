@@ -751,51 +751,52 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
-	if req.GuildID == "" {
-		return jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
-	}
+	var err error
 
-	guild, err := ws.session.Guild(req.GuildID)
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
+	if req.GuildID != "" {
 
-	if req.InviteCode != "" {
-		invites, err := ws.session.GuildInvites(req.GuildID)
+		guild, err := ws.session.Guild(req.GuildID)
 		if err != nil {
-			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
 
-		var valid bool
-		for _, inv := range invites {
-			if inv.Code == req.InviteCode && !inv.Revoked {
-				valid = true
-				break
+		if req.InviteCode != "" {
+			invites, err := ws.session.GuildInvites(req.GuildID)
+			if err != nil {
+				return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 			}
-		}
 
-		if !valid {
-			return jsonError(ctx, fmt.Errorf("invalid invite code"), fasthttp.StatusBadRequest)
-		}
-	} else {
-		var channel *discordgo.Channel
-		for _, c := range guild.Channels {
-			if c.Type == discordgo.ChannelTypeGuildText {
-				channel = c
+			var valid bool
+			for _, inv := range invites {
+				if inv.Code == req.InviteCode && !inv.Revoked {
+					valid = true
+					break
+				}
 			}
-		}
-		if channel == nil {
-			return jsonError(ctx, fmt.Errorf("could not find any channel to create invite for"), fasthttp.StatusConflict)
-		}
 
-		invite, err := ws.session.ChannelInviteCreate(channel.ID, discordgo.Invite{
-			Temporary: false,
-		})
-		if err != nil {
-			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
-		}
+			if !valid {
+				return jsonError(ctx, fmt.Errorf("invalid invite code"), fasthttp.StatusBadRequest)
+			}
+		} else {
+			var channel *discordgo.Channel
+			for _, c := range guild.Channels {
+				if c.Type == discordgo.ChannelTypeGuildText {
+					channel = c
+				}
+			}
+			if channel == nil {
+				return jsonError(ctx, fmt.Errorf("could not find any channel to create invite for"), fasthttp.StatusConflict)
+			}
 
-		req.InviteCode = invite.Code
+			invite, err := ws.session.ChannelInviteCreate(channel.ID, discordgo.Invite{
+				Temporary: false,
+			})
+			if err != nil {
+				return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+			}
+
+			req.InviteCode = invite.Code
+		}
 	}
 
 	if err = ws.db.SetSetting(util.SettingWIInviteCode, req.InviteCode); err != nil {

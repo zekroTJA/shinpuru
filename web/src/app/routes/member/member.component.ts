@@ -39,12 +39,12 @@ export class MemberRouteComponent {
   public repModalAttachment = '';
 
   constructor(
-    private api: APIService,
-    public spinner: SpinnerService,
     public modal: NgbModal,
-    public toasts: ToastService,
+    private api: APIService,
+    private spinner: SpinnerService,
+    private toasts: ToastService,
     private route: ActivatedRoute,
-    public router: Router
+    private router: Router
   ) {
     const guildID = this.route.snapshot.paramMap.get('guildid');
     const memberID = this.route.snapshot.paramMap.get('memberid');
