@@ -10,7 +10,6 @@ import (
 )
 
 type CmdPrefix struct {
-	PermLvl int
 }
 
 func (c *CmdPrefix) GetInvokes() []string {
@@ -30,12 +29,8 @@ func (c *CmdPrefix) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdPrefix) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdPrefix) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdPrefix) GetDomainName() string {
+	return "sp.guild.config.prefix"
 }
 
 func (c *CmdPrefix) Exec(args *CommandArgs) error {

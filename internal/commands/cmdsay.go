@@ -26,7 +26,6 @@ var embedColors = map[string]int{
 }
 
 type CmdSay struct {
-	PermLvl int
 }
 
 func (c *CmdSay) GetInvokes() []string {
@@ -60,12 +59,8 @@ func (c *CmdSay) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdSay) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdSay) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdSay) GetDomainName() string {
+	return "sp.chat.say"
 }
 
 func (c *CmdSay) Exec(args *CommandArgs) error {

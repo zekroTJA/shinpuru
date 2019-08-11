@@ -14,7 +14,6 @@ import (
 var reserved = []string{"create", "add", "edit", "delete", "remove", "rem", "raw"}
 
 type CmdTag struct {
-	PermLvl int
 }
 
 func (c *CmdTag) GetInvokes() []string {
@@ -38,12 +37,8 @@ func (c *CmdTag) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdTag) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdTag) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdTag) GetDomainName() string {
+	return "sp.chat.tag"
 }
 
 func (c *CmdTag) Exec(args *CommandArgs) error {
@@ -74,7 +69,7 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 
 	switch strings.ToLower(args.Args[0]) {
 	case "create", "add":
-		if err, ok := checkPermission(args, 3); !ok || err != nil {
+		if err, ok := checkPermission(args, c.GetDomainName()+".create"); !ok || err != nil {
 			return err
 		}
 		return c.addTag(args, db)
@@ -182,12 +177,12 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db core.Database) error {
 		return err
 	}
 
-	permLvl, err := args.CmdHandler.GetPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
-	if tag.CreatorID != args.User.ID && permLvl < 4 {
+	if tag.CreatorID != args.User.ID && !ok {
 		return printNotPermitted(args, "delete")
 	}
 
@@ -273,13 +268,13 @@ func printNotPermitted(args *CommandArgs, t string) error {
 	return err
 }
 
-func checkPermission(args *CommandArgs, reqiredLevel int) (error, bool) {
-	lvl, err := args.CmdHandler.GetPermissionLevel(args.Session, args.Guild.ID, args.User.ID)
+func checkPermission(args *CommandArgs, dn string) (error, bool) {
+	ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
 	if err != nil {
 		return err, false
 	}
 
-	if lvl < reqiredLevel {
+	if !ok {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"You are not permitted to use this command.")
 		util.DeleteMessageLater(args.Session, msg, 6*time.Second)

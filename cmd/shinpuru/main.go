@@ -10,6 +10,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
+	"github.com/zekroTJA/shinpuru/internal/webserver"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
@@ -39,6 +40,7 @@ func main() {
 			config.Database.Sqlite = new(core.ConfigDatabaseFile)
 		}
 		config.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
+		config.WebServer.Addr = ":8080"
 	}
 
 	util.SetLogLevel(config.Logging.LogLevel)
@@ -59,6 +61,10 @@ func main() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
+
+	ws := webserver.NewWebServer(database, session, cmdHandler, config, config.Discord.ClientID, config.Discord.ClientSecret)
+	go ws.ListenAndServeBlocking()
+	util.Log.Info("Web server running on address %s (%s)...", config.WebServer.Addr, config.WebServer.PublicAddr)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)

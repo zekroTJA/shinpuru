@@ -32,11 +32,15 @@ const (
 	ColorEmbedViolett = 0x6A1B9A
 
 	AutoNick  = "シンプル"
-	StdMotd   = "closed beta version"
+	StdMotd   = "github.com/zekroTJA/shinpuru"
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
 
-	MutedRoleName   = "shinpuru-muted"
-	SettingPresence = "PRESENCE"
+	MutedRoleName = "shinpuru-muted"
+
+	SettingPresence        = "PRESENCE"
+	SettingWIInviteGuildID = "WIINVITEGUILDID"
+	SettingWIInviteCode    = "WIINVITECODE"
+	SettingWIInviteText    = "WIINVITETEXT"
 
 	DiscordAPIEndpoint = "https://discordapp.com/api"
 )

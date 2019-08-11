@@ -17,7 +17,6 @@ const (
 )
 
 type CmdBackup struct {
-	PermLvl int
 }
 
 func (c *CmdBackup) GetInvokes() []string {
@@ -38,12 +37,8 @@ func (c *CmdBackup) GetGroup() string {
 	return GroupGuildAdmin
 }
 
-func (c *CmdBackup) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdBackup) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdBackup) GetDomainName() string {
+	return "sp.guild.admin.backup"
 }
 
 func (c *CmdBackup) Exec(args *CommandArgs) error {

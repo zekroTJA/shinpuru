@@ -1,0 +1,28 @@
+<div>
+    <app-spinner id="spinner-load-guilds" [started]="true"></app-spinner>
+    <div class="guilds-list-container">
+        <a *ngFor="let g of guilds" class="guild-container" routerLink="/guilds/{{ g.id }}">
+            <img [src]="g.icon ? g.icon_url : '/assets/dc-logo.svg'"/>
+            <div class="info-container">
+                <h1>{{ g.name }}</h1>
+                <p>{{ g.member_count }} members</p>
+            </div>
+        </a>
+    </div>
+
+    <div *ngIf="inviteSettings" class="no-guilds">
+        <h3 class="mb-3">You are not sharing any guild with shinpuru :(</h3>
+        <div *ngIf="inviteSettings.guild">
+            <p>{{ inviteSettings.message || 'Join this guild below to get experienced with shinpuru! ;)' }}</p>
+            <div class="d-flex">
+                <a class="guild-container mx-auto" [href]="inviteSettings.invite_url" target="_blank">
+                    <img [src]="inviteSettings.guild.icon ? inviteSettings.guild.icon_url : '/assets/dc-logo.svg'"/>
+                    <div class="info-container">
+                        <h1>{{ inviteSettings.guild.name }}</h1>
+                        <p>{{ inviteSettings.guild.member_count }} members</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

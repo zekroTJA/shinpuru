@@ -10,23 +10,35 @@ go_import_path: github.com/zekroTJA/shinpuru
 addons:
   ssh_known_hosts: zekro.de
 
-script:
-  - bash ./ci/travis.sh
+services:
+  - docker
 
-# before_install:
-#   - openssl aes-256-cbc -K $encrypted_37839d6e8267_key -iv $encrypted_37839d6e8267_iv
-#     -in ./ci/deploy_rsa.enc -out deploy_rsa -d
-#   - eval "$(ssh-agent -s)"
-#   - chmod 600 deploy_rsa
-#   - ssh-add deploy_rsa
+script:
+  - bash ./ci/build.sh
+  - bash ./ci/docker-release.sh
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_37839d6e8267_key -iv $encrypted_37839d6e8267_iv
+    -in ./ci/deploy_rsa.enc -out deploy_rsa -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 deploy_rsa
+  - ssh-add deploy_rsa
 
 after_success: |
-  if [ -n "$GITHUB_TOKEN" ]; then
+  if [ -n "$GITHUB_TOKEN" ] && [ "$TRAVIS_BRANCH" == "dev" ]; then
     git clone https://zekroTJA:$GITHUB_TOKEN@github.com/zekroTJA/shinpuru.wiki.git
     mv docs/commandsManual.md shinpuru.wiki/Commands.md
     git -C ./shinpuru.wiki add .
     git -C ./shinpuru.wiki -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
     git -C ./shinpuru.wiki push
+  fi
+
+  if [ "$TRAVIS_BRANCH" == "dev" ]; then
+    ssh mgr@zekro.de \
+      "cd docker &&\
+      docker-compose stop shinpuru-canary &&\
+      docker-compose pull shinpuru-canary &&\ 
+      docker-compose up -d shinpuru-canary"
   fi
 
 deploy:

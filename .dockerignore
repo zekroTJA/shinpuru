@@ -14,3 +14,5 @@ scripts/*
 ci/*
 .github/*
 Gopkg.lock
+web/dist/
+web/node_modules/

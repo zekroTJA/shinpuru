@@ -1,0 +1,13 @@
+<div 
+    class="member-container" 
+    [style.background-color]="getMemberColor(0.3)"
+>
+    <img [src]="member.avatar_url"/>
+    <div>
+        <div class="d-flex">
+            <p>{{ member.nick || member.user.username }}</p>
+            <p *ngIf="member.user.bot" class="bot-tag">BOT</p>
+        </div>
+        <p class="tag">{{ member.user.username }}#{{ member.user.discriminator }}</p>
+    </div>
+</div>

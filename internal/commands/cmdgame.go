@@ -9,7 +9,6 @@ import (
 )
 
 type CmdGame struct {
-	PermLvl int
 }
 
 func (c *CmdGame) GetInvokes() []string {
@@ -29,12 +28,8 @@ func (c *CmdGame) GetGroup() string {
 	return GroupGlobalAdmin
 }
 
-func (c *CmdGame) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdGame) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdGame) GetDomainName() string {
+	return "sp.game"
 }
 
 func (c *CmdGame) Exec(args *CommandArgs) error {
@@ -67,21 +62,22 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 	}
 
 	switch strings.ToLower(args.Args[0]) {
+
 	case "msg":
 		presence.Game = strings.Join(args.Args[1:], " ")
+
 	case "status":
-		status := strings.ToLower(args.Args[1])
-		validStatus := "dnd online idle"
-		if !strings.Contains(validStatus, status) {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"This is not a valid status. Please use `dnd`, `idle` or `online` as status.")
-			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-			return err
-		}
-		presence.Status = status
+		presence.Status = strings.ToLower(args.Args[1])
+
 	default:
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Use the sub command `msg` to change the game text and `status` to update the status.")
+		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+		return err
+	}
+
+	if err = presence.Validate(); err != nil {
+		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, err.Error())
 		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		return err
 	}

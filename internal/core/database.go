@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -37,8 +38,9 @@ type Database interface {
 	GetGuildGhostpingMsg(guildID string) (string, error)
 	SetGuildGhostpingMsg(guildID, msg string) error
 
-	GetGuildPermissions(guildID string) (map[string]int, error)
-	SetGuildRolePermission(guildID, roleID string, permLvL int) error
+	GetGuildPermissions(guildID string) (map[string]PermissionArray, error)
+	SetGuildRolePermission(guildID, roleID string, p PermissionArray) error
+	GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (PermissionArray, error)
 
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
@@ -60,8 +62,6 @@ type Database interface {
 	GetReport(id snowflake.ID) (*util.Report, error)
 	GetReportsGuild(guildID string) ([]*util.Report, error)
 	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
-
-	GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error)
 
 	GetSetting(setting string) (string, error)
 	SetSetting(setting, value string) error
@@ -91,6 +91,10 @@ type Database interface {
 	GetTagByIdent(ident string, guildID string) (*util.Tag, error)
 	GetGuildTags(guildID string) ([]*util.Tag, error)
 	DeleteTag(id snowflake.ID) error
+
+	SetSession(key, userID string, expires time.Time) error
+	GetSession(key string) (string, error)
+	DeleteSession(userID string) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

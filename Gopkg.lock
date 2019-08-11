@@ -50,12 +50,32 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:4a49346ca45376a2bba679ca0e83bec949d780d4e927931317904bad482943ec"
+  digest = "1:823dc0f8e4cdad8d91e6aba4cdd985a035596a8aa02e9d2abf1bec347894c41f"
+  name = "github.com/klauspost/compress"
+  packages = [
+    "flate",
+    "gzip",
+    "zlib",
+  ]
+  pruneopts = "UT"
+  revision = "23256797d1e4ccac36fad828362cdfef5b3aeb90"
+  version = "v1.7.4"
+
+[[projects]]
+  digest = "1:923c4d7194b42e054b2eb8a6c62824ac55e23ececc1c7e48d4da69c971c55954"
+  name = "github.com/klauspost/cpuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "05a8198c0f5a27739aec358908d7e12c64ce6eb7"
+  version = "v1.2.1"
+
+[[projects]]
+  digest = "1:79e87abf06b873987dee86598950f5b51732ac454d5a5cab6445a14330e6c9e3"
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c7c4067b79cc51e6dfdcef5c702e74b1e0fa7c75"
-  version = "v1.10.0"
+  revision = "b612a2feea6aa87c6d052d9086572551df06497e"
+  version = "v1.11.0"
 
 [[projects]]
   branch = "master"
@@ -72,6 +92,42 @@
   pruneopts = "UT"
   revision = "b2cb9fa56473e98db8caba80237377e83fe44db5"
   version = "v1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d6efa822e9b1e35da4653e912128933143d37d2358eebe2b35c1a5f60e028bd0"
+  name = "github.com/qiangxue/fasthttp-routing"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6ccdc2a18d8712f842de50ddcb8c9a3d025ddc71"
+
+[[projects]]
+  digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
+  name = "github.com/valyala/bytebufferpool"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:15ad8a80098fcc7a194b9db6b26d74072a852e4faa957848c8118193d3c69230"
+  name = "github.com/valyala/fasthttp"
+  packages = [
+    ".",
+    "fasthttputil",
+    "stackless",
+  ]
+  pruneopts = "UT"
+  revision = "e5f51c11919d4f66400334047b897ef0a94c6f3c"
+  version = "v20180529"
+
+[[projects]]
+  branch = "master"
+  digest = "1:1df446de680c06291652db165a18d90bc8f4c45c977ed14caf2e01f75f489720"
+  name = "github.com/zekroTJA/ratelimit"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "219ca33049a5eca0248c92c9641e318276aeb61c"
 
 [[projects]]
   branch = "master"
@@ -92,7 +148,7 @@
     "salsa20/salsa",
   ]
   pruneopts = "UT"
-  revision = "cc06ce4a13d484c0101a9e92913248488a75786d"
+  revision = "4def268fd1a49955bfb3dda92fe3db4f924f2285"
 
 [[projects]]
   branch = "master"
@@ -100,7 +156,7 @@
   name = "golang.org/x/sys"
   packages = ["cpu"]
   pruneopts = "UT"
-  revision = "d432491b91382bba9c2a91776aa47c9430183a6f"
+  revision = "cbf593c0f2f39034e9104bbf77e2ec7c48c98fc5"
 
 [[projects]]
   branch = "master"
@@ -136,6 +192,9 @@
     "github.com/go-sql-driver/mysql",
     "github.com/mattn/go-sqlite3",
     "github.com/op/go-logging",
+    "github.com/qiangxue/fasthttp-routing",
+    "github.com/valyala/fasthttp",
+    "github.com/zekroTJA/ratelimit",
     "github.com/zekroTJA/timedmap",
     "golang.org/x/time/rate",
     "gopkg.in/yaml.v2",

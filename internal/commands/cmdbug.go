@@ -6,7 +6,6 @@ import (
 )
 
 type CmdBug struct {
-	PermLvl int
 }
 
 func (c *CmdBug) GetInvokes() []string {
@@ -25,12 +24,8 @@ func (c *CmdBug) GetGroup() string {
 	return GroupEtc
 }
 
-func (c *CmdBug) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdBug) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdBug) GetDomainName() string {
+	return "sp.etc.bug"
 }
 
 func (c *CmdBug) Exec(args *CommandArgs) error {

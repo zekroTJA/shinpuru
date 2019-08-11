@@ -11,7 +11,6 @@ import (
 )
 
 type CmdQuote struct {
-	PermLvl int
 }
 
 func (c *CmdQuote) GetInvokes() []string {
@@ -30,12 +29,8 @@ func (c *CmdQuote) GetGroup() string {
 	return GroupChat
 }
 
-func (c *CmdQuote) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdQuote) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdQuote) GetDomainName() string {
+	return "sp.chat.quote"
 }
 
 func (c *CmdQuote) Exec(args *CommandArgs) error {

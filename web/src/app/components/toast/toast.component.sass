@@ -1,0 +1,71 @@
+@import '../../../sass/vars'
+@import '../../../sass/mixins'
+    
+@keyframes fadeIn
+    from
+        opacity: 0
+        transform: translateX(50px)
+
+    to
+        opacity: 1
+        transform: translateX(0px)
+
+@keyframes fadeOut
+    0%
+        opacity: 1
+        transform: translateX(0px)
+
+    50%
+        opacity: 0
+        transform: translateX(50px)
+
+    100%
+        opacity: 0
+        transform: translateX(50px)
+
+.white
+    color: white !important
+
+    > .heading
+        border-bottom: solid 1px white !important
+
+.fade-out
+    animation: fadeOut .6s ease !important
+
+.toast-container
+    width: 100%
+    overflow: hidden
+    background-color: white
+    color: black
+    padding: 5px 10px
+    border-radius: 3px
+    animation: fadeIn .3s ease
+    margin-bottom: 10px
+
+    .heading
+        display: flex
+        border-bottom: solid 1px black
+        margin-bottom: 8px
+        padding-bottom: 8px
+
+        .close-btn
+            margin-right: 0px
+            margin-left: auto
+
+            img
+                width: 20px
+                height: 20px
+
+// COLORS
+
+.c-cyan
+    background-color: #0277BD
+
+.c-red
+    background-color: #c62828
+
+.c-yellow
+    background-color: #FBC02D
+
+.c-green
+    background-color: #2E7D32

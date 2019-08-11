@@ -2,16 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdPerms struct {
-	PermLvl int
 }
 
 func (c *CmdPerms) GetInvokes() []string {
@@ -24,36 +24,42 @@ func (c *CmdPerms) GetDescription() string {
 
 func (c *CmdPerms) GetHelp() string {
 	return "`perms` - get current permission settings\n" +
-		"`perms <LvL> <RoleResolvable> (<RoleResolvable> ...)` - set permission level for specific roles"
+		"`perms <PDNS> <RoleResolvable> (<RoleResolvable> ...)` - set permission for specific roles\n\n" +
+		"PDNS (permission domain name specifier) is used to define permissions to groups by domains. This specifier consists of two parts:\n" +
+		"The allow (`+`) / disallow (`-`) part and the domain name (`sp.guilds.config.*` for example).\n\n" +
+		"For example, if you want to allow all guild moderation commands for moderators use `+sp.guild.mod.*`. If you want to disallow a role to use a specific command like " +
+		"`sp!ban`, you can do this by disallowing the specific domain name `-sp.guild.mod.ban`.\n\n" +
+		"Keep in mind:\n" +
+		"`-` and `+` of the same domain always results in a disallow.\n" +
+		"Higher level rules (like `sp.guild.config.*`) always override lower level rules (like `sp.guild.*`).\n\n" +
+		"[**Here**](https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md) you can find further information about the permission system."
 }
 
 func (c *CmdPerms) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdPerms) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdPerms) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdPerms) GetDomainName() string {
+	return "sp.guild.config.perms"
 }
 
 func (c *CmdPerms) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
+	perms, err := db.GetGuildPermissions(args.Guild.ID)
+	if err != nil {
+		return err
+	}
 
 	if len(args.Args) == 0 {
 		msgstr := ""
-		perms, err := db.GetGuildPermissions(args.Guild.ID)
-		if err != nil {
-			return err
+
+		for roleID, pa := range perms {
+			msgstr += fmt.Sprintf("**<@&%s>**\n%s\n\n", roleID, strings.Join(pa, "\n"))
 		}
-		for roleID, permLvl := range perms {
-			msgstr += fmt.Sprintf("`%02d` - <@&%s>\n", permLvl, roleID)
-		}
+
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			msgstr+"\n*Guild owners does always have perm LvL 10 and the owner of the bot has everywhere perm LvL 999.*",
-			"Permission Level for this Guild", 0)
+			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild`, `sp.chat` and `sp.etc` "+
+				"and the owner of the bot has everywhere permissions over `sp`.*", "Permission settings for this guild", 0)
 		return err
 	}
 
@@ -64,15 +70,11 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	permLvL, err := strconv.Atoi(args.Args[0])
-	if err != nil {
+	perm := strings.ToLower(args.Args[0])
+	sperm := perm[1:]
+	if !strings.HasPrefix(sperm, "sp.guild") && !strings.HasPrefix(sperm, "sp.etc") && !strings.HasPrefix(sperm, "sp.chat") {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"First argument is is the permission level and must be a valid number.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
-	} else if permLvL < 0 || permLvL > 9 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"The permission level must be a number between *(including)* 0 and 9.")
+			"You are only able to set permissions for the domains `sp.guild`, `sp.etc` and `sp.chat`")
 		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 		return err
 	}
@@ -87,7 +89,15 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	rolesIds := make([]string, len(roles))
 	for i, r := range roles {
 		rolesIds[i] = fmt.Sprintf("<@&%s>", r.ID)
-		err := db.SetGuildRolePermission(args.Guild.ID, r.ID, permLvL)
+
+		cPerm, ok := perms[r.ID]
+		if !ok {
+			cPerm = make(core.PermissionArray, 0)
+		}
+
+		cPerm = cPerm.Update(perm)
+
+		err := db.SetGuildRolePermission(args.Guild.ID, r.ID, cPerm)
 		if err != nil {
 			return err
 		}
@@ -98,8 +108,8 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		multipleRoles = "'s"
 	}
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Set permission level `%d` for role%s %s.",
-			permLvL, multipleRoles, strings.Join(rolesIds, ", ")),
+		fmt.Sprintf("Set permission `%s` for role%s %s.",
+			perm, multipleRoles, strings.Join(rolesIds, ", ")),
 		"", util.ColorEmbedUpdated)
 
 	return err

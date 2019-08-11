@@ -10,7 +10,6 @@ import (
 )
 
 type CmdClear struct {
-	PermLvl int
 }
 
 func (c *CmdClear) GetInvokes() []string {
@@ -31,12 +30,8 @@ func (c *CmdClear) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdClear) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdClear) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdClear) GetDomainName() string {
+	return "sp.guild.mod.clear"
 }
 
 func (c *CmdClear) Exec(args *CommandArgs) error {
