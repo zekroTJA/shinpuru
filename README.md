@@ -18,7 +18,6 @@
 |--------|-------|
 | master | <a href="https://travis-ci.org/zekroTJA/shinpuru"><img src="https://travis-ci.org/zekroTJA/shinpuru.svg?branch=master" /></a> |
 | dev | <a href="https://travis-ci.org/zekroTJA/shinpuru"><img src="https://travis-ci.org/zekroTJA/shinpuru.svg?branch=dev" /></a> |
-| docker | <a href="https://cloud.docker.com/u/zekro/repository/docker/zekro/shinpuru"><img alt="Docker Cloud Build Status" src="https://img.shields.io/docker/cloud/build/zekro/shinpuru.svg"></a> |
 
 ---
 
