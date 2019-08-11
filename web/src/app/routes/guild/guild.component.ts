@@ -48,8 +48,8 @@ export class GuildComponent {
   public toHexClr = toHexClr;
 
   constructor(
+    private spinner: SpinnerService,
     private api: APIService,
-    public spinner: SpinnerService,
     private route: ActivatedRoute,
     private toasts: ToastService
   ) {

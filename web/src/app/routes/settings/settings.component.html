@@ -53,7 +53,14 @@
                     </tr>
                 </tbody>
             </table>
-            <button class="bg-green ml-auto mb-auto" (click)="updateInvite()">UPDATE INVITE</button>
+            <div class="ml-auto mb-auto">
+                <div class="mb-3">
+                    <button class="bg-green w-100" (click)="updateInvite()">UPDATE INVITE</button>
+                </div>
+                <div>
+                    <button class="bg-orange w-100" (click)="resetInvite()">RESET INVITE</button>
+                </div>
+            </div>
         </div>
     </ng-template>
 </div>
