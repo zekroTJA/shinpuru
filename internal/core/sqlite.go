@@ -44,7 +44,7 @@ func (m *Sqlite) setup() {
 		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"`roleID` text NOT NULL DEFAULT ''," +
 		"`guildID` text NOT NULL DEFAULT ''," +
-		"`permission` int(11) NOT NULL DEFAULT '0'" +
+		"`permission` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -115,6 +115,14 @@ func (m *Sqlite) setup() {
 		"`content` text NOT NULL DEFAULT ''," +
 		"`created` bigint(20) NOT NULL DEFAULT 0," +
 		"`lastEdit` bigint(20) NOT NULL DEFAULT 0" +
+		");")
+	mErr.Append(err)
+
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
+		"`iid`  INTEGER PRIMARY KEY AUTOINCREMENT," +
+		"`sessionkey` text NOT NULL DEFAULT ''," +
+		"`userID` text NOT NULL DEFAULT ''," +
+		"`expires` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 		");")
 	mErr.Append(err)
 
@@ -223,29 +231,33 @@ func (m *Sqlite) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *Sqlite) GetMemberPermissionLevel(s *discordgo.Session, guildID string, memberID string) (int, error) {
+func (m *Sqlite) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (PermissionArray, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	member, err := s.GuildMember(guildID, memberID)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	maxPermLvl := 0
-	if lvl, ok := guildPerms[guildID]; ok {
-		maxPermLvl = lvl
-	}
+
+	var res PermissionArray
+	member.Roles = append(member.Roles, guildID)
 	for _, rID := range member.Roles {
-		if lvl, ok := guildPerms[rID]; ok && lvl > maxPermLvl {
-			maxPermLvl = lvl
+		if p, ok := guildPerms[rID]; ok {
+			if res == nil {
+				res = p
+			} else {
+				res = res.Merge(p)
+			}
 		}
 	}
-	return maxPermLvl, err
+
+	return res, nil
 }
 
-func (m *Sqlite) GetGuildPermissions(guildID string) (map[string]int, error) {
-	results := make(map[string]int)
+func (m *Sqlite) GetGuildPermissions(guildID string) (map[string]PermissionArray, error) {
+	results := make(map[string]PermissionArray)
 	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
 	if err != nil {
@@ -253,19 +265,25 @@ func (m *Sqlite) GetGuildPermissions(guildID string) (map[string]int, error) {
 	}
 	for rows.Next() {
 		var roleID string
-		var permission int
+		var permission string
 		err := rows.Scan(&roleID, &permission)
 		if err != nil {
 			return nil, err
 		}
-		results[roleID] = permission
+		results[roleID] = strings.Split(permission, ",")
 	}
 	return results, nil
 }
 
-func (m *Sqlite) SetGuildRolePermission(guildID, roleID string, permLvL int) error {
+func (m *Sqlite) SetGuildRolePermission(guildID, roleID string, p PermissionArray) error {
+	if len(p) == 0 {
+		_, err := m.DB.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
+		return err
+	}
+
+	pStr := strings.Join(p, ",")
 	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
-		permLvL, roleID, guildID)
+		pStr, roleID, guildID)
 	if err != nil {
 		return err
 	}
@@ -274,7 +292,7 @@ func (m *Sqlite) SetGuildRolePermission(guildID, roleID string, permLvL int) err
 			return err
 		}
 		_, err := m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
-			roleID, guildID, permLvL)
+			roleID, guildID, pStr)
 		return err
 	}
 	return nil
@@ -552,6 +570,10 @@ func (m *Sqlite) GetGuildJoinMsg(guildID string) (string, string, error) {
 	}
 
 	i := strings.Index(data, "|")
+	if i < 0 || len(data) < i+1 {
+		return "", "", nil
+	}
+
 	return data[:i], data[i+1:], nil
 }
 
@@ -569,6 +591,10 @@ func (m *Sqlite) GetGuildLeaveMsg(guildID string) (string, string, error) {
 	}
 
 	i := strings.Index(data, "|")
+	if i < 0 || len(data) < i+1 {
+		return "", "", nil
+	}
+
 	return data[:i], data[i+1:], nil
 }
 
@@ -714,6 +740,50 @@ func (m *Sqlite) GetGuildTags(guildID string) ([]*util.Tag, error) {
 
 func (m *Sqlite) DeleteTag(id snowflake.ID) error {
 	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *Sqlite) SetSession(key, userID string, expires time.Time) error {
+	res, err := m.DB.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
+	if ar, err := res.RowsAffected(); ar == 0 {
+		if err != nil {
+			return err
+		}
+		_, err := m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return err
+}
+
+func (m *Sqlite) GetSession(key string) (string, error) {
+	var userID string
+	var expires time.Time
+	err := m.DB.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
+		Scan(&userID, &expires)
+
+	if err == sql.ErrNoRows {
+		return "", ErrDatabaseNotFound
+	}
+	if err != nil {
+		return "", err
+	}
+
+	if expires.Before(time.Now()) {
+		return "", ErrDatabaseNotFound
+	}
+
+	return userID, nil
+}
+
+func (m *Sqlite) DeleteSession(userID string) error {
+	_, err := m.DB.Exec("DELETE FROM sessions WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}

@@ -63,38 +63,65 @@ func (c *CmdHandler) GetCommand(invoke string) (Command, bool) {
 	return cmd, ok
 }
 
-func (c *CmdHandler) UpdateCommandPermissions(perms map[string]int) {
-	for k, v := range perms {
-		if cmd, ok := c.registeredCmds[k]; ok {
-			cmd.SetPermission(v)
-		}
-	}
-}
-
 func (c *CmdHandler) GetCommandListLen() int {
 	return len(c.registeredCmdInstances)
 }
 
-func (c *CmdHandler) GetPermissionLevel(s *discordgo.Session, guildID, userID string) (int, error) {
-	guild, err := s.Guild(guildID)
-	if err != nil {
-		return 0, err
+func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (core.PermissionArray, error) {
+	if userID == c.config.Discord.OwnerID {
+		return core.PermissionArray{"+sp.*"}, nil
 	}
 
-	var permLvl = 0
-	if userID == c.config.Discord.OwnerID {
-		permLvl = util.PermLvlBotOwner
-	} else if userID == guild.OwnerID {
-		permLvl = util.PermLvlGuildOwner
-	} else {
-		permLvl, err = c.db.GetMemberPermissionLevel(s, guildID, userID)
+	if guildID != "" {
+		guild, err := s.Guild(guildID)
+		if err != nil {
+			return core.PermissionArray{}, nil
+		}
+
+		member, _ := s.GuildMember(guildID, userID)
+
+		if member != nil {
+			for _, r := range guild.Roles {
+				if r.Permissions&0x8 != 0 {
+					for _, mrID := range member.Roles {
+						if r.ID == mrID {
+							return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+						}
+					}
+				}
+			}
+		}
+
+		if userID == guild.OwnerID {
+			return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+		}
 	}
+
+	perm, err := c.db.GetMemberPermission(s, guildID, userID)
 
 	if err != nil && !core.IsErrDatabaseNotFound(err) {
-		return 0, err
+		return nil, err
 	}
 
-	return permLvl, nil
+	perm = perm.Merge(core.PermissionArray{
+		"+sp.etc.*",
+		"+sp.chat.*",
+		"-sp.chat.tag.create",
+		"-sp.chat.tag.delete",
+		"-sp.chat.vote.close",
+		"-sp.guild.mod.inviteblock.send",
+	})
+
+	return perm, nil
+}
+
+func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, error) {
+	perms, err := c.GetPermissions(s, guildID, userID)
+	if err != nil {
+		return false, err
+	}
+
+	return core.PermissionCheck(dn, perms), nil
 }
 
 func (c *CmdHandler) ExportCommandManual(fileName string) error {
@@ -133,11 +160,11 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 					"> %s\n\n"+
 					"| | |\n"+
 					"|---|---|\n"+
-					"| Permission | %d |\n"+
+					"| Domain Name | %s |\n"+
 					"| Group | %s |\n"+
 					"| Aliases | %s |\n\n"+
 					"**Usage**  \n"+
-					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetPermission(), cmd.GetGroup(), aliases, help)
+					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(), aliases, help)
 		}
 		document += "\n"
 	}
@@ -159,4 +186,8 @@ func (c *CmdHandler) AddNotifiedCommandMsg(msgID string) {
 
 func (c *CmdHandler) GetNotifiedCommandMsgs() *timedmap.TimedMap {
 	return c.notifiedCmdMsgs
+}
+
+func (c *CmdHandler) GetCmdInstances() []Command {
+	return c.registeredCmdInstances
 }

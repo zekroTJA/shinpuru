@@ -9,13 +9,13 @@ import (
 )
 
 type Report struct {
-	ID            snowflake.ID
-	Type          int
-	GuildID       string
-	ExecutorID    string
-	VictimID      string
-	Msg           string
-	AttachmehtURL string
+	ID            snowflake.ID `json:"id"`
+	Type          int          `json:"type"`
+	GuildID       string       `json:"guild_id"`
+	ExecutorID    string       `json:"executor_id"`
+	VictimID      string       `json:"victim_id"`
+	Msg           string       `json:"message"`
+	AttachmehtURL string       `json:"attachment_url"`
 }
 
 func (r *Report) GetTimestamp() time.Time {

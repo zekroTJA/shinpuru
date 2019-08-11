@@ -1,11 +1,15 @@
 package core
 
-import "io"
+import (
+	"io"
+)
 
 type ConfigDiscord struct {
 	Token         string
 	GeneralPrefix string
 	OwnerID       string
+	ClientID      string
+	ClientSecret  string
 }
 
 type ConfigDatabaseCreds struct {
@@ -25,12 +29,6 @@ type ConfigDatabaseType struct {
 	Sqlite *ConfigDatabaseFile
 }
 
-type ConfigPermissions struct {
-	BotOwnerLevel        int
-	GuildOwnerLevel      int
-	CustomCmdPermissions map[string]int
-}
-
 type ConfigLogging struct {
 	CommandLogging bool
 	LogLevel       int
@@ -40,13 +38,25 @@ type ConfigEtc struct {
 	TwitchAppID string
 }
 
+type ConfigWS struct {
+	Addr       string       `json:"addr"`
+	TLS        *ConfigWSTLS `json:"tls"`
+	PublicAddr string       `json:"publicaddr"`
+}
+
+type ConfigWSTLS struct {
+	Enabled bool   `json:"enabled"`
+	Cert    string `json:"certfile"`
+	Key     string `json:"keyfile"`
+}
+
 type Config struct {
-	Version     int `yaml:"configVersionPleaseDoNotChange"`
-	Discord     *ConfigDiscord
-	Database    *ConfigDatabaseType
-	Permissions *ConfigPermissions
-	Logging     *ConfigLogging
-	Etc         *ConfigEtc
+	Version   int `yaml:"configVersionPleaseDoNotChange"`
+	Discord   *ConfigDiscord
+	Database  *ConfigDatabaseType
+	Logging   *ConfigLogging
+	Etc       *ConfigEtc
+	WebServer *ConfigWS
 }
 
 type ConfigParser interface {
@@ -56,11 +66,9 @@ type ConfigParser interface {
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Version: 4,
+		Version: 5,
 		Discord: &ConfigDiscord{
-			Token:         "",
 			GeneralPrefix: "sp!",
-			OwnerID:       "",
 		},
 		Database: &ConfigDatabaseType{
 			Type:  "sqlite",
@@ -69,17 +77,17 @@ func NewDefaultConfig() *Config {
 				DBFile: "shinpuru.sqlite3.db",
 			},
 		},
-		Permissions: &ConfigPermissions{
-			BotOwnerLevel:   1000,
-			GuildOwnerLevel: 10,
-			CustomCmdPermissions: map[string]int{
-				"cmdinvoke": 0,
-			},
-		},
 		Logging: &ConfigLogging{
 			CommandLogging: true,
 			LogLevel:       4,
 		},
 		Etc: new(ConfigEtc),
+		WebServer: &ConfigWS{
+			Addr:       ":8080",
+			PublicAddr: "https://example.com:8080",
+			TLS: &ConfigWSTLS{
+				Enabled: false,
+			},
+		},
 	}
 }

@@ -1,0 +1,34 @@
+<div id="header" class="container-fluid">
+    <a class="d-flex" routerLink="/guilds">
+        <img id="sp-logo" class="avatar" src="/assets/shinpuru-logo.png" />
+        <h1 class="ml-3">SHINPURU</h1>
+    </a>
+    
+    <div class="routes">
+        <span *ngFor="let r of routes">
+            /
+            <a [routerLink]="r[1]">{{ r[0] }}</a>
+        </span>
+    </div>
+
+    <div *ngIf="selfUser" id="user-info" class="d-flex">
+        <app-popup *ngIf="popupVisible" class="logout-popup" [elements]="popupElements" (closing)="popupClose($event)"></app-popup>
+        <a class="logout-btn" (click)="popupVisible = true">&#9660;</a>
+        <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
+        <img class="avatar" [(src)]="selfUser.avatar_url" />
+    </div>
+</div>
+
+<ng-template #logout>
+    <div class="popup-entry">
+        <img src="/assets/logout.svg"/>
+        <p>logout</p>
+    </div>
+</ng-template>
+
+<ng-template #settings>
+    <div class="popup-entry">
+        <img src="/assets/settings.svg"/>
+        <p>bot settings</p>
+    </div>
+</ng-template>

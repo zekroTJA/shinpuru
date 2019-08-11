@@ -11,7 +11,6 @@ import (
 )
 
 type CmdInviteBlock struct {
-	PermLvl int
 }
 
 func (c *CmdInviteBlock) GetInvokes() []string {
@@ -23,7 +22,7 @@ func (c *CmdInviteBlock) GetDescription() string {
 }
 
 func (c *CmdInviteBlock) GetHelp() string {
-	return "`inv enable <permLvL>` - enable invite link blocking for members with permission level below passed level\n" +
+	return "`inv enable` - enable invite link blocking\n" +
 		"`inv disable` - disable link blocking"
 }
 
@@ -31,12 +30,8 @@ func (c *CmdInviteBlock) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdInviteBlock) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdInviteBlock) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdInviteBlock) GetDomainName() string {
+	return "sp.guild.mod.inviteblock"
 }
 
 func (c *CmdInviteBlock) Exec(args *CommandArgs) error {

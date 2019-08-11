@@ -1,0 +1,51 @@
+<div class="report-container">
+    <p class="type-heading" [style.background-color]="typeColor">
+        {{ report.type_name.toUpperCase() }}
+    </p>
+    <div class="inner-container">
+        <div class="row">
+            <div class="col">
+                <h4>Executor</h4>
+                <div *ngIf="executor;else executorid" class="d-flex">
+                    <img class="avi" [src]="executor?.avatar_url"/>
+                    <div>
+                        <p>{{ executor?.user.username }}#{{ executor?.user.discriminator }}</p>
+                        <p class="small">{{ report.executor_id }}</p>
+                    </div>
+                </div>
+                <ng-template #executorid><p>{{ report.executor_id }}</p></ng-template>
+            </div>
+            <div class="col">
+                <h4>Victim</h4>
+                <div *ngIf="victim;else victimid" class="d-flex">
+                    <img class="avi" [src]="victim?.avatar_url"/>
+                    <div>
+                        <p>{{ victim?.user.username }}#{{ victim?.user.discriminator }}</p>
+                        <p class="small">{{ report.victim_id }}</p>
+                    </div>
+                </div>
+                <ng-template #victimid><p>{{ report.victim_id }}</p></ng-template>
+            </div>
+        </div>
+    
+        <h4 class="mt-4">Reason</h4>
+        <p>{{ report.message }}</p>
+    
+        <div *ngIf="report.attachment_url">
+            <h4 class="mt-4">Attachment</h4>
+            <div *ngIf="isDiscordAttachment(report.attachment_url); else attachmentimage">
+                <p>
+                    The attachment is posed via Discord message attachment and can only been viewed inside the Discord client.
+                    Copy the link below and paste it inside the Discord chat to view the attachment image.
+                </p>
+                <input type="text" readonly class="url" (click)="$event.target.select()" value="{{ report.attachment_url }}" />
+            </div>
+            <ng-template #attachmentimage>
+                <img class="mw-100" [src]="report.attachment_url"/>
+            </ng-template>
+        </div>
+    
+        <p class="footer">Case-ID: {{ report.id }}&nbsp;&nbsp;|&nbsp;&nbsp;Created {{ dateFormat(report.created, 'yyyy.mm.dd - HH:MM:ss Z') }}</p>
+    </div>
+
+</div>

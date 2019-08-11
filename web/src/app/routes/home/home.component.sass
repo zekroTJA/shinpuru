@@ -1,0 +1,43 @@
+@import '../../../sass/vars'
+@import '../../../sass/mixins'
+    
+.guilds-list-container
+    display: flex
+    flex-wrap: wrap
+
+.guild-container
+    display: flex
+    background-color: $c-nqblack
+    width: fit-content
+    min-width: 300px
+    height: 60px
+    margin: 0 20px 20px 0
+    border-radius: 5px
+    overflow: hidden
+    cursor: pointer
+
+    +hover-btn
+
+    img
+        width: 60px
+        height: 60px
+        border-radius: 5px 0 0 5px
+
+    .info-container
+        padding: 10px 10px
+
+        h1
+            font-size: 18px
+        p
+            font-size: 14px
+            color: $c-font-gray
+
+
+.no-guilds
+    text-align: center
+    margin-top: 10vh
+
+    .guild-inv-container
+        width: 300px
+        background-color: $c-nqblack
+        border-radius: 5px

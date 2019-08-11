@@ -10,7 +10,6 @@ import (
 )
 
 type CmdId struct {
-	PermLvl int
 }
 
 func (c *CmdId) GetInvokes() []string {
@@ -29,12 +28,8 @@ func (c *CmdId) GetGroup() string {
 	return GroupEtc
 }
 
-func (c *CmdId) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdId) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdId) GetDomainName() string {
+	return "sp.etc.id"
 }
 
 func (c *CmdId) Exec(args *CommandArgs) error {

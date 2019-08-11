@@ -12,7 +12,6 @@ import (
 )
 
 type CmdLeaveMsg struct {
-	PermLvl int
 }
 
 func (c *CmdLeaveMsg) GetInvokes() []string {
@@ -34,12 +33,8 @@ func (c *CmdLeaveMsg) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdLeaveMsg) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdLeaveMsg) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdLeaveMsg) GetDomainName() string {
+	return "sp.guild.config.leavemsg"
 }
 
 func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {

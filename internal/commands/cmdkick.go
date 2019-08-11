@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type CmdKick struct {
-	PermLvl int
 }
 
 func (c *CmdKick) GetInvokes() []string {
@@ -29,12 +29,8 @@ func (c *CmdKick) GetGroup() string {
 	return GroupModeration
 }
 
-func (c *CmdKick) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdKick) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdKick) GetDomainName() string {
+	return "sp.guild.mod.kick"
 }
 
 func (c *CmdKick) Exec(args *CommandArgs) error {
@@ -115,34 +111,20 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep := &util.Report{
-				ID:            repID,
-				Type:          repType,
-				GuildID:       args.Guild.ID,
-				ExecutorID:    args.User.ID,
-				VictimID:      victim.User.ID,
-				Msg:           repMsg,
-				AttachmehtURL: attachment,
-			}
-			err = args.CmdHandler.db.AddReport(rep)
-			if err != nil {
-				util.SendEmbedError(args.Session, args.Channel.ID,
-					"Failed creating report: ```\n"+err.Error()+"\n```")
-				return
-			}
-			args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
-			if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
-				args.Session.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
-			}
-			dmChan, err := args.Session.UserChannelCreate(victim.User.ID)
-			if err == nil {
-				args.Session.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
-			}
-			err = args.Session.GuildMemberDeleteWithReason(args.Guild.ID, victim.User.ID, repMsg)
+			rep, err := shared.PushKick(
+				args.Session,
+				args.CmdHandler.db,
+				args.Guild.ID,
+				args.User.ID,
+				victim.User.ID,
+				repMsg,
+				attachment)
+
 			if err != nil {
 				util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed kicking member: ```\n"+err.Error()+"\n```")
-				return
+			} else {
+				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
 			}
 		},
 	}

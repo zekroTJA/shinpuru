@@ -1,0 +1,175 @@
+<div>
+    <app-spinner id="spinner-load-guild" [started]="true"></app-spinner>
+    <div *ngIf="guild">
+
+        <!-- HEADING -->
+        <div id="heading-container">
+            <img [src]="guild.icon ? guild.icon_url : '/assets/dc-logo.svg'"/>
+            <h3>{{ guild.name }}</h3>
+            <p class="embeded">{{ guild.id }}</p>
+        </div>
+
+        <!-- LOGGED IN MEMBER INFO -->
+        <div id="user-info" class="mb-4">
+            <img [src]="guild.self_member.avatar_url"/>
+            <a class="info-container" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
+                <div class="d-flex overflow-wrap">
+                    <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
+                    <p class="embeded">{{ guild.self_member.user.id }}</p>
+                </div>
+                <div class="d-flex mt-2">
+                    <div *ngFor="let r of userRoles">
+                        <app-rolebadge [role]="r"></app-rolebadge>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- GUILD MEMBERS -->
+        <div class="d-flex">
+            <app-spoiler [(ngModel)]="guildToggle"><h4 class="ml-3">GUILD MEMBERS</h4></app-spoiler>
+        </div>
+        <div *ngIf="guildToggle">
+            <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
+            <div id="users-container" class="d-flex overflow-wrap mt-3">
+                <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+            </div>
+        </div>
+
+        <!-- MOD LOG -->
+        <div class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="modlogToggle"><h4 class="ml-3">MOD LOG</h4></app-spoiler>
+        </div>
+        <div *ngIf="modlogToggle">
+            <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
+            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+        </div>
+
+        <!-- GUILD SETTINGS -->
+        <div *ngIf="guildSettingsAllowed && guildSettingsAllowed.length" class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
+        </div>
+        <div *ngIf="guildSettingsToggle">
+            <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">
+                <h5>Prefix</h5>
+                <div class="d-flex">
+                    <input type="text" [(ngModel)]="settings.prefix" (input)="updatedSettings.prefix = $event.target.value" placeholder="unset"/>
+                    <button (click)="settings.prefix = ''; updatedSettings.prefix = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.autorole')" class="settingsTile">
+                <h5>Autorole</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.autorole" (input)="updatedSettings.autorole = getSelectedValue($event)">
+                        <option *ngFor="let r of guild.roles" [ngValue]="r.id">{{ r.name }}</option>
+                    </select>
+                    <button (click)="settings.autorole = '__RESET__'; updatedSettings.autorole = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.modlog')" class="settingsTile">
+                <h5>Modlog Channel</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.modlogchannel" (input)="updatedSettings.modlogchannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <button (click)="settings.modlogchannel = '__RESET__'; updatedSettings.modlogchannel = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.voicelog')" class="settingsTile">
+                <h5>Voicelog Channel</h5>
+                <div class="d-flex">
+                    <select [(ngModel)]="settings.voicelogchannel" (input)="updatedSettings.voicelogchannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <button (click)="settings.voicelogchannel = '__RESET__'; updatedSettings.voicelogchannel = '__RESET__'">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.joinmsg')" class="settingsTile">
+                <h5>Join Message</h5>
+                <i>
+                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the joined user.
+                </i>
+                <div class="d-flex mt-3">
+                    <select [(ngModel)]="settings.joinmessagechannel" (input)="updatedSettings.joinmessagechannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        [(ngModel)]="settings.joinmessagetext" 
+                        (input)="updatedSettings.joinmessagetext = $event.target.value" 
+                        placeholder="message text"
+                        class="ml-3 message-inpt"
+                    />
+                    <button (click)="
+                        settings.joinmessagechannel = ''; 
+                        settings.joinmessagetext = ''; 
+                        updatedSettings.joinmessagechannel = '__RESET__';
+                        updatedSettings.joinmessagetext = '__RESET__';
+                    ">RESET</button>
+                </div>
+            </div>
+            <div *ngIf="guildSettingsContains('sp.guild.config.leavemsg')" class="settingsTile">
+                <h5>Leave Message</h5>
+                <i>
+                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the left user.
+                </i>
+                <div class="d-flex mt-3">
+                    <select [(ngModel)]="settings.leavemessagechannel" (input)="updatedSettings.leavemessagechannel = getSelectedValue($event)">
+                        <option *ngFor="let c of channelsByType(guild.channels, 0)" [ngValue]="c.id">#{{ c.name }}</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        [(ngModel)]="settings.leavemessagetext" 
+                        (input)="updatedSettings.leavemessagetext = $event.target.value" 
+                        placeholder="message text"
+                        class="ml-3 message-inpt"
+                    />
+                    <button (click)="
+                        settings.leavemessagechannel = ''; 
+                        settings.leavemessagetext = ''; 
+                        updatedSettings.leavemessagechannel = '__RESET__';
+                        updatedSettings.leavemessagetext = '__RESET__';
+                    ">RESET</button>
+                </div>
+            </div>
+            <button class="btn-save" (click)="saveGuildSettings()">SAVE SETTINGS</button>
+        </div>
+
+        <!-- PERMISSION SETTINGS -->
+        <div *ngIf="guildSettingsContains('sp.guild.config.perms')" class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">PERMISSIONS</h4></app-spoiler>
+        </div>
+        <div *ngIf="permissionsToggle">
+            <i>
+                <a href="https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md" target="_blank" class="link">Here</a> you can find the documentation about how the 
+                permission system works.
+            </i>
+            <div class="mb-3 mt-2 add-permission d-flex">
+                <div>
+                    <h6>Add Permission Rule</h6>
+                    <div class="d-flex my-2">
+                        <select [(ngModel)]="addPermissionAllow" class="mr-2">
+                            <option [ngValue]="true">allow (+)</option>
+                            <option [ngValue]="false">deny (-)</option>
+                        </select>
+                        <p class="mb-0 mr-2">sp.</p>
+                        <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/>
+                    </div>
+                    <app-tags [available]="guild.roles" [formatter]="roleNameFormatter" placeholder="role name" [(ngModel)]="addPermissionRoles"></app-tags>
+                </div>
+                <button class="ml-auto mb-auto" (click)="addPermissionRule()">ADD RULE</button>
+            </div>
+            <div *ngFor="let p of objectAsArray(settings?.perms)" class="permission-view">
+                <p class="embeded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
+                <ul>
+                    <li *ngFor="let perm of p.perms">
+                        <div class="d-flex">
+                            <p class="embeded" [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'">{{ perm }}</p>
+                            <a class="remove-btn" (click)="removePermission(p, perm)"></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

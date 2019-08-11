@@ -10,7 +10,6 @@ import (
 )
 
 type CmdModlog struct {
-	PermLvl int
 }
 
 func (c *CmdModlog) GetInvokes() []string {
@@ -31,12 +30,8 @@ func (c *CmdModlog) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdModlog) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdModlog) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdModlog) GetDomainName() string {
+	return "sp.guild.config.modlog"
 }
 
 func (c *CmdModlog) Exec(args *CommandArgs) error {

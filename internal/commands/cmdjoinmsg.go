@@ -12,7 +12,6 @@ import (
 )
 
 type CmdJoinMsg struct {
-	PermLvl int
 }
 
 func (c *CmdJoinMsg) GetInvokes() []string {
@@ -34,12 +33,8 @@ func (c *CmdJoinMsg) GetGroup() string {
 	return GroupGuildConfig
 }
 
-func (c *CmdJoinMsg) GetPermission() int {
-	return c.PermLvl
-}
-
-func (c *CmdJoinMsg) SetPermission(permLvl int) {
-	c.PermLvl = permLvl
+func (c *CmdJoinMsg) GetDomainName() string {
+	return "sp.guild.config.joinmsg"
 }
 
 func (c *CmdJoinMsg) Exec(args *CommandArgs) error {

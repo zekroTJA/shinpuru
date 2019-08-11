@@ -1,0 +1,72 @@
+@import '../../../sass/vars'
+@import '../../../sass/mixins'
+    
+.logout-popup
+    position: absolute
+    z-index: 10
+    transform: translateY(30px)
+
+.popup-entry
+    display: flex
+
+    p
+        margin-left: 10px
+        margin-right: 0 !important
+
+    img
+        width: 15px
+        height: 15px
+        +my-auto
+
+#header
+    height: 50px
+    display: flex
+    background-color: $c-nqblack
+    padding: 10px 10px
+
+    h1
+        font-size: 26px
+        +my-auto
+
+    .avatar
+        height: 30px
+        width: 30px
+        +round
+        +my-auto
+
+    #heading
+        font-size: 25px
+        +my-auto
+
+    #user-info
+        margin-right: 0
+        margin-left: auto
+
+        .logout-btn
+            font-size: 12px;
+            margin-right: 10px;
+            border-radius: 3px;
+            background-color: rgba(0, 0, 0, .4)
+            padding: 5px 10px;
+            cursor: pointer
+            +my-auto
+
+        p
+            +my-auto
+            margin-right: 15px
+
+    .routes
+        display: flex
+        margin-left: 20px
+
+        a
+            padding: 3px 6px
+            background-color: rgba(0, 0, 0, .3)
+            margin-right: 5px
+            border-radius: 5px
+
+
+@media only screen and (max-width: 900px)
+    #header
+        .routes 
+            display: none
