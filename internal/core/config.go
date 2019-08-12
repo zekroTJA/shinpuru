@@ -2,6 +2,8 @@ package core
 
 import (
 	"io"
+
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ConfigDiscord struct {
@@ -39,6 +41,7 @@ type ConfigEtc struct {
 }
 
 type ConfigWS struct {
+	Enabled    bool         `json:"enabled"`
 	Addr       string       `json:"addr"`
 	TLS        *ConfigWSTLS `json:"tls"`
 	PublicAddr string       `json:"publicaddr"`
@@ -50,13 +53,19 @@ type ConfigWSTLS struct {
 	Key     string `json:"keyfile"`
 }
 
+type ConfigPermissions struct {
+	DefaultUserRules  []string `json:"defaultuserrules"`
+	DefaultAdminRules []string `json:"defaultadminrules"`
+}
+
 type Config struct {
-	Version   int `yaml:"configVersionPleaseDoNotChange"`
-	Discord   *ConfigDiscord
-	Database  *ConfigDatabaseType
-	Logging   *ConfigLogging
-	Etc       *ConfigEtc
-	WebServer *ConfigWS
+	Version     int `yaml:"configVersionPleaseDoNotChange"`
+	Discord     *ConfigDiscord
+	Permissions *ConfigPermissions
+	Database    *ConfigDatabaseType
+	Logging     *ConfigLogging
+	Etc         *ConfigEtc
+	WebServer   *ConfigWS
 }
 
 type ConfigParser interface {
@@ -69,6 +78,10 @@ func NewDefaultConfig() *Config {
 		Version: 5,
 		Discord: &ConfigDiscord{
 			GeneralPrefix: "sp!",
+		},
+		Permissions: &ConfigPermissions{
+			DefaultUserRules:  util.DefaultUserRules,
+			DefaultAdminRules: util.DefaultAdminRules,
 		},
 		Database: &ConfigDatabaseType{
 			Type:  "sqlite",
@@ -83,6 +96,7 @@ func NewDefaultConfig() *Config {
 		},
 		Etc: new(ConfigEtc),
 		WebServer: &ConfigWS{
+			Enabled:    true,
 			Addr:       ":8080",
 			PublicAddr: "https://example.com:8080",
 			TLS: &ConfigWSTLS{

@@ -32,11 +32,14 @@ type CmdHandler struct {
 	bck    *core.GuildBackups
 	lct    *core.LCTimer
 
+	defAdminRules core.PermissionArray
+	defUserRules  core.PermissionArray
+
 	notifiedCmdMsgs *timedmap.TimedMap
 }
 
 func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *CmdHandler {
-	return &CmdHandler{
+	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
 		db:                     db,
@@ -45,7 +48,20 @@ func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, 
 		lct:                    lct,
 		bck:                    core.NewGuildBackups(s, db),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
+		defAdminRules:          util.DefaultAdminRules,
+		defUserRules:           util.DefaultUserRules,
 	}
+
+	if config.Permissions != nil {
+		if config.Permissions.DefaultAdminRules != nil {
+			cmd.defAdminRules = config.Permissions.DefaultAdminRules
+		}
+		if config.Permissions.DefaultUserRules != nil {
+			cmd.defUserRules = config.Permissions.DefaultUserRules
+		}
+	}
+
+	return cmd
 }
 
 func (c *CmdHandler) RegisterCommand(cmd Command) {
@@ -85,7 +101,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 				if r.Permissions&0x8 != 0 {
 					for _, mrID := range member.Roles {
 						if r.ID == mrID {
-							return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+							return c.defAdminRules, nil
 						}
 					}
 				}
@@ -93,7 +109,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		}
 
 		if userID == guild.OwnerID {
-			return core.PermissionArray{"+sp.guild.*", "+sp.etc.*", "+sp.chat.*"}, nil
+			return c.defAdminRules, nil
 		}
 	}
 
@@ -103,14 +119,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		return nil, err
 	}
 
-	perm = perm.Merge(core.PermissionArray{
-		"+sp.etc.*",
-		"+sp.chat.*",
-		"-sp.chat.tag.create",
-		"-sp.chat.tag.delete",
-		"-sp.chat.vote.close",
-		"-sp.guild.mod.inviteblock.send",
-	})
+	perm = perm.Merge(c.defUserRules)
 
 	return perm, nil
 }

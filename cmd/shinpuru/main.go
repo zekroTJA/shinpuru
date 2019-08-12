@@ -10,7 +10,6 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
-	"github.com/zekroTJA/shinpuru/internal/webserver"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
@@ -62,9 +61,7 @@ func main() {
 		session.Close()
 	}()
 
-	ws := webserver.NewWebServer(database, session, cmdHandler, config, config.Discord.ClientID, config.Discord.ClientSecret)
-	go ws.ListenAndServeBlocking()
-	util.Log.Info("Web server running on address %s (%s)...", config.WebServer.Addr, config.WebServer.PublicAddr)
+	inits.InitWebServer(session, database, cmdHandler, config)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)
