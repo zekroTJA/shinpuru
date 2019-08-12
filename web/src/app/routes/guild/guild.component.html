@@ -13,11 +13,11 @@
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>
             <a class="info-container" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
-                <div class="d-flex overflow-wrap">
+                <div class="d-flex">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
                     <p class="embeded">{{ guild.self_member.user.id }}</p>
                 </div>
-                <div class="d-flex mt-2">
+                <div class="d-flex mt-2 overflow-wrap">
                     <div *ngFor="let r of userRoles">
                         <app-rolebadge [role]="r"></app-rolebadge>
                     </div>

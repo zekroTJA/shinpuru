@@ -75,7 +75,7 @@
                 <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
             </div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex overflow-wrap">
             <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
         </div>
 
