@@ -67,4 +67,19 @@ var (
 	}
 
 	ReportRevokedColor = 0x9C27B0
+
+	DefaultAdminRules = []string{
+		"+sp.guild.*",
+		"+sp.etc.*",
+		"+sp.chat.*",
+	}
+
+	DefaultUserRules = []string{
+		"+sp.etc.*",
+		"+sp.chat.*",
+		"-sp.chat.tag.create",
+		"-sp.chat.tag.delete",
+		"-sp.chat.vote.close",
+		"-sp.guild.mod.inviteblock.send",
+	}
 )
