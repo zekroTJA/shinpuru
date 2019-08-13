@@ -39,10 +39,10 @@ export class CacheBucket<TKey, TVal> {
     this.cache = new Map();
   }
 
-  public putFromPipe = (key: TKey) => <T>(source: Observable<T>) =>
-    new Observable<T>((observer) => {
+  public putFromPipe = (key: TKey) => (source: Observable<TVal>) =>
+    new Observable<TVal>((observer) => {
       return source.subscribe({
-        next: (x) => {
+        next: (x: TVal) => {
           this.put(key, x);
           observer.next(x);
         },
