@@ -29,7 +29,7 @@
         <div class="d-flex">
             <app-spoiler [(ngModel)]="guildToggle">
                 <h4 class="mx-3">GUILD MEMBERS</h4>
-                <p class="cbadge">{{ guildToggle ? (membersShown.length + ' / ' + members.length) : members.length }}</p>
+                <p class="cbadge">{{ guildToggle ? (membersShown?.length + ' / ' + members?.length) : members?.length }}</p>
             </app-spoiler>
         </div>
         <div *ngIf="guildToggle">
@@ -51,7 +51,7 @@
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="modlogToggle">
                 <h4 class="mx-3">MOD LOG</h4>
-                <p class="cbadge">{{ modlogToggle ? (reportsShown.length + ' / ' + reports.length) : reports.length }}</p>
+                <p class="cbadge">{{ modlogToggle ? (reportsShown?.length + ' / ' + reports?.length) : reports?.length }}</p>
             </app-spoiler>
         </div>
         <div *ngIf="modlogToggle">
