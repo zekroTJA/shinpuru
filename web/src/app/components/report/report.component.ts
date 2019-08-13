@@ -15,19 +15,20 @@ const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 export class ReportComponent implements OnInit {
   @Input() public report: Report;
   @Input() public victim: Member;
-
-  public executor: Member;
+  @Input() public executor: Member;
 
   public dateFormat = dateFormat;
 
   constructor(private api: APIService) {}
 
   ngOnInit() {
-    this.api
-      .getGuildMember(this.report.guild_id, this.report.executor_id, true)
-      .subscribe((u) => {
-        this.executor = u;
-      });
+    if (!this.executor) {
+      this.api
+        .getGuildMember(this.report.guild_id, this.report.executor_id, true)
+        .subscribe((u) => {
+          this.executor = u;
+        });
+    }
 
     if (!this.victim) {
       this.api
