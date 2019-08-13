@@ -14,7 +14,6 @@ import {
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
-import { environment } from 'src/environments/environment';
 
 interface Perms {
   id: string;
