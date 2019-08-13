@@ -27,22 +27,42 @@
 
         <!-- GUILD MEMBERS -->
         <div class="d-flex">
-            <app-spoiler [(ngModel)]="guildToggle"><h4 class="ml-3">GUILD MEMBERS</h4></app-spoiler>
+            <app-spoiler [(ngModel)]="guildToggle">
+                <h4 class="mx-3">GUILD MEMBERS</h4>
+                <p class="cbadge">{{ guildToggle ? (membersShown.length + ' / ' + members.length) : members.length }}</p>
+            </app-spoiler>
         </div>
         <div *ngIf="guildToggle">
             <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
             <div id="users-container" class="d-flex overflow-wrap mt-3">
-                <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+                <app-member *ngFor="let m of membersShown" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+            </div>
+            <i *ngIf="membersShown.length == 0 && isSearchInput">Too many results</i>
+            <div class="d-flex">
+                <button *ngIf="
+                        members.length > MAX_SHOWN_USERS && 
+                        membersShown.length != members.length && 
+                        !isSearchInput
+                    " (click)="displayMoreUsers()" class="display-more-btn">DISPLAY MORE...</button>
             </div>
         </div>
 
         <!-- MOD LOG -->
         <div class="d-flex mt-4 mb-2">
-            <app-spoiler [(ngModel)]="modlogToggle"><h4 class="ml-3">MOD LOG</h4></app-spoiler>
+            <app-spoiler [(ngModel)]="modlogToggle">
+                <h4 class="mx-3">MOD LOG</h4>
+                <p class="cbadge">{{ modlogToggle ? (reportsShown.length + ' / ' + reports.length) : reports.length }}</p>
+            </app-spoiler>
         </div>
         <div *ngIf="modlogToggle">
             <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
-            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+            <app-report *ngFor="let rep of reportsShown" [report]="rep"></app-report>
+            <div class="d-flex">
+                <button *ngIf="
+                        reports.length > MAX_SHOWN_MODLOG && 
+                        reportsShown.length != reports.length
+                    " (click)="displayMoreReports()" class="display-more-btn">DISPLAY MORE...</button>
+            </div>
         </div>
 
         <!-- GUILD SETTINGS -->
