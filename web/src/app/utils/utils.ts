@@ -1,6 +1,6 @@
 /** @format */
 
-import { Role } from '../api/api.models';
+import { Role, Member } from '../api/api.models';
 
 /** @format */
 
@@ -31,4 +31,19 @@ export function topRole(roles: Role[], roleIDs: string[]): Role {
     .slice(1)
     .forEach((r) => (top = r && r.position > top.position ? r : top));
   return top;
+}
+
+export function rolePosDiff(roles: Role[], m1: Member, m2: Member): number {
+  const rm1 = roles
+    .filter((r) => m1.roles.includes(r.id))
+    .sort((a, b) => b.position - a.position)[0];
+  const rm2 = roles
+    .filter((r) => m2.roles.includes(r.id))
+    .sort((a, b) => b.position - a.position)[0];
+
+  if (!rm1 || !rm2) {
+    return null;
+  }
+
+  return rm1.position - rm2.position;
 }

@@ -36,6 +36,7 @@ export class APIService {
 
   private cacheMembers = new CacheBucket<string, Member>(10 * 60 * 1000);
   private cacheUsers = new CacheBucket<string, User>(10 * 60 * 1000);
+  private cacheGuilds = new CacheBucket<string, Guild>(30 * 1000);
 
   private errorCatcher = (err) => {
     console.error(err);
@@ -81,9 +82,17 @@ export class APIService {
   }
 
   public getGuild(id: string): Observable<Guild> {
+    const g = this.cacheGuilds.get(id);
+    if (g) {
+      return of(g);
+    }
+
     return this.http
       .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
-      .pipe(catchError(this.errorCatcher));
+      .pipe(
+        this.cacheGuilds.putFromPipe(id),
+        catchError(this.errorCatcher)
+      );
   }
 
   public getGuildMember(

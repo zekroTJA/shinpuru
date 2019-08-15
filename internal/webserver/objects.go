@@ -30,8 +30,9 @@ type User struct {
 type Member struct {
 	*discordgo.Member
 
-	AvatarURL string    `json:"avatar_url"`
-	CreatedAt time.Time `json:"created_at"`
+	AvatarURL  string    `json:"avatar_url"`
+	CreatedAt  time.Time `json:"created_at"`
+	MaxRolePos int       `json:"max_role_position"`
 }
 
 type Guild struct {
