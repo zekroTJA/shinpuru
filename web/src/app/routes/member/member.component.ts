@@ -14,6 +14,7 @@ import {
 import dateFormat from 'dateformat';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from 'src/app/components/toast/toast.service';
+import { rolePosDiff } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-member-route',
@@ -27,6 +28,8 @@ export class MemberRouteComponent {
 
   public reports: Report[];
   public permissionsAllowed: string[] = [];
+
+  public roleDiff: number;
 
   public dateFormat = dateFormat;
 
@@ -52,14 +55,14 @@ export class MemberRouteComponent {
     this.api.getGuildMember(guildID, memberID).subscribe((member) => {
       this.member = member;
       if (this.guild) {
-        this.spinner.stop('spinner-load-member');
+        this.ready();
       }
     });
 
     this.api.getGuild(guildID).subscribe((guild) => {
       this.guild = guild;
       if (this.member) {
-        this.spinner.stop('spinner-load-member');
+        this.ready();
       }
 
       this.api
@@ -74,6 +77,16 @@ export class MemberRouteComponent {
     });
 
     this.fetchReports(guildID, memberID);
+  }
+
+  private ready() {
+    this.roleDiff = rolePosDiff(
+      this.guild.roles,
+      this.guild.self_member,
+      this.member
+    );
+    console.log(this.roleDiff);
+    this.spinner.stop('spinner-load-member');
   }
 
   public get memberRoles(): Role[] {
