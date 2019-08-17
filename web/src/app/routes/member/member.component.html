@@ -122,13 +122,15 @@
                 </button>
                 <button *ngIf="
                     hasPermission('sp.guild.mod.kick') && 
-                    roleDiff > 0 && guild.self_member.dominance >= member.dominance
+                    (!roleDiff || roleDiff > 0) && 
+                    guild.self_member.dominance >= member.dominance
                 " class="bg-orange" (click)="kick()">
                     KICK
                 </button>
                 <button *ngIf="
-                    hasPermission('sp.guild.mod.ban') &&
-                    roleDiff > 0 && guild.self_member.dominance >= member.dominance
+                    hasPermission('sp.guild.mod.kick') && 
+                    (!roleDiff || roleDiff > 0) && 
+                    guild.self_member.dominance >= member.dominance
                 " class="bg-red" (click)="ban()">
                     BAN
                 </button>
