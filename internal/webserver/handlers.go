@@ -80,6 +80,8 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
+	guild.Members, _ = ws.session.GuildMembers(guildID, "", 1000)
+
 	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
 }
 
