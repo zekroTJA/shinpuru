@@ -37,7 +37,9 @@ export class SettingsComponent {
           : [];
 
         this.inviteSettings = inviteSettings;
-        this.inviteSettingsFields.guild_id = inviteSettings.guild.id;
+        this.inviteSettingsFields.guild_id = inviteSettings.guild
+          ? inviteSettings.guild.id
+          : '';
         this.inviteSettingsFields.invite_code =
           invUrlSplit[invUrlSplit.length - 1];
         this.inviteSettingsFields.message = inviteSettings.message;

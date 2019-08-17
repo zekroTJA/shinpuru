@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, share } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   User,
@@ -21,6 +21,7 @@ import {
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
+import { CacheBucket } from './api.cache';
 
 /** @format */
 
@@ -32,6 +33,10 @@ export class APIService {
   private defopts = {
     withCredentials: true,
   };
+
+  private cacheMembers = new CacheBucket<string, Member>(10 * 60 * 1000);
+  private cacheUsers = new CacheBucket<string, User>(10 * 60 * 1000);
+  private cacheGuilds = new CacheBucket<string, Guild>(30 * 1000);
 
   private errorCatcher = (err) => {
     console.error(err);
@@ -50,7 +55,13 @@ export class APIService {
   }
 
   public getSelfUser(): Observable<User> {
+    const u = this.cacheUsers.get('me');
+    if (u) {
+      return of(u);
+    }
+
     return this.http.get<User>(this.rootURL + '/api/me', this.defopts).pipe(
+      this.cacheUsers.putFromPipe('me'),
       catchError((err) => {
         if (err.status !== 401) {
           return this.errorCatcher(err);
@@ -71,9 +82,17 @@ export class APIService {
   }
 
   public getGuild(id: string): Observable<Guild> {
+    const g = this.cacheGuilds.get(id);
+    if (g) {
+      return of(g);
+    }
+
     return this.http
       .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
-      .pipe(catchError(this.errorCatcher));
+      .pipe(
+        this.cacheGuilds.putFromPipe(id),
+        catchError(this.errorCatcher)
+      );
   }
 
   public getGuildMember(
@@ -81,12 +100,20 @@ export class APIService {
     memberID: string,
     ignoreError: boolean = false
   ): Observable<Member> {
+    const m = this.cacheMembers.get(memberID);
+    if (m) {
+      return of(m);
+    }
+
     return this.http
       .get<Member>(
         this.rootURL + '/api/guilds/' + guildID + '/' + memberID,
         this.defopts
       )
-      .pipe(catchError(ignoreError ? (err) => of(null) : this.errorCatcher));
+      .pipe(
+        this.cacheMembers.putFromPipe(memberID),
+        catchError(ignoreError ? (err) => of(null) : this.errorCatcher)
+      );
   }
 
   public getPermissions(guildID: string, userID: string): Observable<string[]> {
