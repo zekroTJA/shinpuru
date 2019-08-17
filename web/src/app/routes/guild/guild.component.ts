@@ -65,11 +65,11 @@ export class GuildComponent {
     this.api.getGuild(guildID).subscribe((guild) => {
       this.guild = guild;
 
-      this.guild.members = this.guild.members.sort(
-        (a, b) =>
-          topRole(guild.roles, b.roles).position -
-          topRole(guild.roles, a.roles).position
-      );
+      // this.guild.members = this.guild.members.sort(
+      //   (a, b) =>
+      //     topRole(guild.roles, b.roles).position -
+      //     topRole(guild.roles, a.roles).position
+      // );
 
       this.members = this.guild.members.filter(
         (m) => m.user.id !== this.guild.self_member.user.id
