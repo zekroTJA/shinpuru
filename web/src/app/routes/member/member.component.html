@@ -115,6 +115,7 @@
 
         <div *ngIf="member.user.id !== guild.self_member.user.id" class="mt-4 mb-2">
             <h4>Moderation</h4>
+            <app-spinner id="spinner-load-modbuttons" *ngIf="!perm" [started]="true"></app-spinner>
             <div class="mod-buttons">
                 <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
                     REPORT
