@@ -80,7 +80,7 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, GuildFromGuild(guild, memb), fasthttp.StatusOK)
+	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
@@ -95,12 +95,28 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
+	guild, err := ws.session.Guild(guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
 	memb, _ = ws.session.GuildMember(guildID, memberID)
 	if memb == nil {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	return jsonResponse(ctx, MemberFromMember(memb), fasthttp.StatusOK)
+	mm := MemberFromMember(memb)
+
+	switch {
+	case util.IsAdmin(guild, memb):
+		mm.Dominance = 1
+	case guild.OwnerID == memberID:
+		mm.Dominance = 2
+	case ws.cmdhandler.IsBotOwner(memberID):
+		mm.Dominance = 3
+	}
+
+	return jsonResponse(ctx, mm, fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
@@ -729,7 +745,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	}
 
 	res := &InviteSettingsResponse{
-		Guild:     GuildFromGuild(guild, nil),
+		Guild:     GuildFromGuild(guild, nil, nil),
 		Message:   message,
 		InviteURL: fmt.Sprintf("https://discord.gg/%s", inviteCode),
 	}

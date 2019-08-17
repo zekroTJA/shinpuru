@@ -37,6 +37,7 @@ export interface Member {
   avatar_url?: string;
   roles: string[];
   created_at?: string;
+  dominance?: number;
 }
 
 export interface Channel {
