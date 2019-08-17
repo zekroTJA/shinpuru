@@ -61,7 +61,7 @@
 
     <!-- ------------------------------------------------------- -->
 
-    <app-spinner id="spinner-load-member" [started]="true"></app-spinner>
+    <app-spinner *ngIf="!member && !guild" id="spinner-load-member" [started]="true"></app-spinner>
     <div *ngIf="member && guild">
 
         <div id="heading-container">

@@ -85,7 +85,6 @@ export class MemberRouteComponent {
       this.guild.self_member,
       this.member
     );
-    this.spinner.stop('spinner-load-member');
   }
 
   public get memberRoles(): Role[] {

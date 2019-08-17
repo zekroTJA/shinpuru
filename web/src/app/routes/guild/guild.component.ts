@@ -85,8 +85,6 @@ export class GuildComponent {
             a.startsWith('sp.guild.config')
           );
         });
-
-      this.spinner.stop('spinner-load-guild');
     });
 
     this.api.getGuildSettings(guildID).subscribe((settings) => {
