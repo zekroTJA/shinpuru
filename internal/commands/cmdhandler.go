@@ -83,8 +83,12 @@ func (c *CmdHandler) GetCommandListLen() int {
 	return len(c.registeredCmdInstances)
 }
 
+func (c *CmdHandler) IsBotOwner(userID string) bool {
+	return userID == c.config.Discord.OwnerID
+}
+
 func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (core.PermissionArray, error) {
-	if userID == c.config.Discord.OwnerID {
+	if c.IsBotOwner(userID) {
 		return core.PermissionArray{"+sp.*"}, nil
 	}
 
@@ -97,14 +101,8 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		member, _ := s.GuildMember(guildID, userID)
 
 		if member != nil {
-			for _, r := range guild.Roles {
-				if r.Permissions&0x8 != 0 {
-					for _, mrID := range member.Roles {
-						if r.ID == mrID {
-							return c.defAdminRules, nil
-						}
-					}
-				}
+			if util.IsAdmin(guild, member) {
+				return c.defAdminRules, nil
 			}
 		}
 

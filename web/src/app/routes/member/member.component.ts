@@ -85,7 +85,6 @@ export class MemberRouteComponent {
       this.guild.self_member,
       this.member
     );
-    console.log(this.roleDiff);
     this.spinner.stop('spinner-load-member');
   }
 

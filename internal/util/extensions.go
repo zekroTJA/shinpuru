@@ -64,6 +64,20 @@ func GetDiscordSnowflakeCreationTime(snowflake string) (time.Time, error) {
 	return time.Unix(timestamp/1000, timestamp), nil
 }
 
+func IsAdmin(g *discordgo.Guild, m *discordgo.Member) bool {
+	for _, r := range g.Roles {
+		if r.Permissions&0x8 != 0 {
+			for _, mrID := range m.Roles {
+				if r.ID == mrID {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
 // RolePosDiff : m1 position - m2 position
 func RolePosDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild) int {
 	m1MaxPos, m2MaxPos := -1, -1

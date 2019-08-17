@@ -1,5 +1,5 @@
 <div>
-    <app-spinner id="spinner-load-guild" [started]="true"></app-spinner>
+    <app-spinner *ngIf="guild && member" id="spinner-load-guild" [started]="true"></app-spinner>
     <div *ngIf="guild">
 
         <!-- HEADING -->

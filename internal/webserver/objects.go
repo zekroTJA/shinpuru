@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/commands"
+
 	routing "github.com/qiangxue/fasthttp-routing"
 
 	"github.com/valyala/fasthttp"
@@ -30,9 +32,9 @@ type User struct {
 type Member struct {
 	*discordgo.Member
 
-	AvatarURL  string    `json:"avatar_url"`
-	CreatedAt  time.Time `json:"created_at"`
-	MaxRolePos int       `json:"max_role_position"`
+	AvatarURL string    `json:"avatar_url"`
+	CreatedAt time.Time `json:"created_at"`
+	Dominance int       `json:"dominance"`
 }
 
 type Guild struct {
@@ -119,15 +121,26 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 	return true, nil
 }
 
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member) *Guild {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler) *Guild {
 	membs := make([]*Member, len(g.Members))
 	for i, m := range g.Members {
 		membs[i] = MemberFromMember(m)
 	}
 
+	selfmm := MemberFromMember(m)
+
+	switch {
+	case util.IsAdmin(g, m):
+		selfmm.Dominance = 1
+	case g.OwnerID == m.User.ID:
+		selfmm.Dominance = 2
+	case cmdHandler.IsBotOwner(m.User.ID):
+		selfmm.Dominance = 3
+	}
+
 	return &Guild{
 		Guild:      g,
-		SelfMember: MemberFromMember(m),
+		SelfMember: selfmm,
 		Members:    membs,
 		IconURL:    getIconURL(g.ID, g.Icon),
 	}
