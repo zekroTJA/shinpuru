@@ -6,22 +6,35 @@
     flex-wrap: wrap
 
 .guild-container
-    display: flex
+    $width: 250px
+
     background-color: $c-nqblack
     width: fit-content
-    min-width: 300px
-    height: 60px
+    min-width: $width
+    height: $width + 60px
     margin: 0 20px 20px 0
     border-radius: 5px
     overflow: hidden
     cursor: pointer
+    overflow: hidden
 
     +hover-btn
 
-    img
-        width: 60px
-        height: 60px
-        border-radius: 5px 0 0 5px
+    &:hover
+        .guild-tn
+            img
+                transform: scale(1.05)
+
+    .guild-tn
+        width: $width
+        height: $width
+        overflow: hidden
+        border-radius: 5px
+
+        img
+            width: $width
+            height: $width
+            +transition25
 
     .info-container
         padding: 10px 10px

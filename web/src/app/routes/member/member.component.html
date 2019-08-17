@@ -61,7 +61,7 @@
 
     <!-- ------------------------------------------------------- -->
 
-    <app-spinner id="spinner-load-member" [started]="true"></app-spinner>
+    <app-spinner *ngIf="!member && !guild" id="spinner-load-member" [started]="true"></app-spinner>
     <div *ngIf="member && guild">
 
         <div id="heading-container">
@@ -75,7 +75,7 @@
                 <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
             </div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex overflow-wrap">
             <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
         </div>
 
@@ -115,14 +115,21 @@
 
         <div *ngIf="member.user.id !== guild.self_member.user.id" class="mt-4 mb-2">
             <h4>Moderation</h4>
+            <app-spinner id="spinner-load-modbuttons" *ngIf="!perm" [started]="true"></app-spinner>
             <div class="mod-buttons">
                 <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
                     REPORT
                 </button>
-                <button *ngIf="hasPermission('sp.guild.mod.kick')" class="bg-orange" (click)="kick()">
+                <button *ngIf="
+                    hasPermission('sp.guild.mod.kick') && 
+                    roleDiff > 0 && guild.self_member.dominance >= member.dominance
+                " class="bg-orange" (click)="kick()">
                     KICK
                 </button>
-                <button *ngIf="hasPermission('sp.guild.mod.ban')" class="bg-red" (click)="ban()">
+                <button *ngIf="
+                    hasPermission('sp.guild.mod.ban') &&
+                    roleDiff > 0 && guild.self_member.dominance >= member.dominance
+                " class="bg-red" (click)="ban()">
                     BAN
                 </button>
             </div>
