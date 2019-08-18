@@ -715,7 +715,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 
 	if inviteCode != "" {
 		for _, inv := range invites {
-			if inv.Inviter.ID == ws.session.State.User.ID && !inv.Revoked {
+			if inv.Inviter != nil && inv.Inviter.ID == ws.session.State.User.ID && !inv.Revoked {
 				inviteCode = inv.Code
 				break
 			}

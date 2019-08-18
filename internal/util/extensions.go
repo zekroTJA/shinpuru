@@ -65,6 +65,10 @@ func GetDiscordSnowflakeCreationTime(snowflake string) (time.Time, error) {
 }
 
 func IsAdmin(g *discordgo.Guild, m *discordgo.Member) bool {
+	if m == nil || g == nil {
+		return false
+	}
+
 	for _, r := range g.Roles {
 		if r.Permissions&0x8 != 0 {
 			for _, mrID := range m.Roles {
