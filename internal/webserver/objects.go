@@ -122,6 +122,10 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 }
 
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler) *Guild {
+	if g == nil {
+		return nil
+	}
+
 	membs := make([]*Member, len(g.Members))
 	for i, m := range g.Members {
 		membs[i] = MemberFromMember(m)
@@ -129,13 +133,15 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 
 	selfmm := MemberFromMember(m)
 
-	switch {
-	case util.IsAdmin(g, m):
-		selfmm.Dominance = 1
-	case g.OwnerID == m.User.ID:
-		selfmm.Dominance = 2
-	case cmdHandler.IsBotOwner(m.User.ID):
-		selfmm.Dominance = 3
+	if m != nil {
+		switch {
+		case util.IsAdmin(g, m):
+			selfmm.Dominance = 1
+		case g.OwnerID == m.User.ID:
+			selfmm.Dominance = 2
+		case cmdHandler.IsBotOwner(m.User.ID):
+			selfmm.Dominance = 3
+		}
 	}
 
 	return &Guild{
