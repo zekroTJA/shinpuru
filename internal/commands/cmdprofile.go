@@ -77,16 +77,11 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	var repsOnRecord int
-	guildReps, err := args.CmdHandler.db.GetReportsGuild(args.Guild.ID)
+	guildReps, err := args.CmdHandler.db.GetReportsFiltered(args.Guild.ID, member.User.ID, -1)
 	if err != nil {
 		return err
 	}
-	for _, grep := range guildReps {
-		if grep.VictimID == member.User.ID {
-			repsOnRecord++
-		}
-	}
+	repsOnRecord := len(guildReps)
 	repsOnRecordStr := "This user has a white vest :ok_hand:"
 	if repsOnRecord > 0 {
 		repsOnRecordStr = fmt.Sprintf("This user has **%d** reports on record on this guild.", repsOnRecord)
