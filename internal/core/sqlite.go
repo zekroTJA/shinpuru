@@ -368,8 +368,15 @@ func (m *Sqlite) GetReport(id snowflake.ID) (*util.Report, error) {
 	return rep, err
 }
 
-func (m *Sqlite) GetReportsGuild(guildID string) ([]*util.Report, error) {
-	rows, err := m.DB.Query("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = ?", guildID)
+func (m *Sqlite) GetReportsGuild(guildID string, offset, limit int) ([]*util.Report, error) {
+	if limit == 0 {
+		limit = 1000
+	}
+
+	rows, err := m.DB.Query(
+		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
+			"FROM reports WHERE guildID = ? "+
+			"LIMIT ?, ?", guildID, limit, offset)
 	var results []*util.Report
 	if err != nil {
 		return nil, err

@@ -184,6 +184,8 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	memberID := ctx.Param("memberid")
 
 	sortBy := string(ctx.QueryArgs().Peek("sortBy"))
+	offset := ctx.QueryArgs().GetUintOrZero("offset")
+	limit := ctx.QueryArgs().GetUintOrZero("limit")
 
 	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
@@ -195,7 +197,7 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	if memberID != "" {
 		reps, err = ws.db.GetReportsFiltered(guildID, memberID, -1)
 	} else {
-		reps, err = ws.db.GetReportsGuild(guildID)
+		reps, err = ws.db.GetReportsGuild(guildID, offset, limit)
 	}
 
 	if err != nil {

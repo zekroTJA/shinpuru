@@ -74,7 +74,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
 				args.CmdHandler.config.WebServer.PublicAddr, args.Guild.ID, victim.User.ID),
 		}
-		reps, err := args.CmdHandler.db.GetReportsGuild(args.Guild.ID)
+		reps, err := args.CmdHandler.db.GetReportsFiltered(args.Guild.ID, victim.User.ID, -1)
 		if err != nil {
 			return err
 		}
@@ -83,9 +83,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		} else {
 			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
 			for _, r := range reps {
-				if r.VictimID == victim.User.ID {
-					emb.Fields = append(emb.Fields, r.AsEmbedField())
-				}
+				emb.Fields = append(emb.Fields, r.AsEmbedField())
 			}
 		}
 		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)

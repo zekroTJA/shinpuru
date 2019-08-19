@@ -60,7 +60,7 @@ type Database interface {
 	AddReport(rep *util.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*util.Report, error)
-	GetReportsGuild(guildID string) ([]*util.Report, error)
+	GetReportsGuild(guildID string, offset, limit int) ([]*util.Report, error)
 	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
 
 	GetSetting(setting string) (string, error)
