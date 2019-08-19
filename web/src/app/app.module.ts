@@ -22,6 +22,7 @@ import { SpoilerComponent } from './components/spoiler/spoiler.component';
 import { FormsModule } from '@angular/forms';
 import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
 import { SettingsComponent } from './routes/settings/settings.component';
+import { SpinnerButtonComponent } from './components/spinnerButton/spinnerButton.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { SettingsComponent } from './routes/settings/settings.component';
     SpoilerComponent,
     TagsInputComponent,
     SettingsComponent,
+    SpinnerButtonComponent,
   ],
   imports: [
     NgbModule,

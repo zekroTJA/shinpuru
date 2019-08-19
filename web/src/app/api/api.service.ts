@@ -152,11 +152,13 @@ export class APIService {
 
   public getGuildMembers(
     guildID: string,
-    from: string = '',
+    after: string = '',
     limit: number = 0
   ): Observable<Member[]> {
     const opts = this.defopts({
-      params: new HttpParams().set('from', from).set('limit', limit.toString()),
+      params: new HttpParams()
+        .set('after', after)
+        .set('limit', limit.toString()),
     });
     return this.http
       .get<ListReponse<Member>>(this.rcGuildMembers(guildID), opts)
