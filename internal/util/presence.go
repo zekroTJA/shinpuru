@@ -10,7 +10,7 @@ import (
 
 const (
 	PresenceSeperator = "|||"
-	validStatus       = "dnd online idle"
+	validStatus       = "dnd online idle invisible"
 )
 
 type Presence struct {
