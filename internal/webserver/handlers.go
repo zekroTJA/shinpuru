@@ -80,9 +80,45 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	guild.Members, _ = ws.session.GuildMembers(guildID, "", 1000)
-
 	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memb, _ := ws.session.GuildMember(guildID, userID)
+	if memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	after := ""
+	limit := 0
+
+	after = string(ctx.QueryArgs().Peek("after"))
+	limit, _ = ctx.QueryArgs().GetUint("limit")
+
+	if limit < 1 {
+		limit = 100
+	}
+
+	members, err := ws.session.GuildMembers(guildID, after, limit)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	memblen := len(members)
+	fhmembers := make([]*Member, memblen)
+
+	for i, m := range members {
+		fhmembers[i] = MemberFromMember(m)
+	}
+
+	return jsonResponse(ctx, &ListResponse{
+		N:    memblen,
+		Data: fhmembers,
+	}, fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {

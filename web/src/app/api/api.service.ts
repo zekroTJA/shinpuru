@@ -22,6 +22,7 @@ import {
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 import { CacheBucket } from './api.cache';
+import { isObject } from 'util';
 
 /** @format */
 
@@ -30,15 +31,71 @@ import { CacheBucket } from './api.cache';
 })
 export class APIService {
   private rootURL = '';
-  private defopts = {
-    withCredentials: true,
+
+  private readonly cacheMembers = new CacheBucket<string, Member>(
+    10 * 60 * 1000
+  );
+  private readonly cacheUsers = new CacheBucket<string, User>(10 * 60 * 1000);
+  private readonly cacheGuilds = new CacheBucket<string, Guild>(30 * 1000);
+
+  private readonly defopts = (obj?: object) => {
+    const defopts = {
+      withCredentials: true,
+    };
+
+    if (obj) {
+      Object.keys(obj).forEach((k) => {
+        defopts[k] = obj[k];
+      });
+    }
+
+    return defopts;
   };
 
-  private cacheMembers = new CacheBucket<string, Member>(10 * 60 * 1000);
-  private cacheUsers = new CacheBucket<string, User>(10 * 60 * 1000);
-  private cacheGuilds = new CacheBucket<string, Guild>(30 * 1000);
+  private readonly rcAPI = (rc: string = '') =>
+    `${this.rootURL}/api${rc ? '/' + rc : ''}`;
 
-  private errorCatcher = (err) => {
+  private readonly rcGuilds = (guildID: string = '') =>
+    `${this.rcAPI('guilds')}${guildID ? '/' + guildID : ''}`;
+
+  private readonly rcGuildMembers = (guildID: string, memberID: string = '') =>
+    `${this.rcGuilds(guildID)}/${memberID ? memberID : 'members'}`;
+
+  private readonly rcGuildMembersPermissions = (
+    guildID: string,
+    memberID: string
+  ) => `${this.rcGuildMembers(guildID, memberID)}/permissions`;
+
+  private readonly rcGuildMembersPermissionsAllowed = (
+    guildID: string,
+    memberID: string
+  ) => `${this.rcGuildMembersPermissions(guildID, memberID)}/allowed`;
+
+  private readonly rcGuildReports = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/reports`;
+
+  private readonly rcGuildMemberReports = (guildID: string, memberID: string) =>
+    `${this.rcGuildMembers(guildID, memberID)}/reports`;
+
+  private readonly rcReports = (reportID: string) =>
+    `${this.rcAPI('reports')}/${reportID}`;
+
+  private readonly rcGuildSettings = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/settings`;
+
+  private readonly rcGuildPermissions = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/permissions`;
+
+  private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
+    `${this.rcGuildMembers(guildID, memberID)}/kick`;
+
+  private readonly rcGuildMemberBan = (guildID: string, memberID: string) =>
+    `${this.rcGuildMembers(guildID, memberID)}/ban`;
+
+  private readonly rcSetting = (rc: string = '') =>
+    `${this.rcAPI('settings')}${rc ? '/' + rc : ''}`;
+
+  private readonly errorCatcher = (err) => {
     console.error(err);
     this.toasts.push(err.message, 'Request Error', 'error', 10000);
     return of(null);
@@ -50,7 +107,7 @@ export class APIService {
 
   public logout(): Observable<any> {
     return this.http
-      .post<any>(this.rootURL + '/api/logout', this.defopts)
+      .post<any>(this.rcAPI('logout'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
@@ -60,7 +117,7 @@ export class APIService {
       return of(u);
     }
 
-    return this.http.get<User>(this.rootURL + '/api/me', this.defopts).pipe(
+    return this.http.get<User>(this.rcAPI('me'), this.defopts()).pipe(
       this.cacheUsers.putFromPipe('me'),
       catchError((err) => {
         if (err.status !== 401) {
@@ -72,7 +129,7 @@ export class APIService {
 
   public getGuilds(): Observable<Guild[]> {
     return this.http
-      .get<ListReponse<Guild>>(this.rootURL + '/api/guilds', this.defopts)
+      .get<ListReponse<Guild>>(this.rcGuilds(), this.defopts())
       .pipe(
         map((lr) => {
           return lr.data;
@@ -87,10 +144,24 @@ export class APIService {
       return of(g);
     }
 
+    return this.http.get<Guild>(this.rcGuilds(id), this.defopts()).pipe(
+      this.cacheGuilds.putFromPipe(id),
+      catchError(this.errorCatcher)
+    );
+  }
+
+  public getGuildMembers(
+    guildID: string,
+    from: string = '',
+    limit: number = 0
+  ): Observable<Member[]> {
+    const opts = this.defopts({
+      params: new HttpParams().set('from', from).set('limit', limit.toString()),
+    });
     return this.http
-      .get<Guild>(this.rootURL + '/api/guilds/' + id, this.defopts)
+      .get<ListReponse<Member>>(this.rcGuildMembers(guildID), opts)
       .pipe(
-        this.cacheGuilds.putFromPipe(id),
+        map((lr) => lr.data),
         catchError(this.errorCatcher)
       );
   }
@@ -106,21 +177,21 @@ export class APIService {
     }
 
     return this.http
-      .get<Member>(
-        this.rootURL + '/api/guilds/' + guildID + '/' + memberID,
-        this.defopts
-      )
+      .get<Member>(this.rcGuildMembers(guildID, memberID), this.defopts())
       .pipe(
         this.cacheMembers.putFromPipe(memberID),
         catchError(ignoreError ? (err) => of(null) : this.errorCatcher)
       );
   }
 
-  public getPermissions(guildID: string, userID: string): Observable<string[]> {
+  public getPermissions(
+    guildID: string,
+    memberID: string
+  ): Observable<string[]> {
     return this.http
       .get<PermissionResponse>(
-        this.rootURL + '/api/guilds/' + guildID + '/' + userID + '/permissions',
-        this.defopts
+        this.rcGuildMembersPermissions(guildID, memberID),
+        this.defopts()
       )
       .pipe(
         map((r) => {
@@ -132,17 +203,12 @@ export class APIService {
 
   public getPermissionsAllowed(
     guildID: string,
-    userID: string
+    memberID: string
   ): Observable<string[]> {
     return this.http
       .get<ListReponse<string>>(
-        this.rootURL +
-          '/api/guilds/' +
-          guildID +
-          '/' +
-          userID +
-          '/permissions/allowed',
-        this.defopts
+        this.rcGuildMembersPermissionsAllowed(guildID, memberID),
+        this.defopts()
       )
       .pipe(
         map((l) => l.data),
@@ -155,13 +221,12 @@ export class APIService {
     memberID: string = null
   ): Observable<Report[]> {
     const uri = memberID
-      ? this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/reports'
-      : this.rootURL + '/api/guilds/' + guildID + '/reports';
+      ? this.rcGuildMemberReports(guildID, memberID)
+      : this.rcGuildReports(guildID);
 
-    const opts = {
-      withCredentials: this.defopts.withCredentials,
+    const opts = this.defopts({
       params: new HttpParams().set('sortBy', 'created'),
-    };
+    });
 
     return this.http.get<ListReponse<Report>>(uri, opts).pipe(
       map((lr) => lr.data),
@@ -171,16 +236,13 @@ export class APIService {
 
   public getReport(reportID: string): Observable<Report> {
     return this.http
-      .get<Report>(this.rootURL + '/api/reports/' + reportID, this.defopts)
+      .get<Report>(this.rcReports(reportID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
   public getGuildSettings(guildID: string): Observable<GuildSettings> {
     return this.http
-      .get<GuildSettings>(
-        this.rootURL + '/api/guilds/' + guildID + '/settings',
-        this.defopts
-      )
+      .get<GuildSettings>(this.rcGuildSettings(guildID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
@@ -189,11 +251,7 @@ export class APIService {
     settings: GuildSettings
   ): Observable<any> {
     return this.http
-      .post(
-        this.rootURL + '/api/guilds/' + guildID + '/settings',
-        settings,
-        this.defopts
-      )
+      .post(this.rcGuildSettings(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
@@ -202,8 +260,8 @@ export class APIService {
   ): Observable<Map<string, string[]>> {
     return this.http
       .get<Map<string, string[]>>(
-        this.rootURL + '/api/guilds/' + guildID + '/permissions',
-        this.defopts
+        this.rcGuildPermissions(guildID),
+        this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
   }
@@ -213,11 +271,7 @@ export class APIService {
     update: PermissionsUpdate
   ): Observable<any> {
     return this.http
-      .post(
-        this.rootURL + '/api/guilds/' + guildID + '/permissions',
-        update,
-        this.defopts
-      )
+      .post(this.rcGuildPermissions(guildID), update, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
@@ -228,9 +282,9 @@ export class APIService {
   ): Observable<Report> {
     return this.http
       .post<Report>(
-        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/reports',
+        this.rcGuildMemberReports(guildID, memberID),
         rep,
-        this.defopts
+        this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
   }
@@ -242,9 +296,9 @@ export class APIService {
   ): Observable<Report> {
     return this.http
       .post<Report>(
-        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/kick',
+        this.rcGuildMemberKick(guildID, memberID),
         rep,
-        this.defopts
+        this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
   }
@@ -256,37 +310,37 @@ export class APIService {
   ): Observable<Report> {
     return this.http
       .post<Report>(
-        this.rootURL + '/api/guilds/' + guildID + '/' + memberID + '/ban',
+        this.rcGuildMemberBan(guildID, memberID),
         rep,
-        this.defopts
+        this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
   }
 
   public getPresence(): Observable<Presence> {
     return this.http
-      .get<Presence>(this.rootURL + '/api/settings/presence', this.defopts)
+      .get<Presence>(this.rcSetting('presence'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
   public postPresence(p: Presence): Observable<Presence> {
     return this.http
-      .post<Presence>(this.rootURL + '/api/settings/presence', p, this.defopts)
+      .post<Presence>(this.rcSetting('presence'), p, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
   public getInviteSettings(): Observable<InviteSettingsResponse> {
     return this.http
       .get<InviteSettingsResponse>(
-        this.rootURL + '/api/settings/noguildinvite',
-        this.defopts
+        this.rcSetting('noguildinvite'),
+        this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
   }
 
   public postInviteSettings(s: InviteSettingsRequest): Observable<any> {
     return this.http
-      .post(this.rootURL + '/api/settings/noguildinvite', s, this.defopts)
+      .post(this.rcSetting('noguildinvite'), s, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
