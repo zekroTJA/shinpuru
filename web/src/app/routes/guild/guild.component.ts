@@ -43,7 +43,6 @@ export class GuildComponent {
   public addPermissionRoles: Role[] = [];
   public addPermissionAllow = true;
 
-  public membersShown: Member[];
   public reportsShown: Report[];
 
   public guildToggle = false;
@@ -53,10 +52,11 @@ export class GuildComponent {
 
   public isSearchInput = false;
 
+  public memberDisplayMoreLoading = false;
+
   public toHexClr = toHexClr;
 
   constructor(
-    private spinner: SpinnerService,
     private api: APIService,
     private route: ActivatedRoute,
     private toasts: ToastService
@@ -65,17 +65,9 @@ export class GuildComponent {
     this.api.getGuild(guildID).subscribe((guild) => {
       this.guild = guild;
 
-      // this.guild.members = this.guild.members.sort(
-      //   (a, b) =>
-      //     topRole(guild.roles, b.roles).position -
-      //     topRole(guild.roles, a.roles).position
-      // );
-
-      this.members = this.guild.members.filter(
-        (m) => m.user.id !== this.guild.self_member.user.id
-      );
-
-      this.membersShown = this.members.slice(0, this.MAX_SHOWN_USERS);
+      if (this.members) {
+        this.guild.members = this.members;
+      }
 
       this.api
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
@@ -86,6 +78,15 @@ export class GuildComponent {
           );
         });
     });
+
+    this.api
+      .getGuildMembers(guildID, '', this.MAX_SHOWN_USERS)
+      .subscribe((members) => {
+        this.members = members;
+        if (this.guild) {
+          this.guild.members = members;
+        }
+      });
 
     this.api.getGuildSettings(guildID).subscribe((settings) => {
       this.settings = settings;
@@ -108,19 +109,18 @@ export class GuildComponent {
     const val = e.target.value.toLowerCase();
 
     if (val === '') {
-      this.membersShown = this.guild.members
-        .filter((m) => m.user.id !== this.guild.self_member.user.id)
-        .slice(0, this.MAX_SHOWN_USERS);
+      this.members = this.guild.members.filter(
+        (m) => m.user.id !== this.guild.self_member.user.id
+      );
       this.isSearchInput = false;
     } else {
-      const res = this.guild.members.filter(
+      this.members = this.guild.members.filter(
         (m) =>
           m.user.id !== this.guild.self_member.user.id &&
           ((m.nick && m.nick.toLowerCase().includes(val)) ||
             m.user.username.toLowerCase().includes(val) ||
             m.user.id.includes(val))
       );
-      this.membersShown = res.length > this.MAX_SHOWN_USERS ? [] : res;
       this.isSearchInput = true;
     }
   }
@@ -230,10 +230,15 @@ export class GuildComponent {
   }
 
   public displayMoreUsers() {
-    const currLen = this.membersShown.length;
-    this.membersShown = this.membersShown.concat(
-      this.members.slice(currLen, currLen + this.MAX_SHOWN_USERS)
-    );
+    this.memberDisplayMoreLoading = true;
+
+    const after = this.guild.members[this.guild.members.length - 1].user.id;
+    this.api
+      .getGuildMembers(this.guild.id, after, this.MAX_SHOWN_USERS)
+      .subscribe((members) => {
+        this.members = this.guild.members = this.guild.members.concat(members);
+        this.memberDisplayMoreLoading = false;
+      });
   }
 
   public displayMoreReports() {

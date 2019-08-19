@@ -29,21 +29,26 @@
         <div class="d-flex">
             <app-spoiler [(ngModel)]="guildToggle">
                 <h4 class="mx-3">GUILD MEMBERS</h4>
-                <p class="cbadge">{{ guildToggle ? (membersShown?.length + ' / ' + members?.length) : members?.length }}</p>
+                <p class="cbadge">{{ guildToggle ? (members?.length + ' / ' + guild.member_count) : guild.member_count }}</p>
             </app-spoiler>
         </div>
         <div *ngIf="guildToggle">
             <input type="text" class="my-2" placeholder="search member" (input)="searchInput($event)"/>
             <div id="users-container" class="d-flex overflow-wrap mt-3">
-                <app-member *ngFor="let m of membersShown" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
+                <app-member *ngFor="let m of members" [member]="m" [roles]="guild.roles" routerLink="/guilds/{{guild.id}}/{{m.user.id}}"></app-member>
             </div>
-            <i *ngIf="membersShown.length == 0 && isSearchInput">Too many results</i>
+            <i *ngIf="members.length == 0 && isSearchInput">No results.</i>
             <div class="d-flex">
-                <button *ngIf="
-                        members.length > MAX_SHOWN_USERS && 
-                        membersShown.length != members.length && 
-                        !isSearchInput
-                    " (click)="displayMoreUsers()" class="display-more-btn">DISPLAY MORE...</button>
+                <app-spinner-button 
+                    *ngIf="guild.member_count > MAX_SHOWN_USERS && 
+                           members.length < guild.member_count && 
+                           !isSearchInput" 
+                    (click)="displayMoreUsers()" 
+                    class="display-more-btn"
+                    [(ngModel)]="memberDisplayMoreLoading"
+                >
+                    DISPLAY MORE...
+                </app-spinner-button>
             </div>
         </div>
 

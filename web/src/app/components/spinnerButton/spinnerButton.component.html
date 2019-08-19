@@ -1,0 +1,8 @@
+<div>
+    <button (click)="onClick($event)" [disabled]="_loading">
+        <app-spinner *ngIf="_loading; else content" [started]="true" [small]="true"></app-spinner>
+        <ng-template #content>
+            <ng-content></ng-content>
+        </ng-template>
+    </button>
+</div>
