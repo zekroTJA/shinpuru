@@ -395,6 +395,10 @@ func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*util.Repo
 }
 
 func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
+	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
+		return nil, fmt.Errorf("invalid argument type")
+	}
+
 	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = "%s"`, guildID)
 	if memberID != "" {
 		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
@@ -424,6 +428,11 @@ func (m *MySQL) GetReportsGuildCount(guildID string) (count int, err error) {
 }
 
 func (m *MySQL) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
+	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
+		err = fmt.Errorf("invalid argument type")
+		return
+	}
+
 	query := fmt.Sprintf(`SELECT COUNT(id) FROM reports WHERE guildID = "%s"`, guildID)
 	if memberID != "" {
 		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
