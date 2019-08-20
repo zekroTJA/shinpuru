@@ -11,6 +11,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var (
+	rxNumber = regexp.MustCompile(`^\d+$`)
+)
+
+func IsNumber(str string) bool {
+	return rxNumber.MatchString(str)
+}
+
 func EnsureNotEmpty(str, def string) string {
 	if str == "" {
 		return def
