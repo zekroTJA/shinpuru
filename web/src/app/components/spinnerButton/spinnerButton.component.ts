@@ -28,11 +28,11 @@ export class SpinnerButtonComponent implements ControlValueAccessor {
     this.click.emit(event);
   }
 
-  public get value(): boolean {
+  public get loading(): boolean {
     return this._loading;
   }
 
-  public set value(v: boolean) {
+  public set loading(v: boolean) {
     if (v !== this._loading) {
       this._loading = v;
       this.onChangeCallback(v);
