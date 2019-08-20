@@ -56,17 +56,22 @@
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="modlogToggle">
                 <h4 class="mx-3">MOD LOG</h4>
-                <p class="cbadge">{{ modlogToggle ? (reportsShown?.length + ' / ' + reports?.length) : reports?.length }}</p>
+                <p class="cbadge">{{ modlogToggle ? (reports?.length + ' / ' + reportsTotalCount) : reportsTotalCount }}</p>
             </app-spoiler>
         </div>
         <div *ngIf="modlogToggle">
             <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
-            <app-report *ngFor="let rep of reportsShown" [report]="rep"></app-report>
+            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
             <div class="d-flex">
-                <button *ngIf="
-                        reports.length > MAX_SHOWN_MODLOG && 
-                        reportsShown.length != reports.length
-                    " (click)="displayMoreReports()" class="display-more-btn">DISPLAY MORE...</button>
+                <app-spinner-button 
+                    *ngIf="reportsTotalCount > MAX_SHOWN_MODLOG && 
+                           reports.length < reportsTotalCount" 
+                    (click)="displayMoreReports()" 
+                    class="display-more-btn"
+                    [(ngModel)]="reportDisplayMoreLoading"
+                >
+                    DISPLAY MORE...
+                </app-spinner-button>
             </div>
         </div>
 

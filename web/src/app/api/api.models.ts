@@ -127,3 +127,7 @@ export interface InviteSettingsResponse {
   invite_url: string;
   message: string;
 }
+
+export interface Count {
+  count: number;
+}

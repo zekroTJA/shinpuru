@@ -107,6 +107,10 @@ type InviteSettingsResponse struct {
 	Message   string `json:"message"`
 }
 
+type Count struct {
+	Count int `json:"count"`
+}
+
 func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 	if len(req.Reason) < 3 {
 		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
