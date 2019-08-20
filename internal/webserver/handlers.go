@@ -224,6 +224,32 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
+func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	if memb, _ := ws.session.GuildMember(guildID, userID); memb == nil {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+
+	var count int
+	var err error
+
+	if memberID != "" {
+		count, err = ws.db.GetReportsFilteredCount(guildID, memberID, -1)
+	} else {
+		count, err = ws.db.GetReportsGuildCount(guildID)
+	}
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, &Count{Count: count}, fasthttp.StatusOK)
+}
+
 func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
 	// userID := ctx.Get("uid").(string)
 

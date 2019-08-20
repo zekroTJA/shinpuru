@@ -28,11 +28,12 @@ interface Perms {
 })
 export class GuildComponent {
   public readonly MAX_SHOWN_USERS = 200;
-  public readonly MAX_SHOWN_MODLOG = 30;
+  public readonly MAX_SHOWN_MODLOG = 20;
 
   public guild: Guild;
   public members: Member[];
   public reports: Report[];
+  public reportsTotalCount: number;
   public allowed: string[];
   public settings: GuildSettings;
   public updatedSettings: GuildSettings = {} as GuildSettings;
@@ -43,8 +44,6 @@ export class GuildComponent {
   public addPermissionRoles: Role[] = [];
   public addPermissionAllow = true;
 
-  public reportsShown: Report[];
-
   public guildToggle = false;
   public modlogToggle = false;
   public guildSettingsToggle = false;
@@ -53,6 +52,7 @@ export class GuildComponent {
   public isSearchInput = false;
 
   public memberDisplayMoreLoading = false;
+  public reportDisplayMoreLoading = false;
 
   public toHexClr = toHexClr;
 
@@ -92,9 +92,14 @@ export class GuildComponent {
       this.settings = settings;
     });
 
-    this.api.getReports(guildID).subscribe((reports) => {
-      this.reports = reports;
-      this.reportsShown = reports.slice(0, this.MAX_SHOWN_MODLOG);
+    this.api
+      .getReports(guildID, null, 0, this.MAX_SHOWN_MODLOG)
+      .subscribe((reports) => {
+        this.reports = reports;
+      });
+
+    this.api.getReportsCount(guildID).subscribe((count) => {
+      this.reportsTotalCount = count;
     });
   }
 
@@ -242,9 +247,13 @@ export class GuildComponent {
   }
 
   public displayMoreReports() {
-    const currLen = this.reportsShown.length;
-    this.reportsShown = this.reportsShown.concat(
-      this.reports.slice(currLen, currLen + this.MAX_SHOWN_MODLOG)
-    );
+    this.reportDisplayMoreLoading = true;
+    const currLen = this.reports.length;
+    this.api
+      .getReports(this.guild.id, null, currLen, this.MAX_SHOWN_MODLOG)
+      .subscribe((modlog) => {
+        this.reports = this.reports.concat(modlog);
+        this.reportDisplayMoreLoading = false;
+      });
   }
 }

@@ -18,6 +18,7 @@ import {
   Presence,
   InviteSettingsResponse,
   InviteSettingsRequest,
+  Count,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -76,6 +77,14 @@ export class APIService {
 
   private readonly rcGuildMemberReports = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/reports`;
+
+  private readonly rcGuildReportsCount = (guildID: string) =>
+    `${this.rcGuildReports(guildID)}/count`;
+
+  private readonly rcGuildMemberReportsCount = (
+    guildID: string,
+    memberID: string
+  ) => `${this.rcGuildMemberReports(guildID, memberID)}/count`;
 
   private readonly rcReports = (reportID: string) =>
     `${this.rcAPI('reports')}/${reportID}`;
@@ -220,14 +229,19 @@ export class APIService {
 
   public getReports(
     guildID: string,
-    memberID: string = null
+    memberID: string = null,
+    offset: number = 0,
+    limit: number = 0
   ): Observable<Report[]> {
     const uri = memberID
       ? this.rcGuildMemberReports(guildID, memberID)
       : this.rcGuildReports(guildID);
 
     const opts = this.defopts({
-      params: new HttpParams().set('sortBy', 'created'),
+      params: new HttpParams()
+        .set('sortBy', 'created')
+        .set('offset', offset.toString())
+        .set('limit', limit.toString()),
     });
 
     return this.http.get<ListReponse<Report>>(uri, opts).pipe(
@@ -240,6 +254,20 @@ export class APIService {
     return this.http
       .get<Report>(this.rcReports(reportID), this.defopts())
       .pipe(catchError(this.errorCatcher));
+  }
+
+  public getReportsCount(
+    guildID: string,
+    memberID: string = null
+  ): Observable<number> {
+    const uri = memberID
+      ? this.rcGuildMemberReportsCount(guildID, memberID)
+      : this.rcGuildReportsCount(guildID);
+
+    return this.http.get<Count>(uri, this.defopts()).pipe(
+      map((c) => c.count),
+      catchError(this.errorCatcher)
+    );
   }
 
   public getGuildSettings(guildID: string): Observable<GuildSettings> {

@@ -378,7 +378,7 @@ func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*util.Repo
 	rows, err := m.DB.Query(
 		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
 			"FROM reports WHERE guildID = ? "+
-			"LIMIT ?, ?", guildID, limit, offset)
+			"LIMIT ?, ?", guildID, offset, limit)
 	var results []*util.Report
 	if err != nil {
 		return nil, err
@@ -416,6 +416,24 @@ func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*ut
 		results = append(results, rep)
 	}
 	return results, nil
+}
+
+func (m *MySQL) GetReportsGuildCount(guildID string) (count int, err error) {
+	err = m.DB.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
+	return
+}
+
+func (m *MySQL) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
+	query := fmt.Sprintf(`SELECT COUNT(id) FROM reports WHERE guildID = "%s"`, guildID)
+	if memberID != "" {
+		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
+	}
+	if repType != -1 {
+		query += fmt.Sprintf(` AND type = %d`, repType)
+	}
+
+	err = m.DB.QueryRow(query).Scan(&count)
+	return
 }
 
 func (m *MySQL) GetVotes() (map[string]*util.Vote, error) {
