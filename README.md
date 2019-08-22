@@ -45,6 +45,8 @@ In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), 
 
 shinpuru also offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
+> **ATTENTION:** This web interface should be considered as 'beta version' because it is in a very early release state. If you are running into bugs or if you have suggestions, please contribute them as issue or pull request. 
+
 ![](https://i.zekro.de/chrome_2019-08-12_09-30-45.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-34-04.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-36-45.png)
