@@ -29,8 +29,6 @@ Here you can choose between the stable or canary version of shinpuru:
 
 <a href="https://discordapp.com/api/oauth2/authorize?client_id=536916384026722314&scope=bot&permissions=2080894065"><img src="https://img.shields.io/badge/%20-INVITE%20CANARY-FFA726.svg?style=for-the-badge&logo=discord" height="30" /></a>
 
-> **Attention**<br>The canary version runs on the latest build pushed to the dev branch and can contain bugs! Also, the canary version is running on a separate database which is not included in my daily database backup.
-
 # Intro
 
 シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as many features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
@@ -42,6 +40,14 @@ Also, I want to use this project as a chance for me, to get some deeper into Go 
 # Features 
 
 In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of all commands and their manuals.
+
+## Web Interface
+
+shinpuru also offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
+
+![](https://i.zekro.de/chrome_2019-08-12_09-30-45.png)
+![](https://i.zekro.de/chrome_2019-08-12_09-34-04.png)
+![](https://i.zekro.de/chrome_2019-08-12_09-36-45.png)
 
 ## Moderation
 
