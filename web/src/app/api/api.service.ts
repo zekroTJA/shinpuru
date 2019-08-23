@@ -19,6 +19,7 @@ import {
   InviteSettingsResponse,
   InviteSettingsRequest,
   Count,
+  SystemInfo,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -371,6 +372,12 @@ export class APIService {
   public postInviteSettings(s: InviteSettingsRequest): Observable<any> {
     return this.http
       .post(this.rcSetting('noguildinvite'), s, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getSystemInfo(): Observable<SystemInfo> {
+    return this.http
+      .get(this.rcAPI('sysinfo'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

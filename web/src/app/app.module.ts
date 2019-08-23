@@ -23,6 +23,7 @@ import { FormsModule } from '@angular/forms';
 import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
 import { SettingsComponent } from './routes/settings/settings.component';
 import { SpinnerButtonComponent } from './components/spinnerButton/spinnerButton.component';
+import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { SpinnerButtonComponent } from './components/spinnerButton/spinnerButton
     TagsInputComponent,
     SettingsComponent,
     SpinnerButtonComponent,
+    SysInfoComponent,
   ],
   imports: [
     NgbModule,

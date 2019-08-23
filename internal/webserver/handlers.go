@@ -2,8 +2,11 @@ package webserver
 
 import (
 	"fmt"
+	"runtime"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/shared"
 
@@ -894,4 +897,42 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
+
+	buildTS, _ := strconv.Atoi(util.AppDate)
+	buildDate := time.Unix(int64(buildTS), 0)
+
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+
+	uptime := int64(time.Since(util.StatsStartupTime).Seconds())
+
+	info := &SystemInfo{
+		Version:    util.AppVersion,
+		CommitHash: util.AppCommit,
+		BuildDate:  buildDate,
+		GoVersion:  runtime.Version(),
+
+		Uptime:    uptime,
+		UptimeStr: fmt.Sprintf("%d", uptime),
+
+		OS:          runtime.GOOS,
+		Arch:        runtime.GOARCH,
+		CPUs:        runtime.NumCPU(),
+		GoRoutines:  runtime.NumGoroutine(),
+		StackUse:    memStats.StackInuse,
+		StackUseStr: fmt.Sprintf("%d", memStats.StackInuse),
+		HeapUse:     memStats.HeapInuse,
+		HeapUseStr:  fmt.Sprintf("%d", memStats.HeapInuse),
+
+		BotUserID: ws.session.State.User.ID,
+		BotInvite: fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
+			ws.session.State.User.ID, util.InvitePermission),
+
+		Guilds: len(ws.session.State.Guilds),
+	}
+
+	return jsonResponse(ctx, info, fasthttp.StatusOK)
 }

@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class HeaderComponent implements OnInit {
   @ViewChild('logout') private logoutTemplate: TemplateRef<any>;
   @ViewChild('settings') private settingsTemplate: TemplateRef<any>;
+  @ViewChild('sysinfo') private sysinfoTemplate: TemplateRef<any>;
 
   public selfUser: User;
 
@@ -33,11 +34,16 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.logoutTemplate);
-    this.popupElements.push({
-      el: this.logoutTemplate,
-      action: this.logout.bind(this),
-    } as PopupElement);
+    this.popupElements.push(
+      {
+        el: this.logoutTemplate,
+        action: this.logout.bind(this),
+      } as PopupElement,
+      {
+        el: this.sysinfoTemplate,
+        action: this.sysinfo.bind(this),
+      } as PopupElement
+    );
   }
 
   public get routes(): string[][] {
@@ -60,5 +66,9 @@ export class HeaderComponent implements OnInit {
 
   private settings() {
     this.router.navigate(['/settings']);
+  }
+
+  private sysinfo() {
+    this.router.navigate(['/sysinfo']);
   }
 }
