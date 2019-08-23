@@ -105,6 +105,8 @@ func (ws *WebServer) registerHandlers() {
 		Get("/me", ws.handlerGetMe)
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
+	api.
+		Get("/sysinfo", ws.handlerGetSystemInfo)
 
 	settings := api.Group("/settings")
 	settings.

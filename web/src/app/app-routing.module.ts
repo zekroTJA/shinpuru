@@ -7,6 +7,7 @@ import { HomeComponent } from './routes/home/home.component';
 import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
 import { SettingsComponent } from './routes/settings/settings.component';
+import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
 const routes: Routes = [
   {
     path: '',
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: 'settings',
     component: SettingsComponent,
+  },
+  {
+    path: 'sysinfo',
+    component: SysInfoComponent,
   },
   {
     path: '**',

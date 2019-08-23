@@ -24,6 +24,7 @@ RUN dep ensure -v
 RUN go build -v -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(git describe --tags) \
 		-X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$(git rev-parse HEAD) \
+		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
         ./cmd/shinpuru/*.go
 
