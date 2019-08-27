@@ -23,7 +23,7 @@ func (c *CmdLeaveMsg) GetDescription() string {
 }
 
 func (c *CmdLeaveMsg) GetHelp() string {
-	return "`leavemsg msg <message>` - Set the message of the leave message." +
+	return "`leavemsg msg <message>` - Set the message of the leave message.\n" +
 		"`leavemsg channel <ChannelIdentifier>` - Set the channel where the message will be sent into.\n" +
 		"`leavemsg reset` - Reset and disable leave messages.\n\n" +
 		"`[user]` will be replaced with the user name and `[ment]` will be replaced with the users mention when used in message text."
