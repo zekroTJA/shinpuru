@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea or enhancement for this project
 title: "[FEATURE] "
-labels: ''
+labels: 'enhancement'
 assignees: zekroTJA
 
 ---
@@ -11,6 +11,12 @@ assignees: zekroTJA
 
 - [ ] New feature
 - [ ] Enhancement
+
+# Type of Host
+
+- [ ] Public Canary
+- [ ] Public Stable
+- [ ] Self Hosted
 
 ## Description
 > Please describe your feature request as clear and concise as possible.
