@@ -222,6 +222,10 @@ func FetchChannel(s *discordgo.Session, guildID, resolvable string, condition ..
 			return r.ID == resolvable
 		},
 		func(r *discordgo.Channel, resolvable string) bool {
+			l := len(resolvable)
+			return l > 3 && r.ID == resolvable[2:l-1]
+		},
+		func(r *discordgo.Channel, resolvable string) bool {
 			return r.Name == resolvable
 		},
 		func(r *discordgo.Channel, resolvable string) bool {

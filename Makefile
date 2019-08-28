@@ -24,6 +24,7 @@ BIN = $(BINPATH)/$(APPNAME)
 
 TAG        = $(shell git describe --tags)
 COMMIT     = $(shell git rev-parse HEAD)
+DATE       = $(shell date +%s)
 
 
 ifneq ($(GOOS),)
@@ -66,6 +67,7 @@ $(BIN):
 		-v -o $@ -ldflags "\
 			-X $(PACKAGE)/$(LDPAKAGE).AppVersion=$(TAG) \
 			-X $(PACKAGE)/$(LDPAKAGE).AppCommit=$(COMMIT) \
+			-X $(PACKAGE)/$(LDPAKAGE).AppDate=$(DATE) \
 			-X $(PACKAGE)/$(LDPAKAGE).Release=TRUE" \
 		$(CURDIR)/cmd/$(APPNAME)/*.go
 
