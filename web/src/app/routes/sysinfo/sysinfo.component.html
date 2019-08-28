@@ -1,0 +1,84 @@
+<div>
+    <div class="d-flex mb-3">
+        <h1>SYSTEM INFORMATION</h1>
+        <app-slider class="ml-auto mr-3" (switch)="onARClick($event)">Auto-Refresh</app-slider>
+    </div>
+
+    <app-spinner *ngIf="!sysinfo; else data" [started]="true"></app-spinner>
+    
+    <ng-template #data>
+
+        <table class="w-100">
+            <tbody>
+                <tr class="heading">
+                    <th colspan="2">General</th>
+                </tr>
+                <tr>
+                    <th>Version</th>
+                    <td>{{ sysinfo.version }}</td>
+                </tr>
+                <tr>
+                    <th>Commit Hash</th>
+                    <td>{{ sysinfo.commit_hash }}</td>
+                </tr>
+                <tr>
+                    <th>Build Date</th>
+                    <td>{{ dateFormat(sysinfo.build_date, 'yyyy.mm.dd - HH:MM:ss Z') }}</td>
+                </tr>
+                <tr>
+                    <th>Go Version</th>
+                    <td>{{ sysinfo.go_version }}</td>
+                </tr>
+
+                <tr class="heading">
+                    <th colspan="2">Environment</th>
+                </tr>
+                <tr>
+                    <th>Uptime</th>
+                    <td>{{ toDDHHMMSS(sysinfo.uptime) }}</td>
+                </tr>
+                <tr>
+                    <th>OS</th>
+                    <td>{{ sysinfo.os }}</td>
+                </tr>
+                <tr>
+                    <th>Arch</th>
+                    <td>{{ sysinfo.arch }}</td>
+                </tr>
+                <tr>
+                    <th>CPU Cores</th>
+                    <td>{{ sysinfo.cpus }}</td>
+                </tr>
+                <tr>
+                    <th>Go Routines</th>
+                    <td>{{ sysinfo.go_routines }}</td>
+                </tr>
+                <tr>
+                    <th>Stack In Use</th>
+                    <td>{{ byteCountFormatter(sysinfo.stack_use) }}</td>
+                </tr>
+                <tr>
+                    <th>Heap In Use</th>
+                    <td>{{ byteCountFormatter(sysinfo.heap_use) }}</td>
+                </tr>
+
+                <tr class="heading">
+                    <th colspan="2">Bot Account</th>
+                </tr>
+                <tr>
+                    <th>User ID</th>
+                    <td>{{ sysinfo.bot_user_id }}</td>
+                </tr>
+                <tr>
+                    <th>Invite URL</th>
+                    <td><a href="{{ sysinfo.bot_invite }}" target="_blank">{{ sysinfo.bot_invite }}</a></td>
+                </tr>
+                <tr>
+                    <th>Guilds Serving</th>
+                    <td>{{ sysinfo.guilds }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </ng-template>
+</div>
