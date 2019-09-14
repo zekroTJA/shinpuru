@@ -376,6 +376,7 @@ func (m *Sqlite) GetReportsGuild(guildID string, offset, limit int) ([]*util.Rep
 	rows, err := m.DB.Query(
 		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
 			"FROM reports WHERE guildID = ? "+
+			"ORDER BY iid DESC "+
 			"LIMIT ?, ?", guildID, offset, limit)
 	var results []*util.Report
 	if err != nil {
