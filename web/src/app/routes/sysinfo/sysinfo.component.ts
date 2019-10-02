@@ -1,6 +1,6 @@
 /** @format */
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SystemInfo } from 'src/app/api/api.models';
 import dateFormat from 'dateformat';
@@ -10,9 +10,11 @@ import dateFormat from 'dateformat';
   templateUrl: './sysinfo.component.html',
   styleUrls: ['./sysinfo.component.sass'],
 })
-export class SysInfoComponent {
+export class SysInfoComponent implements OnDestroy {
   public sysinfo: SystemInfo;
   public uptime: number;
+
+  private refreshTimer: any;
 
   public dateFormat = dateFormat;
 
@@ -20,7 +22,28 @@ export class SysInfoComponent {
     this.refresh();
   }
 
+  public startAutoRefresh() {
+    this.refreshTimer = setInterval(this.refresh.bind(this), 5000);
+  }
+
+  public stopAutoRefresh() {
+    clearInterval(this.refreshTimer);
+  }
+
+  ngOnDestroy() {
+    this.stopAutoRefresh();
+  }
+
+  public onARClick(e: any) {
+    if (e) {
+      this.startAutoRefresh();
+    } else {
+      this.stopAutoRefresh();
+    }
+  }
+
   public refresh() {
+    console.log('REFRESH');
     this.api.getSystemInfo().subscribe((sysinfo) => {
       this.sysinfo = sysinfo;
       this.uptime = sysinfo.uptime;

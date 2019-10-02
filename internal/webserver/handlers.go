@@ -3,7 +3,6 @@ package webserver
 import (
 	"fmt"
 	"runtime"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -186,7 +185,6 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	guildID := ctx.Param("guildid")
 	memberID := ctx.Param("memberid")
 
-	sortBy := string(ctx.QueryArgs().Peek("sortBy"))
 	offset := ctx.QueryArgs().GetUintOrZero("offset")
 	limit := ctx.QueryArgs().GetUintOrZero("limit")
 
@@ -213,12 +211,6 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 		for i, r := range reps {
 			resReps[i] = ReportFromReport(r)
 		}
-	}
-
-	if sortBy == "created" {
-		sort.SliceStable(resReps, func(i, j int) bool {
-			return resReps[i].Created.After(resReps[j].Created)
-		})
 	}
 
 	return jsonResponse(ctx, &ListResponse{
