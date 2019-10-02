@@ -30,6 +30,7 @@ func (m *MySQL) setup() {
 		"`modlogchanID` text NOT NULL," +
 		"`voicelogchanID` text NOT NULL," +
 		"`muteRoleID` text NOT NULL," +
+		"`notifyRoleID` text NOT NULL," +
 		"`ghostPingMsg` text NOT NULL," +
 		"`jdoodleToken` text NOT NULL," +
 		"`backup` text NOT NULL," +
