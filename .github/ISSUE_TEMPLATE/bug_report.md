@@ -2,9 +2,8 @@
 name: Bug report
 about: Create a report to help us improve
 title: "[BUG] "
-labels: ''
+labels: 'bug'
 assignees: zekroTJA
-
 ---
 
 ## Type of Bug
@@ -13,6 +12,12 @@ assignees: zekroTJA
 - [ ] Minor
 - [ ] Major
 - [ ] Crash
+
+# Type of Host
+
+- [ ] Public Canary
+- [ ] Public Stable
+- [ ] Self Hosted
 
 ## Description
 > Describe the bug as clear and concise as possible.
