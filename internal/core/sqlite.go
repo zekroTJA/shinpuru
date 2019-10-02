@@ -31,6 +31,7 @@ func (m *Sqlite) setup() {
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
 		"`voicelogchanID` text NOT NULL DEFAULT ''," +
 		"`muteRoleID` text NOT NULL DEFAULT ''," +
+		"`notifyRoleID` text NOT NULL DEFAULT ''," +
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
 		"`backup` text NOT NULL DEFAULT ''," +
