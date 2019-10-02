@@ -32,7 +32,7 @@ func (c *CmdNotify) GetGroup() string {
 }
 
 func (c *CmdNotify) GetDomainName() string {
-	return "sp.guild.mod.notify"
+	return "sp.chat.notify"
 }
 
 func (c *CmdNotify) Exec(args *CommandArgs) error {
