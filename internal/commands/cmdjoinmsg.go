@@ -23,7 +23,7 @@ func (c *CmdJoinMsg) GetDescription() string {
 }
 
 func (c *CmdJoinMsg) GetHelp() string {
-	return "`joinmsg msg <message>` - Set the message of the join message." +
+	return "`joinmsg msg <message>` - Set the message of the join message.\n" +
 		"`joinmsg channel <ChannelIdentifier>` - Set the channel where the message will be sent into.\n" +
 		"`joinmsg reset` - Reset and disable join messages.\n\n" +
 		"`[user]` will be replaced with the user name and `[ment]` will be replaced with the users mention when used in message text."

@@ -1,5 +1,8 @@
 <div>
-    <h1 class="mb-3">SYSTEM INFORMATION</h1>
+    <div class="d-flex mb-3">
+        <h1>SYSTEM INFORMATION</h1>
+        <app-slider class="ml-auto mr-3" (switch)="onARClick($event)">Auto-Refresh</app-slider>
+    </div>
 
     <app-spinner *ngIf="!sysinfo; else data" [started]="true"></app-spinner>
     
