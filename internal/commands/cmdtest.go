@@ -24,8 +24,6 @@ func (c *CmdTest) GetDomainName() string {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	// fmt.Println(args.Session.Channel("549575608074502174"))
-
-	// return args.CmdHandler.bck.RestoreBackup(args.Guild.ID, "6499313859982409728", )
-	return args.CmdHandler.bck.HardFlush(args.Guild.ID)
+	// args.Message.Attachments
+	return nil
 }
