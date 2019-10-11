@@ -825,3 +825,5 @@ func (m *Sqlite) DeleteSession(userID string) error {
 	}
 	return err
 }
+
+// TODO: implement imagestore
