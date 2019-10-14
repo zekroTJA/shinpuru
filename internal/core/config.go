@@ -7,11 +7,12 @@ import (
 )
 
 type ConfigDiscord struct {
-	Token         string
-	GeneralPrefix string
-	OwnerID       string
-	ClientID      string
-	ClientSecret  string
+	Token          string
+	GeneralPrefix  string
+	OwnerID        string
+	ClientID       string
+	ClientSecret   string
+	GuildBackupLoc string
 }
 
 type ConfigDatabaseCreds struct {
