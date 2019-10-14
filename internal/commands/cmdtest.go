@@ -1,5 +1,11 @@
 package commands
 
+import (
+	"fmt"
+
+	"github.com/zekroTJA/shinpuru/internal/util"
+)
+
 type CmdTest struct {
 }
 
@@ -24,8 +30,8 @@ func (c *CmdTest) GetDomainName() string {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	// fmt.Println(args.Session.Channel("549575608074502174"))
-
-	// return args.CmdHandler.bck.RestoreBackup(args.Guild.ID, "6499313859982409728", )
-	return args.CmdHandler.bck.HardFlush(args.Guild.ID)
+	imgURL := args.Message.Attachments[0].URL
+	fmt.Println(imgURL)
+	image, _ := util.DownloadImageFromURL(imgURL)
+	return args.CmdHandler.db.SaveImageData(image)
 }

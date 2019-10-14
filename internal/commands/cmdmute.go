@@ -236,21 +236,36 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		return err
 	}
 
+	repMsg := strings.Join(args.Args[1:], " ")
+
+	var attachment string
+	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	if attachment != "" {
+		img, err := util.DownloadImageFromURL(attachment)
+		if err == nil && img != nil {
+			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+				return err
+			}
+			attachment = img.ID.String()
+		}
+	}
+
 	rep, err := shared.PushMute(
 		args.Session,
 		args.CmdHandler.db,
+		args.CmdHandler.config.WebServer.PublicAddr,
 		args.Guild.ID,
 		args.User.ID,
 		victim.User.ID,
 		strings.Join(args.Args[1:], " "),
-		"",
+		attachment,
 		muteRoleID)
 
 	if err != nil {
 		_, err = util.SendEmbedError(args.Session, args.Channel.ID,
 			"Failed creating report: ```\n"+err.Error()+"\n```")
 	} else {
-		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
+		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
 	}
 
 	return err

@@ -91,11 +91,19 @@ func NewWebServer(db core.Database, s *discordgo.Session, cmd *commands.CmdHandl
 }
 
 func (ws *WebServer) registerHandlers() {
-	// rlGlobal := ws.rlm.GetHandler(500*time.Millisecond, 50)
-	// rlUsersCreate := ws.rlm.GetHandler(15*time.Second, 1)
-	// rlPageCreate := ws.rlm.GetHandler(5*time.Second, 5)
+	// --------------------------------
+	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.auth.checkAuth, ws.handlerFiles)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler)
+
+	imagestore := ws.router.Group("/imagestore")
+	imagestore.
+		Get("/<id>", ws.handlerGetImage)
+
+	// --------------------------------
+	// ONLY AVAILABLE AFTER AUTH
+
+	ws.router.Use(ws.auth.checkAuth, ws.handlerFiles)
 
 	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
 	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
