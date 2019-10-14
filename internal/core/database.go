@@ -97,6 +97,10 @@ type Database interface {
 	SetSession(key, userID string, expires time.Time) error
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
+
+	GetImageData(id snowflake.ID) (*util.Image, error)
+	SaveImageData(image *util.Image) error
+	RemoveImageData(id snowflake.ID) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

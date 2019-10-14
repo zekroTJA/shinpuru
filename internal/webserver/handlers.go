@@ -209,7 +209,7 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	if reps != nil {
 		resReps = make([]*Report, len(reps))
 		for i, r := range reps {
-			resReps[i] = ReportFromReport(r)
+			resReps[i] = ReportFromReport(r, ws.config.WebServer.PublicAddr)
 		}
 	}
 
@@ -263,7 +263,7 @@ func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusOK)
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
@@ -538,9 +538,21 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 		return err
 	}
 
+	if repReq.Attachment != "" {
+		img, err := util.DownloadImageFromURL(repReq.Attachment)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if err = ws.db.SaveImageData(img); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+		repReq.Attachment = img.ID.String()
+	}
+
 	rep, err := shared.PushReport(
 		ws.session,
 		ws.db,
+		ws.config.WebServer.PublicAddr,
 		guildID,
 		userID,
 		memberID,
@@ -552,7 +564,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
 func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
@@ -600,9 +612,21 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return err
 	}
 
+	if req.Attachment != "" {
+		img, err := util.DownloadImageFromURL(req.Attachment)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if err = ws.db.SaveImageData(img); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+		req.Attachment = img.ID.String()
+	}
+
 	rep, err := shared.PushKick(
 		ws.session,
 		ws.db,
+		ws.config.WebServer.PublicAddr,
 		guildID,
 		userID,
 		memberID,
@@ -613,7 +637,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
 func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
@@ -661,9 +685,21 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return err
 	}
 
+	if req.Attachment != "" {
+		img, err := util.DownloadImageFromURL(req.Attachment)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if err = ws.db.SaveImageData(img); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+		req.Attachment = img.ID.String()
+	}
+
 	rep, err := shared.PushBan(
 		ws.session,
 		ws.db,
+		ws.config.WebServer.PublicAddr,
 		guildID,
 		userID,
 		memberID,
@@ -674,7 +710,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, ReportFromReport(rep), fasthttp.StatusCreated)
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
@@ -927,4 +963,35 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, info, fasthttp.StatusOK)
+}
+
+func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
+	path := ctx.Param("id")
+
+	pathSplit := strings.Split(path, ".")
+	imageIDstr := pathSplit[0]
+
+	imageID, err := snowflake.ParseString(imageIDstr)
+	if err != nil {
+		return jsonError(ctx, fmt.Errorf("invalid snowflake ID"), fasthttp.StatusBadRequest)
+	}
+
+	img, err := ws.db.GetImageData(imageID)
+	if core.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	fileExtension := strings.Split(img.MimeType, "/")[1]
+	if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
+		ctx.Redirect(fmt.Sprintf("/imagestore/%s.%s", imageIDstr, fileExtension), fasthttp.StatusFound)
+		return nil
+	}
+
+	ctx.Response.Header.SetContentType(img.MimeType)
+	ctx.SetBody(img.Data)
+
+	return nil
 }

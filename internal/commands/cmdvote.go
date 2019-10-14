@@ -212,7 +212,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		Description:   description,
 		Possibilities: split[1:],
 		ImageURL:      imgLink,
-		Ticks:         make([]*util.VoteTick, 0),
+		Ticks:         make(map[string]*util.VoteTick),
 	}
 	emb, err := vote.AsEmbed(args.Session)
 	if err != nil {
