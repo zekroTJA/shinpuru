@@ -12,7 +12,11 @@ import (
 )
 
 const (
-	tickRate       = 12 * time.Hour
+	// tickRate = 5 * time.Minute
+	tickRate = 12 * time.Hour
+)
+
+var (
 	backupLocation = "./guildBackups"
 )
 
@@ -87,7 +91,11 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
-func NewGuildBackups(s *discordgo.Session, db Database) *GuildBackups {
+func NewGuildBackups(s *discordgo.Session, db Database, loc string) *GuildBackups {
+	if loc != "" {
+		backupLocation = loc
+	}
+
 	bck := new(GuildBackups)
 	bck.db = db
 	bck.session = s
@@ -105,6 +113,9 @@ func (bck *GuildBackups) initTickerLoop() {
 
 func (bck *GuildBackups) backupAllGuilds() {
 	guilds, err := bck.db.GetBackupGuilds()
+
+	util.Log.Infof("Initializing backups for %d guilds %+v\n", len(guilds), guilds)
+
 	if err != nil {
 		util.Log.Error("failed getting backup guilds: ", err)
 		return
