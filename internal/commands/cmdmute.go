@@ -236,6 +236,20 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		return err
 	}
 
+	repMsg := strings.Join(args.Args[1:], " ")
+
+	var attachment string
+	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	if attachment != "" {
+		img, err := util.DownloadImageFromURL(attachment)
+		if err == nil && img != nil {
+			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+				return err
+			}
+			attachment = img.ID.String()
+		}
+	}
+
 	rep, err := shared.PushMute(
 		args.Session,
 		args.CmdHandler.db,
@@ -244,7 +258,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		args.User.ID,
 		victim.User.ID,
 		strings.Join(args.Args[1:], " "),
-		"",
+		attachment,
 		muteRoleID)
 
 	if err != nil {
