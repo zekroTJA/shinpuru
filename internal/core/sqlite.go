@@ -127,6 +127,14 @@ func (m *Sqlite) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `imagestore` (" +
+		"`iid`  INTEGER PRIMARY KEY AUTOINCREMENT," +
+		"`id` text NOT NULL DEFAULT ''," +
+		"`mimeType` text NOT NULL DEFAULT ''," +
+		"`data` blob NOT NULL DEFAULT ''" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -827,39 +835,30 @@ func (m *Sqlite) DeleteSession(userID string) error {
 }
 
 func (m *Sqlite) GetImageData(id snowflake.ID) (*util.Image, error) {
-	// img := new(util.Image)
-	// row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
-	// err := row.Scan(&img.ID, &img.MimeType, &img.Data)
-	// if err == sql.ErrNoRows {
-	// 	return nil, ErrDatabaseNotFound
-	// }
-	// if err != nil {
-	// 	return nil, err
-	// }
+	img := new(util.Image)
+	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
+	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
 
-	// img.Size = len(img.Data)
+	img.Size = len(img.Data)
 
-	// return img, nil
-
-	// TODO: implementation
-	return nil, nil
+	return img, nil
 }
 
 func (m *Sqlite) SaveImageData(img *util.Image) error {
-	// _, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
-	// return err
-
-	// TODO: implementation
-	return nil
+	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
+	return err
 }
 
 func (m *Sqlite) RemoveImageData(id snowflake.ID) error {
-	// _, err := m.DB.Exec("DELETE FROM imagestore WHERE id = ?", id)
-	// if err == sql.ErrNoRows {
-	// 	return ErrDatabaseNotFound
-	// }
-	// return err
-
-	// TODO: implementation
-	return nil
+	_, err := m.DB.Exec("DELETE FROM imagestore WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
 }
