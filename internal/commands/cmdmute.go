@@ -239,6 +239,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	rep, err := shared.PushMute(
 		args.Session,
 		args.CmdHandler.db,
+		args.CmdHandler.config.WebServer.PublicAddr,
 		args.Guild.ID,
 		args.User.ID,
 		victim.User.ID,
@@ -250,7 +251,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		_, err = util.SendEmbedError(args.Session, args.Channel.ID,
 			"Failed creating report: ```\n"+err.Error()+"\n```")
 	} else {
-		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
+		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
 	}
 
 	return err

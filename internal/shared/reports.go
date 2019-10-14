@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func PushReport(s *discordgo.Session, db core.Database, guildID, executorID, victimID, reason, attachment string, typ int) (*util.Report, error) {
+func PushReport(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string, typ int) (*util.Report, error) {
 	repID := util.NodesReport[typ].Generate()
 
 	rep := &util.Report{
@@ -27,21 +27,21 @@ func PushReport(s *discordgo.Session, db core.Database, guildID, executorID, vic
 	}
 
 	if modlogChan, err := db.GetGuildModLog(guildID); err == nil {
-		s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed())
+		s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(publicAddr))
 	}
 
 	dmChan, err := s.UserChannelCreate(victimID)
 	if err == nil {
-		s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed())
+		s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(publicAddr))
 	}
 
 	return rep, nil
 }
 
-func PushKick(s *discordgo.Session, db core.Database, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushKick(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
 	const typ = 0
 
-	rep, err := PushReport(s, db, guildID, executorID, victimID, reason, attachment, typ)
+	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +54,10 @@ func PushKick(s *discordgo.Session, db core.Database, guildID, executorID, victi
 	return rep, nil
 }
 
-func PushBan(s *discordgo.Session, db core.Database, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushBan(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
 	const typ = 1
 
-	rep, err := PushReport(s, db, guildID, executorID, victimID, reason, attachment, typ)
+	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
 	if err != nil {
 		return nil, err
 	}
@@ -70,14 +70,14 @@ func PushBan(s *discordgo.Session, db core.Database, guildID, executorID, victim
 	return rep, nil
 }
 
-func PushMute(s *discordgo.Session, db core.Database, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*util.Report, error) {
+func PushMute(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*util.Report, error) {
 	const typ = 2
 
 	if reason == "" {
 		reason = "no reason specified"
 	}
 
-	rep, err := PushReport(s, db, guildID, executorID, victimID, reason, attachment, typ)
+	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
 	if err != nil {
 		return nil, err
 	}

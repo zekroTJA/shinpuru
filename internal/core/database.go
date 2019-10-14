@@ -98,8 +98,8 @@ type Database interface {
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
 
-	GetImageData(id snowflake.ID) (*Image, error)
-	SaveImageData(image *Image) error
+	GetImageData(id snowflake.ID) (*util.Image, error)
+	SaveImageData(image *util.Image) error
 	RemoveImageData(id snowflake.ID) error
 }
 

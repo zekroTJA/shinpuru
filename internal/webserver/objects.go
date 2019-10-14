@@ -206,8 +206,9 @@ func MemberFromMember(m *discordgo.Member) *Member {
 	}
 }
 
-func ReportFromReport(r *util.Report) *Report {
+func ReportFromReport(r *util.Report, publicAddr string) *Report {
 	rtype := util.ReportTypes[r.Type]
+	r.AttachmehtURL = util.GetImageLink(r.AttachmehtURL, publicAddr)
 	return &Report{
 		Report:   r,
 		TypeName: rtype,
