@@ -78,6 +78,15 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 
 	var attachment string
 	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	if attachment != "" {
+		img, err := util.DownloadImageFromURL(attachment)
+		if err == nil && img != nil {
+			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+				return err
+			}
+			attachment = img.ID.String()
+		}
+	}
 
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
@@ -104,7 +113,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: attachment,
+				URL: util.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,
@@ -114,6 +123,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 			rep, err := shared.PushKick(
 				args.Session,
 				args.CmdHandler.db,
+				args.CmdHandler.config.WebServer.PublicAddr,
 				args.Guild.ID,
 				args.User.ID,
 				victim.User.ID,
@@ -124,7 +134,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 				util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed kicking member: ```\n"+err.Error()+"\n```")
 			} else {
-				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
+				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
 			}
 		},
 	}

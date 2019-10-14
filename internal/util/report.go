@@ -22,7 +22,7 @@ func (r *Report) GetTimestamp() time.Time {
 	return time.Unix(r.ID.Time()/1000, 0)
 }
 
-func (r *Report) AsEmbed() *discordgo.MessageEmbed {
+func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Title: "Case " + r.ID.String(),
 		Color: ReportColors[r.Type],
@@ -48,15 +48,15 @@ func (r *Report) AsEmbed() *discordgo.MessageEmbed {
 		},
 		Timestamp: r.GetTimestamp().Format("2006-01-02T15:04:05.000Z"),
 		Image: &discordgo.MessageEmbedImage{
-			URL: r.AttachmehtURL,
+			URL: GetImageLink(r.AttachmehtURL, publicAddr),
 		},
 	}
 }
 
-func (r *Report) AsEmbedField() *discordgo.MessageEmbedField {
+func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {
-		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", r.AttachmehtURL)
+		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", GetImageLink(r.AttachmehtURL, publicAddr))
 	}
 
 	return &discordgo.MessageEmbedField{

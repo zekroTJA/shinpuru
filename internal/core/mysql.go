@@ -132,10 +132,11 @@ func (m *MySQL) setup() {
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `imagestore` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`id` text NOT NULL," +
-		"`mineType` string NOT NULL," +
+		"`mimeType` text NOT NULL," +
 		"`data` longblob NOT NULL," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
 
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
@@ -840,8 +841,8 @@ func (m *MySQL) DeleteSession(userID string) error {
 	return err
 }
 
-func (m *MySQL) GetImageData(id snowflake.ID) (*Image, error) {
-	img := new(Image)
+func (m *MySQL) GetImageData(id snowflake.ID) (*util.Image, error) {
+	img := new(util.Image)
 	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
 	if err == sql.ErrNoRows {
@@ -856,7 +857,7 @@ func (m *MySQL) GetImageData(id snowflake.ID) (*Image, error) {
 	return img, nil
 }
 
-func (m *MySQL) SaveImageData(img *Image) error {
+func (m *MySQL) SaveImageData(img *util.Image) error {
 	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }

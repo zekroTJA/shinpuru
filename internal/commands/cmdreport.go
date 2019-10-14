@@ -83,7 +83,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		} else {
 			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
 			for _, r := range reps {
-				emb.Fields = append(emb.Fields, r.AsEmbedField())
+				emb.Fields = append(emb.Fields, r.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr))
 			}
 		}
 		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
@@ -115,6 +115,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		}
 		msgOffset++
 	}
+
 	if len(args.Args[msgOffset:]) < 1 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Please enter a valid report description.")
@@ -125,6 +126,15 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 	var attachment string
 	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	if attachment != "" {
+		img, err := util.DownloadImageFromURL(attachment)
+		if err == nil && img != nil {
+			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+				return err
+			}
+			attachment = img.ID.String()
+		}
+	}
 
 	acceptMsg := util.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
@@ -147,7 +157,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: attachment,
+				URL: util.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,
@@ -157,6 +167,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 			rep, err := shared.PushReport(
 				args.Session,
 				args.CmdHandler.db,
+				args.CmdHandler.config.WebServer.PublicAddr,
 				args.Guild.ID,
 				args.User.ID,
 				victim.User.ID,
@@ -168,7 +179,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed creating report: ```\n"+err.Error()+"\n```")
 			} else {
-				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed())
+				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
 			}
 		},
 	}
@@ -216,7 +227,7 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 					Name:  "Revocation Reason",
 					Value: reason,
 				},
-				rep.AsEmbedField(),
+				rep.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,
@@ -248,7 +259,7 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 						Name:  "Revocation Reason",
 						Value: reason,
 					},
-					rep.AsEmbedField(),
+					rep.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr),
 				},
 			}
 

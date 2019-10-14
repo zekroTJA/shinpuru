@@ -1,5 +1,11 @@
 package commands
 
+import (
+	"fmt"
+
+	"github.com/zekroTJA/shinpuru/internal/util"
+)
+
 type CmdTest struct {
 }
 
@@ -24,6 +30,8 @@ func (c *CmdTest) GetDomainName() string {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	// args.Message.Attachments
-	return nil
+	imgURL := args.Message.Attachments[0].URL
+	fmt.Println(imgURL)
+	image, _ := util.DownloadImageFromURL(imgURL)
+	return args.CmdHandler.db.SaveImageData(image)
 }

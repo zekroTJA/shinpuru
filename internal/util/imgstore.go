@@ -1,9 +1,10 @@
-package core
+package util
 
 import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -46,5 +47,15 @@ func DownloadImageFromURL(url string) (*Image, error) {
 		return nil, fmt.Errorf("empty body received")
 	}
 
+	img.ID = NodeImages.Generate()
+
 	return img, nil
+}
+
+func GetImageLink(ident, publicAddr string) string {
+	if ident == "" || strings.HasPrefix(ident, "http://") || strings.HasPrefix(ident, "https://") {
+		return ident
+	}
+
+	return fmt.Sprintf("%s/imagestore/%s.png", publicAddr, ident)
 }
