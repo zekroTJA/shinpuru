@@ -19,14 +19,8 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 export class SpinnerButtonComponent implements ControlValueAccessor {
   private _loading = false;
 
-  @Output() click: EventEmitter<any> = new EventEmitter<any>();
-
   private onTouchedCallback: () => void = () => {};
   private onChangeCallback: (_: any) => void = () => {};
-
-  public onClick(event: any) {
-    this.click.emit(event);
-  }
 
   public get loading(): boolean {
     return this._loading;
