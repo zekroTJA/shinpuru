@@ -1,0 +1,19 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-go@v1
+      - uses: actions/setup-node@v1
+    
+      - run: |
+          go get -u github.com/golang/dep/cmd/dep
+          dep ensure -v
+          
+      - run: bash ./ci/build.sh
