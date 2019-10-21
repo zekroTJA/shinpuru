@@ -29,9 +29,11 @@ interface Perms {
 export class GuildComponent {
   public readonly MAX_SHOWN_USERS = 200;
   public readonly MAX_SHOWN_MODLOG = 20;
+  public readonly MAX_LOAD_USERS = 1000;
 
   public guild: Guild;
   public members: Member[];
+  public membersDisplayed: Member[];
   public reports: Report[];
   public reportsTotalCount: number;
   public allowed: string[];
@@ -79,14 +81,9 @@ export class GuildComponent {
         });
     });
 
-    this.api
-      .getGuildMembers(guildID, '', this.MAX_SHOWN_USERS)
-      .subscribe((members) => {
-        this.members = members;
-        if (this.guild) {
-          this.guild.members = members;
-        }
-      });
+    this.loadMembers(guildID, () => {
+      this.membersDisplayed = this.members.slice(0, this.MAX_SHOWN_USERS);
+    });
 
     this.api.getGuildSettings(guildID).subscribe((settings) => {
       this.settings = settings;
@@ -103,6 +100,33 @@ export class GuildComponent {
     });
   }
 
+  private loadMembers(guildID: string, cb: () => void) {
+    const membersLen = this.members ? this.members.length : 0;
+    const lastMember =
+      this.members && membersLen > 0 ? this.members[membersLen - 1] : null;
+    this.api
+      .getGuildMembers(
+        guildID,
+        lastMember ? lastMember.user.id : '',
+        this.MAX_LOAD_USERS
+      )
+      .subscribe((members) => {
+        if (!this.members) {
+          this.members = [];
+        }
+
+        this.members = this.members.concat(members);
+
+        if (this.guild) {
+          this.guild.members = this.members;
+        }
+
+        console.log(this.members.length);
+        console.log(lastMember ? lastMember.user : '');
+        cb();
+      });
+  }
+
   public get userRoles(): Role[] {
     const userRoleIDs = this.guild.self_member.roles;
     return this.guild.roles
@@ -114,17 +138,14 @@ export class GuildComponent {
     const val = e.target.value.toLowerCase();
 
     if (val === '') {
-      this.members = this.guild.members.filter(
-        (m) => m.user.id !== this.guild.self_member.user.id
-      );
+      this.membersDisplayed = this.members.slice(0, this.MAX_SHOWN_USERS);
       this.isSearchInput = false;
     } else {
-      this.members = this.guild.members.filter(
+      this.membersDisplayed = this.members.filter(
         (m) =>
-          m.user.id !== this.guild.self_member.user.id &&
-          ((m.nick && m.nick.toLowerCase().includes(val)) ||
-            m.user.username.toLowerCase().includes(val) ||
-            m.user.id.includes(val))
+          (m.nick && m.nick.toLowerCase().includes(val)) ||
+          m.user.username.toLowerCase().includes(val) ||
+          m.user.id.includes(val)
       );
       this.isSearchInput = true;
     }
@@ -234,16 +255,24 @@ export class GuildComponent {
       });
   }
 
-  public displayMoreUsers() {
+  public displayMoreMembers() {
+    console.log('DISPALY MORE MEMBERS');
     this.memberDisplayMoreLoading = true;
 
-    const after = this.guild.members[this.guild.members.length - 1].user.id;
-    this.api
-      .getGuildMembers(this.guild.id, after, this.MAX_SHOWN_USERS)
-      .subscribe((members) => {
-        this.members = this.guild.members = this.guild.members.concat(members);
-        this.memberDisplayMoreLoading = false;
-      });
+    const currVisible = this.membersDisplayed.length;
+
+    const append = () => {
+      this.membersDisplayed = this.membersDisplayed.concat(
+        this.members.slice(currVisible, currVisible + this.MAX_SHOWN_USERS)
+      );
+      this.memberDisplayMoreLoading = false;
+    };
+
+    if (currVisible + this.MAX_SHOWN_USERS > this.members.length) {
+      this.loadMembers(this.guild.id, append);
+    } else {
+      append();
+    }
   }
 
   public displayMoreReports() {
