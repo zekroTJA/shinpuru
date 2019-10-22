@@ -74,7 +74,7 @@ Another useful feature is the [`quote`](https://github.com/zekroTJA/shinpuru/wik
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-19-32.png)
 
-Time for some democracy? So, you cna create reaction-interactive votes with the [`vote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#vote) command.
+Time for some democracy? So, you can create reaction-interactive votes with the [`vote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#vote) command.
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-22-03.png)
 
@@ -85,7 +85,7 @@ Annoyed from ghost pings *(messages with mentions, which were deleted, so you on
 
 ## Guild Backups
 
-You want to be prepared for each emergency? Just enable the auto-backup system of shinpuru with the [`backup`](https://github.com/zekroTJA/shinpuru/wiki/Commands#backup) command. Then, a full backup of all of the guilds roles, channels, members and guild settings will be saved every 12 hours. The last 10 backups are saved, so you have access to backups for the last 5 days. Of course, you can also automatically restore saved backups by using the `backup restore` command.
+You want to be prepared for each emergency? Just enable the auto-backup system of shinpuru with the [`backup`](https://github.com/zekroTJA/shinpuru/wiki/Commands#backup) command. Then, a full backup of all of the guild roles, channels, members and guild settings will be saved every 12 hours. The last 10 backups are saved, so you have access to backups for the last 5 days. Of course, you can also automatically restore saved backups by using the `backup restore` command.
 
 ## Twitch Notifications
 
