@@ -58,7 +58,7 @@ build: $(BIN)
 
 PHONY += deps
 deps:
-	$(DEP) ensure -v
+	$(DEP) mod tidy
 	cd ./web && \
 		$(NPM) install
 
