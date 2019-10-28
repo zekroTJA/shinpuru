@@ -121,8 +121,6 @@ export class GuildComponent {
           this.guild.members = this.members;
         }
 
-        console.log(this.members.length);
-        console.log(lastMember ? lastMember.user : '');
         cb();
       });
   }
@@ -156,7 +154,6 @@ export class GuildComponent {
   }
 
   public saveGuildSettings() {
-    console.log(this.updatedSettings);
     this.api
       .postGuildSettings(this.guild.id, this.updatedSettings)
       .subscribe((res) => {
@@ -256,7 +253,6 @@ export class GuildComponent {
   }
 
   public displayMoreMembers() {
-    console.log('DISPALY MORE MEMBERS');
     this.memberDisplayMoreLoading = true;
 
     const currVisible = this.membersDisplayed.length;
