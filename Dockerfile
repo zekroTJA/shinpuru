@@ -1,25 +1,23 @@
-FROM golang:1.12.6-stretch
+FROM golang:1.13.3-stretch
 
 RUN apt-get update -y &&\
     apt-get install -y \
         git
 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - &&\
         apt-get install -y nodejs &&\
         npm install -g @angular/cli
 
 ENV PATH="${GOPATH}/bin:${PATH}"
 
-RUN go get -u github.com/golang/dep/cmd/dep
-
-WORKDIR ${GOPATH}/src/github.com/zekroTJA/shinpuru
+WORKDIR /var/shinpuru
 
 ADD . .
 
 RUN mkdir -p /etc/config &&\
     mkdir -p /etc/db
 
-RUN dep ensure -v
+RUN go mod tidy
 
 RUN go build -v -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(git describe --tags) \
