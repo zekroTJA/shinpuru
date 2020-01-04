@@ -624,8 +624,8 @@ func (m *MySQL) GetGuildJoinMsg(guildID string) (string, string, error) {
 	return data[:i], data[i+1:], nil
 }
 
-func (m *MySQL) SetGuildJoinMsg(guildID string, channelID string, msg string) error {
-	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", channelID, msg))
+func (m *MySQL) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
+	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", msg, channelID))
 }
 
 func (m *MySQL) GetGuildLeaveMsg(guildID string) (string, string, error) {
