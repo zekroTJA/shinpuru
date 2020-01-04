@@ -324,11 +324,11 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.JoinMessageText, gs.JoinMessageChannel, err = ws.db.GetGuildJoinMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.JoinMessageChannel, gs.JoinMessageText, err = ws.db.GetGuildJoinMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.LeaveMessageText, gs.LeaveMessageChannel, err = ws.db.GetGuildLeaveMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.LeaveMessageChannel, gs.LeaveMessageText, err = ws.db.GetGuildLeaveMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
@@ -423,7 +423,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			gs.JoinMessageText = ""
 		}
 
-		if err = ws.db.SetGuildJoinMsg(guildID, gs.JoinMessageText, gs.JoinMessageChannel); err != nil {
+		if err = ws.db.SetGuildJoinMsg(guildID, gs.JoinMessageChannel, gs.JoinMessageText); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		}
 	}
@@ -440,7 +440,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 			gs.LeaveMessageText = ""
 		}
 
-		if err = ws.db.SetGuildLeaveMsg(guildID, gs.LeaveMessageText, gs.LeaveMessageChannel); err != nil {
+		if err = ws.db.SetGuildLeaveMsg(guildID, gs.LeaveMessageChannel, gs.LeaveMessageText); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		}
 	}
