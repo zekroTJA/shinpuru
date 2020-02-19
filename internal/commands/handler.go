@@ -192,6 +192,19 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 					"| Aliases | %s |\n\n"+
 					"**Usage**  \n"+
 					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(), aliases, help)
+
+			if spr := cmd.GetSubPermissionRules(); spr != nil {
+				cmdDetails += "\n**Sub Permission Rules**\n"
+				for _, perm := range spr {
+					explicit := ""
+					if perm.Explicit {
+						explicit = "`[EXPLICIT]` "
+					}
+					cmdDetails += fmt.Sprintf("- **`%s.%s`** %s- %s\n",
+						cmd.GetDomainName(), perm.Term, explicit, perm.Description)
+				}
+				cmdDetails += "\n\n"
+			}
 		}
 
 		document += "\n"
