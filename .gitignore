@@ -1,5 +1,4 @@
 .vsc/*
-.vscode/*
 private.*
 bin/*
 *.exe
@@ -7,3 +6,4 @@ bin/*
 vendor/
 web/node_modules/
 web/dist/
+__debug_bin

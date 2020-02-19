@@ -39,8 +39,19 @@ func (p PermissionArray) Merge(np PermissionArray) PermissionArray {
 }
 
 func PermissionMatchDNs(dn, p string) int {
+	var needsExplicitAllow bool
+
+	if dn[0] == '!' {
+		needsExplicitAllow = true
+		dn = dn[1:]
+	}
+
 	if dn == p {
 		return 999
+	}
+
+	if needsExplicitAllow {
+		return -1
 	}
 
 	dnA := strings.Split(dn, ".")

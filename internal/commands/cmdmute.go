@@ -38,6 +38,10 @@ func (c *CmdMute) GetDomainName() string {
 	return "sp.guild.mod.mute"
 }
 
+func (c *CmdMute) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdMute) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.displayMuteRole(args)

@@ -33,6 +33,10 @@ func (c *CmdMvall) GetDomainName() string {
 	return "sp.guild.mod.mvall"
 }
 
+func (c *CmdMvall) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdMvall) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,

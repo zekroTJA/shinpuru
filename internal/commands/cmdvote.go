@@ -24,7 +24,7 @@ func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
 		"`vote list` - display currentltly running votes\n" +
 		"`vote expire <duration> (<voteID>)` - set expire to last created (or specified) vote\n" +
-		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes `[sp.chat.vote.close]`"
+		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
 }
 
 func (c *CmdVote) GetGroup() string {
@@ -34,6 +34,17 @@ func (c *CmdVote) GetGroup() string {
 func (c *CmdVote) GetDomainName() string {
 	return "sp.chat.vote"
 }
+
+func (c *CmdVote) GetSubPermissionRules() []SubPermission {
+	return []SubPermission{
+		SubPermission{
+			Term:        "close",
+			Explicit:    true,
+			Description: "Allows closing votes also from other users",
+		},
+	}
+}
+
 func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	if len(args.Args) > 0 {
@@ -99,7 +110,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 				}
 			}
 
-			ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".close")
+			ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
 			if vote.CreatorID != args.User.ID && !ok && args.User.ID != args.Guild.OwnerID {
 				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 					"You do not have the permission to close another ones votes.")

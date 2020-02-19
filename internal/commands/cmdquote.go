@@ -33,6 +33,10 @@ func (c *CmdQuote) GetDomainName() string {
 	return "sp.chat.quote"
 }
 
+func (c *CmdQuote) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdQuote) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,

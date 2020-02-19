@@ -37,6 +37,10 @@ func (c *CmdJoinMsg) GetDomainName() string {
 	return "sp.guild.config.joinmsg"
 }
 
+func (c *CmdJoinMsg) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdJoinMsg) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 

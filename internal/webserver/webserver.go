@@ -173,7 +173,7 @@ func (ws *WebServer) registerHandlers() {
 func (ws *WebServer) ListenAndServeBlocking() error {
 	tls := ws.config.WebServer.TLS
 
-	if tls.Enabled {
+	if tls != nil && tls.Enabled {
 		if tls.Cert == "" || tls.Key == "" {
 			return errors.New("cert file and key file must be specified")
 		}
