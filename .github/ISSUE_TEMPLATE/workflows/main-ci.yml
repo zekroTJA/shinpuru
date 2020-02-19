@@ -1,0 +1,35 @@
+name: Main CI
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+
+  wiki-generate:
+
+    name: Wiki Generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+
+      - name: Build and push to wiki
+        run: |
+          go run ./cmd/cmdman -o ./docs/commandsManual.md
+          git clone https://zekroTJA:${{ secrets.GITHUB_TOKEN }}@github.com/zekroTJA/shinpuru.wiki.git
+          mv ./docs/commandsManual.md ./shinpuru.wiki/Commands.md
+          git -C ./shinpuru.wiki add .
+          git -C ./shinpuru.wiki -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
+          git -C ./shinpuru.wiki push
