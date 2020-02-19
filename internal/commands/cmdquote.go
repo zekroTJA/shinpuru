@@ -22,7 +22,7 @@ func (c *CmdQuote) GetDescription() string {
 }
 
 func (c *CmdQuote) GetHelp() string {
-	return "`quote <msgID/msgURL>`"
+	return "`quote <msgID/msgURL> (<comment>)`"
 }
 
 func (c *CmdQuote) GetGroup() string {
@@ -49,6 +49,8 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		urlSplit := strings.Split(args.Args[0], "/")
 		args.Args[0] = urlSplit[len(urlSplit)-1]
 	}
+
+	comment := strings.Join(args.Args[1:], " ")
 
 	msgSearchEmb := &discordgo.MessageEmbed{
 		Color:       util.ColorEmbedGray,
@@ -144,7 +146,8 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		Description: quoteMsg.Content +
 			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg, args.Guild.ID)),
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
+			IconURL: args.User.AvatarURL("16"),
+			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
@@ -157,6 +160,11 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Height:   att.Height,
 			Width:    att.Width,
 		}
+	}
+
+	if comment != "" {
+		args.Session.ChannelMessageEdit(args.Channel.ID, msgSearch.ID,
+			fmt.Sprintf("**%s:**\n%s\n", args.User.String(), comment))
 	}
 
 	args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
