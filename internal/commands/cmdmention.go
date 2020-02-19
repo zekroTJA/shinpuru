@@ -35,6 +35,10 @@ func (c *CmdMention) GetDomainName() string {
 	return "sp.guild.mod.ment"
 }
 
+func (c *CmdMention) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdMention) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		rolesStr := ""

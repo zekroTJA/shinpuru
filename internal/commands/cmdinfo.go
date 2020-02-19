@@ -30,6 +30,10 @@ func (c *CmdInfo) GetDomainName() string {
 	return "sp.etc.info"
 }
 
+func (c *CmdInfo) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdInfo) Exec(args *CommandArgs) error {
 	invLink := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
 		args.Session.State.User.ID, util.InvitePermission)

@@ -43,6 +43,10 @@ func (c *CmdPerms) GetDomainName() string {
 	return "sp.guild.config.perms"
 }
 
+func (c *CmdPerms) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdPerms) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 	perms, err := db.GetGuildPermissions(args.Guild.ID)

@@ -37,6 +37,10 @@ func (c *CmdLeaveMsg) GetDomainName() string {
 	return "sp.guild.config.leavemsg"
 }
 
+func (c *CmdLeaveMsg) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 

@@ -35,6 +35,10 @@ func (c *CmdNotify) GetDomainName() string {
 	return "sp.chat.notify"
 }
 
+func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdNotify) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)

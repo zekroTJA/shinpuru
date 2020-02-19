@@ -33,6 +33,10 @@ func (c *CmdStats) GetDomainName() string {
 	return "sp.etc.stats"
 }
 
+func (c *CmdStats) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdStats) Exec(args *CommandArgs) error {
 	uptime := int(time.Since(util.StatsStartupTime).Seconds())
 	uptimeDays := int(uptime / (3600 * 24))

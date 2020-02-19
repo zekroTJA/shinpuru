@@ -36,6 +36,10 @@ func (c *CmdSay) GetDescription() string {
 	return "send an embeded message with the bot"
 }
 
+func (c *CmdSay) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdSay) GetHelp() string {
 	colors := make([]string, len(embedColors))
 	i := 0
