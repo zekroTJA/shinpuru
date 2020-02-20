@@ -7,7 +7,7 @@ import (
 
 type PermissionArray []string
 
-func (p PermissionArray) Update(npdn string) PermissionArray {
+func (p PermissionArray) Update(npdn string, override bool) PermissionArray {
 	newp := make(PermissionArray, len(p)+1)
 
 	i := 0
@@ -15,6 +15,13 @@ func (p PermissionArray) Update(npdn string) PermissionArray {
 	for _, cp := range p {
 		if len(cp) > 0 && cp[1:] == npdn[1:] {
 			add = false
+
+			if override {
+				newp[i] = npdn
+				i++
+				continue
+			}
+
 			if cp[0] != npdn[0] {
 				continue
 			}
@@ -31,9 +38,9 @@ func (p PermissionArray) Update(npdn string) PermissionArray {
 	return newp[:i]
 }
 
-func (p PermissionArray) Merge(np PermissionArray) PermissionArray {
+func (p PermissionArray) Merge(np PermissionArray, override bool) PermissionArray {
 	for _, cp := range np {
-		p = p.Update(cp)
+		p = p.Update(cp, override)
 	}
 	return p
 }

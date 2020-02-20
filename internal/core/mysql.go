@@ -249,18 +249,19 @@ func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, member
 	if err != nil {
 		return nil, err
 	}
-	member, err := s.GuildMember(guildID, memberID)
+
+	membRoles, err := util.GetSortedMemberRoles(s, guildID, memberID, false)
 	if err != nil {
 		return nil, err
 	}
 
 	var res PermissionArray
-	for _, rID := range member.Roles {
-		if p, ok := guildPerms[rID]; ok {
+	for _, r := range membRoles {
+		if p, ok := guildPerms[r.ID]; ok {
 			if res == nil {
 				res = p
 			} else {
-				res = res.Merge(p)
+				res = res.Merge(p, true)
 			}
 		}
 	}
