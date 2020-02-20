@@ -117,7 +117,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		return nil, err
 	}
 
-	perm = perm.Merge(c.defUserRules)
+	perm = perm.Merge(c.defUserRules, false)
 
 	return perm, nil
 }
