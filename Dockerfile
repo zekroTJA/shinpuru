@@ -26,7 +26,7 @@ RUN go build -v -o ./bin/shinpuru -ldflags "\
 RUN cd ./web &&\
     npm ci &&\
     ng build --prod=true \
-        --output-path ./bin/web/dist/web
+        --output-path ../bin/web/dist/web
 
 
 FROM debian:buster-slim as final
