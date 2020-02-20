@@ -1,0 +1,48 @@
+name: Releases CD
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+
+  releases-deploy:
+
+    name: GitHub Releases Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Set up NodeJS 
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+
+      - name: Set up Hub
+        run: |
+          sudo snap install hub --classic
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+
+      - name: Build releases
+        run: |
+          bash ./ci/build.sh
+
+      - name: Deploy to Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: 'hub release create
+            -a ./deploy/build_assets.tar.gz
+            -a ./deploy/md5sum.txt
+            -a ./deploy/sha256sum.txt
+            -m "${{ github.ref }}"
+            ${{ github.ref }}'

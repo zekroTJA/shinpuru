@@ -30,10 +30,6 @@ fi
 
 IMAGE="$IMAGE_NAME:$DTAG"
 
-echo "IMAGE '$IMAGE'"
-
 docker build . -t $IMAGE
-
 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-
 docker push $IMAGE
