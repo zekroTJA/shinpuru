@@ -27,7 +27,7 @@ RUN go build -v -o ./bin/shinpuru -ldflags "\
         ./cmd/shinpuru/*.go
 
 RUN cd ./web &&\
-        npm i &&\
+        npm ci &&\
         ng build --prod=true
 
 EXPOSE 8080

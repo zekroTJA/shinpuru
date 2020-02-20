@@ -5,8 +5,6 @@ BUILDPATH="./bin"
 BUILDNAME="shinpuru"
 #########
 
-SQLLDFLAGS=$(bash ./scripts/getsqlschemes.bash)
-
 TAG=$(git describe --tags)
 if [ "$TAG" == "" ]; then
     TAG="untagged"
@@ -18,15 +16,12 @@ if [ ! -d $BUILDPATH ]; then
     mkdir $BUILDPATH
 fi
 
-BUILDS=( \
-    'linux;arm' \
-    'linux;amd64' \
-    'windows;amd64' \
-    'darwin;amd64' \
+BUILDS=(
+    'linux;arm'
+    'linux;amd64'
+    'windows;amd64'
+    'darwin;amd64'
 )
-
-curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-dep ensure
 
 for BUILD in ${BUILDS[*]}; do
 
@@ -42,8 +37,7 @@ for BUILD in ${BUILDS[*]}; do
             -ldflags " \
                 -X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$TAG \
                 -X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$COMMIT \
-                -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE \
-                $SQLLDFLAGS" \
+                -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
                 ./cmd/shinpuru)
             
 
@@ -53,9 +47,17 @@ for BUILD in ${BUILDS[*]}; do
     fi
 done
 
-sha256sum $BUILDPATH/* | tee $BUILDPATH/sha256sums
+cd web
+npm ci
+npx ng build --prod --output-path ../bin/web/dist/web
+cd ..
 
-echo "Exporting commands manual..."
-go run ./cmd/cmdman -o ./docs/commandsManual.md
+mkdir deploy
+tar -C ./bin -czvf ./deploy/build_assets.tar.gz *
+
+cd deploy
+sha256sum ./build_assets.tar.gz | tee sha256sum.txt
+md5sum ./build_assets.tar.gz | tee md5sum.txt
+cd ..
 
 wait
