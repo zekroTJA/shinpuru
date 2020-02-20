@@ -34,6 +34,8 @@ FROM debian:buster-slim as final
 WORKDIR /app
 COPY --from=build /build/bin .
 
+RUN apt-get update &&\
+    apt-get install -y ca-certificates
 RUN mkdir -p /etc/config &&\
     mkdir -p /etc/db
 
