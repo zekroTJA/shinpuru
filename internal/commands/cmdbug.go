@@ -28,6 +28,10 @@ func (c *CmdBug) GetDomainName() string {
 	return "sp.etc.bug"
 }
 
+func (c *CmdBug) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdBug) Exec(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
 		Color: util.ColorEmbedDefault,

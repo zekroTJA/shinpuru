@@ -34,6 +34,10 @@ func (c *CmdClear) GetDomainName() string {
 	return "sp.guild.mod.clear"
 }
 
+func (c *CmdClear) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdClear) Exec(args *CommandArgs) error {
 	var msgsStructs []*discordgo.Message
 	var err error

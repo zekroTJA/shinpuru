@@ -34,6 +34,10 @@ func (c *CmdVoicelog) GetDomainName() string {
 	return "sp.guild.config.voicelog"
 }
 
+func (c *CmdVoicelog) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdVoicelog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		acceptMsg := &util.AcceptMessage{

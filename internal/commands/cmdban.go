@@ -33,6 +33,10 @@ func (c *CmdBan) GetDomainName() string {
 	return "sp.guild.mod.ban"
 }
 
+func (c *CmdBan) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdBan) Exec(args *CommandArgs) error {
 	if len(args.Args) < 2 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,

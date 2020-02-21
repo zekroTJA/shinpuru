@@ -41,6 +41,21 @@ func (c *CmdTag) GetDomainName() string {
 	return "sp.chat.tag"
 }
 
+func (c *CmdTag) GetSubPermissionRules() []SubPermission {
+	return []SubPermission{
+		SubPermission{
+			Term:        "create",
+			Explicit:    true,
+			Description: "Allows creating tags",
+		},
+		SubPermission{
+			Term:        "delete",
+			Explicit:    true,
+			Description: "Allows deleting tags (of every user)",
+		},
+	}
+}
+
 func (c *CmdTag) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
@@ -69,7 +84,7 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 
 	switch strings.ToLower(args.Args[0]) {
 	case "create", "add":
-		if err, ok := checkPermission(args, c.GetDomainName()+".create"); !ok || err != nil {
+		if err, ok := checkPermission(args, "!"+c.GetDomainName()+".create"); !ok || err != nil {
 			return err
 		}
 		return c.addTag(args, db)
@@ -177,7 +192,7 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db core.Database) error {
 		return err
 	}
 
-	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".delete")
+	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}

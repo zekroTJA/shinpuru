@@ -32,6 +32,10 @@ func (c *CmdGame) GetDomainName() string {
 	return "sp.game"
 }
 
+func (c *CmdGame) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdGame) Exec(args *CommandArgs) error {
 
 	if len(args.Args) < 2 {

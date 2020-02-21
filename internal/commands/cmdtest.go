@@ -29,6 +29,10 @@ func (c *CmdTest) GetDomainName() string {
 	return "sp.test"
 }
 
+func (c *CmdTest) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	imgURL := args.Message.Attachments[0].URL
 	fmt.Println(imgURL)

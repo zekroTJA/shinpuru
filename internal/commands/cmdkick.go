@@ -33,6 +33,10 @@ func (c *CmdKick) GetDomainName() string {
 	return "sp.guild.mod.kick"
 }
 
+func (c *CmdKick) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdKick) Exec(args *CommandArgs) error {
 	if len(args.Args) < 2 {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,

@@ -34,6 +34,10 @@ func (c *CmdModlog) GetDomainName() string {
 	return "sp.guild.config.modlog"
 }
 
+func (c *CmdModlog) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdModlog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		acceptMsg := &util.AcceptMessage{
