@@ -36,6 +36,10 @@ func (c *CmdTwitchNotify) GetDomainName() string {
 	return "sp.chat.twitch"
 }
 
+func (c *CmdTwitchNotify) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 	tnw := args.CmdHandler.tnw
 

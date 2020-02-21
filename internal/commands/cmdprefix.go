@@ -33,6 +33,10 @@ func (c *CmdPrefix) GetDomainName() string {
 	return "sp.guild.config.prefix"
 }
 
+func (c *CmdPrefix) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdPrefix) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 

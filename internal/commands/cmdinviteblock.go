@@ -34,6 +34,16 @@ func (c *CmdInviteBlock) GetDomainName() string {
 	return "sp.guild.mod.inviteblock"
 }
 
+func (c *CmdInviteBlock) GetSubPermissionRules() []SubPermission {
+	return []SubPermission{
+		SubPermission{
+			Term:        "send",
+			Explicit:    true,
+			Description: "Allows sending invites even if invite block is enabled",
+		},
+	}
+}
+
 func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.printStatus(args)

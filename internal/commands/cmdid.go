@@ -32,6 +32,10 @@ func (c *CmdId) GetDomainName() string {
 	return "sp.etc.id"
 }
 
+func (c *CmdId) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdId) Exec(args *CommandArgs) error {
 	var user *discordgo.User
 	var role *discordgo.Role

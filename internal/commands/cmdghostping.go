@@ -43,6 +43,10 @@ func (c *CmdGhostping) GetDomainName() string {
 	return "sp.guild.mod.ghostping"
 }
 
+func (c *CmdGhostping) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdGhostping) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.info(args)

@@ -43,6 +43,10 @@ func (c *CmdExec) GetDomainName() string {
 	return "sp.chat.exec"
 }
 
+func (c *CmdExec) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdExec) Exec(args *CommandArgs) error {
 	errHelpMsg := func(args *CommandArgs) error {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,

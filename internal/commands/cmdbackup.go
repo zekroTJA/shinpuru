@@ -41,6 +41,10 @@ func (c *CmdBackup) GetDomainName() string {
 	return "sp.guild.admin.backup"
 }
 
+func (c *CmdBackup) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdBackup) Exec(args *CommandArgs) error {
 	if len(args.Args) > 0 {
 		switch strings.ToLower(args.Args[0]) {

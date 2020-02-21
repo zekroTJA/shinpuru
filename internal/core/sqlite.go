@@ -245,19 +245,19 @@ func (m *Sqlite) GetMemberPermission(s *discordgo.Session, guildID string, membe
 	if err != nil {
 		return nil, err
 	}
-	member, err := s.GuildMember(guildID, memberID)
+
+	membRoles, err := util.GetSortedMemberRoles(s, guildID, memberID, false)
 	if err != nil {
 		return nil, err
 	}
 
 	var res PermissionArray
-	member.Roles = append(member.Roles, guildID)
-	for _, rID := range member.Roles {
-		if p, ok := guildPerms[rID]; ok {
+	for _, r := range membRoles {
+		if p, ok := guildPerms[r.ID]; ok {
 			if res == nil {
 				res = p
 			} else {
-				res = res.Merge(p)
+				res = res.Merge(p, true)
 			}
 		}
 	}
@@ -621,8 +621,8 @@ func (m *Sqlite) GetGuildJoinMsg(guildID string) (string, string, error) {
 	return data[:i], data[i+1:], nil
 }
 
-func (m *Sqlite) SetGuildJoinMsg(guildID string, channelID string, msg string) error {
-	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", channelID, msg))
+func (m *Sqlite) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
+	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", msg, channelID))
 }
 
 func (m *Sqlite) GetGuildLeaveMsg(guildID string) (string, string, error) {

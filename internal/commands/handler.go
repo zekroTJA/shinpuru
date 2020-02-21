@@ -117,7 +117,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 		return nil, err
 	}
 
-	perm = perm.Merge(c.defUserRules)
+	perm = perm.Merge(c.defUserRules, false)
 
 	return perm, nil
 }
@@ -133,7 +133,24 @@ func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn 
 
 func (c *CmdHandler) ExportCommandManual(fileName string) error {
 	document := "> Auto generated command manual | " + time.Now().Format(time.RFC1123) + "\n\n" +
-		"# Command List\n\n"
+		"# Explicit Sub Commands\n\n" +
+		"The commands below have sub command permissions which must be set explicitly and can not be " +
+		"applied by wildcards (`*`). So here you have them if you want to allow them for specific roles:\n\n"
+
+	for _, cmd := range c.registeredCmdInstances {
+		if spr := cmd.GetSubPermissionRules(); spr != nil {
+			document += fmt.Sprintf("### %s\n\n", cmd.GetInvokes()[0])
+
+			for _, perm := range spr {
+				if perm.Explicit {
+					document += fmt.Sprintf("- **`%s.%s`** - %s\n",
+						cmd.GetDomainName(), perm.Term, perm.Description)
+				}
+			}
+		}
+	}
+
+	document += "\n# Command List\n\n"
 
 	cmdCats := make(map[string][]Command)
 	cmdDetails := "# Command Details\n\n"
@@ -152,12 +169,15 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 		catKeys[i] = cat
 		i++
 	}
+
 	sort.Strings(catKeys)
 	cmdCatsSorted := make(map[string][]Command)
+
 	for _, cat := range catKeys {
 		cmdCatsSorted[cat] = cmdCats[cat]
 		document += fmt.Sprintf("## %s\n", cat)
 		cmdDetails += fmt.Sprintf("## %s\n\n", cat)
+
 		for _, cmd := range cmdCats[cat] {
 			document += fmt.Sprintf("- [%s](#%s)\n", cmd.GetInvokes()[0], cmd.GetInvokes()[0])
 			aliases := strings.Join(cmd.GetInvokes()[1:], ", ")
@@ -172,7 +192,21 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 					"| Aliases | %s |\n\n"+
 					"**Usage**  \n"+
 					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(), aliases, help)
+
+			if spr := cmd.GetSubPermissionRules(); spr != nil {
+				cmdDetails += "\n**Sub Permission Rules**\n"
+				for _, perm := range spr {
+					explicit := ""
+					if perm.Explicit {
+						explicit = "`[EXPLICIT]` "
+					}
+					cmdDetails += fmt.Sprintf("- **`%s.%s`** %s- %s\n",
+						cmd.GetDomainName(), perm.Term, explicit, perm.Description)
+				}
+				cmdDetails += "\n\n"
+			}
 		}
+
 		document += "\n"
 	}
 
