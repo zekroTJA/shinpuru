@@ -1,6 +1,8 @@
 package inits
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core"
@@ -12,7 +14,7 @@ func InitWebServer(s *discordgo.Session, db core.Database, cmdHandler *commands.
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
 		ws = webserver.NewWebServer(db, s, cmdHandler, cfg, cfg.Discord.ClientID, cfg.Discord.ClientSecret)
 		go ws.ListenAndServeBlocking()
-		util.Log.Info("Web server running on address %s (%s)...", cfg.WebServer.Addr, cfg.WebServer.PublicAddr)
+		util.Log.Info(fmt.Sprintf("Web server running on address %s (%s)...", cfg.WebServer.Addr, cfg.WebServer.PublicAddr))
 	}
 	return
 }
