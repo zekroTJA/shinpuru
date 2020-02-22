@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 
 	"github.com/bwmarrin/discordgo"
@@ -210,7 +210,7 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 
 	rep, err := args.CmdHandler.db.GetReport(snowflake.ID(id))
 	if err != nil {
-		if core.IsErrDatabaseNotFound(err) {
+		if database.IsErrDatabaseNotFound(err) {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Could not find any report with ID `%d`", id))
 			util.DeleteMessageLater(args.Session, msg, 6*time.Second)

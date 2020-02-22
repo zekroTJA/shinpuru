@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -99,7 +99,7 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 	}
 }
 
-func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 3 {
 		return printInvalidArguments(args)
 	}
@@ -123,7 +123,7 @@ func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
 		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 		return err
 	}
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
@@ -152,7 +152,7 @@ func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func (c *CmdTag) editTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 3 {
 		return printInvalidArguments(args)
 	}
@@ -182,7 +182,7 @@ func (c *CmdTag) editTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func (c *CmdTag) deleteTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 2 {
 		return printInvalidArguments(args)
 	}
@@ -212,7 +212,7 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func (c *CmdTag) getRawTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) getRawTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 2 {
 		return printInvalidArguments(args)
 	}
@@ -226,7 +226,7 @@ func (c *CmdTag) getRawTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func (c CmdTag) getTag(args *CommandArgs, db core.Database) error {
+func (c CmdTag) getTag(args *CommandArgs, db database.Database) error {
 	tag, err, ok := getTag(args.Args[0], args, db)
 	if !ok || err != nil {
 		return err
@@ -236,9 +236,9 @@ func (c CmdTag) getTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func getTag(ident string, args *CommandArgs, db core.Database) (*util.Tag, error, bool) {
+func getTag(ident string, args *CommandArgs, db database.Database) (*util.Tag, error, bool) {
 	tag, err := db.GetTagByIdent(strings.ToLower(ident), args.Guild.ID)
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err, false
 	}
 	if tag != nil {
@@ -251,7 +251,7 @@ func getTag(ident string, args *CommandArgs, db core.Database) (*util.Tag, error
 	}
 
 	tag, err = db.GetTagByID(id)
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err, false
 	}
 

@@ -8,9 +8,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -32,36 +32,36 @@ func main() {
 		util.Log.Fatal(err)
 	}
 
-	config := inits.InitConfig(*flagConfigLocation, new(core.YAMLConfigParser))
+	conf := inits.InitConfig(*flagConfigLocation, new(config.YAMLConfigParser))
 
 	if *flagDocker {
-		if config.Database.Sqlite == nil {
-			config.Database.Sqlite = new(core.ConfigDatabaseFile)
+		if conf.Database.Sqlite == nil {
+			conf.Database.Sqlite = new(config.ConfigDatabaseFile)
 		}
-		config.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
-		config.WebServer.Addr = ":8080"
+		conf.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
+		conf.WebServer.Addr = ":8080"
 	}
 
-	util.SetLogLevel(config.Logging.LogLevel)
+	util.SetLogLevel(conf.Logging.LogLevel)
 
-	database := inits.InitDatabase(config.Database)
+	database := inits.InitDatabase(conf.Database)
 	defer func() {
 		util.Log.Info("Shutting down database connection...")
 		database.Close()
 	}()
 
-	tnw := inits.InitTwitchNotifyer(session, config, database)
+	tnw := inits.InitTwitchNotifyer(session, conf, database)
 
 	lct := inits.InitLTCTimer()
 
-	cmdHandler := inits.InitCommandHandler(session, config, database, tnw, lct)
-	inits.InitDiscordBotSession(session, config, database, cmdHandler, lct)
+	cmdHandler := inits.InitCommandHandler(session, conf, database, tnw, lct)
+	inits.InitDiscordBotSession(session, conf, database, cmdHandler, lct)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
 
-	inits.InitWebServer(session, database, cmdHandler, config)
+	inits.InitWebServer(session, database, cmdHandler, conf)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)

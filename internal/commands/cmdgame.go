@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -46,7 +46,7 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 	}
 
 	rawPresence, err := args.CmdHandler.db.GetSetting(util.SettingPresence)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 

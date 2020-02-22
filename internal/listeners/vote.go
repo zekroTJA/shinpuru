@@ -3,15 +3,15 @@ package listeners
 import (
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerVote struct {
-	db core.Database
+	db database.Database
 }
 
-func NewListenerVote(db core.Database) *ListenerVote {
+func NewListenerVote(db database.Database) *ListenerVote {
 	return &ListenerVote{
 		db: db,
 	}

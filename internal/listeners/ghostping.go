@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/timedmap"
 )
 
@@ -19,13 +19,13 @@ const (
 )
 
 type ListenerGhostPing struct {
-	db              core.Database
+	db              database.Database
 	cmdHandler      *commands.CmdHandler
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 }
 
-func NewListenerGhostPing(db core.Database, cmdHandler *commands.CmdHandler) *ListenerGhostPing {
+func NewListenerGhostPing(db database.Database, cmdHandler *commands.CmdHandler) *ListenerGhostPing {
 	return &ListenerGhostPing{
 		db:         db,
 		cmdHandler: cmdHandler,
@@ -77,7 +77,7 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 
 	gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 	if err != nil {
-		if !core.IsErrDatabaseNotFound(err) {
+		if !database.IsErrDatabaseNotFound(err) {
 			util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", deletedMsg.GuildID, err.Error())
 		}
 		return

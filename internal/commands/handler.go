@@ -13,7 +13,12 @@ import (
 
 	"github.com/zekroTJA/timedmap"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/backup"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -26,19 +31,19 @@ type CmdHandler struct {
 	registeredCmds         map[string]Command
 	registeredCmdInstances []Command
 
-	db     core.Database
-	config *core.Config
-	tnw    *core.TwitchNotifyWorker
-	bck    *core.GuildBackups
-	lct    *core.LCTimer
+	db     database.Database
+	config *config.Config
+	tnw    *twitchnotify.TwitchNotifyWorker
+	bck    *backup.GuildBackups
+	lct    *lctimer.LCTimer
 
-	defAdminRules core.PermissionArray
-	defUserRules  core.PermissionArray
+	defAdminRules permissions.PermissionArray
+	defUserRules  permissions.PermissionArray
 
 	notifiedCmdMsgs *timedmap.TimedMap
 }
 
-func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Config, tnw *twitchnotify.TwitchNotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
 	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
@@ -46,7 +51,7 @@ func NewCmdHandler(s *discordgo.Session, db core.Database, config *core.Config, 
 		config:                 config,
 		tnw:                    tnw,
 		lct:                    lct,
-		bck:                    core.NewGuildBackups(s, db, config.Discord.GuildBackupLoc),
+		bck:                    backup.NewGuildBackups(s, db, config.Discord.GuildBackupLoc),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 		defAdminRules:          util.DefaultAdminRules,
 		defUserRules:           util.DefaultUserRules,
@@ -87,15 +92,15 @@ func (c *CmdHandler) IsBotOwner(userID string) bool {
 	return userID == c.config.Discord.OwnerID
 }
 
-func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (core.PermissionArray, error) {
+func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (permissions.PermissionArray, error) {
 	if c.IsBotOwner(userID) {
-		return core.PermissionArray{"+sp.*"}, nil
+		return permissions.PermissionArray{"+sp.*"}, nil
 	}
 
 	if guildID != "" {
 		guild, err := s.Guild(guildID)
 		if err != nil {
-			return core.PermissionArray{}, nil
+			return permissions.PermissionArray{}, nil
 		}
 
 		member, _ := s.GuildMember(guildID, userID)
@@ -113,7 +118,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 
 	perm, err := c.db.GetMemberPermission(s, guildID, userID)
 
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err
 	}
 
@@ -128,7 +133,7 @@ func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn 
 		return false, err
 	}
 
-	return core.PermissionCheck(dn, perms), nil
+	return permissions.PermissionCheck(dn, perms), nil
 }
 
 func (c *CmdHandler) ExportCommandManual(fileName string) error {

@@ -5,9 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
-
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -103,7 +102,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 
 		cPerm, ok := perms[r.ID]
 		if !ok {
-			cPerm = make(core.PermissionArray, 0)
+			cPerm = make(permissions.PermissionArray, 0)
 		}
 
 		cPerm = cPerm.Update(perm, false)

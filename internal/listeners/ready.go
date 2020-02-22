@@ -5,17 +5,19 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerReady struct {
-	config *core.Config
-	db     core.Database
-	lct    *core.LCTimer
+	config *config.Config
+	db     database.Database
+	lct    *lctimer.LCTimer
 }
 
-func NewListenerReady(config *core.Config, db core.Database, lct *core.LCTimer) *ListenerReady {
+func NewListenerReady(config *config.Config, db database.Database, lct *lctimer.LCTimer) *ListenerReady {
 	return &ListenerReady{
 		config: config,
 		db:     db,

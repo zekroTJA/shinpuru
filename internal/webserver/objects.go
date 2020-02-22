@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 
 	"github.com/valyala/fasthttp"
-	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 
@@ -57,7 +57,7 @@ type GuildReduced struct {
 }
 
 type PermissionsResponse struct {
-	Permissions core.PermissionArray `json:"permissions"`
+	Permissions permissions.PermissionArray `json:"permissions"`
 }
 
 type Report struct {
@@ -68,15 +68,15 @@ type Report struct {
 }
 
 type GuildSettings struct {
-	Prefix              string                          `json:"prefix"`
-	Perms               map[string]core.PermissionArray `json:"perms"`
-	AutoRole            string                          `json:"autorole"`
-	ModLogChannel       string                          `json:"modlogchannel"`
-	VoiceLogChannel     string                          `json:"voicelogchannel"`
-	JoinMessageChannel  string                          `json:"joinmessagechannel"`
-	JoinMessageText     string                          `json:"joinmessagetext"`
-	LeaveMessageChannel string                          `json:"leavemessagechannel"`
-	LeaveMessageText    string                          `json:"leavemessagetext"`
+	Prefix              string                                 `json:"prefix"`
+	Perms               map[string]permissions.PermissionArray `json:"perms"`
+	AutoRole            string                                 `json:"autorole"`
+	ModLogChannel       string                                 `json:"modlogchannel"`
+	VoiceLogChannel     string                                 `json:"voicelogchannel"`
+	JoinMessageChannel  string                                 `json:"joinmessagechannel"`
+	JoinMessageText     string                                 `json:"joinmessagetext"`
+	LeaveMessageChannel string                                 `json:"leavemessagechannel"`
+	LeaveMessageText    string                                 `json:"leavemessagetext"`
 }
 
 type PermissionsUpdate struct {

@@ -12,11 +12,10 @@ import (
 	"github.com/zekroTJA/timedmap"
 	"golang.org/x/time/rate"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
-
-	"github.com/zekroTJA/shinpuru/internal/core"
 )
 
 const (
@@ -51,7 +50,7 @@ var (
 )
 
 type ListenerJdoodle struct {
-	db     core.Database
+	db     database.Database
 	limits *timedmap.TimedMap
 }
 
@@ -72,7 +71,7 @@ type jdoodleResponseResult struct {
 	CPUTime string `json:"cpuTime"`
 }
 
-func NewListenerJdoodle(db core.Database) *ListenerJdoodle {
+func NewListenerJdoodle(db database.Database) *ListenerJdoodle {
 	return &ListenerJdoodle{
 		db:     db,
 		limits: timedmap.New(limitTMCleanupInterval),

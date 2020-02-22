@@ -1,4 +1,4 @@
-package core
+package backup
 
 import (
 	"encoding/json"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,60 +25,7 @@ var (
 type GuildBackups struct {
 	ticker  *time.Ticker
 	session *discordgo.Session
-	db      Database
-}
-
-type BackupEntry struct {
-	GuildID   string
-	Timestamp time.Time
-	FileID    string
-}
-
-type BackupObject struct {
-	ID       string           `json:"id"`
-	Guild    *BackupGuild     `json:"guild"`
-	Channels []*BackupChannel `json:"channels"`
-	Roles    []*BackupRole    `json:"roles"`
-	Members  []*BackupMember  `json:"members"`
-}
-
-type BackupGuild struct {
-	Name                        string `json:"name"`
-	AfkChannelID                string `json:"afk_channel_id"`
-	AfkTimeout                  int    `json:"afk_timeout"`
-	VerificationLevel           int    `json:"verification_level"`
-	DefaultMessageNotifications int    `json:"default_message_notifications"`
-}
-
-type BackupChannel struct {
-	ID                   string                           `json:"id"`
-	Name                 string                           `json:"name"`
-	Topic                string                           `json:"topic"`
-	Type                 int                              `json:"type"`
-	NSFW                 bool                             `json:"nsfw"`
-	Position             int                              `json:"position"`
-	Bitrate              int                              `json:"bitrate"`
-	UserLimit            int                              `json:"user_limit"`
-	ParentID             string                           `json:"parent_id"`
-	PermissionOverwrites []*discordgo.PermissionOverwrite `json:"permission_overwrites"`
-}
-
-type BackupRole struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Mentionable bool   `json:"mentionable"`
-	Hoist       bool   `json:"hoist"`
-	Color       int    `json:"color"`
-	Position    int    `json:"position"`
-	Permissions int    `json:"permissions"`
-}
-
-type BackupMember struct {
-	ID    string   `json:"id"`
-	Nick  string   `json:"nick"`
-	Deaf  bool     `json:"deaf"`
-	Mute  bool     `json:"mute"`
-	Roles []string `json:"roles"`
+	db      database.Database
 }
 
 func asyncWriteStatus(c chan string, status string) {
@@ -91,7 +40,7 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
-func NewGuildBackups(s *discordgo.Session, db Database, loc string) *GuildBackups {
+func NewGuildBackups(s *discordgo.Session, db database.Database, loc string) *GuildBackups {
 	if loc != "" {
 		backupLocation = loc
 	}
@@ -140,8 +89,8 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return err
 	}
 
-	backup := new(BackupObject)
-	backup.Guild = &BackupGuild{
+	backup := new(backupmodels.BackupObject)
+	backup.Guild = &backupmodels.BackupGuild{
 		AfkChannelID:                g.AfkChannelID,
 		AfkTimeout:                  g.AfkTimeout,
 		DefaultMessageNotifications: g.DefaultMessageNotifications,
@@ -150,7 +99,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	for _, c := range g.Channels {
-		backup.Channels = append(backup.Channels, &BackupChannel{
+		backup.Channels = append(backup.Channels, &backupmodels.BackupChannel{
 			Bitrate:   c.Bitrate,
 			ID:        c.ID,
 			NSFW:      c.NSFW,
@@ -167,7 +116,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		if r.ID == guildID {
 			continue
 		}
-		backup.Roles = append(backup.Roles, &BackupRole{
+		backup.Roles = append(backup.Roles, &backupmodels.BackupRole{
 			Color:       r.Color,
 			Hoist:       r.Hoist,
 			ID:          r.ID,
@@ -179,7 +128,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	for _, m := range g.Members {
-		backup.Members = append(backup.Members, &BackupMember{
+		backup.Members = append(backup.Members, &backupmodels.BackupMember{
 			Deaf:  m.Deaf,
 			ID:    m.User.ID,
 			Mute:  m.Mute,
@@ -226,7 +175,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	if len(cBackups) > 10 {
-		var lastEntry *BackupEntry
+		var lastEntry *backupmodels.BackupEntry
 		for _, b := range cBackups {
 			if lastEntry == nil || b.Timestamp.Before(lastEntry.Timestamp) {
 				lastEntry = b
@@ -264,7 +213,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 	defer f.Close()
 
-	var backup BackupObject
+	var backup backupmodels.BackupObject
 
 	dec := json.NewDecoder(f)
 	err = dec.Decode(&backup)
