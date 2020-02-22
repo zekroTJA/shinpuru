@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -163,7 +163,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	}
 
 	muteRoleID, err := args.CmdHandler.db.GetMuteRoleGuild(args.Guild.ID)
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Mute command is not set up. Please enter `mute setup`.")
 		util.DeleteMessageLater(args.Session, msg, 6*time.Second)

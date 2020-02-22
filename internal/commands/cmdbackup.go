@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -80,9 +81,9 @@ func (c *CmdBackup) switchStatus(args *CommandArgs, enable bool) error {
 	return err
 }
 
-func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, string, error) {
+func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*backupmodels.BackupEntry, string, error) {
 	backups, err := args.CmdHandler.db.GetBackups(args.Guild.ID)
-	if err != nil && core.IsErrDatabaseNotFound(err) {
+	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return nil, "", err
 	}
 
@@ -111,7 +112,7 @@ func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, stri
 
 func (c *CmdBackup) list(args *CommandArgs) error {
 	status, err := args.CmdHandler.db.GetGuildBackup(args.Guild.ID)
-	if err != nil && core.IsErrDatabaseNotFound(err) {
+	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
@@ -164,7 +165,7 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 		return err
 	}
 
-	var backup *core.BackupEntry
+	var backup *backupmodels.BackupEntry
 
 	if i < 10 {
 		if int64(len(backups)-1) < i {

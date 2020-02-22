@@ -1,4 +1,4 @@
-package core
+package database
 
 import (
 	"errors"
@@ -6,6 +6,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -38,9 +41,9 @@ type Database interface {
 	GetGuildGhostpingMsg(guildID string) (string, error)
 	SetGuildGhostpingMsg(guildID, msg string) error
 
-	GetGuildPermissions(guildID string) (map[string]PermissionArray, error)
-	SetGuildRolePermission(guildID, roleID string, p PermissionArray) error
-	GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (PermissionArray, error)
+	GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error)
+	SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error
+	GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error)
 
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
@@ -77,14 +80,14 @@ type Database interface {
 	GetMuteRoleGuild(guildID string) (string, error)
 	SetMuteRole(guildID, roleID string) error
 
-	GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error)
-	GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error)
-	SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error
+	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error)
+	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error)
+	SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
 
 	AddBackup(guildID, fileID string) error
 	DeleteBackup(guildID, fileID string) error
-	GetBackups(guildID string) ([]*BackupEntry, error)
+	GetBackups(guildID string) ([]*backupmodels.BackupEntry, error)
 	GetBackupGuilds() ([]string, error)
 
 	AddTag(tag *util.Tag) error

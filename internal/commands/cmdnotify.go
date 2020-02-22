@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -42,7 +42,7 @@ func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
 func (c *CmdNotify) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
-		if core.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
+		if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"No notify role  was set up for this guild.")
 			util.DeleteMessageLater(args.Session, msg, 10*time.Second)

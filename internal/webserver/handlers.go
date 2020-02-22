@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
-
-	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -256,7 +256,7 @@ func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
 	}
 
 	rep, err := ws.db.GetReport(id)
-	if err == core.ErrDatabaseNotFound {
+	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 	if err != nil {
@@ -273,7 +273,7 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	memberID := ctx.Param("memberid")
 
 	perms, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 	if err != nil {
@@ -285,7 +285,7 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	allowed := make([]string, len(cmds))
 	i := 0
 	for _, cmd := range cmds {
-		if core.PermissionCheck(cmd.GetDomainName(), perms) {
+		if permissions.PermissionCheck(cmd.GetDomainName(), perms) {
 			allowed[i] = cmd.GetDomainName()
 			i++
 		}
@@ -304,31 +304,31 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 
 	var err error
 
-	if gs.Prefix, err = ws.db.GetGuildPrefix(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.Prefix, err = ws.db.GetGuildPrefix(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.Perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.Perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.AutoRole, err = ws.db.GetGuildAutoRole(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.AutoRole, err = ws.db.GetGuildAutoRole(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.ModLogChannel, err = ws.db.GetGuildModLog(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.ModLogChannel, err = ws.db.GetGuildModLog(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.VoiceLogChannel, err = ws.db.GetGuildVoiceLog(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.VoiceLogChannel, err = ws.db.GetGuildVoiceLog(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.JoinMessageChannel, gs.JoinMessageText, err = ws.db.GetGuildJoinMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.JoinMessageChannel, gs.JoinMessageText, err = ws.db.GetGuildJoinMsg(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
-	if gs.LeaveMessageChannel, gs.LeaveMessageText, err = ws.db.GetGuildLeaveMsg(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if gs.LeaveMessageChannel, gs.LeaveMessageText, err = ws.db.GetGuildLeaveMsg(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
@@ -457,10 +457,10 @@ func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	var perms map[string]core.PermissionArray
+	var perms map[string]permissions.PermissionArray
 	var err error
 
-	if perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !core.IsErrDatabaseNotFound(err) {
+	if perms, err = ws.db.GetGuildPermissions(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return errInternalOrNotFound(ctx, err)
 	}
 
@@ -490,7 +490,7 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 
 	perms, err := ws.db.GetGuildPermissions(guildID)
 	if err != nil {
-		if core.IsErrDatabaseNotFound(err) {
+		if database.IsErrDatabaseNotFound(err) {
 			return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 		}
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
@@ -499,7 +499,7 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	for _, roleID := range update.RoleIDs {
 		rperms, ok := perms[roleID]
 		if !ok {
-			rperms = make(core.PermissionArray, 0)
+			rperms = make(permissions.PermissionArray, 0)
 		}
 
 		rperms = rperms.Update(update.Perm, false)
@@ -716,7 +716,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 	presenceRaw, err := ws.db.GetSetting(util.SettingPresence)
 	if err != nil {
-		if core.IsErrDatabaseNotFound(err) {
+		if database.IsErrDatabaseNotFound(err) {
 			return jsonResponse(ctx, &util.Presence{
 				Game:   util.StdMotd,
 				Status: "online",
@@ -977,7 +977,7 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	}
 
 	img, err := ws.db.GetImageData(imageID)
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 	if err != nil {

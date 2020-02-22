@@ -5,7 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -42,7 +42,7 @@ func (c *CmdPrefix) Exec(args *CommandArgs) error {
 
 	if len(args.Args) == 0 {
 		prefix, err := db.GetGuildPrefix(args.Guild.ID)
-		if !core.IsErrDatabaseNotFound(err) && err != nil {
+		if !database.IsErrDatabaseNotFound(err) && err != nil {
 			return err
 		}
 		defPrefix := args.CmdHandler.config.Discord.GeneralPrefix

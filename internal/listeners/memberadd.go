@@ -4,15 +4,15 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerMemberAdd struct {
-	db core.Database
+	db database.Database
 }
 
-func NewListenerMemberAdd(db core.Database) *ListenerMemberAdd {
+func NewListenerMemberAdd(db database.Database) *ListenerMemberAdd {
 	return &ListenerMemberAdd{
 		db: db,
 	}
@@ -20,7 +20,7 @@ func NewListenerMemberAdd(db core.Database) *ListenerMemberAdd {
 
 func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
 	autoRoleID, err := l.db.GetGuildAutoRole(e.GuildID)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		util.Log.Errorf("Failed getting autorole for guild '%s' from database: %s", e.GuildID, err.Error())
 	}
 	if autoRoleID != "" {

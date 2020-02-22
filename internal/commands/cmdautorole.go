@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -41,7 +41,7 @@ func (c *CmdAutorole) GetSubPermissionRules() []SubPermission {
 func (c *CmdAutorole) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		currAutoRoleID, err := args.CmdHandler.db.GetGuildAutoRole(args.Guild.ID)
-		if err != nil && !core.IsErrDatabaseNotFound(err) {
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
 		}
 		if currAutoRoleID == "" {

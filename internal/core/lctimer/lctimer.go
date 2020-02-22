@@ -1,4 +1,4 @@
-package core
+package lctimer
 
 import (
 	"time"

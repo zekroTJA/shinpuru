@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func PushReport(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string, typ int) (*util.Report, error) {
+func PushReport(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string, typ int) (*util.Report, error) {
 	repID := util.NodesReport[typ].Generate()
 
 	rep := &util.Report{
@@ -38,7 +38,7 @@ func PushReport(s *discordgo.Session, db core.Database, publicAddr, guildID, exe
 	return rep, nil
 }
 
-func PushKick(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushKick(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
 	const typ = 0
 
 	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
@@ -54,7 +54,7 @@ func PushKick(s *discordgo.Session, db core.Database, publicAddr, guildID, execu
 	return rep, nil
 }
 
-func PushBan(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushBan(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
 	const typ = 1
 
 	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
@@ -70,7 +70,7 @@ func PushBan(s *discordgo.Session, db core.Database, publicAddr, guildID, execut
 	return rep, nil
 }
 
-func PushMute(s *discordgo.Session, db core.Database, publicAddr, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*util.Report, error) {
+func PushMute(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*util.Report, error) {
 	const typ = 2
 
 	if reason == "" {

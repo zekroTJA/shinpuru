@@ -3,15 +3,15 @@ package listeners
 import (
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerGuildJoin struct {
-	config *core.Config
+	config *config.Config
 }
 
-func NewListenerGuildJoin(config *core.Config) *ListenerGuildJoin {
+func NewListenerGuildJoin(config *config.Config) *ListenerGuildJoin {
 	return &ListenerGuildJoin{
 		config: config,
 	}

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -61,7 +61,7 @@ func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 
 func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 	status, err := args.CmdHandler.db.GetGuildInviteBlock(args.Guild.ID)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 

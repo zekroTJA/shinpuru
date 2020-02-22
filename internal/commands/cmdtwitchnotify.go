@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -60,7 +60,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
-				if tUser, err := tnw.GetUser(not.TwitchUserID, core.TwitchNotifyIdentID); err == nil {
+				if tUser, err := tnw.GetUser(not.TwitchUserID, twitchnotify.TwitchNotifyIdentID); err == nil {
 					notsStr += fmt.Sprintf(":white_small_square:  **%s** in <#%s>\n",
 						tUser.DisplayName, not.ChannelID)
 				}
@@ -71,7 +71,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], core.TwitchNotifyIdentLogin)
+	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], twitchnotify.TwitchNotifyIdentLogin)
 	if err != nil && err.Error() == "not found" {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Twitch user could not be found.")
@@ -87,7 +87,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			return err
 		}
 
-		var notify *core.TwitchNotifyDBEntry
+		var notify *twitchnotify.TwitchNotifyDBEntry
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
 				notify = not
@@ -132,7 +132,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 				return
 			}
 
-			err = args.CmdHandler.db.SetTwitchNotify(&core.TwitchNotifyDBEntry{
+			err = args.CmdHandler.db.SetTwitchNotify(&twitchnotify.TwitchNotifyDBEntry{
 				ChannelID:    args.Channel.ID,
 				GuildID:      args.Guild.ID,
 				TwitchUserID: tUser.ID,

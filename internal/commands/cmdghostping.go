@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -75,7 +75,7 @@ func (c *CmdGhostping) info(args *CommandArgs) error {
 	}
 
 	gpMsg, err := args.CmdHandler.db.GetGuildGhostpingMsg(args.Guild.ID)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 

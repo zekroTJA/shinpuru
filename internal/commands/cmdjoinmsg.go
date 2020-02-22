@@ -6,9 +6,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
-
-	"github.com/zekroTJA/shinpuru/internal/core"
 )
 
 type CmdJoinMsg struct {
@@ -45,7 +44,7 @@ func (c *CmdJoinMsg) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
 	chanID, msg, err := db.GetGuildJoinMsg(args.Guild.ID)
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 

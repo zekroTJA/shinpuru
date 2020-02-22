@@ -1,4 +1,4 @@
-package core
+package twitchnotify
 
 import (
 	"errors"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/generaltso/vibrant"
+	"github.com/zekroTJA/shinpuru/internal/core/httpreq"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -103,7 +104,7 @@ func (w *TwitchNotifyWorker) handler() error {
 		urlParam += "&user_id=" + uID
 	}
 
-	res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/streams?"+urlParam[1:], map[string]string{
+	res, err := httpreq.HTTPRequest("GET", "https://api.twitch.tv/helix/streams?"+urlParam[1:], map[string]string{
 		"Client-ID": w.clientID,
 	}, nil)
 
@@ -130,7 +131,7 @@ func (w *TwitchNotifyWorker) handler() error {
 		if !isStillOffline {
 			user, _ := w.users[cData.UserID]
 			if game, ok := w.gameIDCache[cData.GameID]; !ok {
-				res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/games?id="+cData.GameID, map[string]string{
+				res, err := httpreq.HTTPRequest("GET", "https://api.twitch.tv/helix/games?id="+cData.GameID, map[string]string{
 					"Client-ID": w.clientID,
 				}, nil)
 				if err == nil {
@@ -183,7 +184,7 @@ func (w *TwitchNotifyWorker) handler() error {
 }
 
 func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotifyUser, error) {
-	res, err := HTTPRequest("GET", "https://api.twitch.tv/helix/users?"+identType+"="+identifyer, map[string]string{
+	res, err := httpreq.HTTPRequest("GET", "https://api.twitch.tv/helix/users?"+identType+"="+identifyer, map[string]string{
 		"Client-ID": w.clientID,
 	}, nil)
 
@@ -234,7 +235,7 @@ func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.M
 		},
 	}
 
-	if body, err := HTTPGetFile(u.AviURL); err == nil {
+	if body, err := httpreq.HTTPGetFile(u.AviURL); err == nil {
 		if imgData, _, err := image.Decode(body); err == nil {
 			if palette, err := vibrant.NewPaletteFromImage(imgData); err == nil {
 				for name, swatch := range palette.ExtractAwesome() {

@@ -1,4 +1,4 @@
-package core
+package database
 
 import (
 	"database/sql"
@@ -7,6 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 
@@ -145,7 +149,7 @@ func (m *MySQL) setup() {
 
 func (m *MySQL) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*ConfigDatabaseCreds)
+	creds := credentials[0].(*config.ConfigDatabaseCreds)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
@@ -244,7 +248,7 @@ func (m *MySQL) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (PermissionArray, error) {
+func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err
@@ -255,7 +259,7 @@ func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, member
 		return nil, err
 	}
 
-	var res PermissionArray
+	var res permissions.PermissionArray
 	for _, r := range membRoles {
 		if p, ok := guildPerms[r.ID]; ok {
 			if res == nil {
@@ -269,8 +273,8 @@ func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, member
 	return res, nil
 }
 
-func (m *MySQL) GetGuildPermissions(guildID string) (map[string]PermissionArray, error) {
-	results := make(map[string]PermissionArray)
+func (m *MySQL) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
+	results := make(map[string]permissions.PermissionArray)
 	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
 	if err != nil {
@@ -288,7 +292,7 @@ func (m *MySQL) GetGuildPermissions(guildID string) (map[string]PermissionArray,
 	return results, nil
 }
 
-func (m *MySQL) SetGuildRolePermission(guildID, roleID string, p PermissionArray) error {
+func (m *MySQL) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	if len(p) == 0 {
 		_, err := m.DB.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
 		return err
@@ -530,8 +534,8 @@ func (m *MySQL) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
-func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEntry, error) {
-	t := &TwitchNotifyDBEntry{
+func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error) {
+	t := &twitchnotify.TwitchNotifyDBEntry{
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
 	}
@@ -543,7 +547,7 @@ func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*TwitchNotifyDBEn
 	return t, err
 }
 
-func (m *MySQL) SetTwitchNotify(twitchNotify *TwitchNotifyDBEntry) error {
+func (m *MySQL) SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error {
 	res, err := m.DB.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
@@ -569,18 +573,18 @@ func (m *MySQL) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	return err
 }
 
-func (m *MySQL) GetAllTwitchNotifies(twitchUserID string) ([]*TwitchNotifyDBEntry, error) {
+func (m *MySQL) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error) {
 	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
 	}
 	rows, err := m.DB.Query(query)
-	results := make([]*TwitchNotifyDBEntry, 0)
+	results := make([]*twitchnotify.TwitchNotifyDBEntry, 0)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		t := new(TwitchNotifyDBEntry)
+		t := new(twitchnotify.TwitchNotifyDBEntry)
 		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID)
 		if err == nil {
 			results = append(results, t)
@@ -650,7 +654,7 @@ func (m *MySQL) SetGuildLeaveMsg(guildID string, channelID string, msg string) e
 	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
-func (m *MySQL) GetBackups(guildID string) ([]*BackupEntry, error) {
+func (m *MySQL) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error) {
 	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -659,9 +663,9 @@ func (m *MySQL) GetBackups(guildID string) ([]*BackupEntry, error) {
 		return nil, err
 	}
 
-	backups := make([]*BackupEntry, 0)
+	backups := make([]*backupmodels.BackupEntry, 0)
 	for rows.Next() {
-		be := new(BackupEntry)
+		be := new(backupmodels.BackupEntry)
 		var timeStampUnix int64
 		err = rows.Scan(&be.GuildID, &timeStampUnix, &be.FileID)
 		if err != nil {
