@@ -8,7 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/wcharczuk/go-chart/drawing"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/wcharczuk/go-chart"
 )
 
 type VoteState int
@@ -118,6 +121,41 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: footerText,
 		},
+	}
+
+	if state == VoteStateClosed {
+
+		values := make([]chart.Value, len(v.Possibilities))
+
+		for i, p := range v.Possibilities {
+			values[i] = chart.Value{
+				Value: float64(totalTicks[i]),
+				Label: p,
+			}
+		}
+
+		pie := chart.PieChart{
+			Width:  512,
+			Height: 512,
+			Values: values,
+			Background: chart.Style{
+				FillColor: drawing.ColorTransparent,
+			},
+			Title: v.Description,
+		}
+
+		imgData := []byte{}
+		buff := bytes.NewBuffer(imgData)
+		err = pie.Render(chart.PNG, buff)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err := s.ChannelFileSend(v.ChannelID,
+			fmt.Sprintf("vote_chart_%s.png", v.ID), buff)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if v.ImageURL != "" {
