@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -146,7 +147,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return err
 	}
 
-	backupID := util.NodeBackup.Generate()
+	backupID := snowflakenodes.NodeBackup.Generate()
 	backupFileName := backupLocation + "/" + backupID.String() + ".json"
 
 	f, err := os.Create(backupFileName)

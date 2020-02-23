@@ -7,6 +7,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdAutorole struct {
@@ -66,7 +67,7 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 			return err
 		}
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			"Autorole reseted.", "", util.ColorEmbedUpdated)
+			"Autorole reseted.", "", static.ColorEmbedUpdated)
 		return err
 	}
 
@@ -82,6 +83,6 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 		return err
 	}
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", util.ColorEmbedUpdated)
+		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", static.ColorEmbedUpdated)
 	return err
 }

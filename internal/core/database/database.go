@@ -9,7 +9,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/tag"
+	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
 var ErrDatabaseNotFound = errors.New("value not found")
@@ -60,20 +63,20 @@ type Database interface {
 	GetGuildLeaveMsg(guildID string) (string, string, error)
 	SetGuildLeaveMsg(guildID string, channelID string, msg string) error
 
-	AddReport(rep *util.Report) error
+	AddReport(rep *report.Report) error
 	DeleteReport(id snowflake.ID) error
-	GetReport(id snowflake.ID) (*util.Report, error)
-	GetReportsGuild(guildID string, offset, limit int) ([]*util.Report, error)
-	GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error)
+	GetReport(id snowflake.ID) (*report.Report, error)
+	GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error)
+	GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error)
 	GetReportsGuildCount(guildID string) (int, error)
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
 
 	GetSetting(setting string) (string, error)
 	SetSetting(setting, value string) error
 
-	GetVotes() (map[string]*util.Vote, error)
+	GetVotes() (map[string]*vote.Vote, error)
 
-	AddUpdateVote(votes *util.Vote) error
+	AddUpdateVote(votes *vote.Vote) error
 	DeleteVote(voteID string) error
 
 	GetMuteRoles() (map[string]string, error)
@@ -90,19 +93,19 @@ type Database interface {
 	GetBackups(guildID string) ([]*backupmodels.BackupEntry, error)
 	GetBackupGuilds() ([]string, error)
 
-	AddTag(tag *util.Tag) error
-	EditTag(tag *util.Tag) error
-	GetTagByID(id snowflake.ID) (*util.Tag, error)
-	GetTagByIdent(ident string, guildID string) (*util.Tag, error)
-	GetGuildTags(guildID string) ([]*util.Tag, error)
+	AddTag(tag *tag.Tag) error
+	EditTag(tag *tag.Tag) error
+	GetTagByID(id snowflake.ID) (*tag.Tag, error)
+	GetTagByIdent(ident string, guildID string) (*tag.Tag, error)
+	GetGuildTags(guildID string) ([]*tag.Tag, error)
 	DeleteTag(id snowflake.ID) error
 
 	SetSession(key, userID string, expires time.Time) error
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
 
-	GetImageData(id snowflake.ID) (*util.Image, error)
-	SaveImageData(image *util.Image) error
+	GetImageData(id snowflake.ID) (*imgstore.Image, error)
+	SaveImageData(image *imgstore.Image) error
 	RemoveImageData(id snowflake.ID) error
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdId struct {
@@ -72,7 +73,7 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 
 	emb := &discordgo.MessageEmbed{
-		Color:  util.ColorEmbedDefault,
+		Color:  static.ColorEmbedDefault,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 

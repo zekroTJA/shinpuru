@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdPerms struct {
@@ -120,7 +121,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
 		fmt.Sprintf("Set permission `%s` for role%s %s.",
 			perm, multipleRoles, strings.Join(rolesIds, ", ")),
-		"", util.ColorEmbedUpdated)
+		"", static.ColorEmbedUpdated)
 
 	return err
 }

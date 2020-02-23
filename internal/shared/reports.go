@@ -5,13 +5,14 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 )
 
-func PushReport(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string, typ int) (*util.Report, error) {
-	repID := util.NodesReport[typ].Generate()
+func PushReport(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string, typ int) (*report.Report, error) {
+	repID := snowflakenodes.NodesReport[typ].Generate()
 
-	rep := &util.Report{
+	rep := &report.Report{
 		ID:            repID,
 		Type:          typ,
 		GuildID:       guildID,
@@ -38,7 +39,7 @@ func PushReport(s *discordgo.Session, db database.Database, publicAddr, guildID,
 	return rep, nil
 }
 
-func PushKick(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushKick(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*report.Report, error) {
 	const typ = 0
 
 	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
@@ -54,7 +55,7 @@ func PushKick(s *discordgo.Session, db database.Database, publicAddr, guildID, e
 	return rep, nil
 }
 
-func PushBan(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*util.Report, error) {
+func PushBan(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment string) (*report.Report, error) {
 	const typ = 1
 
 	rep, err := PushReport(s, db, publicAddr, guildID, executorID, victimID, reason, attachment, typ)
@@ -70,7 +71,7 @@ func PushBan(s *discordgo.Session, db database.Database, publicAddr, guildID, ex
 	return rep, nil
 }
 
-func PushMute(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*util.Report, error) {
+func PushMute(s *discordgo.Session, db database.Database, publicAddr, guildID, executorID, victimID, reason, attachment, muteRoleID string) (*report.Report, error) {
 	const typ = 2
 
 	if reason == "" {

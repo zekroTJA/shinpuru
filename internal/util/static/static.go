@@ -1,4 +1,4 @@
-package util
+package static
 
 const (
 	InvitePermission = 0x1 | // CREATE INSTANT INVITE

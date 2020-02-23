@@ -3,7 +3,7 @@ package config
 import (
 	"io"
 
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type ConfigDiscord struct {
@@ -81,8 +81,8 @@ func NewDefaultConfig() *Config {
 			GeneralPrefix: "sp!",
 		},
 		Permissions: &ConfigPermissions{
-			DefaultUserRules:  util.DefaultUserRules,
-			DefaultAdminRules: util.DefaultAdminRules,
+			DefaultUserRules:  static.DefaultUserRules,
+			DefaultAdminRules: static.DefaultAdminRules,
 		},
 		Database: &ConfigDatabaseType{
 			Type:  "sqlite",

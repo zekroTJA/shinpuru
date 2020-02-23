@@ -9,11 +9,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, cmdHandler *commands.CmdHandler, lct *lctimer.LCTimer) {
-	snowflake.Epoch = util.DefEpoche
-	err := util.SetupSnowflakeNodes()
+	snowflake.Epoch = static.DefEpoche
+	err := snowflakenodes.SetupSnowflakeNodes()
 	if err != nil {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 	}

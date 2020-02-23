@@ -7,6 +7,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdPrefix struct {
@@ -68,7 +69,7 @@ func (c *CmdPrefix) Exec(args *CommandArgs) error {
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 		"Guild prefix is now set to: ```\n"+args.Args[0]+"\n```",
-		"", util.ColorEmbedUpdated)
+		"", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 
 	return err

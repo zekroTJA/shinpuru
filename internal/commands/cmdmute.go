@@ -7,6 +7,12 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/mute"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -75,10 +81,10 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 		desc = fmt.Sprintf("Follwoing, the role %s will be set as mute role.", muteRole.Mention())
 	}
 
-	acmsg := &util.AcceptMessage{
+	acmsg := &acceptmsg.AcceptMessage{
 		Session: args.Session,
 		Embed: &discordgo.MessageEmbed{
-			Color: util.ColorEmbedDefault,
+			Color: static.ColorEmbedDefault,
 			Title: "Warning",
 			Description: desc + " Also, all channels *(which the bot has access to)* will be permission-overwritten that " +
 				"members with this role will not be able to write in these channels anymore.",
@@ -88,7 +94,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 		AcceptFunc: func(msg *discordgo.Message) {
 			if muteRole == nil {
 				for _, r := range args.Guild.Roles {
-					if r.Name == util.MutedRoleName {
+					if r.Name == static.MutedRoleName {
 						muteRole = r
 					}
 				}
@@ -104,7 +110,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 				}
 
 				muteRole, err = args.Session.GuildRoleEdit(args.Guild.ID, muteRole.ID,
-					util.MutedRoleName, 0, false, 0, false)
+					static.MutedRoleName, 0, false, 0, false)
 				if err != nil {
 					msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
 						"Failed editing mute role: ```\n"+err.Error()+"\n```")
@@ -121,7 +127,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 				return
 			}
 
-			err = util.MuteSetupChannels(args.Session, args.Guild.ID, muteRole.ID)
+			err = mute.MuteSetupChannels(args.Session, args.Guild.ID, muteRole.ID)
 			if err != nil {
 				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed updating channels: ```\n"+err.Error()+"\n```")
@@ -132,7 +138,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 			msg, _ = util.SendEmbed(args.Session, args.Channel.ID,
 				"Set up mute role and edited channel permissions.\nMaybe you need to increase the "+
 					"position of the role to override other roles permission settings.",
-				"", util.ColorEmbedUpdated)
+				"", static.ColorEmbedUpdated)
 			util.DeleteMessageLater(args.Session, msg, 12*time.Second)
 		},
 		DeclineFunc: func(msg *discordgo.Message) {
@@ -172,8 +178,8 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		return err
 	}
 
-	repType := util.IndexOfStrArray("MUTE", util.ReportTypes)
-	repID := util.NodesReport[repType].Generate()
+	repType := util.IndexOfStrArray("MUTE", static.ReportTypes)
+	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	var roleExists bool
 	for _, r := range args.Guild.Roles {
@@ -201,7 +207,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		}
 		emb := &discordgo.MessageEmbed{
 			Title: "Case " + repID.String(),
-			Color: util.ReportColors[repType],
+			Color: static.ReportColors[repType],
 			Fields: []*discordgo.MessageEmbedField{
 				&discordgo.MessageEmbedField{
 					Inline: true,
@@ -243,9 +249,9 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	repMsg := strings.Join(args.Args[1:], " ")
 
 	var attachment string
-	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
 	if attachment != "" {
-		img, err := util.DownloadImageFromURL(attachment)
+		img, err := imgstore.DownloadImageFromURL(attachment)
 		if err == nil && img != nil {
 			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
 				return err
@@ -282,7 +288,7 @@ func (c *CmdMute) list(args *CommandArgs) error {
 	}
 
 	emb := &discordgo.MessageEmbed{
-		Color:       util.ColorEmbedGray,
+		Color:       static.ColorEmbedGray,
 		Description: "Fetching muted members...",
 		Fields:      make([]*discordgo.MessageEmbedField, 0),
 	}
@@ -293,9 +299,9 @@ func (c *CmdMute) list(args *CommandArgs) error {
 	}
 
 	muteReports, err := args.CmdHandler.db.GetReportsFiltered(args.Guild.ID, "",
-		util.IndexOfStrArray("MUTE", util.ReportTypes))
+		util.IndexOfStrArray("MUTE", static.ReportTypes))
 
-	muteReportsMap := make(map[string]*util.Report)
+	muteReportsMap := make(map[string]*report.Report)
 	for _, r := range muteReports {
 		muteReportsMap[r.VictimID] = r
 	}
@@ -312,7 +318,7 @@ func (c *CmdMute) list(args *CommandArgs) error {
 		}
 	}
 
-	emb.Color = util.ColorEmbedDefault
+	emb.Color = static.ColorEmbedDefault
 	emb.Description = ""
 
 	_, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, msg.ID, emb)

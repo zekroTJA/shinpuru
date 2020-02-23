@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type ListenerCmds struct {
@@ -110,7 +111,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		err = cmdInstance.Exec(cmdArgs)
 		if err != nil {
 			emb := &discordgo.MessageEmbed{
-				Color:       util.ColorEmbedError,
+				Color:       static.ColorEmbedError,
 				Title:       "Command execution failed",
 				Description: fmt.Sprintf("Failed executing command: ```\n%s\n```", err.Error()),
 				Footer: &discordgo.MessageEmbedFooter{

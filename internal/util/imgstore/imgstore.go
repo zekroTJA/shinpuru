@@ -1,4 +1,4 @@
-package util
+package imgstore
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 )
 
 var defClient = http.Client{
@@ -47,7 +48,7 @@ func DownloadImageFromURL(url string) (*Image, error) {
 		return nil, fmt.Errorf("empty body received")
 	}
 
-	img.ID = NodeImages.Generate()
+	img.ID = snowflakenodes.NodeImages.Generate()
 
 	return img, nil
 }

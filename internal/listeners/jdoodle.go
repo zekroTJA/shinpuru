@@ -14,6 +14,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -156,7 +157,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		s.MessageReactionsRemoveAll(eReact.ChannelID, eReact.MessageID)
 		removeHandler()
 
-		resMsg, err := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", util.ColorEmbedGray)
+		resMsg, err := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", static.ColorEmbedGray)
 		if err != nil {
 			return
 		}
@@ -197,7 +198,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 			}
 
 			s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, &discordgo.MessageEmbed{
-				Color:       util.ColorEmbedError,
+				Color:       static.ColorEmbedError,
 				Title:       "Execution Error",
 				Description: fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error),
 			})
@@ -216,7 +217,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 			executor, _ := s.GuildMember(eReact.GuildID, eReact.UserID)
 
 			emb := &discordgo.MessageEmbed{
-				Color: util.ColorEmbedCyan,
+				Color: static.ColorEmbedCyan,
 				Title: "Compilation Result",
 				Fields: []*discordgo.MessageEmbedField{
 					&discordgo.MessageEmbedField{

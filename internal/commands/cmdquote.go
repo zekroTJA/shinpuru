@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdQuote struct {
@@ -53,7 +54,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	comment := strings.Join(args.Args[1:], " ")
 
 	msgSearchEmb := &discordgo.MessageEmbed{
-		Color:       util.ColorEmbedGray,
+		Color:       static.ColorEmbedGray,
 		Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", args.Channel.ID),
 	}
 
@@ -110,7 +111,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if timeOuted {
 		msgSearchEmb.Description = "Searching worker timeout."
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
@@ -118,7 +119,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if quoteMsg == nil {
 		msgSearchEmb.Description = "Could not find any message with this ID. :disappointed:"
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
@@ -126,7 +127,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if len(quoteMsg.Content) < 1 && len(quoteMsg.Attachments) < 1 {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
 		return err
@@ -138,7 +139,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	}
 
 	msgSearchEmb = &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: quoteMsg.Author.AvatarURL(""),
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,

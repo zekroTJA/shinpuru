@@ -9,6 +9,8 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdTwitchNotify struct {
@@ -112,12 +114,12 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	accMsg := util.AcceptMessage{
+	accMsg := acceptmsg.AcceptMessage{
 		Session:        args.Session,
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		Embed: &discordgo.MessageEmbed{
-			Color:       util.ColorEmbedDefault,
+			Color:       static.ColorEmbedDefault,
 			Description: fmt.Sprintf("Do you want to get notifications in this channel when **%s** goes online on Twitch?", tUser.DisplayName),
 			Thumbnail: &discordgo.MessageEmbedThumbnail{
 				URL: tUser.AviURL,
@@ -145,7 +147,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			}
 
 			msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", util.ColorEmbedUpdated)
+				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", static.ColorEmbedUpdated)
 			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		},
 		DeclineFunc: func(m *discordgo.Message) {

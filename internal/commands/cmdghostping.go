@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 const defMsgPattern = "{pinger} ghost pinged {pinged} with message:\n\n{msg}"
@@ -64,7 +65,7 @@ func (c *CmdGhostping) Exec(args *CommandArgs) error {
 
 func (c *CmdGhostping) info(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
 				Name: "Help",
@@ -103,7 +104,7 @@ func (c *CmdGhostping) set(args *CommandArgs) error {
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 		"Set message pattern as ghost ping warn:\n"+msgPattern+"\n\n"+
-			"*Use `ghost reset` to disable ghost ping warnings or use `help ghost` for further information.*", "", util.ColorEmbedUpdated)
+			"*Use `ghost reset` to disable ghost ping warnings or use `help ghost` for further information.*", "", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 15*time.Second)
 	return err
 }
@@ -114,7 +115,7 @@ func (c *CmdGhostping) reset(args *CommandArgs) error {
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"Warn message reset and ghost ping warnings disabled.", "", util.ColorEmbedUpdated)
+		"Warn message reset and ghost ping warnings disabled.", "", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 	return err
 }

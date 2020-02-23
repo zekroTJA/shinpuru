@@ -20,6 +20,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 const (
@@ -53,8 +54,8 @@ func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Co
 		lct:                    lct,
 		bck:                    backup.NewGuildBackups(s, db, config.Discord.GuildBackupLoc),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
-		defAdminRules:          util.DefaultAdminRules,
-		defUserRules:           util.DefaultUserRules,
+		defAdminRules:          static.DefaultAdminRules,
+		defUserRules:           static.DefaultUserRules,
 	}
 
 	if config.Permissions != nil {

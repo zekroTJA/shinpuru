@@ -1,4 +1,4 @@
-package util
+package vote
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/wcharczuk/go-chart"
@@ -80,15 +82,15 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 		return nil, err
 	}
 	title := "Open Vote"
-	color := ColorEmbedDefault
+	color := static.ColorEmbedDefault
 
 	switch state {
 	case VoteStateClosed:
 		title = "Vote closed"
-		color = ColorEmbedOrange
+		color = static.ColorEmbedOrange
 	case VoteStateExpired:
 		title = "Vote expired"
-		color = ColorEmbedViolett
+		color = static.ColorEmbedViolett
 	}
 
 	totalTicks := make(map[int]int)
@@ -181,7 +183,7 @@ func (v *Vote) AsField() *discordgo.MessageEmbedField {
 	return &discordgo.MessageEmbedField{
 		Name: "VID: " + v.ID,
 		Value: fmt.Sprintf("**Description:** %s\n**Expires:** %s\n`%d votes`\n[*jump to msg*](%s)",
-			shortenedDescription, expiresTxt, len(v.Ticks), GetMessageLink(&discordgo.Message{
+			shortenedDescription, expiresTxt, len(v.Ticks), util.GetMessageLink(&discordgo.Message{
 				ID:        v.MsgID,
 				ChannelID: v.ChannelID,
 			}, v.GuildID)),
