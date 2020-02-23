@@ -5,6 +5,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 func InitConfig(configLocation string, cfgParser config.ConfigParser) *config.Config {
@@ -28,7 +29,7 @@ func InitConfig(configLocation string, cfgParser config.ConfigParser) *config.Co
 		util.Log.Fatal("Failed decoding config file:", err)
 	}
 
-	if config.Version < util.ConfigVersion {
+	if config.Version < static.ConfigVersion {
 		util.Log.Fatalf("Config file structure is outdated and must be re-created. Just rename your config and start the bot to recreate the latest valid version of the config.")
 	}
 

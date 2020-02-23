@@ -10,6 +10,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/presence"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -192,7 +196,7 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	var reps []*util.Report
+	var reps []*report.Report
 	var err error
 
 	if memberID != "" {
@@ -539,7 +543,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 	}
 
 	if repReq.Attachment != "" {
-		img, err := util.DownloadImageFromURL(repReq.Attachment)
+		img, err := imgstore.DownloadImageFromURL(repReq.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -613,7 +617,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	}
 
 	if req.Attachment != "" {
-		img, err := util.DownloadImageFromURL(req.Attachment)
+		img, err := imgstore.DownloadImageFromURL(req.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -686,7 +690,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	}
 
 	if req.Attachment != "" {
-		img, err := util.DownloadImageFromURL(req.Attachment)
+		img, err := imgstore.DownloadImageFromURL(req.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -714,23 +718,23 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 }
 
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
-	presenceRaw, err := ws.db.GetSetting(util.SettingPresence)
+	presenceRaw, err := ws.db.GetSetting(static.SettingPresence)
 	if err != nil {
 		if database.IsErrDatabaseNotFound(err) {
-			return jsonResponse(ctx, &util.Presence{
-				Game:   util.StdMotd,
+			return jsonResponse(ctx, &presence.Presence{
+				Game:   static.StdMotd,
 				Status: "online",
 			}, fasthttp.StatusOK)
 		}
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	presence, err := util.UnmarshalPresence(presenceRaw)
+	pre, err := presence.UnmarshalPresence(presenceRaw)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, presence, fasthttp.StatusOK)
+	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
@@ -742,37 +746,37 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 	}
 
-	presence := new(util.Presence)
-	if err := parseJSONBody(ctx, presence); err != nil {
+	pre := new(presence.Presence)
+	if err := parseJSONBody(ctx, pre); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
-	if strings.Contains(presence.Game, util.PresenceSeperator) {
+	if strings.Contains(pre.Game, presence.PresenceSeperator) {
 		return jsonError(ctx,
 			fmt.Errorf("'%s' is used as seperator for the presence settings save and can not be used in the actual game message",
-				util.PresenceSeperator), fasthttp.StatusBadRequest)
+				presence.PresenceSeperator), fasthttp.StatusBadRequest)
 	}
 
-	if err := presence.Validate(); err != nil {
+	if err := pre.Validate(); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
-	if err := ws.db.SetSetting(util.SettingPresence, presence.Marshal()); err != nil {
+	if err := ws.db.SetSetting(static.SettingPresence, pre.Marshal()); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if err := ws.session.UpdateStatusComplex(presence.ToUpdateStatusData()); err != nil {
+	if err := ws.session.UpdateStatusComplex(pre.ToUpdateStatusData()); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, presence, fasthttp.StatusOK)
+	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
 
 func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	var guildID, message, inviteCode string
 	var err error
 
-	if guildID, err = ws.db.GetSetting(util.SettingWIInviteGuildID); err != nil {
+	if guildID, err = ws.db.GetSetting(static.SettingWIInviteGuildID); err != nil {
 		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
 			return err
 		}
@@ -786,13 +790,13 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 		}, fasthttp.StatusOK)
 	}
 
-	if message, err = ws.db.GetSetting(util.SettingWIInviteText); err != nil {
+	if message, err = ws.db.GetSetting(static.SettingWIInviteText); err != nil {
 		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
 			return err
 		}
 	}
 
-	if inviteCode, err = ws.db.GetSetting(util.SettingWIInviteCode); err != nil {
+	if inviteCode, err = ws.db.GetSetting(static.SettingWIInviteCode); err != nil {
 		if isErr, err := errInternalIgnoreNotFound(ctx, err); isErr {
 			return err
 		}
@@ -836,7 +840,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 		}
 
 		inviteCode = invite.Code
-		if err = ws.db.SetSetting(util.SettingWIInviteCode, inviteCode); err != nil {
+		if err = ws.db.SetSetting(static.SettingWIInviteCode, inviteCode); err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 	}
@@ -912,15 +916,15 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 		}
 	}
 
-	if err = ws.db.SetSetting(util.SettingWIInviteCode, req.InviteCode); err != nil {
+	if err = ws.db.SetSetting(static.SettingWIInviteCode, req.InviteCode); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if err = ws.db.SetSetting(util.SettingWIInviteGuildID, req.GuildID); err != nil {
+	if err = ws.db.SetSetting(static.SettingWIInviteGuildID, req.GuildID); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if err = ws.db.SetSetting(util.SettingWIInviteText, req.Messsage); err != nil {
+	if err = ws.db.SetSetting(static.SettingWIInviteText, req.Messsage); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
@@ -957,7 +961,7 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 
 		BotUserID: ws.session.State.User.ID,
 		BotInvite: fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-			ws.session.State.User.ID, util.InvitePermission),
+			ws.session.State.User.ID, static.InvitePermission),
 
 		Guilds: len(ws.session.State.Guilds),
 	}

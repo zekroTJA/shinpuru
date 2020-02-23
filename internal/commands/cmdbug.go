@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdBug struct {
@@ -34,7 +34,7 @@ func (c *CmdBug) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdBug) Exec(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Title: "How to report a bug or request a feature",
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{

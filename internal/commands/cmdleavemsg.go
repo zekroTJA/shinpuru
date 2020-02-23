@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdLeaveMsg struct {
@@ -123,7 +124,7 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	}
 
 	rmsg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		resTxt, "", util.ColorEmbedGreen)
+		resTxt, "", static.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 	return err
 }

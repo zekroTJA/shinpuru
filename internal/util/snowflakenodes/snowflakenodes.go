@@ -1,6 +1,9 @@
-package util
+package snowflakenodes
 
-import "github.com/bwmarrin/snowflake"
+import (
+	"github.com/bwmarrin/snowflake"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
+)
 
 var NodesReport []*snowflake.Node
 var NodeBackup *snowflake.Node
@@ -9,9 +12,9 @@ var NodeTags *snowflake.Node
 var NodeImages *snowflake.Node
 
 func SetupSnowflakeNodes() error {
-	NodesReport = make([]*snowflake.Node, len(ReportTypes))
+	NodesReport = make([]*snowflake.Node, len(static.ReportTypes))
 	var err error
-	for i := range ReportTypes {
+	for i := range static.ReportTypes {
 		NodesReport[i], err = snowflake.NewNode(int64(i))
 		if err != nil {
 			return err

@@ -9,6 +9,8 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdNotify struct {
@@ -109,12 +111,12 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 		notifiableStr := "\n*Notify role is defaulty not notifiable. You need to enable this manually by using the " +
 			"`ment` command or toggling it manually in the discord settings.*"
 		if notifyRoleExists {
-			am := &util.AcceptMessage{
+			am := &acceptmsg.AcceptMessage{
 				Session:        args.Session,
 				UserID:         args.User.ID,
 				DeleteMsgAfter: true,
 				Embed: &discordgo.MessageEmbed{
-					Color: util.ColorEmbedDefault,
+					Color: static.ColorEmbedDefault,
 					Description: fmt.Sprintf("The notify role on this guild is already set to <@&%s>.\n"+
 						"Do you want to overwrite this setting? This will also **delete** the role <@&%s>.",
 						notifyRoleID, notifyRoleID),

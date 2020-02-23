@@ -3,7 +3,7 @@ package lctimer
 import (
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 )
 
 type LCHandler func(now time.Time)
@@ -24,7 +24,7 @@ func NewLTCTimer(each time.Duration) *LCTimer {
 }
 
 func (t *LCTimer) OnTick(handler LCHandler) func() {
-	uid := util.NodeLCHandler.Generate().String()
+	uid := snowflakenodes.NodeLCHandler.Generate().String()
 	t.handlers[uid] = handler
 	return func() {
 		delete(t.handlers, uid)

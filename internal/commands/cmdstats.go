@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdStats struct {
@@ -57,7 +58,7 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 	usedStack := util.ByteCountFormatter(memStats.StackInuse)
 
 	emb := &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Title: "shinpuru Global Stats",
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{

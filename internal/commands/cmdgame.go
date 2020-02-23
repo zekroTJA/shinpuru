@@ -6,6 +6,8 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/presence"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdGame struct {
@@ -45,33 +47,33 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	rawPresence, err := args.CmdHandler.db.GetSetting(util.SettingPresence)
+	rawPresence, err := args.CmdHandler.db.GetSetting(static.SettingPresence)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
-	defPresence := &util.Presence{
+	defPresence := &presence.Presence{
 		Game:   args.CmdHandler.config.Discord.GeneralPrefix + "help | zekro.de",
 		Status: "online",
 	}
 
-	var presence *util.Presence
+	var pre *presence.Presence
 	if rawPresence == "" {
-		presence = defPresence
+		pre = defPresence
 	} else {
-		presence, err = util.UnmarshalPresence(rawPresence)
+		pre, err = presence.UnmarshalPresence(rawPresence)
 		if err != nil {
-			presence = defPresence
+			pre = defPresence
 		}
 	}
 
 	switch strings.ToLower(args.Args[0]) {
 
 	case "msg":
-		presence.Game = strings.Join(args.Args[1:], " ")
+		pre.Game = strings.Join(args.Args[1:], " ")
 
 	case "status":
-		presence.Status = strings.ToLower(args.Args[1])
+		pre.Status = strings.ToLower(args.Args[1])
 
 	default:
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
@@ -80,24 +82,24 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if err = presence.Validate(); err != nil {
+	if err = pre.Validate(); err != nil {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, err.Error())
 		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		return err
 	}
 
-	err = args.Session.UpdateStatusComplex(presence.ToUpdateStatusData())
+	err = args.Session.UpdateStatusComplex(pre.ToUpdateStatusData())
 	if err != nil {
 		return err
 	}
 
-	err = args.CmdHandler.db.SetSetting(util.SettingPresence, presence.Marshal())
+	err = args.CmdHandler.db.SetSetting(static.SettingPresence, pre.Marshal())
 	if err != nil {
 		return err
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"Presence updated.", "", util.ColorEmbedUpdated)
+		"Presence updated.", "", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 5*time.Second)
 	return err
 }

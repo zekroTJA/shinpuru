@@ -10,6 +10,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 const (
@@ -145,7 +146,7 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
 			}
 
-			util.SendEmbed(s, dmChan.ID, "API key set and system is enabled. :ok_hand:", "", util.ColorEmbedGreen)
+			util.SendEmbed(s, dmChan.ID, "API key set and system is enabled. :ok_hand:", "", static.ColorEmbedGreen)
 		}
 
 		if removeHandler != nil {
@@ -163,7 +164,7 @@ func (c *CmdExec) reset(args *CommandArgs) error {
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"API key was deleted from database and system was disabled.", "", util.ColorEmbedYellow)
+		"API key was deleted from database and system was disabled.", "", static.ColorEmbedYellow)
 	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 	return err
 }

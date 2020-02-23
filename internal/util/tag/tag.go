@@ -1,10 +1,11 @@
-package util
+package tag
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -56,7 +57,7 @@ func (t *Tag) AsEmbed(s *discordgo.Session) *discordgo.MessageEmbed {
 			IconURL: author.imageURL,
 		},
 		Description: t.Content,
-		Color:       ColorEmbedDefault,
+		Color:       static.ColorEmbedDefault,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: footer,
 		},

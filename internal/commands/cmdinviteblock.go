@@ -8,6 +8,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdInviteBlock struct {
@@ -66,10 +67,10 @@ func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 	}
 
 	strStat := "disabled"
-	color := util.ColorEmbedOrange
+	color := static.ColorEmbedOrange
 	if status != "" {
 		strStat = "enabled (*for members with permission level < " + status + "*)"
-		color = util.ColorEmbedGreen
+		color = static.ColorEmbedGreen
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,

@@ -7,6 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdModlog struct {
@@ -40,10 +42,10 @@ func (c *CmdModlog) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdModlog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		acceptMsg := &util.AcceptMessage{
+		acceptMsg := &acceptmsg.AcceptMessage{
 			Session: args.Session,
 			Embed: &discordgo.MessageEmbed{
-				Color:       util.ColorEmbedDefault,
+				Color:       static.ColorEmbedDefault,
 				Description: "Do you want to set this channel as modlog channel?",
 			},
 			UserID:         args.User.ID,
@@ -55,7 +57,7 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 						"Failed setting modlog channel: ```\n"+err.Error()+"\n```")
 				} else {
 					msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-						"Set this channel as modlog channel.", "", util.ColorEmbedUpdated)
+						"Set this channel as modlog channel.", "", static.ColorEmbedUpdated)
 					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 				}
 			},
@@ -73,7 +75,7 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 			return err
 		}
 		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			"Modlog channel reset.", "", util.ColorEmbedUpdated)
+			"Modlog channel reset.", "", static.ColorEmbedUpdated)
 		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
 		return err
 	}
@@ -92,7 +94,7 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 		return err
 	}
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Set <#%s> as modlog channel.", mlChan.ID), "", util.ColorEmbedUpdated)
+		fmt.Sprintf("Set <#%s> as modlog channel.", mlChan.ID), "", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 	return err
 }

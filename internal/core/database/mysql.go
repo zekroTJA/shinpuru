@@ -12,6 +12,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/tag"
+	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 
 	"github.com/bwmarrin/discordgo"
@@ -362,7 +366,7 @@ func (m *MySQL) SetSetting(setting, value string) error {
 	return err
 }
 
-func (m *MySQL) AddReport(rep *util.Report) error {
+func (m *MySQL) AddReport(rep *report.Report) error {
 	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
@@ -373,8 +377,8 @@ func (m *MySQL) DeleteReport(id snowflake.ID) error {
 	return err
 }
 
-func (m *MySQL) GetReport(id snowflake.ID) (*util.Report, error) {
-	rep := new(util.Report)
+func (m *MySQL) GetReport(id snowflake.ID) (*report.Report, error) {
+	rep := new(report.Report)
 
 	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
 	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
@@ -385,7 +389,7 @@ func (m *MySQL) GetReport(id snowflake.ID) (*util.Report, error) {
 	return rep, err
 }
 
-func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*util.Report, error) {
+func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
 	if limit == 0 {
 		limit = 1000
 	}
@@ -395,12 +399,12 @@ func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*util.Repo
 			"FROM reports WHERE guildID = ? "+
 			"ORDER BY iid DESC "+
 			"LIMIT ?, ?", guildID, offset, limit)
-	var results []*util.Report
+	var results []*report.Report
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		rep := new(util.Report)
+		rep := new(report.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
@@ -410,7 +414,7 @@ func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*util.Repo
 	return results, nil
 }
 
-func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*util.Report, error) {
+func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
 	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
 		return nil, fmt.Errorf("invalid argument type")
 	}
@@ -423,12 +427,12 @@ func (m *MySQL) GetReportsFiltered(guildID, memberID string, repType int) ([]*ut
 		query += fmt.Sprintf(` AND type = %d`, repType)
 	}
 	rows, err := m.DB.Query(query)
-	var results []*util.Report
+	var results []*report.Report
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		rep := new(util.Report)
+		rep := new(report.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 		if err != nil {
 			return nil, err
@@ -461,9 +465,9 @@ func (m *MySQL) GetReportsFilteredCount(guildID, memberID string, repType int) (
 	return
 }
 
-func (m *MySQL) GetVotes() (map[string]*util.Vote, error) {
+func (m *MySQL) GetVotes() (map[string]*vote.Vote, error) {
 	rows, err := m.DB.Query("SELECT id, data FROM votes")
-	results := make(map[string]*util.Vote)
+	results := make(map[string]*vote.Vote)
 	if err != nil {
 		return nil, err
 	}
@@ -474,7 +478,7 @@ func (m *MySQL) GetVotes() (map[string]*util.Vote, error) {
 			util.Log.Error("An error occured reading vote from database: ", err)
 			continue
 		}
-		vote, err := util.VoteUnmarshal(rawData)
+		vote, err := vote.VoteUnmarshal(rawData)
 		if err != nil {
 			m.DeleteVote(rawData)
 		} else {
@@ -484,7 +488,7 @@ func (m *MySQL) GetVotes() (map[string]*util.Vote, error) {
 	return results, err
 }
 
-func (m *MySQL) AddUpdateVote(vote *util.Vote) error {
+func (m *MySQL) AddUpdateVote(vote *vote.Vote) error {
 	rawData, err := vote.Marshal()
 	if err != nil {
 		return err
@@ -700,13 +704,13 @@ func (m *MySQL) GetBackupGuilds() ([]string, error) {
 	return guilds, err
 }
 
-func (m *MySQL) AddTag(tag *util.Tag) error {
+func (m *MySQL) AddTag(tag *tag.Tag) error {
 	_, err := m.DB.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
 	return err
 }
 
-func (m *MySQL) EditTag(tag *util.Tag) error {
+func (m *MySQL) EditTag(tag *tag.Tag) error {
 	_, err := m.DB.Exec("UPDATE tags SET "+
 		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
 		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
@@ -716,8 +720,8 @@ func (m *MySQL) EditTag(tag *util.Tag) error {
 	return err
 }
 
-func (m *MySQL) GetTagByID(id snowflake.ID) (*util.Tag, error) {
-	tag := new(util.Tag)
+func (m *MySQL) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
+	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
 
@@ -739,8 +743,8 @@ func (m *MySQL) GetTagByID(id snowflake.ID) (*util.Tag, error) {
 	return tag, nil
 }
 
-func (m *MySQL) GetTagByIdent(ident string, guildID string) (*util.Tag, error) {
-	tag := new(util.Tag)
+func (m *MySQL) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
+	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
 
@@ -762,7 +766,7 @@ func (m *MySQL) GetTagByIdent(ident string, guildID string) (*util.Tag, error) {
 	return tag, nil
 }
 
-func (m *MySQL) GetGuildTags(guildID string) ([]*util.Tag, error) {
+func (m *MySQL) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 	rows, err := m.DB.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
@@ -772,11 +776,11 @@ func (m *MySQL) GetGuildTags(guildID string) ([]*util.Tag, error) {
 		return nil, err
 	}
 
-	tags := make([]*util.Tag, 0)
+	tags := make([]*tag.Tag, 0)
 	var timestampCreated int64
 	var timestampLastEdit int64
 	for rows.Next() {
-		tag := new(util.Tag)
+		tag := new(tag.Tag)
 		err = rows.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
 			&tag.Content, &timestampCreated, &timestampLastEdit)
 		if err != nil {
@@ -846,8 +850,8 @@ func (m *MySQL) DeleteSession(userID string) error {
 	return err
 }
 
-func (m *MySQL) GetImageData(id snowflake.ID) (*util.Image, error) {
-	img := new(util.Image)
+func (m *MySQL) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
+	img := new(imgstore.Image)
 	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
 	if err == sql.ErrNoRows {
@@ -862,7 +866,7 @@ func (m *MySQL) GetImageData(id snowflake.ID) (*util.Image, error) {
 	return img, nil
 }
 
-func (m *MySQL) SaveImageData(img *util.Image) error {
+func (m *MySQL) SaveImageData(img *imgstore.Image) error {
 	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }

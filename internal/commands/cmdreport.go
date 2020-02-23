@@ -8,6 +8,9 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -27,8 +30,8 @@ func (c *CmdReport) GetDescription() string {
 }
 
 func (c *CmdReport) GetHelp() string {
-	repTypes := make([]string, len(util.ReportTypes))
-	for i, t := range util.ReportTypes {
+	repTypes := make([]string, len(static.ReportTypes))
+	for i, t := range static.ReportTypes {
 		repTypes[i] = fmt.Sprintf("`%d` - %s", i, t)
 	}
 	return "`report <userResolvable>` - list all reports of a user\n" +
@@ -72,7 +75,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 	if len(args.Args) == 1 {
 		emb := &discordgo.MessageEmbed{
-			Color: util.ColorEmbedDefault,
+			Color: static.ColorEmbedDefault,
 			Title: fmt.Sprintf("Reports for %s#%s",
 				victim.User.Username, victim.User.Discriminator),
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
@@ -96,8 +99,8 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 	msgOffset := 1
 	repType, err := strconv.Atoi(args.Args[1])
-	maxType := len(util.ReportTypes) - 1
-	minType := util.ReportTypesReserved
+	maxType := len(static.ReportTypes) - 1
+	minType := static.ReportTypesReserved
 	if repType == 0 {
 		repType = minType
 	}
@@ -129,9 +132,9 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 	repMsg := strings.Join(args.Args[msgOffset:], " ")
 
 	var attachment string
-	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
 	if attachment != "" {
-		img, err := util.DownloadImageFromURL(attachment)
+		img, err := imgstore.DownloadImageFromURL(attachment)
 		if err == nil && img != nil {
 			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
 				return err
@@ -140,9 +143,9 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		}
 	}
 
-	acceptMsg := util.AcceptMessage{
+	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       util.ReportColors[repType],
+			Color:       static.ReportColors[repType],
 			Title:       "Report Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -153,7 +156,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Type",
-					Value: util.ReportTypes[repType],
+					Value: static.ReportTypes[repType],
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Description",
@@ -161,7 +164,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: util.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
+				URL: imgstore.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,
@@ -219,9 +222,9 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 		return err
 	}
 
-	aceptMsg := util.AcceptMessage{
+	aceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color: util.ReportRevokedColor,
+			Color: static.ReportRevokedColor,
 			Title: "Report Revocation",
 			Description: "Do you really want to revoke this report?\n" +
 				":warning: **WARNING:** Revoking a report will be displayed in the mod log channel (if set) and " +
@@ -251,7 +254,7 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 			}
 
 			repRevEmb := &discordgo.MessageEmbed{
-				Color:       util.ReportRevokedColor,
+				Color:       static.ReportRevokedColor,
 				Title:       "REPORT REVOCATION",
 				Description: "Revoked reports are deleted from the database and no more visible in any commands.",
 				Fields: []*discordgo.MessageEmbedField{
