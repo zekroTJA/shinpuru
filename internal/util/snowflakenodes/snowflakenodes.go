@@ -11,7 +11,7 @@ var NodeLCHandler *snowflake.Node
 var NodeTags *snowflake.Node
 var NodeImages *snowflake.Node
 
-func SetupSnowflakeNodes() error {
+func Setup() error {
 	NodesReport = make([]*snowflake.Node, len(static.ReportTypes))
 	var err error
 	for i := range static.ReportTypes {

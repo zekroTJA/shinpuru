@@ -61,7 +61,7 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 	if rawPresence == "" {
 		pre = defPresence
 	} else {
-		pre, err = presence.UnmarshalPresence(rawPresence)
+		pre, err = presence.Unmarshal(rawPresence)
 		if err != nil {
 			pre = defPresence
 		}

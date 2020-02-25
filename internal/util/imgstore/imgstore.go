@@ -24,7 +24,7 @@ type Image struct {
 	Size     int
 }
 
-func DownloadImageFromURL(url string) (*Image, error) {
+func DownloadFromURL(url string) (*Image, error) {
 	resp, err := defClient.Get(url)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func DownloadImageFromURL(url string) (*Image, error) {
 	return img, nil
 }
 
-func GetImageLink(ident, publicAddr string) string {
+func GetLink(ident, publicAddr string) string {
 	if ident == "" || strings.HasPrefix(ident, "http://") || strings.HasPrefix(ident, "https://") {
 		return ident
 	}

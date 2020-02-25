@@ -90,8 +90,8 @@ type Database interface {
 
 	AddBackup(guildID, fileID string) error
 	DeleteBackup(guildID, fileID string) error
-	GetBackups(guildID string) ([]*backupmodels.BackupEntry, error)
-	GetBackupGuilds() ([]string, error)
+	GetBackups(guildID string) ([]*backupmodels.Entry, error)
+	GetGuilds() ([]string, error)
 
 	AddTag(tag *tag.Tag) error
 	EditTag(tag *tag.Tag) error

@@ -7,5 +7,5 @@ import (
 )
 
 func InitLTCTimer() *lctimer.LCTimer {
-	return lctimer.NewLTCTimer(10 * time.Second)
+	return lctimer.New(10 * time.Second)
 }

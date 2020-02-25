@@ -15,7 +15,7 @@ import (
 
 func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, cmdHandler *commands.CmdHandler, lct *lctimer.LCTimer) {
 	snowflake.Epoch = static.DefEpoche
-	err := snowflakenodes.SetupSnowflakeNodes()
+	err := snowflakenodes.Setup()
 	if err != nil {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 	}

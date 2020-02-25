@@ -40,7 +40,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 
 	rawPresence, err := l.db.GetSetting(static.SettingPresence)
 	if err == nil {
-		pre, err := presence.UnmarshalPresence(rawPresence)
+		pre, err := presence.Unmarshal(rawPresence)
 		if err == nil {
 			s.UpdateStatusComplex(pre.ToUpdateStatusData())
 		}

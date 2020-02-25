@@ -50,7 +50,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 		},
 		Timestamp: r.GetTimestamp().Format("2006-01-02T15:04:05.000Z"),
 		Image: &discordgo.MessageEmbedImage{
-			URL: imgstore.GetImageLink(r.AttachmehtURL, publicAddr),
+			URL: imgstore.GetLink(r.AttachmehtURL, publicAddr),
 		},
 	}
 }
@@ -58,7 +58,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {
-		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", imgstore.GetImageLink(r.AttachmehtURL, publicAddr))
+		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", imgstore.GetLink(r.AttachmehtURL, publicAddr))
 	}
 
 	return &discordgo.MessageEmbedField{

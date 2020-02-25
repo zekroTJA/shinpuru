@@ -6,7 +6,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-type ConfigDiscord struct {
+type Discord struct {
 	Token          string
 	GeneralPrefix  string
 	OwnerID        string
@@ -15,61 +15,61 @@ type ConfigDiscord struct {
 	GuildBackupLoc string
 }
 
-type ConfigDatabaseCreds struct {
+type DatabaseCreds struct {
 	Host     string
 	User     string
 	Password string
 	Database string
 }
 
-type ConfigDatabaseFile struct {
+type DatabaseFile struct {
 	DBFile string
 }
 
-type ConfigDatabaseType struct {
+type DatabaseType struct {
 	Type   string
-	MySql  *ConfigDatabaseCreds
-	Sqlite *ConfigDatabaseFile
+	MySql  *DatabaseCreds
+	Sqlite *DatabaseFile
 }
 
-type ConfigLogging struct {
+type Logging struct {
 	CommandLogging bool
 	LogLevel       int
 }
 
-type ConfigEtc struct {
+type Etc struct {
 	TwitchAppID string
 }
 
-type ConfigWS struct {
-	Enabled    bool         `json:"enabled"`
-	Addr       string       `json:"addr"`
-	TLS        *ConfigWSTLS `json:"tls"`
-	PublicAddr string       `json:"publicaddr"`
+type WS struct {
+	Enabled    bool   `json:"enabled"`
+	Addr       string `json:"addr"`
+	TLS        *WSTLS `json:"tls"`
+	PublicAddr string `json:"publicaddr"`
 }
 
-type ConfigWSTLS struct {
+type WSTLS struct {
 	Enabled bool   `json:"enabled"`
 	Cert    string `json:"certfile"`
 	Key     string `json:"keyfile"`
 }
 
-type ConfigPermissions struct {
+type Permissions struct {
 	DefaultUserRules  []string `json:"defaultuserrules"`
 	DefaultAdminRules []string `json:"defaultadminrules"`
 }
 
 type Config struct {
 	Version     int `yaml:"configVersionPleaseDoNotChange"`
-	Discord     *ConfigDiscord
-	Permissions *ConfigPermissions
-	Database    *ConfigDatabaseType
-	Logging     *ConfigLogging
-	Etc         *ConfigEtc
-	WebServer   *ConfigWS
+	Discord     *Discord
+	Permissions *Permissions
+	Database    *DatabaseType
+	Logging     *Logging
+	Etc         *Etc
+	WebServer   *WS
 }
 
-type ConfigParser interface {
+type Parser interface {
 	Decode(r io.Reader) (*Config, error)
 	Encode(w io.Writer, c *Config) error
 }
@@ -77,30 +77,30 @@ type ConfigParser interface {
 func NewDefaultConfig() *Config {
 	return &Config{
 		Version: 5,
-		Discord: &ConfigDiscord{
+		Discord: &Discord{
 			GeneralPrefix: "sp!",
 		},
-		Permissions: &ConfigPermissions{
+		Permissions: &Permissions{
 			DefaultUserRules:  static.DefaultUserRules,
 			DefaultAdminRules: static.DefaultAdminRules,
 		},
-		Database: &ConfigDatabaseType{
+		Database: &DatabaseType{
 			Type:  "sqlite",
-			MySql: new(ConfigDatabaseCreds),
-			Sqlite: &ConfigDatabaseFile{
+			MySql: new(DatabaseCreds),
+			Sqlite: &DatabaseFile{
 				DBFile: "shinpuru.sqlite3.db",
 			},
 		},
-		Logging: &ConfigLogging{
+		Logging: &Logging{
 			CommandLogging: true,
 			LogLevel:       4,
 		},
-		Etc: new(ConfigEtc),
-		WebServer: &ConfigWS{
+		Etc: new(Etc),
+		WebServer: &WS{
 			Enabled:    true,
 			Addr:       ":8080",
 			PublicAddr: "https://example.com:8080",
-			TLS: &ConfigWSTLS{
+			TLS: &WSTLS{
 				Enabled: false,
 			},
 		},

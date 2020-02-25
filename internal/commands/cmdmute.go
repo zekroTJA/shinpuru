@@ -127,7 +127,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 				return
 			}
 
-			err = mute.MuteSetupChannels(args.Session, args.Guild.ID, muteRole.ID)
+			err = mute.SetupChannels(args.Session, args.Guild.ID, muteRole.ID)
 			if err != nil {
 				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
 					"Failed updating channels: ```\n"+err.Error()+"\n```")
@@ -249,9 +249,9 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	repMsg := strings.Join(args.Args[1:], " ")
 
 	var attachment string
-	repMsg, attachment = imgstore.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, args.Message.Attachments)
 	if attachment != "" {
-		img, err := imgstore.DownloadImageFromURL(attachment)
+		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
 			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
 				return err

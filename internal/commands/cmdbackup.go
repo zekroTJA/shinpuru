@@ -83,7 +83,7 @@ func (c *CmdBackup) switchStatus(args *CommandArgs, enable bool) error {
 	return err
 }
 
-func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*backupmodels.BackupEntry, string, error) {
+func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*backupmodels.Entry, string, error) {
 	backups, err := args.CmdHandler.db.GetBackups(args.Guild.ID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return nil, "", err
@@ -167,7 +167,7 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 		return err
 	}
 
-	var backup *backupmodels.BackupEntry
+	var backup *backupmodels.Entry
 
 	if i < 10 {
 		if int64(len(backups)-1) < i {

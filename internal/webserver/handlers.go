@@ -543,7 +543,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 	}
 
 	if repReq.Attachment != "" {
-		img, err := imgstore.DownloadImageFromURL(repReq.Attachment)
+		img, err := imgstore.DownloadFromURL(repReq.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -617,7 +617,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	}
 
 	if req.Attachment != "" {
-		img, err := imgstore.DownloadImageFromURL(req.Attachment)
+		img, err := imgstore.DownloadFromURL(req.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -690,7 +690,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	}
 
 	if req.Attachment != "" {
-		img, err := imgstore.DownloadImageFromURL(req.Attachment)
+		img, err := imgstore.DownloadFromURL(req.Attachment)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -729,7 +729,7 @@ func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	pre, err := presence.UnmarshalPresence(presenceRaw)
+	pre, err := presence.Unmarshal(presenceRaw)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}

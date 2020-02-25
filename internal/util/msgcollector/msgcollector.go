@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type MessageCollectorOptions struct {
+type Options struct {
 	MaxMessages        int
 	MaxMatches         int
 	Timeout            time.Duration
@@ -20,7 +20,7 @@ type MessageCollector struct {
 	Closed            bool
 	channelID         string
 	session           *discordgo.Session
-	options           *MessageCollectorOptions
+	options           *Options
 	filter            func(*discordgo.Message) bool
 	eventUnsub        func()
 	onCollected       func(*discordgo.Message, *MessageCollector)
@@ -28,12 +28,12 @@ type MessageCollector struct {
 	onClosed          func(string, *MessageCollector)
 }
 
-func NewMessageCollector(s *discordgo.Session, channelID string, filter func(*discordgo.Message) bool, options *MessageCollectorOptions) (*MessageCollector, error) {
+func New(s *discordgo.Session, channelID string, filter func(*discordgo.Message) bool, options *Options) (*MessageCollector, error) {
 	if s == nil {
 		return nil, errors.New("session is not defined")
 	}
 	if options == nil {
-		options = new(MessageCollectorOptions)
+		options = new(Options)
 	}
 	mc := &MessageCollector{
 		session:           s,

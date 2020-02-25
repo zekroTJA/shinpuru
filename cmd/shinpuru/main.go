@@ -36,7 +36,7 @@ func main() {
 
 	if *flagDocker {
 		if conf.Database.Sqlite == nil {
-			conf.Database.Sqlite = new(config.ConfigDatabaseFile)
+			conf.Database.Sqlite = new(config.DatabaseFile)
 		}
 		conf.Database.Sqlite.DBFile = "/etc/db/db.sqlite3"
 		conf.WebServer.Addr = ":8080"

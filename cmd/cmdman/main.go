@@ -17,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	config := &core.Config{
-		Discord: &core.ConfigDiscord{},
+		Discord: &core.Discord{},
 	}
 
 	database := new(core.MySQL)

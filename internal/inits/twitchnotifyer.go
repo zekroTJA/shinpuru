@@ -9,13 +9,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) *twitchnotify.TwitchNotifyWorker {
+func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) *twitchnotify.NotifyWorker {
 	if config.Etc == nil || config.Etc.TwitchAppID == "" {
 		return nil
 	}
 
 	listener := listeners.NewListenerTwitchNotify(session, config, db)
-	tnw := twitchnotify.NewTwitchNotifyWorker(config.Etc.TwitchAppID,
+	tnw := twitchnotify.NewNotifyWorker(config.Etc.TwitchAppID,
 		listener.HandlerWentOnline, listener.HandlerWentOffline)
 
 	notifies, err := db.GetAllTwitchNotifies("")

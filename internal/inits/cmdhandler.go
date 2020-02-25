@@ -10,7 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, tnw *twitchnotify.TwitchNotifyWorker, lct *lctimer.LCTimer) *commands.CmdHandler {
+func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *commands.CmdHandler {
 	cmdHandler := commands.NewCmdHandler(s, db, cfg, tnw, lct)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})

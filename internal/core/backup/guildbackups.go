@@ -41,7 +41,7 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
-func NewGuildBackups(s *discordgo.Session, db database.Database, loc string) *GuildBackups {
+func New(s *discordgo.Session, db database.Database, loc string) *GuildBackups {
 	if loc != "" {
 		backupLocation = loc
 	}
@@ -62,7 +62,7 @@ func (bck *GuildBackups) initTickerLoop() {
 }
 
 func (bck *GuildBackups) backupAllGuilds() {
-	guilds, err := bck.db.GetBackupGuilds()
+	guilds, err := bck.db.GetGuilds()
 
 	util.Log.Infof("Initializing backups for %d guilds %+v\n", len(guilds), guilds)
 
@@ -72,7 +72,7 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 
 	for _, g := range guilds {
-		err = bck.BackupGuild(g)
+		err = bck.Guild(g)
 		if err != nil {
 			util.Log.Error("failed creating backup for guild '%s': %s", g, err.Error())
 		}
@@ -80,7 +80,7 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 }
 
-func (bck *GuildBackups) BackupGuild(guildID string) error {
+func (bck *GuildBackups) Guild(guildID string) error {
 	if bck.session == nil {
 		return errors.New("session is nil")
 	}
@@ -90,8 +90,8 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return err
 	}
 
-	backup := new(backupmodels.BackupObject)
-	backup.Guild = &backupmodels.BackupGuild{
+	backup := new(backupmodels.Object)
+	backup.Guild = &backupmodels.Guild{
 		AfkChannelID:                g.AfkChannelID,
 		AfkTimeout:                  g.AfkTimeout,
 		DefaultMessageNotifications: g.DefaultMessageNotifications,
@@ -100,7 +100,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	for _, c := range g.Channels {
-		backup.Channels = append(backup.Channels, &backupmodels.BackupChannel{
+		backup.Channels = append(backup.Channels, &backupmodels.Channel{
 			Bitrate:   c.Bitrate,
 			ID:        c.ID,
 			NSFW:      c.NSFW,
@@ -117,7 +117,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		if r.ID == guildID {
 			continue
 		}
-		backup.Roles = append(backup.Roles, &backupmodels.BackupRole{
+		backup.Roles = append(backup.Roles, &backupmodels.Role{
 			Color:       r.Color,
 			Hoist:       r.Hoist,
 			ID:          r.ID,
@@ -129,7 +129,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	for _, m := range g.Members {
-		backup.Members = append(backup.Members, &backupmodels.BackupMember{
+		backup.Members = append(backup.Members, &backupmodels.Member{
 			Deaf:  m.Deaf,
 			ID:    m.User.ID,
 			Mute:  m.Mute,
@@ -176,7 +176,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	if len(cBackups) > 10 {
-		var lastEntry *backupmodels.BackupEntry
+		var lastEntry *backupmodels.Entry
 		for _, b := range cBackups {
 			if lastEntry == nil || b.Timestamp.Before(lastEntry.Timestamp) {
 				lastEntry = b
@@ -214,7 +214,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 	defer f.Close()
 
-	var backup backupmodels.BackupObject
+	var backup backupmodels.Object
 
 	dec := json.NewDecoder(f)
 	err = dec.Decode(&backup)
