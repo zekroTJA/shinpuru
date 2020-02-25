@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 )
 
@@ -16,11 +17,11 @@ var (
 func main() {
 	flag.Parse()
 
-	config := &core.Config{
-		Discord: &core.Discord{},
+	config := &config.Config{
+		Discord: &config.Discord{},
 	}
 
-	database := new(core.MySQL)
+	database := new(database.MySQL)
 
 	cmdHandler := inits.InitCommandHandler(nil, config, database, nil, nil)
 	if err := cmdHandler.ExportCommandManual(*flagExportFile); err != nil {
