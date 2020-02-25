@@ -102,7 +102,7 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 
 		if spr := cmd.GetSubPermissionRules(); spr != nil {
 			txt := "*`[E]` in front of permissions means `Explicit`, which means that this " +
-				"permission must be explicitly allowed and can not be wild-carded (`.*`).\n" +
+				"permission must be explicitly allowed and can not be wild-carded.\n" +
 				"`[D]` implies that wildecards will apply to this sub permission.*\n\n"
 
 			for _, rule := range spr {
