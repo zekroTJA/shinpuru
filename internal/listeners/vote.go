@@ -3,15 +3,15 @@ package listeners
 import (
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
 type ListenerVote struct {
-	db core.Database
+	db database.Database
 }
 
-func NewListenerVote(db core.Database) *ListenerVote {
+func NewListenerVote(db database.Database) *ListenerVote {
 	return &ListenerVote{
 		db: db,
 	}
@@ -25,12 +25,12 @@ func (l *ListenerVote) Handler(s *discordgo.Session, e *discordgo.MessageReactio
 	if user == nil || user.Bot || user.ID == s.State.User.ID {
 		return
 	}
-	for _, v := range util.VotesRunning {
+	for _, v := range vote.VotesRunning {
 		if v.GuildID != e.GuildID || v.ChannelID != e.ChannelID || v.MsgID != e.MessageID {
 			continue
 		}
 		tick := -1
-		for i, ve := range util.VoteEmotes {
+		for i, ve := range vote.VoteEmotes {
 			if e.Emoji.Name == ve {
 				tick = i
 			}

@@ -5,11 +5,11 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
 )
 
 var (
@@ -18,12 +18,11 @@ var (
 )
 
 type ListenerInviteBlock struct {
-	config     *core.Config
-	db         core.Database
+	db         database.Database
 	cmdHandler *commands.CmdHandler
 }
 
-func NewListenerInviteBlock(db core.Database, cmdHandler *commands.CmdHandler) *ListenerInviteBlock {
+func NewListenerInviteBlock(db database.Database, cmdHandler *commands.CmdHandler) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
 		db:         db,
 		cmdHandler: cmdHandler,
@@ -78,7 +77,7 @@ func (l *ListenerInviteBlock) followLink(link string) (bool, error) {
 
 func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Message) error {
 	enabled, err := l.db.GetGuildInviteBlock(e.GuildID)
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		return nil
 	}
 	if err != nil {
@@ -88,7 +87,7 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 		return nil
 	}
 
-	ok, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "sp.guild.mod.inviteblock.send")
+	ok, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "!sp.guild.mod.inviteblock.send")
 	if err != nil {
 		return err
 	}

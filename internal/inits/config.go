@@ -3,18 +3,19 @@ package inits
 import (
 	"os"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitConfig(configLocation string, cfgParser core.ConfigParser) *core.Config {
+func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
 	cfgFile, err := os.Open(configLocation)
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed creating default config:", err)
 		}
-		err = cfgParser.Encode(cfgFile, core.NewDefaultConfig())
+		err = cfgParser.Encode(cfgFile, config.NewDefaultConfig())
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
 		}
@@ -28,7 +29,7 @@ func InitConfig(configLocation string, cfgParser core.ConfigParser) *core.Config
 		util.Log.Fatal("Failed decoding config file:", err)
 	}
 
-	if config.Version < util.ConfigVersion {
+	if config.Version < static.ConfigVersion {
 		util.Log.Fatalf("Config file structure is outdated and must be re-created. Just rename your config and start the bot to recreate the latest valid version of the config.")
 	}
 

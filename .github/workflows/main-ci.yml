@@ -35,4 +35,8 @@ jobs:
           mv ./docs/commandsManual.md ./shinpuru.wiki/Commands.md
           git -C ./shinpuru.wiki add .
           git -C ./shinpuru.wiki -c user.name="travis" -c user.email="travis" commit -m "automatically updated commands list"
+<<<<<<< HEAD
           git -C ./shinpuru.wiki push
+=======
+          git -C ./shinpuru.wiki push
+>>>>>>> dev

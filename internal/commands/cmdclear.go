@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdClear struct {
@@ -32,6 +33,10 @@ func (c *CmdClear) GetGroup() string {
 
 func (c *CmdClear) GetDomainName() string {
 	return "sp.guild.mod.clear"
+}
+
+func (c *CmdClear) GetSubPermissionRules() []SubPermission {
+	return nil
 }
 
 func (c *CmdClear) Exec(args *CommandArgs) error {
@@ -100,7 +105,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", util.ColorEmbedUpdated)
+		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 
 	return err

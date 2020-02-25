@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdHelp struct {
@@ -33,9 +34,13 @@ func (c *CmdHelp) GetDomainName() string {
 	return "sp.etc.help"
 }
 
+func (c *CmdHelp) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdHelp) Exec(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
-		Color:  util.ColorEmbedDefault,
+		Color:  static.ColorEmbedDefault,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 
@@ -67,6 +72,7 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 			util.DeleteMessageLater(args.Session, msg, 5*time.Second)
 			return err
 		}
+
 		emb.Title = "Command Description"
 		emb.Fields = []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
@@ -92,6 +98,27 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 				Name:  "Usage",
 				Value: util.EnsureNotEmpty(cmd.GetHelp(), "`no uage information`"),
 			},
+		}
+
+		if spr := cmd.GetSubPermissionRules(); spr != nil {
+			txt := "*`[E]` in front of permissions means `Explicit`, which means that this " +
+				"permission must be explicitly allowed and can not be wild-carded.\n" +
+				"`[D]` implies that wildecards will apply to this sub permission.*\n\n"
+
+			for _, rule := range spr {
+				expl := "D"
+				if rule.Explicit {
+					expl = "E"
+				}
+
+				txt = fmt.Sprintf("%s`[%s]` %s.%s - *%s*\n",
+					txt, expl, cmd.GetDomainName(), rule.Term, rule.Description)
+			}
+
+			emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
+				Name:  "Sub Permission Rules",
+				Value: txt,
+			})
 		}
 	}
 

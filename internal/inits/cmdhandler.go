@@ -3,11 +3,14 @@ package inits
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitCommandHandler(s *discordgo.Session, cfg *core.Config, db core.Database, tnw *core.TwitchNotifyWorker, lct *core.LCTimer) *commands.CmdHandler {
+func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *commands.CmdHandler {
 	cmdHandler := commands.NewCmdHandler(s, db, cfg, tnw, lct)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})

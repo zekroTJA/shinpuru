@@ -6,17 +6,17 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 var voiceStateCashe = map[string]*discordgo.VoiceState{}
 
 type ListenerVoiceUpdate struct {
-	db core.Database
+	db database.Database
 }
 
-func NewListenerVoiceUpdate(db core.Database) *ListenerVoiceUpdate {
+func NewListenerVoiceUpdate(db database.Database) *ListenerVoiceUpdate {
 	return &ListenerVoiceUpdate{
 		db: db,
 	}
@@ -61,7 +61,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 			return
 		}
 		msgTxt := fmt.Sprintf(":arrow_right:  Joined **`%s`**", newChan.Name)
-		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, util.ColorEmbedGreen)
+		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedGreen)
 	} else if vsOld != nil && vsNew.ChannelID != "" && vsOld.ChannelID != vsNew.ChannelID {
 		newChan, err := s.Channel(e.ChannelID)
 		if err != nil {
@@ -72,13 +72,13 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 			return
 		}
 		msgTxt := fmt.Sprintf(":left_right_arrow:  Moved from **`%s`** to **`%s`**", oldChan.Name, newChan.Name)
-		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, util.ColorEmbedCyan)
+		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedCyan)
 	} else if vsOld != nil && vsNew.ChannelID == "" {
 		oldChan, err := s.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
 		}
 		msgTxt := fmt.Sprintf(":arrow_left:  Left **`%s`**", oldChan.Name)
-		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, util.ColorEmbedOrange)
+		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedOrange)
 	}
 }

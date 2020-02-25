@@ -1,11 +1,18 @@
 package commands
 
+type SubPermission struct {
+	Term        string
+	Explicit    bool
+	Description string
+}
+
 type Command interface {
 	GetInvokes() []string
 	GetDescription() string
 	GetHelp() string
 	GetGroup() string
 	GetDomainName() string
+	GetSubPermissionRules() []SubPermission
 	Exec(args *CommandArgs) error
 }
 

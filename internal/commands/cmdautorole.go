@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdAutorole struct {
@@ -34,10 +35,14 @@ func (c *CmdAutorole) GetDomainName() string {
 	return "sp.guild.config.autorole"
 }
 
+func (c *CmdAutorole) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdAutorole) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		currAutoRoleID, err := args.CmdHandler.db.GetGuildAutoRole(args.Guild.ID)
-		if err != nil && !core.IsErrDatabaseNotFound(err) {
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
 		}
 		if currAutoRoleID == "" {
@@ -62,7 +67,7 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 			return err
 		}
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			"Autorole reseted.", "", util.ColorEmbedUpdated)
+			"Autorole reseted.", "", static.ColorEmbedUpdated)
 		return err
 	}
 
@@ -78,6 +83,6 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 		return err
 	}
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", util.ColorEmbedUpdated)
+		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", static.ColorEmbedUpdated)
 	return err
 }

@@ -5,11 +5,14 @@ import (
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 
 	"github.com/valyala/fasthttp"
-	"github.com/zekroTJA/shinpuru/internal/core"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 
@@ -57,26 +60,26 @@ type GuildReduced struct {
 }
 
 type PermissionsResponse struct {
-	Permissions core.PermissionArray `json:"permissions"`
+	Permissions permissions.PermissionArray `json:"permissions"`
 }
 
 type Report struct {
-	*util.Report
+	*report.Report
 
 	TypeName string    `json:"type_name"`
 	Created  time.Time `json:"created"`
 }
 
 type GuildSettings struct {
-	Prefix              string                          `json:"prefix"`
-	Perms               map[string]core.PermissionArray `json:"perms"`
-	AutoRole            string                          `json:"autorole"`
-	ModLogChannel       string                          `json:"modlogchannel"`
-	VoiceLogChannel     string                          `json:"voicelogchannel"`
-	JoinMessageChannel  string                          `json:"joinmessagechannel"`
-	JoinMessageText     string                          `json:"joinmessagetext"`
-	LeaveMessageChannel string                          `json:"leavemessagechannel"`
-	LeaveMessageText    string                          `json:"leavemessagetext"`
+	Prefix              string                                 `json:"prefix"`
+	Perms               map[string]permissions.PermissionArray `json:"perms"`
+	AutoRole            string                                 `json:"autorole"`
+	ModLogChannel       string                                 `json:"modlogchannel"`
+	VoiceLogChannel     string                                 `json:"voicelogchannel"`
+	JoinMessageChannel  string                                 `json:"joinmessagechannel"`
+	JoinMessageText     string                                 `json:"joinmessagetext"`
+	LeaveMessageChannel string                                 `json:"leavemessagechannel"`
+	LeaveMessageText    string                                 `json:"leavemessagetext"`
 }
 
 type PermissionsUpdate struct {
@@ -140,7 +143,7 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
 	}
 
-	if req.Attachment != "" && !util.ImgUrlSRx.MatchString(req.Attachment) {
+	if req.Attachment != "" && !imgstore.ImgUrlSRx.MatchString(req.Attachment) {
 		return false, jsonError(ctx,
 			fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4."),
 			fasthttp.StatusBadRequest)
@@ -206,9 +209,9 @@ func MemberFromMember(m *discordgo.Member) *Member {
 	}
 }
 
-func ReportFromReport(r *util.Report, publicAddr string) *Report {
-	rtype := util.ReportTypes[r.Type]
-	r.AttachmehtURL = util.GetImageLink(r.AttachmehtURL, publicAddr)
+func ReportFromReport(r *report.Report, publicAddr string) *Report {
+	rtype := static.ReportTypes[r.Type]
+	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
 	return &Report{
 		Report:   r,
 		TypeName: rtype,

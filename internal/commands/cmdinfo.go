@@ -5,6 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdInfo struct {
@@ -30,11 +31,15 @@ func (c *CmdInfo) GetDomainName() string {
 	return "sp.etc.info"
 }
 
+func (c *CmdInfo) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdInfo) Exec(args *CommandArgs) error {
 	invLink := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-		args.Session.State.User.ID, util.InvitePermission)
+		args.Session.State.User.ID, static.InvitePermission)
 	emb := &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Title: "Info",
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: args.Session.State.User.AvatarURL(""),

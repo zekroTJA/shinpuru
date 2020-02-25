@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 )
 
 type CmdTest struct {
@@ -29,9 +29,13 @@ func (c *CmdTest) GetDomainName() string {
 	return "sp.test"
 }
 
+func (c *CmdTest) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	imgURL := args.Message.Attachments[0].URL
 	fmt.Println(imgURL)
-	image, _ := util.DownloadImageFromURL(imgURL)
+	image, _ := imgstore.DownloadFromURL(imgURL)
 	return args.CmdHandler.db.SaveImageData(image)
 }

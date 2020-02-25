@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
-
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -144,14 +143,14 @@ func (ws *WebServer) optionsHandler(ctx *routing.Context) error {
 }
 
 func errInternalOrNotFound(ctx *routing.Context, err error) error {
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 	return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 }
 
 func errInternalIgnoreNotFound(ctx *routing.Context, err error) (bool, error) {
-	if core.IsErrDatabaseNotFound(err) {
+	if database.IsErrDatabaseNotFound(err) {
 		return false, nil
 	}
 	return true, jsonError(ctx, err, fasthttp.StatusInternalServerError)

@@ -5,8 +5,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdPrefix struct {
@@ -33,12 +34,16 @@ func (c *CmdPrefix) GetDomainName() string {
 	return "sp.guild.config.prefix"
 }
 
+func (c *CmdPrefix) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdPrefix) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
 	if len(args.Args) == 0 {
 		prefix, err := db.GetGuildPrefix(args.Guild.ID)
-		if !core.IsErrDatabaseNotFound(err) && err != nil {
+		if !database.IsErrDatabaseNotFound(err) && err != nil {
 			return err
 		}
 		defPrefix := args.CmdHandler.config.Discord.GeneralPrefix
@@ -64,7 +69,7 @@ func (c *CmdPrefix) Exec(args *CommandArgs) error {
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
 		"Guild prefix is now set to: ```\n"+args.Args[0]+"\n```",
-		"", util.ColorEmbedUpdated)
+		"", static.ColorEmbedUpdated)
 	util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 
 	return err
