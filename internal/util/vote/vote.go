@@ -38,15 +38,15 @@ type Vote struct {
 	ImageURL      string
 	Expires       time.Time
 	Possibilities []string
-	Ticks         map[string]*VoteTick
+	Ticks         map[string]*Tick
 }
 
-type VoteTick struct {
+type Tick struct {
 	UserID string
 	Tick   int
 }
 
-func VoteUnmarshal(data string) (*Vote, error) {
+func Unmarshal(data string) (*Vote, error) {
 	rawData, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		return nil, err
@@ -204,7 +204,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 	if t, ok := v.Ticks[userID]; ok {
 		t.Tick = tick
 	} else {
-		v.Ticks[userID] = &VoteTick{
+		v.Ticks[userID] = &Tick{
 			UserID: userID,
 			Tick:   tick,
 		}

@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitDatabase(databaseCfg *config.ConfigDatabaseType) database.Database {
+func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 	var db database.Database
 	var err error
 

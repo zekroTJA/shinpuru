@@ -85,9 +85,9 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	var attachment string
-	repMsg, attachment = imgstore.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, args.Message.Attachments)
 	if attachment != "" {
-		img, err := imgstore.DownloadImageFromURL(attachment)
+		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
 			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
 				return err
@@ -121,7 +121,7 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: imgstore.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
+				URL: imgstore.GetLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,

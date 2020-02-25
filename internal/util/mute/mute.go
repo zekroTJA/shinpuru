@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func MuteSetupChannels(s *discordgo.Session, guildID, roleID string) error {
+func SetupChannels(s *discordgo.Session, guildID, roleID string) error {
 	guild, err := s.Guild(guildID)
 	if err != nil {
 		return err

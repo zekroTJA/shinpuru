@@ -211,7 +211,7 @@ func MemberFromMember(m *discordgo.Member) *Member {
 
 func ReportFromReport(r *report.Report, publicAddr string) *Report {
 	rtype := static.ReportTypes[r.Type]
-	r.AttachmehtURL = imgstore.GetImageLink(r.AttachmehtURL, publicAddr)
+	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
 	return &Report{
 		Report:   r,
 		TypeName: rtype,

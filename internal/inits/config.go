@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitConfig(configLocation string, cfgParser config.ConfigParser) *config.Config {
+func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
 	cfgFile, err := os.Open(configLocation)
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)

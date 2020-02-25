@@ -36,6 +36,6 @@ func (c *CmdTest) GetSubPermissionRules() []SubPermission {
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	imgURL := args.Message.Attachments[0].URL
 	fmt.Println(imgURL)
-	image, _ := imgstore.DownloadImageFromURL(imgURL)
+	image, _ := imgstore.DownloadFromURL(imgURL)
 	return args.CmdHandler.db.SaveImageData(image)
 }

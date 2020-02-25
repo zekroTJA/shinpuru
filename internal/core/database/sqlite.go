@@ -150,7 +150,7 @@ func (m *Sqlite) setup() {
 
 func (m *Sqlite) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*config.ConfigDatabaseFile)
+	creds := credentials[0].(*config.DatabaseFile)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
@@ -474,7 +474,7 @@ func (m *Sqlite) GetVotes() (map[string]*vote.Vote, error) {
 			util.Log.Error("An error occured reading vote from database: ", err)
 			continue
 		}
-		vote, err := vote.VoteUnmarshal(rawData)
+		vote, err := vote.Unmarshal(rawData)
 		if err != nil {
 			m.DeleteVote(rawData)
 		} else {
@@ -654,7 +654,7 @@ func (m *Sqlite) SetGuildLeaveMsg(guildID string, channelID string, msg string) 
 	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
-func (m *Sqlite) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error) {
+func (m *Sqlite) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
 	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -663,9 +663,9 @@ func (m *Sqlite) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error)
 		return nil, err
 	}
 
-	backups := make([]*backupmodels.BackupEntry, 0)
+	backups := make([]*backupmodels.Entry, 0)
 	for rows.Next() {
-		be := new(backupmodels.BackupEntry)
+		be := new(backupmodels.Entry)
 		var timeStampUnix int64
 		err = rows.Scan(&be.GuildID, &timeStampUnix, &be.FileID)
 		if err != nil {
@@ -678,7 +678,7 @@ func (m *Sqlite) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error)
 	return backups, nil
 }
 
-func (m *Sqlite) GetBackupGuilds() ([]string, error) {
+func (m *Sqlite) GetGuilds() ([]string, error) {
 	rows, err := m.DB.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound

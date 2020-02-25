@@ -24,7 +24,7 @@ func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, 
 	}
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.TwitchNotifyData, u *twitchnotify.TwitchNotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
 	if l.session == nil {
 		return
 	}
@@ -37,7 +37,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.TwitchNotifyDat
 
 	msgs := make([]*discordgo.Message, 0)
 	for _, not := range nots {
-		emb := twitchnotify.TwitchNotifyGetEmbed(d, u)
+		emb := twitchnotify.GetEmbed(d, u)
 		msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
 		if err != nil {
 			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
@@ -51,7 +51,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.TwitchNotifyDat
 
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.TwitchNotifyData, u *twitchnotify.TwitchNotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
 	if l.session == nil {
 		return
 	}

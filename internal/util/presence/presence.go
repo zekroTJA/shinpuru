@@ -18,7 +18,7 @@ type Presence struct {
 	Status string `json:"status"`
 }
 
-func UnmarshalPresence(raw string) (*Presence, error) {
+func Unmarshal(raw string) (*Presence, error) {
 	split := strings.Split(raw, PresenceSeperator)
 	if len(split) < 2 {
 		return nil, errors.New("invalid format")

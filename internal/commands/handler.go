@@ -34,7 +34,7 @@ type CmdHandler struct {
 
 	db     database.Database
 	config *config.Config
-	tnw    *twitchnotify.TwitchNotifyWorker
+	tnw    *twitchnotify.NotifyWorker
 	bck    *backup.GuildBackups
 	lct    *lctimer.LCTimer
 
@@ -44,7 +44,7 @@ type CmdHandler struct {
 	notifiedCmdMsgs *timedmap.TimedMap
 }
 
-func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Config, tnw *twitchnotify.TwitchNotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
 	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
@@ -52,7 +52,7 @@ func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Co
 		config:                 config,
 		tnw:                    tnw,
 		lct:                    lct,
-		bck:                    backup.NewGuildBackups(s, db, config.Discord.GuildBackupLoc),
+		bck:                    backup.New(s, db, config.Discord.GuildBackupLoc),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 		defAdminRules:          static.DefaultAdminRules,
 		defUserRules:           static.DefaultUserRules,

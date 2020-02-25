@@ -15,7 +15,7 @@ type LCTimer struct {
 	stopChan chan bool
 }
 
-func NewLTCTimer(each time.Duration) *LCTimer {
+func New(each time.Duration) *LCTimer {
 	return &LCTimer{
 		ticker:   time.NewTicker(each),
 		handlers: make(map[string]LCHandler),

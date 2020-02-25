@@ -6,21 +6,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type BackupEntry struct {
+type Entry struct {
 	GuildID   string
 	Timestamp time.Time
 	FileID    string
 }
 
-type BackupObject struct {
-	ID       string           `json:"id"`
-	Guild    *BackupGuild     `json:"guild"`
-	Channels []*BackupChannel `json:"channels"`
-	Roles    []*BackupRole    `json:"roles"`
-	Members  []*BackupMember  `json:"members"`
+type Object struct {
+	ID       string     `json:"id"`
+	Guild    *Guild     `json:"guild"`
+	Channels []*Channel `json:"channels"`
+	Roles    []*Role    `json:"roles"`
+	Members  []*Member  `json:"members"`
 }
 
-type BackupGuild struct {
+type Guild struct {
 	Name                        string `json:"name"`
 	AfkChannelID                string `json:"afk_channel_id"`
 	AfkTimeout                  int    `json:"afk_timeout"`
@@ -28,7 +28,7 @@ type BackupGuild struct {
 	DefaultMessageNotifications int    `json:"default_message_notifications"`
 }
 
-type BackupChannel struct {
+type Channel struct {
 	ID                   string                           `json:"id"`
 	Name                 string                           `json:"name"`
 	Topic                string                           `json:"topic"`
@@ -41,7 +41,7 @@ type BackupChannel struct {
 	PermissionOverwrites []*discordgo.PermissionOverwrite `json:"permission_overwrites"`
 }
 
-type BackupRole struct {
+type Role struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Mentionable bool   `json:"mentionable"`
@@ -51,7 +51,7 @@ type BackupRole struct {
 	Permissions int    `json:"permissions"`
 }
 
-type BackupMember struct {
+type Member struct {
 	ID    string   `json:"id"`
 	Nick  string   `json:"nick"`
 	Deaf  bool     `json:"deaf"`

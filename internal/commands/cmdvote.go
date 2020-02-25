@@ -215,7 +215,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		split[i] = strings.Trim(e, " \t")
 	}
 
-	description, imgLink := imgstore.ExtractImageURLFromMessage(split[0], args.Message.Attachments)
+	description, imgLink := imgstore.ExtractFromMessage(split[0], args.Message.Attachments)
 
 	ivote := &vote.Vote{
 		ID:            args.Message.ID,
@@ -226,7 +226,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		Description:   description,
 		Possibilities: split[1:],
 		ImageURL:      imgLink,
-		Ticks:         make(map[string]*vote.VoteTick),
+		Ticks:         make(map[string]*vote.Tick),
 	}
 
 	emb, err := ivote.AsEmbed(args.Session)

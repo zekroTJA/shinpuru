@@ -21,7 +21,7 @@ const (
 	TwitchNotifyIdentID    = "id"
 )
 
-type TwitchNotifyData struct {
+type NotifyData struct {
 	ID           string   `json:"id"`
 	UserID       string   `json:"user_id"`
 	UserName     string   `json:"user_name"`
@@ -37,7 +37,7 @@ type TwitchNotifyData struct {
 	Game *TwitchNotifyGame
 }
 
-type TwitchNotifyUser struct {
+type NotifyUser struct {
 	ID          string `json:"id"`
 	DisplayName string `json:"display_name"`
 	LoginName   string `json:"login"`
@@ -50,15 +50,15 @@ type TwitchNotifyGame struct {
 	IconURL string `json:"box_art_url"`
 }
 
-type TwitchNotifyHandler func(*TwitchNotifyData, *TwitchNotifyUser)
+type NotifyHandler func(*NotifyData, *NotifyUser)
 
-type TwitchNotifyWorker struct {
+type NotifyWorker struct {
 	timer              *time.Ticker
-	users              map[string]*TwitchNotifyUser
+	users              map[string]*NotifyUser
 	clientID           string
-	pastResponses      []*TwitchNotifyData
-	wentOnlineHandler  TwitchNotifyHandler
-	wentOfflineHandler TwitchNotifyHandler
+	pastResponses      []*NotifyData
+	wentOnlineHandler  NotifyHandler
+	wentOfflineHandler NotifyHandler
 	gameIDCache        map[string]*TwitchNotifyGame
 }
 
@@ -72,9 +72,9 @@ func (g *TwitchNotifyGame) formatIconURL(res string) {
 	g.IconURL = strings.Replace(g.IconURL, "{width}x{height}", res, 1)
 }
 
-func NewTwitchNotifyWorker(clientID string, wentOnlineHandler TwitchNotifyHandler, wentOfflineHandler TwitchNotifyHandler) *TwitchNotifyWorker {
-	worker := &TwitchNotifyWorker{
-		users:              make(map[string]*TwitchNotifyUser),
+func NewNotifyWorker(clientID string, wentOnlineHandler NotifyHandler, wentOfflineHandler NotifyHandler) *NotifyWorker {
+	worker := &NotifyWorker{
+		users:              make(map[string]*NotifyUser),
 		clientID:           clientID,
 		wentOnlineHandler:  wentOnlineHandler,
 		wentOfflineHandler: wentOfflineHandler,
@@ -95,7 +95,7 @@ func NewTwitchNotifyWorker(clientID string, wentOnlineHandler TwitchNotifyHandle
 	return worker
 }
 
-func (w *TwitchNotifyWorker) handler() error {
+func (w *NotifyWorker) handler() error {
 	if len(w.users) < 1 {
 		return nil
 	}
@@ -113,7 +113,7 @@ func (w *TwitchNotifyWorker) handler() error {
 	}
 
 	var data struct {
-		Data []*TwitchNotifyData `json:"data"`
+		Data []*NotifyData `json:"data"`
 	}
 	err = res.ParseJSONBody(&data)
 	if err != nil {
@@ -177,13 +177,13 @@ func (w *TwitchNotifyWorker) handler() error {
 		}
 	}
 
-	w.pastResponses = make([]*TwitchNotifyData, len(data.Data))
+	w.pastResponses = make([]*NotifyData, len(data.Data))
 	copy(w.pastResponses, data.Data)
 
 	return nil
 }
 
-func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotifyUser, error) {
+func (w *NotifyWorker) GetUser(identifyer, identType string) (*NotifyUser, error) {
 	res, err := httpreq.HTTPRequest("GET", "https://api.twitch.tv/helix/users?"+identType+"="+identifyer, map[string]string{
 		"Client-ID": w.clientID,
 	}, nil)
@@ -193,7 +193,7 @@ func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotif
 	}
 
 	var data struct {
-		Data []*TwitchNotifyUser `json:"data"`
+		Data []*NotifyUser `json:"data"`
 	}
 
 	err = res.ParseJSONBody(&data)
@@ -208,7 +208,7 @@ func (w *TwitchNotifyWorker) GetUser(identifyer, identType string) (*TwitchNotif
 	return data.Data[0], nil
 }
 
-func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) error {
+func (w *NotifyWorker) AddUser(u *NotifyUser) error {
 	if len(w.users) >= 1000 {
 		return errors.New("max reached")
 	}
@@ -216,7 +216,7 @@ func (w *TwitchNotifyWorker) AddUser(u *TwitchNotifyUser) error {
 	return nil
 }
 
-func TwitchNotifyGetEmbed(d *TwitchNotifyData, u *TwitchNotifyUser) *discordgo.MessageEmbed {
+func GetEmbed(d *NotifyData, u *NotifyUser) *discordgo.MessageEmbed {
 	emb := &discordgo.MessageEmbed{
 		Title:       u.DisplayName + " just started streaming!",
 		URL:         "https://twitch.tv/" + u.LoginName,

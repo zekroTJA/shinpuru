@@ -153,7 +153,7 @@ func (m *MySQL) setup() {
 
 func (m *MySQL) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*config.ConfigDatabaseCreds)
+	creds := credentials[0].(*config.DatabaseCreds)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
@@ -478,7 +478,7 @@ func (m *MySQL) GetVotes() (map[string]*vote.Vote, error) {
 			util.Log.Error("An error occured reading vote from database: ", err)
 			continue
 		}
-		vote, err := vote.VoteUnmarshal(rawData)
+		vote, err := vote.Unmarshal(rawData)
 		if err != nil {
 			m.DeleteVote(rawData)
 		} else {
@@ -658,7 +658,7 @@ func (m *MySQL) SetGuildLeaveMsg(guildID string, channelID string, msg string) e
 	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
-func (m *MySQL) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error) {
+func (m *MySQL) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
 	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -667,9 +667,9 @@ func (m *MySQL) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error) 
 		return nil, err
 	}
 
-	backups := make([]*backupmodels.BackupEntry, 0)
+	backups := make([]*backupmodels.Entry, 0)
 	for rows.Next() {
-		be := new(backupmodels.BackupEntry)
+		be := new(backupmodels.Entry)
 		var timeStampUnix int64
 		err = rows.Scan(&be.GuildID, &timeStampUnix, &be.FileID)
 		if err != nil {
@@ -682,7 +682,7 @@ func (m *MySQL) GetBackups(guildID string) ([]*backupmodels.BackupEntry, error) 
 	return backups, nil
 }
 
-func (m *MySQL) GetBackupGuilds() ([]string, error) {
+func (m *MySQL) GetGuilds() ([]string, error) {
 	rows, err := m.DB.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
