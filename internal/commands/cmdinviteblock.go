@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdInviteBlock struct {
@@ -34,6 +35,16 @@ func (c *CmdInviteBlock) GetDomainName() string {
 	return "sp.guild.mod.inviteblock"
 }
 
+func (c *CmdInviteBlock) GetSubPermissionRules() []SubPermission {
+	return []SubPermission{
+		SubPermission{
+			Term:        "send",
+			Explicit:    true,
+			Description: "Allows sending invites even if invite block is enabled",
+		},
+	}
+}
+
 func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.printStatus(args)
@@ -51,15 +62,15 @@ func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 
 func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 	status, err := args.CmdHandler.db.GetGuildInviteBlock(args.Guild.ID)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
 	strStat := "disabled"
-	color := util.ColorEmbedOrange
+	color := static.ColorEmbedOrange
 	if status != "" {
 		strStat = "enabled (*for members with permission level < " + status + "*)"
-		color = util.ColorEmbedGreen
+		color = static.ColorEmbedGreen
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,

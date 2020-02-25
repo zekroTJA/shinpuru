@@ -8,6 +8,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdBan struct {
@@ -31,6 +35,10 @@ func (c *CmdBan) GetGroup() string {
 
 func (c *CmdBan) GetDomainName() string {
 	return "sp.guild.mod.ban"
+}
+
+func (c *CmdBan) GetSubPermissionRules() []SubPermission {
+	return nil
 }
 
 func (c *CmdBan) Exec(args *CommandArgs) error {
@@ -69,17 +77,17 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 
 	repMsg := strings.Join(args.Args[1:], " ")
 	var repType int
-	for i, v := range util.ReportTypes {
+	for i, v := range static.ReportTypes {
 		if v == "BAN" {
 			repType = i
 		}
 	}
-	repID := util.NodesReport[repType].Generate()
+	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	var attachment string
-	repMsg, attachment = util.ExtractImageURLFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, args.Message.Attachments)
 	if attachment != "" {
-		img, err := util.DownloadImageFromURL(attachment)
+		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
 			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
 				return err
@@ -88,9 +96,9 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 		}
 	}
 
-	acceptMsg := util.AcceptMessage{
+	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       util.ReportColors[repType],
+			Color:       static.ReportColors[repType],
 			Title:       "Ban Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -105,7 +113,7 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Type",
-					Value: util.ReportTypes[repType],
+					Value: static.ReportTypes[repType],
 				},
 				&discordgo.MessageEmbedField{
 					Name:  "Description",
@@ -113,7 +121,7 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: util.GetImageLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
+				URL: imgstore.GetLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
 			},
 		},
 		Session:        args.Session,

@@ -8,8 +8,11 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 const (
@@ -41,6 +44,10 @@ func (c *CmdBackup) GetDomainName() string {
 	return "sp.guild.admin.backup"
 }
 
+func (c *CmdBackup) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdBackup) Exec(args *CommandArgs) error {
 	if len(args.Args) > 0 {
 		switch strings.ToLower(args.Args[0]) {
@@ -65,20 +72,20 @@ func (c *CmdBackup) switchStatus(args *CommandArgs, enable bool) error {
 
 	if enable {
 		msg, err := util.SendEmbed(args.Session, args.Channel.ID, "Enabled backup for this guild.\nA full guild backup *(incl. Members, Roles, Channels and Guild Settings)* "+
-			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will habe the backup files of the last 5 days.", "", util.ColorEmbedGreen)
+			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will habe the backup files of the last 5 days.", "", static.ColorEmbedGreen)
 		util.DeleteMessageLater(args.Session, msg, 15*time.Second)
 		return err
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID, "Backup creation disabled.\n"+
-		"You will be still have access to created backups and be able to restore them.", "", util.ColorEmbedOrange)
+		"You will be still have access to created backups and be able to restore them.", "", static.ColorEmbedOrange)
 	util.DeleteMessageLater(args.Session, msg, 15*time.Second)
 	return err
 }
 
-func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, string, error) {
+func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*backupmodels.Entry, string, error) {
 	backups, err := args.CmdHandler.db.GetBackups(args.Guild.ID)
-	if err != nil && core.IsErrDatabaseNotFound(err) {
+	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return nil, "", err
 	}
 
@@ -107,7 +114,7 @@ func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*core.BackupEntry, stri
 
 func (c *CmdBackup) list(args *CommandArgs) error {
 	status, err := args.CmdHandler.db.GetGuildBackup(args.Guild.ID)
-	if err != nil && core.IsErrDatabaseNotFound(err) {
+	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
@@ -122,7 +129,7 @@ func (c *CmdBackup) list(args *CommandArgs) error {
 	}
 
 	emb := &discordgo.MessageEmbed{
-		Color:       util.ColorEmbedDefault,
+		Color:       static.ColorEmbedDefault,
 		Title:       "Backups",
 		Description: strStatus,
 		Fields: []*discordgo.MessageEmbedField{
@@ -160,7 +167,7 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 		return err
 	}
 
-	var backup *core.BackupEntry
+	var backup *backupmodels.Entry
 
 	if i < 10 {
 		if int64(len(backups)-1) < i {
@@ -185,12 +192,12 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 		return err
 	}
 
-	accMsg := &util.AcceptMessage{
+	accMsg := &acceptmsg.AcceptMessage{
 		Session:        args.Session,
 		DeleteMsgAfter: true,
 		UserID:         args.User.ID,
 		Embed: &discordgo.MessageEmbed{
-			Color: util.ColorEmbedOrange,
+			Color: static.ColorEmbedOrange,
 			Description: fmt.Sprintf(":warning:  **WARNING**  :warning:\n\n"+
 				"By pressing :white_check_mark:, the structure of this guild will be **reset** to the selected backup:\n\n"+
 				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
@@ -214,7 +221,7 @@ func (c *CmdBackup) proceedRestore(args *CommandArgs, fileID string) {
 
 	statusMsg, _ := args.Session.ChannelMessageSendEmbed(args.Channel.ID,
 		&discordgo.MessageEmbed{
-			Color:       util.ColorEmbedGray,
+			Color:       static.ColorEmbedGray,
 			Description: "initializing backup restoring...",
 		})
 
@@ -227,7 +234,7 @@ func (c *CmdBackup) proceedRestore(args *CommandArgs, fileID string) {
 						continue
 					}
 					args.Session.ChannelMessageEditEmbed(statusMsg.ChannelID, statusMsg.ID, &discordgo.MessageEmbed{
-						Color:       util.ColorEmbedGray,
+						Color:       static.ColorEmbedGray,
 						Description: status + "...",
 					})
 				case err, ok := <-errorsChan:

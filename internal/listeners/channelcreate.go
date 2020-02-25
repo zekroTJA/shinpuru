@@ -2,15 +2,14 @@ package listeners
 
 import (
 	"github.com/bwmarrin/discordgo"
-
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 )
 
 type ListenerChannelCreate struct {
-	db core.Database
+	db database.Database
 }
 
-func NewListenerChannelCreate(db core.Database) *ListenerChannelCreate {
+func NewListenerChannelCreate(db database.Database) *ListenerChannelCreate {
 	return &ListenerChannelCreate{
 		db: db,
 	}

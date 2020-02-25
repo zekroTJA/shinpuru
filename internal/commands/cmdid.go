@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdId struct {
@@ -30,6 +31,10 @@ func (c *CmdId) GetGroup() string {
 
 func (c *CmdId) GetDomainName() string {
 	return "sp.etc.id"
+}
+
+func (c *CmdId) GetSubPermissionRules() []SubPermission {
+	return nil
 }
 
 func (c *CmdId) Exec(args *CommandArgs) error {
@@ -68,7 +73,7 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 
 	emb := &discordgo.MessageEmbed{
-		Color:  util.ColorEmbedDefault,
+		Color:  static.ColorEmbedDefault,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 

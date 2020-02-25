@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdQuote struct {
@@ -22,7 +23,7 @@ func (c *CmdQuote) GetDescription() string {
 }
 
 func (c *CmdQuote) GetHelp() string {
-	return "`quote <msgID/msgURL>`"
+	return "`quote <msgID/msgURL> (<comment>)`"
 }
 
 func (c *CmdQuote) GetGroup() string {
@@ -31,6 +32,10 @@ func (c *CmdQuote) GetGroup() string {
 
 func (c *CmdQuote) GetDomainName() string {
 	return "sp.chat.quote"
+}
+
+func (c *CmdQuote) GetSubPermissionRules() []SubPermission {
+	return nil
 }
 
 func (c *CmdQuote) Exec(args *CommandArgs) error {
@@ -46,8 +51,10 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		args.Args[0] = urlSplit[len(urlSplit)-1]
 	}
 
+	comment := strings.Join(args.Args[1:], " ")
+
 	msgSearchEmb := &discordgo.MessageEmbed{
-		Color:       util.ColorEmbedGray,
+		Color:       static.ColorEmbedGray,
 		Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", args.Channel.ID),
 	}
 
@@ -104,7 +111,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if timeOuted {
 		msgSearchEmb.Description = "Searching worker timeout."
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
@@ -112,7 +119,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if quoteMsg == nil {
 		msgSearchEmb.Description = "Could not find any message with this ID. :disappointed:"
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
@@ -120,7 +127,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 
 	if len(quoteMsg.Content) < 1 && len(quoteMsg.Attachments) < 1 {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
-		msgSearchEmb.Color = util.ColorEmbedError
+		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
 		util.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
 		return err
@@ -132,7 +139,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	}
 
 	msgSearchEmb = &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: quoteMsg.Author.AvatarURL(""),
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
@@ -140,7 +147,8 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		Description: quoteMsg.Content +
 			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg, args.Guild.ID)),
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
+			IconURL: args.User.AvatarURL("16"),
+			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
@@ -153,6 +161,11 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Height:   att.Height,
 			Width:    att.Width,
 		}
+	}
+
+	if comment != "" {
+		args.Session.ChannelMessageEdit(args.Channel.ID, msgSearch.ID,
+			fmt.Sprintf("**%s:**\n%s\n", args.User.String(), comment))
 	}
 
 	args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)

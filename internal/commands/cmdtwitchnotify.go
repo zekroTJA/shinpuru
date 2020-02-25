@@ -7,8 +7,10 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdTwitchNotify struct {
@@ -36,6 +38,10 @@ func (c *CmdTwitchNotify) GetDomainName() string {
 	return "sp.chat.twitch"
 }
 
+func (c *CmdTwitchNotify) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 	tnw := args.CmdHandler.tnw
 
@@ -56,7 +62,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
-				if tUser, err := tnw.GetUser(not.TwitchUserID, core.TwitchNotifyIdentID); err == nil {
+				if tUser, err := tnw.GetUser(not.TwitchUserID, twitchnotify.TwitchNotifyIdentID); err == nil {
 					notsStr += fmt.Sprintf(":white_small_square:  **%s** in <#%s>\n",
 						tUser.DisplayName, not.ChannelID)
 				}
@@ -67,7 +73,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], core.TwitchNotifyIdentLogin)
+	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], twitchnotify.TwitchNotifyIdentLogin)
 	if err != nil && err.Error() == "not found" {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"Twitch user could not be found.")
@@ -83,7 +89,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			return err
 		}
 
-		var notify *core.TwitchNotifyDBEntry
+		var notify *twitchnotify.TwitchNotifyDBEntry
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
 				notify = not
@@ -108,12 +114,12 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	accMsg := util.AcceptMessage{
+	accMsg := acceptmsg.AcceptMessage{
 		Session:        args.Session,
 		UserID:         args.User.ID,
 		DeleteMsgAfter: true,
 		Embed: &discordgo.MessageEmbed{
-			Color:       util.ColorEmbedDefault,
+			Color:       static.ColorEmbedDefault,
 			Description: fmt.Sprintf("Do you want to get notifications in this channel when **%s** goes online on Twitch?", tUser.DisplayName),
 			Thumbnail: &discordgo.MessageEmbedThumbnail{
 				URL: tUser.AviURL,
@@ -128,7 +134,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 				return
 			}
 
-			err = args.CmdHandler.db.SetTwitchNotify(&core.TwitchNotifyDBEntry{
+			err = args.CmdHandler.db.SetTwitchNotify(&twitchnotify.TwitchNotifyDBEntry{
 				ChannelID:    args.Channel.ID,
 				GuildID:      args.Guild.ID,
 				TwitchUserID: tUser.ID,
@@ -141,7 +147,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			}
 
 			msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", util.ColorEmbedUpdated)
+				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", static.ColorEmbedUpdated)
 			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 		},
 		DeclineFunc: func(m *discordgo.Message) {

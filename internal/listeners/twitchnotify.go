@@ -2,18 +2,20 @@ package listeners
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 type ListenerTwitchNotify struct {
-	config    *core.Config
-	db        core.Database
+	config    *config.Config
+	db        database.Database
 	session   *discordgo.Session
 	notMsgIDs map[string][]*discordgo.Message
 }
 
-func NewListenerTwitchNotify(session *discordgo.Session, config *core.Config, db core.Database) *ListenerTwitchNotify {
+func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, db database.Database) *ListenerTwitchNotify {
 	return &ListenerTwitchNotify{
 		config:    config,
 		db:        db,
@@ -22,7 +24,7 @@ func NewListenerTwitchNotify(session *discordgo.Session, config *core.Config, db
 	}
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOnline(d *core.TwitchNotifyData, u *core.TwitchNotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
 	if l.session == nil {
 		return
 	}
@@ -35,7 +37,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *core.TwitchNotifyData, u *co
 
 	msgs := make([]*discordgo.Message, 0)
 	for _, not := range nots {
-		emb := core.TwitchNotifyGetEmbed(d, u)
+		emb := twitchnotify.GetEmbed(d, u)
 		msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
 		if err != nil {
 			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
@@ -49,7 +51,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *core.TwitchNotifyData, u *co
 
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOffline(d *core.TwitchNotifyData, u *core.TwitchNotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
 	if l.session == nil {
 		return
 	}

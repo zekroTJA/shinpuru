@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
-
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdPerms struct {
@@ -43,6 +43,10 @@ func (c *CmdPerms) GetDomainName() string {
 	return "sp.guild.config.perms"
 }
 
+func (c *CmdPerms) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdPerms) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 	perms, err := db.GetGuildPermissions(args.Guild.ID)
@@ -51,10 +55,17 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	}
 
 	if len(args.Args) == 0 {
+		sortedGuildRoles, err := util.GetSortedGuildRoles(args.Session, args.Guild.ID, true)
+		if err != nil {
+			return err
+		}
+
 		msgstr := ""
 
-		for roleID, pa := range perms {
-			msgstr += fmt.Sprintf("**<@&%s>**\n%s\n\n", roleID, strings.Join(pa, "\n"))
+		for _, role := range sortedGuildRoles {
+			if pa, ok := perms[role.ID]; ok {
+				msgstr += fmt.Sprintf("**<@&%s>**\n%s\n\n", role.ID, strings.Join(pa, "\n"))
+			}
 		}
 
 		_, err = util.SendEmbed(args.Session, args.Channel.ID,
@@ -92,10 +103,10 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 
 		cPerm, ok := perms[r.ID]
 		if !ok {
-			cPerm = make(core.PermissionArray, 0)
+			cPerm = make(permissions.PermissionArray, 0)
 		}
 
-		cPerm = cPerm.Update(perm)
+		cPerm = cPerm.Update(perm, false)
 
 		err := db.SetGuildRolePermission(args.Guild.ID, r.ID, cPerm)
 		if err != nil {
@@ -110,7 +121,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	_, err = util.SendEmbed(args.Session, args.Channel.ID,
 		fmt.Sprintf("Set permission `%s` for role%s %s.",
 			perm, multipleRoles, strings.Join(rolesIds, ", ")),
-		"", util.ColorEmbedUpdated)
+		"", static.ColorEmbedUpdated)
 
 	return err
 }

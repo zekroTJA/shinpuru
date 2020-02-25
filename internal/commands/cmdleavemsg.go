@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
-
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdLeaveMsg struct {
@@ -37,11 +37,15 @@ func (c *CmdLeaveMsg) GetDomainName() string {
 	return "sp.guild.config.leavemsg"
 }
 
+func (c *CmdLeaveMsg) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
 	chanID, msg, err := db.GetGuildLeaveMsg(args.Guild.ID)
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
@@ -120,7 +124,7 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	}
 
 	rmsg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		resTxt, "", util.ColorEmbedGreen)
+		resTxt, "", static.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
 	return err
 }

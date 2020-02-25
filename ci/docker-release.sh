@@ -1,16 +1,16 @@
 #!/bin/bash
 
-set -e
-
 IMAGE_NAME="zekro/shinpuru"
 
-BRANCH=$TRAVIS_BRANCH
-TAG=$TRAVIS_TAG
-
-echo "TRAVIS_TAG '$TRAVIS_TAG'"
-echo "TRAVIS_BRANCH '$TRAVIS_BRANCH'"
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+TAG=$(git describe --tags --abbrev=0)
 
 DTAG=""
+
+set -e
+
+echo "BRANCH: $BRANCH"
+echo "TAG:    $TAG"
 
 if ! [ -z $TAG ]; then
     DTAG=$TAG
@@ -30,10 +30,6 @@ fi
 
 IMAGE="$IMAGE_NAME:$DTAG"
 
-echo "IMAGE '$IMAGE'"
-
 docker build . -t $IMAGE
-
 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-
 docker push $IMAGE

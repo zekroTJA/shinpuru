@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdStats struct {
@@ -33,6 +34,10 @@ func (c *CmdStats) GetDomainName() string {
 	return "sp.etc.stats"
 }
 
+func (c *CmdStats) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdStats) Exec(args *CommandArgs) error {
 	uptime := int(time.Since(util.StatsStartupTime).Seconds())
 	uptimeDays := int(uptime / (3600 * 24))
@@ -53,7 +58,7 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 	usedStack := util.ByteCountFormatter(memStats.StackInuse)
 
 	emb := &discordgo.MessageEmbed{
-		Color: util.ColorEmbedDefault,
+		Color: static.ColorEmbedDefault,
 		Title: "shinpuru Global Stats",
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{

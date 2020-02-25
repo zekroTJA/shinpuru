@@ -2,7 +2,7 @@
 
 ## Preamble
 
-Before version 0.14, shinpurus permission system was based on permission levels. Every command had its own, predefined level which a user must had at least to perform this command. Because this system is unflexible and hardly static, I've decided to step over to a domain based permission system.
+Before version 0.14, shinpuru's permission system was based on permission levels. Every command had a specific, predefined and static level which a user must match at least to perform the command. Because of this system's unflexibility, I've decided to step over to a domain based permission system.
 
 ## Domain Based Permissions
 
@@ -11,10 +11,10 @@ A permission domain looks like following, for example:
 ```
 sp.chat.vote.close
 ^  ^    ^    ^
-|  |    |    |---- sub command
-|  |    |--------- main command
-|  |-------------- command domain
-|----------------- main shinpuru domain
+|  |    |    +---- sub command
+|  |    +--------- main command
+|  +-------------- command domain
++----------------- main shinpuru domain
 ```
 
 So every command and some sub command which need seperate permission configurations are grouped by their command domains and command names.
@@ -27,11 +27,11 @@ Now, you can specify rules to Discord guild roles which look like following:
 +sp.guild.config.modlog
 ^\--------------------/
 |          |
-|          |----- permission domain
-|---------------- rule type specification
+|          +----- permission domain
++---------------- rule type specification
 ```
 
-The `rule type specification` is wether `+` for `ALLOW` or `-` for `DENY`. One of both specifiers **must** be set for each rule.
+The `rule type specification` is either `+` for `ALLOW` or `-` for `DENY`. One of both specifiers **must** be set for each rule. `DENY` always counts over `ALLOW` on the same permission level.
 
 Of course, you can also specify rules over domain groups by using wild cards:
 
@@ -39,42 +39,49 @@ Of course, you can also specify rules over domain groups by using wild cards:
 +sp.guild.config.*
 ```
 
+Keep in mind that higer domains count over lower when using wildcards, which means `-sp.guild.mod.kick` counts over `+sp.guild.mod.*` and denies the usage of the `kick` command.
+
 Rules are always bound to guild roles. So, shinpuru displays role configurations like following:
 
 ```
-@everyone
-    +sp.etc.*
-    +sp.chat.*
-    -sp.chat.vote.close
+@Admin
+    +sp.guild.mod.ban
+    +sp.guild.config.*
 
 @Moderator
     +sp.chat.vote.close
     +sp.guild.mod.*
     -sp.guild.mod.ban
 
-@Admin
-    +sp.guild.mod.ban
-    +sp.guild.config.*
-```
-
-Also keep in mind if a user has an `ALLOW`ing and `DENY`ing rules over the same domain at the same time, this will be counted like the rule is not set at all.
-
-So if a member has following roles with following rules:
-```
-@Member
+@everyone
+    +sp.etc.*
     +sp.chat.*
-    -sp.chat.vote.close
+```
 
+If you want to negate a rule, just set the negative rule on the specific role.
+
+So if you have a role with following rule set:
+
+```
 @Moderator
     +sp.chat.vote.close
+    +sp.guild.mod.*
+    -sp.guild.mod.ban
 ```
 
-Their resulting rule set looks like following:
+And now, you want to allow `@Moderators` to use the `ban` command, just set the rule
+
 ```
-+sp.chat.*
++sp.guild.mod.ban
 ```
 
-So this user will be able to use the `sp.chat.vote.close` command because they have access to all commands and sub commands from the domain `sp.chat`.
+which results in the follwoing rule set configuration:
+
+```
+@Moderator
+    +sp.chat.vote.close
+    +sp.guild.mod.*
+```
 
 ## Rule Domination Order
 
@@ -99,3 +106,17 @@ This also works vice versa:
 ```
 
 This user will not be able to use any command from `sp.guild.config` except the `sp.guild.config.autorole` command.
+
+Also, rules et to roles with higer position will always override rules assigned to troles with lower position, like in the following example:
+
+*Role position equals like displayed. Higher means higher role position.*
+```
+@Supporter
+    -sp.chat.vote.close
+
+@Moderator
+    +sp.chat.vote.close
+    +sp.guild.mod.*
+```
+
+If a user has both roles, `@Supporter` and `@Moderator`, the rule `+sp.chat.vote.close` of `@Moderator` will be canceled out by the rule `-sp.chat.vote.close` bound to `@Supporter`, which is higer in position.

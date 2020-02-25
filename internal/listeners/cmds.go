@@ -8,17 +8,19 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type ListenerCmds struct {
-	config     *core.Config
-	db         core.Database
+	config     *config.Config
+	db         database.Database
 	cmdHandler *commands.CmdHandler
 }
 
-func NewListenerCmd(config *core.Config, db core.Database, cmdHandler *commands.CmdHandler) *ListenerCmds {
+func NewListenerCmd(config *config.Config, db database.Database, cmdHandler *commands.CmdHandler) *ListenerCmds {
 	return &ListenerCmds{
 		config:     config,
 		db:         db,
@@ -41,7 +43,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		return
 	}
 	guildPrefix, err := l.db.GetGuildPrefix(e.GuildID)
-	if err != nil && !core.IsErrDatabaseNotFound(err) {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		util.Log.Errorf("Failed fetching guild prefix from database: %s", err.Error())
 	}
 
@@ -78,7 +80,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 
 		ok, err := l.cmdHandler.CheckPermissions(s, guild.ID, e.Author.ID, cmdInstance.GetDomainName())
 
-		if err != nil && !core.IsErrDatabaseNotFound(err) {
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			util.SendEmbedError(s, channel.ID, fmt.Sprintf("Failed getting permission from database: ```\n%s\n```", err.Error()), "Permission Error")
 			return
 		}
@@ -109,7 +111,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		err = cmdInstance.Exec(cmdArgs)
 		if err != nil {
 			emb := &discordgo.MessageEmbed{
-				Color:       util.ColorEmbedError,
+				Color:       static.ColorEmbedError,
 				Title:       "Command execution failed",
 				Description: fmt.Sprintf("Failed executing command: ```\n%s\n```", err.Error()),
 				Footer: &discordgo.MessageEmbedFooter{

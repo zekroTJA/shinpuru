@@ -7,8 +7,11 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/internal/util/tag"
 )
 
 var reserved = []string{"create", "add", "edit", "delete", "remove", "rem", "raw"}
@@ -41,6 +44,21 @@ func (c *CmdTag) GetDomainName() string {
 	return "sp.chat.tag"
 }
 
+func (c *CmdTag) GetSubPermissionRules() []SubPermission {
+	return []SubPermission{
+		SubPermission{
+			Term:        "create",
+			Explicit:    true,
+			Description: "Allows creating tags",
+		},
+		SubPermission{
+			Term:        "delete",
+			Explicit:    true,
+			Description: "Allows deleting tags (of every user)",
+		},
+	}
+}
+
 func (c *CmdTag) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
@@ -69,7 +87,7 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 
 	switch strings.ToLower(args.Args[0]) {
 	case "create", "add":
-		if err, ok := checkPermission(args, c.GetDomainName()+".create"); !ok || err != nil {
+		if err, ok := checkPermission(args, "!"+c.GetDomainName()+".create"); !ok || err != nil {
 			return err
 		}
 		return c.addTag(args, db)
@@ -84,7 +102,7 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 	}
 }
 
-func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 3 {
 		return printInvalidArguments(args)
 	}
@@ -100,15 +118,15 @@ func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
 		}
 	}
 
-	tag, err := db.GetTagByIdent(ident, args.Guild.ID)
-	if tag != nil {
+	itag, err := db.GetTagByIdent(ident, args.Guild.ID)
+	if itag != nil {
 		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 			fmt.Sprintf("The tag `%s` already exists. Use `tag edit %s` to edit this tag or use another tag name.",
 				ident, ident))
 		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 		return err
 	}
-	if err != nil && err != core.ErrDatabaseNotFound {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
@@ -117,27 +135,27 @@ func (c *CmdTag) addTag(args *CommandArgs, db core.Database) error {
 	contentOffset := strings.Index(args.Message.Content, argsJoined) + len(argsJoined) + 1
 	content := args.Message.Content[contentOffset:]
 
-	tag = &util.Tag{
+	itag = &tag.Tag{
 		Content:   content,
 		Created:   now,
 		CreatorID: args.User.ID,
 		GuildID:   args.Guild.ID,
-		ID:        util.NodeTags.Generate(),
+		ID:        snowflakenodes.NodeTags.Generate(),
 		Ident:     ident,
 		LastEdit:  now,
 	}
 
-	if err = db.AddTag(tag); err != nil {
+	if err = db.AddTag(itag); err != nil {
 		return err
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Tag `%s` was created with ID `%s`.", ident, tag.ID), "", util.ColorEmbedGreen)
+		fmt.Sprintf("Tag `%s` was created with ID `%s`.", ident, itag.ID), "", static.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 	return err
 }
 
-func (c *CmdTag) editTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 3 {
 		return printInvalidArguments(args)
 	}
@@ -161,43 +179,43 @@ func (c *CmdTag) editTag(args *CommandArgs, db core.Database) error {
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Tag `%s` (ID `%s`) was updated.", tag.Ident, tag.ID), "", util.ColorEmbedGreen)
+		fmt.Sprintf("Tag `%s` (ID `%s`) was updated.", tag.Ident, tag.ID), "", static.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
 
 	return err
 }
 
-func (c *CmdTag) deleteTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 2 {
 		return printInvalidArguments(args)
 	}
 
-	tag, err, ok := getTag(args.Args[1], args, db)
+	itag, err, ok := getTag(args.Args[1], args, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".delete")
+	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
-	if tag.CreatorID != args.User.ID && !ok {
+	if itag.CreatorID != args.User.ID && !ok {
 		return printNotPermitted(args, "delete")
 	}
 
-	if err = db.DeleteTag(tag.ID); err != nil {
+	if err = db.DeleteTag(itag.ID); err != nil {
 		return err
 	}
 
 	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"Tag was deleted.", "", util.ColorEmbedGreen)
+		"Tag was deleted.", "", static.ColorEmbedGreen)
 	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
 
 	return err
 }
 
-func (c *CmdTag) getRawTag(args *CommandArgs, db core.Database) error {
+func (c *CmdTag) getRawTag(args *CommandArgs, db database.Database) error {
 	if len(args.Args) < 2 {
 		return printInvalidArguments(args)
 	}
@@ -211,7 +229,7 @@ func (c *CmdTag) getRawTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func (c CmdTag) getTag(args *CommandArgs, db core.Database) error {
+func (c CmdTag) getTag(args *CommandArgs, db database.Database) error {
 	tag, err, ok := getTag(args.Args[0], args, db)
 	if !ok || err != nil {
 		return err
@@ -221,13 +239,13 @@ func (c CmdTag) getTag(args *CommandArgs, db core.Database) error {
 	return err
 }
 
-func getTag(ident string, args *CommandArgs, db core.Database) (*util.Tag, error, bool) {
-	tag, err := db.GetTagByIdent(strings.ToLower(ident), args.Guild.ID)
-	if err != nil && err != core.ErrDatabaseNotFound {
+func getTag(ident string, args *CommandArgs, db database.Database) (*tag.Tag, error, bool) {
+	itag, err := db.GetTagByIdent(strings.ToLower(ident), args.Guild.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err, false
 	}
-	if tag != nil {
-		return tag, nil, true
+	if itag != nil {
+		return itag, nil, true
 	}
 
 	id, err := snowflake.ParseString(ident)
@@ -235,16 +253,16 @@ func getTag(ident string, args *CommandArgs, db core.Database) (*util.Tag, error
 		return nil, printTagNotFound(args), false
 	}
 
-	tag, err = db.GetTagByID(id)
-	if err != nil && err != core.ErrDatabaseNotFound {
+	itag, err = db.GetTagByID(id)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err, false
 	}
 
-	if tag == nil || tag.GuildID != args.Guild.ID {
+	if itag == nil || itag.GuildID != args.Guild.ID {
 		return nil, printTagNotFound(args), false
 	}
 
-	return tag, nil, true
+	return itag, nil, true
 }
 
 func printInvalidArguments(args *CommandArgs) error {

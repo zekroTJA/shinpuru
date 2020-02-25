@@ -7,8 +7,10 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdNotify struct {
@@ -35,10 +37,14 @@ func (c *CmdNotify) GetDomainName() string {
 	return "sp.chat.notify"
 }
 
+func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdNotify) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
-		if core.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
+		if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"No notify role  was set up for this guild.")
 			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
@@ -105,12 +111,12 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 		notifiableStr := "\n*Notify role is defaulty not notifiable. You need to enable this manually by using the " +
 			"`ment` command or toggling it manually in the discord settings.*"
 		if notifyRoleExists {
-			am := &util.AcceptMessage{
+			am := &acceptmsg.AcceptMessage{
 				Session:        args.Session,
 				UserID:         args.User.ID,
 				DeleteMsgAfter: true,
 				Embed: &discordgo.MessageEmbed{
-					Color: util.ColorEmbedDefault,
+					Color: static.ColorEmbedDefault,
 					Description: fmt.Sprintf("The notify role on this guild is already set to <@&%s>.\n"+
 						"Do you want to overwrite this setting? This will also **delete** the role <@&%s>.",
 						notifyRoleID, notifyRoleID),

@@ -7,9 +7,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/qiangxue/fasthttp-routing"
+	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
-	"github.com/zekroTJA/shinpuru/internal/core"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
@@ -22,11 +22,11 @@ const (
 )
 
 type Auth struct {
-	db      core.Database
+	db      database.Database
 	session *discordgo.Session
 }
 
-func NewAuth(db core.Database, s *discordgo.Session) *Auth {
+func NewAuth(db database.Database, s *discordgo.Session) *Auth {
 	return &Auth{
 		db:      db,
 		session: s,
@@ -45,7 +45,7 @@ func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 
 	skey := string(key)
 	uid, err := auth.db.GetSession(skey)
-	if err == core.ErrDatabaseNotFound {
+	if database.IsErrDatabaseNotFound(err) {
 		return "", nil
 	}
 	if err != nil {

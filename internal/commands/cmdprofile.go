@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type CmdProfile struct {
@@ -34,6 +35,10 @@ func (c *CmdProfile) GetDomainName() string {
 	return "sp.chat.profile"
 }
 
+func (c *CmdProfile) GetSubPermissionRules() []SubPermission {
+	return nil
+}
+
 func (c *CmdProfile) Exec(args *CommandArgs) error {
 	member, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
 	if err != nil {
@@ -55,7 +60,7 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 	}
 
 	maxPos := len(args.Guild.Roles)
-	roleColor := util.ColorEmbedGray
+	roleColor := static.ColorEmbedGray
 	for _, guildRole := range args.Guild.Roles {
 		if _, ok := membRoleIDs[guildRole.ID]; ok && guildRole.Position < maxPos && guildRole.Color != 0 {
 			maxPos = guildRole.Position
