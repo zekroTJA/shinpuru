@@ -77,9 +77,5 @@ var (
 	DefaultUserRules = []string{
 		"+sp.etc.*",
 		"+sp.chat.*",
-		"-sp.chat.tag.create",
-		"-sp.chat.tag.delete",
-		"-sp.chat.vote.close",
-		"-sp.guild.mod.inviteblock.send",
 	}
 )
