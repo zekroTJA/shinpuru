@@ -44,5 +44,5 @@ jobs:
             -a ./deploy/build_assets.tar.gz
             -a ./deploy/md5sum.txt
             -a ./deploy/sha256sum.txt
-            -m "${{ github.ref }}"
-            ${{ github.ref }}'
+            -m "$(git describe --tags --abbrev=0)"
+            $(git describe --tags --abbrev=0)'
