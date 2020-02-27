@@ -12,9 +12,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.sass'],
 })
 export class HeaderComponent implements OnInit {
-  @ViewChild('logout') private logoutTemplate: TemplateRef<any>;
-  @ViewChild('settings') private settingsTemplate: TemplateRef<any>;
-  @ViewChild('sysinfo') private sysinfoTemplate: TemplateRef<any>;
+  @ViewChild('logout', { static: true }) private logoutTemplate: TemplateRef<
+    any
+  >;
+  @ViewChild('settings', { static: true })
+  private settingsTemplate: TemplateRef<any>;
+  @ViewChild('sysinfo', { static: true }) private sysinfoTemplate: TemplateRef<
+    any
+  >;
 
   public selfUser: User;
 
