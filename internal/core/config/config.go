@@ -26,10 +26,18 @@ type DatabaseFile struct {
 	DBFile string
 }
 
+type DatabaseRedis struct {
+	Enable   bool
+	Addr     string
+	Password string
+	Type     int
+}
+
 type DatabaseType struct {
 	Type   string
 	MySql  *DatabaseCreds
 	Sqlite *DatabaseFile
+	Redis  *DatabaseRedis
 }
 
 type Logging struct {
@@ -89,6 +97,12 @@ func NewDefaultConfig() *Config {
 			MySql: new(DatabaseCreds),
 			Sqlite: &DatabaseFile{
 				DBFile: "shinpuru.sqlite3.db",
+			},
+			Redis: &DatabaseRedis{
+				Enable:   false,
+				Addr:     "localhost:6379",
+				Password: "",
+				Type:     0,
 			},
 		},
 		Logging: &Logging{
