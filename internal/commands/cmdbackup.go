@@ -133,7 +133,7 @@ func (c *CmdBackup) list(args *CommandArgs) error {
 		Title:       "Backups",
 		Description: strStatus,
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Saved Backups",
 				Value: strBackupAll,
 			},

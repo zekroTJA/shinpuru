@@ -27,9 +27,10 @@ require (
 	github.com/zekroTJA/timedmap v0.0.0-20191002080151-54d496ba02fb
 	golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
-	golang.org/x/tools v0.0.0-20200225022059-a0ec867d517c // indirect
+	golang.org/x/tools v0.0.0-20200304143113-d6a4d55695f2 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.8

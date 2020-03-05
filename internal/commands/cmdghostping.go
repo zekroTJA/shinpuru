@@ -67,7 +67,7 @@ func (c *CmdGhostping) info(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Help",
 				Value: "Set up or edit a ghost ping warn with `ghost set`. You can disable this with `ghost reset`." +
 					"Enter `help ghost` for further information.",

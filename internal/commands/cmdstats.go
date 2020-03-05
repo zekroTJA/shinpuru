@@ -61,22 +61,22 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 		Color: static.ColorEmbedDefault,
 		Title: "shinpuru Global Stats",
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Uptime",
 				Value: fmt.Sprintf("%d d, %d h, %d min, %d sec",
 					uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Stats since startup",
 				Value: fmt.Sprintf("**%d** Messages analysed for commands\n**%d** commands executed",
 					util.StatsMessagesAnalysed, util.StatsCommandsExecuted+1),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Guilds & Members",
 				Value: fmt.Sprintf("Serving **%d** guilds with **%d** members in total.",
 					len(args.Session.State.Guilds), guildUsers),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Runtime Stats",
 				Value: fmt.Sprintf("Running Go Routines: **%d**\nUsed CPU Threads: **%d**\n"+
 					"Used Heap: **%s**\nUsed Stack: **%s**", nGoroutines, usedCPUs, usedHeap, usedStack),

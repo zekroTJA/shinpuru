@@ -102,20 +102,20 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 			Title:       "Kick Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
-				&discordgo.MessageEmbedField{
+				{
 					Name: "Victim",
 					Value: fmt.Sprintf("<@%s> (%s#%s)",
 						victim.User.ID, victim.User.Username, victim.User.Discriminator),
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "ID",
 					Value: repID.String(),
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Type",
 					Value: static.ReportTypes[repType],
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Description",
 					Value: repMsg,
 				},

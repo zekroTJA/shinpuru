@@ -40,7 +40,7 @@ func (c *CmdVote) GetDomainName() string {
 
 func (c *CmdVote) GetSubPermissionRules() []SubPermission {
 	return []SubPermission{
-		SubPermission{
+		{
 			Term:        "close",
 			Explicit:    true,
 			Description: "Allows closing votes also from other users",

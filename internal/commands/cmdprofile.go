@@ -106,39 +106,39 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 			URL: member.User.AvatarURL(""),
 		},
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Inline: true,
 				Name:   "Tag",
 				Value:  member.User.Username + "#" + member.User.Discriminator,
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Inline: true,
 				Name:   "Nickname",
 				Value:  util.EnsureNotEmpty(member.Nick, "*no nick*"),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "ID",
 				Value: "```\n" + member.User.ID + "\n```",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Guild Joined",
 				Value: util.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Account Created",
 				Value: util.EnsureNotEmpty(createdTime.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Permissions",
 				Value: util.EnsureNotEmpty(strings.Join(perms, "\n"), "*no permissions defined*"),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Reports",
 				Value: repsOnRecordStr + "\n*Use `rep <user>` to list all reports of this user.*",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Roles",
 				Value: util.EnsureNotEmpty(strings.Join(roles, ", "), "*no roles assigned*"),
 			},

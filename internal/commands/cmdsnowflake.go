@@ -112,29 +112,29 @@ func (c *CmdSnowflake) printSfDc(args *CommandArgs, sf *snowflakenodes.DiscordSn
 		Title: "Snowflake Info",
 		Color: 0x7289DA,
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Snowflake",
 				Value: fmt.Sprintf("```\n%s\n```", sf.Snowflake),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Type",
 				Value: "Discord Snowflake ID",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Timestamp",
 				Value: sf.Time.Format(time.RFC1123),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:   "Worker ID",
 				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.WorkerID), "*<empty>*"),
 				Inline: true,
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:   "Process ID",
 				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.ProcessID), "*<empty>*"),
 				Inline: true,
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:   "Incremental ID",
 				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.IncrementalID), "*<empty>*"),
 				Inline: true,
@@ -151,30 +151,30 @@ func (c *CmdSnowflake) printSfSp(args *CommandArgs, sf snowflake.ID) error {
 		Title: "Snowflake Info",
 		Color: static.ColorEmbedDefault,
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Snowflake",
 				Value: fmt.Sprintf("```\n%s\n```", sf.String()),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Type",
 				Value: "Discord Snowflake ID",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Timestamp",
 				Value: snowflakenodes.
 					ParseUnixTime(int(sf.Time())).
 					Format(time.RFC1123),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Node Name",
 				Value: util.EnsureNotEmpty(snowflakenodes.GetNodeName(sf.Node()), "*<empty>*"),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:   "Node ID",
 				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.Node()), "*<empty>*"),
 				Inline: true,
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:   "Incremental ID",
 				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.Step()), "*<empty>*"),
 				Inline: true,

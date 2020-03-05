@@ -220,20 +220,20 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 				Color: static.ColorEmbedCyan,
 				Title: "Compilation Result",
 				Fields: []*discordgo.MessageEmbedField{
-					&discordgo.MessageEmbedField{
+					{
 						Name:  "Code",
 						Value: fmt.Sprintf("```%s\n%s\n```", embLang, cont),
 					},
-					&discordgo.MessageEmbedField{
+					{
 						Name:  "Output",
 						Value: "```\n" + result.Output + "\n```",
 					},
-					&discordgo.MessageEmbedField{
+					{
 						Name:   "CPU Time",
 						Value:  result.CPUTime + " Seconds",
 						Inline: true,
 					},
-					&discordgo.MessageEmbedField{
+					{
 						Name:   "Memory",
 						Value:  result.Memory + " Byte",
 						Inline: true,

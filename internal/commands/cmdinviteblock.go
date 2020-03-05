@@ -37,7 +37,7 @@ func (c *CmdInviteBlock) GetDomainName() string {
 
 func (c *CmdInviteBlock) GetSubPermissionRules() []SubPermission {
 	return []SubPermission{
-		SubPermission{
+		{
 			Term:        "send",
 			Explicit:    true,
 			Description: "Allows sending invites even if invite block is enabled",

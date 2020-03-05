@@ -46,12 +46,12 @@ func (c *CmdTag) GetDomainName() string {
 
 func (c *CmdTag) GetSubPermissionRules() []SubPermission {
 	return []SubPermission{
-		SubPermission{
+		{
 			Term:        "create",
 			Explicit:    true,
 			Description: "Allows creating tags",
 		},
-		SubPermission{
+		{
 			Term:        "delete",
 			Explicit:    true,
 			Description: "Allows deleting tags (of every user)",
