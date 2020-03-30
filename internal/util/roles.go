@@ -23,9 +23,15 @@ func GetSortedMemberRoles(s *discordgo.Session, guildID, memberID string, revers
 	}
 
 	membRoles := make([]*discordgo.Role, len(member.Roles))
-	for i, rID := range member.Roles {
-		membRoles[i], _ = rolesMap[rID]
+	applied := 0
+	for _, rID := range member.Roles {
+		if r, ok := rolesMap[rID]; ok {
+			membRoles[applied] = r
+			applied++
+		}
 	}
+
+	membRoles = membRoles[:applied]
 
 	sortRoleArray(membRoles, reversed)
 
