@@ -45,6 +45,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.RegisterCommand(&commands.CmdJoinMsg{})
 	cmdHandler.RegisterCommand(&commands.CmdLeaveMsg{})
 	cmdHandler.RegisterCommand(&commands.CmdSnowflake{})
+	cmdHandler.RegisterCommand(&commands.CmdChannelStats{})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
