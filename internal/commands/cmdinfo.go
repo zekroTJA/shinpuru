@@ -50,33 +50,33 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			"features which I thought would be useful and which were the most used with my older Discord bots, like " +
 			"[zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.",
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Repository",
 				Value: "[github.com/zekrotja/shinpuru](https://github.com/zekrotja/shinpuru)",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Version",
 				Value: fmt.Sprintf("This instance is running on version **%s** (commit hash `%s`)",
 					util.AppVersion, util.AppCommit),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Licence",
 				Value: "Covered by [MIT Licence](https://github.com/zekroTJA/shinpuru/blob/master/LICENCE).",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "Invite",
 				Value: fmt.Sprintf("[Invite Link](%s).\n```\n%s\n```",
 					invLink, invLink),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Bug Hunters",
 				Value: "Much :heart: to all [**bug hunters**](https://github.com/zekroTJA/shinpuru/blob/dev/bughunters.md).",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Development state",
 				Value: "You can see current tasks [here](https://github.com/zekroTJA/shinpuru/projects).",
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name: "3rd Party Dependencies and Credits",
 				Value: "[Here](https://github.com/zekroTJA/shinpuru/blob/master/README.md#third-party-dependencies) you can find a list of all dependencies used.\n" +
 					"Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).",

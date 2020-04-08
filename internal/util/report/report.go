@@ -29,21 +29,21 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 		Title: "Case " + r.ID.String(),
 		Color: static.ReportColors[r.Type],
 		Fields: []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
+			{
 				Inline: true,
 				Name:   "Executor",
 				Value:  fmt.Sprintf("<@%s>", r.ExecutorID),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Inline: true,
 				Name:   "Victim",
 				Value:  fmt.Sprintf("<@%s>", r.VictimID),
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Type",
 				Value: static.ReportTypes[r.Type],
 			},
-			&discordgo.MessageEmbedField{
+			{
 				Name:  "Description",
 				Value: r.Msg,
 			},

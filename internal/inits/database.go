@@ -20,6 +20,12 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 		db = new(database.Sqlite)
 		err = db.Connect(databaseCfg.Sqlite)
 	}
+
+	if databaseCfg.Redis != nil && databaseCfg.Redis.Enable {
+		db = database.NewRedisMiddleware(databaseCfg.Redis, db)
+		util.Log.Info("Enabled redis as database cache")
+	}
+
 	if err != nil {
 		util.Log.Fatal("Failed connecting to database:", err)
 	}

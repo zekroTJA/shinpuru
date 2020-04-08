@@ -149,16 +149,16 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 			Title:       "Report Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
-				&discordgo.MessageEmbedField{
+				{
 					Name: "Victim",
 					Value: fmt.Sprintf("<@%s> (%s#%s)",
 						victim.User.ID, victim.User.Username, victim.User.Discriminator),
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Type",
 					Value: static.ReportTypes[repType],
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Description",
 					Value: repMsg,
 				},
@@ -230,7 +230,7 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 				":warning: **WARNING:** Revoking a report will be displayed in the mod log channel (if set) and " +
 				"the revoke will be **deleted** from the database and no more visible again after!",
 			Fields: []*discordgo.MessageEmbedField{
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Revocation Reason",
 					Value: reason,
 				},
@@ -258,11 +258,11 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 				Title:       "REPORT REVOCATION",
 				Description: "Revoked reports are deleted from the database and no more visible in any commands.",
 				Fields: []*discordgo.MessageEmbedField{
-					&discordgo.MessageEmbedField{
+					{
 						Name:  "Revoke Executor",
 						Value: args.User.Mention(),
 					},
-					&discordgo.MessageEmbedField{
+					{
 						Name:  "Revocation Reason",
 						Value: reason,
 					},

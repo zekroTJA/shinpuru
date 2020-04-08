@@ -89,12 +89,12 @@ func (d *DiscordOAuth) HandlerCallback(ctx *routing.Context) error {
 	// 1. Request getting bearer token by app auth code
 
 	data := map[string][]string{
-		"client_id":     []string{d.clientID},
-		"client_secret": []string{d.clientSecret},
-		"grant_type":    []string{"authorization_code"},
-		"code":          []string{code},
-		"redirect_uri":  []string{d.redirectURI},
-		"scope":         []string{"identify"},
+		"client_id":     {d.clientID},
+		"client_secret": {d.clientSecret},
+		"grant_type":    {"authorization_code"},
+		"code":          {code},
+		"redirect_uri":  {d.redirectURI},
+		"scope":         {"identify"},
 	}
 
 	values := url.Values(data)

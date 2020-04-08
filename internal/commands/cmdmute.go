@@ -209,21 +209,21 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 			Title: "Case " + repID.String(),
 			Color: static.ReportColors[repType],
 			Fields: []*discordgo.MessageEmbedField{
-				&discordgo.MessageEmbedField{
+				{
 					Inline: true,
 					Name:   "Executor",
 					Value:  fmt.Sprintf("<@%s>", args.User.ID),
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Inline: true,
 					Name:   "Victim",
 					Value:  fmt.Sprintf("<@%s>", victim.User.ID),
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Type",
 					Value: "UNMUTE",
 				},
-				&discordgo.MessageEmbedField{
+				{
 					Name:  "Description",
 					Value: "MANUAL UNMUTE",
 				},
