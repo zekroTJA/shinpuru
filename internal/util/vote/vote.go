@@ -143,7 +143,6 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 			Background: chart.Style{
 				FillColor: drawing.ColorTransparent,
 			},
-			Title: v.Description,
 		}
 
 		imgData := []byte{}
