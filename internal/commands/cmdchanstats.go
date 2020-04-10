@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
@@ -96,8 +97,6 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		}
 	}
 
-	fmt.Println(typ)
-
 	statusMsg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, c.getCollectedEmbed(0))
 	if err != nil {
 		return err
@@ -124,83 +123,107 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		}
 	}
 
+	countPerUser := make(map[string]int)
+	var title string
+
+	// Type: Messages per user
+	if typ == cStatsTypeMsgs {
+		title = "Messages per User"
+		for _, m := range allMsgs {
+			uname := m.Author.Username
+			if _, ok := countPerUser[uname]; !ok {
+				countPerUser[uname] = 1
+			} else {
+				countPerUser[uname]++
+			}
+		}
+	}
+
+	// Type: Attachments per user
+	if typ == cStatsTypeAtt {
+		title = "Attachments per User"
+		for _, m := range allMsgs {
+			uname := m.Author.Username
+			natt := len(m.Attachments)
+			if _, ok := countPerUser[uname]; !ok {
+				countPerUser[uname] = natt
+			} else {
+				countPerUser[uname] += natt
+			}
+		}
+	}
+
+	values := make([]chart.Value, len(countPerUser))
+	var summVals float64
+	i := 0
+	for uname, c := range countPerUser {
+		v := float64(c)
+		values[i] = chart.Value{
+			Label: uname,
+			Value: v,
+		}
+		summVals += v
+		i++
+	}
+
+	sort.Slice(values, func(i, j int) bool {
+		return values[i].Value > values[j].Value
+	})
+
+	valuesStr := make([]string, len(values))
+	for i, v := range values {
+		valuesStr[i] = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", i+1, v.Label, v.Value, (v.Value/summVals)*100)
+	}
+
 	statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: fmt.Sprintf("Finished. Collected %d messages.", len(allMsgs)),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  title,
+				Value: strings.Join(valuesStr, "\n"),
+			},
+		},
 	})
 
-	if typ == cStatsTypeMsgs {
-		msgsPerUser := make(map[string]int)
-		for _, m := range allMsgs {
-			uname := m.Author.Username
-			if _, ok := msgsPerUser[uname]; !ok {
-				msgsPerUser[uname] = 1
-			} else {
-				msgsPerUser[uname]++
-			}
-		}
-
-		values := make([]chart.Value, len(msgsPerUser))
-		i := 0
-		for uname, c := range msgsPerUser {
-			values[i] = chart.Value{
-				Label: uname,
-				Value: float64(c),
-			}
-			i++
-		}
-
-		sort.Slice(values, func(i, j int) bool {
-			return values[i].Value > values[j].Value
-		})
-
-		// ch := chart.BarChart{
-		// 	Title: "Test Bar Chart",
-		// 	Background: chart.Style{
-		// 		Padding: chart.Box{
-		// 			Top: 40,
-		// 		},
-		// 		FillColor: drawing.ColorTransparent,
-		// 	},
-		// 	Canvas: chart.Style{
-		// 		FontColor: drawing.ColorBlack,
-		// 	},
-		// 	Height:     512,
-		// 	BarWidth:   60,
-		// 	BarSpacing: 20,
-		// 	Bars:       values,
-		// }
-
-		ch := chart.BarChart{
-			Title: "Test Bar Chart",
-			Background: chart.Style{
-				Padding: chart.Box{
-					Top: 40,
-				},
+	ch := chart.BarChart{
+		Title:      title,
+		TitleStyle: chart.StyleShow(),
+		XAxis:      chart.StyleShow(),
+		YAxis: chart.YAxis{
+			Style: chart.StyleShow(),
+			ValueFormatter: func(v interface{}) string {
+				return fmt.Sprintf("%.0f", v)
 			},
-			Height:   512,
-			BarWidth: 60,
-			Bars: []chart.Value{
-				{Value: 5.25, Label: "Blue"},
-				{Value: 4.88, Label: "Green"},
-				{Value: 4.74, Label: "Gray"},
-				{Value: 3.22, Label: "Orange"},
-				{Value: 3, Label: "Test"},
-				{Value: 2.27, Label: "??"},
-				{Value: 1, Label: "!!"},
+			GridMajorStyle: chart.StyleShow(),
+			GridMinorStyle: chart.StyleShow(),
+		},
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top:    40,
+				Right:  40,
+				Bottom: 30,
+				Left:   10,
 			},
-		}
-
-		imgData := []byte{}
-		buff := bytes.NewBuffer(imgData)
-		err = ch.Render(chart.PNG, buff)
-		if err != nil {
-			return
-		}
-
-		_, err = args.Session.ChannelFileSend(args.Channel.ID,
-			"channel_stats_chart.png", buff)
+			FillColor: drawing.ColorTransparent,
+		},
+		Canvas: chart.Style{
+			FontColor: drawing.ColorBlack,
+		},
+		Height: 512,
+		Width:  1024,
+		Bars:   values,
 	}
+
+	imgData := []byte{}
+	buff := bytes.NewBuffer(imgData)
+	err = ch.Render(chart.PNG, buff)
+	if err != nil {
+		return
+	}
+
+	_, err = args.Session.ChannelFileSend(args.Channel.ID,
+		"channel_stats_chart.png", buff)
 
 	return
 }
@@ -208,14 +231,10 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 func (c *CmdChannelStats) getTyp(arg string) int {
 	switch strings.ToLower(arg) {
 
-	case "msg":
-	case "msgs":
-	case "messages":
+	case "msg", "msgs", "messages":
 		return cStatsTypeMsgs
 
-	case "att":
-	case "atts":
-	case "attachments":
+	case "att", "atts", "attachments":
 		return cStatsTypeAtt
 	}
 
