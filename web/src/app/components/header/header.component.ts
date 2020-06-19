@@ -65,7 +65,7 @@ export class HeaderComponent implements OnInit {
 
   private logout() {
     this.api.logout().subscribe(() => {
-      window.location.assign('/');
+      window.location.assign('/login');
     });
   }
 
