@@ -31,7 +31,7 @@ func NewListenerCmd(config *config.Config, db database.Database, cmdHandler *com
 func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate) {
 	util.StatsMessagesAnalysed++
 
-	if e.Message.Author.ID == s.State.User.ID {
+	if e.Message.Author.ID == s.State.User.ID || e.Message.Author.Bot {
 		return
 	}
 	channel, err := s.Channel(e.ChannelID)
