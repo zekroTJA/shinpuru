@@ -94,7 +94,7 @@ func (ws *WebServer) addHeaders(ctx *routing.Context) error {
 	ctx.Response.Header.Set("X-Content-Type-Options", "nosniff")
 
 	if util.Release != "TRUE" {
-		ctx.Response.Header.Set("Access-Control-Allow-Origin", ws.config.WebServer.PublicAddr)
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", ws.config.WebServer.DebugPublicAddr)
 		ctx.Response.Header.Set("Access-Control-Allow-Headers", "authorization, content-type, set-cookie, cookie, server")
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
