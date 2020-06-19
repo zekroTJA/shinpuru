@@ -50,10 +50,11 @@ type Etc struct {
 }
 
 type WS struct {
-	Enabled    bool   `json:"enabled"`
-	Addr       string `json:"addr"`
-	TLS        *WSTLS `json:"tls"`
-	PublicAddr string `json:"publicaddr"`
+	Enabled         bool   `json:"enabled"`
+	Addr            string `json:"addr"`
+	TLS             *WSTLS `json:"tls"`
+	PublicAddr      string `json:"publicaddr"`
+	DebugPublicAddr string `json:"debugpublicaddr,omitempty"`
 }
 
 type WSTLS struct {
