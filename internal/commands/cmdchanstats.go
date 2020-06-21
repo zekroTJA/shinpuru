@@ -54,9 +54,12 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	channel := args.Channel
 	typ := cStatsTypeMsgs
 
+	// Check command argument 0
+	// If no type is specified, `cStatsTypeMsgs` stays unchanged
+	// and channel will be tried to be fetched by first argument.
 	if len(args.Args) == 1 {
 		t := c.getTyp(args.Args[0])
-		if t < 0 {
+		if t == -1 {
 			channel, err = util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
 				return c.Type == discordgo.ChannelTypeGuildText
 			})
@@ -74,9 +77,13 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		}
 	}
 
+	// If a second argument is passed and if the first one is
+	// not a type specifier, this will be interpreted as error.
+	// From the first argument, the channel will be tried to
+	// be fetched.
 	if len(args.Args) == 2 {
 		typ := c.getTyp(args.Args[0])
-		if typ < 0 {
+		if typ == -1 {
 			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
 			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
@@ -97,6 +104,8 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		}
 	}
 
+	// Generate and send a status messgae which shows the current count
+	// of collected messages.
 	statusMsg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, c.getCollectedEmbed(0))
 	if err != nil {
 		return err
@@ -106,7 +115,11 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	var msgs []*discordgo.Message
 	var lastMsgID string
 
+	// Fetch all messages in specified channel.
+	// Because only 100 messages can be fetched at once,
+	// the request needs to be paginated.
 	for {
+		// Fetch channel messages.
 		msgs, err = args.Session.ChannelMessages(channel.ID, 100, lastMsgID, "", "")
 		if err != nil {
 			return
@@ -115,8 +128,10 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 			break
 		}
 
+		// Append messages to list and set last message ID.
 		allMsgs = append(allMsgs, msgs...)
 		lastMsgID = msgs[len(msgs)-1].ID
+		// Update status message.
 		statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, c.getCollectedEmbed(len(allMsgs)))
 		if err != nil {
 			return
@@ -126,8 +141,11 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	countPerUser := make(map[string]int)
 	var title string
 
+	// Setting title and countPerUser
+	// depending on the analysis type.
+	switch typ {
 	// Type: Messages per user
-	if typ == cStatsTypeMsgs {
+	case cStatsTypeMsgs:
 		title = "Messages per User"
 		for _, m := range allMsgs {
 			uname := m.Author.Username
@@ -137,10 +155,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 				countPerUser[uname]++
 			}
 		}
-	}
 
 	// Type: Attachments per user
-	if typ == cStatsTypeAtt {
+	case cStatsTypeAtt:
 		title = "Attachments per User"
 		for _, m := range allMsgs {
 			uname := m.Author.Username
@@ -153,6 +170,8 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		}
 	}
 
+	// Transform the `countsPerUser` map to an
+	// array of chart.Value.
 	values := make([]chart.Value, len(countPerUser))
 	var summVals float64
 	i := 0
@@ -166,15 +185,27 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		i++
 	}
 
+	// Sort the resulting array by value descending.
 	sort.Slice(values, func(i, j int) bool {
 		return values[i].Value > values[j].Value
 	})
 
+	// If ammount of users is larger than 10,
+	// slice the results by 10.
+	if len(values) > 10 {
+		title += " (Top 10)"
+		values = values[:10]
+	}
+
+	// Make an array of strings for the result top list embed
+	// and put in all formatted values.
 	valuesStr := make([]string, len(values))
 	for i, v := range values {
 		valuesStr[i] = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", i+1, v.Label, v.Value, (v.Value/summVals)*100)
 	}
 
+	// Assemble the final result embed and set it to the already
+	// sent status embed.
 	statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: fmt.Sprintf("Finished. Collected %d messages.", len(allMsgs)),
@@ -186,6 +217,8 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		},
 	})
 
+	// Create and assemble GoChart chart
+	// from collected values.
 	ch := chart.BarChart{
 		Title:      title,
 		TitleStyle: chart.StyleShow(),
@@ -215,6 +248,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		Bars:   values,
 	}
 
+	// Render chart to byte buffer.
 	imgData := []byte{}
 	buff := bytes.NewBuffer(imgData)
 	err = ch.Render(chart.PNG, buff)
@@ -222,12 +256,15 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		return
 	}
 
+	// Send the rendered chart from buffer into the channel.
 	_, err = args.Session.ChannelFileSend(args.Channel.ID,
 		"channel_stats_chart.png", buff)
 
 	return
 }
 
+// getType returns the type number by
+// passed argument string.
 func (c *CmdChannelStats) getTyp(arg string) int {
 	switch strings.ToLower(arg) {
 
@@ -241,6 +278,8 @@ func (c *CmdChannelStats) getTyp(arg string) int {
 	return -1
 }
 
+// getCollectedEmbed returns a discordgo.MessageEmbed displaying the
+// ammount of processed messages.
 func (c *CmdChannelStats) getCollectedEmbed(collected int) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGray,
