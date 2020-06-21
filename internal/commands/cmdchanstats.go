@@ -190,6 +190,18 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		return values[i].Value > values[j].Value
 	})
 
+	// Figure out at which position the command
+	// executor themself is and set the contribution
+	// value of them.
+	var myIndex int
+	var myValue float64
+	for i, v := range values {
+		if v.Label == args.User.Username {
+			myIndex = i + 1
+			myValue = v.Value
+		}
+	}
+
 	// If ammount of users is larger than 10,
 	// slice the results by 10.
 	if len(values) > 10 {
@@ -202,6 +214,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	valuesStr := make([]string, len(values))
 	for i, v := range values {
 		valuesStr[i] = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", i+1, v.Label, v.Value, (v.Value/summVals)*100)
+		if v.Label == args.User.Username {
+			valuesStr[i] = fmt.Sprintf("__%s__", valuesStr[i])
+		}
 	}
 
 	// Assemble the final result embed and set it to the already
@@ -213,6 +228,10 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 			{
 				Name:  title,
 				Value: strings.Join(valuesStr, "\n"),
+			},
+			{
+				Name:  "Your position",
+				Value: fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", myIndex, args.User.Username, myValue, (myValue/summVals)*100),
 			},
 		},
 	})
