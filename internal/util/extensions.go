@@ -116,6 +116,7 @@ func RolePosDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild)
 	return m1MaxPos - m2MaxPos
 }
 
+// TODO: Deprecated
 func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration time.Duration) {
 	if msg == nil {
 		return

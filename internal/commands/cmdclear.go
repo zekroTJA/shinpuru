@@ -49,24 +49,22 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		var memb *discordgo.Member
 		n, err := strconv.Atoi(args.Args[0])
 		if err != nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Sorry, but the member can not be found on this guild. :cry:")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Sorry, but the member can not be found on this guild. :cry:").
+				DeleteAfter(8 * time.Second).Error()
 		} else if n < 0 || n > 100 {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Number of messages is invald and must be between *(including)* 0 and 100.")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Number of messages is invald and must be between *(including)* 0 and 100.").
+				DeleteAfter(8 * time.Second).Error()
 			return err
 		}
 
 		if len(args.Args) >= 2 {
 			memb, err = util.FetchMember(args.Session, args.Guild.ID, args.Args[1])
 			if err != nil {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Sorry, but the member can not be found on this guild. :cry:")
-				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					"Sorry, but the member can not be found on this guild. :cry:").
+					DeleteAfter(8 * time.Second).Error()
 			}
 		}
 		msgsStructsUnsorted, err := args.Session.ChannelMessages(args.Channel.ID, n, "", "", "")
@@ -104,9 +102,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		multipleMsgs = "s"
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", static.ColorEmbedUpdated)
-	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", static.ColorEmbedUpdated).
+		DeleteAfter(6 * time.Second).Error()
 }

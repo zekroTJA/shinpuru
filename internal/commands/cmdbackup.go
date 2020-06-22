@@ -71,16 +71,14 @@ func (c *CmdBackup) switchStatus(args *CommandArgs, enable bool) error {
 	}
 
 	if enable {
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID, "Enabled backup for this guild.\nA full guild backup *(incl. Members, Roles, Channels and Guild Settings)* "+
-			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will habe the backup files of the last 5 days.", "", static.ColorEmbedGreen)
-		util.DeleteMessageLater(args.Session, msg, 15*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID, "Enabled backup for this guild.\nA full guild backup *(incl. Members, Roles, Channels and Guild Settings)* "+
+			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will habe the backup files of the last 5 days.", "", static.ColorEmbedGreen).
+			DeleteAfter(15 * time.Second).Error()
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID, "Backup creation disabled.\n"+
-		"You will be still have access to created backups and be able to restore them.", "", static.ColorEmbedOrange)
-	util.DeleteMessageLater(args.Session, msg, 15*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID, "Backup creation disabled.\n"+
+		"You will be still have access to created backups and be able to restore them.", "", static.ColorEmbedOrange).
+		DeleteAfter(15 * time.Second).Error()
 }
 
 func (c *CmdBackup) getBackupsList(args *CommandArgs) ([]*backupmodels.Entry, string, error) {
@@ -146,9 +144,8 @@ func (c *CmdBackup) list(args *CommandArgs) error {
 
 func (c *CmdBackup) restore(args *CommandArgs) error {
 	if len(args.Args) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, "Please specify the index or the ID of the backup, you want to restore.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID, "Please specify the index or the ID of the backup, you want to restore.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	backups, _, err := c.getBackupsList(args)
@@ -162,19 +159,17 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 	}
 
 	if i < 0 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, "Argument must be an index between 0 and 9 or a snowflake ID.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID, "Argument must be an index between 0 and 9 or a snowflake ID.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	var backup *backupmodels.Entry
 
 	if i < 10 {
 		if int64(len(backups)-1) < i {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				fmt.Sprintf("There are only %d (index 0 to %d) backups you can chose from.", len(backups), len(backups)-1))
-			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("There are only %d (index 0 to %d) backups you can chose from.", len(backups), len(backups)-1)).
+				DeleteAfter(8 * time.Second).Error()
 		}
 		backup = backups[i]
 	} else {
@@ -186,10 +181,9 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 	}
 
 	if backup == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			fmt.Sprintf("Could not find any backup by this specifier: ```\n%s\n```", args.Args[1]))
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("Could not find any backup by this specifier: ```\n%s\n```", args.Args[1])).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	accMsg := &acceptmsg.AcceptMessage{
@@ -203,8 +197,9 @@ func (c *CmdBackup) restore(args *CommandArgs) error {
 				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
 		},
 		DeclineFunc: func(m *discordgo.Message) {
-			cMsg, _ := util.SendEmbedError(args.Session, args.Channel.ID, "Canceled.")
-			util.DeleteMessageLater(args.Session, cMsg, 6*time.Second)
+			util.SendEmbedError(args.Session, args.Channel.ID, "Canceled.").
+				DeleteAfter(6 * time.Second).Error()
+			return
 		},
 		AcceptFunc: func(m *discordgo.Message) {
 			c.proceedRestore(args, backup.FileID)
