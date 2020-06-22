@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -33,9 +34,9 @@ func (c *CmdChannelStats) GetDescription() string {
 }
 
 func (c *CmdChannelStats) GetHelp() string {
-	return "`chanstats (<ChannelIdentifier>)` - get channel stats\n" +
-		"`chanstats msgs (<ChannelIdentifier>)` - get channel stats by messages\n" +
-		"`chanstats att (<ChannelIdentifier>)` - get channel stats by attachments"
+	return "`chanstats (<ChannelIdentifier>) (limit:<nLimit>)` - get channel stats\n" +
+		"`chanstats msgs (<ChannelIdentifier>) (limit:<nLimit>)` - get channel stats by messages\n" +
+		"`chanstats att (<ChannelIdentifier>) (limit:<nLimit>)` - get channel stats by attachments"
 }
 
 func (c *CmdChannelStats) GetGroup() string {
@@ -51,13 +52,41 @@ func (c *CmdChannelStats) GetSubPermissionRules() []SubPermission {
 }
 
 func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
+	const hardLimit = 10000
+
 	channel := args.Channel
 	typ := cStatsTypeMsgs
+	limit := hardLimit
+	lenArgs := len(args.Args)
+
+	// C
+	if lenArgs > 0 {
+		const limitPrefix = "limit:"
+
+		last := args.Args[lenArgs-1]
+		if strings.HasPrefix(strings.ToLower(last), limitPrefix) {
+			limit, err = strconv.Atoi(last[len(limitPrefix):])
+			if err != nil {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
+				util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+				return err
+			}
+			if limit > hardLimit || limit < 1 {
+				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+					fmt.Sprintf("Invalid command arguments. Limit must be in range of [1, %d].", hardLimit))
+				util.DeleteMessageLater(args.Session, msg, 8*time.Second)
+				return err
+			}
+			args.Args = args.Args[:lenArgs-1]
+			lenArgs--
+		}
+	}
 
 	// Check command argument 0
 	// If no type is specified, `cStatsTypeMsgs` stays unchanged
 	// and channel will be tried to be fetched by first argument.
-	if len(args.Args) == 1 {
+	if lenArgs == 1 {
 		t := c.getTyp(args.Args[0])
 		if t == -1 {
 			channel, err = util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
@@ -135,6 +164,13 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, c.getCollectedEmbed(len(allMsgs)))
 		if err != nil {
 			return
+		}
+
+		// If collected messages are equal ore above limit,
+		// break further message collection
+		if len(allMsgs) >= limit {
+			allMsgs = allMsgs[:limit]
+			break
 		}
 	}
 
@@ -221,6 +257,10 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 
 	// Assemble the final result embed and set it to the already
 	// sent status embed.
+	myPositionStr := "*You did not contributed any messages in this channel in the given range.*"
+	if myValue > 0 {
+		myPositionStr = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", myIndex, args.User.Username, myValue, (myValue/summVals)*100)
+	}
 	statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: fmt.Sprintf("Finished. Collected %d messages.", len(allMsgs)),
@@ -231,10 +271,20 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 			},
 			{
 				Name:  "Your position",
-				Value: fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", myIndex, args.User.Username, myValue, (myValue/summVals)*100),
+				Value: myPositionStr,
 			},
 		},
 	})
+
+	// If `values` has only 1 entry, append another
+	// "empty" value to bypass "invalid data range;
+	// cannot be zero" error.
+	if len(values) == 1 {
+		values = append(values, chart.Value{
+			Label: "",
+			Value: 0,
+		})
+	}
 
 	// Create and assemble GoChart chart
 	// from collected values.
