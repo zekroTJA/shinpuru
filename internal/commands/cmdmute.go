@@ -22,7 +22,7 @@ type CmdMute struct {
 }
 
 func (c *CmdMute) GetInvokes() []string {
-	return []string{"mute", "m", "silence"}
+	return []string{"mute", "m", "silence", "unmute", "um", "unsilence"}
 }
 
 func (c *CmdMute) GetDescription() string {

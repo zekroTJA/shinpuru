@@ -56,7 +56,6 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Number of messages is invald and must be between *(including)* 0 and 100.").
 				DeleteAfter(8 * time.Second).Error()
-			return err
 		}
 
 		if len(args.Args) >= 2 {
