@@ -67,10 +67,9 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 	} else {
 		cmd, ok := args.CmdHandler.GetCommand(args.Args[0])
 		if !ok {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				fmt.Sprintf("Sorry, there is no command with the invoke `%s`", args.Args[0]))
-			util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("Sorry, there is no command with the invoke `%s`", args.Args[0])).
+				DeleteAfter(5 * time.Second).Error()
 		}
 
 		emb.Title = "Command Description"

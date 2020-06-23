@@ -46,19 +46,16 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 			return err
 		}
 		if currAutoRoleID == "" {
-			_, err := util.SendEmbed(args.Session, args.Channel.ID,
-				"There is no autorole set on this guild currently.", "", 0)
-			return err
+			return util.SendEmbed(args.Session, args.Channel.ID,
+				"There is no autorole set on this guild currently.", "", 0).Error()
 		}
 		_, err = util.FetchRole(args.Session, args.Guild.ID, currAutoRoleID)
 		if err != nil {
-			_, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"**ATTENTION:** The set auto role is no more existent on the guild!")
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"**ATTENTION:** The set auto role is no more existent on the guild!").Error()
 		}
-		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			fmt.Sprintf("Currently, <@&%s> is set as auto role.", currAutoRoleID), "", 0)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			fmt.Sprintf("Currently, <@&%s> is set as auto role.", currAutoRoleID), "", 0).Error()
 	}
 
 	if strings.ToLower(args.Args[0]) == "reset" {
@@ -66,23 +63,21 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 		if err != nil {
 			return err
 		}
-		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			"Autorole reseted.", "", static.ColorEmbedUpdated)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			"Autorole reseted.", "", static.ColorEmbedUpdated).Error()
 	}
 
 	newAutoRole, err := util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Sorry, but the entered role could not be fetched :(")
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Sorry, but the entered role could not be fetched :(").
+			DeleteAfter(5 * time.Second).Error()
 	}
 	err = args.CmdHandler.db.SetGuildAutoRole(args.Guild.ID, newAutoRole.ID)
 	if err != nil {
 		return err
 	}
-	_, err = util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", static.ColorEmbedUpdated)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", static.ColorEmbedUpdated).
+		Error()
 }

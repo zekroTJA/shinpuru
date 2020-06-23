@@ -39,10 +39,9 @@ func (c *CmdMvall) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdMvall) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a voice channel as argument.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a voice channel as argument.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	var currVC string
@@ -53,10 +52,9 @@ func (c *CmdMvall) Exec(args *CommandArgs) error {
 	}
 
 	if currVC == "" {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You need to be in a voice channel to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You need to be in a voice channel to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	toVC, err := util.FetchChannel(args.Session, args.Guild.ID, strings.Join(args.Args, " "),
@@ -64,17 +62,15 @@ func (c *CmdMvall) Exec(args *CommandArgs) error {
 			return c.Type == discordgo.ChannelTypeGuildVoice
 		})
 	if err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Could not find any voice channel passing the resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Could not find any voice channel passing the resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if toVC.Type != discordgo.ChannelTypeGuildVoice {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			fmt.Sprintf("The target channel *(`%s`)* is not a voice channel.", toVC.Name))
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("The target channel *(`%s`)* is not a voice channel.", toVC.Name)).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	for _, vs := range args.Guild.VoiceStates {

@@ -40,10 +40,9 @@ func (c *CmdQuote) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdQuote) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a message ID or URL which should be quoted.")
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a message ID or URL which should be quoted.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if strings.HasPrefix(args.Args[0], "https://discordapp.com/channels/") {

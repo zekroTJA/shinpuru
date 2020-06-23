@@ -41,10 +41,9 @@ func (c *CmdGame) GetSubPermissionRules() []SubPermission {
 func (c *CmdGame) Exec(args *CommandArgs) error {
 
 	if len(args.Args) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Use the sub command `msg` to change the game text and `status` to update the status.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Use the sub command `msg` to change the game text and `status` to update the status.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	rawPresence, err := args.CmdHandler.db.GetSetting(static.SettingPresence)
@@ -76,16 +75,14 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 		pre.Status = strings.ToLower(args.Args[1])
 
 	default:
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Use the sub command `msg` to change the game text and `status` to update the status.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Use the sub command `msg` to change the game text and `status` to update the status.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if err = pre.Validate(); err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, err.Error())
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID, err.Error()).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	err = args.Session.UpdateStatusComplex(pre.ToUpdateStatusData())
@@ -98,8 +95,7 @@ func (c *CmdGame) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"Presence updated.", "", static.ColorEmbedUpdated)
-	util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		"Presence updated.", "", static.ColorEmbedUpdated).
+		DeleteAfter(5 * time.Second).Error()
 }

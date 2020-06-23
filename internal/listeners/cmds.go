@@ -86,8 +86,8 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		}
 
 		if !ok {
-			errMsg, _ := util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
-			util.DeleteMessageLater(s, errMsg, 8*time.Second)
+			util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission").
+				DeleteAfter(8 * time.Second).Error()
 			return
 		}
 

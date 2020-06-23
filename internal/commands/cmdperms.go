@@ -68,26 +68,24 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 			}
 		}
 
-		_, err = util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(args.Session, args.Channel.ID,
 			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild`, `sp.chat` and `sp.etc` "+
-				"and the owner of the bot has everywhere permissions over `sp`.*", "Permission settings for this guild", 0)
-		return err
+				"and the owner of the bot has everywhere permissions over `sp`.*", "Permission settings for this guild", 0).
+			Error()
 	}
 
 	if len(args.Args) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Use `help perms` to get information how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid arguments. Use `help perms` to get information how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	perm := strings.ToLower(args.Args[0])
 	sperm := perm[1:]
 	if !strings.HasPrefix(sperm, "sp.guild") && !strings.HasPrefix(sperm, "sp.etc") && !strings.HasPrefix(sperm, "sp.chat") {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You are only able to set permissions for the domains `sp.guild`, `sp.etc` and `sp.chat`")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You are only able to set permissions for the domains `sp.guild`, `sp.etc` and `sp.chat`").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	roles := make([]*discordgo.Role, 0)
@@ -118,10 +116,10 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	if len(roles) > 1 {
 		multipleRoles = "'s"
 	}
-	_, err = util.SendEmbed(args.Session, args.Channel.ID,
+
+	return util.SendEmbed(args.Session, args.Channel.ID,
 		fmt.Sprintf("Set permission `%s` for role%s %s.",
 			perm, multipleRoles, strings.Join(rolesIds, ", ")),
-		"", static.ColorEmbedUpdated)
-
-	return err
+		"", static.ColorEmbedUpdated).
+		Error()
 }

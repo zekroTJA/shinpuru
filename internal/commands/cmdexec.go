@@ -50,10 +50,9 @@ func (c *CmdExec) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdExec) Exec(args *CommandArgs) error {
 	errHelpMsg := func(args *CommandArgs) error {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid command arguments. Please use `help exec` to see how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid command arguments. Please use `help exec` to see how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if len(args.Args) < 1 {
@@ -76,17 +75,18 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 		return err
 	}
 
-	_, err = util.SendEmbed(args.Session, dmChan.ID,
+	err = util.SendEmbed(args.Session, dmChan.ID,
 		"We need an [jsdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
 			"saved as clear text in our database to pass it to the API, so please, be careful which data you want to use, also, if we secure our \n"+
-			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0)
+			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0).
+		Error()
 	if err != nil {
 		if strings.Contains(err.Error(), "Cannot send messages to this user") {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			err := util.SendEmbedError(args.Session, args.Channel.ID,
 				"In order to setup [jsdoodle's](https://www.jdoodle.com) API, we need to get your jsdoodle API client ID and secret. "+
 					"Because of security, we don't want that you send your credentials into a guilds chat, that would be done via DM.\n"+
-					"So, please enable DM's for this guild to proceed.")
-			util.DeleteMessageLater(args.Session, msg, 15*time.Second)
+					"So, please enable DM's for this guild to proceed.").
+				DeleteAfter(15 * time.Second).Error()
 			return err
 		}
 	}
@@ -163,8 +163,7 @@ func (c *CmdExec) reset(args *CommandArgs) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"API key was deleted from database and system was disabled.", "", static.ColorEmbedYellow)
-	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		"API key was deleted from database and system was disabled.", "", static.ColorEmbedYellow).
+		DeleteAfter(8 * time.Second).Error()
 }

@@ -66,10 +66,9 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 
 	if user == nil && role == nil && textChannel == nil && voiceChannel == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Could not fetch any member, role or channel by this resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Could not fetch any member, role or channel by this resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	emb := &discordgo.MessageEmbed{

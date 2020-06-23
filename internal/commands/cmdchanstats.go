@@ -67,16 +67,14 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		if strings.HasPrefix(strings.ToLower(last), limitPrefix) {
 			limit, err = strconv.Atoi(last[len(limitPrefix):])
 			if err != nil {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
-				util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
+					DeleteAfter(8 * time.Second).Error()
 			}
 			if limit > hardLimit || limit < 1 {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					fmt.Sprintf("Invalid command arguments. Limit must be in range of [1, %d].", hardLimit))
-				util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					fmt.Sprintf("Invalid command arguments. Limit must be in range of [1, %d].", hardLimit)).
+					DeleteAfter(8 * time.Second).Error()
 			}
 			args.Args = args.Args[:lenArgs-1]
 			lenArgs--
@@ -96,10 +94,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 				return
 			}
 			if channel == nil {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
-				util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
+					DeleteAfter(8 * time.Second).Error()
 			}
 		} else {
 			typ = t
@@ -113,10 +110,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	if len(args.Args) == 2 {
 		typ := c.getTyp(args.Args[0])
 		if typ == -1 {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
-			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 
 		channel, err = util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
@@ -126,10 +122,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 			return
 		}
 		if channel == nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Invalid command arguments. Please use `help chanstats` to see how to use this command.")
-			util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 	}
 

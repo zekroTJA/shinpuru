@@ -55,10 +55,9 @@ func (c *CmdReport) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdReport) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid command arguments. Please use `help report` to see how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid command arguments. Please use `help report` to see how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if strings.ToLower(args.Args[0]) == "revoke" {
@@ -67,10 +66,9 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Sorry, could not find any member :cry:")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Sorry, could not find any member :cry:").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if len(args.Args) == 1 {
@@ -106,28 +104,25 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 	}
 
 	if victim.User.ID == args.User.ID {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can not report yourself...")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not report yourself...").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if err == nil {
 		if repType < minType || repType > maxType {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", minType, maxType)+
-					"Use `help report` to get all types of report which can be used.")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+					"Use `help report` to get all types of report which can be used.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		msgOffset++
 	}
 
 	if len(args.Args[msgOffset:]) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a valid report description.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a valid report description.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 	repMsg := strings.Join(args.Args[msgOffset:], " ")
 
@@ -198,10 +193,9 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 
 func (c *CmdReport) revoke(args *CommandArgs) error {
 	if len(args.Args) < 3 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid command arguments. Please use `help report` for more information.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid command arguments. Please use `help report` for more information.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	id, err := strconv.Atoi(args.Args[1])
@@ -214,10 +208,9 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 	rep, err := args.CmdHandler.db.GetReport(snowflake.ID(id))
 	if err != nil {
 		if database.IsErrDatabaseNotFound(err) {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				fmt.Sprintf("Could not find any report with ID `%d`", id))
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("Could not find any report with ID `%d`", id)).
+				DeleteAfter(8 * time.Second).Error()
 		}
 		return err
 	}
@@ -241,9 +234,9 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 		DeleteMsgAfter: true,
 		UserID:         args.User.ID,
 		DeclineFunc: func(m *discordgo.Message) {
-			msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Canceled.")
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+			util.SendEmbedError(args.Session, args.Channel.ID,
+				"Canceled.").
+				DeleteAfter(8 * time.Second)
 		},
 		AcceptFunc: func(m *discordgo.Message) {
 			err := args.CmdHandler.db.DeleteReport(rep.ID)
