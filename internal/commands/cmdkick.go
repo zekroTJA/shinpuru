@@ -43,24 +43,21 @@ func (c *CmdKick) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdKick) Exec(args *CommandArgs) error {
 	if len(args.Args) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid command arguments. Please use `help kick` to see how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid command arguments. Please use `help kick` to see how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Sorry, could not find any member :cry:")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Sorry, could not find any member :cry:").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if victim.User.ID == args.User.ID {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can not kick yourself...")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not kick yourself...").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	authorMemb, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
@@ -69,10 +66,9 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 	}
 
 	if util.RolePosDiff(victim, authorMemb, args.Guild) >= 0 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can only kick members with lower permissions than yours.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can only kick members with lower permissions than yours.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	repMsg := strings.Join(args.Args[1:], " ")

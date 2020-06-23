@@ -67,9 +67,8 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 							i++
 						}
 					}
-					msg, err := util.SendEmbed(args.Session, args.Channel.ID, fmt.Sprintf("Closed %d votes.", i), "", 0)
-					util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-					return err
+					return util.SendEmbed(args.Session, args.Channel.ID, fmt.Sprintf("Closed %d votes.", i), "", 0).
+						DeleteAfter(8 * time.Second).Error()
 				}
 				vid := args.Args[1]
 				for _, v := range vote.VotesRunning {
@@ -78,10 +77,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					}
 				}
 				if ivote == nil {
-					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
-					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-					return err
+					return util.SendEmbedError(args.Session, args.Channel.ID,
+						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid)).
+						DeleteAfter(8 * time.Second).Error()
 				}
 			} else {
 				vids := make([]string, 0)
@@ -106,19 +104,17 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					util.DeleteMessageLater(args.Session, msg, 30*time.Second)
 					return err
 				} else if ivote == nil {
-					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-						"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.")
-					util.DeleteMessageLater(args.Session, msg, 12*time.Second)
-					return err
+					return util.SendEmbedError(args.Session, args.Channel.ID,
+						"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.").
+						DeleteAfter(12 * time.Second).Error()
 				}
 			}
 
 			ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
 			if ivote.CreatorID != args.User.ID && !ok && args.User.ID != args.Guild.OwnerID {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"You do not have the permission to close another ones votes.")
-				util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					"You do not have the permission to close another ones votes.").
+					DeleteAfter(8 * time.Second).Error()
 			}
 
 			err = args.CmdHandler.db.DeleteVote(ivote.ID)
@@ -127,29 +123,26 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 			}
 
 			err = ivote.Close(args.Session, vote.VoteStateClosed)
-			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-				"Vote closed.", "", static.ColorEmbedGreen)
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-			return err
+			return util.SendEmbed(args.Session, args.Channel.ID,
+				"Vote closed.", "", static.ColorEmbedGreen).
+				DeleteAfter(8 * time.Second).Error()
 
 		case "list":
 			return listVotes(args)
 
 		case "expire", "expires":
 			if len(args.Args) < 2 {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Please cpecify a expire duration!")
-				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-				return err
+				return util.SendEmbedError(args.Session, args.Channel.ID,
+					"Please cpecify a expire duration!").
+					DeleteAfter(8 * time.Second).Error()
 			}
 
 			expireDuration, err := time.ParseDuration(args.Args[1])
 			if err != nil {
-				msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+				return util.SendEmbedError(args.Session, args.Channel.ID,
 					"Invalid duration format. Please take a look "+
-						"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.")
-				util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-				return err
+						"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.").
+					DeleteAfter(8 * time.Second).Error()
 			}
 
 			var ivote *vote.Vote
@@ -161,10 +154,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					}
 				}
 				if ivote == nil {
-					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid))
-					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-					return err
+					return util.SendEmbedError(args.Session, args.Channel.ID,
+						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid)).
+						DeleteAfter(8 * time.Second).Error()
 				}
 			} else {
 				votes := make([]*vote.Vote, 0)
@@ -174,10 +166,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 					}
 				}
 				if len(votes) == 0 {
-					msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-						"There is no open vote on this guild created by you.")
-					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-					return err
+					return util.SendEmbedError(args.Session, args.Channel.ID,
+						"There is no open vote on this guild created by you.").
+						DeleteAfter(8 * time.Second).Error()
 				}
 
 				ivote = votes[len(votes)-1]
@@ -188,10 +179,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 				return err
 			}
 
-			msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-				fmt.Sprintf("Vote will expire at %s.", ivote.Expires.Format("01/02 15:04 MST")), "", static.ColorEmbedGreen)
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+			return util.SendEmbed(args.Session, args.Channel.ID,
+				fmt.Sprintf("Vote will expire at %s.", ivote.Expires.Format("01/02 15:04 MST")), "", static.ColorEmbedGreen).
+				DeleteAfter(8 * time.Second).Error()
 		}
 
 	} else {
@@ -200,17 +190,15 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	split := strings.Split(strings.Join(args.Args, " "), "|")
 	if len(split) < 3 || len(split) > 11 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Please use `help vote` go get help about how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid arguments. Please use `help vote` go get help about how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 	for i, e := range split {
 		if len(e) < 1 {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Description or possibilities can not be empty.")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Description or possibilities can not be empty.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		split[i] = strings.Trim(e, " \t")
 	}

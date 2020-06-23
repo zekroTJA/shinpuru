@@ -157,8 +157,8 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 		s.MessageReactionsRemoveAll(eReact.ChannelID, eReact.MessageID)
 		removeHandler()
 
-		resMsg, err := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", static.ColorEmbedGray)
-		if err != nil {
+		resMsg := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", static.ColorEmbedGray)
+		if resMsg.Error() != nil {
 			return
 		}
 
@@ -202,7 +202,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 				Title:       "Execution Error",
 				Description: fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error),
 			})
-			util.DeleteMessageLater(s, resMsg, 15*time.Second)
+			util.DeleteMessageLater(s, resMsg.Message, 15*time.Second)
 
 		} else {
 

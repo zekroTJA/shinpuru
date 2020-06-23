@@ -56,9 +56,9 @@ func (c *CmdVoicelog) Exec(args *CommandArgs) error {
 					util.SendEmbedError(args.Session, args.Channel.ID,
 						"Failed setting voicelog channel: ```\n"+err.Error()+"\n```")
 				} else {
-					msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-						"Set this channel as voicelog channel.", "", static.ColorEmbedUpdated)
-					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+					util.SendEmbed(args.Session, args.Channel.ID,
+						"Set this channel as voicelog channel.", "", static.ColorEmbedUpdated).
+						DeleteAfter(8 * time.Second)
 				}
 			},
 		}
@@ -69,32 +69,29 @@ func (c *CmdVoicelog) Exec(args *CommandArgs) error {
 	if strings.ToLower(args.Args[0]) == "reset" {
 		err := args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, "")
 		if err != nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Failed reseting voice log channel: ```\n"+err.Error()+"\n```")
-			util.DeleteMessageLater(args.Session, msg, 15*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Failed reseting voice log channel: ```\n"+err.Error()+"\n```").
+				DeleteAfter(15 * time.Second).Error()
 		}
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			"Voicelog channel reset.", "", static.ColorEmbedUpdated)
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			"Voicelog channel reset.", "", static.ColorEmbedUpdated).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	mlChan, err := util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
 		return c.Type == discordgo.ChannelTypeGuildText
 	})
 	if err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Could not find any channel on this guild passing this resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Could not find any channel on this guild passing this resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 	err = args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, mlChan.ID)
 	if err != nil {
 		return err
 	}
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Set <#%s> as voicelog channel.", mlChan.ID), "", static.ColorEmbedUpdated)
-	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-	return err
+
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Set <#%s> as voicelog channel.", mlChan.ID), "", static.ColorEmbedUpdated).
+		DeleteAfter(8 * time.Second).Error()
 }

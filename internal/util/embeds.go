@@ -31,6 +31,7 @@ func SendEmbedError(s *discordgo.Session, chanID, content string, title ...strin
 	emb := &discordgo.MessageEmbed{
 		Description: content,
 		Color:       static.ColorEmbedError,
+		Title:       "Error",
 	}
 
 	if len(title) > 0 {

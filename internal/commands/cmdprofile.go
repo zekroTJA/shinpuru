@@ -47,10 +47,9 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 	if len(args.Args) > 0 {
 		member, err = util.FetchMember(args.Session, args.Guild.ID, strings.Join(args.Args, " "))
 		if err != nil || member == nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Could not fetch any member by the passed resolvable.")
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Could not fetch any member by the passed resolvable.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 	}
 
