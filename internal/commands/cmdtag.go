@@ -20,7 +20,7 @@ type CmdTag struct {
 }
 
 func (c *CmdTag) GetInvokes() []string {
-	return []string{"tag", "t", "note"}
+	return []string{"tag", "t", "note", "tags"}
 }
 
 func (c *CmdTag) GetDescription() string {
