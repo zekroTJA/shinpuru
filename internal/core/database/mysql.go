@@ -31,8 +31,7 @@ func (m *MySQL) setup() {
 	mErr := multierror.New(nil)
 
 	_, err := m.DB.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`guildID` text NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
@@ -45,29 +44,27 @@ func (m *MySQL) setup() {
 		"`inviteBlock` text NOT NULL DEFAULT ''," +
 		"`joinMsg` text NOT NULL DEFAULT ''," +
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`roleID` text NOT NULL DEFAULT ''," +
+		"`roleID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`roleID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL," +
 		"`type` int(11) NOT NULL DEFAULT '0'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
 		"`victimID` text NOT NULL DEFAULT ''," +
 		"`msg` text NOT NULL DEFAULT ''," +
 		"`attachment` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -79,30 +76,27 @@ func (m *MySQL) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`guildID` text NOT NULL DEFAULT ''," +
-		"`chanID` text NOT NULL DEFAULT ''," +
-		"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
-		"`minimum` int(11) NOT NULL DEFAULT '5'," +
-		"PRIMARY KEY (`iid`)" +
-		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	// _, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
+	// 	"`guildID` text NOT NULL DEFAULT ''," +
+	// 	"`chanID` text NOT NULL DEFAULT ''," +
+	// 	"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
+	// 	"`minimum` int(11) NOT NULL DEFAULT '5'," +
+	// 	"PRIMARY KEY (`iid`)" +
+	// 	") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	// mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL," +
 		"`data` mediumtext NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`guildID` text NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL," +
 		"`channelID` text NOT NULL DEFAULT ''," +
 		"`twitchUserID` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -116,15 +110,14 @@ func (m *MySQL) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`content` text NOT NULL DEFAULT ''," +
 		"`created` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"`lastEdit` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -138,11 +131,10 @@ func (m *MySQL) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `imagestore` (" +
-		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL DEFAULT ''," +
 		"`mimeType` text NOT NULL DEFAULT ''," +
 		"`data` longblob NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`iid`)" +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -397,7 +389,7 @@ func (m *MySQL) GetReportsGuild(guildID string, offset, limit int) ([]*report.Re
 	rows, err := m.DB.Query(
 		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
 			"FROM reports WHERE guildID = ? "+
-			"ORDER BY iid DESC "+
+			"ORDER BY id DESC "+
 			"LIMIT ?, ?", guildID, offset, limit)
 	var results []*report.Report
 	if err != nil {
