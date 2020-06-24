@@ -49,7 +49,7 @@ func SendEmbed(s *discordgo.Session, chanID, content string, title string, color
 
 	emb.Title = title
 	if color == 0 {
-		emb.Color = static.ColorEmbedError
+		emb.Color = static.ColorEmbedDefault
 	}
 
 	return sendEmbedRaw(s, chanID, emb)
