@@ -86,11 +86,11 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 	}
 
 	if strings.ToLower(args.Args[0]) == "setup" {
-		ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
+		ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
 		}
-		if !ok {
+		if !ok && !override {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Sorry, but you do'nt have the permission to setup the notify role.").
 				DeleteAfter(8 * time.Second).Error()

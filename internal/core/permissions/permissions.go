@@ -7,6 +7,7 @@ import (
 
 type PermissionArray []string
 
+// TODO: This function REALLY needs some documentation
 func (p PermissionArray) Update(npdn string, override bool) PermissionArray {
 	newp := make(PermissionArray, len(p)+1)
 

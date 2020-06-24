@@ -93,48 +93,45 @@ func (c *CmdHandler) IsBotOwner(userID string) bool {
 	return userID == c.config.Discord.OwnerID
 }
 
-func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (permissions.PermissionArray, error) {
+func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (permissions.PermissionArray, bool, error) {
+	var overrideExplicits bool
+	perm, err := c.db.GetMemberPermission(s, guildID, userID)
+
 	if c.IsBotOwner(userID) {
-		return permissions.PermissionArray{"+sp.*"}, nil
+		perm = perm.Merge(permissions.PermissionArray{"+sp.*"}, false)
+		overrideExplicits = true
 	}
 
 	if guildID != "" {
 		guild, err := s.Guild(guildID)
 		if err != nil {
-			return permissions.PermissionArray{}, nil
+			return permissions.PermissionArray{}, false, nil
 		}
 
 		member, _ := s.GuildMember(guildID, userID)
 
-		if member != nil {
-			if util.IsAdmin(guild, member) {
-				return c.defAdminRules, nil
-			}
-		}
-
-		if userID == guild.OwnerID {
-			return c.defAdminRules, nil
+		if userID == guild.OwnerID || (member != nil && util.IsAdmin(guild, member)) {
+			perm = perm.Merge(c.defAdminRules, false)
+			overrideExplicits = true
 		}
 	}
 
-	perm, err := c.db.GetMemberPermission(s, guildID, userID)
-
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return nil, err
+		return nil, false, err
 	}
 
 	perm = perm.Merge(c.defUserRules, false)
 
-	return perm, nil
+	return perm, overrideExplicits, nil
 }
 
-func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, error) {
-	perms, err := c.GetPermissions(s, guildID, userID)
+func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, bool, error) {
+	perms, overrideExplicits, err := c.GetPermissions(s, guildID, userID)
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 
-	return permissions.PermissionCheck(dn, perms), nil
+	return permissions.PermissionCheck(dn, perms), overrideExplicits, nil
 }
 
 func (c *CmdHandler) ExportCommandManual(fileName string) error {

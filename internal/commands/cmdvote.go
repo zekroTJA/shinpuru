@@ -110,8 +110,8 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 				}
 			}
 
-			ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
-			if ivote.CreatorID != args.User.ID && !ok && args.User.ID != args.Guild.OwnerID {
+			ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
+			if ivote.CreatorID != args.User.ID && !ok && !override {
 				return util.SendEmbedError(args.Session, args.Channel.ID,
 					"You do not have the permission to close another ones votes.").
 					DeleteAfter(8 * time.Second).Error()

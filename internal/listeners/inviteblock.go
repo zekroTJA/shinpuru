@@ -87,12 +87,12 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 		return nil
 	}
 
-	ok, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "!sp.guild.mod.inviteblock.send")
+	ok, override, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "!sp.guild.mod.inviteblock.send")
 	if err != nil {
 		return err
 	}
 
-	if ok {
+	if ok || override {
 		return nil
 	}
 

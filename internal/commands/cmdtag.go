@@ -52,6 +52,11 @@ func (c *CmdTag) GetSubPermissionRules() []SubPermission {
 			Description: "Allows creating tags",
 		},
 		{
+			Term:        "edit",
+			Explicit:    true,
+			Description: "Allows editing tags (of every user)",
+		},
+		{
 			Term:        "delete",
 			Explicit:    true,
 			Description: "Allows deleting tags (of every user)",
@@ -161,7 +166,12 @@ func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	if tag.CreatorID != args.User.ID {
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".edit")
+	if err != nil {
+		return err
+	}
+
+	if tag.CreatorID != args.User.ID && !ok && !override {
 		return printNotPermitted(args, "edit")
 	}
 
@@ -189,12 +199,12 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
-	if itag.CreatorID != args.User.ID && !ok {
+	if itag.CreatorID != args.User.ID && !ok && !override {
 		return printNotPermitted(args, "delete")
 	}
 
@@ -276,12 +286,12 @@ func printNotPermitted(args *CommandArgs, t string) error {
 }
 
 func checkPermission(args *CommandArgs, dn string) (error, bool) {
-	ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
 	if err != nil {
 		return err, false
 	}
 
-	if !ok {
+	if !ok && !override {
 		err := util.SendEmbedError(args.Session, args.Channel.ID,
 			"You are not permitted to use this command.").
 			DeleteAfter(8 * time.Second).Error()

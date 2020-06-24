@@ -173,7 +173,7 @@ func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	perm, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
+	perm, _, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
@@ -276,7 +276,7 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	guildID := ctx.Param("guildid")
 	memberID := ctx.Param("memberid")
 
-	perms, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
+	perms, _, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
 	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
@@ -352,7 +352,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.AutoRole != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.autorole"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.autorole"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -368,7 +368,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.ModLogChannel != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.modlog"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.modlog"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -384,7 +384,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.Prefix != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.prefix"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.prefix"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -400,7 +400,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.VoiceLogChannel != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.voicelog"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.voicelog"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -416,7 +416,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.JoinMessageChannel != "" && gs.JoinMessageText != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.joinmsg"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.joinmsg"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -433,7 +433,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.LeaveMessageChannel != "" && gs.LeaveMessageText != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.leavemsg"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.leavemsg"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -476,7 +476,7 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 
 	guildID := ctx.Param("guildid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -523,7 +523,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -578,7 +578,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -651,7 +651,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -740,7 +740,7 @@ func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.game"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.game"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -857,7 +857,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.noguildinvite"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.noguildinvite"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)

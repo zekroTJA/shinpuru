@@ -76,7 +76,7 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	perms, err := args.CmdHandler.GetPermissions(args.Session, args.Guild.ID, member.User.ID)
+	perms, _, err := args.CmdHandler.GetPermissions(args.Session, args.Guild.ID, member.User.ID)
 	if err != nil {
 		return err
 	}
