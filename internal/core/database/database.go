@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
@@ -103,9 +104,12 @@ type Database interface {
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
 
-	// GetImageData(id snowflake.ID) (*imgstore.Image, error)
-	// SaveImageData(image *imgstore.Image) error
-	// RemoveImageData(id snowflake.ID) error
+	// Deprecated
+	GetImageData(id snowflake.ID) (*imgstore.Image, error)
+	// Deprecated
+	SaveImageData(image *imgstore.Image) error
+	// Deprecated
+	RemoveImageData(id snowflake.ID) error
 }
 
 func IsErrDatabaseNotFound(err error) bool {

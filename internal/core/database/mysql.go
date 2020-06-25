@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
@@ -842,31 +843,31 @@ func (m *MySQL) DeleteSession(userID string) error {
 	return err
 }
 
-// func (m *MySQL) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
-// 	img := new(imgstore.Image)
-// 	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
-// 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
-// 	if err == sql.ErrNoRows {
-// 		return nil, ErrDatabaseNotFound
-// 	}
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (m *MySQL) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
+	img := new(imgstore.Image)
+	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
+	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
+	if err == sql.ErrNoRows {
+		return nil, ErrDatabaseNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
 
-// 	img.Size = len(img.Data)
+	img.Size = len(img.Data)
 
-// 	return img, nil
-// }
+	return img, nil
+}
 
-// func (m *MySQL) SaveImageData(img *imgstore.Image) error {
-// 	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
-// 	return err
-// }
+func (m *MySQL) SaveImageData(img *imgstore.Image) error {
+	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
+	return err
+}
 
-// func (m *MySQL) RemoveImageData(id snowflake.ID) error {
-// 	_, err := m.DB.Exec("DELETE FROM imagestore WHERE id = ?", id)
-// 	if err == sql.ErrNoRows {
-// 		return ErrDatabaseNotFound
-// 	}
-// 	return err
-// }
+func (m *MySQL) RemoveImageData(id snowflake.ID) error {
+	_, err := m.DB.Exec("DELETE FROM imagestore WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}

@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
@@ -636,14 +637,14 @@ func (r *RedisMiddleware) DeleteSession(userID string) error {
 	return r.db.DeleteSession(userID)
 }
 
-// func (r *RedisMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
-// 	return r.db.GetImageData(id)
-// }
+func (r *RedisMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
+	return r.db.GetImageData(id)
+}
 
-// func (r *RedisMiddleware) SaveImageData(image *imgstore.Image) error {
-// 	return r.db.SaveImageData(image)
-// }
+func (r *RedisMiddleware) SaveImageData(image *imgstore.Image) error {
+	return r.db.SaveImageData(image)
+}
 
-// func (r *RedisMiddleware) RemoveImageData(id snowflake.ID) error {
-// 	return r.db.RemoveImageData(id)
-// }
+func (r *RedisMiddleware) RemoveImageData(id snowflake.ID) error {
+	return r.db.RemoveImageData(id)
+}
