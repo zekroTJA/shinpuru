@@ -72,6 +72,7 @@ type StorageMinio struct {
 	Endpoint     string `json:"endpoint"`
 	AccessKey    string `json:"accesskey"`
 	AccessSecret string `json:"accesssecret"`
+	Location     string `json:"location"`
 	Secure       bool   `json:"secure"`
 }
 
@@ -134,7 +135,10 @@ func NewDefaultConfig() *Config {
 			File: &StorageFile{
 				Location: "./data",
 			},
-			Minio: &StorageMinio{},
+			Minio: &StorageMinio{
+				Location: "us-east-1",
+				Secure:   true,
+			},
 		},
 		WebServer: &WS{
 			Enabled:    true,
