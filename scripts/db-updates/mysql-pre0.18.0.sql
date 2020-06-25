@@ -18,11 +18,6 @@ ALTER TABLE `votes`
     DROP `iid`,
     ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `twitchnotify` 
-    MODIFY `guildID` VARCHAR(25) NOT NULL,
-    DROP `iid`,
-    ADD PRIMARY KEY (`guildID`);
-
 ALTER TABLE `tags` 
     MODIFY `id` VARCHAR(25) NOT NULL,
     DROP `iid`,

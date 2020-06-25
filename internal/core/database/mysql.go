@@ -93,10 +93,11 @@ func (m *MySQL) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
-		"`guildID` varchar(25) NOT NULL," +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL DEFAULT ''," +
 		"`channelID` text NOT NULL DEFAULT ''," +
 		"`twitchUserID` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`guildID`)" +
+		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
