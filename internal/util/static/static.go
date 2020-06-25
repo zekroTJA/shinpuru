@@ -42,6 +42,9 @@ const (
 	SettingWIInviteCode    = "WIINVITECODE"
 	SettingWIInviteText    = "WIINVITETEXT"
 
+	StorageBucketImages  = "shinpuru-images"
+	StorageBucketBackups = "shinpuru-backups"
+
 	DiscordAPIEndpoint = "https://discordapp.com/api"
 )
 

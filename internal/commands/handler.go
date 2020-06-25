@@ -18,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -33,6 +34,7 @@ type CmdHandler struct {
 	registeredCmdInstances []Command
 
 	db     database.Database
+	st     storage.Storage
 	config *config.Config
 	tnw    *twitchnotify.NotifyWorker
 	bck    *backup.GuildBackups
@@ -44,11 +46,12 @@ type CmdHandler struct {
 	notifiedCmdMsgs *timedmap.TimedMap
 }
 
-func NewCmdHandler(s *discordgo.Session, db database.Database, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storage, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
 	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),
 		db:                     db,
+		st:                     st,
 		config:                 config,
 		tnw:                    tnw,
 		lct:                    lct,

@@ -23,7 +23,7 @@ func main() {
 
 	database := new(database.MySQL)
 
-	cmdHandler := inits.InitCommandHandler(nil, config, database, nil, nil)
+	cmdHandler := inits.InitCommandHandler(nil, config, database, nil, nil, nil)
 	if err := cmdHandler.ExportCommandManual(*flagExportFile); err != nil {
 		util.Log.Fatal("Failed exporting command manual: ", err)
 	}

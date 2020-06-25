@@ -75,20 +75,20 @@ func (f *File) PutObject(bucketName string, objectName string, reader io.Reader,
 	return
 }
 
-func (f *File) GetObject(bucketName string, objectName string) (io.ReadCloser, error) {
+func (f *File) GetObject(bucketName string, objectName string) (io.ReadCloser, int64, error) {
 	fd := path.Join(f.location, bucketName, objectName)
 	stat, err := os.Stat(fd)
 	var fh *os.File
 
 	if os.IsNotExist(err) {
-		return nil, errors.New("file does not exist")
+		return nil, 0, errors.New("file does not exist")
 	} else if err != nil {
-		return nil, err
+		return nil, 0, err
 	} else if stat.IsDir() {
-		return nil, errors.New("given file dir is a location")
+		return nil, 0, errors.New("given file dir is a location")
 	} else {
 		fh, err = os.Open(fd)
 	}
 
-	return fh, err
+	return fh, stat.Size(), err
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -46,6 +47,7 @@ type WebServer struct {
 	router *routing.Router
 
 	db         database.Database
+	st         storage.Storage
 	rlm        *RateLimitManager
 	auth       *Auth
 	dcoauth    *discordoauth.DiscordOAuth
@@ -55,7 +57,7 @@ type WebServer struct {
 	config *config.Config
 }
 
-func NewWebServer(db database.Database, s *discordgo.Session, cmd *commands.CmdHandler, config *config.Config, clientID, clientSecret string) (ws *WebServer) {
+func NewWebServer(db database.Database, st storage.Storage, s *discordgo.Session, cmd *commands.CmdHandler, config *config.Config, clientID, clientSecret string) (ws *WebServer) {
 	ws = new(WebServer)
 
 	if !strings.HasPrefix(config.WebServer.PublicAddr, "http") {

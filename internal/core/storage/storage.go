@@ -14,5 +14,5 @@ type Storage interface {
 	CreateBucketIfNotExists(name string, location ...string) error
 
 	PutObject(bucketName string, objectName string, reader io.Reader, objectSize int64, mimeType string) error
-	GetObject(bucketName string, objectName string) (io.ReadCloser, error)
+	GetObject(bucketName string, objectName string) (io.ReadCloser, int64, error)
 }

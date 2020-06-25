@@ -46,12 +46,18 @@ func (m *Minio) PutObject(bucketName string, objectName string, reader io.Reader
 	return
 }
 
-func (m *Minio) GetObject(bucketName string, objectName string) (io.ReadCloser, error) {
+func (m *Minio) GetObject(bucketName string, objectName string) (io.ReadCloser, int64, error) {
 	obj, err := m.client.GetObject(bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return obj, err
+
+	stat, err := obj.Stat()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return obj, stat.Size, err
 }
 
 func (m *Minio) getLocation(loc []string) string {
