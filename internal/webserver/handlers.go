@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabriel-vasile/mimetype"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
@@ -19,6 +18,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
+	"github.com/gabriel-vasile/mimetype"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/util"

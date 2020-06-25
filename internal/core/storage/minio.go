@@ -36,7 +36,7 @@ func (m *Minio) CreateBucketIfNotExists(name string, location ...string) (err er
 	return
 }
 
-func (m *Minio) PutObject(bucketName string, objectName string, reader io.Reader, objectSize int64, mimeType string) (err error) {
+func (m *Minio) PutObject(bucketName, objectName string, reader io.Reader, objectSize int64, mimeType string) (err error) {
 	if err = m.CreateBucketIfNotExists(bucketName, m.location); err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func (m *Minio) PutObject(bucketName string, objectName string, reader io.Reader
 	return
 }
 
-func (m *Minio) GetObject(bucketName string, objectName string) (io.ReadCloser, int64, error) {
+func (m *Minio) GetObject(bucketName, objectName string) (io.ReadCloser, int64, error) {
 	obj, err := m.client.GetObject(bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, 0, err
@@ -58,6 +58,10 @@ func (m *Minio) GetObject(bucketName string, objectName string) (io.ReadCloser, 
 	}
 
 	return obj, stat.Size, err
+}
+
+func (m *Minio) DeleteObject(bucketName, objectName string) error {
+	return m.client.RemoveObject(bucketName, objectName)
 }
 
 func (m *Minio) getLocation(loc []string) string {

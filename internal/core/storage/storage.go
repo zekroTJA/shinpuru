@@ -13,6 +13,7 @@ type Storage interface {
 	CreateBucket(name string, location ...string) error
 	CreateBucketIfNotExists(name string, location ...string) error
 
-	PutObject(bucketName string, objectName string, reader io.Reader, objectSize int64, mimeType string) error
-	GetObject(bucketName string, objectName string) (io.ReadCloser, int64, error)
+	PutObject(bucketName, objectName string, reader io.Reader, objectSize int64, mimeType string) error
+	GetObject(bucketName, objectName string) (io.ReadCloser, int64, error)
+	DeleteObject(bucketName, objectName string) error
 }

@@ -92,3 +92,8 @@ func (f *File) GetObject(bucketName string, objectName string) (io.ReadCloser, i
 
 	return fh, stat.Size(), err
 }
+
+func (f *File) DeleteObject(bucketName, objectName string) error {
+	fd := path.Join(f.location, bucketName, objectName)
+	return os.Remove(fd)
+}
