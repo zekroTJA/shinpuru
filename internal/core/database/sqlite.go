@@ -32,8 +32,7 @@ func (m *Sqlite) setup() {
 	mErr := multierror.New(nil)
 
 	_, err := m.DB.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`guildID` text NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
@@ -50,16 +49,14 @@ func (m *Sqlite) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`roleID` text NOT NULL DEFAULT ''," +
+		"`roleID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`type` int(11) NOT NULL DEFAULT '3'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
@@ -76,25 +73,17 @@ func (m *Sqlite) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`setting` text NOT NULL DEFAULT ''," +
-		"`value` text NOT NULL DEFAULT ''" +
-		");")
-	mErr.Append(err)
-
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`guildID` text NOT NULL DEFAULT ''," +
-		"`chanID` text NOT NULL DEFAULT ''," +
-		"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
-		"`minimum` int(11) NOT NULL DEFAULT '5'" +
-		");")
-	mErr.Append(err)
+	// _, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
+	// 	"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
+	// 	"`guildID` text NOT NULL DEFAULT ''," +
+	// 	"`chanID` text NOT NULL DEFAULT ''," +
+	// 	"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
+	// 	"`minimum` int(11) NOT NULL DEFAULT '5'" +
+	// 	");")
+	// mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`data` mediumtext NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
@@ -116,8 +105,7 @@ func (m *Sqlite) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -136,8 +124,7 @@ func (m *Sqlite) setup() {
 	mErr.Append(err)
 
 	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `imagestore` (" +
-		"`iid`  INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`id` text NOT NULL DEFAULT ''," +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`mimeType` text NOT NULL DEFAULT ''," +
 		"`data` blob NOT NULL DEFAULT ''" +
 		");")
