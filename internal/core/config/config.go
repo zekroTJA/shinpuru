@@ -68,6 +68,23 @@ type Permissions struct {
 	DefaultAdminRules []string `json:"defaultadminrules"`
 }
 
+type StorageMinio struct {
+	Endpoint     string `json:"endpoint"`
+	AccessKey    string `json:"accesskey"`
+	AccessSecret string `json:"accesssecret"`
+	Secure       bool   `json:"secure"`
+}
+
+type StorageFile struct {
+	Location string `json:"location"`
+}
+
+type StorageType struct {
+	Type  string        `json:"type"`
+	Minio *StorageMinio `json:"minio"`
+	File  *StorageFile  `json:"file"`
+}
+
 type Config struct {
 	Version     int `yaml:"configVersionPleaseDoNotChange"`
 	Discord     *Discord
@@ -75,6 +92,7 @@ type Config struct {
 	Database    *DatabaseType
 	Logging     *Logging
 	Etc         *Etc
+	Storage     *StorageType
 	WebServer   *WS
 }
 
@@ -85,7 +103,7 @@ type Parser interface {
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Version: 5,
+		Version: 6,
 		Discord: &Discord{
 			GeneralPrefix: "sp!",
 		},
@@ -95,7 +113,7 @@ func NewDefaultConfig() *Config {
 		},
 		Database: &DatabaseType{
 			Type:  "sqlite",
-			MySql: new(DatabaseCreds),
+			MySql: &DatabaseCreds{},
 			Sqlite: &DatabaseFile{
 				DBFile: "shinpuru.sqlite3.db",
 			},
@@ -110,7 +128,14 @@ func NewDefaultConfig() *Config {
 			CommandLogging: true,
 			LogLevel:       4,
 		},
-		Etc: new(Etc),
+		Etc: &Etc{},
+		Storage: &StorageType{
+			Type: "file",
+			File: &StorageFile{
+				Location: "./data",
+			},
+			Minio: &StorageMinio{},
+		},
 		WebServer: &WS{
 			Enabled:    true,
 			Addr:       ":8080",
