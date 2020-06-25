@@ -70,6 +70,7 @@ func NewWebServer(db database.Database, st storage.Storage, s *discordgo.Session
 
 	ws.config = config
 	ws.db = db
+	ws.st = st
 	ws.session = s
 	ws.cmdhandler = cmd
 	ws.rlm = NewRateLimitManager()

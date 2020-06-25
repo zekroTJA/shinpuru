@@ -7,7 +7,7 @@ require (
 	github.com/bwmarrin/discordgo v0.20.1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gabriel-vasile/mimetype v1.1.1 // indirect
+	github.com/gabriel-vasile/mimetype v1.1.1
 	github.com/generaltso/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/generaltso/vibrant v0.0.0-20171030211322-563623b97aee
 	github.com/go-ini/ini v1.57.0 // indirect

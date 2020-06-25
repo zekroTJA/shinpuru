@@ -993,15 +993,19 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
 
+	defer reader.Close()
+
 	img := new(imgstore.Image)
 
-	img.Data = make([]byte, size)
+	// For some reason, 1 byte less than the actual image size must
+	// be read to prevent an EOF error.
+	img.Size = int(size - 1)
+	img.Data = make([]byte, img.Size)
 	_, err = reader.Read(img.Data)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	img.Size = int(size)
 	img.MimeType = mimetype.Detect(img.Data).String()
 
 	fileExtension := strings.Split(img.MimeType, "/")[1]
@@ -1011,6 +1015,8 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	}
 
 	ctx.Response.Header.SetContentType(img.MimeType)
+	// 30 days browser caching
+	ctx.Response.Header.Set("Cache-Control", "public, max-age=2592000, immutable")
 	ctx.SetBody(img.Data)
 
 	return nil
