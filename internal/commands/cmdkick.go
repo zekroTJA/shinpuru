@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
@@ -85,7 +86,9 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+			err = args.CmdHandler.st.PutObject(static.StorageBucketImages, img.ID.String(),
+				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+			if err != nil {
 				return err
 			}
 			attachment = img.ID.String()

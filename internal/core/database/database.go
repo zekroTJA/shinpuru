@@ -104,8 +104,11 @@ type Database interface {
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
 
+	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
+	// Deprecated
 	SaveImageData(image *imgstore.Image) error
+	// Deprecated
 	RemoveImageData(id snowflake.ID) error
 }
 

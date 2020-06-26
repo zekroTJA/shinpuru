@@ -6,12 +6,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(s, db, cfg, tnw, lct)
+func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *commands.CmdHandler {
+	cmdHandler := commands.NewCmdHandler(s, db, st, cfg, tnw, lct)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})

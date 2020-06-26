@@ -54,14 +54,16 @@ func main() {
 
 	lct := inits.InitLTCTimer()
 
-	cmdHandler := inits.InitCommandHandler(session, conf, database, tnw, lct)
+	st := inits.InitStorage(conf)
+
+	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct)
 	inits.InitDiscordBotSession(session, conf, database, cmdHandler, lct)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
 
-	inits.InitWebServer(session, database, cmdHandler, conf)
+	inits.InitWebServer(session, database, st, cmdHandler, conf)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)

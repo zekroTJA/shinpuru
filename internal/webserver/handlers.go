@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"bytes"
 	"fmt"
 	"runtime"
 	"strconv"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
+	"github.com/gabriel-vasile/mimetype"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -547,7 +549,9 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		repReq.Attachment = img.ID.String()
@@ -621,7 +625,9 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		req.Attachment = img.ID.String()
@@ -694,7 +700,9 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		req.Attachment = img.ID.String()
@@ -980,13 +988,25 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("invalid snowflake ID"), fasthttp.StatusBadRequest)
 	}
 
-	img, err := ws.db.GetImageData(imageID)
-	if database.IsErrDatabaseNotFound(err) {
-		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	reader, size, err := ws.st.GetObject(static.StorageBucketImages, imageID.String())
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
+
+	defer reader.Close()
+
+	img := new(imgstore.Image)
+
+	// For some reason, 1 byte less than the actual image size must
+	// be read to prevent an EOF error.
+	img.Size = int(size - 1)
+	img.Data = make([]byte, img.Size)
+	_, err = reader.Read(img.Data)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
+
+	img.MimeType = mimetype.Detect(img.Data).String()
 
 	fileExtension := strings.Split(img.MimeType, "/")[1]
 	if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
@@ -995,6 +1015,8 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	}
 
 	ctx.Response.Header.SetContentType(img.MimeType)
+	// 30 days browser caching
+	ctx.Response.Header.Set("Cache-Control", "public, max-age=2592000, immutable")
 	ctx.SetBody(img.Data)
 
 	return nil

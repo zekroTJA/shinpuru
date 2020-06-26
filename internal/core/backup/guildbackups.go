@@ -1,15 +1,17 @@
 package backup
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
-	"os"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -27,6 +29,7 @@ type GuildBackups struct {
 	ticker  *time.Ticker
 	session *discordgo.Session
 	db      database.Database
+	st      storage.Storage
 }
 
 func asyncWriteStatus(c chan string, status string) {
@@ -41,13 +44,14 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
-func New(s *discordgo.Session, db database.Database, loc string) *GuildBackups {
+func New(s *discordgo.Session, db database.Database, st storage.Storage, loc string) *GuildBackups {
 	if loc != "" {
 		backupLocation = loc
 	}
 
 	bck := new(GuildBackups)
 	bck.db = db
+	bck.st = st
 	bck.session = s
 	bck.ticker = time.NewTicker(tickRate)
 	go bck.initTickerLoop()
@@ -138,35 +142,25 @@ func (bck *GuildBackups) Guild(guildID string) error {
 		})
 	}
 
-	if _, err := os.Stat(backupLocation); os.IsNotExist(err) {
-		err = os.MkdirAll(backupLocation, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-
 	backupID := snowflakenodes.NodeBackup.Generate()
-	backupFileName := backupLocation + "/" + backupID.String() + ".json"
 
-	f, err := os.Create(backupFileName)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
+	buff := bytes.NewBuffer([]byte{})
 
-	enc := json.NewEncoder(f)
+	enc := json.NewEncoder(buff)
 	enc.SetIndent("", "  ")
 	err = enc.Encode(backup)
 	if err != nil {
-		f.Close()
-		os.Remove(backupFileName)
+		return err
+	}
+
+	err = bck.st.PutObject(static.StorageBucketBackups, backupID.String(), buff, int64(buff.Len()), "application/json")
+	if err != nil {
 		return err
 	}
 
 	err = bck.db.AddBackup(g.ID, backupID.String())
 	if err != nil {
+		bck.st.DeleteObject(static.StorageBucketBackups, backupID.String())
 		return err
 	}
 
@@ -183,7 +177,7 @@ func (bck *GuildBackups) Guild(guildID string) error {
 			}
 		}
 
-		err = os.Remove(backupLocation + "/" + lastEntry.FileID + ".json")
+		err = bck.st.DeleteObject(static.StorageBucketBackups, lastEntry.FileID)
 		if err != nil {
 			return err
 		}
@@ -208,15 +202,15 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	asyncWriteStatus(statusC, "reading backup file")
-	f, err := os.Open(backupLocation + "/" + fileID + ".json")
+	reader, _, err := bck.st.GetObject(static.StorageBucketBackups, fileID)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer reader.Close()
 
 	var backup backupmodels.Object
 
-	dec := json.NewDecoder(f)
+	dec := json.NewDecoder(reader)
 	err = dec.Decode(&backup)
 	if err != nil {
 		return err
