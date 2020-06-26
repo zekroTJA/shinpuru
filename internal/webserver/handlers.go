@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/etag"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -1007,17 +1008,12 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 
 	img.MimeType = mimetype.Detect(img.Data).String()
 
-	// TODO: This might be optimized because, after the redirect, the image is read
-	// exaclty the same way again from storage after redirect.
-	// fileExtension := strings.Split(img.MimeType, "/")[1]
-	// if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
-	// 	ctx.Redirect(fmt.Sprintf("/imagestore/%s.%s", imageIDstr, fileExtension), fasthttp.StatusFound)
-	// 	return nil
-	// }
+	etag := etag.Generate(img.Data, false)
 
 	ctx.Response.Header.SetContentType(img.MimeType)
 	// 30 days browser caching
 	ctx.Response.Header.Set("Cache-Control", "public, max-age=2592000, immutable")
+	ctx.Response.Header.Set("ETag", etag)
 	ctx.SetBody(img.Data)
 
 	return nil
