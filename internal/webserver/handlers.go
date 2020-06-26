@@ -1005,14 +1005,15 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	reader.Close()
 	img.MimeType = mimetype.Detect(img.Data).String()
 
-	fileExtension := strings.Split(img.MimeType, "/")[1]
-	if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
-		ctx.Redirect(fmt.Sprintf("/imagestore/%s.%s", imageIDstr, fileExtension), fasthttp.StatusFound)
-		return nil
-	}
+	// TODO: This might be optimized because, after the redirect, the image is read
+	// exaclty the same way again from storage after redirect.
+	// fileExtension := strings.Split(img.MimeType, "/")[1]
+	// if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
+	// 	ctx.Redirect(fmt.Sprintf("/imagestore/%s.%s", imageIDstr, fileExtension), fasthttp.StatusFound)
+	// 	return nil
+	// }
 
 	ctx.Response.Header.SetContentType(img.MimeType)
 	// 30 days browser caching
