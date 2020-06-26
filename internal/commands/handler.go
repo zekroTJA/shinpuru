@@ -96,9 +96,15 @@ func (c *CmdHandler) IsBotOwner(userID string) bool {
 	return userID == c.config.Discord.OwnerID
 }
 
-func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (permissions.PermissionArray, bool, error) {
-	var overrideExplicits bool
-	perm, err := c.db.GetMemberPermission(s, guildID, userID)
+func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
+	if guildID != "" {
+		perm, err = c.db.GetMemberPermission(s, guildID, userID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			return
+		}
+	} else {
+		perm = make(permissions.PermissionArray, 0)
+	}
 
 	if c.IsBotOwner(userID) {
 		perm = perm.Merge(permissions.PermissionArray{"+sp.*"}, false)
@@ -106,7 +112,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 	}
 
 	if guildID != "" {
-		guild, err := s.Guild(guildID)
+		guild, err := s.State.Guild(guildID)
 		if err != nil {
 			return permissions.PermissionArray{}, false, nil
 		}
@@ -117,10 +123,6 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 			perm = perm.Merge(c.defAdminRules, false)
 			overrideExplicits = true
 		}
-	}
-
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return nil, false, err
 	}
 
 	perm = perm.Merge(c.defUserRules, false)
