@@ -1,5 +1,7 @@
 package static
 
+import "github.com/bwmarrin/discordgo"
+
 const (
 	InvitePermission = 0x1 | // CREATE INSTANT INVITE
 		0x10 | // MANAGE CHANNELS
@@ -18,6 +20,18 @@ const (
 		0x10000000 | // MANAGE ROLES
 		0x20000000 | // MANAGE WEBHOOKS
 		0x40000000 // MANAGE EMOJIS
+
+	Intents = discordgo.IntentsDirectMessages |
+		discordgo.IntentsGuildBans |
+		discordgo.IntentsGuildEmojis |
+		discordgo.IntentsGuildIntegrations |
+		discordgo.IntentsGuildInvites |
+		discordgo.IntentsGuildMembers |
+		discordgo.IntentsGuildMessageReactions |
+		discordgo.IntentsGuildMessages |
+		discordgo.IntentsGuildPresences |
+		discordgo.IntentsGuildVoiceStates |
+		discordgo.IntentsGuilds
 
 	ConfigVersion = 6
 

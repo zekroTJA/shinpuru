@@ -1,3 +1,5 @@
+BEGIN;
+
 ALTER TABLE `guilds` 
     MODIFY `guildID` VARCHAR(25) NOT NULL,
     DROP `iid`,
@@ -27,3 +29,5 @@ ALTER TABLE `imagestore`
     MODIFY `id` VARCHAR(25) NOT NULL,
     DROP `iid`,
     ADD PRIMARY KEY (`id`);
+
+COMMIT;

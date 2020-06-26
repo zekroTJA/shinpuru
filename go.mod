@@ -7,7 +7,6 @@ require (
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gabriel-vasile/mimetype v1.1.1
-	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/generaltso/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/generaltso/vibrant v0.0.0-20200513034313-89f84c2c6ef4
 	github.com/go-ini/ini v1.57.0 // indirect
@@ -16,9 +15,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/gddo v0.0.0-20200611223618-a4829ef13274 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.5.0 // indirect
-	github.com/klauspost/cpuid v1.3.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -34,8 +31,6 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
-	google.golang.org/api v0.28.0 // indirect
-	google.golang.org/grpc v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )

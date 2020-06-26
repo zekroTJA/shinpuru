@@ -21,6 +21,8 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	}
 
 	session.Token = "Bot " + config.Discord.Token
+	session.StateEnabled = true
+	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(database, cmdHandler)
 	listenerGhostPing := listeners.NewListenerGhostPing(database, cmdHandler)
