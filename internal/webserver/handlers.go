@@ -3,6 +3,7 @@ package webserver
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"runtime"
 	"strconv"
 	"strings"
@@ -997,15 +998,14 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 
 	img := new(imgstore.Image)
 
-	// For some reason, 1 byte less than the actual image size must
-	// be read to prevent an EOF error.
-	img.Size = int(size - 1)
+	img.Size = int(size)
 	img.Data = make([]byte, img.Size)
 	_, err = reader.Read(img.Data)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
+	reader.Close()
 	img.MimeType = mimetype.Detect(img.Data).String()
 
 	fileExtension := strings.Split(img.MimeType, "/")[1]

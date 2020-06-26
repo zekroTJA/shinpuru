@@ -89,7 +89,7 @@ func (bck *GuildBackups) Guild(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.Guild(guildID)
+	g, err := bck.session.State.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -406,7 +406,7 @@ func (bck *GuildBackups) HardFlush(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.Guild(guildID)
+	g, err := bck.session.State.Guild(guildID)
 	if err != nil {
 		return err
 	}
