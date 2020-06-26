@@ -88,7 +88,7 @@ func migrateReport(rep *report.Report, db database.Database, st storage.Storage)
 		return
 	}
 
-	util.Log.Infof("Migrating report attachment %s", img.Data)
+	util.Log.Infof("Migrating report attachment %s", img.ID)
 	r := bytes.NewReader(img.Data)
 	err = st.PutObject(static.StorageBucketImages, img.ID.String(), r, int64(img.Size), img.MimeType)
 	if err != nil {
@@ -118,5 +118,8 @@ func migrateBackup(backup *backupmodels.Entry, loc string, db database.Database,
 		return
 	}
 
-	os.Remove(fd)
+	fh.Close()
+	if err = os.Remove(fd); err != nil {
+		util.Log.Error(err)
+	}
 }
