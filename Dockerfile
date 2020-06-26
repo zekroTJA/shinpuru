@@ -1,26 +1,37 @@
+# ------------------------------------------------------------
+# --- STAGE 1: Build Backend, Tools and Web Assets
 FROM golang:1.13-alpine AS build
 WORKDIR /build
 
+# Get required packages
 RUN apk add git nodejs npm build-base
-
+# Add source files
 ADD . .
-
+# Get go packages
 RUN go mod tidy
-RUN go build -v -o ./bin/shinpuru -ldflags "\
+# Build shinpuru backend
+RUN go build -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(git describe --tags) \
 		-X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$(git rev-parse HEAD) \
 		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
         ./cmd/shinpuru/main.go
+# Build storagepatch tool
+RUN go build -o ./bin/storagepatch ./cmd/storagepatch/main.go
+# Build web assets
 RUN cd ./web &&\
     npm ci &&\
     npx ng build --prod=true \
         --output-path ../bin/web/dist/web
 
-
+# ------------------------------------------------------------
+# --- STAGE 2: Final runtime environment
 FROM alpine:latest AS final
 WORKDIR /app
 COPY --from=build /build/bin .
+
+RUN mv storagepatch /usr/bin/storagepatch \
+    && chmod +x /usr/bin/storagepatch
 
 RUN apk add ca-certificates
 
