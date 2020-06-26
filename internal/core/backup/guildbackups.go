@@ -95,6 +95,8 @@ func (bck *GuildBackups) Guild(guildID string) error {
 	}
 
 	backup := new(backupmodels.Object)
+	backup.Timestamp = time.Now()
+
 	backup.Guild = &backupmodels.Guild{
 		AfkChannelID:                g.AfkChannelID,
 		AfkTimeout:                  g.AfkTimeout,
@@ -142,7 +144,7 @@ func (bck *GuildBackups) Guild(guildID string) error {
 		})
 	}
 
-	backupID := snowflakenodes.NodeBackup.Generate()
+	backup.ID = snowflakenodes.NodeBackup.Generate().String()
 
 	buff := bytes.NewBuffer([]byte{})
 
@@ -153,14 +155,14 @@ func (bck *GuildBackups) Guild(guildID string) error {
 		return err
 	}
 
-	err = bck.st.PutObject(static.StorageBucketBackups, backupID.String(), buff, int64(buff.Len()), "application/json")
+	err = bck.st.PutObject(static.StorageBucketBackups, backup.ID, buff, int64(buff.Len()), "application/json")
 	if err != nil {
 		return err
 	}
 
-	err = bck.db.AddBackup(g.ID, backupID.String())
+	err = bck.db.AddBackup(g.ID, backup.ID)
 	if err != nil {
-		bck.st.DeleteObject(static.StorageBucketBackups, backupID.String())
+		bck.st.DeleteObject(static.StorageBucketBackups, backup.ID)
 		return err
 	}
 

@@ -13,11 +13,12 @@ type Entry struct {
 }
 
 type Object struct {
-	ID       string     `json:"id"`
-	Guild    *Guild     `json:"guild"`
-	Channels []*Channel `json:"channels"`
-	Roles    []*Role    `json:"roles"`
-	Members  []*Member  `json:"members"`
+	ID        string     `json:"id"`
+	Timestamp time.Time  `json:"timestamp"`
+	Guild     *Guild     `json:"guild"`
+	Channels  []*Channel `json:"channels"`
+	Roles     []*Role    `json:"roles"`
+	Members   []*Member  `json:"members"`
 }
 
 type Guild struct {
