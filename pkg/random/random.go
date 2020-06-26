@@ -1,3 +1,5 @@
+// Package random provides some general purpose
+// cryptographically pseudo-random utilities.
 package random
 
 import (

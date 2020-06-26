@@ -1,3 +1,6 @@
+// package discordoauth provides fasthttp handlers
+// to authenticate with via the Discord OAuth2
+// endpoint.
 package discordoauth
 
 import (
@@ -8,9 +11,8 @@ import (
 	"net/http"
 	"net/url"
 
+	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
-
-	"github.com/qiangxue/fasthttp-routing"
 )
 
 const (
