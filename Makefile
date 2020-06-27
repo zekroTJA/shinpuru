@@ -10,7 +10,6 @@ PRETTIER_CFG = "$(CURDIR)/.prettierrc.yml"
 
 ### EXECUTABLES ###############################
 GO     	 = go
-DEP    	 = dep
 GOLINT 	 = golint
 GREP   	 = grep
 NPM    	 = npm
@@ -51,14 +50,14 @@ endif
 
 
 PHONY = _make
-_make: deps build fe cleanup
+_make: deps build fe copyfe cleanup
 
 PHONY += build
 build: $(BIN) 
 
 PHONY += deps
 deps:
-	$(DEP) mod tidy
+	$(GO) mod tidy
 	cd ./web && \
 		$(NPM) install
 
@@ -91,6 +90,11 @@ PHONY += fe
 fe:
 	cd $(CURDIR)/web && \
 		$(NG) build --prod=true
+
+PHONY += copyfe
+copyfe:
+	mkdir -p bin/web/dist
+	cp -R web/dist/web bin/web/dist
 
 PHONY += runfe
 runfe:
