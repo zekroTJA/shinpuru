@@ -11,8 +11,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 )
 
 const (
@@ -57,6 +57,8 @@ func (c *CmdBackup) Exec(args *CommandArgs) error {
 			return c.switchStatus(args, false)
 		case "r", "restore":
 			return c.restore(args)
+		case "purge", "clear":
+			return c.purgeBackupsAccept(args)
 		default:
 			return c.list(args)
 		}
@@ -248,4 +250,70 @@ func (c *CmdBackup) proceedRestore(args *CommandArgs, fileID string) {
 		util.SendEmbedError(args.Session, args.Channel.ID,
 			fmt.Sprintf("An unexpected error occured while restoring backup: ```\n%s\n```", err.Error()))
 	}
+}
+
+func (c *CmdBackup) purgeBackupsAccept(args *CommandArgs) error {
+	_, err := acceptmsg.New().
+		WithSession(args.Session).
+		WithEmbed(&discordgo.MessageEmbed{
+			Color: static.ColorEmbedOrange,
+			Description: ":warning:  **WARNING**  :warning:\n\n" +
+				"Do you really want to **purge __all__ backups** for this guild?",
+		}).
+		LockOnUser(args.User.ID).
+		DeleteAfterAnswer().
+		DoOnDecline(func(_ *discordgo.Message) {
+			util.SendEmbedError(args.Session, args.Channel.ID, "Canceled.").
+				DeleteAfter(6 * time.Second).Error()
+			return
+		}).
+		DoOnAccept(func(_ *discordgo.Message) {
+			c.purgeBackups(args)
+		}).
+		Send(args.Channel.ID)
+
+	return err
+}
+
+func (c *CmdBackup) purgeBackups(args *CommandArgs) {
+	backups, err := args.CmdHandler.db.GetBackups(args.Guild.ID)
+	if err != nil {
+		util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error())).
+			DeleteAfter(15 * time.Second).Error()
+		return
+	}
+
+	var lnBackups = len(backups)
+	if lnBackups < 1 {
+		util.SendEmbedError(args.Session, args.Channel.ID,
+			"There are no backups saved to be purged.").
+			DeleteAfter(8 * time.Second).Error()
+		return
+	}
+
+	var success int
+	for _, backup := range backups {
+		if err = args.CmdHandler.db.DeleteBackup(args.Guild.ID, backup.FileID); err != nil {
+			continue
+		}
+		if err = args.CmdHandler.st.DeleteObject(static.StorageBucketBackups, backup.FileID); err != nil {
+			continue
+		}
+		success++
+	}
+
+	if success < lnBackups {
+		util.SendEmbedError(args.Session, args.Channel.ID,
+			fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
+				success, lnBackups, lnBackups-success)).
+			DeleteAfter(8 * time.Second).Error()
+		return
+	}
+
+	util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
+			success, lnBackups), "", static.ColorEmbedGreen).
+		DeleteAfter(8 * time.Second).Error()
+	return
 }

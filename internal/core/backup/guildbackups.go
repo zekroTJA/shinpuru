@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	// tickRate = 5 * time.Minute
+	// tickRate = 30 * time.Second
 	tickRate = 12 * time.Hour
 )
 
