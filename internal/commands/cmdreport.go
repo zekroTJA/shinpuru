@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -65,7 +66,7 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		return c.revoke(args)
 	}
 
-	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"Sorry, could not find any member :cry:").

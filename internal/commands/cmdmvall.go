@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdMvall struct {
@@ -57,7 +58,7 @@ func (c *CmdMvall) Exec(args *CommandArgs) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	toVC, err := util.FetchChannel(args.Session, args.Guild.ID, strings.Join(args.Args, " "),
+	toVC, err := fetch.FetchChannel(args.Session, args.Guild.ID, strings.Join(args.Args, " "),
 		func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildVoice
 		})

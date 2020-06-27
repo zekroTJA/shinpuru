@@ -1,11 +1,9 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -90,32 +88,6 @@ func IsAdmin(g *discordgo.Guild, m *discordgo.Member) bool {
 	return false
 }
 
-// RolePosDiff : m1 position - m2 position
-func RolePosDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild) int {
-	m1MaxPos, m2MaxPos := -1, -1
-	rolePositions := make(map[string]int)
-
-	for _, rG := range g.Roles {
-		rolePositions[rG.ID] = rG.Position
-	}
-
-	for _, r := range m1.Roles {
-		p := rolePositions[r]
-		if p > m1MaxPos || m1MaxPos == -1 {
-			m1MaxPos = p
-		}
-	}
-
-	for _, r := range m2.Roles {
-		p := rolePositions[r]
-		if p > m2MaxPos || m2MaxPos == -1 {
-			m2MaxPos = p
-		}
-	}
-
-	return m1MaxPos - m2MaxPos
-}
-
 // TODO: Deprecated
 func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration time.Duration) {
 	if msg == nil {
@@ -124,144 +96,4 @@ func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration t
 	time.AfterFunc(duration, func() {
 		s.ChannelMessageDelete(msg.ChannelID, msg.ID)
 	})
-}
-
-func FetchRole(s *discordgo.Session, guildID, resolvable string) (*discordgo.Role, error) {
-	roles, err := s.GuildRoles(guildID)
-	if err != nil {
-		return nil, err
-	}
-	rx := regexp.MustCompile("<@&|>")
-	resolvable = rx.ReplaceAllString(resolvable, "")
-
-	checkFuncs := []func(*discordgo.Role, string) bool{
-		func(r *discordgo.Role, resolvable string) bool {
-			return r.ID == resolvable
-		},
-		func(r *discordgo.Role, resolvable string) bool {
-			return r.Name == resolvable
-		},
-		func(r *discordgo.Role, resolvable string) bool {
-			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
-		},
-		func(r *discordgo.Role, resolvable string) bool {
-			return strings.HasPrefix(strings.ToLower(r.Name), strings.ToLower(resolvable))
-		},
-		func(r *discordgo.Role, resolvable string) bool {
-			return strings.Contains(strings.ToLower(r.Name), strings.ToLower(resolvable))
-		},
-	}
-
-	for _, checkFunc := range checkFuncs {
-		for _, r := range roles {
-			if checkFunc(r, resolvable) {
-				return r, nil
-			}
-		}
-	}
-
-	return nil, errors.New("could not be fetched")
-}
-
-func FetchMember(s *discordgo.Session, guildID, resolvable string) (*discordgo.Member, error) {
-	rx := regexp.MustCompile("<@|!|>")
-	resolvable = rx.ReplaceAllString(resolvable, "")
-	var lastUserID string
-
-	for {
-		members, err := s.GuildMembers(guildID, lastUserID, 1000)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(members) < 1 {
-			break
-		}
-
-		lastUserID = members[len(members)-1].User.ID
-
-		checkFuncs := []func(*discordgo.Member, string) bool{
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.User.ID == resolvable
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.User.Username == resolvable
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return strings.ToLower(r.User.Username) == strings.ToLower(resolvable)
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return strings.HasPrefix(strings.ToLower(r.User.Username), strings.ToLower(resolvable))
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return strings.Contains(strings.ToLower(r.User.Username), strings.ToLower(resolvable))
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.Nick == resolvable
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.Nick != "" && strings.ToLower(r.Nick) == strings.ToLower(resolvable)
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.Nick != "" && strings.HasPrefix(strings.ToLower(r.Nick), strings.ToLower(resolvable))
-			},
-			func(r *discordgo.Member, resolvable string) bool {
-				return r.Nick != "" && strings.Contains(strings.ToLower(r.Nick), strings.ToLower(resolvable))
-			},
-		}
-
-		for _, checkFunc := range checkFuncs {
-			for _, m := range members {
-				if checkFunc(m, resolvable) {
-					return m, nil
-				}
-			}
-		}
-	}
-
-	return nil, errors.New("could not be fetched")
-}
-
-func FetchChannel(s *discordgo.Session, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
-	channels, err := s.GuildChannels(guildID)
-	if err != nil {
-		return nil, err
-	}
-
-	checkFuncs := []func(*discordgo.Channel, string) bool{
-		func(r *discordgo.Channel, resolvable string) bool {
-			return r.ID == resolvable
-		},
-		func(r *discordgo.Channel, resolvable string) bool {
-			l := len(resolvable)
-			return l > 3 && r.ID == resolvable[2:l-1]
-		},
-		func(r *discordgo.Channel, resolvable string) bool {
-			return r.Name == resolvable
-		},
-		func(r *discordgo.Channel, resolvable string) bool {
-			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
-		},
-		func(r *discordgo.Channel, resolvable string) bool {
-			return strings.HasPrefix(strings.ToLower(r.Name), strings.ToLower(resolvable))
-		},
-		func(r *discordgo.Channel, resolvable string) bool {
-			return strings.Contains(strings.ToLower(r.Name), strings.ToLower(resolvable))
-		},
-	}
-
-	for _, checkFunc := range checkFuncs {
-		for _, c := range channels {
-			if len(condition) > 0 && condition[0] != nil {
-				if !condition[0](c) {
-					continue
-				}
-			}
-			if checkFunc(c, resolvable) {
-				return c, nil
-			}
-		}
-	}
-
-	return nil, errors.New("could not be fetched")
 }

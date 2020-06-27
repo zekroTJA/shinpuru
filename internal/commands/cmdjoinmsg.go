@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdJoinMsg struct {
@@ -91,7 +92,7 @@ func (c *CmdJoinMsg) Exec(args *CommandArgs) error {
 		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
 			return err
 		}
-		ch, err := util.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
+		ch, err := fetch.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
 		if err != nil {

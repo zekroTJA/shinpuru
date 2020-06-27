@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdAutorole struct {
@@ -49,7 +50,7 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 			return util.SendEmbed(args.Session, args.Channel.ID,
 				"There is no autorole set on this guild currently.", "", 0).Error()
 		}
-		_, err = util.FetchRole(args.Session, args.Guild.ID, currAutoRoleID)
+		_, err = fetch.FetchRole(args.Session, args.Guild.ID, currAutoRoleID)
 		if err != nil {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"**ATTENTION:** The set auto role is no more existent on the guild!").Error()
@@ -67,7 +68,7 @@ func (c *CmdAutorole) Exec(args *CommandArgs) error {
 			"Autorole reseted.", "", static.ColorEmbedUpdated).Error()
 	}
 
-	newAutoRole, err := util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+	newAutoRole, err := fetch.FetchRole(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"Sorry, but the entered role could not be fetched :(").

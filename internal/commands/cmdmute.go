@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -71,7 +72,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 	desc := "Following, a rolen with the name `shinpuru-muted` will be created *(if not existend yet)* and set as mute role."
 
 	if len(args.Args) > 1 {
-		muteRole, err = util.FetchRole(args.Session, args.Guild.ID, args.Args[1])
+		muteRole, err = fetch.FetchRole(args.Session, args.Guild.ID, args.Args[1])
 		if err != nil {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Role could not be fetched by passed identifier.").
@@ -153,7 +154,7 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 }
 
 func (c *CmdMute) muteUnmute(args *CommandArgs) error {
-	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"Could not fetch any user by the passed resolvable.").

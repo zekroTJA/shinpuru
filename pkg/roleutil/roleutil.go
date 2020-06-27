@@ -80,3 +80,33 @@ func GetSortedGuildRoles(s *discordgo.Session, guildID string, reversed bool) ([
 
 	return roles, nil
 }
+
+// PositionDiff : m1 position - m2 position
+// PositionDiff returns the difference number between
+// the top most role of member m1 and member m2 on
+// the specified guild g by subtracting
+// m1MaxPos - m2MaxPos.
+func PositionDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild) int {
+	m1MaxPos, m2MaxPos := -1, -1
+	rolePositions := make(map[string]int)
+
+	for _, rG := range g.Roles {
+		rolePositions[rG.ID] = rG.Position
+	}
+
+	for _, r := range m1.Roles {
+		p := rolePositions[r]
+		if p > m1MaxPos || m1MaxPos == -1 {
+			m1MaxPos = p
+		}
+	}
+
+	for _, r := range m2.Roles {
+		p := rolePositions[r]
+		if p > m2MaxPos || m2MaxPos == -1 {
+			m2MaxPos = p
+		}
+	}
+
+	return m1MaxPos - m2MaxPos
+}

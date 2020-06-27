@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdModlog struct {
@@ -78,7 +79,7 @@ func (c *CmdModlog) Exec(args *CommandArgs) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	mlChan, err := util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+	mlChan, err := fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
 		return c.Type == discordgo.ChannelTypeGuildText
 	})
 	if err != nil {

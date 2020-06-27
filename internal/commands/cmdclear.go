@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdClear struct {
@@ -59,7 +60,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		}
 
 		if len(args.Args) >= 2 {
-			memb, err = util.FetchMember(args.Session, args.Guild.ID, args.Args[1])
+			memb, err = fetch.FetchMember(args.Session, args.Guild.ID, args.Args[1])
 			if err != nil {
 				return util.SendEmbedError(args.Session, args.Channel.ID,
 					"Sorry, but the member can not be found on this guild. :cry:").

@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
@@ -91,7 +92,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 
 	roles := make([]*discordgo.Role, 0)
 	for _, roleID := range args.Args[1:] {
-		if r, err := util.FetchRole(args.Session, args.Guild.ID, roleID); err == nil {
+		if r, err := fetch.FetchRole(args.Session, args.Guild.ID, roleID); err == nil {
 			roles = append(roles, r)
 		}
 	}

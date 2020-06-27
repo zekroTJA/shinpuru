@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdMention struct {
@@ -50,7 +51,7 @@ func (c *CmdMention) Exec(args *CommandArgs) error {
 		return util.SendEmbed(args.Session, args.Channel.ID, rolesStr, "Currently mentionable roles:", 0).
 			Error()
 	}
-	role, err := util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+	role, err := fetch.FetchRole(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
 		return util.SendEmbedError(args.Session, args.Channel.ID, "Could not fetch any message to the passed resolvable.").
 			DeleteAfter(8 * time.Second).Error()

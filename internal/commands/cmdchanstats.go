@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 
-	"github.com/zekroTJA/shinpuru/internal/util/static"
-
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 const (
@@ -87,7 +87,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	if lenArgs == 1 {
 		t := c.getTyp(args.Args[0])
 		if t == -1 {
-			channel, err = util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+			channel, err = fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
 				return c.Type == discordgo.ChannelTypeGuildText
 			})
 			if err != nil {
@@ -115,7 +115,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 				DeleteAfter(8 * time.Second).Error()
 		}
 
-		channel, err = util.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+		channel, err = fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
 		if err != nil {

@@ -17,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -614,7 +615,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if util.RolePosDiff(victim, executor, guild) >= 0 {
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return jsonError(ctx, fmt.Errorf("you can not kick members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 
@@ -689,7 +690,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if util.RolePosDiff(victim, executor, guild) >= 0 {
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return jsonError(ctx, fmt.Errorf("you can not ban members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 

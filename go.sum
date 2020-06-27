@@ -2,6 +2,7 @@ cloud.google.com/go v0.16.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/andybalholm/brotli v1.0.0 h1:7UCwP93aiSfvWpapti8g88vVVGp2qqtGyePsSuDafo4=
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
+github.com/blend/go-sdk v2.0.0+incompatible h1:FL9X/of4ZYO5D2JJNI4vHrbXPfuSDbUa7h8JP9+E92w=
 github.com/blend/go-sdk v2.0.0+incompatible/go.mod h1:3GUb0YsHFNTJ6hsJTpzdmCUl05o8HisKjx5OAlzYKdw=
 github.com/bradfitz/gomemcache v0.0.0-20170208213004-1952afaa557d/go.mod h1:PmM6Mmwb0LSuEubjR8N7PtNe1KxZLtOUHtbeikc5h60=
 github.com/bwmarrin/discordgo v0.21.1 h1:UI2PWwzvn5IFuscYcDc6QB/duhs9MUIjQ4HclcIZisc=

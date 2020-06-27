@@ -9,6 +9,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdProfile struct {
@@ -45,7 +46,7 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		return err
 	}
 	if len(args.Args) > 0 {
-		member, err = util.FetchMember(args.Session, args.Guild.ID, strings.Join(args.Args, " "))
+		member, err = fetch.FetchMember(args.Session, args.Guild.ID, strings.Join(args.Args, " "))
 		if err != nil || member == nil {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Could not fetch any member by the passed resolvable.").

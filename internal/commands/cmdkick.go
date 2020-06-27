@@ -13,6 +13,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
 type CmdKick struct {
@@ -48,7 +50,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 			"Invalid command arguments. Please use `help kick` to see how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"Sorry, could not find any member :cry:").
@@ -66,7 +68,7 @@ func (c *CmdKick) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if util.RolePosDiff(victim, authorMemb, args.Guild) >= 0 {
+	if roleutil.PositionDiff(victim, authorMemb, args.Guild) >= 0 {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"You can only kick members with lower permissions than yours.").
 			DeleteAfter(8 * time.Second).Error()
