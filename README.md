@@ -7,7 +7,7 @@
     </strong><br><br>
     <a href="https://dc.zekro.de"><img height="28" src="https://img.shields.io/discord/307084334198816769.svg?style=for-the-badge&logo=discord" /></a>&nbsp;
     <a href="https://github.com/zekroTJA/shinpuru/releases"><img height="28" src="https://img.shields.io/github/tag/zekroTJA/shinpuru.svg?style=for-the-badge"/></a>&nbsp;
-    <a href="https://cloud.docker.com/u/zekro/repository/docker/zekro/shinpuru"><img alt="Docker Cloud Automated build" src="https://img.shields.io/docker/cloud/automated/zekro/shinpuru.svg?color=cyan&logo=docker&logoColor=cyan&style=for-the-badge"></a>&nbsp;
+    <a href="https://hub.docker.com/r/zekro/shinpuru"><img alt="Docker Cloud Automated build" src="https://img.shields.io/docker/cloud/automated/zekro/shinpuru.svg?color=cyan&logo=docker&logoColor=cyan&style=for-the-badge"></a>&nbsp;
     <img height="28" src="https://forthebadge.com/images/badges/built-with-grammas-recipe.svg">
 <br>
 </div>
@@ -33,7 +33,7 @@ Here you can choose between the stable or canary version of shinpuru:
 
 シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as many features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
 
-Also, I want to use this project as a chance for me, to get some deeper into Go and larger Go project structures. In a later development state, this bot will detach zekroBot 2.
+Also, I want to use this project as a chance for me, to get some deeper into Go and larger Go project structures.
 
 ---
 
@@ -43,7 +43,7 @@ In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), 
 
 ## Web Interface
 
-shinpuru also offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
+shinpuru offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
 > **ATTENTION:** This web interface should be considered as 'beta version' because it is in a very early release state. If you are running into bugs or if you have suggestions, please contribute them as issue or pull request. 
 
@@ -96,7 +96,7 @@ With the Twitch Notification System, you can stay up to date which channels are 
 
 ## Code Execution
 
-shinpuru is able to compile embedded code in messages on the fly, just by clicking a reaction under the message containing the code. The code will be sent to [jdoodle's](https://jdoodle.com) API, will be executed and the output will be displayed in the discord channel!
+shinpuru is able to "compile" embedded code in messages on the fly, just by clicking a reaction under the message containing the code. The code will be sent to [jdoodle's](https://jdoodle.com) API, will be executed and the output will be displayed in the discord channel!
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-36-36.png)
 
@@ -128,20 +128,43 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ---
 
+# Public Packages
+
+Some of the independant utilities and functionalities shinpuru uses are publicly available via `go get <package>`. I will try to keep the API and general behaviour of those functionalities as "frozen" as possible to make those packages long-time reliable.
+
+- [`github.com/zekroTJA/shinpuru/pkg/acceptmsg`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg)
+- [`github.com/zekroTJA/shinpuru/pkg/discordoauth`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordoauth)
+- [`github.com/zekroTJA/shinpuru/pkg/etag`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/etag)
+- [`github.com/zekroTJA/shinpuru/pkg/fetch`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/fetch)
+- [`github.com/zekroTJA/shinpuru/pkg/msgcollector`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/msgcollector)
+- [`github.com/zekroTJA/shinpuru/pkg/multierror`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/multierror)
+- [`github.com/zekroTJA/shinpuru/pkg/random`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/random)
+- [`github.com/zekroTJA/shinpuru/pkg/roleutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/roleutil)
+
+---
+
 # Third party dependencies
 
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
-- [go-yaml/yaml](https://github.com/go-yaml/yaml)
+- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
+- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype)
+- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
+- [go-redis/redis](https://github.com/go-redis/redis)
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
 - [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
+- [minio/minio-go](https://github.com/minio/minio-go)
 - [op/go-logging](https://github.com/op/go-logging)
-- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
-- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
+- [valyala/fasthttp ](https://github.com/valyala/fasthttp)
+- [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart)
+- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit)
+- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
+
+The shinpuru web frontend was built using [Angular 8](https://angular.io/).
 
 Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
 
 ---
 
-Copyright © 2018-2019 zekro Development (Ringo Hoffmann).  
+Copyright © 2018-2020 zekro Development (Ringo Hoffmann).  
 Covered by MIT Licence.
