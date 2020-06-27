@@ -9,9 +9,9 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
-	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
