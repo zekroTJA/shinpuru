@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
 type CmdPerms struct {
@@ -55,7 +56,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 	}
 
 	if len(args.Args) == 0 {
-		sortedGuildRoles, err := util.GetSortedGuildRoles(args.Session, args.Guild.ID, true)
+		sortedGuildRoles, err := roleutil.GetSortedGuildRoles(args.Session, args.Guild.ID, true)
 		if err != nil {
 			return err
 		}

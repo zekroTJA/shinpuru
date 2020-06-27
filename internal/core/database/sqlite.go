@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
@@ -241,7 +242,7 @@ func (m *Sqlite) GetMemberPermission(s *discordgo.Session, guildID string, membe
 		return nil, err
 	}
 
-	membRoles, err := util.GetSortedMemberRoles(s, guildID, memberID, false)
+	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false)
 	if err != nil {
 		return nil, err
 	}

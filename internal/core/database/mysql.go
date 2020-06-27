@@ -17,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -251,7 +252,7 @@ func (m *MySQL) GetMemberPermission(s *discordgo.Session, guildID string, member
 		return nil, err
 	}
 
-	membRoles, err := util.GetSortedMemberRoles(s, guildID, memberID, false)
+	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false)
 	if err != nil {
 		return nil, err
 	}
