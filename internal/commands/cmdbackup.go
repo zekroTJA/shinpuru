@@ -33,7 +33,8 @@ func (c *CmdBackup) GetDescription() string {
 func (c *CmdBackup) GetHelp() string {
 	return "`backup <enable|disable>` - enable or disable backups for your guild\n" +
 		"`backup (list)` - list all saved backups\n" +
-		"`backup restore <id>` - restore a backup"
+		"`backup restore <id>` - restore a backup\n" +
+		"`backup perge` - delete all backups of the guild"
 }
 
 func (c *CmdBackup) GetGroup() string {
