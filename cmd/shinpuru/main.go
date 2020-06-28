@@ -50,7 +50,11 @@ func main() {
 		database.Close()
 	}()
 
-	tnw := inits.InitTwitchNotifyer(session, conf, database)
+	tnw, tnl := inits.InitTwitchNotifyer(session, conf, database)
+	defer func() {
+		util.Log.Info("Tearing down twitch notify listener...")
+		tnl.TearDown()
+	}()
 
 	lct := inits.InitLTCTimer()
 

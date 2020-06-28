@@ -23,7 +23,8 @@ const (
 
 	maxUserCap = 1000
 
-	clockDuration = 60 * time.Second
+	clockDuration = 30 * time.Second
+	// clockDuration = 60 * time.Second
 
 	oAuth2Endpoint = "https://id.twitch.tv/oauth2/token"
 	helixEndpoint  = "https://api.twitch.tv/helix"
@@ -191,7 +192,7 @@ func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 			Height: 720,
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			IconURL: d.Game.IconURL,
+			IconURL: strings.Replace(d.Game.IconURL, "{width}x{height}", "16x16", 1),
 			Text:    "Playing " + d.Game.Name,
 		},
 	}
@@ -371,6 +372,7 @@ func (w *NotifyWorker) handler() error {
 	}
 
 	// Update the last request state.
+	w.wereLive = make([]*Stream, len(streams))
 	copy(w.wereLive, streams)
 
 	return nil

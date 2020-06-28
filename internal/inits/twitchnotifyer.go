@@ -9,9 +9,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) *twitchnotify.NotifyWorker {
+func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) (*twitchnotify.NotifyWorker, *listeners.ListenerTwitchNotify) {
 	if config.TwitchApp == nil {
-		return nil
+		return nil, nil
 	}
 
 	listener := listeners.NewListenerTwitchNotify(session, config, db)
@@ -33,5 +33,5 @@ func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db da
 		util.Log.Error("failed getting Twitch notify entreis: ", err)
 	}
 
-	return tnw
+	return tnw, listener
 }

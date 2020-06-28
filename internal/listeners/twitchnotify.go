@@ -24,6 +24,14 @@ func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, 
 	}
 }
 
+func (l *ListenerTwitchNotify) TearDown() {
+	for _, msgs := range l.notMsgIDs {
+		for _, msg := range msgs {
+			l.session.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
+	}
+}
+
 func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twitchnotify.User) {
 	if l.session == nil {
 		return
