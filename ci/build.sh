@@ -53,7 +53,7 @@ npx ng build --prod --output-path ../bin/web/dist/web
 cd ..
 
 mkdir deploy
-tar -C ./bin -czvf ./deploy/build_assets.tar.gz *
+tar -C ./bin -czvf ./deploy/build_assets.tar.gz .
 
 cd deploy
 sha256sum ./build_assets.tar.gz | tee sha256sum.txt
