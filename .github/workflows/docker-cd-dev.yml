@@ -1,12 +1,9 @@
-name: Docker CD
+name: Docker CD Canary
 
 on:
   push:
     branches:
-      - master
       - dev
-    tags:
-      - '*'
 
 jobs:
 
@@ -25,4 +22,6 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          bash ./ci/docker-release.sh
+          docker build . -t zekro/shinpuru:canary
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push zekro/shinpuru:canary
