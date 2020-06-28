@@ -83,9 +83,9 @@ type Database interface {
 	GetMuteRoleGuild(guildID string) (string, error)
 	SetMuteRole(guildID, roleID string) error
 
-	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error)
-	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error)
-	SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error
+	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error)
+	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error)
+	SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
 
 	AddBackup(guildID, fileID string) error

@@ -24,7 +24,7 @@ func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, 
 	}
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twitchnotify.User) {
 	if l.session == nil {
 		return
 	}
@@ -51,7 +51,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.NotifyData, u *
 
 }
 
-func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.NotifyData, u *twitchnotify.NotifyUser) {
+func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.Stream, u *twitchnotify.User) {
 	if l.session == nil {
 		return
 	}

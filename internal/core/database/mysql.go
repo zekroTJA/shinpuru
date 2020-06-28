@@ -532,8 +532,8 @@ func (m *MySQL) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
-func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error) {
-	t := &twitchnotify.TwitchNotifyDBEntry{
+func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
+	t := &twitchnotify.DBEntry{
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
 	}
@@ -545,7 +545,7 @@ func (m *MySQL) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.Twi
 	return t, err
 }
 
-func (m *MySQL) SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error {
+func (m *MySQL) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
 	res, err := m.DB.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
@@ -571,18 +571,18 @@ func (m *MySQL) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	return err
 }
 
-func (m *MySQL) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error) {
+func (m *MySQL) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
 	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
 	}
 	rows, err := m.DB.Query(query)
-	results := make([]*twitchnotify.TwitchNotifyDBEntry, 0)
+	results := make([]*twitchnotify.DBEntry, 0)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		t := new(twitchnotify.TwitchNotifyDBEntry)
+		t := new(twitchnotify.DBEntry)
 		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID)
 		if err == nil {
 			results = append(results, t)

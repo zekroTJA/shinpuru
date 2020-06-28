@@ -49,6 +49,11 @@ type Etc struct {
 	TwitchAppID string
 }
 
+type TwitchApp struct {
+	ClientID     string `json:"clientid"`
+	ClientSecret string `json:"clientsecret"`
+}
+
 type WS struct {
 	Enabled         bool   `json:"enabled"`
 	Addr            string `json:"addr"`
@@ -92,7 +97,7 @@ type Config struct {
 	Permissions *Permissions
 	Database    *DatabaseType
 	Logging     *Logging
-	Etc         *Etc
+	TwitchApp   *TwitchApp
 	Storage     *StorageType
 	WebServer   *WS
 }
@@ -129,7 +134,7 @@ func NewDefaultConfig() *Config {
 			CommandLogging: true,
 			LogLevel:       4,
 		},
-		Etc: &Etc{},
+		TwitchApp: &TwitchApp{},
 		Storage: &StorageType{
 			Type: "file",
 			File: &StorageFile{

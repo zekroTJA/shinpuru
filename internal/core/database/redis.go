@@ -523,15 +523,15 @@ func (r *RedisMiddleware) SetMuteRole(guildID, roleID string) error {
 	return r.db.SetMuteRole(guildID, roleID)
 }
 
-func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error) {
+func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
 	return r.db.GetAllTwitchNotifies(twitchUserID)
 }
 
-func (r *RedisMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error) {
+func (r *RedisMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
 	return r.db.GetTwitchNotify(twitchUserID, guildID)
 }
 
-func (r *RedisMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error {
+func (r *RedisMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
 	return r.db.SetTwitchNotify(twitchNotify)
 }
 

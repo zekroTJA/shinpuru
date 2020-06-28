@@ -61,7 +61,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
-				if tUser, err := tnw.GetUser(not.TwitchUserID, twitchnotify.TwitchNotifyIdentID); err == nil {
+				if tUser, err := tnw.GetUser(not.TwitchUserID, twitchnotify.IdentID); err == nil {
 					notsStr += fmt.Sprintf(":white_small_square:  **%s** in <#%s>\n",
 						tUser.DisplayName, not.ChannelID)
 				}
@@ -72,7 +72,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			Error()
 	}
 
-	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], twitchnotify.TwitchNotifyIdentLogin)
+	tUser, err := tnw.GetUser(args.Args[len(args.Args)-1], twitchnotify.IdentLogin)
 	if err != nil && err.Error() == "not found" {
 		return util.SendEmbedError(args.Session, args.Channel.ID,
 			"Twitch user could not be found.").
@@ -87,7 +87,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 			return err
 		}
 
-		var notify *twitchnotify.TwitchNotifyDBEntry
+		var notify *twitchnotify.DBEntry
 		for _, not := range nots {
 			if not.GuildID == args.Guild.ID {
 				notify = not
@@ -130,7 +130,7 @@ func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 				return
 			}
 
-			err = args.CmdHandler.db.SetTwitchNotify(&twitchnotify.TwitchNotifyDBEntry{
+			err = args.CmdHandler.db.SetTwitchNotify(&twitchnotify.DBEntry{
 				ChannelID:    args.Channel.ID,
 				GuildID:      args.Guild.ID,
 				TwitchUserID: tUser.ID,

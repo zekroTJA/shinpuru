@@ -57,6 +57,10 @@ func IndexOfStrArray(str string, arr []string) int {
 	return -1
 }
 
+func StringArrayContains(str string, arr []string) bool {
+	return IndexOfStrArray(str, arr) > -1
+}
+
 func GetMessageLink(msg *discordgo.Message, guildID string) string {
 	return fmt.Sprintf("https://discordapp.com/channels/%s/%s/%s", guildID, msg.ChannelID, msg.ID)
 }

@@ -10,18 +10,22 @@ import (
 )
 
 func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) *twitchnotify.NotifyWorker {
-	if config.Etc == nil || config.Etc.TwitchAppID == "" {
+	if config.TwitchApp == nil {
 		return nil
 	}
 
 	listener := listeners.NewListenerTwitchNotify(session, config, db)
-	tnw := twitchnotify.NewNotifyWorker(config.Etc.TwitchAppID,
+	tnw, err := twitchnotify.New(config.TwitchApp,
 		listener.HandlerWentOnline, listener.HandlerWentOffline)
+
+	if err != nil {
+		util.Log.Fatalf("twitch app credentials are invalid: %s", err)
+	}
 
 	notifies, err := db.GetAllTwitchNotifies("")
 	if err == nil {
 		for _, notify := range notifies {
-			if u, err := tnw.GetUser(notify.TwitchUserID, twitchnotify.TwitchNotifyIdentID); err == nil {
+			if u, err := tnw.GetUser(notify.TwitchUserID, twitchnotify.IdentID); err == nil {
 				tnw.AddUser(u)
 			}
 		}

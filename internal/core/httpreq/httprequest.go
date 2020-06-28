@@ -9,11 +9,11 @@ import (
 	"strconv"
 )
 
-type HTTPResponse struct {
+type Response struct {
 	*http.Response
 }
 
-func HTTPRequest(method, url string, headers map[string]string, data interface{}) (*HTTPResponse, error) {
+func Request(method, url string, headers map[string]string, data interface{}) (*Response, error) {
 	var body io.Reader
 	var dataLen int
 	if data != nil {
@@ -44,18 +44,26 @@ func HTTPRequest(method, url string, headers map[string]string, data interface{}
 		return nil, err
 	}
 
-	return &HTTPResponse{
+	return &Response{
 		Response: resp,
 	}, nil
 }
 
-func (r *HTTPResponse) ParseJSONBody(v interface{}) error {
+func Get(url string, headers map[string]string) (*Response, error) {
+	return Request("GET", url, headers, nil)
+}
+
+func Post(url string, headers map[string]string, data interface{}) (*Response, error) {
+	return Request("POST", url, headers, data)
+}
+
+func (r *Response) JSON(v interface{}) error {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(v)
 	return err
 }
 
-func HTTPGetFile(uri string) (io.Reader, error) {
+func GetFile(uri string) (io.Reader, error) {
 	resp, err := http.Get(uri)
 	if err != nil {
 		return nil, err

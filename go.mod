@@ -14,7 +14,7 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/golang/gddo v0.0.0-20200611223618-a4829ef13274 // indirect
+	github.com/golang/gddo v0.0.0-20200611223618-a4829ef13274
 	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/minio-go v6.0.14+incompatible
