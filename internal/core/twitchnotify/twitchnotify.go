@@ -23,8 +23,8 @@ const (
 
 	maxUserCap = 1000
 
-	clockDuration = 30 * time.Second
-	// clockDuration = 60 * time.Second
+	// clockDuration = 30 * time.Second
+	clockDuration = 60 * time.Second
 
 	oAuth2Endpoint = "https://id.twitch.tv/oauth2/token"
 	helixEndpoint  = "https://api.twitch.tv/helix"

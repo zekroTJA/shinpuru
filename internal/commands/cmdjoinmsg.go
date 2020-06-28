@@ -80,7 +80,6 @@ func (c *CmdJoinMsg) Exec(args *CommandArgs) error {
 
 	case "msg", "message", "text":
 		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
-			fmt.Println(ok, err)
 			return err
 		}
 		if err = db.SetGuildJoinMsg(args.Guild.ID, chanID, argsJoined); err != nil {

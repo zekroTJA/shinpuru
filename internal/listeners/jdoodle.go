@@ -134,7 +134,6 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 
 	err = s.MessageReactionAdd(e.ChannelID, e.ID, runReactionEmoji)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 

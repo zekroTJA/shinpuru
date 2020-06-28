@@ -51,7 +51,6 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 	}
 	_, err = s.Channel(voiceLogChan)
 	if err != nil {
-		fmt.Println("reset vlog chan")
 		l.db.SetGuildVoiceLog(e.GuildID, "")
 		return
 	}
