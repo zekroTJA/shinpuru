@@ -29,6 +29,10 @@ const (
 	notifiedCmdsExpireTime   = 6 * time.Hour
 )
 
+// CmdHandler provides functionalities to register Commands,
+// manage registered command instances, manage command
+// permissions, colelcting usage statistics and generating
+// help pages.
 type CmdHandler struct {
 	registeredCmds         map[string]Command
 	registeredCmdInstances []Command
@@ -46,6 +50,9 @@ type CmdHandler struct {
 	notifiedCmdMsgs *timedmap.TimedMap
 }
 
+// NewCmdHandler initializes a new instance of CmdHandler with the passed
+// discord Session, database provider, storage provider, configuration,
+// twitch notify worker and lifecycle timer.
 func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storage, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
 	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
@@ -73,6 +80,8 @@ func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storag
 	return cmd
 }
 
+// RegisterCommand registers the passed command instance to
+// the command handler.
 func (c *CmdHandler) RegisterCommand(cmd Command) {
 	c.registeredCmdInstances = append(c.registeredCmdInstances, cmd)
 	for _, invoke := range cmd.GetInvokes() {
@@ -83,19 +92,30 @@ func (c *CmdHandler) RegisterCommand(cmd Command) {
 	}
 }
 
+// GetCommand returns the command instance by primary
+// invoke or by alias.
 func (c *CmdHandler) GetCommand(invoke string) (Command, bool) {
 	cmd, ok := c.registeredCmds[invoke]
 	return cmd, ok
 }
 
+// GetCommandListLen returns the ammount of registered
+// command instances.
 func (c *CmdHandler) GetCommandListLen() int {
 	return len(c.registeredCmdInstances)
 }
 
+// IsBotOwner returns true if the passed userID is
+// the userID specified as owner in the bots config.
 func (c *CmdHandler) IsBotOwner(userID string) bool {
 	return userID == c.config.Discord.OwnerID
 }
 
+// GetPermissions tries to fetch the permissions array of
+// the passed user of the specified guild. The merged
+// permissions array is returned as well as the override,
+// which is true when the specified user is the bot owner,
+// guild owner or an admin of the guild.
 func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
 	if guildID != "" {
 		perm, err = c.db.GetMemberPermission(s, guildID, userID)
@@ -130,6 +150,10 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 	return perm, overrideExplicits, nil
 }
 
+// CheckPermissions tries to fetch the permissions of the specified user
+// on the specified guild and returns true, if the passed dn matches the
+// fetched permissions array. Also, the override status is returned as
+// well as errors occured during permissions fetching.
 func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, bool, error) {
 	perms, overrideExplicits, err := c.GetPermissions(s, guildID, userID)
 	if err != nil {
@@ -139,6 +163,9 @@ func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn 
 	return permissions.PermissionCheck(dn, perms), overrideExplicits, nil
 }
 
+// ExportCommandManual generates a markdown document with the
+// description and help and details of all registered commands
+// and saves it to the specified file directory.
 func (c *CmdHandler) ExportCommandManual(fileName string) error {
 	document := "> Auto generated command manual | " + time.Now().Format(time.RFC1123) + "\n\n" +
 		"# Explicit Sub Commands\n\n" +
@@ -229,14 +256,21 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 	return ioutil.WriteFile(fileName, []byte(document), 0644)
 }
 
+// AddNotifiedCommandMsg marks the specified message ID
+// to be excluded from the ghost ping detection if it
+// includes a mention.
 func (c *CmdHandler) AddNotifiedCommandMsg(msgID string) {
 	c.notifiedCmdMsgs.Set(msgID, struct{}{}, notifiedCmdsExpireTime)
 }
 
+// GetNotifiedCommandMsgs returns the array of message
+// IDs marked with AddNotifiedCommandMsg.
 func (c *CmdHandler) GetNotifiedCommandMsgs() *timedmap.TimedMap {
 	return c.notifiedCmdMsgs
 }
 
+// GetCmdInstances returns the list of all registered
+// command instances.
 func (c *CmdHandler) GetCmdInstances() []Command {
 	return c.registeredCmdInstances
 }
