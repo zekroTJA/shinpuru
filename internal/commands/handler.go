@@ -62,7 +62,7 @@ func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storag
 		config:                 config,
 		tnw:                    tnw,
 		lct:                    lct,
-		bck:                    backup.New(s, db, st, config.Discord.GuildBackupLoc),
+		bck:                    backup.New(s, db, st),
 		notifiedCmdMsgs:        timedmap.New(notifiedCmdsCleanupDelay),
 		defAdminRules:          static.DefaultAdminRules,
 		defUserRules:           static.DefaultUserRules,

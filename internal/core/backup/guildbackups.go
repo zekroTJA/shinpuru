@@ -21,10 +21,6 @@ const (
 	tickRate = 12 * time.Hour
 )
 
-var (
-	backupLocation = "./guildBackups"
-)
-
 type GuildBackups struct {
 	ticker  *time.Ticker
 	session *discordgo.Session
@@ -44,11 +40,7 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
-func New(s *discordgo.Session, db database.Database, st storage.Storage, loc string) *GuildBackups {
-	if loc != "" {
-		backupLocation = loc
-	}
-
+func New(s *discordgo.Session, db database.Database, st storage.Storage) *GuildBackups {
 	bck := new(GuildBackups)
 	bck.db = db
 	bck.st = st
