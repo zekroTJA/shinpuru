@@ -6,11 +6,11 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, cmdHandler *commands.CmdHandler, lct *lctimer.LifeCycleTimer) {

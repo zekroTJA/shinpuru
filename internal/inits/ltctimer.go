@@ -3,7 +3,7 @@ package inits
 import (
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 func InitLTCTimer() *lctimer.LifeCycleTimer {

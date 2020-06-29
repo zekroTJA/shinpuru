@@ -7,11 +7,11 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 type ListenerReady struct {

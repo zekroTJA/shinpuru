@@ -5,10 +5,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage, tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) *commands.CmdHandler {

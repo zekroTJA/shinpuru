@@ -1,9 +1,11 @@
+// Package lctimer provides a life cycle timer which
+// calls registered callback handlers on timer elapse.
 package lctimer
 
 import (
+	"sync"
+	"sync/atomic"
 	"time"
-
-	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 )
 
 // Handler is a lifecycle timer
@@ -15,8 +17,9 @@ type Handler func(now time.Time)
 // timer elapse.
 type LifeCycleTimer struct {
 	ticker   *time.Ticker
-	handlers map[string]Handler
+	handlers *sync.Map
 
+	rid      int32
 	stopChan chan bool
 }
 
@@ -27,7 +30,7 @@ type LifeCycleTimer struct {
 func New(each time.Duration) *LifeCycleTimer {
 	return &LifeCycleTimer{
 		ticker:   time.NewTicker(each),
-		handlers: make(map[string]Handler),
+		handlers: &sync.Map{},
 		stopChan: make(chan bool, 1),
 	}
 }
@@ -37,10 +40,11 @@ func New(each time.Duration) *LifeCycleTimer {
 //
 // Returned function removes the handler on call.
 func (t *LifeCycleTimer) OnTick(handler Handler) func() {
-	uid := snowflakenodes.NodeLCHandler.Generate().String()
-	t.handlers[uid] = handler
+	uid := atomic.LoadInt32(&t.rid)
+	atomic.AddInt32(&t.rid, 1)
+	t.handlers.Store(uid, handler)
 	return func() {
-		delete(t.handlers, uid)
+		t.handlers.Delete(uid)
 	}
 }
 
@@ -87,9 +91,13 @@ func (t *LifeCycleTimer) Start() {
 			select {
 
 			case now := <-t.ticker.C:
-				for _, h := range t.handlers {
-					h(now)
-				}
+				t.handlers.Range(func(_, value interface{}) bool {
+					h, ok := value.(Handler)
+					if ok {
+						h(now)
+					}
+					return true
+				})
 
 			case <-t.stopChan:
 				t.ticker.Stop()

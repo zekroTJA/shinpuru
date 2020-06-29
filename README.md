@@ -140,6 +140,7 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [`github.com/zekroTJA/shinpuru/pkg/etag`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/etag)
 - [`github.com/zekroTJA/shinpuru/pkg/fetch`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/fetch)
 - [`github.com/zekroTJA/shinpuru/pkg/httpreq`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/httpreq)
+- [`github.com/zekroTJA/shinpuru/pkg/lctimer`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/lctimer)
 - [`github.com/zekroTJA/shinpuru/pkg/msgcollector`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/msgcollector)
 - [`github.com/zekroTJA/shinpuru/pkg/multierror`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/multierror)
 - [`github.com/zekroTJA/shinpuru/pkg/random`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/random)

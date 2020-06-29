@@ -16,12 +16,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 const (

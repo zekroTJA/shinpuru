@@ -9,7 +9,6 @@ import (
 
 var NodesReport []*snowflake.Node
 var NodeBackup *snowflake.Node
-var NodeLCHandler *snowflake.Node
 var NodeTags *snowflake.Node
 var NodeImages *snowflake.Node
 
@@ -29,7 +28,6 @@ func Setup() error {
 	}
 
 	NodeBackup, err = snowflake.NewNode(100)
-	NodeLCHandler, err = snowflake.NewNode(110)
 	NodeTags, err = snowflake.NewNode(120)
 	NodeImages, err = snowflake.NewNode(130)
 
