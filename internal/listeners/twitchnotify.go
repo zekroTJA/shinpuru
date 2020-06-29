@@ -25,6 +25,10 @@ func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, 
 }
 
 func (l *ListenerTwitchNotify) TearDown() {
+	if l == nil {
+		return
+	}
+
 	for _, msgs := range l.notMsgIDs {
 		for _, msg := range msgs {
 			l.session.ChannelMessageDelete(msg.ChannelID, msg.ID)
