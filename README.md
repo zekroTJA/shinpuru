@@ -45,11 +45,14 @@ In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), 
 
 shinpuru offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
-> **ATTENTION:** This web interface should be considered as 'beta version' because it is in a very early release state. If you are running into bugs or if you have suggestions, please contribute them as issue or pull request. 
-
 ![](https://i.zekro.de/chrome_2019-08-12_09-30-45.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-34-04.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-36-45.png)
+
+## Permission System
+
+shinpuru has a fine grained and highly configurable permission system which uses "permission domains". You can specify permissions for whole groups of commands or for single commands for each role on your guild either by command or using the web interface.  
+Please read [**this document**](https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide) about how the permission system exactly works and how to set it up correctly.
 
 ## Moderation
 
@@ -89,8 +92,8 @@ You want to be prepared for each emergency? Just enable the auto-backup system o
 
 ## Twitch Notifications
 
-With the Twitch Notification System, you can stay up to date which channels are currently live on Twitch! Just enter the command [`!twitch <twitchUserName>`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitch) in a channel to set up the system. Then, every time, the channel goes live, a message will be posted to this channel, which will be automatically removed when the channel goes offline on Twitch.  
-*Because of API limitations, the delay until the bot notifies a status change can be up to 3 minutes.*
+With the Twitch Notification System, you can stay up to date which channels are currently live on Twitch! Just enter the command [`!twitch <twitchUserName>`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitch) in a channel to set up the system. Then, every time, the streamer goes live, a message will be posted to this channel, which will be automatically removed when the channel goes offline on Twitch.  
+*Because of API limitations, the delay until the bot notifies a status change can be up to one minute.*
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-29-02.png)
 
@@ -110,7 +113,7 @@ The system detects obvious invite links like `discord.gg/<InvID>` or `discordapp
 
 ## Voice Logging
 
-Missing Teamspeaks voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
+Missing Teamspeak's voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-32-58.png)
 
@@ -118,7 +121,7 @@ Missing Teamspeaks voice activity log? Just specify a voice log channel with the
 
 # Docker
 
-Read about how to self-host shinpuru using the provided Docker image in the [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Docker).
+Read about how to host shinpuru using the provided Docker image in the [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Docker).
 
 ---
 
@@ -168,4 +171,4 @@ Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_i
 ---
 
 Copyright © 2018-2020 zekro Development (Ringo Hoffmann).  
-Covered by MIT Licence.
+Covered by MIT License.
