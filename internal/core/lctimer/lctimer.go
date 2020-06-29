@@ -6,24 +6,37 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 )
 
-type LCHandler func(now time.Time)
+// Handler is a lifecycle timer
+// elapse callback function
+type Handler func(now time.Time)
 
-type LCTimer struct {
+// LifeCycleTimer provides functionalities to
+// execute registered handlers on lifetime
+// timer elapse.
+type LifeCycleTimer struct {
 	ticker   *time.Ticker
-	handlers map[string]LCHandler
+	handlers map[string]Handler
 
 	stopChan chan bool
 }
 
-func New(each time.Duration) *LCTimer {
-	return &LCTimer{
+// New initializes a new LifeCycleTimer instance
+// with the given elapse duration.
+//
+// This function does not start the actual timer.
+func New(each time.Duration) *LifeCycleTimer {
+	return &LifeCycleTimer{
 		ticker:   time.NewTicker(each),
-		handlers: make(map[string]LCHandler),
+		handlers: make(map[string]Handler),
 		stopChan: make(chan bool, 1),
 	}
 }
 
-func (t *LCTimer) OnTick(handler LCHandler) func() {
+// OnTick executes the passed handler function on
+// each life cycle timer elapse.
+//
+// Returned function removes the handler on call.
+func (t *LifeCycleTimer) OnTick(handler Handler) func() {
 	uid := snowflakenodes.NodeLCHandler.Generate().String()
 	t.handlers[uid] = handler
 	return func() {
@@ -31,7 +44,11 @@ func (t *LCTimer) OnTick(handler LCHandler) func() {
 	}
 }
 
-func (t *LCTimer) OnTickOnce(handler LCHandler) func() {
+// OnTickOnce executes the passed handler once at
+// next life time cycle elapse.
+//
+// Returned function removes the handler on call.
+func (t *LifeCycleTimer) OnTickOnce(handler Handler) func() {
 	var unreg func()
 	unreg = t.OnTick(func(now time.Time) {
 		handler(now)
@@ -40,7 +57,12 @@ func (t *LCTimer) OnTickOnce(handler LCHandler) func() {
 	return unreg
 }
 
-func (t *LCTimer) AfterTime(after time.Time, handler LCHandler) func() {
+// AfterTimeOnce is shorthand for OnTickOnce, but only
+// executes the handler on timer elapse after specified
+// timestamp.
+//
+// Returned function removes the handler on call.
+func (t *LifeCycleTimer) AfterTimeOnce(after time.Time, handler Handler) func() {
 	return t.OnTickOnce(func(now time.Time) {
 		if now.After(after) {
 			handler(now)
@@ -48,12 +70,18 @@ func (t *LCTimer) AfterTime(after time.Time, handler LCHandler) func() {
 	})
 }
 
-func (t *LCTimer) AfterDuration(after time.Duration, handler LCHandler) func() {
+// AfterDurationOnce is shorthand for OnTickOnce, but only
+// executes the handler on timer elapse after specified
+// duration has elapsed.
+//
+// Returned function removes the handler on call.
+func (t *LifeCycleTimer) AfterDurationOnce(after time.Duration, handler Handler) func() {
 	afterTime := time.Now().Add(after)
-	return t.AfterTime(afterTime, handler)
+	return t.AfterTimeOnce(afterTime, handler)
 }
 
-func (t *LCTimer) Start() {
+// Start starts the life cycle timer loop.
+func (t *LifeCycleTimer) Start() {
 	go func() {
 		for {
 			select {
@@ -72,7 +100,8 @@ func (t *LCTimer) Start() {
 	}()
 }
 
-func (t *LCTimer) Stop() {
+// Stop stops the life cycle timer loop.
+func (t *LifeCycleTimer) Stop() {
 	go func() {
 		t.stopChan <- true
 	}()

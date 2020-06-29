@@ -6,6 +6,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
 )
 
-func InitLTCTimer() *lctimer.LCTimer {
+func InitLTCTimer() *lctimer.LifeCycleTimer {
 	return lctimer.New(10 * time.Second)
 }

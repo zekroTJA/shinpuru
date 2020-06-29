@@ -17,10 +17,10 @@ import (
 type ListenerReady struct {
 	config *config.Config
 	db     database.Database
-	lct    *lctimer.LCTimer
+	lct    *lctimer.LifeCycleTimer
 }
 
-func NewListenerReady(config *config.Config, db database.Database, lct *lctimer.LCTimer) *ListenerReady {
+func NewListenerReady(config *config.Config, db database.Database, lct *lctimer.LifeCycleTimer) *ListenerReady {
 	return &ListenerReady{
 		config: config,
 		db:     db,

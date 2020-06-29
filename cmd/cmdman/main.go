@@ -21,7 +21,7 @@ func main() {
 		Discord: &config.Discord{},
 	}
 
-	database := new(database.MySQL)
+	database := new(database.MySQLDriver)
 
 	cmdHandler := inits.InitCommandHandler(nil, config, database, nil, nil, nil)
 	if err := cmdHandler.ExportCommandManual(*flagExportFile); err != nil {

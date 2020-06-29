@@ -6,6 +6,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// YAMLConfigParser implements the Parser interface
+// for a YAML config file.
 type YAMLConfigParser struct{}
 
 func (y *YAMLConfigParser) Decode(r io.Reader) (*Config, error) {

@@ -38,6 +38,17 @@ const (
 	keyAPISession = "API:SESSION"
 )
 
+// RedisMiddleware implements the Database interface for
+// Redis.
+//
+// This driver can only be used as caching
+// middleware and consumes another database driver.
+// Incomming database requests are looked up in the cache
+// and values are returned from cache instead of requesting
+// the database if the value is existent. Otherwise, the
+// value is requested from database and then stored to cache.
+// On setting database values, values are set in database as
+// same as in the cache.
 type RedisMiddleware struct {
 	client *redis.Client
 	db     Database

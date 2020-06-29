@@ -17,11 +17,8 @@ import (
 
 var ErrDatabaseNotFound = errors.New("value not found")
 
-var (
-	MySqlDbSchemeB64  = ""
-	SqliteDbSchemeB64 = ""
-)
-
+// Database describes functionalities of a database
+// driver.
 type Database interface {
 	Connect(credentials ...interface{}) error
 	Close()

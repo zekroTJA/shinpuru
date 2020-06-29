@@ -14,10 +14,10 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 
 	switch strings.ToLower(databaseCfg.Type) {
 	case "mysql", "mariadb":
-		db = new(database.MySQL)
+		db = new(database.MySQLDriver)
 		err = db.Connect(databaseCfg.MySql)
 	case "sqlite", "sqlite3":
-		db = new(database.Sqlite)
+		db = new(database.SqliteDriver)
 		err = db.Connect(databaseCfg.Sqlite)
 		printSqliteWraning()
 	}

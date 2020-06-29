@@ -6,12 +6,17 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Entry wraps the database entry of a backup.
 type Entry struct {
 	GuildID   string
 	Timestamp time.Time
 	FileID    string
 }
 
+// Object wraps a backup structure with an unique
+// ID (snowflake), timestamp of creation, the guild
+// properties and each channels, roles and members
+// properties.
 type Object struct {
 	ID        string     `json:"id"`
 	Timestamp time.Time  `json:"timestamp"`
@@ -21,6 +26,7 @@ type Object struct {
 	Members   []*Member  `json:"members"`
 }
 
+// Guild contains general properties of the guild.
 type Guild struct {
 	Name                        string `json:"name"`
 	AfkChannelID                string `json:"afk_channel_id"`
@@ -29,6 +35,7 @@ type Guild struct {
 	DefaultMessageNotifications int    `json:"default_message_notifications"`
 }
 
+// Channel contains general properties of the channel.
 type Channel struct {
 	ID                   string                           `json:"id"`
 	Name                 string                           `json:"name"`
@@ -42,6 +49,7 @@ type Channel struct {
 	PermissionOverwrites []*discordgo.PermissionOverwrite `json:"permission_overwrites"`
 }
 
+// Role contains general properties of the role.
 type Role struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
@@ -52,6 +60,7 @@ type Role struct {
 	Permissions int    `json:"permissions"`
 }
 
+// Member contains general properties of the member.
 type Member struct {
 	ID    string   `json:"id"`
 	Nick  string   `json:"nick"`

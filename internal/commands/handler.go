@@ -42,7 +42,7 @@ type CmdHandler struct {
 	config *config.Config
 	tnw    *twitchnotify.NotifyWorker
 	bck    *backup.GuildBackups
-	lct    *lctimer.LCTimer
+	lct    *lctimer.LifeCycleTimer
 
 	defAdminRules permissions.PermissionArray
 	defUserRules  permissions.PermissionArray
@@ -53,7 +53,7 @@ type CmdHandler struct {
 // NewCmdHandler initializes a new instance of CmdHandler with the passed
 // discord Session, database provider, storage provider, configuration,
 // twitch notify worker and lifecycle timer.
-func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storage, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LCTimer) *CmdHandler {
+func NewCmdHandler(s *discordgo.Session, db database.Database, st storage.Storage, config *config.Config, tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) *CmdHandler {
 	cmd := &CmdHandler{
 		registeredCmds:         make(map[string]Command),
 		registeredCmdInstances: make([]Command, 0),

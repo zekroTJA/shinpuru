@@ -21,6 +21,8 @@ const (
 	tickRate = 12 * time.Hour
 )
 
+// GuildBackups provides functionalities to backup
+// and restore a guild to and from a JSON file.
 type GuildBackups struct {
 	ticker  *time.Ticker
 	session *discordgo.Session
@@ -28,18 +30,26 @@ type GuildBackups struct {
 	st      storage.Storage
 }
 
+// asyncWriteStatus writes the passed status to the
+// passed channel in a new goroutine.
 func asyncWriteStatus(c chan string, status string) {
 	go func() {
 		c <- status
 	}()
 }
 
+// asyncWriteError writes the passed error to the
+// passed channel in a new goroutine.
 func asyncWriteError(c chan error, err error) {
 	go func() {
 		c <- err
 	}()
 }
 
+// New initializes a new GuildBackups instance using
+// the passed discordgo Session, database provider,
+// and storage provider. Also, the ticker loop is
+// initialized.
 func New(s *discordgo.Session, db database.Database, st storage.Storage) *GuildBackups {
 	bck := new(GuildBackups)
 	bck.db = db
@@ -50,6 +60,9 @@ func New(s *discordgo.Session, db database.Database, st storage.Storage) *GuildB
 	return bck
 }
 
+// initTickerLoop starts the ticker loop which
+// calls backupAllGuilds in a new goroutine
+// everytime the ticker elapsed.
 func (bck *GuildBackups) initTickerLoop() {
 	for {
 		<-bck.ticker.C
@@ -57,6 +70,11 @@ func (bck *GuildBackups) initTickerLoop() {
 	}
 }
 
+// backupAllGuilds iterates through all guilds
+// which habe guild backups enabled and initiates
+// the backup routines one after one.
+// Guild backups are not created in new goroutines
+// because of potential rate limit exceedance.
 func (bck *GuildBackups) backupAllGuilds() {
 	guilds, err := bck.db.GetGuilds()
 
@@ -68,7 +86,7 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 
 	for _, g := range guilds {
-		err = bck.Guild(g)
+		err = bck.BackupGuild(g)
 		if err != nil {
 			util.Log.Error("failed creating backup for guild '%s': %s", g, err.Error())
 		}
@@ -76,7 +94,11 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 }
 
-func (bck *GuildBackups) Guild(guildID string) error {
+// BackupGuild creates a backup of a single guild
+// and writes the resulting JSON file to the specified
+// storage. If the backup creation fails, the error is
+// returned.
+func (bck *GuildBackups) BackupGuild(guildID string) error {
 	if bck.session == nil {
 		return errors.New("session is nil")
 	}
@@ -185,6 +207,14 @@ func (bck *GuildBackups) Guild(guildID string) error {
 	return err
 }
 
+// RestoreBackup tries to restore a guild structure by
+// backup file specified via fileID. The current status
+// is sent into the statusC channel and occured errors
+// are pushed into the errorsC channel.
+// Only if the initialization of this method has failed,
+// an error is returned. The returned error does not
+// represent the success result of the backup restore
+// process.
 func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan string, errorsC chan error) error {
 	defer func() {
 		close(statusC)
@@ -393,6 +423,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	return nil
 }
 
+// HardFlush removes all roles and channels
+// of a guild.
 func (bck *GuildBackups) HardFlush(guildID string) error {
 	if bck.session == nil {
 		return errors.New("session is nil")
