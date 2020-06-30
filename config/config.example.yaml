@@ -126,10 +126,13 @@ webserver:
   # CORS origin domain.
   debugpublicaddr: "http://localhost:8081"
 
-# Miscellaneous  settings
-etc:
-  # If you want to use the Twitch notification feature of this
-  # bot, you need to create a Twitch App for requesting the API:
-  # https://glass.twitch.tv/console/apps
-  # Create an app and paste the Client ID here (NOT THE SECRET!)
-  twitchappid: "tu761eecqd8yv0z0wv9zmi4an9ptgs"
+# Credentials of the twitch app to connect to the 
+# twitch API
+# You can register a twitch API app and get the
+# credentials from this page:
+# https://glass.twitch.tv/console/apps
+twitchapp:
+  # Client ID
+  clientid: "zcwbsvg71qmo6to9813jkdvsh1rch4"
+  # Client Secret
+  clientsecret: "nlf6pl00vf4hz4oszgxytlpo9q6h52"
