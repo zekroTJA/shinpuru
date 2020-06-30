@@ -202,6 +202,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		if err != nil {
 			return err
 		}
+		// TODO: Use shared API and push to DB
 		emb := &discordgo.MessageEmbed{
 			Title: "Case " + repID.String(),
 			Color: static.ReportColors[repType],
