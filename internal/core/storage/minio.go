@@ -7,6 +7,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 )
 
+// Minio implements the Storage interface for
+// the MinIO SDK to connect to a MinIO instance,
+// Amazon S3 or Google Cloud.
 type Minio struct {
 	client   *minio.Client
 	location string

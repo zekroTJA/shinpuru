@@ -9,6 +9,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 )
 
+// File implements the Storage interface for a
+// local file storage provider.
 type File struct {
 	location string
 }

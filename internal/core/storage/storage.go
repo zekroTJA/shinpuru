@@ -6,6 +6,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 )
 
+// Storage interface provides functionalities to
+// access an object storage driver.
 type Storage interface {
 	Connect(cfg *config.Config) error
 
