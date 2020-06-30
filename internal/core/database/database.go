@@ -15,6 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
+// ErrDatabaseNotFound is returned when no value was
+// found in the database for the specified request.
 var ErrDatabaseNotFound = errors.New("value not found")
 
 // Database describes functionalities of a database
@@ -109,6 +111,8 @@ type Database interface {
 	RemoveImageData(id snowflake.ID) error
 }
 
+// IsErrDatabaseNotFound returns true if the passed err
+// is an ErrDatabaseNotFound.
 func IsErrDatabaseNotFound(err error) bool {
 	return err == ErrDatabaseNotFound
 }

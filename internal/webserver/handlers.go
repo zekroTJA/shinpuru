@@ -294,7 +294,7 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	allowed := make([]string, len(cmds))
 	i := 0
 	for _, cmd := range cmds {
-		if permissions.PermissionCheck(cmd.GetDomainName(), perms) {
+		if perms.Check(cmd.GetDomainName()) {
 			allowed[i] = cmd.GetDomainName()
 			i++
 		}

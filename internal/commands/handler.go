@@ -160,7 +160,7 @@ func (c *CmdHandler) CheckPermissions(s *discordgo.Session, guildID, userID, dn 
 		return false, false, err
 	}
 
-	return permissions.PermissionCheck(dn, perms), overrideExplicits, nil
+	return perms.Check(dn), overrideExplicits, nil
 }
 
 // ExportCommandManual generates a markdown document with the
