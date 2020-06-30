@@ -168,30 +168,34 @@ func (m *MySQLDriver) Close() {
 
 func (m *MySQLDriver) getGuildSetting(guildID, key string) (string, error) {
 	var value string
-	err := m.DB.QueryRow("SELECT "+key+" FROM guilds WHERE guildID = ?", guildID).Scan(&value)
+	err := m.DB.QueryRow(
+		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
+		guildID).Scan(&value)
 	if err == sql.ErrNoRows {
 		err = ErrDatabaseNotFound
 	}
 	return value, err
 }
 
-func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) error {
-	res, err := m.DB.Exec("UPDATE guilds SET "+key+" = ? WHERE guildID = ?", value, guildID)
+func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) (err error) {
+	res, err := m.DB.Exec(
+		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
+		value, guildID)
 	if err != nil {
-		return err
+		return
 	}
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO guilds (guildID, "+key+") VALUES (?, ?)", guildID, value)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
 	}
-	return err
+	if ar == 0 {
+		_, err = m.DB.Exec(
+			fmt.Sprintf("INSERT INTO guilds (guildID, %s) VALUES (?, ?)", key),
+			guildID, value)
+	}
+
+	return nil
 }
 
 func (m *MySQLDriver) GetGuildPrefix(guildID string) (string, error) {
