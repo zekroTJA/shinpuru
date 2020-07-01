@@ -31,7 +31,8 @@ const (
 		discordgo.IntentsGuildMessages |
 		discordgo.IntentsGuildPresences |
 		discordgo.IntentsGuildVoiceStates |
-		discordgo.IntentsGuilds
+		discordgo.IntentsGuilds |
+		discordgo.IntentsGuildVoiceStates
 
 	ConfigVersion = 6
 
