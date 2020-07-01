@@ -38,7 +38,13 @@ func (c *CmdNotify) GetDomainName() string {
 }
 
 func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
-	return nil
+	return []SubPermission{
+		{
+			Term:        "setup",
+			Explicit:    true,
+			Description: "Allows setting up the notify role for this guild.",
+		},
+	}
 }
 
 func (c *CmdNotify) Exec(args *CommandArgs) error {
