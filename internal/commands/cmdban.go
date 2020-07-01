@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
@@ -8,10 +9,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
 type CmdBan struct {
@@ -43,24 +46,21 @@ func (c *CmdBan) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdBan) Exec(args *CommandArgs) error {
 	if len(args.Args) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid command arguments. Please use `help ban` to see how to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid command arguments. Please use `help ban` to see how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
-	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil || victim == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Sorry, could not find any member :cry:")
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Sorry, could not find any member :cry:").
+			DeleteAfter(10 * time.Second).Error()
 	}
 
 	if victim.User.ID == args.User.ID {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can not ban yourself...")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not ban yourself...").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	authorMemb, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
@@ -68,11 +68,10 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	if util.RolePosDiff(victim, authorMemb, args.Guild) >= 0 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can only ban members with lower permissions than yours.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+	if roleutil.PositionDiff(victim, authorMemb, args.Guild) >= 0 {
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can only ban members with lower permissions than yours.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	repMsg := strings.Join(args.Args[1:], " ")
@@ -89,7 +88,9 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+			err = args.CmdHandler.st.PutObject(static.StorageBucketImages, img.ID.String(),
+				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+			if err != nil {
 				return err
 			}
 			attachment = img.ID.String()

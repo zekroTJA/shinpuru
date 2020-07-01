@@ -78,7 +78,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 			User:       e.Author,
 		}
 
-		ok, err := l.cmdHandler.CheckPermissions(s, guild.ID, e.Author.ID, cmdInstance.GetDomainName())
+		ok, _, err := l.cmdHandler.CheckPermissions(s, guild.ID, e.Author.ID, cmdInstance.GetDomainName())
 
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			util.SendEmbedError(s, channel.ID, fmt.Sprintf("Failed getting permission from database: ```\n%s\n```", err.Error()), "Permission Error")
@@ -86,8 +86,8 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		}
 
 		if !ok {
-			errMsg, _ := util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission")
-			util.DeleteMessageLater(s, errMsg, 8*time.Second)
+			util.SendEmbedError(s, channel.ID, "You are not permitted to use this command!", "Missing permission").
+				DeleteAfter(8 * time.Second).Error()
 			return
 		}
 

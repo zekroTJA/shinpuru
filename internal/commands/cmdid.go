@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdId struct {
@@ -47,18 +48,18 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 		user = args.User
 	} else {
 		joinedArgs := strings.Join(args.Args, " ")
-		if u, err := util.FetchMember(args.Session, args.Guild.ID, joinedArgs); err == nil {
+		if u, err := fetch.FetchMember(args.Session, args.Guild.ID, joinedArgs); err == nil {
 			user = u.User
 		}
-		if r, err := util.FetchRole(args.Session, args.Guild.ID, joinedArgs); err == nil {
+		if r, err := fetch.FetchRole(args.Session, args.Guild.ID, joinedArgs); err == nil {
 			role = r
 		}
-		if tc, err := util.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
+		if tc, err := fetch.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		}); err == nil {
 			textChannel = tc
 		}
-		if vc, err := util.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
+		if vc, err := fetch.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildVoice
 		}); err == nil {
 			voiceChannel = vc
@@ -66,10 +67,9 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 
 	if user == nil && role == nil && textChannel == nil && voiceChannel == nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Could not fetch any member, role or channel by this resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Could not fetch any member, role or channel by this resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	emb := &discordgo.MessageEmbed{

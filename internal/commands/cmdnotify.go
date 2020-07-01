@@ -9,8 +9,8 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 )
 
 type CmdNotify struct {
@@ -45,10 +45,9 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
 		if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"No notify role  was set up for this guild.")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"No notify role  was set up for this guild.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		if err != nil {
 			return err
@@ -60,11 +59,10 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 			}
 		}
 		if !roleExists {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"The set notify role does not exist on this guild anymore. Please notify a "+
-					"moderator aor admin about this to fix this. ;)")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+					"moderator aor admin about this to fix this. ;)").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		member, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
 		if err != nil {
@@ -83,21 +81,19 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 			}
 			msgStr = "Added notify role."
 		}
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID, msgStr, "", 0)
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID, msgStr, "", 0).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if strings.ToLower(args.Args[0]) == "setup" {
-		ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
+		ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
 		}
-		if !ok {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Sorry, but you do'nt have the permission to setup the notify role.")
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+		if !ok && !override {
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Sorry, but you do'nt have the permission to setup the notify role.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		var notifyRoleExists bool
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
@@ -124,26 +120,26 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 				AcceptFunc: func(m *discordgo.Message) {
 					role, err := c.setup(args)
 					if err != nil {
-						msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-							"Failed setup: "+err.Error())
-						util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+						util.SendEmbedError(args.Session, args.Channel.ID,
+							"Failed setup: "+err.Error()).
+							DeleteAfter(8 * time.Second)
 						return
 					}
 					err = args.Session.GuildRoleDelete(args.Guild.ID, notifyRoleID)
 					if err != nil {
-						msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-							"Failed deleting old notify role: "+err.Error())
-						util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+						util.SendEmbedError(args.Session, args.Channel.ID,
+							"Failed deleting old notify role: "+err.Error()).
+							DeleteAfter(8 * time.Second)
 						return
 					}
-					msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-						fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID), "", 0)
-					util.DeleteMessageLater(args.Session, msg, 10*time.Second)
+					util.SendEmbed(args.Session, args.Channel.ID,
+						fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID), "", 0).
+						DeleteAfter(8 * time.Second)
 				},
 				DeclineFunc: func(m *discordgo.Message) {
-					msg, _ := util.SendEmbed(args.Session, args.Channel.ID,
-						"Canceled.", "", 0)
-					util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+					util.SendEmbed(args.Session, args.Channel.ID,
+						"Canceled.", "", 0).
+						DeleteAfter(8 * time.Second)
 				},
 			}
 			_, err := am.Send(args.Channel.ID)
@@ -154,16 +150,14 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 		if err != nil {
 			return err
 		}
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			fmt.Sprintf("Set notify role to <@&%s>.", role.ID)+notifiableStr, "", 0)
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			fmt.Sprintf("Set notify role to <@&%s>.", role.ID)+notifiableStr, "", 0).
+			DeleteAfter(8 * time.Second).Error()
 	}
 
-	msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-		"Invalid command arguments. Please use `help notify` to get help about this command.")
-	util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-	return err
+	return util.SendEmbedError(args.Session, args.Channel.ID,
+		"Invalid command arguments. Please use `help notify` to get help about this command.").
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func (c *CmdNotify) setup(args *CommandArgs) (*discordgo.Role, error) {

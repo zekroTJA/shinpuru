@@ -1,5 +1,11 @@
 package commands
 
+import (
+	"fmt"
+
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+)
+
 type CmdTest struct {
 }
 
@@ -28,6 +34,10 @@ func (c *CmdTest) GetSubPermissionRules() []SubPermission {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-
+	roles := args.Guild.Roles
+	roleutil.SortRoles(roles, false)
+	for i, r := range roles {
+		fmt.Printf("%d - %s\n", i, r.Name)
+	}
 	return nil
 }

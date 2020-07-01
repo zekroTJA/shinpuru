@@ -14,11 +14,12 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 
 	switch strings.ToLower(databaseCfg.Type) {
 	case "mysql", "mariadb":
-		db = new(database.MySQL)
+		db = new(database.MySQLDriver)
 		err = db.Connect(databaseCfg.MySql)
 	case "sqlite", "sqlite3":
-		db = new(database.Sqlite)
+		db = new(database.SqliteDriver)
 		err = db.Connect(databaseCfg.Sqlite)
+		printSqliteWraning()
 	}
 
 	if databaseCfg.Redis != nil && databaseCfg.Redis.Enable {
@@ -32,4 +33,13 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 	util.Log.Info("Connected to database")
 
 	return db
+}
+
+func printSqliteWraning() {
+	util.Log.Warning("--------------------------[ ATTENTION ]--------------------------")
+	util.Log.Warning("You are currently using SQLite as database driver. Please ONLY   ")
+	util.Log.Warning("use SQLite during testing and debugging and NEVER use SQLite in a")
+	util.Log.Warning("real production environment! Here you can read about why:        ")
+	util.Log.Warning("https://github.com/zekroTJA/shinpuru/wiki/No-SQLite-in-production")
+	util.Log.Warning("-----------------------------------------------------------------")
 }

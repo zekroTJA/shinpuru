@@ -8,3 +8,4 @@ web/node_modules/
 web/dist/
 __debug_bin
 deploy/
+data/

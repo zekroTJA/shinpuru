@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdMention struct {
@@ -47,14 +48,13 @@ func (c *CmdMention) Exec(args *CommandArgs) error {
 				rolesStr += fmt.Sprintf("- <@&%s> (%s)\n", role.ID, role.Name)
 			}
 		}
-		_, err := util.SendEmbed(args.Session, args.Channel.ID, rolesStr, "Currently mentionable roles:", 0)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID, rolesStr, "Currently mentionable roles:", 0).
+			Error()
 	}
-	role, err := util.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+	role, err := fetch.FetchRole(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID, "Could not fetch any message to the passed resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID, "Could not fetch any message to the passed resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if role.Mentionable {
@@ -62,10 +62,9 @@ func (c *CmdMention) Exec(args *CommandArgs) error {
 		if err != nil {
 			return err
 		}
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			fmt.Sprintf("Disabled mentionability for role <@&%s>.", role.ID), "", 0)
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			fmt.Sprintf("Disabled mentionability for role <@&%s>.", role.ID), "", 0).
+			DeleteAfter(10 * time.Second).Error()
 	}
 
 	_, err = args.Session.GuildRoleEdit(args.Guild.ID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, true)
@@ -73,11 +72,10 @@ func (c *CmdMention) Exec(args *CommandArgs) error {
 		return err
 	}
 	if len(args.Args) > 1 && strings.ToLower(args.Args[1]) == "g" {
-		msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(args.Session, args.Channel.ID,
 			fmt.Sprintf("Enabled mentionability for role <@&%s> permanently.\n"+
-				"Use `ment <roleResolable>` to disable mentionality of this role.", role.ID), "", 0)
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-		return err
+				"Use `ment <roleResolable>` to disable mentionality of this role.", role.ID), "", 0).
+			DeleteAfter(10 * time.Second).Error()
 	}
 
 	var handlerRemove func()
@@ -94,9 +92,8 @@ func (c *CmdMention) Exec(args *CommandArgs) error {
 		}
 	})
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(args.Session, args.Channel.ID,
 		fmt.Sprintf("Enabled mentionability for role <@&%s>.\n"+
-			"This role will be automatically set to unmentionable after you mention this role in any message on this guild.", role.ID), "", 0)
-	util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-	return err
+			"This role will be automatically set to unmentionable after you mention this role in any message on this guild.", role.ID), "", 0).
+		DeleteAfter(10 * time.Second).Error()
 }

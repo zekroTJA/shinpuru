@@ -38,6 +38,17 @@ const (
 	keyAPISession = "API:SESSION"
 )
 
+// RedisMiddleware implements the Database interface for
+// Redis.
+//
+// This driver can only be used as caching
+// middleware and consumes another database driver.
+// Incomming database requests are looked up in the cache
+// and values are returned from cache instead of requesting
+// the database if the value is existent. Otherwise, the
+// value is requested from database and then stored to cache.
+// On setting database values, values are set in database as
+// same as in the cache.
 type RedisMiddleware struct {
 	client *redis.Client
 	db     Database
@@ -523,15 +534,15 @@ func (r *RedisMiddleware) SetMuteRole(guildID, roleID string) error {
 	return r.db.SetMuteRole(guildID, roleID)
 }
 
-func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error) {
+func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
 	return r.db.GetAllTwitchNotifies(twitchUserID)
 }
 
-func (r *RedisMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error) {
+func (r *RedisMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
 	return r.db.GetTwitchNotify(twitchUserID, guildID)
 }
 
-func (r *RedisMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error {
+func (r *RedisMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
 	return r.db.SetTwitchNotify(twitchNotify)
 }
 

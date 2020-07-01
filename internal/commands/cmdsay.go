@@ -84,36 +84,32 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 	if *fraw {
 		offset := strings.IndexRune(args.Message.Content, '{')
 		if offset < 0 || offset >= len(args.Message.Content) {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Wrong JSON format. The JSON object must start with `{`."+
-					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object")
-			util.DeleteMessageLater(args.Session, msg, 30*time.Second)
-			return err
+					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object").
+				DeleteAfter(20 * time.Second).Error()
 		}
 		content := args.Message.Content[offset:]
 		err := json.Unmarshal([]byte(content), &emb)
 		if err != nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Failed parsing message embed from input: ```\n%s\n```", err.Error())+
-					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object")
-			util.DeleteMessageLater(args.Session, msg, 30*time.Second)
-			return err
+					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object").
+				DeleteAfter(20 * time.Second).Error()
 		}
 		emb.Author = authorField
 	} else {
 		content := strings.Join(f.Args(), " ")
 		if len(content) < 1 {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Please enter something you want to say :wink:")
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Please enter something you want to say :wink:").
+				DeleteAfter(8 * time.Second).Error()
 		}
 		embColor, ok := embedColors[strings.ToLower(*fcolor)]
 		if !ok {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				fmt.Sprintf("Sorry, but I don't know the color `%s`. Please enter `help say` to get a list of valid colors.", *fcolor))
-			util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("Sorry, but I don't know the color `%s`. Please enter `help say` to get a list of valid colors.", *fcolor)).
+				DeleteAfter(8 * time.Second).Error()
 		}
 
 		emb = &discordgo.MessageEmbed{

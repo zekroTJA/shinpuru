@@ -15,13 +15,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
+// ErrDatabaseNotFound is returned when no value was
+// found in the database for the specified request.
 var ErrDatabaseNotFound = errors.New("value not found")
 
-var (
-	MySqlDbSchemeB64  = ""
-	SqliteDbSchemeB64 = ""
-)
-
+// Database describes functionalities of a database
+// driver.
 type Database interface {
 	Connect(credentials ...interface{}) error
 	Close()
@@ -83,9 +82,9 @@ type Database interface {
 	GetMuteRoleGuild(guildID string) (string, error)
 	SetMuteRole(guildID, roleID string) error
 
-	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.TwitchNotifyDBEntry, error)
-	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.TwitchNotifyDBEntry, error)
-	SetTwitchNotify(twitchNotify *twitchnotify.TwitchNotifyDBEntry) error
+	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error)
+	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error)
+	SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
 
 	AddBackup(guildID, fileID string) error
@@ -104,11 +103,16 @@ type Database interface {
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
 
+	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
+	// Deprecated
 	SaveImageData(image *imgstore.Image) error
+	// Deprecated
 	RemoveImageData(id snowflake.ID) error
 }
 
+// IsErrDatabaseNotFound returns true if the passed err
+// is an ErrDatabaseNotFound.
 func IsErrDatabaseNotFound(err error) bool {
 	return err == ErrDatabaseNotFound
 }

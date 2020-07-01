@@ -1,59 +1,68 @@
 package backup
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
-	"os"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 const (
-	// tickRate = 5 * time.Minute
+	// tickRate = 30 * time.Second
 	tickRate = 12 * time.Hour
 )
 
-var (
-	backupLocation = "./guildBackups"
-)
-
+// GuildBackups provides functionalities to backup
+// and restore a guild to and from a JSON file.
 type GuildBackups struct {
 	ticker  *time.Ticker
 	session *discordgo.Session
 	db      database.Database
+	st      storage.Storage
 }
 
+// asyncWriteStatus writes the passed status to the
+// passed channel in a new goroutine.
 func asyncWriteStatus(c chan string, status string) {
 	go func() {
 		c <- status
 	}()
 }
 
+// asyncWriteError writes the passed error to the
+// passed channel in a new goroutine.
 func asyncWriteError(c chan error, err error) {
 	go func() {
 		c <- err
 	}()
 }
 
-func New(s *discordgo.Session, db database.Database, loc string) *GuildBackups {
-	if loc != "" {
-		backupLocation = loc
-	}
-
+// New initializes a new GuildBackups instance using
+// the passed discordgo Session, database provider,
+// and storage provider. Also, the ticker loop is
+// initialized.
+func New(s *discordgo.Session, db database.Database, st storage.Storage) *GuildBackups {
 	bck := new(GuildBackups)
 	bck.db = db
+	bck.st = st
 	bck.session = s
 	bck.ticker = time.NewTicker(tickRate)
 	go bck.initTickerLoop()
 	return bck
 }
 
+// initTickerLoop starts the ticker loop which
+// calls backupAllGuilds in a new goroutine
+// everytime the ticker elapsed.
 func (bck *GuildBackups) initTickerLoop() {
 	for {
 		<-bck.ticker.C
@@ -61,6 +70,11 @@ func (bck *GuildBackups) initTickerLoop() {
 	}
 }
 
+// backupAllGuilds iterates through all guilds
+// which habe guild backups enabled and initiates
+// the backup routines one after one.
+// Guild backups are not created in new goroutines
+// because of potential rate limit exceedance.
 func (bck *GuildBackups) backupAllGuilds() {
 	guilds, err := bck.db.GetGuilds()
 
@@ -72,7 +86,7 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 
 	for _, g := range guilds {
-		err = bck.Guild(g)
+		err = bck.BackupGuild(g)
 		if err != nil {
 			util.Log.Error("failed creating backup for guild '%s': %s", g, err.Error())
 		}
@@ -80,17 +94,23 @@ func (bck *GuildBackups) backupAllGuilds() {
 	}
 }
 
-func (bck *GuildBackups) Guild(guildID string) error {
+// BackupGuild creates a backup of a single guild
+// and writes the resulting JSON file to the specified
+// storage. If the backup creation fails, the error is
+// returned.
+func (bck *GuildBackups) BackupGuild(guildID string) error {
 	if bck.session == nil {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.Guild(guildID)
+	g, err := bck.session.State.Guild(guildID)
 	if err != nil {
 		return err
 	}
 
 	backup := new(backupmodels.Object)
+	backup.Timestamp = time.Now()
+
 	backup.Guild = &backupmodels.Guild{
 		AfkChannelID:                g.AfkChannelID,
 		AfkTimeout:                  g.AfkTimeout,
@@ -138,35 +158,25 @@ func (bck *GuildBackups) Guild(guildID string) error {
 		})
 	}
 
-	if _, err := os.Stat(backupLocation); os.IsNotExist(err) {
-		err = os.MkdirAll(backupLocation, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
+	backup.ID = snowflakenodes.NodeBackup.Generate().String()
 
-	backupID := snowflakenodes.NodeBackup.Generate()
-	backupFileName := backupLocation + "/" + backupID.String() + ".json"
+	buff := bytes.NewBuffer([]byte{})
 
-	f, err := os.Create(backupFileName)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	enc := json.NewEncoder(f)
+	enc := json.NewEncoder(buff)
 	enc.SetIndent("", "  ")
 	err = enc.Encode(backup)
 	if err != nil {
-		f.Close()
-		os.Remove(backupFileName)
 		return err
 	}
 
-	err = bck.db.AddBackup(g.ID, backupID.String())
+	err = bck.st.PutObject(static.StorageBucketBackups, backup.ID, buff, int64(buff.Len()), "application/json")
 	if err != nil {
+		return err
+	}
+
+	err = bck.db.AddBackup(g.ID, backup.ID)
+	if err != nil {
+		bck.st.DeleteObject(static.StorageBucketBackups, backup.ID)
 		return err
 	}
 
@@ -183,7 +193,7 @@ func (bck *GuildBackups) Guild(guildID string) error {
 			}
 		}
 
-		err = os.Remove(backupLocation + "/" + lastEntry.FileID + ".json")
+		err = bck.st.DeleteObject(static.StorageBucketBackups, lastEntry.FileID)
 		if err != nil {
 			return err
 		}
@@ -197,6 +207,14 @@ func (bck *GuildBackups) Guild(guildID string) error {
 	return err
 }
 
+// RestoreBackup tries to restore a guild structure by
+// backup file specified via fileID. The current status
+// is sent into the statusC channel and occured errors
+// are pushed into the errorsC channel.
+// Only if the initialization of this method has failed,
+// an error is returned. The returned error does not
+// represent the success result of the backup restore
+// process.
 func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan string, errorsC chan error) error {
 	defer func() {
 		close(statusC)
@@ -208,15 +226,15 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	asyncWriteStatus(statusC, "reading backup file")
-	f, err := os.Open(backupLocation + "/" + fileID + ".json")
+	reader, _, err := bck.st.GetObject(static.StorageBucketBackups, fileID)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer reader.Close()
 
 	var backup backupmodels.Object
 
-	dec := json.NewDecoder(f)
+	dec := json.NewDecoder(reader)
 	err = dec.Decode(&backup)
 	if err != nil {
 		return err
@@ -405,12 +423,14 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	return nil
 }
 
+// HardFlush removes all roles and channels
+// of a guild.
 func (bck *GuildBackups) HardFlush(guildID string) error {
 	if bck.session == nil {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.Guild(guildID)
+	g, err := bck.session.State.Guild(guildID)
 	if err != nil {
 		return err
 	}

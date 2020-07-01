@@ -1,18 +1,20 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared"
-	"github.com/zekroTJA/shinpuru/internal/util/acceptmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/mute"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -22,7 +24,7 @@ type CmdMute struct {
 }
 
 func (c *CmdMute) GetInvokes() []string {
-	return []string{"mute", "m", "silence"}
+	return []string{"mute", "m", "silence", "unmute", "um", "unsilence"}
 }
 
 func (c *CmdMute) GetDescription() string {
@@ -70,12 +72,11 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 	desc := "Following, a rolen with the name `shinpuru-muted` will be created *(if not existend yet)* and set as mute role."
 
 	if len(args.Args) > 1 {
-		muteRole, err = util.FetchRole(args.Session, args.Guild.ID, args.Args[1])
+		muteRole, err = fetch.FetchRole(args.Session, args.Guild.ID, args.Args[1])
 		if err != nil {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"Role could not be fetched by passed identifier.")
-			util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Role could not be fetched by passed identifier.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 
 		desc = fmt.Sprintf("Follwoing, the role %s will be set as mute role.", muteRole.Mention())
@@ -103,48 +104,48 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 			if muteRole == nil {
 				muteRole, err = args.Session.GuildRoleCreate(args.Guild.ID)
 				if err != nil {
-					msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-						"Failed creating mute role: ```\n"+err.Error()+"\n```")
-					util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+					util.SendEmbedError(args.Session, args.Channel.ID,
+						"Failed creating mute role: ```\n"+err.Error()+"\n```").
+						DeleteAfter(15 * time.Second).Error()
 					return
 				}
 
 				muteRole, err = args.Session.GuildRoleEdit(args.Guild.ID, muteRole.ID,
 					static.MutedRoleName, 0, false, 0, false)
 				if err != nil {
-					msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-						"Failed editing mute role: ```\n"+err.Error()+"\n```")
-					util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+					util.SendEmbedError(args.Session, args.Channel.ID,
+						"Failed editing mute role: ```\n"+err.Error()+"\n```").
+						DeleteAfter(15 * time.Second).Error()
 					return
 				}
 			}
 
 			err := args.CmdHandler.db.SetMuteRole(args.Guild.ID, muteRole.ID)
 			if err != nil {
-				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Failed setting mute role in database: ```\n"+err.Error()+"\n```")
-				util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+				util.SendEmbedError(args.Session, args.Channel.ID,
+					"Failed setting mute role in database: ```\n"+err.Error()+"\n```").
+					DeleteAfter(15 * time.Second).Error()
 				return
 			}
 
 			err = mute.SetupChannels(args.Session, args.Guild.ID, muteRole.ID)
 			if err != nil {
-				msg, _ := util.SendEmbedError(args.Session, args.Channel.ID,
-					"Failed updating channels: ```\n"+err.Error()+"\n```")
-				util.DeleteMessageLater(args.Session, msg, 30*time.Second)
+				util.SendEmbedError(args.Session, args.Channel.ID,
+					"Failed updating channels: ```\n"+err.Error()+"\n```").
+					DeleteAfter(15 * time.Second).Error()
 				return
 			}
 
-			msg, _ = util.SendEmbed(args.Session, args.Channel.ID,
+			util.SendEmbed(args.Session, args.Channel.ID,
 				"Set up mute role and edited channel permissions.\nMaybe you need to increase the "+
 					"position of the role to override other roles permission settings.",
-				"", static.ColorEmbedUpdated)
-			util.DeleteMessageLater(args.Session, msg, 12*time.Second)
+				"", static.ColorEmbedUpdated).
+				DeleteAfter(15 * time.Second).Error()
 		},
 		DeclineFunc: func(msg *discordgo.Message) {
-			msg, _ = util.SendEmbedError(args.Session, args.Channel.ID,
-				"Setup canceled.")
-			util.DeleteMessageLater(args.Session, msg, 5*time.Second)
+			util.SendEmbedError(args.Session, args.Channel.ID,
+				"Setup canceled.").
+				DeleteAfter(8 * time.Second).Error()
 		},
 	}
 
@@ -153,27 +154,24 @@ func (c *CmdMute) setup(args *CommandArgs) error {
 }
 
 func (c *CmdMute) muteUnmute(args *CommandArgs) error {
-	victim, err := util.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
 	if err != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Could not fetch any user by the passed resolvable.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Could not fetch any user by the passed resolvable.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if victim.User.ID == args.User.ID {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You can not mute yourself...")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You can not mute yourself...").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	muteRoleID, err := args.CmdHandler.db.GetMuteRoleGuild(args.Guild.ID)
 	if database.IsErrDatabaseNotFound(err) {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Mute command is not set up. Please enter `mute setup`.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Mute command is not set up. Please enter the command `mute setup`.").
+			DeleteAfter(8 * time.Second).Error()
 	} else if err != nil {
 		return err
 	}
@@ -188,10 +186,9 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		}
 	}
 	if !roleExists {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Mute role does not exist on this guild. Please enter `mute setup`.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Mute role does not exist on this guild. Please enter `mute setup`.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	var victimIsMuted bool
@@ -205,6 +202,7 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		if err != nil {
 			return err
 		}
+		// TODO: Use shared API and push to DB
 		emb := &discordgo.MessageEmbed{
 			Title: "Case " + repID.String(),
 			Color: static.ReportColors[repType],
@@ -253,7 +251,9 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			if err = args.CmdHandler.db.SaveImageData(img); err != nil {
+			err = args.CmdHandler.st.PutObject(static.StorageBucketImages, img.ID.String(),
+				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+			if err != nil {
 				return err
 			}
 			attachment = img.ID.String()
@@ -272,8 +272,9 @@ func (c *CmdMute) muteUnmute(args *CommandArgs) error {
 		muteRoleID)
 
 	if err != nil {
-		_, err = util.SendEmbedError(args.Session, args.Channel.ID,
-			"Failed creating report: ```\n"+err.Error()+"\n```")
+		err = util.SendEmbedError(args.Session, args.Channel.ID,
+			"Failed creating report: ```\n"+err.Error()+"\n```").
+			Error()
 	} else {
 		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
 	}
@@ -332,14 +333,12 @@ func (c *CmdMute) displayMuteRole(args *CommandArgs) error {
 	}
 
 	if roleID == "" {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Mute role is currently unset.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Mute role is currently unset.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Role <@&%s> is currently set as mute role.", roleID), "", 0)
-	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Role <@&%s> is currently set as mute role.", roleID), "", 0).
+		DeleteAfter(8 * time.Second).Error()
 }

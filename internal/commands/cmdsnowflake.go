@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 )
 
 const (
@@ -57,10 +58,9 @@ func (c *CmdSnowflake) Exec(args *CommandArgs) error {
 	matches := c.rx.FindStringSubmatch(strings.Join(args.Args, " "))
 
 	if len(matches) < 2 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a Snowflake which should be calculated.")
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a Snowflake which should be calculated.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	sf := matches[1]
@@ -101,10 +101,9 @@ func (c *CmdSnowflake) Exec(args *CommandArgs) error {
 		return c.printSfSp(args, sfAsSp)
 	}
 
-	msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-		"Unknown snowflake type was provided.")
-	util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-	return err
+	return util.SendEmbedError(args.Session, args.Channel.ID,
+		"Unknown snowflake type was provided.").
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func (c *CmdSnowflake) printSfDc(args *CommandArgs, sf *snowflakenodes.DiscordSnowflake) error {
@@ -161,8 +160,8 @@ func (c *CmdSnowflake) printSfSp(args *CommandArgs, sf snowflake.ID) error {
 			},
 			{
 				Name: "Timestamp",
-				Value: snowflakenodes.
-					ParseUnixTime(int(sf.Time())).
+				Value: timeutil.
+					FromUnix(int(sf.Time())).
 					Format(time.RFC1123),
 			},
 			{

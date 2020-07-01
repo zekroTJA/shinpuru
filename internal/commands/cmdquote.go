@@ -9,6 +9,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 type CmdQuote struct {
@@ -40,10 +41,9 @@ func (c *CmdQuote) GetSubPermissionRules() []SubPermission {
 
 func (c *CmdQuote) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a message ID or URL which should be quoted.")
-		util.DeleteMessageLater(args.Session, msg, 5*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Please enter a message ID or URL which should be quoted.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if strings.HasPrefix(args.Args[0], "https://discordapp.com/channels/") {
@@ -113,7 +113,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		msgSearchEmb.Description = "Searching worker timeout."
 		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
+		discordutil.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
 	}
 
@@ -121,7 +121,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		msgSearchEmb.Description = "Could not find any message with this ID. :disappointed:"
 		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		util.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
+		discordutil.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
 		return err
 	}
 
@@ -129,7 +129,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
 		msgSearchEmb.Color = static.ColorEmbedError
 		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		util.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
+		discordutil.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
 		return err
 	}
 
@@ -145,7 +145,7 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](%s)*", util.GetMessageLink(quoteMsg, args.Guild.ID)),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg)),
 		Footer: &discordgo.MessageEmbedFooter{
 			IconURL: args.User.AvatarURL("16"),
 			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),

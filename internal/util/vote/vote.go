@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/wcharczuk/go-chart"
 )
 
+// VoteState defines the lifecycle state of a Vote.
 type VoteState int
 
 const (
@@ -24,10 +25,15 @@ const (
 	VoteStateExpired
 )
 
+// VotesRunning maps running vote IDs to
+// their vote instances.
 var VotesRunning = map[string]*Vote{}
 
+// VoteEmotes contains the emotes used to tick a vote.
 var VoteEmotes = strings.Fields("\u0031\u20E3 \u0032\u20E3 \u0033\u20E3 \u0034\u20E3 \u0035\u20E3 \u0036\u20E3 \u0037\u20E3 \u0038\u20E3 \u0039\u20E3 \u0030\u20E3")
 
+// Vote wraps the information and current
+// state of a vote and its ticks.
 type Vote struct {
 	ID            string
 	MsgID         string
@@ -41,11 +47,16 @@ type Vote struct {
 	Ticks         map[string]*Tick
 }
 
+// Tick wraps a user ID and the index of
+// the selection ticked.
 type Tick struct {
 	UserID string
 	Tick   int
 }
 
+// Unmarshal tries to deserialize a raw data string
+// to a Vote object. Errors occured during
+// deserialization are returned as well.
 func Unmarshal(data string) (*Vote, error) {
 	rawData, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
@@ -59,6 +70,10 @@ func Unmarshal(data string) (*Vote, error) {
 	return &res, err
 }
 
+// Marshal serializes the vote to a raw data string.
+//
+// The vote object is encoded to a byte array using
+// the gob encoder and then encoded to a base64 string.
 func (v *Vote) Marshal() (string, error) {
 	var buffer bytes.Buffer
 	gobenc := gob.NewEncoder(&buffer)
@@ -71,6 +86,15 @@ func (v *Vote) Marshal() (string, error) {
 	return res, nil
 }
 
+// AsEmbed creates a discordgo.MessageEmbed from the
+// vote. If voteState is passed, the state will be
+// displayed as well. Otherwise, it will be assumed
+// that the vote is open.
+//
+// If voteState is VoteStateClosed or VoteStateExpired,
+// a pie chart will be generated representing the
+// distribution of vote ticks and sent as image to
+// the channel.
 func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo.MessageEmbed, error) {
 	state := VoteStateOpen
 	if len(voteState) > 0 {
@@ -125,7 +149,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 		},
 	}
 
-	if state == VoteStateClosed {
+	if state == VoteStateClosed || state == VoteStateExpired {
 
 		values := make([]chart.Value, len(v.Possibilities))
 
@@ -168,6 +192,8 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 	return emb, nil
 }
 
+// AsField creates a discordgo.MessageEmbedField from
+// the vote information.
 func (v *Vote) AsField() *discordgo.MessageEmbedField {
 	shortenedDescription := v.Description
 	if len(shortenedDescription) > 200 {
@@ -182,13 +208,18 @@ func (v *Vote) AsField() *discordgo.MessageEmbedField {
 	return &discordgo.MessageEmbedField{
 		Name: "VID: " + v.ID,
 		Value: fmt.Sprintf("**Description:** %s\n**Expires:** %s\n`%d votes`\n[*jump to msg*](%s)",
-			shortenedDescription, expiresTxt, len(v.Ticks), util.GetMessageLink(&discordgo.Message{
+			shortenedDescription, expiresTxt, len(v.Ticks), discordutil.GetMessageLink(&discordgo.Message{
 				ID:        v.MsgID,
 				ChannelID: v.ChannelID,
-			}, v.GuildID)),
+				GuildID:   v.GuildID,
+			})),
 	}
 }
 
+// AddReactions adds the reactions to the votes message
+// for each selection possibility.
+//
+// Vote emotes are used from VoteEmotes.
 func (v *Vote) AddReactions(s *discordgo.Session) error {
 	for i := 0; i < len(v.Possibilities); i++ {
 		err := s.MessageReactionAdd(v.ChannelID, v.MsgID, VoteEmotes[i])
@@ -199,6 +230,7 @@ func (v *Vote) AddReactions(s *discordgo.Session) error {
 	return nil
 }
 
+// Tick sets the tick for the specified user to the vote.
 func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 	if t, ok := v.Ticks[userID]; ok {
 		t.Tick = tick
@@ -218,6 +250,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 	return err
 }
 
+// SetExpire sets the expiration for a vote.
 func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
 	v.Expires = time.Now().Add(d)
 
@@ -230,6 +263,8 @@ func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
 	return err
 }
 
+// Close closes the vote and removes it
+// from the VotesRunning map.
 func (v *Vote) Close(s *discordgo.Session, voteState VoteState) error {
 	delete(VotesRunning, v.ID)
 	emb, err := v.AsEmbed(s, voteState)

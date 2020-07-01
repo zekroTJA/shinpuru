@@ -1,26 +1,35 @@
 package webserver
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
+	"github.com/gabriel-vasile/mimetype"
+	routing "github.com/qiangxue/fasthttp-routing"
+	"github.com/valyala/fasthttp"
+
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-
-	"github.com/bwmarrin/discordgo"
-	"github.com/bwmarrin/snowflake"
-	routing "github.com/qiangxue/fasthttp-routing"
-	"github.com/valyala/fasthttp"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/etag"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
+
+// ---------------------------------------------------------------------------
+// - GET /api/me
 
 func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -30,7 +39,7 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	created, _ := util.GetDiscordSnowflakeCreationTime(user.ID)
+	created, _ := discordutil.GetDiscordSnowflakeCreationTime(user.ID)
 
 	res := &User{
 		User:      user,
@@ -41,6 +50,9 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds
 
 func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -71,6 +83,9 @@ func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid
+
 func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -81,13 +96,16 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	guild, err := ws.session.Guild(guildID)
+	guild, err := ws.session.State.Guild(guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
 	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/members
 
 func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -127,6 +145,9 @@ func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid
+
 func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -152,7 +173,7 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	mm := MemberFromMember(memb)
 
 	switch {
-	case util.IsAdmin(guild, memb):
+	case discordutil.IsAdmin(guild, memb):
 		mm.Dominance = 1
 	case guild.OwnerID == memberID:
 		mm.Dominance = 2
@@ -163,7 +184,10 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	return jsonResponse(ctx, mm, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/permissions
+
+func (ws *WebServer) handlerGetMemberPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -173,7 +197,7 @@ func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	perm, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
+	perm, _, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}
@@ -183,7 +207,10 @@ func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/reports
+
+func (ws *WebServer) handlerGetMemberReports(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -223,7 +250,10 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/reports/count
+
+func (ws *WebServer) handlerGetMemberReportsCount(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -249,34 +279,16 @@ func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
 	return jsonResponse(ctx, &Count{Count: count}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
-	// userID := ctx.Get("uid").(string)
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/permissions/allowed
 
-	_id := ctx.Param("id")
-
-	id, err := snowflake.ParseString(_id)
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
-	rep, err := ws.db.GetReport(id)
-	if database.IsErrDatabaseNotFound(err) {
-		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
-	}
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
-	}
-
-	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusOK)
-}
-
-func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) error {
 	// userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
 	memberID := ctx.Param("memberid")
 
-	perms, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
+	perms, _, err := ws.cmdhandler.GetPermissions(ws.session, guildID, memberID)
 	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
@@ -289,7 +301,7 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 	allowed := make([]string, len(cmds))
 	i := 0
 	for _, cmd := range cmds {
-		if permissions.PermissionCheck(cmd.GetDomainName(), perms) {
+		if perms.Check(cmd.GetDomainName()) {
 			allowed[i] = cmd.GetDomainName()
 			i++
 		}
@@ -300,6 +312,9 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 		Data: allowed[:i],
 	}, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/settings
 
 func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 	gs := new(GuildSettings)
@@ -339,6 +354,9 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, gs, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/settings
+
 func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -352,7 +370,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.AutoRole != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.autorole"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.autorole"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -368,7 +386,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.ModLogChannel != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.modlog"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.modlog"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -384,7 +402,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.Prefix != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.prefix"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.prefix"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -400,7 +418,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.VoiceLogChannel != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.voicelog"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.voicelog"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -416,7 +434,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.JoinMessageChannel != "" && gs.JoinMessageText != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.joinmsg"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.joinmsg"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -433,7 +451,7 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	}
 
 	if gs.LeaveMessageChannel != "" && gs.LeaveMessageText != "" {
-		if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.leavemsg"); err != nil {
+		if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.leavemsg"); err != nil {
 			return errInternalOrNotFound(ctx, err)
 		} else if !ok {
 			return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -451,6 +469,9 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/permissions
 
 func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -471,12 +492,15 @@ func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
 	return jsonResponse(ctx, perms, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/permissions
+
 func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.perms"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -516,6 +540,9 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/reports
+
 func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -523,7 +550,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.report"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -547,7 +574,9 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		repReq.Attachment = img.ID.String()
@@ -571,6 +600,9 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/kick
+
 func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -578,7 +610,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.kick"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -608,7 +640,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if util.RolePosDiff(victim, executor, guild) >= 0 {
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return jsonError(ctx, fmt.Errorf("you can not kick members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 
@@ -621,7 +653,9 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		req.Attachment = img.ID.String()
@@ -644,6 +678,9 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/ban
+
 func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -651,7 +688,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 
 	memberID := ctx.Param("memberid")
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -681,7 +718,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if util.RolePosDiff(victim, executor, guild) >= 0 {
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return jsonError(ctx, fmt.Errorf("you can not ban members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 
@@ -694,7 +731,9 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
-		if err = ws.db.SaveImageData(img); err != nil {
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
 		req.Attachment = img.ID.String()
@@ -717,6 +756,33 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/reports/:id
+
+func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
+	// userID := ctx.Get("uid").(string)
+
+	_id := ctx.Param("id")
+
+	id, err := snowflake.ParseString(_id)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	rep, err := ws.db.GetReport(id)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/settings/presence
+
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 	presenceRaw, err := ws.db.GetSetting(static.SettingPresence)
 	if err != nil {
@@ -737,10 +803,13 @@ func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/settings/presence
+
 func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.game"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.game"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -749,12 +818,6 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 	pre := new(presence.Presence)
 	if err := parseJSONBody(ctx, pre); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
-	if strings.Contains(pre.Game, presence.PresenceSeperator) {
-		return jsonError(ctx,
-			fmt.Errorf("'%s' is used as seperator for the presence settings save and can not be used in the actual game message",
-				presence.PresenceSeperator), fasthttp.StatusBadRequest)
 	}
 
 	if err := pre.Validate(); err != nil {
@@ -771,6 +834,9 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/settings/noguildinvite
 
 func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	var guildID, message, inviteCode string
@@ -854,10 +920,13 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/settings/noguildinvite
+
 func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	if ok, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.noguildinvite"); err != nil {
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, "", userID, "sp.noguildinvite"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -931,6 +1000,9 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/sysinfo
+
 func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 
 	buildTS, _ := strconv.Atoi(util.AppDate)
@@ -969,6 +1041,9 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 	return jsonResponse(ctx, info, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /imagestore/:id
+
 func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	path := ctx.Param("id")
 
@@ -980,21 +1055,30 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("invalid snowflake ID"), fasthttp.StatusBadRequest)
 	}
 
-	img, err := ws.db.GetImageData(imageID)
-	if database.IsErrDatabaseNotFound(err) {
-		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
-	}
+	reader, size, err := ws.st.GetObject(static.StorageBucketImages, imageID.String())
 	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	defer reader.Close()
+
+	img := new(imgstore.Image)
+
+	img.Size = int(size)
+	img.Data = make([]byte, img.Size)
+	_, err = reader.Read(img.Data)
+	if err != nil && err != io.EOF {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	fileExtension := strings.Split(img.MimeType, "/")[1]
-	if len(pathSplit) < 2 || fileExtension != pathSplit[1] {
-		ctx.Redirect(fmt.Sprintf("/imagestore/%s.%s", imageIDstr, fileExtension), fasthttp.StatusFound)
-		return nil
-	}
+	img.MimeType = mimetype.Detect(img.Data).String()
+
+	etag := etag.Generate(img.Data, false)
 
 	ctx.Response.Header.SetContentType(img.MimeType)
+	// 30 days browser caching
+	ctx.Response.Header.Set("Cache-Control", "public, max-age=2592000, immutable")
+	ctx.Response.Header.Set("ETag", etag)
 	ctx.SetBody(img.Data)
 
 	return nil

@@ -1,5 +1,7 @@
 package static
 
+import "github.com/bwmarrin/discordgo"
+
 const (
 	InvitePermission = 0x1 | // CREATE INSTANT INVITE
 		0x10 | // MANAGE CHANNELS
@@ -19,7 +21,19 @@ const (
 		0x20000000 | // MANAGE WEBHOOKS
 		0x40000000 // MANAGE EMOJIS
 
-	ConfigVersion = 3
+	Intents = discordgo.IntentsDirectMessages |
+		discordgo.IntentsGuildBans |
+		discordgo.IntentsGuildEmojis |
+		discordgo.IntentsGuildIntegrations |
+		discordgo.IntentsGuildInvites |
+		discordgo.IntentsGuildMembers |
+		discordgo.IntentsGuildMessageReactions |
+		discordgo.IntentsGuildMessages |
+		discordgo.IntentsGuildPresences |
+		discordgo.IntentsGuildVoiceStates |
+		discordgo.IntentsGuilds
+
+	ConfigVersion = 6
 
 	ColorEmbedError   = 0xd32f2f
 	ColorEmbedDefault = 0xffc107
@@ -31,6 +45,8 @@ const (
 	ColorEmbedYellow  = 0xFFC107
 	ColorEmbedViolett = 0x6A1B9A
 
+	ReportRevokedColor = 0x9C27B0
+
 	AutoNick  = "シンプル"
 	StdMotd   = "github.com/zekroTJA/shinpuru"
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
@@ -41,6 +57,9 @@ const (
 	SettingWIInviteGuildID = "WIINVITEGUILDID"
 	SettingWIInviteCode    = "WIINVITECODE"
 	SettingWIInviteText    = "WIINVITETEXT"
+
+	StorageBucketImages  = "shinpuru-images"
+	StorageBucketBackups = "shinpuru-backups"
 
 	DiscordAPIEndpoint = "https://discordapp.com/api"
 )
@@ -65,8 +84,6 @@ var (
 		0xFB8C00,
 		0x8E24AA,
 	}
-
-	ReportRevokedColor = 0x9C27B0
 
 	DefaultAdminRules = []string{
 		"+sp.guild.*",

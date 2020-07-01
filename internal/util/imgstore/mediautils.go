@@ -7,21 +7,25 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var ImgUrlRx = regexp.MustCompile(`https?:\/\/([\w-]+\.)+([\w-]+)(\/[\w-]+)*.*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp|mp4)`)
-var ImgUrlSRx = regexp.MustCompile(`^https?:\/\/([\w-]+\.)+([\w-]+)(\/[\w-]+)*.*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp|mp4)$`)
+var (
+	ImgUrlSRx = regexp.MustCompile(`^https?:\/\/([\w-]+\.)+([\w-]+)(\/[\w-]+)*.*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp|mp4)$`)
 
-func ExtractFromMessage(text string, attachments []*discordgo.MessageAttachment) (string, string) {
-	var imgLink string
+	imgUrlRx = regexp.MustCompile(`https?:\/\/([\w-]+\.)+([\w-]+)(\/[\w-]+)*.*\.(png|jpg|jpeg|gif|ico|tiff|img|bmp|mp4)`)
+)
 
+// ExtractFromMessage tries to extract an image URL from the passed
+// text or message attachments and returns the text of the message
+// excluding the matched link and the image link.
+func ExtractFromMessage(text string, attachments []*discordgo.MessageAttachment) (resText, imgLink string) {
 	if len(attachments) > 0 {
 		imgLink = attachments[0].URL
 	} else {
-		rxResult := ImgUrlRx.FindString(text)
+		rxResult := imgUrlRx.FindString(text)
 		if rxResult != "" {
-			text = strings.Replace(text, rxResult, "", 1)
+			resText = strings.Replace(text, rxResult, "", 1)
 			imgLink = rxResult
 		}
 	}
 
-	return text, imgLink
+	return resText, imgLink
 }

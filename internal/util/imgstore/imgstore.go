@@ -17,6 +17,7 @@ var defClient = http.Client{
 	},
 }
 
+// Image wraps metadata and data of an image.
 type Image struct {
 	ID       snowflake.ID
 	MimeType string
@@ -24,6 +25,10 @@ type Image struct {
 	Size     int
 }
 
+// DownloadFromURL tries to GET an image from the
+// passed resource URL, downloading it and returning
+// the metadata and data of the image as well as
+// occured errors.
 func DownloadFromURL(url string) (*Image, error) {
 	resp, err := defClient.Get(url)
 	if err != nil {
@@ -53,6 +58,8 @@ func DownloadFromURL(url string) (*Image, error) {
 	return img, nil
 }
 
+// GetLink returns the publicly accessable link for an image
+// resource by passed ident and publicAddr.
 func GetLink(ident, publicAddr string) string {
 	if ident == "" || strings.HasPrefix(ident, "http://") || strings.HasPrefix(ident, "https://") {
 		return ident

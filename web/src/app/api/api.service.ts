@@ -25,6 +25,7 @@ import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 import { CacheBucket } from './api.cache';
 import { isObject } from 'util';
+import { Router } from '@angular/router';
 
 /** @format */
 
@@ -107,11 +108,19 @@ export class APIService {
 
   private readonly errorCatcher = (err) => {
     console.error(err);
-    this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    if (err.status === 401) {
+      this.router.navigate(['/login']);
+    } else {
+      this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    }
     return of(null);
   };
 
-  constructor(private http: HttpClient, private toasts: ToastService) {
+  constructor(
+    private http: HttpClient,
+    private toasts: ToastService,
+    private router: Router
+  ) {
     this.rootURL = environment.production ? '' : 'http://localhost:8080';
   }
 
@@ -154,10 +163,9 @@ export class APIService {
       return of(g);
     }
 
-    return this.http.get<Guild>(this.rcGuilds(id), this.defopts()).pipe(
-      this.cacheGuilds.putFromPipe(id),
-      catchError(this.errorCatcher)
-    );
+    return this.http
+      .get<Guild>(this.rcGuilds(id), this.defopts())
+      .pipe(this.cacheGuilds.putFromPipe(id), catchError(this.errorCatcher));
   }
 
   public getGuildMembers(

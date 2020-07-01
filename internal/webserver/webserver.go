@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -35,17 +36,17 @@ var (
 		Root:       "./web/dist/web",
 		IndexNames: []string{"index.html"},
 		Compress:   true,
-		// PathRewrite: func(ctx *fasthttp.RequestCtx) []byte {
-		// 	return ctx.Path()[7:]
-		// },
 	}
 )
 
+// WebServer exposes HTTP REST API endpoints to
+// access shinpurus functionalities via a web app.
 type WebServer struct {
 	server *fasthttp.Server
 	router *routing.Router
 
 	db         database.Database
+	st         storage.Storage
 	rlm        *RateLimitManager
 	auth       *Auth
 	dcoauth    *discordoauth.DiscordOAuth
@@ -55,7 +56,12 @@ type WebServer struct {
 	config *config.Config
 }
 
-func NewWebServer(db database.Database, s *discordgo.Session, cmd *commands.CmdHandler, config *config.Config, clientID, clientSecret string) (ws *WebServer) {
+// New creates a new instance of WebServer consuming the passed
+// database provider, storage provider, discordgo session, command
+// handler and configuration.
+func New(db database.Database, st storage.Storage, s *discordgo.Session,
+	cmd *commands.CmdHandler, config *config.Config) (ws *WebServer) {
+
 	ws = new(WebServer)
 
 	if !strings.HasPrefix(config.WebServer.PublicAddr, "http") {
@@ -68,6 +74,7 @@ func NewWebServer(db database.Database, s *discordgo.Session, cmd *commands.CmdH
 
 	ws.config = config
 	ws.db = db
+	ws.st = st
 	ws.session = s
 	ws.cmdhandler = cmd
 	ws.rlm = NewRateLimitManager()
@@ -79,8 +86,8 @@ func NewWebServer(db database.Database, s *discordgo.Session, cmd *commands.CmdH
 	ws.auth = NewAuth(db, s)
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
-		clientID,
-		clientSecret,
+		config.Discord.ClientID,
+		config.Discord.ClientSecret,
 		config.WebServer.PublicAddr+endpointAuthCB,
 		ws.auth.LoginFailedHandler,
 		ws.auth.LoginSuccessHandler,
@@ -91,23 +98,43 @@ func NewWebServer(db database.Database, s *discordgo.Session, cmd *commands.CmdH
 	return
 }
 
+// ListenAndServeBlocking starts the listening and serving
+// loop of the web server which blocks the current goroutine.
+//
+// If an error is returned, the startup failed with the
+// specified error.
+func (ws *WebServer) ListenAndServeBlocking() error {
+	tls := ws.config.WebServer.TLS
+
+	if tls != nil && tls.Enabled {
+		if tls.Cert == "" || tls.Key == "" {
+			return errors.New("cert file and key file must be specified")
+		}
+		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
+	}
+
+	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
+}
+
+// registerHandlers registers all request handler for the
+// request URL specified match tree.
 func (ws *WebServer) registerHandlers() {
 	// --------------------------------
 	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.handlerFiles)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.
 		Get("/<id>", ws.handlerGetImage)
 
+	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
+	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
 
-	ws.router.Use(ws.auth.checkAuth, ws.handlerFiles)
-
-	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
-	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+	ws.router.Use(ws.auth.checkAuth)
 
 	api := ws.router.Group("/api")
 	api.
@@ -143,17 +170,17 @@ func (ws *WebServer) registerHandlers() {
 
 	guildReports := guild.Group("/reports")
 	guildReports.
-		Get("", ws.handlerGetReports)
+		Get("", ws.handlerGetMemberReports)
 	guildReports.
-		Get("/count", ws.handlerGetReportsCount)
+		Get("/count", ws.handlerGetMemberReportsCount)
 
 	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
 	member.
 		Get("", ws.handlerGuildsGetMember)
 	member.
-		Get("/permissions", ws.handlerGetPermissions)
+		Get("/permissions", ws.handlerGetMemberPermissions)
 	member.
-		Get("/permissions/allowed", ws.handlerGetPermissionsAllowed)
+		Get("/permissions/allowed", ws.handlerGetMemberPermissionsAllowed)
 	member.
 		Post("/kick", ws.handlerPostGuildMemberKick)
 	member.
@@ -161,25 +188,12 @@ func (ws *WebServer) registerHandlers() {
 
 	memberReports := member.Group("/reports")
 	memberReports.
-		Get("", ws.handlerGetReports).
+		Get("", ws.handlerGetMemberReports).
 		Post(ws.handlerPostGuildMemberReport)
 	memberReports.
-		Get("/count", ws.handlerGetReportsCount)
+		Get("/count", ws.handlerGetMemberReportsCount)
 
 	reports := api.Group("/reports")
 	reports.
 		Get("/<id:[0-9]+>", ws.handlerGetReport)
-}
-
-func (ws *WebServer) ListenAndServeBlocking() error {
-	tls := ws.config.WebServer.TLS
-
-	if tls != nil && tls.Enabled {
-		if tls.Cert == "" || tls.Key == "" {
-			return errors.New("cert file and key file must be specified")
-		}
-		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
-	}
-
-	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
 }

@@ -15,7 +15,7 @@ func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed creating default config:", err)
 		}
-		err = cfgParser.Encode(cfgFile, config.NewDefaultConfig())
+		err = cfgParser.Encode(cfgFile, config.GetDefaultConfig())
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
 		}

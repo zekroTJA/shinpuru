@@ -20,7 +20,7 @@ type CmdTag struct {
 }
 
 func (c *CmdTag) GetInvokes() []string {
-	return []string{"tag", "t", "note"}
+	return []string{"tag", "t", "note", "tags"}
 }
 
 func (c *CmdTag) GetDescription() string {
@@ -52,6 +52,11 @@ func (c *CmdTag) GetSubPermissionRules() []SubPermission {
 			Description: "Allows creating tags",
 		},
 		{
+			Term:        "edit",
+			Explicit:    true,
+			Description: "Allows editing tags (of every user)",
+		},
+		{
 			Term:        "delete",
 			Explicit:    true,
 			Description: "Allows deleting tags (of every user)",
@@ -80,9 +85,8 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 			resTxt = strings.Join(tlist, "\n")
 		}
 
-		_, err = util.SendEmbed(args.Session, args.Channel.ID,
-			resTxt, "Tags", 0)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			resTxt, "Tags", 0).Error()
 	}
 
 	switch strings.ToLower(args.Args[0]) {
@@ -111,20 +115,18 @@ func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 
 	for _, r := range reserved {
 		if r == ident {
-			msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"A tag sub command can not be used as tag identifier.")
-			util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"A tag sub command can not be used as tag identifier.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 	}
 
 	itag, err := db.GetTagByIdent(ident, args.Guild.ID)
 	if itag != nil {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(args.Session, args.Channel.ID,
 			fmt.Sprintf("The tag `%s` already exists. Use `tag edit %s` to edit this tag or use another tag name.",
-				ident, ident))
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-		return err
+				ident, ident)).
+			DeleteAfter(8 * time.Second).Error()
 	}
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
@@ -149,10 +151,9 @@ func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Tag `%s` was created with ID `%s`.", ident, itag.ID), "", static.ColorEmbedGreen)
-	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Tag `%s` was created with ID `%s`.", ident, itag.ID), "", static.ColorEmbedGreen).
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
@@ -165,7 +166,12 @@ func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	if tag.CreatorID != args.User.ID {
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".edit")
+	if err != nil {
+		return err
+	}
+
+	if tag.CreatorID != args.User.ID && !ok && !override {
 		return printNotPermitted(args, "edit")
 	}
 
@@ -178,11 +184,9 @@ func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Tag `%s` (ID `%s`) was updated.", tag.Ident, tag.ID), "", static.ColorEmbedGreen)
-	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		fmt.Sprintf("Tag `%s` (ID `%s`) was updated.", tag.Ident, tag.ID), "", static.ColorEmbedGreen).
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
@@ -195,12 +199,12 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	ok, err = args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
-	if itag.CreatorID != args.User.ID && !ok {
+	if itag.CreatorID != args.User.ID && !ok && !override {
 		return printNotPermitted(args, "delete")
 	}
 
@@ -208,11 +212,9 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		"Tag was deleted.", "", static.ColorEmbedGreen)
-	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		"Tag was deleted.", "", static.ColorEmbedGreen).
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func (c *CmdTag) getRawTag(args *CommandArgs, db database.Database) error {
@@ -266,36 +268,33 @@ func getTag(ident string, args *CommandArgs, db database.Database) (*tag.Tag, er
 }
 
 func printInvalidArguments(args *CommandArgs) error {
-	msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-		"Invalid arguments. Use `help tag` to ge thelp about how to use this command.")
-	util.DeleteMessageLater(args.Session, msg, 8*time.Second)
-	return err
+	return util.SendEmbedError(args.Session, args.Channel.ID,
+		"Invalid arguments. Use `help tag` to ge thelp about how to use this command.").
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func printTagNotFound(args *CommandArgs) error {
-	msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-		"Could not find any tag by the given identifier.")
-	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-	return err
+	return util.SendEmbedError(args.Session, args.Channel.ID,
+		"Could not find any tag by the given identifier.").
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func printNotPermitted(args *CommandArgs, t string) error {
-	msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-		fmt.Sprintf("You are not permitted to %s this tag.", t))
-	util.DeleteMessageLater(args.Session, msg, 6*time.Second)
-	return err
+	return util.SendEmbedError(args.Session, args.Channel.ID,
+		fmt.Sprintf("You are not permitted to %s this tag.", t)).
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func checkPermission(args *CommandArgs, dn string) (error, bool) {
-	ok, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
 	if err != nil {
 		return err, false
 	}
 
-	if !ok {
-		msg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"You are not permitted to use this command.")
-		util.DeleteMessageLater(args.Session, msg, 6*time.Second)
+	if !ok && !override {
+		err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"You are not permitted to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 		return err, false
 	}
 

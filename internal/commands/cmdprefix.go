@@ -3,8 +3,6 @@ package commands
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
-
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -47,18 +45,16 @@ func (c *CmdPrefix) Exec(args *CommandArgs) error {
 			return err
 		}
 		defPrefix := args.CmdHandler.config.Discord.GeneralPrefix
-		var msg *discordgo.Message
 		if prefix == "" || prefix == defPrefix {
-			msg, err = util.SendEmbed(args.Session, args.Channel.ID,
+			err = util.SendEmbed(args.Session, args.Channel.ID,
 				"The current guild prefix is not set, so the default prefix of the bot must be used: ```\n"+defPrefix+"\n```",
-				"", 0)
+				"", 0).DeleteAfter(8 * time.Second).Error()
 		} else {
-			msg, err = util.SendEmbed(args.Session, args.Channel.ID,
+			err = util.SendEmbed(args.Session, args.Channel.ID,
 				"The current guild prefix is: ```\n"+prefix+"\n``` "+
 					"Surely, you can still use the general prefix (`"+defPrefix+"`)",
-				"", 0)
+				"", 0).DeleteAfter(8 * time.Second).Error()
 		}
-		util.DeleteMessageLater(args.Session, msg, 10*time.Second)
 		return err
 	}
 
@@ -67,10 +63,8 @@ func (c *CmdPrefix) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	msg, err := util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(args.Session, args.Channel.ID,
 		"Guild prefix is now set to: ```\n"+args.Args[0]+"\n```",
-		"", static.ColorEmbedUpdated)
-	util.DeleteMessageLater(args.Session, msg, 10*time.Second)
-
-	return err
+		"", static.ColorEmbedUpdated).
+		DeleteAfter(8 * time.Second).Error()
 }

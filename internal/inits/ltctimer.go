@@ -3,9 +3,9 @@ package inits
 import (
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/lctimer"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitLTCTimer() *lctimer.LCTimer {
+func InitLTCTimer() *lctimer.LifeCycleTimer {
 	return lctimer.New(10 * time.Second)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
 type CmdLeaveMsg struct {
@@ -69,10 +70,9 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 			}
 		}
 
-		rmsg, err := util.SendEmbed(args.Session, args.Channel.ID,
-			resTxt, "", 0)
-		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
-		return err
+		return util.SendEmbed(args.Session, args.Channel.ID,
+			resTxt, "", 0).
+			DeleteAfter(10 * time.Second).Error()
 	}
 
 	argsJoined := strings.Join(args.Args[1:], " ")
@@ -92,17 +92,16 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
 			return err
 		}
-		ch, err := util.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
+		ch, err := fetch.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
 		if err != nil {
 			return err
 		}
 		if ch == nil {
-			rmsg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-				"text channel could not be found.")
-			util.DeleteMessageLater(args.Session, rmsg, 6*time.Second)
-			return err
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"Text channel could not be found.").
+				DeleteAfter(8 * time.Second).Error()
 		}
 
 		if err = db.SetGuildLeaveMsg(args.Guild.ID, ch.ID, msg); err != nil {
@@ -117,23 +116,21 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 		resTxt = "Leave message reset and disabled."
 
 	default:
-		rmsg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.")
-		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
-		return err
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.").
+			DeleteAfter(8 * time.Second).Error()
 	}
 
-	rmsg, err := util.SendEmbed(args.Session, args.Channel.ID,
-		resTxt, "", static.ColorEmbedGreen)
-	util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
-	return err
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		resTxt, "", static.ColorEmbedGreen).
+		DeleteAfter(10 * time.Second).Error()
 }
 
 func (c *CmdLeaveMsg) checkReqArgs(args *CommandArgs, req int) (bool, error) {
 	if len(args.Args) < req {
-		rmsg, err := util.SendEmbedError(args.Session, args.Channel.ID,
-			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.")
-		util.DeleteMessageLater(args.Session, rmsg, 10*time.Second)
+		err := util.SendEmbedError(args.Session, args.Channel.ID,
+			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.").
+			DeleteAfter(10 * time.Second).Error()
 		return false, err
 	}
 	return true, nil

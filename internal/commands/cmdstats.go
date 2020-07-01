@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/bytecount"
 )
 
 type CmdStats struct {
@@ -54,8 +55,8 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 	usedCPUs := runtime.NumCPU()
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
-	usedHeap := util.ByteCountFormatter(memStats.HeapInuse)
-	usedStack := util.ByteCountFormatter(memStats.StackInuse)
+	usedHeap := bytecount.Format(memStats.HeapInuse)
+	usedStack := bytecount.Format(memStats.StackInuse)
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,

@@ -7,7 +7,7 @@
     </strong><br><br>
     <a href="https://dc.zekro.de"><img height="28" src="https://img.shields.io/discord/307084334198816769.svg?style=for-the-badge&logo=discord" /></a>&nbsp;
     <a href="https://github.com/zekroTJA/shinpuru/releases"><img height="28" src="https://img.shields.io/github/tag/zekroTJA/shinpuru.svg?style=for-the-badge"/></a>&nbsp;
-    <a href="https://cloud.docker.com/u/zekro/repository/docker/zekro/shinpuru"><img alt="Docker Cloud Automated build" src="https://img.shields.io/docker/cloud/automated/zekro/shinpuru.svg?color=cyan&logo=docker&logoColor=cyan&style=for-the-badge"></a>&nbsp;
+    <a href="https://hub.docker.com/r/zekro/shinpuru"><img alt="Docker Cloud Automated build" src="https://img.shields.io/docker/cloud/automated/zekro/shinpuru.svg?color=cyan&logo=docker&logoColor=cyan&style=for-the-badge"></a>&nbsp;
     <img height="28" src="https://forthebadge.com/images/badges/built-with-grammas-recipe.svg">
 <br>
 </div>
@@ -33,7 +33,7 @@ Here you can choose between the stable or canary version of shinpuru:
 
 シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as many features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
 
-Also, I want to use this project as a chance for me, to get some deeper into Go and larger Go project structures. In a later development state, this bot will detach zekroBot 2.
+Also, I want to use this project as a chance for me, to get some deeper into Go and larger Go project structures.
 
 ---
 
@@ -43,13 +43,16 @@ In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), 
 
 ## Web Interface
 
-shinpuru also offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
-
-> **ATTENTION:** This web interface should be considered as 'beta version' because it is in a very early release state. If you are running into bugs or if you have suggestions, please contribute them as issue or pull request. 
+shinpuru offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
 ![](https://i.zekro.de/chrome_2019-08-12_09-30-45.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-34-04.png)
 ![](https://i.zekro.de/chrome_2019-08-12_09-36-45.png)
+
+## Permission System
+
+shinpuru has a fine grained and highly configurable permission system which uses "permission domains". You can specify permissions for whole groups of commands or for single commands for each role on your guild either by command or using the web interface.  
+Please read [**this document**](https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide) about how the permission system exactly works and how to set it up correctly.
 
 ## Moderation
 
@@ -89,14 +92,14 @@ You want to be prepared for each emergency? Just enable the auto-backup system o
 
 ## Twitch Notifications
 
-With the Twitch Notification System, you can stay up to date which channels are currently live on Twitch! Just enter the command [`!twitch <twitchUserName>`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitch) in a channel to set up the system. Then, every time, the channel goes live, a message will be posted to this channel, which will be automatically removed when the channel goes offline on Twitch.  
-*Because of API limitations, the delay until the bot notifies a status change can be up to 3 minutes.*
+With the Twitch Notification System, you can stay up to date which channels are currently live on Twitch! Just enter the command [`!twitch <twitchUserName>`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitch) in a channel to set up the system. Then, every time, the streamer goes live, a message will be posted to this channel, which will be automatically removed when the channel goes offline on Twitch.  
+*Because of API limitations, the delay until the bot notifies a status change can be up to one minute.*
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-29-02.png)
 
 ## Code Execution
 
-shinpuru is able to compile embedded code in messages on the fly, just by clicking a reaction under the message containing the code. The code will be sent to [jdoodle's](https://jdoodle.com) API, will be executed and the output will be displayed in the discord channel!
+shinpuru is able to "compile" embedded code in messages on the fly, just by clicking a reaction under the message containing the code. The code will be sent to [jdoodle's](https://jdoodle.com) API, will be executed and the output will be displayed in the discord channel!
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-36-36.png)
 
@@ -110,7 +113,7 @@ The system detects obvious invite links like `discord.gg/<InvID>` or `discordapp
 
 ## Voice Logging
 
-Missing Teamspeaks voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
+Missing Teamspeak's voice activity log? Just specify a voice log channel with the [`voicelog`](https://github.com/zekroTJA/shinpuru/wiki/Commands#voicelog) command and every voice channel move will be logged in this channel.
 
 ![](https://i.zekro.de/firefox_2019-02-22_15-32-58.png)
 
@@ -118,7 +121,7 @@ Missing Teamspeaks voice activity log? Just specify a voice log channel with the
 
 # Docker
 
-Read about how to self-host shinpuru using the provided Docker image in the [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Docker).
+Read about how to host shinpuru using the provided Docker image in the [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Docker).
 
 ---
 
@@ -128,20 +131,48 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ---
 
+# Public Packages
+
+Some of the independant utilities and functionalities shinpuru uses are publicly available via `go get <package>`. I will try to keep the API and general behaviour of those functionalities as "frozen" as possible to make those packages long-time reliable.
+
+- [`github.com/zekroTJA/shinpuru/pkg/acceptmsg`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg)
+- [`github.com/zekroTJA/shinpuru/pkg/bytecount`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/bytecount)
+- [`github.com/zekroTJA/shinpuru/pkg/discordoauth`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordoauth)
+- [`github.com/zekroTJA/shinpuru/pkg/discordutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordutil)
+- [`github.com/zekroTJA/shinpuru/pkg/etag`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/etag)
+- [`github.com/zekroTJA/shinpuru/pkg/fetch`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/fetch)
+- [`github.com/zekroTJA/shinpuru/pkg/httpreq`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/httpreq)
+- [`github.com/zekroTJA/shinpuru/pkg/lctimer`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/lctimer)
+- [`github.com/zekroTJA/shinpuru/pkg/msgcollector`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/msgcollector)
+- [`github.com/zekroTJA/shinpuru/pkg/multierror`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/multierror)
+- [`github.com/zekroTJA/shinpuru/pkg/random`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/random)
+- [`github.com/zekroTJA/shinpuru/pkg/roleutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/roleutil)
+- [`github.com/zekroTJA/shinpuru/pkg/timeutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/timeutil)
+
+---
+
 # Third party dependencies
 
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
-- [go-yaml/yaml](https://github.com/go-yaml/yaml)
+- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
+- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype)
+- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
+- [go-redis/redis](https://github.com/go-redis/redis)
 - [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
 - [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
+- [minio/minio-go](https://github.com/minio/minio-go)
 - [op/go-logging](https://github.com/op/go-logging)
-- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
-- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
+- [valyala/fasthttp ](https://github.com/valyala/fasthttp)
+- [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart)
+- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit)
+- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
+
+The shinpuru web frontend was built using [Angular 8](https://angular.io/).
 
 Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
 
 ---
 
-Copyright © 2018-2019 zekro Development (Ringo Hoffmann).  
-Covered by MIT Licence.
+Copyright © 2018-2020 zekro Development (Ringo Hoffmann).  
+Covered by MIT License.
