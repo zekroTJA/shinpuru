@@ -16,11 +16,15 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
+// ListResponse wraps a list response object
+// with the list as Data and N as len(Data).
 type ListResponse struct {
 	N    int         `json:"n"`
 	Data interface{} `json:"data"`
 }
 
+// User extends a discordgo.User as reponse
+// model.
 type User struct {
 	*discordgo.User
 
@@ -29,6 +33,8 @@ type User struct {
 	BotOwner  bool      `json:"bot_owner"`
 }
 
+// Member extends a discordgo.Member as
+// response model.
 type Member struct {
 	*discordgo.Member
 
@@ -37,6 +43,8 @@ type Member struct {
 	Dominance int       `json:"dominance"`
 }
 
+// Guild extends a discordgo.Guild as
+// response model.
 type Guild struct {
 	*discordgo.Guild
 
@@ -45,6 +53,8 @@ type Guild struct {
 	Members    []*Member `json:"members"`
 }
 
+// GuildReduced is a Guild model with fewer
+// details than Guild model.
 type GuildReduced struct {
 	ID          string              `json:"id"`
 	Name        string              `json:"name"`
@@ -56,10 +66,15 @@ type GuildReduced struct {
 	MemberCount int                 `json:"member_count"`
 }
 
+// PermissionsResponse wraps a
+// permissions.PermissionsArra as response
+// model.
 type PermissionsResponse struct {
 	Permissions permissions.PermissionArray `json:"permissions"`
 }
 
+// Report extends report.Report by TypeName
+// and Created time.
 type Report struct {
 	*report.Report
 
@@ -67,6 +82,8 @@ type Report struct {
 	Created  time.Time `json:"created"`
 }
 
+// GuildSettings is the response model for
+// guil dsettings and preferences.
 type GuildSettings struct {
 	Prefix              string                                 `json:"prefix"`
 	Perms               map[string]permissions.PermissionArray `json:"perms"`
@@ -79,38 +96,52 @@ type GuildSettings struct {
 	LeaveMessageText    string                                 `json:"leavemessagetext"`
 }
 
+// PermissionsUpdate is the request model to
+// update a permissions array.
 type PermissionsUpdate struct {
 	Perm    string   `json:"perm"`
 	RoleIDs []string `json:"role_ids"`
 }
 
+// ReasonRequest is a request model wrapping a
+// Reason and Attachment URL.
 type ReasonRequest struct {
 	Reason     string `json:"reason"`
 	Attachment string `json:"attachment"`
 }
 
+// ReportRequest extends ReasonRequest by
+// Type of report.
 type ReportRequest struct {
 	*ReasonRequest
 
 	Type int `json:"type"`
 }
 
+// InviteSettingsRequest is the request model
+// for setting the global invite setting.
 type InviteSettingsRequest struct {
 	GuildID    string `json:"guild_id"`
 	Messsage   string `json:"message"`
 	InviteCode string `json:"invite_code"`
 }
 
+// InviteSettingsResponse is the response model
+// sent back when setting the global invite setting.
 type InviteSettingsResponse struct {
 	Guild     *Guild `json:"guild"`
 	InviteURL string `json:"invite_url"`
 	Message   string `json:"message"`
 }
 
+// Count is a simple response wrapper for a
+// count number.
 type Count struct {
 	Count int `json:"count"`
 }
 
+// SystemInfo is the response model for a
+// system info request.
 type SystemInfo struct {
 	Version    string    `json:"version"`
 	CommitHash string    `json:"commit_hash"`
@@ -135,6 +166,9 @@ type SystemInfo struct {
 	Guilds int `json:"guilds"`
 }
 
+// Validate returns true, when the ReasonRequest is valid.
+// Otherwise, false is returned and an error response is
+// returned.
 func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 	if len(req.Reason) < 3 {
 		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
@@ -149,6 +183,8 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 	return true, nil
 }
 
+// GuildFromGuild returns a Guild model from the passed
+// discordgo.Guild g, discordgo.Member m and cmdHandler.
 func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler) *Guild {
 	if g == nil {
 		return nil
@@ -180,6 +216,8 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 	}
 }
 
+// GuildReducedFromGuild returns a GuildReduced from the passed
+// discordgo.Guild g.
 func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 	return &GuildReduced{
 		ID:          g.ID,
@@ -193,6 +231,8 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 	}
 }
 
+// MemberFromMember returns a Member from the passed
+// discordgo.Member m.
 func MemberFromMember(m *discordgo.Member) *Member {
 	if m == nil {
 		return nil
@@ -206,6 +246,9 @@ func MemberFromMember(m *discordgo.Member) *Member {
 	}
 }
 
+// ReportFromReport returns a Report from the passed
+// report.Report r and publicAddr to generate an
+// attachment URL.
 func ReportFromReport(r *report.Report, publicAddr string) *Report {
 	rtype := static.ReportTypes[r.Type]
 	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
@@ -216,6 +259,8 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 	}
 }
 
+// getIconURL returns the CDN URL of a Discord icon
+// resource with the passed guildID and iconHash.
 func getIconURL(guildID, iconHash string) string {
 	if iconHash == "" {
 		return ""

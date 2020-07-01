@@ -170,17 +170,17 @@ func (ws *WebServer) registerHandlers() {
 
 	guildReports := guild.Group("/reports")
 	guildReports.
-		Get("", ws.handlerGetReports)
+		Get("", ws.handlerGetMemberReports)
 	guildReports.
-		Get("/count", ws.handlerGetReportsCount)
+		Get("/count", ws.handlerGetMemberReportsCount)
 
 	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
 	member.
 		Get("", ws.handlerGuildsGetMember)
 	member.
-		Get("/permissions", ws.handlerGetPermissions)
+		Get("/permissions", ws.handlerGetMemberPermissions)
 	member.
-		Get("/permissions/allowed", ws.handlerGetPermissionsAllowed)
+		Get("/permissions/allowed", ws.handlerGetMemberPermissionsAllowed)
 	member.
 		Post("/kick", ws.handlerPostGuildMemberKick)
 	member.
@@ -188,10 +188,10 @@ func (ws *WebServer) registerHandlers() {
 
 	memberReports := member.Group("/reports")
 	memberReports.
-		Get("", ws.handlerGetReports).
+		Get("", ws.handlerGetMemberReports).
 		Post(ws.handlerPostGuildMemberReport)
 	memberReports.
-		Get("/count", ws.handlerGetReportsCount)
+		Get("/count", ws.handlerGetMemberReportsCount)
 
 	reports := api.Group("/reports")
 	reports.

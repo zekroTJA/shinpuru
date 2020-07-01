@@ -9,9 +9,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
+	"github.com/gabriel-vasile/mimetype"
+	routing "github.com/qiangxue/fasthttp-routing"
+	"github.com/valyala/fasthttp"
+
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -19,14 +26,10 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
-
-	"github.com/bwmarrin/discordgo"
-	"github.com/bwmarrin/snowflake"
-	"github.com/gabriel-vasile/mimetype"
-	routing "github.com/qiangxue/fasthttp-routing"
-	"github.com/valyala/fasthttp"
-	"github.com/zekroTJA/shinpuru/internal/util"
 )
+
+// ---------------------------------------------------------------------------
+// - GET /api/me
 
 func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -47,6 +50,9 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds
 
 func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -77,6 +83,9 @@ func (ws *WebServer) handlerGuildsGet(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid
+
 func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -94,6 +103,9 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/members
 
 func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -133,6 +145,9 @@ func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid
+
 func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -169,7 +184,10 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	return jsonResponse(ctx, mm, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/permissions
+
+func (ws *WebServer) handlerGetMemberPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -189,7 +207,10 @@ func (ws *WebServer) handlerGetPermissions(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/reports
+
+func (ws *WebServer) handlerGetMemberReports(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -229,7 +250,10 @@ func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/reports/count
+
+func (ws *WebServer) handlerGetMemberReportsCount(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -255,28 +279,10 @@ func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
 	return jsonResponse(ctx, &Count{Count: count}, fasthttp.StatusOK)
 }
 
-func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
-	// userID := ctx.Get("uid").(string)
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/permissions/allowed
 
-	_id := ctx.Param("id")
-
-	id, err := snowflake.ParseString(_id)
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
-	rep, err := ws.db.GetReport(id)
-	if database.IsErrDatabaseNotFound(err) {
-		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
-	}
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
-	}
-
-	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusOK)
-}
-
-func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) error {
 	// userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -306,6 +312,9 @@ func (ws *WebServer) handlerGetPermissionsAllowed(ctx *routing.Context) error {
 		Data: allowed[:i],
 	}, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/settings
 
 func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 	gs := new(GuildSettings)
@@ -344,6 +353,9 @@ func (ws *WebServer) handlerGetGuildSettings(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, gs, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/settings
 
 func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -458,6 +470,9 @@ func (ws *WebServer) handlerPostGuildSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/permissions
+
 func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -476,6 +491,9 @@ func (ws *WebServer) handlerGetGuildPermissions(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, perms, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/permissions
 
 func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -521,6 +539,9 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/reports
 
 func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -578,6 +599,9 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/kick
 
 func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -654,6 +678,9 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/ban
+
 func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -729,6 +756,33 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/reports/:id
+
+func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
+	// userID := ctx.Get("uid").(string)
+
+	_id := ctx.Param("id")
+
+	id, err := snowflake.ParseString(_id)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	rep, err := ws.db.GetReport(id)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/settings/presence
+
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 	presenceRaw, err := ws.db.GetSetting(static.SettingPresence)
 	if err != nil {
@@ -748,6 +802,9 @@ func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/settings/presence
 
 func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
@@ -777,6 +834,9 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, pre, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/settings/noguildinvite
 
 func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	var guildID, message, inviteCode string
@@ -860,6 +920,9 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, res, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - POST /api/settings/noguildinvite
+
 func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
@@ -937,6 +1000,9 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
 
+// ---------------------------------------------------------------------------
+// - GET /api/sysinfo
+
 func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 
 	buildTS, _ := strconv.Atoi(util.AppDate)
@@ -974,6 +1040,9 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, info, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /imagestore/:id
 
 func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	path := ctx.Param("id")
