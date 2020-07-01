@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 )
 
 const (
@@ -159,8 +160,8 @@ func (c *CmdSnowflake) printSfSp(args *CommandArgs, sf snowflake.ID) error {
 			},
 			{
 				Name: "Timestamp",
-				Value: snowflakenodes.
-					ParseUnixTime(int(sf.Time())).
+				Value: timeutil.
+					FromUnix(int(sf.Time())).
 					Format(time.RFC1123),
 			},
 			{

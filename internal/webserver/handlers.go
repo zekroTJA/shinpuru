@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 
@@ -35,7 +36,7 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	created, _ := util.GetDiscordSnowflakeCreationTime(user.ID)
+	created, _ := discordutil.GetDiscordSnowflakeCreationTime(user.ID)
 
 	res := &User{
 		User:      user,
@@ -157,7 +158,7 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 	mm := MemberFromMember(memb)
 
 	switch {
-	case util.IsAdmin(guild, memb):
+	case discordutil.IsAdmin(guild, memb):
 		mm.Dominance = 1
 	case guild.OwnerID == memberID:
 		mm.Dominance = 2
@@ -760,12 +761,6 @@ func (ws *WebServer) handlerPostPresence(ctx *routing.Context) error {
 	pre := new(presence.Presence)
 	if err := parseJSONBody(ctx, pre); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
-	}
-
-	if strings.Contains(pre.Game, presence.PresenceSeperator) {
-		return jsonError(ctx,
-			fmt.Errorf("'%s' is used as seperator for the presence settings save and can not be used in the actual game message",
-				presence.PresenceSeperator), fasthttp.StatusBadRequest)
 	}
 
 	if err := pre.Validate(); err != nil {

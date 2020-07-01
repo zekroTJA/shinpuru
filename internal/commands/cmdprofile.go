@@ -9,6 +9,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 )
 
@@ -72,7 +73,7 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 	if err != nil {
 		return err
 	}
-	createdTime, err := util.GetDiscordSnowflakeCreationTime(member.User.ID)
+	createdTime, err := discordutil.GetDiscordSnowflakeCreationTime(member.User.ID)
 	if err != nil {
 		return err
 	}

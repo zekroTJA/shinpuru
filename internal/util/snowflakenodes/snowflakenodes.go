@@ -7,13 +7,28 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-var NodesReport []*snowflake.Node
-var NodeBackup *snowflake.Node
-var NodeTags *snowflake.Node
-var NodeImages *snowflake.Node
+var (
+	// NodesReport contains snowflake nodes for
+	// each report type.
+	NodesReport []*snowflake.Node
 
-var nodeMap map[int]string
+	// NodeBackup is the snowflake node for
+	// backup IDs.
+	NodeBackup *snowflake.Node
+	// NodeTags is the snowflake node for
+	// chat tag IDs.
+	NodeTags *snowflake.Node
+	// NodeImages is the snowflake node for
+	// public images.
+	NodeImages *snowflake.Node
 
+	// nodeMap maps snowflake node IDs with
+	// their identifier strings.
+	nodeMap map[int]string
+)
+
+// Setup initializes the snowflake nodes and
+// nodesMap.
 func Setup() error {
 	nodeMap = make(map[int]string)
 	NodesReport = make([]*snowflake.Node, len(static.ReportTypes))
@@ -39,6 +54,11 @@ func Setup() error {
 	return err
 }
 
+// GetNodeName returns the identifier name of
+// the snowflake node by nodeID.
 func GetNodeName(nodeID int64) string {
-	return nodeMap[int(nodeID)]
+	if ident, ok := nodeMap[int(nodeID)]; ok {
+		return ident
+	}
+	return "undefined"
 }

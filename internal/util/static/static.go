@@ -45,6 +45,8 @@ const (
 	ColorEmbedYellow  = 0xFFC107
 	ColorEmbedViolett = 0x6A1B9A
 
+	ReportRevokedColor = 0x9C27B0
+
 	AutoNick  = "シンプル"
 	StdMotd   = "github.com/zekroTJA/shinpuru"
 	DefEpoche = 1545834736 // 2018-12-26 15:32:16 +0100 CET
@@ -82,8 +84,6 @@ var (
 		0xFB8C00,
 		0x8E24AA,
 	}
-
-	ReportRevokedColor = 0x9C27B0
 
 	DefaultAdminRules = []string{
 		"+sp.guild.*",

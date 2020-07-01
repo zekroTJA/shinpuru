@@ -136,7 +136,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 Some of the independant utilities and functionalities shinpuru uses are publicly available via `go get <package>`. I will try to keep the API and general behaviour of those functionalities as "frozen" as possible to make those packages long-time reliable.
 
 - [`github.com/zekroTJA/shinpuru/pkg/acceptmsg`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg)
+- [`github.com/zekroTJA/shinpuru/pkg/bytecount`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/bytecount)
 - [`github.com/zekroTJA/shinpuru/pkg/discordoauth`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordoauth)
+- [`github.com/zekroTJA/shinpuru/pkg/discordutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordutil)
 - [`github.com/zekroTJA/shinpuru/pkg/etag`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/etag)
 - [`github.com/zekroTJA/shinpuru/pkg/fetch`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/fetch)
 - [`github.com/zekroTJA/shinpuru/pkg/httpreq`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/httpreq)
@@ -145,6 +147,7 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [`github.com/zekroTJA/shinpuru/pkg/multierror`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/multierror)
 - [`github.com/zekroTJA/shinpuru/pkg/random`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/random)
 - [`github.com/zekroTJA/shinpuru/pkg/roleutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/roleutil)
+- [`github.com/zekroTJA/shinpuru/pkg/timeutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/timeutil)
 
 ---
 

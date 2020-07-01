@@ -7,6 +7,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
+// EmbedMessage extends a discordgo.MessageEmbedMessage
+// with extra utilities.
 type EmbedMessage struct {
 	*discordgo.Message
 
@@ -14,6 +16,9 @@ type EmbedMessage struct {
 	err error
 }
 
+// DeleteAfter deletes the message after the specified
+// duration when the message still exists and sets occured
+// error to the EmbedMessage.
 func (emb *EmbedMessage) DeleteAfter(d time.Duration) *EmbedMessage {
 	if emb.Message != nil {
 		time.AfterFunc(d, func() {
@@ -23,24 +28,17 @@ func (emb *EmbedMessage) DeleteAfter(d time.Duration) *EmbedMessage {
 	return emb
 }
 
+// Error returns the embeded error.
 func (emb *EmbedMessage) Error() error {
 	return emb.err
 }
 
-func SendEmbedError(s *discordgo.Session, chanID, content string, title ...string) *EmbedMessage {
-	emb := &discordgo.MessageEmbed{
-		Description: content,
-		Color:       static.ColorEmbedError,
-		Title:       "Error",
-	}
-
-	if len(title) > 0 {
-		emb.Title = title[0]
-	}
-
-	return sendEmbedRaw(s, chanID, emb)
-}
-
+// SendEmbed creates an discordgo.MessageEmbed from the passed
+// content, title and color and sends it to the specified channel.
+//
+// If color == 0, static.ColorEmbedDefault will be set as color.
+//
+// Occured errors are set to the internal error.
 func SendEmbed(s *discordgo.Session, chanID, content string, title string, color int) *EmbedMessage {
 	emb := &discordgo.MessageEmbed{
 		Description: content,
@@ -52,10 +50,30 @@ func SendEmbed(s *discordgo.Session, chanID, content string, title string, color
 		emb.Color = static.ColorEmbedDefault
 	}
 
-	return sendEmbedRaw(s, chanID, emb)
+	return SendEmbedRaw(s, chanID, emb)
 }
 
-func sendEmbedRaw(s *discordgo.Session, chanID string, emb *discordgo.MessageEmbed) *EmbedMessage {
+// SendEmbedError is shorthand for SendEmbed with
+// static.ColorEmbedError as color and title "Error"
+// if no title was passed.
+func SendEmbedError(s *discordgo.Session, chanID, content string, title ...string) *EmbedMessage {
+	emb := &discordgo.MessageEmbed{
+		Description: content,
+		Color:       static.ColorEmbedError,
+		Title:       "Error",
+	}
+
+	if len(title) > 0 {
+		emb.Title = title[0]
+	}
+
+	return SendEmbedRaw(s, chanID, emb)
+}
+
+// SendEmbedRaw sends the passed emb to the passed
+// channel and sets occured errors to the internal
+// error.
+func SendEmbedRaw(s *discordgo.Session, chanID string, emb *discordgo.MessageEmbed) *EmbedMessage {
 	msg, err := s.ChannelMessageSendEmbed(chanID, emb)
 
 	return &EmbedMessage{msg, s, err}

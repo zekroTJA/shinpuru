@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 const defMsgPattern = "{pinger} ghost pinged {pinged} with message:\n\n{msg}"
@@ -87,7 +88,7 @@ func (c *CmdGhostping) info(args *CommandArgs) error {
 	}
 
 	msg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
-	util.DeleteMessageLater(args.Session, msg, 15*time.Second)
+	discordutil.DeleteMessageLater(args.Session, msg, 15*time.Second)
 	return err
 }
 

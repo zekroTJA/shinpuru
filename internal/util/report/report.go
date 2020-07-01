@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
+// Report describes a report object.
 type Report struct {
 	ID            snowflake.ID `json:"id"`
 	Type          int          `json:"type"`
@@ -20,10 +21,17 @@ type Report struct {
 	AttachmehtURL string       `json:"attachment_url"`
 }
 
+// GetTimestamp returns the time stamp when the
+// report was generated from the reports ID
+// snowflake.
 func (r *Report) GetTimestamp() time.Time {
 	return time.Unix(r.ID.Time()/1000, 0)
 }
 
+// AsEmbed creates a discordgo.Embed from the
+// report. publicAddr is passed to generate a
+// public link for a potential report attachment
+// to be displayed in the embeds image section.
 func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Title: "Case " + r.ID.String(),
@@ -55,6 +63,9 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 	}
 }
 
+// AsEmbedField creates a discordgo.MessageEmbedField from
+// the report. publicAddr is passed to generate a publicly
+// vailable link embeded in the embed field.
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {

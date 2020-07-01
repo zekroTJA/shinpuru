@@ -4,19 +4,16 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	routing "github.com/qiangxue/fasthttp-routing"
+	"github.com/valyala/fasthttp"
+
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-
-	routing "github.com/qiangxue/fasthttp-routing"
-
-	"github.com/valyala/fasthttp"
-
-	"github.com/zekroTJA/shinpuru/internal/util"
-
-	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 type ListResponse struct {
@@ -166,7 +163,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 
 	if m != nil {
 		switch {
-		case util.IsAdmin(g, m):
+		case discordutil.IsAdmin(g, m):
 			selfmm.Dominance = 1
 		case g.OwnerID == m.User.ID:
 			selfmm.Dominance = 2
@@ -201,7 +198,7 @@ func MemberFromMember(m *discordgo.Member) *Member {
 		return nil
 	}
 
-	created, _ := util.GetDiscordSnowflakeCreationTime(m.User.ID)
+	created, _ := discordutil.GetDiscordSnowflakeCreationTime(m.User.ID)
 	return &Member{
 		Member:    m,
 		AvatarURL: m.User.AvatarURL(""),

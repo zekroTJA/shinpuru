@@ -21,6 +21,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
@@ -139,7 +140,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 
 		member, _ := s.GuildMember(guildID, userID)
 
-		if userID == guild.OwnerID || (member != nil && util.IsAdmin(guild, member)) {
+		if userID == guild.OwnerID || (member != nil && discordutil.IsAdmin(guild, member)) {
 			perm = perm.Merge(c.defAdminRules, false)
 			overrideExplicits = true
 		}

@@ -9,17 +9,22 @@ import (
 )
 
 const (
-	PresenceSeperator = "|||"
+	presenceSeperator = "|||"
 	validStatus       = "dnd online idle invisible"
 )
 
+// Presence represents a presence status with a game
+// message and a status string.
 type Presence struct {
 	Game   string `json:"game"`
 	Status string `json:"status"`
 }
 
+// Unmarshal deserializes the passed raw string to
+// a presence object and returns an error when the
+// raw data has the wrong format.
 func Unmarshal(raw string) (*Presence, error) {
-	split := strings.Split(raw, PresenceSeperator)
+	split := strings.Split(raw, presenceSeperator)
 	if len(split) < 2 {
 		return nil, errors.New("invalid format")
 	}
@@ -29,10 +34,13 @@ func Unmarshal(raw string) (*Presence, error) {
 	}, nil
 }
 
+// Marshal produces a raw string from the presence.
 func (p *Presence) Marshal() string {
 	return p.Game + "|||" + p.Status
 }
 
+// ToUpdateStatusData returns a discordgo.UpdateStatusData
+// from the presence object.
 func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 	return discordgo.UpdateStatusData{
 		Game: &discordgo.Game{
@@ -42,10 +50,13 @@ func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 	}
 }
 
+// Validate returns an error when either an invalid status
+// was specified or the presence text contains the seperator
+// used for serialization and deserialization.
 func (p *Presence) Validate() error {
-	if strings.Contains(p.Game, PresenceSeperator) {
+	if strings.Contains(p.Game, presenceSeperator) {
 		return fmt.Errorf("`%s` is used as seperator for the settings saving so it can not be contained in the actual message.",
-			PresenceSeperator)
+			presenceSeperator)
 	}
 
 	if !strings.Contains(validStatus, p.Status) {

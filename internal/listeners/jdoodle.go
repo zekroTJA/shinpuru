@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -201,7 +202,7 @@ func (l *ListenerJdoodle) Handler(s *discordgo.Session, e *discordgo.MessageCrea
 				Title:       "Execution Error",
 				Description: fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error),
 			})
-			util.DeleteMessageLater(s, resMsg.Message, 15*time.Second)
+			discordutil.DeleteMessageLater(s, resMsg.Message, 15*time.Second)
 
 		} else {
 

@@ -100,9 +100,9 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 							emb.Fields = append(emb.Fields, v.AsField())
 						}
 					}
-					msg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
-					util.DeleteMessageLater(args.Session, msg, 30*time.Second)
-					return err
+					return util.SendEmbedRaw(args.Session, args.Channel.ID, emb).
+						DeleteAfter(30 * time.Second).
+						Error()
 				} else if ivote == nil {
 					return util.SendEmbedError(args.Session, args.Channel.ID,
 						"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.").
