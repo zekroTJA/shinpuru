@@ -54,12 +54,7 @@ func (p PermissionArray) Update(newPerm string, override bool) PermissionArray {
 			}
 
 			if perm[0] != newPerm[0] {
-				if newPerm[0] == '-' {
-					continue
-				} else {
-					newPermsArray[i] = newPerm
-					i++
-				}
+				continue
 			}
 		}
 
