@@ -36,12 +36,11 @@ var (
 		Root:       "./web/dist/web",
 		IndexNames: []string{"index.html"},
 		Compress:   true,
-		// PathRewrite: func(ctx *fasthttp.RequestCtx) []byte {
-		// 	return ctx.Path()[7:]
-		// },
 	}
 )
 
+// WebServer exposes HTTP REST API endpoints to
+// access shinpurus functionalities via a web app.
 type WebServer struct {
 	server *fasthttp.Server
 	router *routing.Router
@@ -57,7 +56,12 @@ type WebServer struct {
 	config *config.Config
 }
 
-func NewWebServer(db database.Database, st storage.Storage, s *discordgo.Session, cmd *commands.CmdHandler, config *config.Config, clientID, clientSecret string) (ws *WebServer) {
+// New creates a new instance of WebServer consuming the passed
+// database provider, storage provider, discordgo session, command
+// handler and configuration.
+func New(db database.Database, st storage.Storage, s *discordgo.Session,
+	cmd *commands.CmdHandler, config *config.Config) (ws *WebServer) {
+
 	ws = new(WebServer)
 
 	if !strings.HasPrefix(config.WebServer.PublicAddr, "http") {
@@ -82,8 +86,8 @@ func NewWebServer(db database.Database, st storage.Storage, s *discordgo.Session
 	ws.auth = NewAuth(db, s)
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
-		clientID,
-		clientSecret,
+		config.Discord.ClientID,
+		config.Discord.ClientSecret,
 		config.WebServer.PublicAddr+endpointAuthCB,
 		ws.auth.LoginFailedHandler,
 		ws.auth.LoginSuccessHandler,
@@ -94,23 +98,43 @@ func NewWebServer(db database.Database, st storage.Storage, s *discordgo.Session
 	return
 }
 
+// ListenAndServeBlocking starts the listening and serving
+// loop of the web server which blocks the current goroutine.
+//
+// If an error is returned, the startup failed with the
+// specified error.
+func (ws *WebServer) ListenAndServeBlocking() error {
+	tls := ws.config.WebServer.TLS
+
+	if tls != nil && tls.Enabled {
+		if tls.Cert == "" || tls.Key == "" {
+			return errors.New("cert file and key file must be specified")
+		}
+		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
+	}
+
+	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
+}
+
+// registerHandlers registers all request handler for the
+// request URL specified match tree.
 func (ws *WebServer) registerHandlers() {
 	// --------------------------------
 	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.handlerFiles)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.
 		Get("/<id>", ws.handlerGetImage)
 
+	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
+	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
 
-	ws.router.Use(ws.auth.checkAuth, ws.handlerFiles)
-
-	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
-	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+	ws.router.Use(ws.auth.checkAuth)
 
 	api := ws.router.Group("/api")
 	api.
@@ -172,17 +196,4 @@ func (ws *WebServer) registerHandlers() {
 	reports := api.Group("/reports")
 	reports.
 		Get("/<id:[0-9]+>", ws.handlerGetReport)
-}
-
-func (ws *WebServer) ListenAndServeBlocking() error {
-	tls := ws.config.WebServer.TLS
-
-	if tls != nil && tls.Enabled {
-		if tls.Cert == "" || tls.Key == "" {
-			return errors.New("cert file and key file must be specified")
-		}
-		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
-	}
-
-	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
 }

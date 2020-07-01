@@ -89,6 +89,11 @@ func parseJSONBody(ctx *routing.Context, v interface{}) error {
 	return err
 }
 
+// addHeaders adds the server header for shinpuru backend
+// and 'X-Content-Type-Options' to 'nosniff'.
+//
+// If util.Release is not "TRUE", CORS headers are added to
+// allow access from the angular dev webserver.
 func (ws *WebServer) addHeaders(ctx *routing.Context) error {
 	ctx.Response.Header.SetServer("shinpuru v." + util.AppVersion)
 	ctx.Response.Header.Set("X-Content-Type-Options", "nosniff")
@@ -103,6 +108,10 @@ func (ws *WebServer) addHeaders(ctx *routing.Context) error {
 	return nil
 }
 
+// getIPAddr returns the IP address of the request origin.
+// This method firstly consumes the "x-Forwarded-For" header,
+// which is set by most reverse proxies. If this header value
+// is empty, the actual origin address is returned.
 func getIPAddr(ctx *routing.Context) string {
 	forwardedfor := ctx.Request.Header.PeekBytes(headerXForwardedFor)
 	if forwardedfor != nil && len(forwardedfor) > 0 {
@@ -112,6 +121,7 @@ func getIPAddr(ctx *routing.Context) string {
 	return ctx.RemoteIP().String()
 }
 
+// handlerFiles is the request handler for SPA file routing.
 func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	path := string(ctx.Path())
 
@@ -135,6 +145,8 @@ func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	return nil
 }
 
+// optionsHandler handles OPTIONS requestst sent by
+// brwoser as CORS preflight requests.
 func (ws *WebServer) optionsHandler(ctx *routing.Context) error {
 	if string(ctx.Method()) == "OPTIONS" {
 		ctx.SetStatusCode(fasthttp.StatusOK)
@@ -143,6 +155,10 @@ func (ws *WebServer) optionsHandler(ctx *routing.Context) error {
 	return nil
 }
 
+// errInternalOrNotFound responds with a 404 Not Found
+// if the passed err equals DatabaseNotFound.
+// Otherwise, a 500 Internal Server Error is returned with
+// the error informatio nas body data.
 func errInternalOrNotFound(ctx *routing.Context, err error) error {
 	if database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
@@ -150,6 +166,9 @@ func errInternalOrNotFound(ctx *routing.Context, err error) error {
 	return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 }
 
+// errInternalIgnoreNotFound only returns a 500 Internal
+// Server Error if the passed err does not equal
+// ErrDatabaseNotFound. Otherwise, no action is taken.
 func errInternalIgnoreNotFound(ctx *routing.Context, err error) (bool, error) {
 	if database.IsErrDatabaseNotFound(err) {
 		return false, nil
