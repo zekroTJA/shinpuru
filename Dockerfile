@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # --- STAGE 1: Build Backend, Tools and Web Assets
-FROM golang:1.13-alpine AS build
+FROM golang:1.14-alpine AS build
 WORKDIR /build
 
 # Get required packages
