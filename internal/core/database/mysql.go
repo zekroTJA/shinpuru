@@ -308,15 +308,15 @@ func (m *MySQLDriver) SetGuildRolePermission(guildID, roleID string, p permissio
 	if err != nil {
 		return err
 	}
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
-			roleID, guildID, pStr)
+	ar, err := res.RowsAffected()
+	if err != nil {
 		return err
 	}
-	return nil
+	if ar == 0 {
+		_, err = m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
+			roleID, guildID, pStr)
+	}
+	return err
 }
 
 func (m *MySQLDriver) GetGuildJdoodleKey(guildID string) (string, error) {
@@ -352,16 +352,12 @@ func (m *MySQLDriver) GetSetting(setting string) (string, error) {
 
 func (m *MySQLDriver) SetSetting(setting, value string) error {
 	res, err := m.DB.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
+	ar, err := res.RowsAffected()
+	if err != nil {
 		return err
+	}
+	if ar == 0 {
+		_, err = m.DB.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
 	}
 	return err
 }
@@ -493,18 +489,16 @@ func (m *MySQLDriver) AddUpdateVote(vote *vote.Vote) error {
 	if err != nil {
 		return err
 	}
+
 	res, err := m.DB.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
+	ar, err := res.RowsAffected()
+	if err != nil {
 		return err
 	}
+	if ar == 0 {
+		_, err = m.DB.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
+	}
+
 	return err
 }
 
@@ -557,17 +551,13 @@ func (m *MySQLDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error 
 	if err != nil {
 		return err
 	}
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
-			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
+	ar, err := res.RowsAffected()
+	if err != nil {
 		return err
+	}
+	if ar == 0 {
+		_, err = m.DB.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
+			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
 	}
 	return err
 }
@@ -808,16 +798,12 @@ func (m *MySQLDriver) SetSession(key, userID string, expires time.Time) error {
 		return err
 	}
 
-	if ar, err := res.RowsAffected(); ar == 0 {
-		if err != nil {
-			return err
-		}
-		_, err := m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
+	ar, err := res.RowsAffected()
+	if err != nil {
 		return err
+	}
+	if ar == 0 {
+		_, err = m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
 	}
 	return err
 }
