@@ -1,11 +1,13 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -34,6 +36,8 @@ const (
 	keyGuildJoinMsg       = "GUILD:JOINMSG"
 	keyGuildLeaveMsg      = "GUILD:LEAVEMSG"
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
+
+	keyUserAPIToken = "USER:APITOKEN"
 
 	keyAPISession = "API:SESSION"
 )
@@ -658,4 +662,54 @@ func (r *RedisMiddleware) SaveImageData(image *imgstore.Image) error {
 
 func (r *RedisMiddleware) RemoveImageData(id snowflake.ID) error {
 	return r.db.RemoveImageData(id)
+}
+
+func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
+	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, token.UserID)
+
+	data, err := json.Marshal(token)
+	if err != nil {
+		return
+	}
+
+	if err = m.client.Set(key, data, 0).Err(); err != nil {
+		return
+	}
+
+	return m.db.SetAPIToken(token)
+}
+
+func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
+	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
+
+	resStr, err := m.client.Get(key).Result()
+	if err == redis.Nil {
+		if t, err = m.db.GetAPIToken(userID); err != nil {
+			return
+		}
+		var resB []byte
+		resB, err = json.Marshal(t)
+		if err != nil {
+			return
+		}
+		if err = m.client.Set(key, resB, 0).Err(); err != nil {
+			return
+		}
+		return
+	}
+
+	t = new(models.APITokenEntry)
+	err = json.Unmarshal([]byte(resStr), t)
+
+	return
+}
+
+func (m *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
+	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
+
+	if err = m.client.Del(key).Err(); err != nil {
+		return
+	}
+
+	return m.db.DeleteAPIToken(userID)
 }

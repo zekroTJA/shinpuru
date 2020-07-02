@@ -12,14 +12,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.sass'],
 })
 export class HeaderComponent implements OnInit {
-  @ViewChild('logout', { static: true }) private logoutTemplate: TemplateRef<
-    any
-  >;
+  @ViewChild('logout', { static: true })
+  private logoutTemplate: TemplateRef<any>;
+
   @ViewChild('settings', { static: true })
   private settingsTemplate: TemplateRef<any>;
-  @ViewChild('sysinfo', { static: true }) private sysinfoTemplate: TemplateRef<
-    any
-  >;
+
+  @ViewChild('sysinfo', { static: true })
+  private sysinfoTemplate: TemplateRef<any>;
+
+  @ViewChild('apitoken', { static: true })
+  private apiTokenTemplate: TemplateRef<any>;
 
   public selfUser: User;
 
@@ -47,6 +50,10 @@ export class HeaderComponent implements OnInit {
       {
         el: this.sysinfoTemplate,
         action: this.sysinfo.bind(this),
+      } as PopupElement,
+      {
+        el: this.apiTokenTemplate,
+        action: this.apitoken.bind(this),
       } as PopupElement
     );
   }
@@ -75,5 +82,9 @@ export class HeaderComponent implements OnInit {
 
   private sysinfo() {
     this.router.navigate(['/sysinfo']);
+  }
+
+  private apitoken() {
+    this.router.navigate(['/apitoken']);
   }
 }

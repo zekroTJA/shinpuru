@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
@@ -102,6 +103,10 @@ type Database interface {
 	SetSession(key, userID string, expires time.Time) error
 	GetSession(key string) (string, error)
 	DeleteSession(userID string) error
+
+	SetAPIToken(token *models.APITokenEntry) error
+	GetAPIToken(userID string) (*models.APITokenEntry, error)
+	DeleteAPIToken(userID string) error
 
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)

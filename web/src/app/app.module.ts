@@ -25,6 +25,7 @@ import { SettingsComponent } from './routes/settings/settings.component';
 import { SpinnerButtonComponent } from './components/spinnerButton/spinnerButton.component';
 import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
 import { SliderComponent } from './components/slider/slider.component';
+import { APITokenComponent } from './routes/apitoken/apitoken.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { SliderComponent } from './components/slider/slider.component';
     SpinnerButtonComponent,
     SysInfoComponent,
     SliderComponent,
+    APITokenComponent,
   ],
   imports: [
     NgbModule,

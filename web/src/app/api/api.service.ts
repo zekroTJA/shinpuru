@@ -20,11 +20,11 @@ import {
   InviteSettingsRequest,
   Count,
   SystemInfo,
+  APIToken,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 import { CacheBucket } from './api.cache';
-import { isObject } from 'util';
 import { Router } from '@angular/router';
 
 /** @format */
@@ -386,6 +386,26 @@ export class APIService {
   public getSystemInfo(): Observable<SystemInfo> {
     return this.http
       .get(this.rcAPI('sysinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getAPIToken(ignoreError: boolean = false): Observable<APIToken> {
+    let req = this.http.get<APIToken>(this.rcAPI('token'), this.defopts());
+    if (!ignoreError) {
+      req = req.pipe(catchError(this.errorCatcher));
+    }
+    return req;
+  }
+
+  public postAPIToken(): Observable<APIToken> {
+    return this.http
+      .post(this.rcAPI('token'), null, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteAPIToken(): Observable<any> {
+    return this.http
+      .delete(this.rcAPI('token'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

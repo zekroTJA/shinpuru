@@ -6,34 +6,43 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	jwt "github.com/dgrijalva/jwt-go"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
 var (
-	sessionExpiration = 7 * 24 * time.Hour
+	sessionExpiration   = 7 * 24 * time.Hour
+	jwtGenerationMethod = jwt.SigningMethodHS256
+	apiTokenExpiration  = 365 * 24 * time.Hour
 )
 
 const (
 	sessionKeyLength = 128
+
+	jwtIssuer = "shinpuru v.%v"
 )
 
 // Auth provides handlers and untilities to authorize a
 // HTTP request by session cookie.
 type Auth struct {
-	db      database.Database
-	session *discordgo.Session
+	db          database.Database
+	session     *discordgo.Session
+	tokenSecret []byte
 }
 
 // NewAuth initializes a new Auth instance with the passed
 // database provider and discordgo session.
-func NewAuth(db database.Database, s *discordgo.Session) *Auth {
+func NewAuth(db database.Database, s *discordgo.Session, tokenSecret []byte) *Auth {
 	return &Auth{
-		db:      db,
-		session: s,
+		db:          db,
+		session:     s,
+		tokenSecret: tokenSecret,
 	}
 }
 
@@ -88,6 +97,49 @@ func (auth *Auth) LogOutHandler(ctx *routing.Context) error {
 
 }
 
+// CreateAPIToken creates a JWT API token for the passed userID,
+// sets it to the database and returns the token information.
+func (auth *Auth) CreateAPIToken(userID string) (*APITokenResponse, error) {
+	now := time.Now()
+	expires := now.Add(apiTokenExpiration)
+
+	salt, err := random.GetRandBase64Str(16)
+	if err != nil {
+		return nil, err
+	}
+
+	claims := APITokenClaims{}
+	claims.Issuer = fmt.Sprintf(jwtIssuer, util.AppVersion)
+	claims.Subject = userID
+	claims.ExpiresAt = expires.Unix()
+	claims.NotBefore = now.Unix()
+	claims.IssuedAt = now.Unix()
+	claims.Salt = salt
+
+	token, err := jwt.NewWithClaims(jwtGenerationMethod, claims).
+		SignedString(auth.tokenSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenEntry := &models.APITokenEntry{
+		Salt:    salt,
+		Created: now,
+		Expires: expires,
+		UserID:  userID,
+	}
+
+	if err = auth.db.SetAPIToken(tokenEntry); err != nil {
+		return nil, err
+	}
+
+	return &APITokenResponse{
+		Created: now,
+		Expires: expires,
+		Token:   token,
+	}, nil
+}
+
 // createSessionKey randomly generates a base64 string with the
 // length of sessionKeyLength.
 func (auth *Auth) createSessionKey() (string, error) {
@@ -96,15 +148,18 @@ func (auth *Auth) createSessionKey() (string, error) {
 
 // checkSessionCookie checks the set cookie for session key of
 // the request against the database. If the value exists and could
-// be matched, the session is authorized.
+// be matched, the session is authorized and the user ID is
+// returned.
+//
+// Occuring errors during authenticatrion are returned.
+// Invalid authentication does not return any errors.
 func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 	key := ctx.Request.Header.Cookie("__session")
 	if key == nil || len(key) == 0 {
 		return "", nil
 	}
 
-	skey := string(key)
-	uid, err := auth.db.GetSession(skey)
+	uid, err := auth.db.GetSession(string(key))
 	if database.IsErrDatabaseNotFound(err) {
 		return "", nil
 	}
@@ -113,6 +168,59 @@ func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 	}
 
 	return uid, nil
+}
+
+// checkAPIToken checks for a set Authorization header with a
+// bearer token and tries to authenticate this token.
+// If the token is valid, the user ID is returned.
+//
+// Occuring errors during authenticatrion are returned.
+// Invalid authentication does not return any errors.
+func (auth *Auth) checkAPIToken(ctx *routing.Context) (string, error) {
+	key := ctx.Request.Header.Peek("Authorization")
+	if key == nil || len(key) == 0 {
+		return "", nil
+	}
+
+	keyStr := string(key)
+	if !strings.HasPrefix(strings.ToLower(keyStr), "bearer ") {
+		return "", nil
+	}
+	keyStr = keyStr[7:]
+
+	token, err := jwt.Parse(keyStr, func(t *jwt.Token) (interface{}, error) {
+		return auth.tokenSecret, nil
+	})
+	if token == nil && err != nil {
+		return "", err
+	}
+	if !token.Valid || token.Claims.Valid() != nil {
+		return "", nil
+	}
+
+	claimsMap, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", nil
+	}
+
+	claims := APITokenClaimsFromMap(claimsMap)
+
+	tokenEntry, err := auth.db.GetAPIToken(claims.Subject)
+	if database.IsErrDatabaseNotFound(err) {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	if tokenEntry.Salt != claims.Salt {
+		return "", err
+	}
+
+	tokenEntry.Hits++
+	tokenEntry.LastAccess = time.Now()
+	auth.db.SetAPIToken(tokenEntry)
+
+	return claims.Subject, nil
 }
 
 // checkAuth wraps checkSessionCookie as request handler.
@@ -125,6 +233,13 @@ func (auth *Auth) checkAuth(ctx *routing.Context) error {
 	uid, err := auth.checkSessionCookie(ctx)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if uid == "" {
+		uid, err = auth.checkAPIToken(ctx)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
 	}
 
 	if uid != "" {

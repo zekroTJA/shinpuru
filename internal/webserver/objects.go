@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/dgrijalva/jwt-go"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 
@@ -166,6 +167,24 @@ type SystemInfo struct {
 	Guilds int `json:"guilds"`
 }
 
+// APITokenResponse wraps the reponse model of
+// an apit token request.
+type APITokenResponse struct {
+	Created    time.Time `json:"created"`
+	Expires    time.Time `json:"expires"`
+	LastAccess time.Time `json:"lastAccess"`
+	Hits       int       `json:"hits"`
+	Token      string    `json:"token,omitempty"`
+}
+
+// APITokenClaims extends the standard jwt claims
+// by private claims used for api tokens.
+type APITokenClaims struct {
+	jwt.StandardClaims
+
+	Salt string `json:"sp_salt,omitempty"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
@@ -257,6 +276,21 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 		TypeName: rtype,
 		Created:  r.GetTimestamp(),
 	}
+}
+
+// APITokenClaimsFromMap creates an APITokenClaims
+// model from given jwt.MapClaims.
+func APITokenClaimsFromMap(m jwt.MapClaims) APITokenClaims {
+	c := APITokenClaims{}
+
+	c.Issuer, _ = m["iss"].(string)
+	c.Subject, _ = m["sub"].(string)
+	c.ExpiresAt, _ = m["exp"].(int64)
+	c.NotBefore, _ = m["nbf"].(int64)
+	c.IssuedAt, _ = m["iat"].(int64)
+	c.Salt, _ = m["sp_salt"].(string)
+
+	return c
 }
 
 // getIconURL returns the CDN URL of a Discord icon
