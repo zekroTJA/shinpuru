@@ -8,6 +8,7 @@ import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
 import { SettingsComponent } from './routes/settings/settings.component';
 import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
+import { APITokenComponent } from './routes/apitoken/apitoken.component';
 const routes: Routes = [
   {
     path: '',
@@ -37,6 +38,10 @@ const routes: Routes = [
   {
     path: 'sysinfo',
     component: SysInfoComponent,
+  },
+  {
+    path: 'apitoken',
+    component: APITokenComponent,
   },
   {
     path: '**',
