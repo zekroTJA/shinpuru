@@ -170,6 +170,8 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
+	memb.GuildID = guildID
+
 	mm := MemberFromMember(memb)
 
 	switch {
