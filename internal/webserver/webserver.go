@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
+	"github.com/zekroTJA/shinpuru/pkg/random"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
@@ -60,7 +61,7 @@ type WebServer struct {
 // database provider, storage provider, discordgo session, command
 // handler and configuration.
 func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd *commands.CmdHandler, config *config.Config) (ws *WebServer) {
+	cmd *commands.CmdHandler, config *config.Config) (ws *WebServer, err error) {
 
 	ws = new(WebServer)
 
@@ -70,6 +71,15 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 			protocol += "s"
 		}
 		config.WebServer.PublicAddr = fmt.Sprintf("%s://%s", protocol, config.WebServer.PublicAddr)
+	}
+
+	if config.WebServer.APITokenKey == "" {
+		config.WebServer.APITokenKey, err = random.GetRandBase64Str(32)
+	} else if len(config.WebServer.APITokenKey) < 32 {
+		err = errors.New("APITokenKey must have at leats a length of 32 characters")
+	}
+	if err != nil {
+		return
 	}
 
 	ws.config = config

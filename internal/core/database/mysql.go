@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -27,13 +28,13 @@ import (
 // MySQLDriver implements the Database interface for
 // MariaDB or MySQLDriver.
 type MySQLDriver struct {
-	DB *sql.DB
+	db *sql.DB
 }
 
 func (m *MySQLDriver) setup() {
 	mErr := multierror.New(nil)
 
-	_, err := m.DB.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
+	_, err := m.db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
 		"`guildID` varchar(25) NOT NULL," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
@@ -51,7 +52,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
 		"`roleID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''," +
@@ -59,7 +60,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`type` int(11) NOT NULL DEFAULT '0'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -71,7 +72,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`setting` text NOT NULL DEFAULT ''," +
 		"`value` text NOT NULL DEFAULT ''," +
@@ -79,23 +80,14 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	// _, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `starboard` (" +
-	// 	"`guildID` text NOT NULL DEFAULT ''," +
-	// 	"`chanID` text NOT NULL DEFAULT ''," +
-	// 	"`enabled` tinyint(1) NOT NULL DEFAULT '1'," +
-	// 	"`minimum` int(11) NOT NULL DEFAULT '5'," +
-	// 	"PRIMARY KEY (`iid`)" +
-	// 	") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	// mErr.Append(err)
-
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`data` mediumtext NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`channelID` text NOT NULL DEFAULT ''," +
@@ -104,7 +96,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`timestamp` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
@@ -113,7 +105,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
@@ -125,7 +117,7 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`sessionkey` text NOT NULL DEFAULT ''," +
 		"`userID` text NOT NULL DEFAULT ''," +
@@ -134,13 +126,16 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	// _, err = m.DB.Exec("CREATE TABLE IF NOT EXISTS `imagestore` (" +
-	// 	"`id` varchar(25) NOT NULL DEFAULT ''," +
-	// 	"`mimeType` text NOT NULL DEFAULT ''," +
-	// 	"`data` longblob NOT NULL DEFAULT ''," +
-	// 	"PRIMARY KEY (`id`)" +
-	// 	") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	// mErr.Append(err)
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
+		"`userID` varchar(25) NOT NULL," +
+		"`salt` text NOT NULL," +
+		"`created` timestamp NOT NULL," +
+		"`expires` timestamp NOT NULL," +
+		"`lastAccess` timestamp NOT NULL," +
+		"`hits` bigint(20) NOT NULL," +
+		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
 
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
@@ -155,20 +150,20 @@ func (m *MySQLDriver) Connect(credentials ...interface{}) error {
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci&parseTime=true",
 		creds.User, creds.Password, creds.Host, creds.Database)
-	m.DB, err = sql.Open("mysql", dsn)
+	m.db, err = sql.Open("mysql", dsn)
 	m.setup()
 	return err
 }
 
 func (m *MySQLDriver) Close() {
-	if m.DB != nil {
-		m.DB.Close()
+	if m.db != nil {
+		m.db.Close()
 	}
 }
 
 func (m *MySQLDriver) getGuildSetting(guildID, key string) (string, error) {
 	var value string
-	err := m.DB.QueryRow(
+	err := m.db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
 		guildID).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -178,7 +173,7 @@ func (m *MySQLDriver) getGuildSetting(guildID, key string) (string, error) {
 }
 
 func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) (err error) {
-	res, err := m.DB.Exec(
+	res, err := m.db.Exec(
 		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
 		value, guildID)
 	if err != nil {
@@ -190,7 +185,7 @@ func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) (err er
 		return
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec(
+		_, err = m.db.Exec(
 			fmt.Sprintf("INSERT INTO guilds (guildID, %s) VALUES (?, ?)", key),
 			guildID, value)
 	}
@@ -279,7 +274,7 @@ func (m *MySQLDriver) GetMemberPermission(s *discordgo.Session, guildID string, 
 
 func (m *MySQLDriver) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
 	results := make(map[string]permissions.PermissionArray)
-	rows, err := m.DB.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
+	rows, err := m.db.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
 	if err != nil {
 		return nil, err
@@ -298,12 +293,12 @@ func (m *MySQLDriver) GetGuildPermissions(guildID string) (map[string]permission
 
 func (m *MySQLDriver) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	if len(p) == 0 {
-		_, err := m.DB.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
+		_, err := m.db.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
 		return err
 	}
 
 	pStr := strings.Join(p, ",")
-	res, err := m.DB.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
+	res, err := m.db.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
 		pStr, roleID, guildID)
 	if err != nil {
 		return err
@@ -313,7 +308,7 @@ func (m *MySQLDriver) SetGuildRolePermission(guildID, roleID string, p permissio
 		return err
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
+		_, err = m.db.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
 			roleID, guildID, pStr)
 	}
 	return err
@@ -343,7 +338,7 @@ func (m *MySQLDriver) SetGuildBackup(guildID string, enabled bool) error {
 
 func (m *MySQLDriver) GetSetting(setting string) (string, error) {
 	var value string
-	err := m.DB.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
+	err := m.db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
 	if err == sql.ErrNoRows {
 		err = ErrDatabaseNotFound
 	}
@@ -351,32 +346,32 @@ func (m *MySQLDriver) GetSetting(setting string) (string, error) {
 }
 
 func (m *MySQLDriver) SetSetting(setting, value string) error {
-	res, err := m.DB.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
+	res, err := m.db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
 	ar, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
+		_, err = m.db.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
 	}
 	return err
 }
 
 func (m *MySQLDriver) AddReport(rep *report.Report) error {
-	_, err := m.DB.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+	_, err := m.db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
 func (m *MySQLDriver) DeleteReport(id snowflake.ID) error {
-	_, err := m.DB.Exec("DELETE FROM reports WHERE id = ?", id)
+	_, err := m.db.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 
 func (m *MySQLDriver) GetReport(id snowflake.ID) (*report.Report, error) {
 	rep := new(report.Report)
 
-	row := m.DB.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
+	row := m.db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
 	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -390,7 +385,7 @@ func (m *MySQLDriver) GetReportsGuild(guildID string, offset, limit int) ([]*rep
 		limit = 1000
 	}
 
-	rows, err := m.DB.Query(
+	rows, err := m.db.Query(
 		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
 			"FROM reports WHERE guildID = ? "+
 			"ORDER BY id DESC "+
@@ -422,7 +417,7 @@ func (m *MySQLDriver) GetReportsFiltered(guildID, memberID string, repType int) 
 	if repType != -1 {
 		query += fmt.Sprintf(` AND type = %d`, repType)
 	}
-	rows, err := m.DB.Query(query)
+	rows, err := m.db.Query(query)
 	var results []*report.Report
 	if err != nil {
 		return nil, err
@@ -439,7 +434,7 @@ func (m *MySQLDriver) GetReportsFiltered(guildID, memberID string, repType int) 
 }
 
 func (m *MySQLDriver) GetReportsGuildCount(guildID string) (count int, err error) {
-	err = m.DB.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
+	err = m.db.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
 	return
 }
 
@@ -457,12 +452,12 @@ func (m *MySQLDriver) GetReportsFilteredCount(guildID, memberID string, repType 
 		query += fmt.Sprintf(` AND type = %d`, repType)
 	}
 
-	err = m.DB.QueryRow(query).Scan(&count)
+	err = m.db.QueryRow(query).Scan(&count)
 	return
 }
 
 func (m *MySQLDriver) GetVotes() (map[string]*vote.Vote, error) {
-	rows, err := m.DB.Query("SELECT id, data FROM votes")
+	rows, err := m.db.Query("SELECT id, data FROM votes")
 	results := make(map[string]*vote.Vote)
 	if err != nil {
 		return nil, err
@@ -490,25 +485,25 @@ func (m *MySQLDriver) AddUpdateVote(vote *vote.Vote) error {
 		return err
 	}
 
-	res, err := m.DB.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
+	res, err := m.db.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
 	ar, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
+		_, err = m.db.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
 	}
 
 	return err
 }
 
 func (m *MySQLDriver) DeleteVote(voteID string) error {
-	_, err := m.DB.Exec("DELETE FROM votes WHERE id = ?", voteID)
+	_, err := m.db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
 }
 
 func (m *MySQLDriver) GetMuteRoles() (map[string]string, error) {
-	rows, err := m.DB.Query("SELECT guildID, muteRoleID FROM guilds")
+	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
 	results := make(map[string]string)
 	if err != nil {
 		return nil, err
@@ -537,7 +532,7 @@ func (m *MySQLDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnoti
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
 	}
-	err := m.DB.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
+	err := m.db.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
 		twitchUserID, guildID).Scan(&t.ChannelID)
 	if err == sql.ErrNoRows {
 		err = ErrDatabaseNotFound
@@ -546,7 +541,7 @@ func (m *MySQLDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnoti
 }
 
 func (m *MySQLDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
-	res, err := m.DB.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
+	res, err := m.db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
 		return err
@@ -556,14 +551,14 @@ func (m *MySQLDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error 
 		return err
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
+		_, err = m.db.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
 			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
 	}
 	return err
 }
 
 func (m *MySQLDriver) DeleteTwitchNotify(twitchUserID, guildID string) error {
-	_, err := m.DB.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
+	_, err := m.db.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
 	return err
 }
 
@@ -572,7 +567,7 @@ func (m *MySQLDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
 	}
-	rows, err := m.DB.Query(query)
+	rows, err := m.db.Query(query)
 	results := make([]*twitchnotify.DBEntry, 0)
 	if err != nil {
 		return nil, err
@@ -589,12 +584,12 @@ func (m *MySQLDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify
 
 func (m *MySQLDriver) AddBackup(guildID, fileID string) error {
 	timestamp := time.Now().Unix()
-	_, err := m.DB.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
+	_, err := m.db.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
 	return err
 }
 
 func (m *MySQLDriver) DeleteBackup(guildID, fileID string) error {
-	_, err := m.DB.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
+	_, err := m.db.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
 	return err
 }
 
@@ -649,7 +644,7 @@ func (m *MySQLDriver) SetGuildLeaveMsg(guildID string, channelID string, msg str
 }
 
 func (m *MySQLDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
-	rows, err := m.DB.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
+	rows, err := m.db.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
 	}
@@ -673,7 +668,7 @@ func (m *MySQLDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error) 
 }
 
 func (m *MySQLDriver) GetGuilds() ([]string, error) {
-	rows, err := m.DB.Query("SELECT guildID FROM guilds WHERE backup = '1'")
+	rows, err := m.db.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
 	}
@@ -695,13 +690,13 @@ func (m *MySQLDriver) GetGuilds() ([]string, error) {
 }
 
 func (m *MySQLDriver) AddTag(tag *tag.Tag) error {
-	_, err := m.DB.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
+	_, err := m.db.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
 	return err
 }
 
 func (m *MySQLDriver) EditTag(tag *tag.Tag) error {
-	_, err := m.DB.Exec("UPDATE tags SET "+
+	_, err := m.db.Exec("UPDATE tags SET "+
 		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
 		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
 	if err == sql.ErrNoRows {
@@ -715,7 +710,7 @@ func (m *MySQLDriver) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	var timestampCreated int64
 	var timestampLastEdit int64
 
-	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	row := m.db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE id = ?", id)
 
 	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
@@ -738,7 +733,7 @@ func (m *MySQLDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, err
 	var timestampCreated int64
 	var timestampLastEdit int64
 
-	row := m.DB.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	row := m.db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE ident = ? AND guildID = ?", ident, guildID)
 
 	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
@@ -757,7 +752,7 @@ func (m *MySQLDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, err
 }
 
 func (m *MySQLDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
-	rows, err := m.DB.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	rows, err := m.db.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -785,7 +780,7 @@ func (m *MySQLDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 }
 
 func (m *MySQLDriver) DeleteTag(id snowflake.ID) error {
-	_, err := m.DB.Exec("DELETE FROM tags WHERE id = ?", id)
+	_, err := m.db.Exec("DELETE FROM tags WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}
@@ -793,7 +788,7 @@ func (m *MySQLDriver) DeleteTag(id snowflake.ID) error {
 }
 
 func (m *MySQLDriver) SetSession(key, userID string, expires time.Time) error {
-	res, err := m.DB.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
+	res, err := m.db.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
 	if err != sql.ErrNoRows && err != nil {
 		return err
 	}
@@ -803,7 +798,7 @@ func (m *MySQLDriver) SetSession(key, userID string, expires time.Time) error {
 		return err
 	}
 	if ar == 0 {
-		_, err = m.DB.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
+		_, err = m.db.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
 	}
 	return err
 }
@@ -811,7 +806,7 @@ func (m *MySQLDriver) SetSession(key, userID string, expires time.Time) error {
 func (m *MySQLDriver) GetSession(key string) (string, error) {
 	var userID string
 	var expires time.Time
-	err := m.DB.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
+	err := m.db.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
 		Scan(&userID, &expires)
 
 	if err == sql.ErrNoRows {
@@ -829,7 +824,7 @@ func (m *MySQLDriver) GetSession(key string) (string, error) {
 }
 
 func (m *MySQLDriver) DeleteSession(userID string) error {
-	_, err := m.DB.Exec("DELETE FROM sessions WHERE userID = ?", userID)
+	_, err := m.db.Exec("DELETE FROM sessions WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}
@@ -838,7 +833,7 @@ func (m *MySQLDriver) DeleteSession(userID string) error {
 
 func (m *MySQLDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	img := new(imgstore.Image)
-	row := m.DB.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
+	row := m.db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
 	if err == sql.ErrNoRows {
 		return nil, ErrDatabaseNotFound
@@ -853,12 +848,56 @@ func (m *MySQLDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 }
 
 func (m *MySQLDriver) SaveImageData(img *imgstore.Image) error {
-	_, err := m.DB.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
+	_, err := m.db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }
 
 func (m *MySQLDriver) RemoveImageData(id snowflake.ID) error {
-	_, err := m.DB.Exec("DELETE FROM imagestore WHERE id = ?", id)
+	_, err := m.db.Exec("DELETE FROM imagestore WHERE id = ?", id)
+	if err == sql.ErrNoRows {
+		return ErrDatabaseNotFound
+	}
+	return err
+}
+
+func (m *MySQLDriver) SetAPIToken(token *models.APITokenEntry) (err error) {
+	res, err := m.db.Exec(
+		"UPDATE apitokens SET "+
+			"salt = ?, created = ?, expires = ?, lastAccess = ?, hits = ? "+
+			"WHERE userID = ?",
+		token.Salt, token.Created, token.Expires, token.LastAccess, token.Hits, token.UserID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec(
+			"INSERT INTO apitokens "+
+				"(userID, salt, created, expires, lastAccess, hits) "+
+				"VALUES (?, ?, ?, ?, ?, ?)",
+			token.UserID, token.Salt, token.Created, token.Expires, token.LastAccess, token.Hits)
+	}
+	return
+}
+
+func (m *MySQLDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
+	t = new(models.APITokenEntry)
+	err = m.db.QueryRow(
+		"SELECT userID, salt, created, expires, lastAccess, hits "+
+			"FROM apitokens WHERE userID = ?", userID).
+		Scan(&t.UserID, &t.Salt, &t.Created, &t.Expires, &t.LastAccess, &t.Hits)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MySQLDriver) DeleteAPIKey(userID string) error {
+	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}
