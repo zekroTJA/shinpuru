@@ -16,7 +16,7 @@ func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storag
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
 		ws, err := webserver.New(db, st, s, cmdHandler, cfg)
 		if err != nil {
-			util.Log.Info(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
+			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}
 
 		go ws.ListenAndServeBlocking()

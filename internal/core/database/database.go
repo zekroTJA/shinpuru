@@ -106,7 +106,7 @@ type Database interface {
 
 	SetAPIToken(token *models.APITokenEntry) error
 	GetAPIToken(userID string) (*models.APITokenEntry, error)
-	DeleteAPIKey(userID string) error
+	DeleteAPIToken(userID string) error
 
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)

@@ -93,7 +93,7 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 		Handler: ws.router.HandleRequest,
 	}
 
-	ws.auth = NewAuth(db, s)
+	ws.auth = NewAuth(db, s, []byte(config.WebServer.APITokenKey))
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
 		config.Discord.ClientID,
@@ -206,4 +206,9 @@ func (ws *WebServer) registerHandlers() {
 	reports := api.Group("/reports")
 	reports.
 		Get("/<id:[0-9]+>", ws.handlerGetReport)
+
+	api.
+		Get("/token", ws.handlerGetToken).
+		Post(ws.handlerPostToken).
+		Delete(ws.handlerDeleteToken)
 }

@@ -1083,3 +1083,56 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 
 	return nil
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/token
+
+func (ws *WebServer) handlerGetToken(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	token, err := ws.db.GetAPIToken(userID)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, fmt.Errorf("no token found"), fasthttp.StatusNotFound)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	tokenResp := &APITokenResponse{
+		Created:    token.Created,
+		Expires:    token.Expires,
+		Hits:       token.Hits,
+		LastAccess: token.LastAccess,
+	}
+
+	return jsonResponse(ctx, tokenResp, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - POST /api/token
+
+func (ws *WebServer) handlerPostToken(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	token, err := ws.auth.CreateAPIToken(userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, token, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - DELETE /api/token
+
+func (ws *WebServer) handlerDeleteToken(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	err := ws.auth.db.DeleteAPIToken(userID)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, fmt.Errorf("no token found"), fasthttp.StatusNotFound)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}

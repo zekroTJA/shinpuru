@@ -704,12 +704,12 @@ func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, e
 	return
 }
 
-func (m *RedisMiddleware) DeleteAPIKey(userID string) (err error) {
+func (m *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
 
 	if err = m.client.Del(key).Err(); err != nil {
 		return
 	}
 
-	return m.db.DeleteAPIKey(userID)
+	return m.db.DeleteAPIToken(userID)
 }

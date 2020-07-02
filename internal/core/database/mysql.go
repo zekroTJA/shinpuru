@@ -896,7 +896,7 @@ func (m *MySQLDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err e
 	return
 }
 
-func (m *MySQLDriver) DeleteAPIKey(userID string) error {
+func (m *MySQLDriver) DeleteAPIToken(userID string) error {
 	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound

@@ -882,7 +882,7 @@ func (m *SqliteDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err 
 	return
 }
 
-func (m *SqliteDriver) DeleteAPIKey(userID string) error {
+func (m *SqliteDriver) DeleteAPIToken(userID string) error {
 	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
