@@ -47,11 +47,31 @@ type Member struct {
 // Guild extends a discordgo.Guild as
 // response model.
 type Guild struct {
-	*discordgo.Guild
+	ID                       string                      `json:"id"`
+	Name                     string                      `json:"name"`
+	Icon                     string                      `json:"icon"`
+	Region                   string                      `json:"region"`
+	AfkChannelID             string                      `json:"afk_channel_id"`
+	OwnerID                  string                      `json:"owner_id"`
+	JoinedAt                 discordgo.Timestamp         `json:"joined_at"`
+	Splash                   string                      `json:"splash"`
+	MemberCount              int                         `json:"member_count"`
+	VerificationLevel        discordgo.VerificationLevel `json:"verification_level"`
+	EmbedEnabled             bool                        `json:"embed_enabled"`
+	Large                    bool                        `json:"large"`
+	Unavailable              bool                        `json:"unavailable"`
+	MfaLevel                 discordgo.MfaLevel          `json:"mfa_level"`
+	Description              string                      `json:"description"`
+	Banner                   string                      `json:"banner"`
+	PremiumTier              discordgo.PremiumTier       `json:"premium_tier"`
+	PremiumSubscriptionCount int                         `json:"premium_subscription_count"`
 
-	SelfMember *Member   `json:"self_member"`
-	IconURL    string    `json:"icon_url"`
-	Members    []*Member `json:"members"`
+	Roles    []*discordgo.Role    `json:"roles"`
+	Channels []*discordgo.Channel `json:"channels"`
+
+	SelfMember *Member `json:"self_member"`
+	IconURL    string  `json:"icon_url"`
+	// Members    []*Member `json:"members"`
 }
 
 // GuildReduced is a Guild model with fewer
@@ -209,10 +229,14 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		return nil
 	}
 
-	membs := make([]*Member, len(g.Members))
-	for i, m := range g.Members {
-		membs[i] = MemberFromMember(m)
-	}
+	// var membs []*Member
+
+	// if includeMembers {
+	// 	membs = make([]*Member, len(g.Members))
+	// 	for i, m := range g.Members {
+	// 		membs[i] = MemberFromMember(m)
+	// 	}
+	// }
 
 	selfmm := MemberFromMember(m)
 
@@ -228,9 +252,28 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 	}
 
 	return &Guild{
-		Guild:      g,
+		AfkChannelID:             g.AfkChannelID,
+		Banner:                   g.Banner,
+		Channels:                 g.Channels,
+		Description:              g.Description,
+		EmbedEnabled:             g.EmbedEnabled,
+		ID:                       g.ID,
+		Icon:                     g.Icon,
+		JoinedAt:                 g.JoinedAt,
+		Large:                    g.Large,
+		MemberCount:              g.MemberCount,
+		MfaLevel:                 g.MfaLevel,
+		Name:                     g.Name,
+		OwnerID:                  g.OwnerID,
+		PremiumSubscriptionCount: g.PremiumSubscriptionCount,
+		PremiumTier:              g.PremiumTier,
+		Region:                   g.Region,
+		Roles:                    g.Roles,
+		Splash:                   g.Splash,
+		Unavailable:              g.Unavailable,
+		VerificationLevel:        g.VerificationLevel,
+
 		SelfMember: selfmm,
-		Members:    membs,
 		IconURL:    getIconURL(g.ID, g.Icon),
 	}
 }

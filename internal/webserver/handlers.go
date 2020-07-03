@@ -101,7 +101,8 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, GuildFromGuild(guild, memb, ws.cmdhandler), fasthttp.StatusOK)
+	gRes := GuildFromGuild(guild, memb, ws.cmdhandler)
+	return jsonResponse(ctx, gRes, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
