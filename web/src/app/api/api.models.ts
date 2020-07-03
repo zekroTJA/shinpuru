@@ -153,7 +153,7 @@ export interface SystemInfo {
 export interface APIToken {
   created: Date;
   expires: Date;
-  lastAccess: Date;
+  last_access: Date;
   hits: number;
   token?: string;
 }

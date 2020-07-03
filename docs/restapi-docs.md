@@ -353,3 +353,211 @@ Example:
 
 ### Report
 
+A shinpuru Report record object.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | The snowflake ID of the report. |
+| `type` | `int` | The type of the report:<br>`0` - kick<br>`1` - ban<br>`2` - mute<br>`4` - warn<br>`5` - advertisement |
+| `guild_id` | `string` | The snowflake ID of the guild the report belongs to. |
+| `executor_id` | `string` | The snowflake ID of the executor of the report. |
+| `victim_id` | `string` | The snowflake ID of the victim of the report. |
+| `message` | `string` | The message of the report. |
+| `attachment_url` | `string` | The resource URL of an optional attachment. |
+| `type_name` | `string` | The name of the type of the report. |
+| `created` | `timestamp` | The creation timestamp of the report. |
+
+Example:
+```json
+{
+  "id": "6678266303259619328",
+  "type": 3,
+  "guild_id": "547762913876639754",
+  "executor_id": "221905671296253953",
+  "victim_id": "455819141245304832",
+  "message": "Bad language",
+  "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+  "type_name": "WARN",
+  "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### GuildSettings
+
+A wrapper object for all guild specific preferences and settings.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `prefix` | `string` | The guild specific prefix. |
+| `perms` | `{ string: string[] }` | A map of role-sepcific permission rules. |
+| `autorole` | `string` | The snowflake ID of the set autorole. |
+| `modlogchannel` | `string` | The snowflake ID of the set modlog channel. |
+| `voicelogchannel` | `string` | The snowflake ID of the set voicelog channel. |
+| `joinmessagechannel` | `string` | The snowflake ID of the channel where join messages are sent to. |
+| `joinmessagetext` | `string` | The text which is sent into the join message channel when a user joins the guild. |
+| `leavemessagechannel` | `string` | The snowflake ID of the channel where leave messages are sent to. |
+| `leavemessagetext` | `string` | The text which is sent into the leave message channel when a user leaves the guild. |
+
+Example:
+```json
+{
+  "prefix": "!",
+  "perms": {
+    "362166741373288448": [
+      "+sp.guild.mod.*",
+      "-sp.guild.mod.ban",
+      "-sp.guild.mod.kick"
+    ],
+    "406891236407115777": [
+      "+sp.guild.config.*"
+    ]
+  },
+  "autorole": "362169804146081802",
+  "modlogchannel": "529279471350710314",
+  "voicelogchannel": "454618414258978839",
+  "joinmessagechannel": "381119295632965655",
+  "joinmessagetext": "Welcome, [user]!",
+  "leavemessagechannel": "",
+  "leavemessagetext": ""
+}
+```
+
+### GlobalInviteSettings
+
+An object which specifies the global invite settings.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `invite_url` | `string` | The invite URL to the guild. |
+| `message` | `string` | The displayed message. |
+| `guild` | `Guild` | Guild object of the guild to be invited to. |
+
+
+Example:
+```json
+{
+  "invite_url": "https://discord.gg/sxUnqAn",
+  "message": "Join the shinpuru Canary test guild to test the latest dev build!",
+  "guild": {
+    "id": "547762913876639754",
+    "name": "shinpuru Canary Testing",
+    "icon": "48684c3ad6e9b42793675fda9b09d64c",
+    "region": "eu-central",
+    "afk_channel_id": "",
+    "owner_id": "221905671296253953",
+    "joined_at": "",
+    "splash": "",
+    "member_count": 0,
+    "verification_level": 0,
+    "embed_enabled": false,
+    "large": false,
+    "unavailable": false,
+    "mfa_level": 0,
+    "description": "",
+    "banner": "",
+    "premium_tier": 0,
+    "premium_subscription_count": 0,
+    "roles": [
+      {
+        "id": "547762913876639754",
+        "name": "@everyone",
+        "managed": false,
+        "mentionable": false,
+        "hoist": false,
+        "color": 0,
+        "position": 0,
+        "permissions": 104193601
+      }
+    ],
+    "channels": null,
+    "self_member": null,
+    "icon_url": "https://cdn.discordapp.com/icons/547762913876639754/48684c3ad6e9b42793675fda9b09d64c.png"
+  }
+}
+```
+
+### GlobalPresence
+
+An object which specifies the bot instance's presence.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `game` | `string` | The game text. |
+| `status` | `string` | The online status:<br>- `online`<br>- `away`<br>- `dnd`<br>- `invisible` |
+
+Example:
+```json
+{
+  "game": "sp-canary.zekro.de",
+  "status": "online"
+}
+```
+
+### SystemInfo
+
+An object which wraps general information about the instance and the system where the instance is running on.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | `string` | The build version of shinpuru. |
+| `commit_hash` | `string` | The commit hash of the build of shinpuru. |
+| `build_date` | `timestamp` | The timestamp when the build was created. |
+| `go_version` | `string` | The Go version used to compile the build. |
+| `uptime` | `int` | Number of seconds since instance initialization. |
+| `uptime_str` | `string` | Number of seconds since instance initialization as string. |
+| `os` | `string` | The os identifier the instance is running on. |
+| `arch` | `string` | The architecture the instance is running on. |
+| `cpus` | `int` | Number of CPU threads allocated. |
+| `go_routines` | `int` | Number of concurrently running goroutines. |
+| `stack_use` | `int` | Number of bytes allocated on the stack. |
+| `stack_use_str` | `string` | Number of bytes allocated on the stack as string. |
+| `heap_use` | `int` | Number of bytes allocated on the heap. |
+| `heap_use_str` | `string` | Number of bytes allocated on the heap as string. |
+| `bot_user_id` | `string` | The ID of the bot account used. |
+| `bot_invite` | `string` | The URL to invite the bot including needed permissions. |
+| `guilds` | `int` | Number of guilds the instance is running on. |
+
+Example:
+```json
+{
+  "version": "0.17.0-99-g8c1ce6b",
+  "commit_hash": "8c1ce6b9c07412067f955a654003c8e6f030353b",
+  "build_date": "2020-07-03T09:23:40Z",
+  "go_version": "go1.14.4",
+  "uptime": 5308,
+  "uptime_str": "5308",
+  "os": "linux",
+  "arch": "amd64",
+  "cpus": 6,
+  "go_routines": 29,
+  "stack_use": 720896,
+  "stack_use_str": "720896",
+  "heap_use": 4866048,
+  "heap_use_str": "4866048",
+  "bot_user_id": "536916384026722314",
+  "bot_invite": "https://discordapp.com/api/oauth2/authorize?client_id=536916384026722314&scope=bot&permissions=2080894065",
+  "guilds": 9
+}
+```
+
+### APIToken
+
+An object representing information about an API token.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `created` | `timestamp` | The creation timestamp of the token. |
+| `expires` | `timestamp` | The expiration timestamp of the token. |
+| `last_access` | `timestamp` | The creation timestamp of the token. |
+
+
+Example:
+```json
+{
+  "created": "2020-07-03T10:59:06.100282743Z",
+  "expires": "2021-07-03T10:59:06.100282743Z",
+  "lastAccess": "0001-01-01T00:00:00Z",
+  "hits": 0,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjUzMDk5NDYsImlhdCI6MTU5Mzc3Mzk0NiwiaXNzIjoic2hpbnB1cnUgdi4wLjE3LjAtOTktZzhjMWNlNmIiLCJuYmYiOjE1OTM3NzM5NDYsInN1YiI6IjIyMTkwNTY3MTI5NjI1Mzk1MyIsInNwX3NhbHQiOiJNd2RhUUxpcUJDNWZhNXFkaHdjdVpnPT0ifQ.2kifiXUHJTS-CNw-n8dUMSWD44Dwzb73EsvDtJjS8aE"
+}
+```

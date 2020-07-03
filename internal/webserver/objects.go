@@ -104,7 +104,7 @@ type Report struct {
 }
 
 // GuildSettings is the response model for
-// guil dsettings and preferences.
+// guild settings and preferences.
 type GuildSettings struct {
 	Prefix              string                                 `json:"prefix"`
 	Perms               map[string]permissions.PermissionArray `json:"perms"`
@@ -192,7 +192,7 @@ type SystemInfo struct {
 type APITokenResponse struct {
 	Created    time.Time `json:"created"`
 	Expires    time.Time `json:"expires"`
-	LastAccess time.Time `json:"lastAccess"`
+	LastAccess time.Time `json:"last_access"`
 	Hits       int       `json:"hits"`
 	Token      string    `json:"token,omitempty"`
 }
