@@ -17,6 +17,8 @@ var (
 // text or message attachments and returns the text of the message
 // excluding the matched link and the image link.
 func ExtractFromMessage(text string, attachments []*discordgo.MessageAttachment) (resText, imgLink string) {
+	resText = text
+
 	if len(attachments) > 0 {
 		imgLink = attachments[0].URL
 	} else {

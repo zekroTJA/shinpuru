@@ -229,15 +229,6 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		return nil
 	}
 
-	// var membs []*Member
-
-	// if includeMembers {
-	// 	membs = make([]*Member, len(g.Members))
-	// 	for i, m := range g.Members {
-	// 		membs[i] = MemberFromMember(m)
-	// 	}
-	// }
-
 	selfmm := MemberFromMember(m)
 
 	if m != nil {
