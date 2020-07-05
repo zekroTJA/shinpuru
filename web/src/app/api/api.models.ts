@@ -149,3 +149,11 @@ export interface SystemInfo {
   bot_invite: string;
   guilds: number;
 }
+
+export interface APIToken {
+  created: Date;
+  expires: Date;
+  last_access: Date;
+  hits: number;
+  token?: string;
+}

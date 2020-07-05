@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/dgrijalva/jwt-go"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 
@@ -46,11 +47,31 @@ type Member struct {
 // Guild extends a discordgo.Guild as
 // response model.
 type Guild struct {
-	*discordgo.Guild
+	ID                       string                      `json:"id"`
+	Name                     string                      `json:"name"`
+	Icon                     string                      `json:"icon"`
+	Region                   string                      `json:"region"`
+	AfkChannelID             string                      `json:"afk_channel_id"`
+	OwnerID                  string                      `json:"owner_id"`
+	JoinedAt                 discordgo.Timestamp         `json:"joined_at"`
+	Splash                   string                      `json:"splash"`
+	MemberCount              int                         `json:"member_count"`
+	VerificationLevel        discordgo.VerificationLevel `json:"verification_level"`
+	EmbedEnabled             bool                        `json:"embed_enabled"`
+	Large                    bool                        `json:"large"`
+	Unavailable              bool                        `json:"unavailable"`
+	MfaLevel                 discordgo.MfaLevel          `json:"mfa_level"`
+	Description              string                      `json:"description"`
+	Banner                   string                      `json:"banner"`
+	PremiumTier              discordgo.PremiumTier       `json:"premium_tier"`
+	PremiumSubscriptionCount int                         `json:"premium_subscription_count"`
 
-	SelfMember *Member   `json:"self_member"`
-	IconURL    string    `json:"icon_url"`
-	Members    []*Member `json:"members"`
+	Roles    []*discordgo.Role    `json:"roles"`
+	Channels []*discordgo.Channel `json:"channels"`
+
+	SelfMember *Member `json:"self_member"`
+	IconURL    string  `json:"icon_url"`
+	// Members    []*Member `json:"members"`
 }
 
 // GuildReduced is a Guild model with fewer
@@ -83,7 +104,7 @@ type Report struct {
 }
 
 // GuildSettings is the response model for
-// guil dsettings and preferences.
+// guild settings and preferences.
 type GuildSettings struct {
 	Prefix              string                                 `json:"prefix"`
 	Perms               map[string]permissions.PermissionArray `json:"perms"`
@@ -166,6 +187,24 @@ type SystemInfo struct {
 	Guilds int `json:"guilds"`
 }
 
+// APITokenResponse wraps the reponse model of
+// an apit token request.
+type APITokenResponse struct {
+	Created    time.Time `json:"created"`
+	Expires    time.Time `json:"expires"`
+	LastAccess time.Time `json:"last_access"`
+	Hits       int       `json:"hits"`
+	Token      string    `json:"token,omitempty"`
+}
+
+// APITokenClaims extends the standard jwt claims
+// by private claims used for api tokens.
+type APITokenClaims struct {
+	jwt.StandardClaims
+
+	Salt string `json:"sp_salt,omitempty"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
@@ -190,11 +229,6 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		return nil
 	}
 
-	membs := make([]*Member, len(g.Members))
-	for i, m := range g.Members {
-		membs[i] = MemberFromMember(m)
-	}
-
 	selfmm := MemberFromMember(m)
 
 	if m != nil {
@@ -209,9 +243,28 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 	}
 
 	return &Guild{
-		Guild:      g,
+		AfkChannelID:             g.AfkChannelID,
+		Banner:                   g.Banner,
+		Channels:                 g.Channels,
+		Description:              g.Description,
+		EmbedEnabled:             g.EmbedEnabled,
+		ID:                       g.ID,
+		Icon:                     g.Icon,
+		JoinedAt:                 g.JoinedAt,
+		Large:                    g.Large,
+		MemberCount:              g.MemberCount,
+		MfaLevel:                 g.MfaLevel,
+		Name:                     g.Name,
+		OwnerID:                  g.OwnerID,
+		PremiumSubscriptionCount: g.PremiumSubscriptionCount,
+		PremiumTier:              g.PremiumTier,
+		Region:                   g.Region,
+		Roles:                    g.Roles,
+		Splash:                   g.Splash,
+		Unavailable:              g.Unavailable,
+		VerificationLevel:        g.VerificationLevel,
+
 		SelfMember: selfmm,
-		Members:    membs,
 		IconURL:    getIconURL(g.ID, g.Icon),
 	}
 }
@@ -257,6 +310,21 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 		TypeName: rtype,
 		Created:  r.GetTimestamp(),
 	}
+}
+
+// APITokenClaimsFromMap creates an APITokenClaims
+// model from given jwt.MapClaims.
+func APITokenClaimsFromMap(m jwt.MapClaims) APITokenClaims {
+	c := APITokenClaims{}
+
+	c.Issuer, _ = m["iss"].(string)
+	c.Subject, _ = m["sub"].(string)
+	c.ExpiresAt, _ = m["exp"].(int64)
+	c.NotBefore, _ = m["nbf"].(int64)
+	c.IssuedAt, _ = m["iat"].(int64)
+	c.Salt, _ = m["sp_salt"].(string)
+
+	return c
 }
 
 // getIconURL returns the CDN URL of a Discord icon

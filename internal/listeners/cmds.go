@@ -67,7 +67,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 	invoke = strings.ToLower(invoke)
 
 	if cmdInstance, ok := l.cmdHandler.GetCommand(invoke); ok {
-		guild, _ := s.Guild(e.GuildID)
+		guild, _ := s.State.Guild(e.GuildID)
 		cmdArgs := &commands.CommandArgs{
 			Args:       contSplit[1:],
 			Channel:    channel,

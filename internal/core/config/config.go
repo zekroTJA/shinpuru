@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
 // Discord holds general configurations to connect
@@ -72,6 +73,7 @@ type WebServer struct {
 	Enabled         bool          `json:"enabled"`
 	Addr            string        `json:"addr"`
 	TLS             *WebServerTLS `json:"tls"`
+	APITokenKey     string        `json:"apitokenkey"`
 	PublicAddr      string        `json:"publicaddr"`
 	DebugPublicAddr string        `json:"debugpublicaddr,omitempty"`
 }
@@ -151,6 +153,8 @@ type Parser interface {
 // GetDefaultConfig returns a Config instance with
 // default values.
 func GetDefaultConfig() *Config {
+	apiTokenKey, _ := random.GetRandBase64Str(32)
+
 	return &Config{
 		Version: 6,
 		Discord: &Discord{
@@ -189,9 +193,10 @@ func GetDefaultConfig() *Config {
 			},
 		},
 		WebServer: &WebServer{
-			Enabled:    true,
-			Addr:       ":8080",
-			PublicAddr: "https://example.com:8080",
+			Enabled:     true,
+			Addr:        ":8080",
+			APITokenKey: apiTokenKey,
+			PublicAddr:  "https://example.com:8080",
 			TLS: &WebServerTLS{
 				Enabled: false,
 			},

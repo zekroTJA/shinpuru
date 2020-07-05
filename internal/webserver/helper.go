@@ -125,7 +125,7 @@ func getIPAddr(ctx *routing.Context) string {
 func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	path := string(ctx.Path())
 
-	if strings.HasPrefix(path, "/api") || strings.HasPrefix(path, "/imagestore") || strings.HasPrefix(path, "/_/") {
+	if strings.HasPrefix(path, "/api/") || strings.HasPrefix(path, "/imagestore/") || strings.HasPrefix(path, "/_/") {
 		ctx.Next()
 		return nil
 	}
