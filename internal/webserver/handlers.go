@@ -211,9 +211,10 @@ func (ws *WebServer) handlerGetMemberPermissions(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/reports
 // - GET /api/guilds/:guildid/:memberid/reports
 
-func (ws *WebServer) handlerGetMemberReports(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetReports(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -254,9 +255,10 @@ func (ws *WebServer) handlerGetMemberReports(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/reports/count
 // - GET /api/guilds/:guildid/:memberid/reports/count
 
-func (ws *WebServer) handlerGetMemberReportsCount(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetReportsCount(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")

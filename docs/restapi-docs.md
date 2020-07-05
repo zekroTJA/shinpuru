@@ -35,12 +35,12 @@ Requests which produce a list as response are wrapped in the following model:
 Example: 
 ```json
 {
-    "n": 3,
-    "data": [
-        { ... },
-        { ... },
-        { ... }
-    ]
+  "n": 3,
+  "data": [
+    { ... },
+    { ... },
+    { ... }
+  ]
 }
 ```
 
@@ -549,6 +549,8 @@ An object representing information about an API token.
 | `created` | `timestamp` | The creation timestamp of the token. |
 | `expires` | `timestamp` | The expiration timestamp of the token. |
 | `last_access` | `timestamp` | The creation timestamp of the token. |
+| `hits` | `int` | The number of authentications processed with this token. |
+| `token?` | `string` | The token string. **This data is only hydrated on token generation!** |
 
 
 Example:
@@ -556,8 +558,879 @@ Example:
 {
   "created": "2020-07-03T10:59:06.100282743Z",
   "expires": "2021-07-03T10:59:06.100282743Z",
-  "lastAccess": "0001-01-01T00:00:00Z",
+  "last_access": "0001-01-01T00:00:00Z",
   "hits": 0,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjUzMDk5NDYsImlhdCI6MTU5Mzc3Mzk0NiwiaXNzIjoic2hpbnB1cnUgdi4wLjE3LjAtOTktZzhjMWNlNmIiLCJuYmYiOjE1OTM3NzM5NDYsInN1YiI6IjIyMTkwNTY3MTI5NjI1Mzk1MyIsInNwX3NhbHQiOiJNd2RhUUxpcUJDNWZhNXFkaHdjdVpnPT0ifQ.2kifiXUHJTS-CNw-n8dUMSWD44Dwzb73EsvDtJjS8aE"
+}
+```
+
+## Endpoints
+
+### Get Self User
+
+> ### `GET /api/me`
+
+Shows general user information about the authenticated user.
+
+**Example Response**
+
+```json
+{
+  "id": "221905671296253953",
+  "email": "",
+  "username": "zekro",
+  "avatar": "a_752a15d01e68fb5f6f6ec83400461a6a",
+  "locale": "",
+  "discriminator": "0001",
+  "token": "",
+  "verified": false,
+  "mfa_enabled": false,
+  "bot": false,
+  "avatar_url": "https://cdn.discordapp.com/avatars/221905671296253953/a_752a15d01e68fb5f6f6ec83400461a6a.gif",
+  "created_at": "2016-09-04T08:38:26.976834845Z",
+  "bot_owner": true
+}
+```
+
+### Get Guild List
+
+> ### `GET /api/guilds`
+
+Returns a list of guilds you and shinpuru are sharing.
+
+**Example Response**
+
+```json
+{
+  "n": 2,
+  "data": [
+    {
+      "id": "362162947738566657",
+      "name": "zekro's Privatbutze",
+      "icon": "2bdf517d77a79b1d6ba60457bd00128e",
+      "icon_url": "https://cdn.discordapp.com/icons/362162947738566657/2bdf517d77a79b1d6ba60457bd00128e.png",
+      "region": "europe",
+      "owner_id": "221905671296253953",
+      "joined_at": "2019-01-21T18:59:09.405000+00:00",
+      "member_count": 41
+    },
+    {
+      "id": "526196711962705925",
+      "name": "5w4gg3rn4ut_5t4t10n",
+      "icon": "5ec6d60236376005794d684c6e9a209a",
+      "icon_url": "https://cdn.discordapp.com/icons/526196711962705925/5ec6d60236376005794d684c6e9a209a.png",
+      "region": "eu-central",
+      "owner_id": "221905671296253953",
+      "joined_at": "2019-07-15T13:53:34.795000+00:00",
+      "member_count": 7
+    }
+  ]
+}
+```
+
+### Get Guild
+
+> ### `GET /api/guilds/:guildid`
+
+Returns details of a guild.
+
+**Example Response**
+
+```json
+{
+  "id": "362162947738566657",
+  "name": "zekro's Privatbutze",
+  "icon": "2bdf517d77a79b1d6ba60457bd00128e",
+  "region": "europe",
+  "afk_channel_id": "384315833104597005",
+  "owner_id": "221905671296253953",
+  "joined_at": "2019-01-21T18:59:09.405000+00:00",
+  "splash": "",
+  "member_count": 41,
+  "verification_level": 4,
+  "embed_enabled": false,
+  "large": false,
+  "unavailable": false,
+  "mfa_level": 0,
+  "description": "",
+  "banner": "",
+  "premium_tier": 1,
+  "premium_subscription_count": 3,
+  "roles": [
+    {
+      "id": "362162947738566657",
+      "name": "@everyone",
+      "managed": false,
+      "mentionable": false,
+      "hoist": false,
+      "color": 0,
+      "position": 0,
+      "permissions": 37084224
+    },
+    {
+      "id": "362166557721362433",
+      "name": "先生 (Sensei)",
+      "managed": false,
+      "mentionable": true,
+      "hoist": true,
+      "color": 16758016,
+      "position": 15,
+      "permissions": 512
+    },
+    {
+      "id": "362166741373288448",
+      "name": "先輩 (Senpai)",
+      "managed": false,
+      "mentionable": true,
+      "hoist": true,
+      "color": 3447003,
+      "position": 10,
+      "permissions": 2146958931
+    }
+  ],
+  "channels": [
+    {
+      "id": "381119295632965655",
+      "guild_id": "362162947738566657",
+      "name": "general",
+      "topic": "\n",
+      "type": 0,
+      "last_message_id": "720959238976962651",
+      "last_pin_timestamp": "2019-06-20T04:05:01.229000+00:00",
+      "nsfw": false,
+      "icon": "",
+      "position": 1,
+      "bitrate": 0,
+      "recipients": null,
+      "permission_overwrites": [
+        {
+          "id": "362162947738566657",
+          "type": "role",
+          "deny": 1024,
+          "allow": 0
+        },
+        {
+          "id": "362169804146081802",
+          "type": "role",
+          "deny": 0,
+          "allow": 1024
+        }
+      ],
+      "user_limit": 0,
+      "parent_id": "362162947738566658",
+      "rate_limit_per_user": 0
+    }
+  ],
+  "self_member": {
+    "guild_id": "",
+    "joined_at": "2020-04-09T20:53:47.658000+00:00",
+    "nick": "",
+    "deaf": false,
+    "mute": false,
+    "user": {
+      "id": "221905671296253953",
+      "email": "",
+      "username": "zekro",
+      "avatar": "a_752a15d01e68fb5f6f6ec83400461a6a",
+      "locale": "",
+      "discriminator": "0001",
+      "token": "",
+      "verified": false,
+      "mfa_enabled": false,
+      "bot": false
+    },
+    "roles": [
+      "362166557721362433",
+      "362169804146081802",
+      "406891236407115777",
+      "583411624514289675",
+      "639385098021765131"
+    ],
+    "premium_since": "2020-04-15T09:24:24.174000+00:00",
+    "avatar_url": "https://cdn.discordapp.com/avatars/221905671296253953/a_752a15d01e68fb5f6f6ec83400461a6a.gif",
+    "created_at": "2016-09-04T08:38:26.976834845Z",
+    "dominance": 1
+  },
+  "icon_url": "https://cdn.discordapp.com/icons/362162947738566657/2bdf517d77a79b1d6ba60457bd00128e.png"
+}
+```
+
+### Get Guild Members List
+
+> ### `GET /api/guilds/:guildid/members`
+
+Returns a list of members of a guild. The upper limit of requestable items is `100`, so this request must be paginated.
+
+**Query Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit?` | `int` | Maximum ammount of items per request (`max` = `default` = `100`). |
+| `after?` | `string` | Show items after the specified snowflake ID. |
+
+
+**Example Response**
+
+```json
+{
+  "n": 1,
+  "data": [
+    {
+      "guild_id": "",
+      "joined_at": "2020-04-09T20:53:47.658000+00:00",
+      "nick": "",
+      "deaf": false,
+      "mute": false,
+      "user": {
+        "id": "221905671296253953",
+        "email": "",
+        "username": "zekro",
+        "avatar": "a_752a15d01e68fb5f6f6ec83400461a6a",
+        "locale": "",
+        "discriminator": "0001",
+        "token": "",
+        "verified": false,
+        "mfa_enabled": false,
+        "bot": false
+      },
+      "roles": [
+        "362166557721362433",
+        "362169804146081802",
+        "406891236407115777",
+        "583411624514289675",
+        "639385098021765131"
+      ],
+      "premium_since": "2020-04-15T09:24:24.174000+00:00",
+      "avatar_url": "https://cdn.discordapp.com/avatars/221905671296253953/a_752a15d01e68fb5f6f6ec83400461a6a.gif",
+      "created_at": "2016-09-04T08:38:26.976834845Z",
+      "dominance": 0
+    }
+  ]
+}
+```
+
+### Get Guild Member
+
+> ### `GET /api/guilds/:guildid/:memberid`
+
+Shows information about a specific memebr on the specified guild.
+
+**Example Response**
+
+```json
+{
+  "guild_id": "362162947738566657",
+  "joined_at": "2020-04-09T20:53:47.658000+00:00",
+  "nick": "",
+  "deaf": false,
+  "mute": false,
+  "user": {
+    "id": "221905671296253953",
+    "email": "",
+    "username": "zekro",
+    "avatar": "a_752a15d01e68fb5f6f6ec83400461a6a",
+    "locale": "",
+    "discriminator": "0001",
+    "token": "",
+    "verified": false,
+    "mfa_enabled": false,
+    "bot": false
+  },
+  "roles": [
+    "362166557721362433",
+    "362169804146081802",
+    "406891236407115777",
+    "583411624514289675",
+    "639385098021765131"
+  ],
+  "premium_since": "2020-04-15T09:24:24.174000+00:00",
+  "avatar_url": "https://cdn.discordapp.com/avatars/221905671296253953/a_752a15d01e68fb5f6f6ec83400461a6a.gif",
+  "created_at": "2016-09-04T08:38:26.976834845Z",
+  "dominance": 1
+}
+```
+
+### Get Guild Member Permissions
+
+> ### `GET /api/guilds/:guildid/:memberid/permissions`
+
+Returns the calculated permissions rules array of the specified user on the specified guild.
+
+**Example Response**
+
+```json
+{
+  "permissions": [
+    "+sp.guild.config.*",
+    "+sp.*",
+    "+sp.guild.*",
+    "+sp.etc.*",
+    "+sp.chat.*"
+  ]
+}
+```
+
+### Get Guild Member Permissions Allowed
+
+> ### `GET /api/guilds/:guildid/:memberid/permissions/allowed`
+
+Returns a full list of all rule domains which are allowed for the specified user on the specified guild.
+
+**Example Response**
+
+```json
+{
+  "n": 33,
+  "data": [
+    "sp.etc.help",
+    "sp.guild.config.prefix",
+    "sp.guild.config.perms",
+    "sp.guild.mod.clear",
+    "sp.guild.mod.mvall",
+    "sp.etc.info",
+    "sp.chat.say",
+    "sp.chat.quote",
+    "sp.game",
+    "sp.guild.config.autorole",
+    "sp.guild.mod.report",
+    "sp.guild.config.modlog",
+    "sp.guild.mod.kick",
+    "sp.guild.mod.ban",
+    "sp.chat.vote",
+    "sp.chat.profile",
+    "sp.etc.id",
+    "sp.guild.mod.mute",
+    "sp.guild.mod.ment",
+    "sp.chat.notify",
+    "sp.guild.config.voicelog",
+    "sp.etc.bug",
+    "sp.etc.stats",
+    "sp.chat.twitch",
+    "sp.guild.mod.ghostping",
+    "sp.chat.exec",
+    "sp.guild.admin.backup",
+    "sp.guild.mod.inviteblock",
+    "sp.chat.tag",
+    "sp.guild.config.joinmsg",
+    "sp.guild.config.leavemsg",
+    "sp.etc.snowflake",
+    "sp.chat.chanstats"
+  ]
+}
+```
+
+### Get Guild Member Permissions
+
+> ### `GET /api/guilds/:guildid/:memberid/permissions`
+
+Returns the calculated permissions rules array of the specified user on the specified guild.
+
+**Example Response**
+
+```json
+{
+  "permissions": [
+    "+sp.guild.config.*",
+    "+sp.*",
+    "+sp.guild.*",
+    "+sp.etc.*",
+    "+sp.chat.*"
+  ]
+}
+```
+
+### Get Guild Reports
+
+> ### `GET /api/guilds/:guildid/reports`
+
+Displays a list of reports on the specified guild. This request can also be paginated.
+
+**Query Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit?` | `int` | Maximum ammount of items per request. |
+| `offset?` | `int` | Ammount of items to be skipped. |
+
+**Example Response**
+
+```json
+{
+  "n": 1,
+  "data": [
+    {
+      "id": "6678266303259619328",
+      "type": 3,
+      "guild_id": "547762913876639754",
+      "executor_id": "221905671296253953",
+      "victim_id": "455819141245304832",
+      "message": "Bad language",
+      "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+      "type_name": "WARN",
+      "created": "2020-07-03T09:29:57Z"
+    }
+  ]
+}
+```
+
+### Get Guild Reports Count
+
+> ### `GET /api/guilds/:guildid/reports/counts`
+
+Returns the accumulated ammount of reports on this guild.
+
+**Example Response**
+
+```json
+{
+  "count": 1
+}
+```
+
+### Get Guild Member Reports
+
+> ### `GET /api/guilds/:guildid/:memberid/reports`
+
+Displays a list of reports for the specified member on the specified guild. This request can also be paginated.
+
+**Query Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit?` | `int` | Maximum ammount of items per request. |
+| `offset?` | `int` | Ammount of items to be skipped. |
+
+**Example Response**
+
+```json
+{
+  "n": 1,
+  "data": [
+    {
+      "id": "6678266303259619328",
+      "type": 3,
+      "guild_id": "547762913876639754",
+      "executor_id": "221905671296253953",
+      "victim_id": "455819141245304832",
+      "message": "Bad language",
+      "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+      "type_name": "WARN",
+      "created": "2020-07-03T09:29:57Z"
+    }
+  ]
+}
+```
+
+### Get Guild Reports Count
+
+> ### `GET /api/guilds/:guildid/:memberid/reports/counts`
+
+Returns the accumulated ammount of reports on this guild for the specified member.
+
+**Example Response**
+
+```json
+{
+  "count": 1
+}
+```
+
+### Get Guild Settings
+
+> ### `GET /api/guilds/:guildid/settings`
+
+Returns the settings and preferences for the specified guild.
+
+**Example Response**
+
+```json
+{
+  "prefix": "!",
+  "perms": {
+    "608577686528458762": [
+      "+sp.guild.config.*"
+    ],
+    "608584907014537246": [
+      "+sp.guild.mod.*"
+    ]
+  },
+  "autorole": "547772764921004043",
+  "modlogchannel": "547773902357790730",
+  "voicelogchannel": "547774364968288296",
+  "joinmessagechannel": "Welcome [ment]! :heart:",
+  "joinmessagetext": "547762913876639757",
+  "leavemessagechannel": "",
+  "leavemessagetext": ""
+}
+```
+
+### Set Guild Settings
+
+> ### `POST /api/guilds/:guildid/settings`
+
+Returns the settings and preferences for the specified guild.
+
+**Body Parameters**
+
+Only set parameters will be updated. If you want to actively reset a value, you need to set the value to `__RESET__`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `prefix` | `string` | The guild specific prefix. |
+| `autorole` | `string` | The snowflake ID of the set autorole. |
+| `modlogchannel` | `string` | The snowflake ID of the set modlog channel. |
+| `voicelogchannel` | `string` | The snowflake ID of the set voicelog channel. |
+| `joinmessagechannel` | `string` | The snowflake ID of the channel where join messages are sent to. |
+| `joinmessagetext` | `string` | The text which is sent into the join message channel when a user joins the guild. |
+| `leavemessagechannel` | `string` | The snowflake ID of the channel where leave messages are sent to. |
+| `leavemessagetext` | `string` | The text which is sent into the leave message channel when a user leaves the guild. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
+}
+```
+
+### Get Guild Permissions
+
+> ### `GET /api/guilds/:guildid/permissions`
+
+Returns the defined rule sets for roles on the guild.
+
+**Example Response**
+
+```json
+{
+  "608577686528458762": [
+    "+sp.guild.config.*"
+  ],
+  "608584907014537246": [
+    "+sp.guild.mod.*"
+  ]
+}
+```
+
+### Set Guild Permissions
+
+> ### `POST /api/guilds/:guildid/permissions`
+
+Defines a new rule for specified role IDs.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `perm` | `string` | The permission rule, for example:<br>`+sp.guild.mod.*` |
+| `roles` | `string[]` | The list of roles IDs to set the rule for. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
+}
+```
+
+### Create Member Report
+
+> ### `POST /api/guilds/:guildid/:memberid/reports`
+
+Records a report for a member on the specified guild.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | `int` | Type of the report. Only these two are available for manual spec:<br>`3` - WARN<br>`4` - AD |
+| `reason` | `string` | The issue reason. |
+| `attachment?` | `string` | An image URL as report attachment. |
+
+**Example Response**
+
+```json
+{
+  "id": "6678266303259619328",
+  "type": 3,
+  "guild_id": "547762913876639754",
+  "executor_id": "221905671296253953",
+  "victim_id": "455819141245304832",
+  "message": "Bad language",
+  "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+  "type_name": "WARN",
+  "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### Create Member Kick Issue
+
+> ### `POST /api/guilds/:guildid/:memberid/kick`
+
+Issues a member kick which is recorded with a kick report.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reason` | `string` | The issue reason. |
+| `attachment?` | `string` | An image URL as report attachment. |
+
+**Example Response**
+
+```json
+{
+  "id": "6678266303259619328",
+  "type": 0,
+  "guild_id": "547762913876639754",
+  "executor_id": "221905671296253953",
+  "victim_id": "455819141245304832",
+  "message": "Bad language",
+  "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+  "type_name": "KICK",
+  "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### Create Member Kick Issue
+
+> ### `POST /api/guilds/:guildid/:memberid/ban`
+
+Issues a member kick which is recorded with a ban report.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reason` | `string` | The issue reason. |
+| `attachment?` | `string` | An image URL as report attachment. |
+
+**Example Response**
+
+```json
+{
+  "id": "6678266303259619328",
+  "type": 1,
+  "guild_id": "547762913876639754",
+  "executor_id": "221905671296253953",
+  "victim_id": "455819141245304832",
+  "message": "Bad language",
+  "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+  "type_name": "BAN",
+  "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### Get Report
+
+> ### `GET /api/reports/:caseid`
+
+Returns information about a report by case ID.
+
+**Example Response**
+
+```json
+{
+  "id": "6678266303259619328",
+  "type": 1,
+  "guild_id": "547762913876639754",
+  "executor_id": "221905671296253953",
+  "victim_id": "455819141245304832",
+  "message": "Bad language",
+  "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
+  "type_name": "BAN",
+  "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### Get Bot Presence
+
+> ### `GET /api/settings/presence`
+
+Displays the bot instance set presence.
+
+**Example Response**
+
+```json
+{
+  "game": "sp-canary.zekro.de",
+  "status": "online"
+}
+```
+
+### Set Bot Presence
+
+> ### `POST /api/settings/presence`
+
+Set the bot instance presence.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `game` | `string` | The presence game. |
+| `status` | `string` | The online status:<br>- `online`<br>- `away`<br>- `dnd`<br>- `invisible` |
+
+**Example Response**
+
+```json
+{
+  "game": "sp-canary.zekro.de",
+  "status": "online"
+}
+```
+
+### Get No Guild Invite Setting
+
+> ### `GET /api/settings/noguildinvite`
+
+Displays the guild invite set which is displayed when soneone hits the web interface who does not share any guild with the bot instance account.
+
+**Example Response**
+
+```json
+{
+    "invite_url": "https://discord.gg/sxUnqAn",
+  "message": "Join the shinpuru Canary test guild to test the latest dev build!",
+  "guild": {
+    "id": "547762913876639754",
+    "name": "shinpuru Canary Testing",
+    "icon": "48684c3ad6e9b42793675fda9b09d64c",
+    "region": "eu-central",
+    "afk_channel_id": "",
+    "owner_id": "221905671296253953",
+    "joined_at": "",
+    "splash": "",
+    "member_count": 0,
+    "verification_level": 0,
+    "embed_enabled": false,
+    "large": false,
+    "unavailable": false,
+    "mfa_level": 0,
+    "description": "",
+    "banner": "",
+    "premium_tier": 0,
+    "premium_subscription_count": 0,
+    "roles": [
+      {
+        "id": "547762913876639754",
+        "name": "@everyone",
+        "managed": false,
+        "mentionable": false,
+        "hoist": false,
+        "color": 0,
+        "position": 0,
+        "permissions": 104193601
+      }
+    ],
+    "channels": null,
+    "self_member": null,
+    "icon_url": "https://cdn.discordapp.com/icons/547762913876639754/48684c3ad6e9b42793675fda9b09d64c.png"
+  }
+}
+```
+
+### Set No Guild Invite Setting
+
+> ### `POST /api/settings/noguildinvite`
+
+Set the guild invite set which is displayed when soneone hits the web interface who does not share any guild with the bot instance account.
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `guild_id` | `string` | The snowflake ID of the guild to be invited to. |
+| `message` | `string` | The message displayed on the web interface page. |
+| `invite_code?` | `string` | Set an already defined invite code. Otherwise, a new invite will be generated by shinpuru. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
+}
+```
+
+### Get System and Instance Information
+
+> ### `POST /api/sysinfo`
+
+Returns detailed information about the shinpuru instance and the system it is running on.
+
+**Example Response**
+
+```json
+{
+  "version": "0.17.0-100-g8faeb1a",
+  "commit_hash": "8faeb1a5ab0aa574e896ba0f67372e096984b4e6",
+  "build_date": "2020-07-03T11:04:01Z",
+  "go_version": "go1.14.4",
+  "uptime": 44384,
+  "uptime_str": "44384",
+  "os": "linux",
+  "arch": "amd64",
+  "cpus": 6,
+  "go_routines": 20,
+  "stack_use": 884736,
+  "stack_use_str": "884736",
+  "heap_use": 5136384,
+  "heap_use_str": "5136384",
+  "bot_user_id": "536916384026722314",
+  "bot_invite": "https://discordapp.com/api/oauth2/authorize?client_id=536916384026722314&scope=bot&permissions=2080894065",
+  "guilds": 9
+}
+```
+
+### Get API Token
+
+> ### `GET /api/token`
+
+Returns information about a generated API token for the authenticated user. This does not contain the API token itself!
+
+**Example Response**
+
+```json
+{
+  "created": "2020-07-03T10:59:52.18640661Z",
+  "expires": "2021-07-03T10:59:52.18640661Z",
+  "last_access": "2020-07-05T09:43:40.923373646Z",
+  "hits": 34
+}
+```
+
+### Post API Token
+
+> ### `POST /api/token`
+
+Create a new API token for the authenticated user which is returned in the response. If a token was generated before, the old token will be rendered invalid.
+
+**Example Response**
+
+```json
+{
+  "created": "2020-07-03T10:59:06.100282743Z",
+  "expires": "2021-07-03T10:59:06.100282743Z",
+  "last_access": "0001-01-01T00:00:00Z",
+  "hits": 0,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjUzMDk5NDYsImlhdCI6MTU5Mzc3Mzk0NiwiaXNzIjoic2hpbnB1cnUgdi4wLjE3LjAtOTktZzhjMWNlNmIiLCJuYmYiOjE1OTM3NzM5NDYsInN1YiI6IjIyMTkwNTY3MTI5NjI1Mzk1MyIsInNwX3NhbHQiOiJNd2RhUUxpcUJDNWZhNXFkaHdjdVpnPT0ifQ.2kifiXUHJTS-CNw-n8dUMSWD44Dwzb73EsvDtJjS8aE"
+}
+```
+
+### Unset API Token
+
+> ### `DELETE /api/token`
+
+Deletes the generated API token for the authenticated user and makes it invalid.
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
 }
 ```
