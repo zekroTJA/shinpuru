@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -38,6 +39,7 @@ func (c *CmdInfo) GetSubPermissionRules() []SubPermission {
 func (c *CmdInfo) Exec(args *CommandArgs) error {
 	invLink := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
 		args.Session.State.User.ID, static.InvitePermission)
+
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "Info",
@@ -61,7 +63,7 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			},
 			{
 				Name:  "Licence",
-				Value: "Covered by [MIT Licence](https://github.com/zekroTJA/shinpuru/blob/master/LICENCE).",
+				Value: "Covered by the [MIT Licence](https://github.com/zekroTJA/shinpuru/blob/master/LICENCE).",
 			},
 			{
 				Name: "Invite",
@@ -83,7 +85,7 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			},
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "© 2018-2019 zekro Development (Ringo Hoffmann)",
+			Text: fmt.Sprintf("© 2018-%s zekro Development (Ringo Hoffmann)", time.Now().Format("2006")),
 		},
 	}
 	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
