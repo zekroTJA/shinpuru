@@ -175,7 +175,7 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 
 	for _, cmd := range c.registeredCmdInstances {
 		if spr := cmd.GetSubPermissionRules(); spr != nil {
-			document += fmt.Sprintf("### %s\n\n", cmd.GetInvokes()[0])
+			document += fmt.Sprintf("**%s**\n\n", cmd.GetInvokes()[0])
 
 			for _, perm := range spr {
 				if perm.Explicit {
@@ -183,6 +183,8 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 						cmd.GetDomainName(), perm.Term, perm.Description)
 				}
 			}
+
+			document += "\n"
 		}
 	}
 
