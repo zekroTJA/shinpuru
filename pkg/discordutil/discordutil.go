@@ -11,9 +11,9 @@ import (
 )
 
 // GetMessageLink assembles and returns a message link by
-// passed msg object.
-func GetMessageLink(msg *discordgo.Message) string {
-	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", msg.GuildID, msg.ChannelID, msg.ID)
+// passed msg object and guildID.
+func GetMessageLink(msg *discordgo.Message, guildID string) string {
+	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", guildID, msg.ChannelID, msg.ID)
 }
 
 // GetDiscordSnowflakeCreationTime returns the time.Time
