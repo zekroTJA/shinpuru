@@ -40,7 +40,7 @@ func (c *CmdChannelStats) GetHelp() string {
 }
 
 func (c *CmdChannelStats) GetGroup() string {
-	return GroupGuildConfig
+	return GroupChat
 }
 
 func (c *CmdChannelStats) GetDomainName() string {
