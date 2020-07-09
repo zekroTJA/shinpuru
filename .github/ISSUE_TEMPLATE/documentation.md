@@ -1,17 +1,10 @@
 ---
 name: Bug report
-about: Report a bug, typo or a miss-behaviour.
-title: "[BUG] "
-labels: 'bug'
+about: Report an issue with the documentation of shinpuru.
+title: "[DOCS] "
+labels: 'documentation'
 assignees: zekroTJA
 ---
-
-## Type of Bug
-
-- [ ] Typo
-- [ ] Minor
-- [ ] Major
-- [ ] Crash
 
 ## Description
 > Describe the bug as clear and concise as possible.
