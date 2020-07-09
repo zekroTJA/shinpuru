@@ -22,8 +22,8 @@ import { SpoilerComponent } from './components/spoiler/spoiler.component';
 import { FormsModule } from '@angular/forms';
 import { TagsInputComponent } from './components/tagsinput/tagsinput.component';
 import { SettingsComponent } from './routes/settings/settings.component';
-import { SpinnerButtonComponent } from './components/spinnerButton/spinnerButton.component';
-import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
+import { SpinnerButtonComponent } from './components/spinner-button/spinner-button.component';
+import { InfoComponent } from './routes/info/info.component';
 import { SliderComponent } from './components/slider/slider.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
 
@@ -45,7 +45,7 @@ import { APITokenComponent } from './routes/apitoken/apitoken.component';
     TagsInputComponent,
     SettingsComponent,
     SpinnerButtonComponent,
-    SysInfoComponent,
+    InfoComponent,
     SliderComponent,
     APITokenComponent,
   ],
