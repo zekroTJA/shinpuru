@@ -59,7 +59,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	limit := hardLimit
 	lenArgs := len(args.Args)
 
-	// C
+	// Check for limit:<limit> argument and parse parameter
+	// from it. After that, the limit argument is removed
+	// from the arguments array.
 	if lenArgs > 0 {
 		const limitPrefix = "limit:"
 
