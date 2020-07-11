@@ -24,6 +24,9 @@ export class HeaderComponent implements OnInit {
   @ViewChild('apitoken', { static: true })
   private apiTokenTemplate: TemplateRef<any>;
 
+  @ViewChild('documentation', { static: true })
+  private documentationTemplate: TemplateRef<any>;
+
   public selfUser: User;
 
   public popupVisible = false;
@@ -50,6 +53,10 @@ export class HeaderComponent implements OnInit {
       {
         el: this.sysinfoTemplate,
         action: this.sysinfo.bind(this),
+      } as PopupElement,
+      {
+        el: this.documentationTemplate,
+        action: this.documentaiton.bind(this),
       } as PopupElement,
       {
         el: this.apiTokenTemplate,
@@ -81,10 +88,14 @@ export class HeaderComponent implements OnInit {
   }
 
   private sysinfo() {
-    this.router.navigate(['/sysinfo']);
+    this.router.navigate(['/info']);
   }
 
   private apitoken() {
     this.router.navigate(['/apitoken']);
+  }
+
+  private documentaiton() {
+    window.open('https://github.com/zekroTJA/shinpuru/wiki', '_blank');
   }
 }

@@ -1070,6 +1070,15 @@ Returns the settings and preferences for the specified guild.
 
 Returns the settings and preferences for the specified guild.
 
+**Requires Permissions**
+
+- `sp.guild.config.autorole`
+- `sp.guild.config.modlog`
+- `sp.guild.config.prefix`
+- `sp.guild.config.voicelog`
+- `sp.guild.config.joinmsg`
+- `sp.guild.config.leavemsg`
+
 **Body Parameters**
 
 Only set parameters will be updated. If you want to actively reset a value, you need to set the value to `__RESET__`.
@@ -1119,6 +1128,10 @@ Returns the defined rule sets for roles on the guild.
 
 Defines a new rule for specified role IDs.
 
+**Requires Permissions**
+
+- `sp.guild.config.perms`
+
 **Body Parameters**
 
 | Field | Type | Description |
@@ -1140,6 +1153,10 @@ Defines a new rule for specified role IDs.
 > ### `POST /api/guilds/:guildid/:memberid/reports`
 
 Records a report for a member on the specified guild.
+
+**Required Permissions**
+
+- `sp.guild.mod.report`
 
 **Body Parameters**
 
@@ -1171,6 +1188,10 @@ Records a report for a member on the specified guild.
 
 Issues a member kick which is recorded with a kick report.
 
+**Required Permissions**
+
+- `sp.guild.mod.kick`
+
 **Body Parameters**
 
 | Field | Type | Description |
@@ -1194,11 +1215,15 @@ Issues a member kick which is recorded with a kick report.
 }
 ```
 
-### Create Member Kick Issue
+### Create Member Ban Issue
 
 > ### `POST /api/guilds/:guildid/:memberid/ban`
 
-Issues a member kick which is recorded with a ban report.
+Issues a member ban which is recorded with a ban report.
+
+**Required Permissions**
+
+- `sp.guild.mod.ban`
 
 **Body Parameters**
 
@@ -1263,6 +1288,10 @@ Displays the bot instance set presence.
 ### Set Bot Presence
 
 > ### `POST /api/settings/presence`
+
+**Required Permissions**
+
+- `sp.game`
 
 Set the bot instance presence.
 
@@ -1337,6 +1366,10 @@ Displays the guild invite set which is displayed when soneone hits the web inter
 > ### `POST /api/settings/noguildinvite`
 
 Set the guild invite set which is displayed when soneone hits the web interface who does not share any guild with the bot instance account.
+
+**Required Permissions**
+
+- `sp.noguildinvite`
 
 **Body Parameters**
 

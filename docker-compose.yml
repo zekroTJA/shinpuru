@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  minio:
+    image: 'minio/minio:latest'
+    expose:
+      - '9000'
+    volumes:
+      - './minio/data:/data'
+    environment:
+      MINIO_ACCESS_KEY:    'minio_access_key'
+      MINIO_SECRET_KEY:    'minio_secret_key'
+      MINIO_REGION_NAME:   'us-east-1'
+    command: server /data # --certs-dir /etc/cert
+    restart: always
+
+  redis:
+    image: 'redis:latest'
+    expose:
+      - '6379'
+    restart: always
+
+  mysql:
+    image: 'mariadb:latest'
+    expose:
+      - '3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_root_password
+    volumes:
+      - './mysql/cfg:/etc/mysql'
+      - './mysql/lib:/var/lib/mysql'
+    restart: always
+
+  shinpuru:
+    build: '.'
+    image: 'zekro/shinpuru:latest'
+    volumes:
+      - './shinpuru/config:/etc/config'
+      - '/etc/cert:/etc/cert'
+    ports:
+      - '442:8080'
+    restart: always

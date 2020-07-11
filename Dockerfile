@@ -11,7 +11,7 @@ ADD . .
 RUN go mod tidy
 # Build shinpuru backend
 RUN go build -o ./bin/shinpuru -ldflags "\
-		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(git describe --tags) \
+		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(sh ./scripts/semver.sh) \
 		-X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$(git rev-parse HEAD) \
 		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \

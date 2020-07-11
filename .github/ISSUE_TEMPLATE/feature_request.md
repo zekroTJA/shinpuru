@@ -12,14 +12,10 @@ assignees: zekroTJA
 - [ ] New feature
 - [ ] Enhancement
 
-# Type of Host
-
-- [ ] Public Canary
-- [ ] Public Stable
-- [ ] Self Hosted
-
 ## Description
 > Please describe your feature request as clear and concise as possible.
+...
 
-## Images & Sketches
+## Images and Sketches
 > If you want to attach images or sketches, feel free to do it here.
+...

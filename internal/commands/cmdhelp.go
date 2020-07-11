@@ -53,7 +53,12 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 			}
 			cmds[group] = append(cmds[group], c)
 		}
+
 		emb.Title = "Command List"
+		emb.Description = fmt.Sprintf(
+			"[**Here**](%s) you can find the full list of commands with all details in one document.",
+			static.CommandManualDocument)
+
 		for cat, catCmds := range cmds {
 			commandHelpLines := ""
 			for _, c := range catCmds {
@@ -73,6 +78,10 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 		}
 
 		emb.Title = "Command Description"
+		emb.Description = fmt.Sprintf(
+			"[**Here**](%s#%s) you can find the command description online.",
+			static.CommandManualDocument, cmd.GetInvokes()[0])
+
 		emb.Fields = []*discordgo.MessageEmbedField{
 			{
 				Name:   "Invokes",

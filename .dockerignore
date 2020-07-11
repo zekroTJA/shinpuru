@@ -11,6 +11,7 @@ bin/
 githooks/*
 docs/*
 scripts/*
+!scripts/semver.sh
 ci/*
 .github/*
 Gopkg.lock

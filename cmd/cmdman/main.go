@@ -17,6 +17,11 @@ var (
 func main() {
 	flag.Parse()
 
+	// Setting Release flag to true manually to prevent
+	// registration of test command and exclude it in the
+	// command manual.
+	util.Release = "TRUE"
+
 	config := &config.Config{
 		Discord: &config.Discord{},
 	}

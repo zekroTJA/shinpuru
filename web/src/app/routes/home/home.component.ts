@@ -18,7 +18,7 @@ export class HomeComponent {
     this.api.getGuilds().subscribe((guilds) => {
       this.guilds = guilds;
 
-      if (this.guilds.length < 1) {
+      if (this.guilds?.length < 1) {
         this.api.getInviteSettings().subscribe((inviteSettings) => {
           this.inviteSettings = inviteSettings;
           this.spinner.stop('spinner-load-guilds');

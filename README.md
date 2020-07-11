@@ -153,6 +153,8 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 
 # Third party dependencies
 
+### Back End
+
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
 - [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype)
@@ -168,9 +170,21 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
 
-The shinpuru web frontend was built using [Angular 8](https://angular.io/).
+### Web Front End
 
-Avatar of [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) from [瑞希](https://www.pixiv.net/member.php?id=137253).
+- [Angular 9](https://angular.io)
+- [Bootstrap](https://ng-bootstrap.github.io)
+- [dateformat](https://www.npmjs.com/package/dateformat)
+- [core-js](https://www.npmjs.com/package/core-js)
+- [rxjs](https://www.npmjs.com/package/rxjs)
+- [tslib](https://www.npmjs.com/package/tslib)
+- [zone.js](https://www.npmjs.com/package/zone.js)
+
+### Assets
+
+- Avatar used from album [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) made by [瑞希](https://www.pixiv.net/member.php?id=137253)
+- Icons uded from [Material Icons Set](https://material.io/resources/icons/?style=baseline)
+- Discord Icon used from [Discord's Branding Resources](https://discord.com/new/branding)
 
 ---
 

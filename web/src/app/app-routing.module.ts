@@ -7,7 +7,7 @@ import { HomeComponent } from './routes/home/home.component';
 import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
 import { SettingsComponent } from './routes/settings/settings.component';
-import { SysInfoComponent } from './routes/sysinfo/sysinfo.component';
+import { InfoComponent } from './routes/info/info.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
 const routes: Routes = [
   {
@@ -36,8 +36,8 @@ const routes: Routes = [
     component: SettingsComponent,
   },
   {
-    path: 'sysinfo',
-    component: SysInfoComponent,
+    path: 'info',
+    component: InfoComponent,
   },
   {
     path: 'apitoken',

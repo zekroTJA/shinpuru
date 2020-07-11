@@ -7,10 +7,10 @@ import dateFormat from 'dateformat';
 
 @Component({
   selector: 'app-sysinfo',
-  templateUrl: './sysinfo.component.html',
-  styleUrls: ['./sysinfo.component.sass'],
+  templateUrl: './info.component.html',
+  styleUrls: ['./info.component.sass'],
 })
-export class SysInfoComponent implements OnDestroy {
+export class InfoComponent implements OnDestroy {
   public sysinfo: SystemInfo;
   public uptime: number;
 
