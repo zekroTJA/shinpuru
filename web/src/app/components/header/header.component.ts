@@ -88,7 +88,7 @@ export class HeaderComponent implements OnInit {
   }
 
   private sysinfo() {
-    this.router.navigate(['/sysinfo']);
+    this.router.navigate(['/info']);
   }
 
   private apitoken() {

@@ -36,7 +36,7 @@ const routes: Routes = [
     component: SettingsComponent,
   },
   {
-    path: 'sysinfo',
+    path: 'info',
     component: InfoComponent,
   },
   {
