@@ -96,21 +96,37 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		return
 	}
 
+	// Mark if the command was sent into a DM channel
+	// or not.
+	isDM := channel.Type == discordgo.ChannelTypeDM
+
+	// Only continue if the command message was either
+	// sent into a guild text channel or into a DM channel
+	// when DM execution is allowed by the command instance.
+	if !(channel.Type == discordgo.ChannelTypeGuildText ||
+		isDM && cmdInstance.IsExecutableInDMChannels()) {
+		util.SendEmbedError(s, channel.ID, "This command can not be executed in a DM channel.", "")
+		return
+	}
+
 	// Now, the first item of the args (the invoke) is
 	// stripped away.
 	args = args[1:]
 
-	// Get the guild object where the command was
-	// executed from discordgo state cache.
-	guild, err := s.State.Guild(e.GuildID)
-	// If guild object was not found in discordgo
-	// state cache, query the guild object from API.
-	if err == discordgo.ErrNilState || err == discordgo.ErrStateNotFound {
-		guild, err = s.Guild(e.GuildID)
-	}
-	if err != nil {
-		util.Log.Errorf("Failed getting discord guild from ID (%s): %s", e.GuildID, err.Error())
-		return
+	var guild *discordgo.Guild
+	if !isDM {
+		// Get the guild object where the command was
+		// executed from discordgo state cache.
+		guild, err = s.State.Guild(e.GuildID)
+		// If guild object was not found in discordgo
+		// state cache, query the guild object from API.
+		if err == discordgo.ErrNilState || err == discordgo.ErrStateNotFound {
+			guild, err = s.Guild(e.GuildID)
+		}
+		if err != nil {
+			util.Log.Errorf("Failed getting discord guild from ID (%s): %s", e.GuildID, err.Error())
+			return
+		}
 	}
 
 	// Assemble the command args passed to the
@@ -123,11 +139,16 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 		Message:    e.Message,
 		Session:    s,
 		User:       e.Author,
+		IsDM:       isDM,
 	}
 
 	// Check if the command executor has the
 	// permissions to execute the command.
-	ok, _, err = l.cmdHandler.CheckPermissions(s, guild.ID, e.Author.ID, cmdInstance.GetDomainName())
+	var guildID string
+	if guild != nil {
+		guildID = guild.ID
+	}
+	ok, _, err = l.cmdHandler.CheckPermissions(s, guildID, e.Author.ID, cmdInstance.GetDomainName())
 	// Return and send error message to channel when
 	// something went wrong on getting the permission
 	// rules from database.
@@ -196,6 +217,10 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 	// Print command log message when command logging
 	// is enabled by config.
 	if l.config.Logging.CommandLogging {
-		util.Log.Infof("Executed Command: %s[%s]@%s[%s] - %s", e.Author.Username, e.Author.ID, guild.Name, guild.ID, e.Message.Content)
+		if isDM {
+			util.Log.Infof("Executed Command: %s[%s]@DM - %s", e.Author.Username, e.Author.ID, e.Message.Content)
+		} else {
+			util.Log.Infof("Executed Command: %s[%s]@%s[%s] - %s", e.Author.Username, e.Author.ID, guild.Name, guild.ID, e.Message.Content)
+		}
 	}
 }

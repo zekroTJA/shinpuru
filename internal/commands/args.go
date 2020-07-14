@@ -15,4 +15,5 @@ type CommandArgs struct {
 	Args       []string
 	Session    *discordgo.Session
 	CmdHandler *CmdHandler
+	IsDM       bool
 }
