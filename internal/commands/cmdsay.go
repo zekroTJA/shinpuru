@@ -67,6 +67,10 @@ func (c *CmdSay) GetDomainName() string {
 	return "sp.chat.say"
 }
 
+func (c *CmdSay) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdSay) Exec(args *CommandArgs) error {
 	f := flag.NewFlagSet("sayflags", flag.ContinueOnError)
 	fcolor := f.String("c", "orange", "color")

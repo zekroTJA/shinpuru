@@ -41,6 +41,10 @@ func (c *CmdModlog) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdModlog) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdModlog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		acceptMsg := &acceptmsg.AcceptMessage{

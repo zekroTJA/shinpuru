@@ -38,6 +38,10 @@ func (c *CmdGame) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdGame) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdGame) Exec(args *CommandArgs) error {
 
 	if len(args.Args) < 2 {

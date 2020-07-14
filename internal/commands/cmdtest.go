@@ -33,6 +33,10 @@ func (c *CmdTest) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdTest) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdTest) Exec(args *CommandArgs) error {
 	roles := args.Guild.Roles
 	roleutil.SortRoles(roles, false)

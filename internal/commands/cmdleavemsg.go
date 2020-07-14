@@ -42,6 +42,10 @@ func (c *CmdLeaveMsg) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdLeaveMsg) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 

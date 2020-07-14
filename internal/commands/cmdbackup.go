@@ -49,6 +49,10 @@ func (c *CmdBackup) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdBackup) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdBackup) Exec(args *CommandArgs) error {
 	if len(args.Args) > 0 {
 		switch strings.ToLower(args.Args[0]) {

@@ -40,6 +40,10 @@ func (c *CmdAutorole) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdAutorole) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdAutorole) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		currAutoRoleID, err := args.CmdHandler.db.GetGuildAutoRole(args.Guild.ID)

@@ -49,6 +49,10 @@ func (c *CmdPerms) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdPerms) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdPerms) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 	perms, err := db.GetGuildPermissions(args.Guild.ID)

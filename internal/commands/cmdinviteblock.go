@@ -45,6 +45,10 @@ func (c *CmdInviteBlock) GetSubPermissionRules() []SubPermission {
 	}
 }
 
+func (c *CmdInviteBlock) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.printStatus(args)

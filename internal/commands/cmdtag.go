@@ -64,6 +64,10 @@ func (c *CmdTag) GetSubPermissionRules() []SubPermission {
 	}
 }
 
+func (c *CmdTag) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdTag) Exec(args *CommandArgs) error {
 	db := args.CmdHandler.db
 
