@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: Documentation Issue
 about: Report an issue with the documentation of shinpuru.
 title: "[DOCS] "
 labels: 'documentation'
