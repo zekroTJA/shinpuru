@@ -197,12 +197,22 @@ type APITokenResponse struct {
 	Token      string    `json:"token,omitempty"`
 }
 
-// APITokenClaims extends the standard jwt claims
+// APITokenClaims extends the standard JWT claims
 // by private claims used for api tokens.
 type APITokenClaims struct {
 	jwt.StandardClaims
 
 	Salt string `json:"sp_salt,omitempty"`
+}
+
+// SessionTokenClaims extends the standard JWT
+// claims by information used for session tokens.
+//
+// Currently, no additional information is
+// extended but this wrapper is used tho to
+// be able to add session information later.
+type SessionTokenClaims struct {
+	jwt.StandardClaims
 }
 
 // Validate returns true, when the ReasonRequest is valid.
@@ -315,14 +325,35 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 // APITokenClaimsFromMap creates an APITokenClaims
 // model from given jwt.MapClaims.
 func APITokenClaimsFromMap(m jwt.MapClaims) APITokenClaims {
-	c := APITokenClaims{}
+	c := APITokenClaims{
+		StandardClaims: standardClaimsFromMap(m),
+	}
+
+	c.Salt, _ = m["sp_salt"].(string)
+
+	return c
+}
+
+// SessionTokenClaimsFromMap creates an SessionTokenClaims
+// model from given jwt.MapClaims.
+func SessionTokenClaimsFromMap(m jwt.MapClaims) SessionTokenClaims {
+	c := SessionTokenClaims{
+		StandardClaims: standardClaimsFromMap(m),
+	}
+
+	return c
+}
+
+// standardClaimsFromMap creates a jwt.StandardClaims
+// model from the given jwt.MapClaims.
+func standardClaimsFromMap(m jwt.MapClaims) jwt.StandardClaims {
+	c := jwt.StandardClaims{}
 
 	c.Issuer, _ = m["iss"].(string)
 	c.Subject, _ = m["sub"].(string)
 	c.ExpiresAt, _ = m["exp"].(int64)
 	c.NotBefore, _ = m["nbf"].(int64)
 	c.IssuedAt, _ = m["iat"].(int64)
-	c.Salt, _ = m["sp_salt"].(string)
 
 	return c
 }

@@ -17,9 +17,10 @@ import (
 )
 
 var (
-	sessionExpiration   = 7 * 24 * time.Hour
+	sessionExpiration  = 7 * 24 * time.Hour
+	apiTokenExpiration = 365 * 24 * time.Hour
+
 	jwtGenerationMethod = jwt.SigningMethodHS256
-	apiTokenExpiration  = 365 * 24 * time.Hour
 )
 
 const (
@@ -62,16 +63,12 @@ func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
 
 	ctx.Set("uid", uid)
 
-	sessionKey, err := auth.createSessionKey()
+	sessionKey, err := auth.createSessionKey(uid)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
 	expires := time.Now().Add(sessionExpiration)
-
-	if err = auth.db.SetSession(sessionKey, uid, expires); err != nil {
-		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
-	}
 
 	cookie := fmt.Sprintf("__session=%s; Expires=%s; Path=/; HttpOnly",
 		sessionKey, expires.Format(time.RFC1123))
@@ -86,10 +83,6 @@ func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
 // LogOutHandler removes the session key of the authenticated
 // user from the database and sends an unset cookie.
 func (auth *Auth) LogOutHandler(ctx *routing.Context) error {
-	userID := ctx.Get("uid").(string)
-
-	auth.db.DeleteSession(userID)
-
 	cookie := "__session=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; HttpOnly"
 	ctx.Response.Header.Set("Set-Cookie", cookie)
 
@@ -140,10 +133,26 @@ func (auth *Auth) CreateAPIToken(userID string) (*APITokenResponse, error) {
 	}, nil
 }
 
-// createSessionKey randomly generates a base64 string with the
-// length of sessionKeyLength.
-func (auth *Auth) createSessionKey() (string, error) {
-	return random.GetRandBase64Str(sessionKeyLength)
+// createSessionKey creates a JWT string with the passed
+// userID and sessionExpiration as expiration value.
+func (auth *Auth) createSessionKey(userID string) (string, error) {
+	now := time.Now()
+	expires := now.Add(sessionExpiration)
+
+	claims := APITokenClaims{}
+	claims.Issuer = fmt.Sprintf(jwtIssuer, util.AppVersion)
+	claims.Subject = userID
+	claims.ExpiresAt = expires.Unix()
+	claims.NotBefore = now.Unix()
+	claims.IssuedAt = now.Unix()
+
+	token, err := jwt.NewWithClaims(jwtGenerationMethod, claims).
+		SignedString(auth.tokenSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 // checkSessionCookie checks the set cookie for session key of
@@ -159,15 +168,26 @@ func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 		return "", nil
 	}
 
-	uid, err := auth.db.GetSession(string(key))
-	if database.IsErrDatabaseNotFound(err) {
-		return "", nil
-	}
-	if err != nil {
+	keyStr := string(key)
+
+	token, err := jwt.Parse(keyStr, func(t *jwt.Token) (interface{}, error) {
+		return auth.tokenSecret, nil
+	})
+	if token == nil && err != nil {
 		return "", err
 	}
+	if !token.Valid || token.Claims.Valid() != nil {
+		return "", nil
+	}
 
-	return uid, nil
+	claimsMap, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", nil
+	}
+
+	claims := SessionTokenClaimsFromMap(claimsMap)
+
+	return claims.Subject, nil
 }
 
 // checkAPIToken checks for a set Authorization header with a

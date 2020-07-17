@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
@@ -592,64 +591,6 @@ func (r *RedisMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 
 func (r *RedisMiddleware) DeleteTag(id snowflake.ID) error {
 	return r.db.DeleteTag(id)
-}
-
-func (r *RedisMiddleware) SetSession(sessionKey, userID string, expires time.Time) error {
-	var keyByKey = fmt.Sprintf("%s:K:%s", keyAPISession, sessionKey)
-	var keyByUser = fmt.Sprintf("%s:U:%s", keyAPISession, userID)
-
-	if err := r.client.Set(keyByKey, userID, time.Until(expires)).Err(); err != nil {
-		return err
-	}
-
-	if err := r.client.Set(keyByUser, sessionKey, time.Until(expires)).Err(); err != nil {
-		return err
-	}
-
-	return r.db.SetSession(sessionKey, userID, expires)
-}
-
-func (r *RedisMiddleware) GetSession(sessionKey string) (string, error) {
-	var keyByKey = fmt.Sprintf("%s:K:%s", keyAPISession, sessionKey)
-
-	val, err := r.client.Get(keyByKey).Result()
-	if err == redis.Nil {
-		val, err = r.db.GetSession(sessionKey)
-		if err != nil {
-			return "", err
-		}
-
-		keyByUser := fmt.Sprintf("%s:U:%s", keyAPISession, val)
-		if err = r.client.Set(keyByKey, val, 0).Err(); err != nil {
-			return "", err
-		}
-		err = r.client.Set(keyByUser, sessionKey, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
-}
-
-func (r *RedisMiddleware) DeleteSession(userID string) error {
-	var keyByUser = fmt.Sprintf("%s:U:%s", keyAPISession, userID)
-
-	sessionKey, err := r.client.Get(keyByUser).Result()
-	if err == redis.Nil {
-		return r.db.DeleteSession(userID)
-	}
-	if err != nil {
-		return err
-	}
-
-	keyByKey := fmt.Sprintf("%s:K:%s", keyAPISession, sessionKey)
-	if err := r.client.Del(keyByKey).Err(); err != nil && err != redis.Nil {
-		return err
-	}
-
-	return r.db.DeleteSession(userID)
 }
 
 func (r *RedisMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {

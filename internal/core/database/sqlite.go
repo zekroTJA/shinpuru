@@ -110,13 +110,13 @@ func (m *SqliteDriver) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
-		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"`sessionkey` text NOT NULL DEFAULT ''," +
-		"`userID` text NOT NULL DEFAULT ''," +
-		"`expires` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-		");")
-	mErr.Append(err)
+	// _, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
+	// 	"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
+	// 	"`sessionkey` text NOT NULL DEFAULT ''," +
+	// 	"`userID` text NOT NULL DEFAULT ''," +
+	// 	"`expires` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+	// 	");")
+	// mErr.Append(err)
 
 	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
 		"`userID` varchar(25) NOT NULL PRIMARY KEY," +
@@ -771,46 +771,6 @@ func (m *SqliteDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 
 func (m *SqliteDriver) DeleteTag(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM tags WHERE id = ?", id)
-	if err == sql.ErrNoRows {
-		return ErrDatabaseNotFound
-	}
-	return err
-}
-
-func (m *SqliteDriver) SetSession(key, userID string, expires time.Time) error {
-	res, err := m.db.Exec("UPDATE sessions SET sessionkey = ?, expires = ? WHERE userID = ?", key, expires, userID)
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO sessions (sessionkey, userID, expires) VALUES (?, ?, ?)", key, userID, expires)
-	}
-	return err
-}
-
-func (m *SqliteDriver) GetSession(key string) (string, error) {
-	var userID string
-	var expires time.Time
-	err := m.db.QueryRow("SELECT userID, expires FROM sessions WHERE sessionkey = ?", key).
-		Scan(&userID, &expires)
-
-	if err == sql.ErrNoRows {
-		return "", ErrDatabaseNotFound
-	}
-	if err != nil {
-		return "", err
-	}
-
-	if expires.Before(time.Now()) {
-		return "", ErrDatabaseNotFound
-	}
-
-	return userID, nil
-}
-
-func (m *SqliteDriver) DeleteSession(userID string) error {
-	_, err := m.db.Exec("DELETE FROM sessions WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return ErrDatabaseNotFound
 	}
