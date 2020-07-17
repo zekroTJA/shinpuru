@@ -156,12 +156,12 @@ func (auth *Auth) createSessionKey(userID string) (string, error) {
 }
 
 // checkSessionCookie checks the set cookie for session key of
-// the request against the database. If the value exists and could
-// be matched, the session is authorized and the user ID is
-// returned.
+// the request by validating the JWT signature against the
+// specified signing key and obtains the user ID from the JWT.
 //
-// Occuring errors during authenticatrion are returned.
-// Invalid authentication does not return any errors.
+// This function only returns an error when the check fails
+// unexpectedly. When the key was invalid, an empty string and
+// no error is returned.
 func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 	key := ctx.Request.Header.Cookie("__session")
 	if key == nil || len(key) == 0 {
