@@ -63,3 +63,13 @@ func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration t
 		s.ChannelMessageDelete(msg.ChannelID, msg.ID)
 	})
 }
+
+// GetGuild first tries to retrieve a guild object by passed
+// ID from the discordgo state cache. If there is no value
+// available, the guild will be fetched via API.
+func GetGuild(s *discordgo.Session, guildID string) (g *discordgo.Guild, err error) {
+	if g, err = s.State.Guild(guildID); err != nil {
+		g, err = s.Guild(guildID)
+	}
+	return
+}

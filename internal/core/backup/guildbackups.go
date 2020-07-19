@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -103,7 +104,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.State.Guild(guildID)
+	g, err := discordutil.GetGuild(bck.session, guildID)
 	if err != nil {
 		return err
 	}
@@ -430,7 +431,7 @@ func (bck *GuildBackups) HardFlush(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := bck.session.State.Guild(guildID)
+	g, err := discordutil.GetGuild(bck.session, guildID)
 	if err != nil {
 		return err
 	}

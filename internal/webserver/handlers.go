@@ -96,7 +96,7 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	guild, err := ws.session.State.Guild(guildID)
+	guild, err := discordutil.GetGuild(ws.session, guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}

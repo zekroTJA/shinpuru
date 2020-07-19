@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 var (
@@ -117,7 +118,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 	if !isDM {
 		// Get the guild object where the command was
 		// executed from discordgo state cache.
-		guild, err = s.State.Guild(e.GuildID)
+		guild, err = discordutil.GetGuild(s, e.GuildID)
 		// If guild object was not found in discordgo
 		// state cache, query the guild object from API.
 		if err == discordgo.ErrNilState || err == discordgo.ErrStateNotFound {
