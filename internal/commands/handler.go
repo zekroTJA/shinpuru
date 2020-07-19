@@ -133,7 +133,7 @@ func (c *CmdHandler) GetPermissions(s *discordgo.Session, guildID, userID string
 	}
 
 	if guildID != "" {
-		guild, err := s.State.Guild(guildID)
+		guild, err := discordutil.GetGuild(s, guildID)
 		if err != nil {
 			return permissions.PermissionArray{}, false, nil
 		}

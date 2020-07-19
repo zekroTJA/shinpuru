@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 type ListenerCmds struct {
@@ -67,7 +68,7 @@ func (l *ListenerCmds) Handler(s *discordgo.Session, e *discordgo.MessageCreate)
 	invoke = strings.ToLower(invoke)
 
 	if cmdInstance, ok := l.cmdHandler.GetCommand(invoke); ok {
-		guild, _ := s.State.Guild(e.GuildID)
+		guild, _ := discordutil.GetGuild(s, e.GuildID)
 		cmdArgs := &commands.CommandArgs{
 			Args:       contSplit[1:],
 			Channel:    channel,
