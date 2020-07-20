@@ -184,6 +184,10 @@ func (ws *WebServer) registerHandlers() {
 	guildReports.
 		Get("/count", ws.handlerGetReportsCount)
 
+	guildBackups := guild.Group("/backups")
+	guildBackups.
+		Post("/toggle", ws.handlerGuildBackupsToggle)
+
 	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
 	member.
 		Get("", ws.handlerGuildsGetMember)

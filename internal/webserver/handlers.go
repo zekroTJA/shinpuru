@@ -762,6 +762,35 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/backups/toggle
+
+func (ws *WebServer) handlerGuildBackupsToggle(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.admin.backup"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	var data struct {
+		Enabled bool `json:"enabled"`
+	}
+
+	if err := parseJSONBody(ctx, &data); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if err := ws.db.SetGuildBackup(guildID, data.Enabled); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - GET /api/reports/:id
 
 func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
