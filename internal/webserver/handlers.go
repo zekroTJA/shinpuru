@@ -101,7 +101,7 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	gRes := GuildFromGuild(guild, memb, ws.cmdhandler)
+	gRes := GuildFromGuild(guild, memb, ws.cmdhandler, ws.db)
 	return jsonResponse(ctx, gRes, fasthttp.StatusOK)
 }
 
@@ -917,7 +917,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	}
 
 	res := &InviteSettingsResponse{
-		Guild:     GuildFromGuild(guild, nil, nil),
+		Guild:     GuildFromGuild(guild, nil, nil, nil),
 		Message:   message,
 		InviteURL: fmt.Sprintf("https://discord.gg/%s", inviteCode),
 	}

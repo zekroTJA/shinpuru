@@ -10,7 +10,9 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -69,8 +71,10 @@ type Guild struct {
 	Roles    []*discordgo.Role    `json:"roles"`
 	Channels []*discordgo.Channel `json:"channels"`
 
-	SelfMember *Member `json:"self_member"`
-	IconURL    string  `json:"icon_url"`
+	SelfMember        *Member   `json:"self_member"`
+	IconURL           string    `json:"icon_url"`
+	BackupsEnabled    bool      `json:"backups_enabled"`
+	LatestBackupEntry time.Time `json:"latest_backup_entry"`
 	// Members    []*Member `json:"members"`
 }
 
@@ -234,7 +238,7 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 
 // GuildFromGuild returns a Guild model from the passed
 // discordgo.Guild g, discordgo.Member m and cmdHandler.
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler) *Guild {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler, db database.Database) *Guild {
 	if g == nil {
 		return nil
 	}
@@ -252,7 +256,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		}
 	}
 
-	return &Guild{
+	ng := &Guild{
 		AfkChannelID:             g.AfkChannelID,
 		Banner:                   g.Banner,
 		Channels:                 g.Channels,
@@ -277,6 +281,28 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		SelfMember: selfmm,
 		IconURL:    getIconURL(g.ID, g.Icon),
 	}
+
+	if db != nil {
+		var err error
+
+		ng.BackupsEnabled, err = db.GetGuildBackup(g.ID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed getting backup status of guild %s: %s", g.ID, err.Error())
+		}
+
+		backupEntries, err := db.GetBackups(g.ID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed getting backup entries of guild %s: %s", g.ID, err.Error())
+		}
+
+		for _, e := range backupEntries {
+			if e.Timestamp.Before(ng.LatestBackupEntry) {
+				ng.LatestBackupEntry = e.Timestamp
+			}
+		}
+	}
+
+	return ng
 }
 
 // GuildReducedFromGuild returns a GuildReduced from the passed
