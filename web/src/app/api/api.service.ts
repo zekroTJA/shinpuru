@@ -97,6 +97,9 @@ export class APIService {
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
 
+  private readonly rcGuildBackupsToggle = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/backups/toggle`;
+
   private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/kick`;
 
@@ -353,6 +356,15 @@ export class APIService {
         rep,
         this.defopts()
       )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildBackupToggle(
+    guildID: string,
+    enabled: boolean
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildBackupsToggle(guildID), { enabled }, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

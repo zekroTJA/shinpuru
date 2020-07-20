@@ -9,6 +9,16 @@
             <p class="embeded">{{ guild.id }}</p>
         </div>
 
+        <div class="mb-4 backup-embed" [class.disabled]="!guild.backups_enabled">
+            <img *ngIf="guild.backups_enabled" src="assets/shield.svg"/>
+            <img *ngIf="!guild.backups_enabled" src="assets/warning.svg"/>
+            <span class="ml-2">
+                Backups <strong>{{ guild.backups_enabled ? 'enabled' : 'disabled' }}</strong> 
+                for this guild. {{ lastBackupText }}
+            </span>
+            <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+        </div>
+
         <!-- LOGGED IN MEMBER INFO -->
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>

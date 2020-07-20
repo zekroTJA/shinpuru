@@ -14,6 +14,7 @@ import {
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
+import dateFormat from 'dateformat';
 
 interface Perms {
   id: string;
@@ -75,8 +76,9 @@ export class GuildComponent {
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
         .subscribe((allowed) => {
           this.allowed = allowed;
-          this.guildSettingsAllowed = this.allowed.filter((a) =>
-            a.startsWith('sp.guild.config')
+          this.guildSettingsAllowed = this.allowed.filter(
+            (a) =>
+              a.startsWith('sp.guild.config') || a.startsWith('sp.guild.admin')
           );
         });
     });
@@ -132,6 +134,16 @@ export class GuildComponent {
       .sort((a, b) => b.position - a.position);
   }
 
+  public get lastBackupText(): string {
+    if (this.guild.latest_backup_entry.toString() === '0001-01-01T00:00:00Z') {
+      return 'No backups are available for this guild.';
+    }
+
+    return `Last backup was created at ${dateFormat(
+      this.guild.latest_backup_entry
+    )}.`;
+  }
+
   public searchInput(e: any) {
     const val = e.target.value.toLowerCase();
 
@@ -173,10 +185,7 @@ export class GuildComponent {
     const t = e.target;
     const val = t.options[t.selectedIndex].value;
     if (val.match(/\d+:\s.+/g)) {
-      return val
-        .split(' ')
-        .slice(1)
-        .join(' ');
+      return val.split(' ').slice(1).join(' ');
     }
     return val;
   }
@@ -279,6 +288,23 @@ export class GuildComponent {
       .subscribe((modlog) => {
         this.reports = this.reports.concat(modlog);
         this.reportDisplayMoreLoading = false;
+      });
+  }
+
+  public toggleGuildBackup() {
+    this.api
+      .postGuildBackupToggle(this.guild.id, !this.guild.backups_enabled)
+      .subscribe(() => {
+        this.guild.backups_enabled = !this.guild.backups_enabled;
+        this.toasts.push(
+          `${
+            this.guild.backups_enabled ? 'Enabled' : 'Disabled'
+          } guild backups for guild ${this.guild.name}.`,
+          'Guild Backups Updated',
+          'cyan',
+          6000,
+          true
+        );
       });
   }
 }

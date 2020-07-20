@@ -19,7 +19,7 @@ export class ToastService {
   push(
     text: string,
     heading: string,
-    type: string = '',
+    type: 'cyan' | 'red' | 'error' | 'yellow' | 'warning' | 'green' | 'success',
     delay: number = null,
     closable: boolean = true
   ) {

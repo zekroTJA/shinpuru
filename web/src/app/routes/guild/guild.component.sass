@@ -108,8 +108,30 @@
 
 
 .display-more-btn
-    padding: 10px 30px 10px 30px !important
+    padding: 10px 30px !important
     +mx-auto
+
+
+.backup-embed
+    border: solid 2px $c-lime
+    padding: 5px 10px
+    border-radius: 5px
+    width: 100%
+    background-color: rgba($c-lime, 0.2)
+    display: flex
+
+    &.disabled
+        border-color: $c-orange
+        background-color: rgba($c-orange, 0.2)
+
+        & button
+            background-color: $c-orange
+
+    button
+        padding: 0px 10px
+        font-size: 14px
+        margin-left: auto
+        background-color: $c-green
 
 
 @media only screen and (max-width: 700px)
