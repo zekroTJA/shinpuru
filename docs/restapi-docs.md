@@ -231,6 +231,8 @@ A Discord Guild object.
 | `channels` | `Channel[]` | List of channels of the guild. |
 | `self_member` | `Member` | The member object of the authenticated user on the guild. |
 | `icon_url` | `string` | The resource URL of the guilds icon. |
+| `backups_enabled` | `bool` | Whether backup generation is enabled on this guild or not. |
+| `latest_backup_entry` | `timestamp` | Time of the latest backup created. |
 
 Example:
 ```json
@@ -318,7 +320,9 @@ Example:
     "created_at": "2016-09-04T08:38:26.976834845Z",
     "dominance": 1
   },
-  "icon_url": "https://cdn.discordapp.com/icons/362162947738566657/2bdf517d77a79b1d6ba60457bd00128e.png"
+  "icon_url": "https://cdn.discordapp.com/icons/362162947738566657/2bdf517d77a79b1d6ba60457bd00128e.png",
+  "backups_enabled": true,
+  "latest_backup_entry": "2020-07-20T17:59:59+02:00"
 }
 ```
 
