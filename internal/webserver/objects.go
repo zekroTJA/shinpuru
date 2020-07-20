@@ -296,7 +296,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		}
 
 		for _, e := range backupEntries {
-			if e.Timestamp.Before(ng.LatestBackupEntry) {
+			if e.Timestamp.After(ng.LatestBackupEntry) {
 				ng.LatestBackupEntry = e.Timestamp
 			}
 		}
