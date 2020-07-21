@@ -18,7 +18,7 @@ This change also adds the following REST API endpoints:
 
 ## Minor
 
-- Login session keys now also use the JWT implementation. This makes sessions independend from the database, which is more secure when a database leak occurs, and more practical to store session metadata in the session key. The key used for sessions is randomly generated on each startup and is only held in RAM during runtime for security reasons.
+- Login session keys now also use the JWT implementation. This makes sessions independend from the database, which is more secure when a database leak occurs, and more practical to store session metadata in the session key. The key used for sessions is randomly generated on each startup and periodically after a specified time has elaped. Also it is only held in RAM during runtime for security reasons.
 
 # Docker
 
