@@ -201,10 +201,7 @@ func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 	token, err := jwt.Parse(keyStr, func(t *jwt.Token) (interface{}, error) {
 		return auth.sessionSecret, nil
 	})
-	if token == nil && err != nil {
-		return "", err
-	}
-	if !token.Valid || token.Claims.Valid() != nil {
+	if token == nil || err != nil || !token.Valid || token.Claims.Valid() != nil {
 		return "", nil
 	}
 
