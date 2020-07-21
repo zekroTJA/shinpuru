@@ -231,7 +231,7 @@ A Discord Guild object.
 | `channels` | `Channel[]` | List of channels of the guild. |
 | `self_member` | `Member` | The member object of the authenticated user on the guild. |
 | `icon_url` | `string` | The resource URL of the guilds icon. |
-| `backups_enabled` | `bool` | Whether backup generation is enabled on this guild or not. |
+| `backups_enabled` | `boolean` | Whether backup generation is enabled on this guild or not. |
 | `latest_backup_entry` | `timestamp` | Time of the latest backup created. |
 
 Example:
@@ -565,6 +565,25 @@ Example:
   "last_access": "0001-01-01T00:00:00Z",
   "hits": 0,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjUzMDk5NDYsImlhdCI6MTU5Mzc3Mzk0NiwiaXNzIjoic2hpbnB1cnUgdi4wLjE3LjAtOTktZzhjMWNlNmIiLCJuYmYiOjE1OTM3NzM5NDYsInN1YiI6IjIyMTkwNTY3MTI5NjI1Mzk1MyIsInNwX3NhbHQiOiJNd2RhUUxpcUJDNWZhNXFkaHdjdVpnPT0ifQ.2kifiXUHJTS-CNw-n8dUMSWD44Dwzb73EsvDtJjS8aE"
+}
+```
+
+### GuildBackup
+
+An object wrapping details about a guild backup entry.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `guild_id` | `string` | The ID of the guild. |
+| `timestamp` | `timestamp` | The timestamp where the guild backup was created. |
+| `file_id` | `string` | The file ID of the backup. |
+
+Example:
+```json
+{
+  "guild_id": "526196711962705925",
+  "timestamp": "2020-07-21T10:13:12+02:00",
+  "file_id": "6684769970976866304"
 }
 ```
 
@@ -1249,6 +1268,76 @@ Issues a member ban which is recorded with a ban report.
   "attachment_url": "https://sp-canary.zekro.de/imagestore/6678266279931420672.png",
   "type_name": "BAN",
   "created": "2020-07-03T09:29:57Z"
+}
+```
+
+### Get Guild Backups
+
+> ### `GET /api/guilds/:guildid/backups`
+
+Returns a list of backups created on this guild.
+
+**Example Response**
+
+```json
+{
+  "n": 2,
+  "data": [
+    {
+      "guild_id": "526196711962705925",
+      "timestamp": "2020-07-20T17:59:59+02:00",
+      "file_id": "6684525051657994240"
+    },
+    {
+      "guild_id": "526196711962705925",
+      "timestamp": "2020-07-21T10:12:15+02:00",
+      "file_id": "6684769728223133696"
+    }
+  ]
+}
+```
+
+### Download Guild Backups
+
+> ### `GET /api/guilds/:guildid/backups/:backupid/download`
+
+Returns the [gzip](http://www.gzip.org/) compressed guild backup JSON file in the response body.
+
+**Example Response**
+
+```
+HTTP/1.1 200 OK
+Server: shinpuru v.1.1.0
+Date: Tue, 21 Jul 2020 08:21:58 GMT
+Content-Type: application/gzip
+Content-Length: 1567
+X-Content-Type-Options: nosniff
+Cache-Control: public, max-age=86400‬, immutable
+{ gzip compressed body data }
+```
+
+### Toggle Guild Backup Enabled
+
+> ### `POST /api/guilds/:guildid/backups/toggle`
+
+Toggle guild backup generation.
+
+**Required Permissions**
+
+- `sp.guild.admin.backup`
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `enabled` | `boolean` | Whether or not to enable guild backup generation. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
 }
 ```
 

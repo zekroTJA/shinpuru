@@ -53,7 +53,7 @@ export class GuildComponent {
   public modlogToggle = false;
   public guildSettingsToggle = false;
   public permissionsToggle = false;
-  public backupsToggle = true; // TODO: Set false
+  public backupsToggle = false;
 
   public isSearchInput = false;
 
