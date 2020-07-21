@@ -40,5 +40,5 @@ jobs:
             -a ./deploy/build_assets.tar.gz
             -a ./deploy/md5sum.txt
             -a ./deploy/sha256sum.txt
-            -f ./CHANGELOG.md
+            -F ./CHANGELOG.md
             $(git describe --tags --abbrev=0)'
