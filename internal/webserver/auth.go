@@ -13,12 +13,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
 var (
-	sessionExpiration  = 7 * 24 * time.Hour
-	apiTokenExpiration = 365 * 24 * time.Hour
+	sessionExpiration       = 7 * 24 * time.Hour
+	sessionSecretExpiration = sessionExpiration * 2
+	apiTokenExpiration      = 365 * 24 * time.Hour
 
 	jwtGenerationMethod = jwt.SigningMethodHS256
 )
@@ -32,19 +34,47 @@ const (
 // Auth provides handlers and untilities to authorize a
 // HTTP request by session cookie.
 type Auth struct {
-	db          database.Database
-	session     *discordgo.Session
-	tokenSecret []byte
+	db      database.Database
+	session *discordgo.Session
+
+	tokenSecret            []byte
+	sessionSecret          []byte
+	sessionSecretRefreshed time.Time
 }
 
 // NewAuth initializes a new Auth instance with the passed
 // database provider and discordgo session.
-func NewAuth(db database.Database, s *discordgo.Session, tokenSecret []byte) *Auth {
-	return &Auth{
+func NewAuth(db database.Database, s *discordgo.Session,
+	lct *lctimer.LifeCycleTimer, tokenSecret []byte) (auth *Auth, err error) {
+
+	auth = &Auth{
 		db:          db,
 		session:     s,
 		tokenSecret: tokenSecret,
 	}
+
+	err = auth.RefreshSessionSecret()
+	auth.sessionSecretRefreshed = time.Now()
+
+	// Refresh sessionSecret key everytime after sessionSecretExpiration
+	// has expired from auth.sessionSecretRefreshed.
+	lct.OnTick(func(now time.Time) {
+		if now.Sub(auth.sessionSecretRefreshed) > sessionSecretExpiration {
+			if err := auth.RefreshSessionSecret(); err != nil {
+				util.Log.Errorf("failed refreshing auth session secret: %s", err.Error())
+			}
+			auth.sessionSecretRefreshed = now
+		}
+	})
+
+	return
+}
+
+// RefreshSessionSecret randomly generates a new JWT key
+// for session key generation and signing.
+func (auth *Auth) RefreshSessionSecret() (err error) {
+	auth.sessionSecret, err = random.GetRandByteArray(32)
+	return
 }
 
 // LoginFailedHandler returns a 401 Unauthorized response.
@@ -54,8 +84,6 @@ func (auth *Auth) LoginFailedHandler(ctx *routing.Context, status int, msg strin
 
 // LoginSuccessHandler fetches the user by uid. If the user
 // exists, the user ID is set to the context as value for "id".
-// Also, a randomly generated session key is set as session key
-// cookie and to the database to validate a session.
 func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
 	if u, _ := auth.session.User(uid); u == nil {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
@@ -147,7 +175,7 @@ func (auth *Auth) createSessionKey(userID string) (string, error) {
 	claims.IssuedAt = now.Unix()
 
 	token, err := jwt.NewWithClaims(jwtGenerationMethod, claims).
-		SignedString(auth.tokenSecret)
+		SignedString(auth.sessionSecret)
 	if err != nil {
 		return "", err
 	}
@@ -171,7 +199,7 @@ func (auth *Auth) checkSessionCookie(ctx *routing.Context) (string, error) {
 	keyStr := string(key)
 
 	token, err := jwt.Parse(keyStr, func(t *jwt.Token) (interface{}, error) {
-		return auth.tokenSecret, nil
+		return auth.sessionSecret, nil
 	})
 	if token == nil && err != nil {
 		return "", err

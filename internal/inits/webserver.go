@@ -10,11 +10,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/webserver"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storage, cmdHandler *commands.CmdHandler, cfg *config.Config) (ws *webserver.WebServer) {
+func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storage,
+	cmdHandler *commands.CmdHandler, lct *lctimer.LifeCycleTimer, cfg *config.Config) (ws *webserver.WebServer) {
+
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
-		ws, err := webserver.New(db, st, s, cmdHandler, cfg)
+		ws, err := webserver.New(db, st, s, cmdHandler, lct, cfg)
 		if err != nil {
 			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}

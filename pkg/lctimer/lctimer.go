@@ -52,13 +52,13 @@ func (t *LifeCycleTimer) OnTick(handler Handler) func() {
 // next life time cycle elapse.
 //
 // Returned function removes the handler on call.
-func (t *LifeCycleTimer) OnTickOnce(handler Handler) func() {
-	var unreg func()
+func (t *LifeCycleTimer) OnTickOnce(handler Handler) (unreg func()) {
 	unreg = t.OnTick(func(now time.Time) {
 		handler(now)
 		unreg()
 	})
-	return unreg
+
+	return
 }
 
 // AfterTimeOnce is shorthand for OnTickOnce, but only

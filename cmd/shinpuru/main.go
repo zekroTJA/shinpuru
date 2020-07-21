@@ -67,7 +67,7 @@ func main() {
 		session.Close()
 	}()
 
-	inits.InitWebServer(session, database, st, cmdHandler, conf)
+	inits.InitWebServer(session, database, st, cmdHandler, lct, conf)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
+	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -55,13 +57,15 @@ type WebServer struct {
 	cmdhandler *commands.CmdHandler
 
 	config *config.Config
+
+	lastAuthSecretRefresh time.Time
 }
 
 // New creates a new instance of WebServer consuming the passed
 // database provider, storage provider, discordgo session, command
-// handler and configuration.
+// handler, life cycle timer and configuration.
 func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd *commands.CmdHandler, config *config.Config) (ws *WebServer, err error) {
+	cmd *commands.CmdHandler, lct *lctimer.LifeCycleTimer, config *config.Config) (ws *WebServer, err error) {
 
 	ws = new(WebServer)
 
@@ -93,7 +97,10 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 		Handler: ws.router.HandleRequest,
 	}
 
-	ws.auth = NewAuth(db, s, []byte(config.WebServer.APITokenKey))
+	ws.auth, err = NewAuth(db, s, lct, []byte(config.WebServer.APITokenKey))
+	if err != nil {
+		return
+	}
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
 		config.Discord.ClientID,
