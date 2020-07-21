@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -187,7 +188,7 @@ func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 			URL: u.AviURL,
 		},
 		Image: &discordgo.MessageEmbedImage{
-			URL:    d.ThumbnailURL,
+			URL:    fmt.Sprintf("%s?rid=%d", d.ThumbnailURL, rand.Int()),
 			Width:  1280,
 			Height: 720,
 		},
