@@ -39,6 +39,10 @@ func (c *CmdStats) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdStats) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdStats) Exec(args *CommandArgs) error {
 	uptime := int(time.Since(util.StatsStartupTime).Seconds())
 	uptimeDays := int(uptime / (3600 * 24))

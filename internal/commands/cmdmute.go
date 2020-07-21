@@ -50,6 +50,10 @@ func (c *CmdMute) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdMute) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdMute) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.displayMuteRole(args)

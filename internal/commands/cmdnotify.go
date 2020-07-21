@@ -47,6 +47,10 @@ func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
 	}
 }
 
+func (c *CmdNotify) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdNotify) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)

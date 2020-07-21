@@ -55,6 +55,10 @@ func (c *CmdReport) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdReport) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdReport) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return util.SendEmbedError(args.Session, args.Channel.ID,

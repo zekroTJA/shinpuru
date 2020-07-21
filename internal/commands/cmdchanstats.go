@@ -51,6 +51,10 @@ func (c *CmdChannelStats) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdChannelStats) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	const hardLimit = 10000
 

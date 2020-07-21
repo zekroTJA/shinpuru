@@ -48,6 +48,10 @@ func (c *CmdExec) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdExec) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdExec) Exec(args *CommandArgs) error {
 	errHelpMsg := func(args *CommandArgs) error {
 		return util.SendEmbedError(args.Session, args.Channel.ID,

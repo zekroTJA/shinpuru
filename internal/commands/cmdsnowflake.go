@@ -50,6 +50,10 @@ func (c *CmdSnowflake) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdSnowflake) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdSnowflake) Exec(args *CommandArgs) error {
 	if c.rx == nil {
 		c.rx = regexp.MustCompile(`(\d+)\s*([a-zA-Z]+)?`)

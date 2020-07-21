@@ -38,6 +38,10 @@ func (c *CmdHelp) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdHelp) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdHelp) Exec(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,
@@ -96,6 +100,12 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 			{
 				Name:   "Domain Name",
 				Value:  cmd.GetDomainName(),
+				Inline: true,
+			},
+			{
+				Name: "DM Capable",
+				Value: util.BoolAsString(
+					cmd.IsExecutableInDMChannels(), "Yes", "No"),
 				Inline: true,
 			},
 			{

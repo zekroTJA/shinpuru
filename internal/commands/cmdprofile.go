@@ -41,6 +41,12 @@ func (c *CmdProfile) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdProfile) IsExecutableInDMChannels() bool {
+	// TODO: Change to true; Required some
+	// modification to the command
+	return false
+}
+
 func (c *CmdProfile) Exec(args *CommandArgs) error {
 	member, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
 	if err != nil {

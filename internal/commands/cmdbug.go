@@ -32,6 +32,10 @@ func (c *CmdBug) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdBug) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdBug) Exec(args *CommandArgs) error {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,

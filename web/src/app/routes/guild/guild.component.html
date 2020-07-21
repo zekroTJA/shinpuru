@@ -9,6 +9,16 @@
             <p class="embeded">{{ guild.id }}</p>
         </div>
 
+        <div class="mb-4 backup-embed" [class.disabled]="!guild.backups_enabled">
+            <img *ngIf="guild.backups_enabled" src="assets/shield.svg"/>
+            <img *ngIf="!guild.backups_enabled" src="assets/warning.svg"/>
+            <span class="ml-2">
+                Backups <strong>{{ guild.backups_enabled ? 'enabled' : 'disabled' }}</strong> 
+                for this guild. {{ lastBackupText }}
+            </span>
+            <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+        </div>
+
         <!-- LOGGED IN MEMBER INFO -->
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>
@@ -199,6 +209,34 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- MOD LOG -->
+        <div class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="backupsToggle">
+                <h4 class="mx-3">BACKUPS</h4>
+                <p class="cbadge">{{ backups?.length || '0' }}</p>
+            </app-spoiler>
+        </div>
+        <div *ngIf="backupsToggle">
+            <i *ngIf="!backups || !backups.length">No backups are available for this guild.</i>
+            <p *ngIf="backups && backups.length > 0">
+                If you want to restore a backup, please use the 
+                <a class="link" href="https://github.com/zekroTJA/shinpuru/wiki/Commands#backup" target="_blank">
+                    backup restore command</a> with the desired backup index number.
+            </p>
+            <div class="backups-container">
+                <span *ngFor="let b of backups; index as i" class="backups-entry">
+                    <strong class="number">{{ i }}</strong>
+                    <span>{{ dateFormat(b.timestamp) }}</span> 
+                    <span class="embeded">(ID: {{b.file_id}})</span>
+                    <a 
+                        title="Download backup file" 
+                        [href]="getBackupDownloadLink(b.file_id)" 
+                        download="backup_archive_{{guild.id}}_{{b.file_id}}"
+                    ><img src="assets/download.svg"/></a>
+                </span>
             </div>
         </div>
     </div>

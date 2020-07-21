@@ -41,6 +41,10 @@ func (c *CmdVoicelog) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdVoicelog) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdVoicelog) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		acceptMsg := &acceptmsg.AcceptMessage{

@@ -40,6 +40,10 @@ func (c *CmdClear) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdClear) IsExecutableInDMChannels() bool {
+	return true
+}
+
 func (c *CmdClear) Exec(args *CommandArgs) error {
 	var msgsStructs []*discordgo.Message
 	var err error

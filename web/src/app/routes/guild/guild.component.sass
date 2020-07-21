@@ -108,8 +108,63 @@
 
 
 .display-more-btn
-    padding: 10px 30px 10px 30px !important
+    padding: 10px 30px !important
     +mx-auto
+
+
+.backup-embed
+    border: solid 2px $c-lime
+    padding: 5px 10px
+    border-radius: 5px
+    width: 100%
+    background-color: rgba($c-lime, 0.2)
+    display: flex
+
+    &.disabled
+        border-color: $c-orange
+        background-color: rgba($c-orange, 0.2)
+
+        & button
+            background-color: $c-orange
+
+    button
+        padding: 0px 10px
+        font-size: 14px
+        margin-left: auto
+        background-color: $c-green
+
+
+.backups-container
+    width: fit-content
+
+    > *
+        margin-bottom: 10px
+        &:last-child
+            margin-bottom: 0
+            background-color: rgba($c-blurple, 0.5)
+
+
+.backups-entry
+    display: flex
+    background-color: rgba(black, 0.15)
+    padding: 5px 10px
+    border-radius: 5px
+    align-items: center
+    justify-content: space-between
+
+    .number
+        background-color: rgba(black, 0.25)
+        padding: 0px 10px
+        border-radius: 5px
+
+    > button
+        padding: 0px 10px
+        background-color: #00000069
+
+    > *
+        margin-right: 10px
+        &:last-child
+            margin-right: 0
 
 
 @media only screen and (max-width: 700px)

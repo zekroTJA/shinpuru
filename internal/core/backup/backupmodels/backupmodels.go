@@ -8,9 +8,9 @@ import (
 
 // Entry wraps the database entry of a backup.
 type Entry struct {
-	GuildID   string
-	Timestamp time.Time
-	FileID    string
+	GuildID   string    `json:"guild_id"`
+	Timestamp time.Time `json:"timestamp"`
+	FileID    string    `json:"file_id"`
 }
 
 // Object wraps a backup structure with an unique

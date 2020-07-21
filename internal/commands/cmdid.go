@@ -38,6 +38,10 @@ func (c *CmdId) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdId) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdId) Exec(args *CommandArgs) error {
 	var user *discordgo.User
 	var role *discordgo.Role

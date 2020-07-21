@@ -42,6 +42,10 @@ func (c *CmdTwitchNotify) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdTwitchNotify) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdTwitchNotify) Exec(args *CommandArgs) error {
 	tnw := args.CmdHandler.tnw
 

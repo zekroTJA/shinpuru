@@ -10,7 +10,9 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -69,8 +71,10 @@ type Guild struct {
 	Roles    []*discordgo.Role    `json:"roles"`
 	Channels []*discordgo.Channel `json:"channels"`
 
-	SelfMember *Member `json:"self_member"`
-	IconURL    string  `json:"icon_url"`
+	SelfMember        *Member   `json:"self_member"`
+	IconURL           string    `json:"icon_url"`
+	BackupsEnabled    bool      `json:"backups_enabled"`
+	LatestBackupEntry time.Time `json:"latest_backup_entry"`
 	// Members    []*Member `json:"members"`
 }
 
@@ -197,12 +201,22 @@ type APITokenResponse struct {
 	Token      string    `json:"token,omitempty"`
 }
 
-// APITokenClaims extends the standard jwt claims
+// APITokenClaims extends the standard JWT claims
 // by private claims used for api tokens.
 type APITokenClaims struct {
 	jwt.StandardClaims
 
 	Salt string `json:"sp_salt,omitempty"`
+}
+
+// SessionTokenClaims extends the standard JWT
+// claims by information used for session tokens.
+//
+// Currently, no additional information is
+// extended but this wrapper is used tho to
+// be able to add session information later.
+type SessionTokenClaims struct {
+	jwt.StandardClaims
 }
 
 // Validate returns true, when the ReasonRequest is valid.
@@ -224,7 +238,7 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 
 // GuildFromGuild returns a Guild model from the passed
 // discordgo.Guild g, discordgo.Member m and cmdHandler.
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler) *Guild {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler, db database.Database) *Guild {
 	if g == nil {
 		return nil
 	}
@@ -242,7 +256,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		}
 	}
 
-	return &Guild{
+	ng := &Guild{
 		AfkChannelID:             g.AfkChannelID,
 		Banner:                   g.Banner,
 		Channels:                 g.Channels,
@@ -267,6 +281,28 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		SelfMember: selfmm,
 		IconURL:    getIconURL(g.ID, g.Icon),
 	}
+
+	if db != nil {
+		var err error
+
+		ng.BackupsEnabled, err = db.GetGuildBackup(g.ID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed getting backup status of guild %s: %s", g.ID, err.Error())
+		}
+
+		backupEntries, err := db.GetBackups(g.ID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed getting backup entries of guild %s: %s", g.ID, err.Error())
+		}
+
+		for _, e := range backupEntries {
+			if e.Timestamp.After(ng.LatestBackupEntry) {
+				ng.LatestBackupEntry = e.Timestamp
+			}
+		}
+	}
+
+	return ng
 }
 
 // GuildReducedFromGuild returns a GuildReduced from the passed
@@ -315,14 +351,35 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 // APITokenClaimsFromMap creates an APITokenClaims
 // model from given jwt.MapClaims.
 func APITokenClaimsFromMap(m jwt.MapClaims) APITokenClaims {
-	c := APITokenClaims{}
+	c := APITokenClaims{
+		StandardClaims: standardClaimsFromMap(m),
+	}
+
+	c.Salt, _ = m["sp_salt"].(string)
+
+	return c
+}
+
+// SessionTokenClaimsFromMap creates an SessionTokenClaims
+// model from given jwt.MapClaims.
+func SessionTokenClaimsFromMap(m jwt.MapClaims) SessionTokenClaims {
+	c := SessionTokenClaims{
+		StandardClaims: standardClaimsFromMap(m),
+	}
+
+	return c
+}
+
+// standardClaimsFromMap creates a jwt.StandardClaims
+// model from the given jwt.MapClaims.
+func standardClaimsFromMap(m jwt.MapClaims) jwt.StandardClaims {
+	c := jwt.StandardClaims{}
 
 	c.Issuer, _ = m["iss"].(string)
 	c.Subject, _ = m["sub"].(string)
 	c.ExpiresAt, _ = m["exp"].(int64)
 	c.NotBefore, _ = m["nbf"].(int64)
 	c.IssuedAt, _ = m["iat"].(int64)
-	c.Salt, _ = m["sp_salt"].(string)
 
 	return c
 }

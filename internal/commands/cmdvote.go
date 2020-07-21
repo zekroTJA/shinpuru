@@ -48,6 +48,10 @@ func (c *CmdVote) GetSubPermissionRules() []SubPermission {
 	}
 }
 
+func (c *CmdVote) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	if len(args.Args) > 0 {

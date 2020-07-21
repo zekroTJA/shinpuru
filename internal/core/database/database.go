@@ -2,7 +2,6 @@ package database
 
 import (
 	"errors"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -99,10 +98,6 @@ type Database interface {
 	GetTagByIdent(ident string, guildID string) (*tag.Tag, error)
 	GetGuildTags(guildID string) ([]*tag.Tag, error)
 	DeleteTag(id snowflake.ID) error
-
-	SetSession(key, userID string, expires time.Time) error
-	GetSession(key string) (string, error)
-	DeleteSession(userID string) error
 
 	SetAPIToken(token *models.APITokenEntry) error
 	GetAPIToken(userID string) (*models.APITokenEntry, error)

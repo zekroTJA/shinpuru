@@ -62,6 +62,9 @@ export interface Guild {
   joined_at: string;
   member_count: number;
 
+  backups_enabled: boolean;
+  latest_backup_entry: Date;
+
   self_member?: Member;
 
   roles?: Role[];
@@ -156,4 +159,10 @@ export interface APIToken {
   last_access: Date;
   hits: number;
   token?: string;
+}
+
+export interface GuildBackup {
+  guild_id: string;
+  timestamp: Date;
+  file_id: string;
 }

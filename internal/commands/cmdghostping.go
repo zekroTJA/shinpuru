@@ -49,6 +49,10 @@ func (c *CmdGhostping) GetSubPermissionRules() []SubPermission {
 	return nil
 }
 
+func (c *CmdGhostping) IsExecutableInDMChannels() bool {
+	return false
+}
+
 func (c *CmdGhostping) Exec(args *CommandArgs) error {
 	if len(args.Args) < 1 {
 		return c.info(args)
