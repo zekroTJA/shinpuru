@@ -227,9 +227,12 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 					"|---|---|\n"+
 					"| Domain Name | %s |\n"+
 					"| Group | %s |\n"+
-					"| Aliases | %s |\n\n"+
+					"| Aliases | %s |\n"+
+					"| DM Capable | %s |\n\n"+
 					"**Usage**  \n"+
-					"%s\n\n", cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(), aliases, help)
+					"%s\n\n",
+				cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(),
+				aliases, util.BoolAsString(cmd.IsExecutableInDMChannels(), "Yes", "No"), help)
 
 			if spr := cmd.GetSubPermissionRules(); spr != nil {
 				cmdDetails += "\n**Sub Permission Rules**\n"

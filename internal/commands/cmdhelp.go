@@ -103,6 +103,12 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 				Inline: true,
 			},
 			{
+				Name: "DM Capable",
+				Value: util.BoolAsString(
+					cmd.IsExecutableInDMChannels(), "Yes", "No"),
+				Inline: true,
+			},
+			{
 				Name:  "Description",
 				Value: util.EnsureNotEmpty(cmd.GetDescription(), "`no description`"),
 			},
