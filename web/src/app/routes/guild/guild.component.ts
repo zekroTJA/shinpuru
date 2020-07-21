@@ -11,6 +11,7 @@ import {
   Report,
   GuildSettings,
   Channel,
+  GuildBackup,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -40,6 +41,7 @@ export class GuildComponent {
   public allowed: string[];
   public settings: GuildSettings;
   public updatedSettings: GuildSettings = {} as GuildSettings;
+  public backups: GuildBackup[];
 
   public guildSettingsAllowed: string[] = [];
 
@@ -51,6 +53,7 @@ export class GuildComponent {
   public modlogToggle = false;
   public guildSettingsToggle = false;
   public permissionsToggle = false;
+  public backupsToggle = true; // TODO: Set false
 
   public isSearchInput = false;
 
@@ -58,6 +61,7 @@ export class GuildComponent {
   public reportDisplayMoreLoading = false;
 
   public toHexClr = toHexClr;
+  public dateFormat = dateFormat;
 
   constructor(
     private api: APIService,
@@ -99,6 +103,10 @@ export class GuildComponent {
 
     this.api.getReportsCount(guildID).subscribe((count) => {
       this.reportsTotalCount = count;
+    });
+
+    this.api.getGuildBackups(guildID).subscribe((backups) => {
+      this.backups = backups.data;
     });
   }
 
@@ -142,6 +150,10 @@ export class GuildComponent {
     return `Last backup was created at ${dateFormat(
       this.guild.latest_backup_entry
     )}.`;
+  }
+
+  public getBackupDownloadLink(backupID: string): string {
+    return this.api.getRcGuildBackupDownload(this.guild.id, backupID);
   }
 
   public searchInput(e: any) {

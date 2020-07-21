@@ -21,6 +21,7 @@ import {
   Count,
   SystemInfo,
   APIToken,
+  GuildBackup,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -97,8 +98,8 @@ export class APIService {
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
 
-  private readonly rcGuildBackupsToggle = (guildID: string) =>
-    `${this.rcGuilds(guildID)}/backups/toggle`;
+  private readonly rcGuildBackups = (guildID: string, rc: string = '') =>
+    `${this.rcGuilds(guildID)}/backups${rc ? '/' + rc : ''}`;
 
   private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/kick`;
@@ -125,6 +126,10 @@ export class APIService {
     private router: Router
   ) {
     this.rootURL = environment.production ? '' : 'http://localhost:8080';
+  }
+
+  public getRcGuildBackupDownload(guildID: string, backupID: string): string {
+    return `${this.rcGuildBackups(guildID)}/${backupID}/download`;
   }
 
   public logout(): Observable<any> {
@@ -364,7 +369,18 @@ export class APIService {
     enabled: boolean
   ): Observable<any> {
     return this.http
-      .post(this.rcGuildBackupsToggle(guildID), { enabled }, this.defopts())
+      .post(this.rcGuildBackups(guildID, 'toggle'), { enabled }, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildBackups(
+    guildID: string
+  ): Observable<ListReponse<GuildBackup>> {
+    return this.http
+      .get<ListReponse<GuildBackup>>(
+        this.rcGuildBackups(guildID),
+        this.defopts()
+      )
       .pipe(catchError(this.errorCatcher));
   }
 

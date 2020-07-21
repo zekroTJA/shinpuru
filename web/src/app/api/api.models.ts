@@ -160,3 +160,9 @@ export interface APIToken {
   hits: number;
   token?: string;
 }
+
+export interface GuildBackup {
+  guild_id: string;
+  timestamp: Date;
+  file_id: string;
+}

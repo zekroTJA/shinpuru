@@ -211,5 +211,31 @@
                 </ul>
             </div>
         </div>
+
+        <!-- MOD LOG -->
+        <div class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="backupsToggle">
+                <h4 class="mx-3">BACKUPS</h4>
+                <p class="cbadge">{{ backups?.length || '0' }}</p>
+            </app-spoiler>
+        </div>
+        <div *ngIf="backupsToggle" class="backups-container">
+            <i *ngIf="!backups || !backups.length">No backups are available for this guild.</i>
+            <p *ngIf="backups && backups.length > 0">
+                If you want to restore a backup, please use the 
+                <a class="link" href="https://github.com/zekroTJA/shinpuru/wiki/Commands#backup" target="_blank">
+                    backup restore command</a> with the desired backup index number.
+            </p>
+            <span *ngFor="let b of backups; index as i" class="backups-entry">
+                <strong class="number">{{ i }}</strong>
+                <span>{{ dateFormat(b.timestamp) }}</span> 
+                <span class="embeded">(ID: {{b.file_id}})</span>
+                <a 
+                    title="Download backup file" 
+                    [href]="getBackupDownloadLink(b.file_id)" 
+                    download="backup_archive_{{guild.id}}_{{b.file_id}}"
+                ><img src="assets/download.svg"/></a>
+            </span>
+        </div>
     </div>
 </div>
