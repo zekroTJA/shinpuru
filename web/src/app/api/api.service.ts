@@ -101,6 +101,9 @@ export class APIService {
   private readonly rcGuildBackups = (guildID: string, rc: string = '') =>
     `${this.rcGuilds(guildID)}/backups${rc ? '/' + rc : ''}`;
 
+  private readonly rcGuildInviteBlock = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/inviteblock`;
+
   private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/kick`;
 
@@ -381,6 +384,15 @@ export class APIService {
         this.rcGuildBackups(guildID),
         this.defopts()
       )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildInviteBlock(
+    guildID: string,
+    enabled: boolean
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildInviteBlock(guildID), { enabled }, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

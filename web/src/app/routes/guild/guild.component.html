@@ -9,16 +9,6 @@
             <p class="embeded">{{ guild.id }}</p>
         </div>
 
-        <div class="mb-4 backup-embed" [class.disabled]="!guild.backups_enabled">
-            <img *ngIf="guild.backups_enabled" src="assets/shield.svg"/>
-            <img *ngIf="!guild.backups_enabled" src="assets/warning.svg"/>
-            <span class="ml-2">
-                Backups <strong>{{ guild.backups_enabled ? 'enabled' : 'disabled' }}</strong> 
-                for this guild. {{ lastBackupText }}
-            </span>
-            <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
-        </div>
-
         <!-- LOGGED IN MEMBER INFO -->
         <div id="user-info" class="mb-4">
             <img [src]="guild.self_member.avatar_url"/>
@@ -59,6 +49,48 @@
                 >
                     DISPLAY MORE...
                 </app-spinner-button>
+            </div>
+        </div>
+
+        <!-- SECURITY-->
+        <div class="d-flex mt-4 mb-2">
+            <app-spoiler [(ngModel)]="securityToggle">
+                <h4 class="mx-3">SECURITY</h4>
+                <img 
+                    title="Some security features are not enabled on this guild." 
+                    *ngIf="!guild.backups_enabled || !guild.invite_block_enabled" 
+                    height="25" width="25" src="assets/warning.svg"
+                />
+            </app-spoiler>
+        </div>
+        <div *ngIf="securityToggle" class="security-container">
+            <div class="mb-4 security-embed" [class.disabled]="!guild.backups_enabled">
+                <h5>BACKUPS</h5>
+                <div class="status">
+                    <img *ngIf="guild.backups_enabled" src="assets/shield.svg"/>
+                    <img *ngIf="!guild.backups_enabled" src="assets/warning.svg"/>
+                    <strong>{{ guild.backups_enabled ? 'enabled' : 'disabled' }}</strong>
+                </div>
+                <div>
+                    <span> {{ lastBackupText }} </span>
+                </div>
+                <div>
+                    <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+                </div>
+            </div>
+            <div class="mb-4 security-embed" [class.disabled]="!guild.invite_block_enabled">
+                <h5>INVITE BLOCKING</h5>
+                <div class="status">
+                    <img *ngIf="guild.invite_block_enabled" src="assets/shield.svg"/>
+                    <img *ngIf="!guild.invite_block_enabled" src="assets/warning.svg"/>
+                    <strong>{{ guild.invite_block_enabled ? 'enabled' : 'disabled' }}</strong>
+                </div>
+                <div>
+                    <span>Prevents members of sending guild invite links.</span>
+                </div>
+                <div>
+                    <button *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')" (click)="toggleInviteBlocing()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+                </div>
             </div>
         </div>
 
@@ -212,7 +244,7 @@
             </div>
         </div>
 
-        <!-- MOD LOG -->
+        <!-- BACKUPS -->
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="backupsToggle">
                 <h4 class="mx-3">BACKUPS</h4>

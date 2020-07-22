@@ -51,6 +51,7 @@ export class GuildComponent {
 
   public guildToggle = false;
   public modlogToggle = false;
+  public securityToggle = false;
   public guildSettingsToggle = false;
   public permissionsToggle = false;
   public backupsToggle = false;
@@ -80,9 +81,8 @@ export class GuildComponent {
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
         .subscribe((allowed) => {
           this.allowed = allowed;
-          this.guildSettingsAllowed = this.allowed.filter(
-            (a) =>
-              a.startsWith('sp.guild.config') || a.startsWith('sp.guild.admin')
+          this.guildSettingsAllowed = this.allowed.filter((a) =>
+            a.startsWith('sp.guild.')
           );
         });
     });
@@ -312,6 +312,23 @@ export class GuildComponent {
           `${
             this.guild.backups_enabled ? 'Enabled' : 'Disabled'
           } guild backups for guild ${this.guild.name}.`,
+          'Guild Backups Updated',
+          'cyan',
+          6000,
+          true
+        );
+      });
+  }
+
+  public toggleInviteBlocing() {
+    this.api
+      .postGuildInviteBlock(this.guild.id, !this.guild.invite_block_enabled)
+      .subscribe(() => {
+        this.guild.invite_block_enabled = !this.guild.invite_block_enabled;
+        this.toasts.push(
+          `${
+            this.guild.invite_block_enabled ? 'Enabled' : 'Disabled'
+          } invite blocking for guild ${this.guild.name}.`,
           'Guild Backups Updated',
           'cyan',
           6000,

@@ -64,6 +64,7 @@ export interface Guild {
 
   backups_enabled: boolean;
   latest_backup_entry: Date;
+  invite_block_enabled: boolean;
 
   self_member?: Member;
 

@@ -112,13 +112,13 @@
     +mx-auto
 
 
-.backup-embed
+.security-embed
     border: solid 2px $c-lime
-    padding: 5px 10px
+    padding: 10px
     border-radius: 5px
     width: 100%
+    max-width: 250px
     background-color: rgba($c-lime, 0.2)
-    display: flex
 
     &.disabled
         border-color: $c-orange
@@ -127,11 +127,28 @@
         & button
             background-color: $c-orange
 
+    > div
+        margin-top: 5px
+
+    > .status > img
+        margin-right: 5px
+
     button
-        padding: 0px 10px
-        font-size: 14px
-        margin-left: auto
+        padding: 0px
+        margin-top: auto
+        width: 100%
         background-color: $c-green
+
+
+.security-container
+    display: flex
+    flex-wrap: wrap
+    
+    > div
+        margin-right: 20px
+        margin-top: 10px
+        &:last-child
+            margin-right: 0
 
 
 .backups-container
