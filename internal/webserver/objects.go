@@ -391,5 +391,5 @@ func getIconURL(guildID, iconHash string) string {
 		return ""
 	}
 
-	return fmt.Sprintf("https://cdn.discord.com/icons/%s/%s.png", guildID, iconHash)
+	return fmt.Sprintf("https://cdn.discordapp.com/icons/%s/%s.png", guildID, iconHash)
 }
