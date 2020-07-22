@@ -233,6 +233,7 @@ A Discord Guild object.
 | `icon_url` | `string` | The resource URL of the guilds icon. |
 | `backups_enabled` | `boolean` | Whether backup generation is enabled on this guild or not. |
 | `latest_backup_entry` | `timestamp` | Time of the latest backup created. |
+| `invite_block_enabled` | `boolean` | Whether invite blocking is enabled on this guild or not. |
 
 Example:
 ```json
@@ -322,7 +323,8 @@ Example:
   },
   "icon_url": "https://cdn.discordapp.com/icons/362162947738566657/2bdf517d77a79b1d6ba60457bd00128e.png",
   "backups_enabled": true,
-  "latest_backup_entry": "2020-07-20T17:59:59+02:00"
+  "latest_backup_entry": "2020-07-20T17:59:59+02:00",
+  "invite_block_enabled": true
 }
 ```
 
@@ -1331,6 +1333,31 @@ Toggle guild backup generation.
 | Field | Type | Description |
 |-------|------|-------------|
 | `enabled` | `boolean` | Whether or not to enable guild backup generation. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
+}
+```
+
+### Toggle Guild Invite Block Enabled
+
+> ### `POST /api/guilds/:guildid/inviteblock`
+
+Toggle guild invite block enable.
+
+**Required Permissions**
+
+- `sp.guild.mod.inviteblock`
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `enabled` | `boolean` | Whether or not to enable invite blocking or not. |
 
 **Example Response**
 
