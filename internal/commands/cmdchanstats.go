@@ -82,8 +82,8 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 					fmt.Sprintf("Invalid command arguments. Limit must be in range of [1, %d].", hardLimit)).
 					DeleteAfter(8 * time.Second).Error()
 			}
-			args.Args = args.Args[:lenArgs-1]
 			lenArgs--
+			args.Args = args.Args.Splice(lenArgs, 1)
 		}
 	}
 

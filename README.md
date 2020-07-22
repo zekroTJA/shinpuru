@@ -137,6 +137,7 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 
 - [`github.com/zekroTJA/shinpuru/pkg/acceptmsg`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg)
 - [`github.com/zekroTJA/shinpuru/pkg/bytecount`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/bytecount)
+- [`github.com/zekroTJA/shinpuru/pkg/ctypes`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/ctypes)
 - [`github.com/zekroTJA/shinpuru/pkg/discordoauth`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordoauth)
 - [`github.com/zekroTJA/shinpuru/pkg/discordutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordutil)
 - [`github.com/zekroTJA/shinpuru/pkg/etag`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/etag)
