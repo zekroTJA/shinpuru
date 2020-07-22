@@ -6,7 +6,7 @@ configVersionPleaseDoNotChange: 6
 
 # Discord specific configuration
 discord:
-  # Your bot's token you will get from https://discordapp.com/developers/applications
+  # Your bot's token you will get from https://discord.com/developers/applications
   token: "MzI4NTc5NjU2MzIyMjUyODAx.DySqfg.6ZZznoZ6A6ZfeM2PiKSyQup05MI"
   # The global prefix which will be always usable on all guilds
   generalprefix: "sp!"
@@ -14,10 +14,10 @@ discord:
   # This user will have FULL PERMISSIONS on all guilds
   ownerid: "221905671296253953"
   # The client ID of the bot's application account
-  # Get this from https://discordapp.com/developers/applications
+  # Get this from https://discord.com/developers/applications
   clientid: "536916384026722314"
   # The client secret for the bot's application account
-  # Get this from https://discordapp.com/developers/applications
+  # Get this from https://discord.com/developers/applications
   clientsecret: "273n9awshbr3w7zb5cq3ucbq234q43q"
 
 # Default permissions for users and admins

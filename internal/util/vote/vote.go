@@ -22,6 +22,7 @@ type VoteState int
 const (
 	VoteStateOpen VoteState = iota
 	VoteStateClosed
+	VoteStateClosedNC
 	VoteStateExpired
 )
 
@@ -109,7 +110,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 	color := static.ColorEmbedDefault
 
 	switch state {
-	case VoteStateClosed:
+	case VoteStateClosed, VoteStateClosedNC:
 		title = "Vote closed"
 		color = static.ColorEmbedOrange
 	case VoteStateExpired:
@@ -149,7 +150,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 		},
 	}
 
-	if state == VoteStateClosed || state == VoteStateExpired {
+	if len(totalTicks) > 0 && (state == VoteStateClosed || state == VoteStateExpired) {
 
 		values := make([]chart.Value, len(v.Possibilities))
 

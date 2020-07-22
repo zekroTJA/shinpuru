@@ -27,7 +27,7 @@ func (c *CmdVote) GetHelp() string {
 	return "`vote <description> | <possibility1> | <possibility2> (| <possibility3> ...)` - create vote\n" +
 		"`vote list` - display currentltly running votes\n" +
 		"`vote expire <duration> (<voteID>)` - set expire to last created (or specified) vote\n" +
-		"`vote close (<VoteID>|all)` - close your last vote, a vote by ID or all your open votes"
+		"`vote close (<VoteID>|all) (nochart|nc)` - close your last vote, a vote by ID or all your open votes"
 }
 
 func (c *CmdVote) GetGroup() string {
@@ -58,78 +58,7 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 		switch strings.ToLower(args.Args[0]) {
 
 		case "close":
-			var ivote *vote.Vote
-			if len(args.Args) > 1 {
-				if strings.ToLower(args.Args[1]) == "all" {
-					var i int
-					for _, v := range vote.VotesRunning {
-						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-							go func(vC *vote.Vote) {
-								args.CmdHandler.db.DeleteVote(vC.ID)
-								vC.Close(args.Session, vote.VoteStateClosed)
-							}(v)
-							i++
-						}
-					}
-					return util.SendEmbed(args.Session, args.Channel.ID, fmt.Sprintf("Closed %d votes.", i), "", 0).
-						DeleteAfter(8 * time.Second).Error()
-				}
-				vid := args.Args[1]
-				for _, v := range vote.VotesRunning {
-					if v.GuildID == args.Guild.ID && v.ID == vid {
-						ivote = v
-					}
-				}
-				if ivote == nil {
-					return util.SendEmbedError(args.Session, args.Channel.ID,
-						fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid)).
-						DeleteAfter(8 * time.Second).Error()
-				}
-			} else {
-				vids := make([]string, 0)
-				for _, v := range vote.VotesRunning {
-					if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-						ivote = v
-						vids = append(vids, v.ID)
-					}
-				}
-				if len(vids) > 1 {
-					emb := &discordgo.MessageEmbed{
-						Description: "You have open more votes than 1. Please select the ID of the vote to close it:",
-						Color:       static.ColorEmbedError,
-						Fields:      make([]*discordgo.MessageEmbedField, 0),
-					}
-					for _, v := range vote.VotesRunning {
-						if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
-							emb.Fields = append(emb.Fields, v.AsField())
-						}
-					}
-					return util.SendEmbedRaw(args.Session, args.Channel.ID, emb).
-						DeleteAfter(30 * time.Second).
-						Error()
-				} else if ivote == nil {
-					return util.SendEmbedError(args.Session, args.Channel.ID,
-						"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.").
-						DeleteAfter(12 * time.Second).Error()
-				}
-			}
-
-			ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
-			if ivote.CreatorID != args.User.ID && !ok && !override {
-				return util.SendEmbedError(args.Session, args.Channel.ID,
-					"You do not have the permission to close another ones votes.").
-					DeleteAfter(8 * time.Second).Error()
-			}
-
-			err = args.CmdHandler.db.DeleteVote(ivote.ID)
-			if err != nil {
-				return err
-			}
-
-			err = ivote.Close(args.Session, vote.VoteStateClosed)
-			return util.SendEmbed(args.Session, args.Channel.ID,
-				"Vote closed.", "", static.ColorEmbedGreen).
-				DeleteAfter(8 * time.Second).Error()
+			return c.close(args)
 
 		case "list":
 			return listVotes(args)
@@ -244,6 +173,93 @@ func (c *CmdVote) Exec(args *CommandArgs) error {
 
 	vote.VotesRunning[ivote.ID] = ivote
 	return nil
+}
+
+func (c *CmdVote) close(args *CommandArgs) error {
+	state := vote.VoteStateClosed
+	if len(args.Args) > 1 {
+		i := args.Args.IndexOf("nc")
+		if i == -1 {
+			i = args.Args.IndexOf("nochart")
+		}
+		if i > -1 {
+			state = vote.VoteStateClosedNC
+			args.Args = args.Args.Splice(i, 1)
+		}
+	}
+
+	var ivote *vote.Vote
+	if len(args.Args) > 1 {
+		if strings.ToLower(args.Args[1]) == "all" {
+			var i int
+			for _, v := range vote.VotesRunning {
+				if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+					go func(vC *vote.Vote) {
+						args.CmdHandler.db.DeleteVote(vC.ID)
+						vC.Close(args.Session, state)
+					}(v)
+					i++
+				}
+			}
+			return util.SendEmbed(args.Session, args.Channel.ID, fmt.Sprintf("Closed %d votes.", i), "", 0).
+				DeleteAfter(8 * time.Second).Error()
+		}
+		vid := args.Args[1]
+		for _, v := range vote.VotesRunning {
+			if v.GuildID == args.Guild.ID && v.ID == vid {
+				ivote = v
+			}
+		}
+		if ivote == nil {
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("There is no open vote on this guild with the ID `%s`.", vid)).
+				DeleteAfter(8 * time.Second).Error()
+		}
+	} else {
+		vids := make([]string, 0)
+		for _, v := range vote.VotesRunning {
+			if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+				ivote = v
+				vids = append(vids, v.ID)
+			}
+		}
+		if len(vids) > 1 {
+			emb := &discordgo.MessageEmbed{
+				Description: "You have open more votes than 1. Please select the ID of the vote to close it:",
+				Color:       static.ColorEmbedError,
+				Fields:      make([]*discordgo.MessageEmbedField, 0),
+			}
+			for _, v := range vote.VotesRunning {
+				if v.GuildID == args.Guild.ID && v.CreatorID == args.User.ID {
+					emb.Fields = append(emb.Fields, v.AsField())
+				}
+			}
+			return util.SendEmbedRaw(args.Session, args.Channel.ID, emb).
+				DeleteAfter(30 * time.Second).
+				Error()
+		} else if ivote == nil {
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"You have no open votes on this guild. Please specify a specific vote ID to close another ones vote, if you have the permissions to do this.").
+				DeleteAfter(12 * time.Second).Error()
+		}
+	}
+
+	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".close")
+	if ivote.CreatorID != args.User.ID && !ok && !override {
+		return util.SendEmbedError(args.Session, args.Channel.ID,
+			"You do not have the permission to close another ones votes.").
+			DeleteAfter(8 * time.Second).Error()
+	}
+
+	err = args.CmdHandler.db.DeleteVote(ivote.ID)
+	if err != nil {
+		return err
+	}
+
+	err = ivote.Close(args.Session, state)
+	return util.SendEmbed(args.Session, args.Channel.ID,
+		"Vote closed.", "", static.ColorEmbedGreen).
+		DeleteAfter(8 * time.Second).Error()
 }
 
 func listVotes(args *CommandArgs) error {

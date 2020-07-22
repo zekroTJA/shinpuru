@@ -1,6 +1,9 @@
 package commands
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/pkg/ctypes"
+)
 
 // CommandArgs wraps instances about a command
 // execution like channel, user, guild, message,
@@ -12,7 +15,7 @@ type CommandArgs struct {
 	User       *discordgo.User
 	Guild      *discordgo.Guild
 	Message    *discordgo.Message
-	Args       []string
+	Args       ctypes.StringArray
 	Session    *discordgo.Session
 	CmdHandler *CmdHandler
 	IsDM       bool
