@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	endpointOauth = "https://discordapp.com/api/oauth2/token"
-	endpointMe    = "https://discordapp.com/api/users/@me"
+	endpointOauth = "https://discord.com/api/oauth2/token"
+	endpointMe    = "https://discord.com/api/users/@me"
 )
 
 // OnErrorFunc is the function to be used to handle errors during
@@ -72,7 +72,7 @@ func NewDiscordOAuth(clientID, clientSecret, redirectURI string, onError OnError
 // HandlerInit returns a redirect response to the OAuth Apps
 // authentication page.
 func (d *DiscordOAuth) HandlerInit(ctx *routing.Context) error {
-	uri := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=identify",
+	uri := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=identify",
 		d.clientID, url.QueryEscape(d.redirectURI))
 	ctx.Redirect(uri, fasthttp.StatusTemporaryRedirect)
 	ctx.Abort()

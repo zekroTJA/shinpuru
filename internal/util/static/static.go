@@ -62,7 +62,7 @@ const (
 	StorageBucketImages  = "shinpuru-images"
 	StorageBucketBackups = "shinpuru-backups"
 
-	DiscordAPIEndpoint = "https://discordapp.com/api"
+	DiscordAPIEndpoint = "https://discord.com/api"
 
 	CommandManualDocument = "https://github.com/zekroTJA/shinpuru/wiki/Commands"
 )

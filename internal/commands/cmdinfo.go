@@ -41,7 +41,7 @@ func (c *CmdInfo) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdInfo) Exec(args *CommandArgs) error {
-	invLink := fmt.Sprintf("https://discordapp.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
+	invLink := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
 		args.Session.State.User.ID, static.InvitePermission)
 
 	emb := &discordgo.MessageEmbed{

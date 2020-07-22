@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	rxInvLink = regexp.MustCompile(`(?i)(https?:\/\/)?(www\.)?(discord\.gg|discordapp.com\/invite)\/.*`)
+	rxInvLink = regexp.MustCompile(`(?i)(https?:\/\/)?(www\.)?(discord\.gg|discord(app)?\.com\/invite)\/.*`)
 	rxGenLink = regexp.MustCompile(`(?i)(https?:\/\/)?(www\.)?([\w-\S]+\.)+\w{1,10}\/?[\S]+`)
 )
 

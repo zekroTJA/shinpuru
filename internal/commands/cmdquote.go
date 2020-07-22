@@ -50,7 +50,10 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if strings.HasPrefix(args.Args[0], "https://discordapp.com/channels/") {
+	if strings.HasPrefix(args.Args[0], "https://discordapp.com/channels/") ||
+		strings.HasPrefix(args.Args[0], "https://discord.com/channels/") ||
+		strings.HasPrefix(args.Args[0], "https://canary.discordapp.com/channels/") ||
+		strings.HasPrefix(args.Args[0], "https://canary.discord.com/channels/") {
 		urlSplit := strings.Split(args.Args[0], "/")
 		args.Args[0] = urlSplit[len(urlSplit)-1]
 	}

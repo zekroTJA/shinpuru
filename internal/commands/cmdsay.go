@@ -53,7 +53,7 @@ func (c *CmdSay) GetHelp() string {
 		"-f string\n" +
 		"	footer\n" +
 		"-raw string\n" +
-		"	raw embed from json (see https://discordapp.com/developers/docs/resources/channel#embed-object)\n" +
+		"	raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)\n" +
 		"-t string\n" +
 		"	title\n```\n" +
 		"**Colors:**\n" + strings.Join(colors, ", ")
@@ -76,7 +76,7 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 	fcolor := f.String("c", "orange", "color")
 	ftitle := f.String("t", "", "title")
 	ffooter := f.String("f", "", "footer")
-	fraw := f.Bool("raw", false, "parses following content as raw embed from json (see https://discordapp.com/developers/docs/resources/channel#embed-object)")
+	fraw := f.Bool("raw", false, "parses following content as raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)")
 	f.Parse(args.Args)
 
 	authorField := &discordgo.MessageEmbedAuthor{
@@ -90,7 +90,7 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 		if offset < 0 || offset >= len(args.Message.Content) {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				"Wrong JSON format. The JSON object must start with `{`."+
-					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object").
+					"If you need help building an embed with raw json, take a look here:\nhttps://discord.com/developers/docs/resources/channel#embed-object").
 				DeleteAfter(20 * time.Second).Error()
 		}
 		content := args.Message.Content[offset:]
@@ -98,7 +98,7 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 		if err != nil {
 			return util.SendEmbedError(args.Session, args.Channel.ID,
 				fmt.Sprintf("Failed parsing message embed from input: ```\n%s\n```", err.Error())+
-					"If you need help building an embed with raw json, take a look here:\nhttps://discordapp.com/developers/docs/resources/channel#embed-object").
+					"If you need help building an embed with raw json, take a look here:\nhttps://discord.com/developers/docs/resources/channel#embed-object").
 				DeleteAfter(20 * time.Second).Error()
 		}
 		emb.Author = authorField
