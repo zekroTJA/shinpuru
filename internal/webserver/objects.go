@@ -71,11 +71,11 @@ type Guild struct {
 	Roles    []*discordgo.Role    `json:"roles"`
 	Channels []*discordgo.Channel `json:"channels"`
 
-	SelfMember        *Member   `json:"self_member"`
-	IconURL           string    `json:"icon_url"`
-	BackupsEnabled    bool      `json:"backups_enabled"`
-	LatestBackupEntry time.Time `json:"latest_backup_entry"`
-	// Members    []*Member `json:"members"`
+	SelfMember         *Member   `json:"self_member"`
+	IconURL            string    `json:"icon_url"`
+	BackupsEnabled     bool      `json:"backups_enabled"`
+	LatestBackupEntry  time.Time `json:"latest_backup_entry"`
+	InviteBlockEnabled bool      `json:"invite_block_enabled"`
 }
 
 // GuildReduced is a Guild model with fewer
@@ -293,12 +293,19 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 		backupEntries, err := db.GetBackups(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			util.Log.Errorf("failed getting backup entries of guild %s: %s", g.ID, err.Error())
+		} else {
+			for _, e := range backupEntries {
+				if e.Timestamp.After(ng.LatestBackupEntry) {
+					ng.LatestBackupEntry = e.Timestamp
+				}
+			}
 		}
 
-		for _, e := range backupEntries {
-			if e.Timestamp.After(ng.LatestBackupEntry) {
-				ng.LatestBackupEntry = e.Timestamp
-			}
+		status, err := db.GetGuildInviteBlock(g.ID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed getting inviteblock status of guild %s: %s", g.ID, err.Error())
+		} else {
+			ng.InviteBlockEnabled = status != ""
 		}
 	}
 

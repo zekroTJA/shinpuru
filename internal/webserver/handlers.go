@@ -109,7 +109,7 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 // ---------------------------------------------------------------------------
 // - GET /api/guilds/:guildid/members
 
-func (ws *WebServer) handlerGuildGetMembers(ctx *routing.Context) error {
+func (ws *WebServer) handlerGetGuildMembers(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
@@ -850,6 +850,40 @@ func (ws *WebServer) handlerPostGuildBackupsToggle(ctx *routing.Context) error {
 	}
 
 	if err := ws.db.SetGuildBackup(guildID, data.Enabled); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/inviteblock
+
+func (ws *WebServer) handlerPostGuildInviteBlock(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.inviteblock"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	var data struct {
+		Enabled bool `json:"enabled"`
+	}
+
+	if err := parseJSONBody(ctx, &data); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	val := ""
+	if data.Enabled {
+		val = "1"
+	}
+
+	if err := ws.db.SetGuildInviteBlock(guildID, val); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
