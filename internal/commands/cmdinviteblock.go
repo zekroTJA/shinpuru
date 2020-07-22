@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -73,7 +72,7 @@ func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 	strStat := "disabled"
 	color := static.ColorEmbedOrange
 	if status != "" {
-		strStat = "enabled (*for members with permission level < " + status + "*)"
+		strStat = "enabled"
 		color = static.ColorEmbedGreen
 	}
 
@@ -85,32 +84,13 @@ func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 }
 
 func (c *CmdInviteBlock) enable(args *CommandArgs) error {
-	if len(args.Args) < 2 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a permission level, which members must have to be allowed to send guild invites.").
-			DeleteAfter(8 * time.Second).Error()
-	}
-
-	lvl := args.Args[1]
-
-	if i, err := strconv.Atoi(lvl); err != nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
-			"Please enter a valid number as permission level.").
-			DeleteAfter(8 * time.Second).Error()
-	} else if i < 1 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
-			"Permission level should be larger than 0.").
-			DeleteAfter(8 * time.Second).Error()
-	}
-
-	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, lvl)
+	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, "1")
 	if err != nil {
 		return err
 	}
 
 	return util.SendEmbed(args.Session, args.Channel.ID,
-		fmt.Sprintf("Enabled invite link blocking for members with a permission "+
-			"level below `%s`.", lvl), "", 0).
+		"Enabled invite link blocking.", "", 0).
 		DeleteAfter(8 * time.Second).Error()
 }
 
