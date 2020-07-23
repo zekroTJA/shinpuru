@@ -16,6 +16,7 @@
 
 | Branch | Main CI | Docker CD | Releases CD |
 |--------|---------|-----------|-------------|
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ee70facddd94497a9f4501adddd2aa3c)](https://app.codacy.com/manual/zekroTJA/shinpuru?utm_source=github.com&utm_medium=referral&utm_content=zekroTJA/shinpuru&utm_campaign=Badge_Grade_Settings)
 | stable | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Latest/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Releases%20CD/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Releases+CD%22+branch%3Amaster)
 | canary    | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Adev) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Canary/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%dev) | |
 
