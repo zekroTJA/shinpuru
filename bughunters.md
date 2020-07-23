@@ -19,3 +19,5 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [rmcproductions](https://github.com/rmcproductions) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67) |
 | [Ron31](https://github.com/Ron31) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#33](https://github.com/zekroTJA/shinpuru/pull/33) |
 | [Skillkiller](https://github.com/Skillkiller) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) |
+| [SnowLeoo](https://github.com/SnowLeoo) | [#129](https://github.com/zekroTJA/shinpuru/issues/129) |
+| [zori4004](https://github.com/zori4004) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |

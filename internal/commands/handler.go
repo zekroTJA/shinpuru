@@ -212,11 +212,18 @@ func (c *CmdHandler) ExportCommandManual(fileName string) error {
 	cmdCatsSorted := make(map[string][]Command)
 
 	for _, cat := range catKeys {
-		cmdCatsSorted[cat] = cmdCats[cat]
+		cmds := cmdCats[cat]
+
+		sort.Slice(cmds, func(i, j int) bool {
+			return cmds[i].GetInvokes()[0] < cmds[j].GetInvokes()[0]
+		})
+
+		cmdCatsSorted[cat] = cmds
+
 		document += fmt.Sprintf("## %s\n", cat)
 		cmdDetails += fmt.Sprintf("## %s\n\n", cat)
 
-		for _, cmd := range cmdCats[cat] {
+		for _, cmd := range cmds {
 			document += fmt.Sprintf("- [%s](#%s)\n", cmd.GetInvokes()[0], cmd.GetInvokes()[0])
 			aliases := strings.Join(cmd.GetInvokes()[1:], ", ")
 			help := strings.Replace(cmd.GetHelp(), "\n", "  \n", -1)
