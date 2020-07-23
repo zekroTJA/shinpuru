@@ -162,7 +162,7 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
 	}
 
-	guild, err := ws.session.Guild(guildID)
+	guild, err := discordutil.GetGuild(ws.session, guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
@@ -631,7 +631,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("you can not kick yourself"), fasthttp.StatusBadRequest)
 	}
 
-	guild, err := ws.session.Guild(guildID)
+	guild, err := discordutil.GetGuild(ws.session, guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
@@ -709,7 +709,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("you can not ban yourself"), fasthttp.StatusBadRequest)
 	}
 
-	guild, err := ws.session.Guild(guildID)
+	guild, err := discordutil.GetGuild(ws.session, guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
@@ -1002,7 +1002,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 		}
 	}
 
-	guild, err := ws.session.Guild(guildID)
+	guild, err := discordutil.GetGuild(ws.session, guildID)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
