@@ -75,7 +75,7 @@
                     <span> {{ lastBackupText }} </span>
                 </div>
                 <div>
-                    <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+                    <button *ngIf="guildSettingsContains('sp.guild.admin.backup')" (click)="toggleGuildBackup()">{{ guild.backups_enabled ? 'Disable' : 'Enable' }}</button>
                 </div>
             </div>
             <div class="mb-4 security-embed" [class.disabled]="!guild.invite_block_enabled">
@@ -89,7 +89,7 @@
                     <span>Prevents members of sending guild invite links.</span>
                 </div>
                 <div>
-                    <button *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')" (click)="toggleInviteBlocing()">{{ guild.backups_enabled ? 'Disable' : 'enable' }}</button>
+                    <button *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')" (click)="toggleInviteBlocing()">{{ guild.invite_block_enabled ? 'Disable' : 'Dnable' }}</button>
                 </div>
             </div>
         </div>
