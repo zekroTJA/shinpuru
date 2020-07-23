@@ -28,7 +28,6 @@ for BUILD in ${BUILDS[*]}; do
     IFS=';' read -ra SPLIT <<< "$BUILD"
     OS=${SPLIT[0]}
     ARCH=${SPLIT[1]}
-    BINARY=${BUILDPATH}/${BUILDNAME}_${OS}_$ARCH
 
     echo "Building ${OS}_$ARCH..."
     (env GOOS=$OS GOARCH=$ARCH \
@@ -43,7 +42,6 @@ for BUILD in ${BUILDS[*]}; do
 
     if [ "$OS" = "windows" ]; then
         mv ${BUILDPATH}/${BUILDNAME}_windows_$ARCH $BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
-        BINARY=$BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
     fi
 done
 

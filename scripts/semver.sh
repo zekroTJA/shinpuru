@@ -1,3 +1,5 @@
+#!/bin/bash
+
 VERSION=$(git describe --tags --abbrev=0)
 NCOMMS=$(git log $VERSION..HEAD --oneline | wc -l)
 LASTCOMM=$(git rev-parse HEAD)

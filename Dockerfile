@@ -5,8 +5,8 @@ WORKDIR /build
 
 # Get required packages
 RUN apk add git nodejs npm build-base
-# Add source files
-ADD . .
+# Copy source files
+COPY . .
 # Get go packages
 RUN go mod tidy
 # Build shinpuru backend
@@ -19,14 +19,14 @@ RUN go build -o ./bin/shinpuru -ldflags "\
 # Build storagepatch tool
 RUN go build -o ./bin/storagepatch ./cmd/storagepatch/main.go
 # Build web assets
-RUN cd ./web &&\
-    npm ci &&\
-    npx ng build --prod=true \
+WORKDIR /build/web
+RUN npm ci \
+    && npx ng build --prod=true \
         --output-path ../bin/web/dist/web
 
 # ------------------------------------------------------------
 # --- STAGE 2: Final runtime environment
-FROM alpine:latest AS final
+FROM alpine:3 AS final
 WORKDIR /app
 COPY --from=build /build/bin .
 
