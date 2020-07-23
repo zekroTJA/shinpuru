@@ -1026,6 +1026,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 		for _, c := range guild.Channels {
 			if c.Type == discordgo.ChannelTypeGuildText {
 				channel = c
+				break
 			}
 		}
 		if channel == nil {
@@ -1075,7 +1076,7 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 
 	if req.GuildID != "" {
 
-		guild, err := ws.session.Guild(req.GuildID)
+		guild, err := discordutil.GetGuild(ws.session, req.GuildID)
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusBadRequest)
 		}
@@ -1102,6 +1103,7 @@ func (ws *WebServer) handlerPostInviteSettings(ctx *routing.Context) error {
 			for _, c := range guild.Channels {
 				if c.Type == discordgo.ChannelTypeGuildText {
 					channel = c
+					break
 				}
 			}
 			if channel == nil {
