@@ -72,6 +72,8 @@ func NewRedisMiddleware(config *config.DatabaseRedis, db database.Database) *Red
 	return r
 }
 
+// --- DATABASE INTERFACE IMPLEMENTATIONS -------------------------------------
+
 func (r *RedisMiddleware) Connect(credentials ...interface{}) error {
 	return r.db.Connect(credentials...)
 }

@@ -27,13 +27,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// SqliteDriver implements the Database interface
+// SqliteMiddleware implements the Database interface
 // for SQLite.
-type SqliteDriver struct {
+type SqliteMiddleware struct {
 	db *sql.DB
 }
 
-func (m *SqliteDriver) setup() {
+func (m *SqliteMiddleware) setup() {
 	mErr := multierror.New(nil)
 
 	_, err := m.db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
@@ -134,7 +134,7 @@ func (m *SqliteDriver) setup() {
 	}
 }
 
-func (m *SqliteDriver) Connect(credentials ...interface{}) error {
+func (m *SqliteMiddleware) Connect(credentials ...interface{}) error {
 	var err error
 	creds := credentials[0].(*config.DatabaseFile)
 	if creds == nil {
@@ -146,13 +146,13 @@ func (m *SqliteDriver) Connect(credentials ...interface{}) error {
 	return err
 }
 
-func (m *SqliteDriver) Close() {
+func (m *SqliteMiddleware) Close() {
 	if m.db != nil {
 		m.db.Close()
 	}
 }
 
-func (m *SqliteDriver) getGuildSetting(guildID, key string) (string, error) {
+func (m *SqliteMiddleware) getGuildSetting(guildID, key string) (string, error) {
 	var value string
 	err := m.db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
@@ -163,7 +163,7 @@ func (m *SqliteDriver) getGuildSetting(guildID, key string) (string, error) {
 	return value, err
 }
 
-func (m *SqliteDriver) setGuildSetting(guildID, key string, value string) (err error) {
+func (m *SqliteMiddleware) setGuildSetting(guildID, key string, value string) (err error) {
 	res, err := m.db.Exec(
 		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
 		value, guildID)
@@ -184,61 +184,61 @@ func (m *SqliteDriver) setGuildSetting(guildID, key string, value string) (err e
 	return nil
 }
 
-func (m *SqliteDriver) GetGuildPrefix(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildPrefix(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "prefix")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildPrefix(guildID, newPrefix string) error {
+func (m *SqliteMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 	return m.setGuildSetting(guildID, "prefix", newPrefix)
 }
 
-func (m *SqliteDriver) GetGuildAutoRole(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildAutoRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "autorole")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildAutoRole(guildID, autoRoleID string) error {
+func (m *SqliteMiddleware) SetGuildAutoRole(guildID, autoRoleID string) error {
 	return m.setGuildSetting(guildID, "autorole", autoRoleID)
 }
 
-func (m *SqliteDriver) GetGuildModLog(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildModLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "modlogchanID")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildModLog(guildID, chanID string) error {
+func (m *SqliteMiddleware) SetGuildModLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "modlogchanID", chanID)
 }
 
-func (m *SqliteDriver) GetGuildVoiceLog(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildVoiceLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "voicelogchanID")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildVoiceLog(guildID, chanID string) error {
+func (m *SqliteMiddleware) SetGuildVoiceLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "voicelogchanID", chanID)
 }
 
-func (m *SqliteDriver) GetGuildNotifyRole(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildNotifyRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "notifyRoleID")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildNotifyRole(guildID, roleID string) error {
+func (m *SqliteMiddleware) SetGuildNotifyRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
 }
 
-func (m *SqliteDriver) GetGuildGhostpingMsg(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "ghostPingMsg")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildGhostpingMsg(guildID, msg string) error {
+func (m *SqliteMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *SqliteDriver) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
+func (m *SqliteMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err
@@ -263,7 +263,7 @@ func (m *SqliteDriver) GetMemberPermission(s *discordgo.Session, guildID string,
 	return res, nil
 }
 
-func (m *SqliteDriver) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
+func (m *SqliteMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
 	results := make(map[string]permissions.PermissionArray)
 	rows, err := m.db.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
@@ -282,7 +282,7 @@ func (m *SqliteDriver) GetGuildPermissions(guildID string) (map[string]permissio
 	return results, nil
 }
 
-func (m *SqliteDriver) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
+func (m *SqliteMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	if len(p) == 0 {
 		_, err := m.db.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
 		return err
@@ -305,21 +305,21 @@ func (m *SqliteDriver) SetGuildRolePermission(guildID, roleID string, p permissi
 	return err
 }
 
-func (m *SqliteDriver) GetGuildJdoodleKey(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "jdoodleToken")
 	return val, err
 }
 
-func (m *SqliteDriver) SetGuildJdoodleKey(guildID, key string) error {
+func (m *SqliteMiddleware) SetGuildJdoodleKey(guildID, key string) error {
 	return m.setGuildSetting(guildID, "jdoodleToken", key)
 }
 
-func (m *SqliteDriver) GetGuildBackup(guildID string) (bool, error) {
+func (m *SqliteMiddleware) GetGuildBackup(guildID string) (bool, error) {
 	val, err := m.getGuildSetting(guildID, "backup")
 	return val != "", err
 }
 
-func (m *SqliteDriver) SetGuildBackup(guildID string, enabled bool) error {
+func (m *SqliteMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 	var val string
 	if enabled {
 		val = "1"
@@ -327,7 +327,7 @@ func (m *SqliteDriver) SetGuildBackup(guildID string, enabled bool) error {
 	return m.setGuildSetting(guildID, "backup", val)
 }
 
-func (m *SqliteDriver) GetSetting(setting string) (string, error) {
+func (m *SqliteMiddleware) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -336,7 +336,7 @@ func (m *SqliteDriver) GetSetting(setting string) (string, error) {
 	return value, err
 }
 
-func (m *SqliteDriver) SetSetting(setting, value string) error {
+func (m *SqliteMiddleware) SetSetting(setting, value string) error {
 	res, err := m.db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
 	ar, err := res.RowsAffected()
 	if err != nil {
@@ -348,18 +348,18 @@ func (m *SqliteDriver) SetSetting(setting, value string) error {
 	return err
 }
 
-func (m *SqliteDriver) AddReport(rep *report.Report) error {
+func (m *SqliteMiddleware) AddReport(rep *report.Report) error {
 	_, err := m.db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
-func (m *SqliteDriver) DeleteReport(id snowflake.ID) error {
+func (m *SqliteMiddleware) DeleteReport(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 
-func (m *SqliteDriver) GetReport(id snowflake.ID) (*report.Report, error) {
+func (m *SqliteMiddleware) GetReport(id snowflake.ID) (*report.Report, error) {
 	rep := new(report.Report)
 
 	row := m.db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
@@ -371,7 +371,7 @@ func (m *SqliteDriver) GetReport(id snowflake.ID) (*report.Report, error) {
 	return rep, err
 }
 
-func (m *SqliteDriver) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
+func (m *SqliteMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
 	if limit == 0 {
 		limit = 1000
 	}
@@ -396,7 +396,7 @@ func (m *SqliteDriver) GetReportsGuild(guildID string, offset, limit int) ([]*re
 	return results, nil
 }
 
-func (m *SqliteDriver) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
+func (m *SqliteMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
 	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
 		return nil, fmt.Errorf("invalid argument type")
 	}
@@ -424,12 +424,12 @@ func (m *SqliteDriver) GetReportsFiltered(guildID, memberID string, repType int)
 	return results, nil
 }
 
-func (m *SqliteDriver) GetReportsGuildCount(guildID string) (count int, err error) {
+func (m *SqliteMiddleware) GetReportsGuildCount(guildID string) (count int, err error) {
 	err = m.db.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
 	return
 }
 
-func (m *SqliteDriver) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
+func (m *SqliteMiddleware) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
 	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
 		err = fmt.Errorf("invalid argument type")
 		return
@@ -447,7 +447,7 @@ func (m *SqliteDriver) GetReportsFilteredCount(guildID, memberID string, repType
 	return
 }
 
-func (m *SqliteDriver) GetVotes() (map[string]*vote.Vote, error) {
+func (m *SqliteMiddleware) GetVotes() (map[string]*vote.Vote, error) {
 	rows, err := m.db.Query("SELECT id, data FROM votes")
 	results := make(map[string]*vote.Vote)
 	if err != nil {
@@ -470,7 +470,7 @@ func (m *SqliteDriver) GetVotes() (map[string]*vote.Vote, error) {
 	return results, err
 }
 
-func (m *SqliteDriver) AddUpdateVote(vote *vote.Vote) error {
+func (m *SqliteMiddleware) AddUpdateVote(vote *vote.Vote) error {
 	rawData, err := vote.Marshal()
 	if err != nil {
 		return err
@@ -488,12 +488,12 @@ func (m *SqliteDriver) AddUpdateVote(vote *vote.Vote) error {
 	return err
 }
 
-func (m *SqliteDriver) DeleteVote(voteID string) error {
+func (m *SqliteMiddleware) DeleteVote(voteID string) error {
 	_, err := m.db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
 }
 
-func (m *SqliteDriver) GetMuteRoles() (map[string]string, error) {
+func (m *SqliteMiddleware) GetMuteRoles() (map[string]string, error) {
 	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
 	results := make(map[string]string)
 	if err != nil {
@@ -509,16 +509,16 @@ func (m *SqliteDriver) GetMuteRoles() (map[string]string, error) {
 	return results, nil
 }
 
-func (m *SqliteDriver) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *SqliteDriver) SetMuteRole(guildID, roleID string) error {
+func (m *SqliteMiddleware) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
-func (m *SqliteDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
+func (m *SqliteMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
 	t := &twitchnotify.DBEntry{
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
@@ -531,7 +531,7 @@ func (m *SqliteDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnot
 	return t, err
 }
 
-func (m *SqliteDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
+func (m *SqliteMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
 	res, err := m.db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
@@ -548,12 +548,12 @@ func (m *SqliteDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error
 	return err
 }
 
-func (m *SqliteDriver) DeleteTwitchNotify(twitchUserID, guildID string) error {
+func (m *SqliteMiddleware) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	_, err := m.db.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
 	return err
 }
 
-func (m *SqliteDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
+func (m *SqliteMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
 	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
@@ -573,26 +573,26 @@ func (m *SqliteDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotif
 	return results, nil
 }
 
-func (m *SqliteDriver) AddBackup(guildID, fileID string) error {
+func (m *SqliteMiddleware) AddBackup(guildID, fileID string) error {
 	timestamp := time.Now().Unix()
 	_, err := m.db.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
 	return err
 }
 
-func (m *SqliteDriver) DeleteBackup(guildID, fileID string) error {
+func (m *SqliteMiddleware) DeleteBackup(guildID, fileID string) error {
 	_, err := m.db.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
 	return err
 }
 
-func (m *SqliteDriver) GetGuildInviteBlock(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildInviteBlock(guildID string) (string, error) {
 	return m.getGuildSetting(guildID, "inviteBlock")
 }
 
-func (m *SqliteDriver) SetGuildInviteBlock(guildID string, data string) error {
+func (m *SqliteMiddleware) SetGuildInviteBlock(guildID string, data string) error {
 	return m.setGuildSetting(guildID, "inviteBlock", data)
 }
 
-func (m *SqliteDriver) GetGuildJoinMsg(guildID string) (string, string, error) {
+func (m *SqliteMiddleware) GetGuildJoinMsg(guildID string) (string, string, error) {
 	data, err := m.getGuildSetting(guildID, "joinMsg")
 	if err != nil {
 		return "", "", err
@@ -609,11 +609,11 @@ func (m *SqliteDriver) GetGuildJoinMsg(guildID string) (string, string, error) {
 	return data[:i], data[i+1:], nil
 }
 
-func (m *SqliteDriver) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
+func (m *SqliteMiddleware) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
 	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", msg, channelID))
 }
 
-func (m *SqliteDriver) GetGuildLeaveMsg(guildID string) (string, string, error) {
+func (m *SqliteMiddleware) GetGuildLeaveMsg(guildID string) (string, string, error) {
 	data, err := m.getGuildSetting(guildID, "leaveMsg")
 	if err != nil {
 		return "", "", err
@@ -630,11 +630,11 @@ func (m *SqliteDriver) GetGuildLeaveMsg(guildID string) (string, string, error) 
 	return data[:i], data[i+1:], nil
 }
 
-func (m *SqliteDriver) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
+func (m *SqliteMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
 	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
-func (m *SqliteDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
+func (m *SqliteMiddleware) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
 	rows, err := m.db.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -658,7 +658,7 @@ func (m *SqliteDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error)
 	return backups, nil
 }
 
-func (m *SqliteDriver) GetGuilds() ([]string, error) {
+func (m *SqliteMiddleware) GetGuilds() ([]string, error) {
 	rows, err := m.db.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -680,13 +680,13 @@ func (m *SqliteDriver) GetGuilds() ([]string, error) {
 	return guilds, err
 }
 
-func (m *SqliteDriver) AddTag(tag *tag.Tag) error {
+func (m *SqliteMiddleware) AddTag(tag *tag.Tag) error {
 	_, err := m.db.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
 	return err
 }
 
-func (m *SqliteDriver) EditTag(tag *tag.Tag) error {
+func (m *SqliteMiddleware) EditTag(tag *tag.Tag) error {
 	_, err := m.db.Exec("UPDATE tags SET "+
 		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
 		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
@@ -696,7 +696,7 @@ func (m *SqliteDriver) EditTag(tag *tag.Tag) error {
 	return err
 }
 
-func (m *SqliteDriver) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
+func (m *SqliteMiddleware) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
@@ -719,7 +719,7 @@ func (m *SqliteDriver) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	return tag, nil
 }
 
-func (m *SqliteDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
+func (m *SqliteMiddleware) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
 	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
@@ -742,7 +742,7 @@ func (m *SqliteDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, er
 	return tag, nil
 }
 
-func (m *SqliteDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
+func (m *SqliteMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 	rows, err := m.db.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
@@ -770,7 +770,7 @@ func (m *SqliteDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 	return tags, nil
 }
 
-func (m *SqliteDriver) DeleteTag(id snowflake.ID) error {
+func (m *SqliteMiddleware) DeleteTag(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM tags WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -778,7 +778,7 @@ func (m *SqliteDriver) DeleteTag(id snowflake.ID) error {
 	return err
 }
 
-func (m *SqliteDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
+func (m *SqliteMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	img := new(imgstore.Image)
 	row := m.db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
@@ -794,12 +794,12 @@ func (m *SqliteDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	return img, nil
 }
 
-func (m *SqliteDriver) SaveImageData(img *imgstore.Image) error {
+func (m *SqliteMiddleware) SaveImageData(img *imgstore.Image) error {
 	_, err := m.db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }
 
-func (m *SqliteDriver) RemoveImageData(id snowflake.ID) error {
+func (m *SqliteMiddleware) RemoveImageData(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM imagestore WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -807,7 +807,7 @@ func (m *SqliteDriver) RemoveImageData(id snowflake.ID) error {
 	return err
 }
 
-func (m *SqliteDriver) SetAPIToken(token *models.APITokenEntry) (err error) {
+func (m *SqliteMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 	res, err := m.db.Exec(
 		"UPDATE apitokens SET "+
 			"salt = ?, created = ?, expires = ?, lastAccess = ?, hits = ? "+
@@ -831,7 +831,7 @@ func (m *SqliteDriver) SetAPIToken(token *models.APITokenEntry) (err error) {
 	return
 }
 
-func (m *SqliteDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
+func (m *SqliteMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
 	t = new(models.APITokenEntry)
 	err = m.db.QueryRow(
 		"SELECT userID, salt, created, expires, lastAccess, hits "+
@@ -843,7 +843,7 @@ func (m *SqliteDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err 
 	return
 }
 
-func (m *SqliteDriver) DeleteAPIToken(userID string) error {
+func (m *SqliteMiddleware) DeleteAPIToken(userID string) error {
 	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -851,7 +851,7 @@ func (m *SqliteDriver) DeleteAPIToken(userID string) error {
 	return err
 }
 
-func (m *SqliteDriver) GetKarma(userID, guildID string) (i int, err error) {
+func (m *SqliteMiddleware) GetKarma(userID, guildID string) (i int, err error) {
 	err = m.db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
 		userID, guildID).Scan(&i)
 	if err == sql.ErrNoRows {
@@ -860,7 +860,7 @@ func (m *SqliteDriver) GetKarma(userID, guildID string) (i int, err error) {
 	return
 }
 
-func (m *SqliteDriver) GetKarmaSum(userID string) (i int, err error) {
+func (m *SqliteMiddleware) GetKarmaSum(userID string) (i int, err error) {
 	err = m.db.QueryRow("SELECT SUM(value) FROM karma WHERE userID = ?",
 		userID).Scan(&i)
 	if err == sql.ErrNoRows {
@@ -869,7 +869,7 @@ func (m *SqliteDriver) GetKarmaSum(userID string) (i int, err error) {
 	return
 }
 
-func (m *SqliteDriver) SetKarma(userID, guildID string, val int) (err error) {
+func (m *SqliteMiddleware) SetKarma(userID, guildID string, val int) (err error) {
 	res, err := m.db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
 		val, userID, guildID)
 	if err != nil {
@@ -887,7 +887,7 @@ func (m *SqliteDriver) SetKarma(userID, guildID string, val int) (err error) {
 	return
 }
 
-func (m *SqliteDriver) UpdateKarma(userID, guildID string, diff int) (err error) {
+func (m *SqliteMiddleware) UpdateKarma(userID, guildID string, diff int) (err error) {
 	res, err := m.db.Exec("UPDATE karma SET value = value + ? WHERE userID = ? AND guildID = ?",
 		diff, userID, guildID)
 	if err != nil {

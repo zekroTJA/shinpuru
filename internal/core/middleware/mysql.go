@@ -26,13 +26,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// MySQLDriver implements the Database interface for
-// MariaDB or MySQLDriver.
-type MySQLDriver struct {
+// MysqlMiddleware implements the Database interface for
+// MariaDB or MysqlMiddleware.
+type MysqlMiddleware struct {
 	db *sql.DB
 }
 
-func (m *MySQLDriver) setup() {
+func (m *MysqlMiddleware) setup() {
 	mErr := multierror.New(nil)
 
 	_, err := m.db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
@@ -143,7 +143,7 @@ func (m *MySQLDriver) setup() {
 	}
 }
 
-func (m *MySQLDriver) Connect(credentials ...interface{}) error {
+func (m *MysqlMiddleware) Connect(credentials ...interface{}) error {
 	var err error
 	creds := credentials[0].(*config.DatabaseCreds)
 	if creds == nil {
@@ -156,13 +156,13 @@ func (m *MySQLDriver) Connect(credentials ...interface{}) error {
 	return err
 }
 
-func (m *MySQLDriver) Close() {
+func (m *MysqlMiddleware) Close() {
 	if m.db != nil {
 		m.db.Close()
 	}
 }
 
-func (m *MySQLDriver) getGuildSetting(guildID, key string) (string, error) {
+func (m *MysqlMiddleware) getGuildSetting(guildID, key string) (string, error) {
 	var value string
 	err := m.db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
@@ -173,7 +173,7 @@ func (m *MySQLDriver) getGuildSetting(guildID, key string) (string, error) {
 	return value, err
 }
 
-func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) (err error) {
+func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (err error) {
 	res, err := m.db.Exec(
 		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
 		value, guildID)
@@ -194,61 +194,61 @@ func (m *MySQLDriver) setGuildSetting(guildID, key string, value string) (err er
 	return nil
 }
 
-func (m *MySQLDriver) GetGuildPrefix(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildPrefix(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "prefix")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildPrefix(guildID, newPrefix string) error {
+func (m *MysqlMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 	return m.setGuildSetting(guildID, "prefix", newPrefix)
 }
 
-func (m *MySQLDriver) GetGuildAutoRole(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildAutoRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "autorole")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildAutoRole(guildID, autoRoleID string) error {
+func (m *MysqlMiddleware) SetGuildAutoRole(guildID, autoRoleID string) error {
 	return m.setGuildSetting(guildID, "autorole", autoRoleID)
 }
 
-func (m *MySQLDriver) GetGuildModLog(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildModLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "modlogchanID")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildModLog(guildID, chanID string) error {
+func (m *MysqlMiddleware) SetGuildModLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "modlogchanID", chanID)
 }
 
-func (m *MySQLDriver) GetGuildVoiceLog(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildVoiceLog(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "voicelogchanID")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildVoiceLog(guildID, chanID string) error {
+func (m *MysqlMiddleware) SetGuildVoiceLog(guildID, chanID string) error {
 	return m.setGuildSetting(guildID, "voicelogchanID", chanID)
 }
 
-func (m *MySQLDriver) GetGuildNotifyRole(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildNotifyRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "notifyRoleID")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildNotifyRole(guildID, roleID string) error {
+func (m *MysqlMiddleware) SetGuildNotifyRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "notifyRoleID", roleID)
 }
 
-func (m *MySQLDriver) GetGuildGhostpingMsg(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "ghostPingMsg")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildGhostpingMsg(guildID, msg string) error {
+func (m *MysqlMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
 }
 
-func (m *MySQLDriver) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
+func (m *MysqlMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err
@@ -273,7 +273,7 @@ func (m *MySQLDriver) GetMemberPermission(s *discordgo.Session, guildID string, 
 	return res, nil
 }
 
-func (m *MySQLDriver) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
+func (m *MysqlMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
 	results := make(map[string]permissions.PermissionArray)
 	rows, err := m.db.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
@@ -292,7 +292,7 @@ func (m *MySQLDriver) GetGuildPermissions(guildID string) (map[string]permission
 	return results, nil
 }
 
-func (m *MySQLDriver) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
+func (m *MysqlMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	if len(p) == 0 {
 		_, err := m.db.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
 		return err
@@ -315,21 +315,21 @@ func (m *MySQLDriver) SetGuildRolePermission(guildID, roleID string, p permissio
 	return err
 }
 
-func (m *MySQLDriver) GetGuildJdoodleKey(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "jdoodleToken")
 	return val, err
 }
 
-func (m *MySQLDriver) SetGuildJdoodleKey(guildID, key string) error {
+func (m *MysqlMiddleware) SetGuildJdoodleKey(guildID, key string) error {
 	return m.setGuildSetting(guildID, "jdoodleToken", key)
 }
 
-func (m *MySQLDriver) GetGuildBackup(guildID string) (bool, error) {
+func (m *MysqlMiddleware) GetGuildBackup(guildID string) (bool, error) {
 	val, err := m.getGuildSetting(guildID, "backup")
 	return val != "", err
 }
 
-func (m *MySQLDriver) SetGuildBackup(guildID string, enabled bool) error {
+func (m *MysqlMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 	var val string
 	if enabled {
 		val = "1"
@@ -337,7 +337,7 @@ func (m *MySQLDriver) SetGuildBackup(guildID string, enabled bool) error {
 	return m.setGuildSetting(guildID, "backup", val)
 }
 
-func (m *MySQLDriver) GetSetting(setting string) (string, error) {
+func (m *MysqlMiddleware) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -346,7 +346,7 @@ func (m *MySQLDriver) GetSetting(setting string) (string, error) {
 	return value, err
 }
 
-func (m *MySQLDriver) SetSetting(setting, value string) error {
+func (m *MysqlMiddleware) SetSetting(setting, value string) error {
 	res, err := m.db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
 	ar, err := res.RowsAffected()
 	if err != nil {
@@ -358,18 +358,18 @@ func (m *MySQLDriver) SetSetting(setting, value string) error {
 	return err
 }
 
-func (m *MySQLDriver) AddReport(rep *report.Report) error {
+func (m *MysqlMiddleware) AddReport(rep *report.Report) error {
 	_, err := m.db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
-func (m *MySQLDriver) DeleteReport(id snowflake.ID) error {
+func (m *MysqlMiddleware) DeleteReport(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 
-func (m *MySQLDriver) GetReport(id snowflake.ID) (*report.Report, error) {
+func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*report.Report, error) {
 	rep := new(report.Report)
 
 	row := m.db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
@@ -381,7 +381,7 @@ func (m *MySQLDriver) GetReport(id snowflake.ID) (*report.Report, error) {
 	return rep, err
 }
 
-func (m *MySQLDriver) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
+func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
 	if limit == 0 {
 		limit = 1000
 	}
@@ -406,7 +406,7 @@ func (m *MySQLDriver) GetReportsGuild(guildID string, offset, limit int) ([]*rep
 	return results, nil
 }
 
-func (m *MySQLDriver) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
+func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
 	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
 		return nil, fmt.Errorf("invalid argument type")
 	}
@@ -434,12 +434,12 @@ func (m *MySQLDriver) GetReportsFiltered(guildID, memberID string, repType int) 
 	return results, nil
 }
 
-func (m *MySQLDriver) GetReportsGuildCount(guildID string) (count int, err error) {
+func (m *MysqlMiddleware) GetReportsGuildCount(guildID string) (count int, err error) {
 	err = m.db.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
 	return
 }
 
-func (m *MySQLDriver) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
+func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
 	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
 		err = fmt.Errorf("invalid argument type")
 		return
@@ -457,7 +457,7 @@ func (m *MySQLDriver) GetReportsFilteredCount(guildID, memberID string, repType 
 	return
 }
 
-func (m *MySQLDriver) GetVotes() (map[string]*vote.Vote, error) {
+func (m *MysqlMiddleware) GetVotes() (map[string]*vote.Vote, error) {
 	rows, err := m.db.Query("SELECT id, data FROM votes")
 	results := make(map[string]*vote.Vote)
 	if err != nil {
@@ -480,7 +480,7 @@ func (m *MySQLDriver) GetVotes() (map[string]*vote.Vote, error) {
 	return results, err
 }
 
-func (m *MySQLDriver) AddUpdateVote(vote *vote.Vote) error {
+func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 	rawData, err := vote.Marshal()
 	if err != nil {
 		return err
@@ -498,12 +498,12 @@ func (m *MySQLDriver) AddUpdateVote(vote *vote.Vote) error {
 	return err
 }
 
-func (m *MySQLDriver) DeleteVote(voteID string) error {
+func (m *MysqlMiddleware) DeleteVote(voteID string) error {
 	_, err := m.db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
 }
 
-func (m *MySQLDriver) GetMuteRoles() (map[string]string, error) {
+func (m *MysqlMiddleware) GetMuteRoles() (map[string]string, error) {
 	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
 	results := make(map[string]string)
 	if err != nil {
@@ -519,16 +519,16 @@ func (m *MySQLDriver) GetMuteRoles() (map[string]string, error) {
 	return results, nil
 }
 
-func (m *MySQLDriver) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *MySQLDriver) SetMuteRole(guildID, roleID string) error {
+func (m *MysqlMiddleware) SetMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
-func (m *MySQLDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
+func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
 	t := &twitchnotify.DBEntry{
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
@@ -541,7 +541,7 @@ func (m *MySQLDriver) GetTwitchNotify(twitchUserID, guildID string) (*twitchnoti
 	return t, err
 }
 
-func (m *MySQLDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
+func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
 	res, err := m.db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
@@ -558,12 +558,12 @@ func (m *MySQLDriver) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error 
 	return err
 }
 
-func (m *MySQLDriver) DeleteTwitchNotify(twitchUserID, guildID string) error {
+func (m *MysqlMiddleware) DeleteTwitchNotify(twitchUserID, guildID string) error {
 	_, err := m.db.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
 	return err
 }
 
-func (m *MySQLDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
+func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
 	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
@@ -583,26 +583,26 @@ func (m *MySQLDriver) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify
 	return results, nil
 }
 
-func (m *MySQLDriver) AddBackup(guildID, fileID string) error {
+func (m *MysqlMiddleware) AddBackup(guildID, fileID string) error {
 	timestamp := time.Now().Unix()
 	_, err := m.db.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
 	return err
 }
 
-func (m *MySQLDriver) DeleteBackup(guildID, fileID string) error {
+func (m *MysqlMiddleware) DeleteBackup(guildID, fileID string) error {
 	_, err := m.db.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
 	return err
 }
 
-func (m *MySQLDriver) GetGuildInviteBlock(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildInviteBlock(guildID string) (string, error) {
 	return m.getGuildSetting(guildID, "inviteBlock")
 }
 
-func (m *MySQLDriver) SetGuildInviteBlock(guildID string, data string) error {
+func (m *MysqlMiddleware) SetGuildInviteBlock(guildID string, data string) error {
 	return m.setGuildSetting(guildID, "inviteBlock", data)
 }
 
-func (m *MySQLDriver) GetGuildJoinMsg(guildID string) (string, string, error) {
+func (m *MysqlMiddleware) GetGuildJoinMsg(guildID string) (string, string, error) {
 	data, err := m.getGuildSetting(guildID, "joinMsg")
 	if err != nil {
 		return "", "", err
@@ -619,11 +619,11 @@ func (m *MySQLDriver) GetGuildJoinMsg(guildID string) (string, string, error) {
 	return data[:i], data[i+1:], nil
 }
 
-func (m *MySQLDriver) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
+func (m *MysqlMiddleware) SetGuildJoinMsg(guildID string, msg string, channelID string) error {
 	return m.setGuildSetting(guildID, "joinMsg", fmt.Sprintf("%s|%s", msg, channelID))
 }
 
-func (m *MySQLDriver) GetGuildLeaveMsg(guildID string) (string, string, error) {
+func (m *MysqlMiddleware) GetGuildLeaveMsg(guildID string) (string, string, error) {
 	data, err := m.getGuildSetting(guildID, "leaveMsg")
 	if err != nil {
 		return "", "", err
@@ -640,11 +640,11 @@ func (m *MySQLDriver) GetGuildLeaveMsg(guildID string) (string, string, error) {
 	return data[:i], data[i+1:], nil
 }
 
-func (m *MySQLDriver) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
+func (m *MysqlMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg string) error {
 	return m.setGuildSetting(guildID, "leaveMsg", fmt.Sprintf("%s|%s", channelID, msg))
 }
 
-func (m *MySQLDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
+func (m *MysqlMiddleware) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
 	rows, err := m.db.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -668,7 +668,7 @@ func (m *MySQLDriver) GetBackups(guildID string) ([]*backupmodels.Entry, error) 
 	return backups, nil
 }
 
-func (m *MySQLDriver) GetGuilds() ([]string, error) {
+func (m *MysqlMiddleware) GetGuilds() ([]string, error) {
 	rows, err := m.db.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -690,13 +690,13 @@ func (m *MySQLDriver) GetGuilds() ([]string, error) {
 	return guilds, err
 }
 
-func (m *MySQLDriver) AddTag(tag *tag.Tag) error {
+func (m *MysqlMiddleware) AddTag(tag *tag.Tag) error {
 	_, err := m.db.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
 	return err
 }
 
-func (m *MySQLDriver) EditTag(tag *tag.Tag) error {
+func (m *MysqlMiddleware) EditTag(tag *tag.Tag) error {
 	_, err := m.db.Exec("UPDATE tags SET "+
 		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
 		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
@@ -706,7 +706,7 @@ func (m *MySQLDriver) EditTag(tag *tag.Tag) error {
 	return err
 }
 
-func (m *MySQLDriver) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
+func (m *MysqlMiddleware) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
@@ -729,7 +729,7 @@ func (m *MySQLDriver) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	return tag, nil
 }
 
-func (m *MySQLDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
+func (m *MysqlMiddleware) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
 	tag := new(tag.Tag)
 	var timestampCreated int64
 	var timestampLastEdit int64
@@ -752,7 +752,7 @@ func (m *MySQLDriver) GetTagByIdent(ident string, guildID string) (*tag.Tag, err
 	return tag, nil
 }
 
-func (m *MySQLDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
+func (m *MysqlMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 	rows, err := m.db.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
@@ -780,7 +780,7 @@ func (m *MySQLDriver) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 	return tags, nil
 }
 
-func (m *MySQLDriver) DeleteTag(id snowflake.ID) error {
+func (m *MysqlMiddleware) DeleteTag(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM tags WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -788,7 +788,7 @@ func (m *MySQLDriver) DeleteTag(id snowflake.ID) error {
 	return err
 }
 
-func (m *MySQLDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
+func (m *MysqlMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	img := new(imgstore.Image)
 	row := m.db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
@@ -804,12 +804,12 @@ func (m *MySQLDriver) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	return img, nil
 }
 
-func (m *MySQLDriver) SaveImageData(img *imgstore.Image) error {
+func (m *MysqlMiddleware) SaveImageData(img *imgstore.Image) error {
 	_, err := m.db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }
 
-func (m *MySQLDriver) RemoveImageData(id snowflake.ID) error {
+func (m *MysqlMiddleware) RemoveImageData(id snowflake.ID) error {
 	_, err := m.db.Exec("DELETE FROM imagestore WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -817,7 +817,7 @@ func (m *MySQLDriver) RemoveImageData(id snowflake.ID) error {
 	return err
 }
 
-func (m *MySQLDriver) SetAPIToken(token *models.APITokenEntry) (err error) {
+func (m *MysqlMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 	res, err := m.db.Exec(
 		"UPDATE apitokens SET "+
 			"salt = ?, created = ?, expires = ?, lastAccess = ?, hits = ? "+
@@ -841,7 +841,7 @@ func (m *MySQLDriver) SetAPIToken(token *models.APITokenEntry) (err error) {
 	return
 }
 
-func (m *MySQLDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
+func (m *MysqlMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
 	t = new(models.APITokenEntry)
 	err = m.db.QueryRow(
 		"SELECT userID, salt, created, expires, lastAccess, hits "+
@@ -853,7 +853,7 @@ func (m *MySQLDriver) GetAPIToken(userID string) (t *models.APITokenEntry, err e
 	return
 }
 
-func (m *MySQLDriver) DeleteAPIToken(userID string) error {
+func (m *MysqlMiddleware) DeleteAPIToken(userID string) error {
 	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
@@ -861,7 +861,7 @@ func (m *MySQLDriver) DeleteAPIToken(userID string) error {
 	return err
 }
 
-func (m *MySQLDriver) GetKarma(userID, guildID string) (i int, err error) {
+func (m *MysqlMiddleware) GetKarma(userID, guildID string) (i int, err error) {
 	err = m.db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
 		userID, guildID).Scan(&i)
 	if err == sql.ErrNoRows {
@@ -870,7 +870,7 @@ func (m *MySQLDriver) GetKarma(userID, guildID string) (i int, err error) {
 	return
 }
 
-func (m *MySQLDriver) GetKarmaSum(userID string) (i int, err error) {
+func (m *MysqlMiddleware) GetKarmaSum(userID string) (i int, err error) {
 	err = m.db.QueryRow("SELECT SUM(value) FROM karma WHERE userID = ?",
 		userID).Scan(&i)
 	if err == sql.ErrNoRows {
@@ -879,7 +879,7 @@ func (m *MySQLDriver) GetKarmaSum(userID string) (i int, err error) {
 	return
 }
 
-func (m *MySQLDriver) SetKarma(userID, guildID string, val int) (err error) {
+func (m *MysqlMiddleware) SetKarma(userID, guildID string, val int) (err error) {
 	res, err := m.db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
 		val, userID, guildID)
 	if err != nil {
@@ -897,7 +897,7 @@ func (m *MySQLDriver) SetKarma(userID, guildID string, val int) (err error) {
 	return
 }
 
-func (m *MySQLDriver) UpdateKarma(userID, guildID string, diff int) (err error) {
+func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err error) {
 	res, err := m.db.Exec("UPDATE karma SET value = value + ? WHERE userID = ? AND guildID = ?",
 		diff, userID, guildID)
 	if err != nil {
