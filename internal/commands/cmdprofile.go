@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -104,6 +105,16 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		roles[i] = "<@&" + rID + ">"
 	}
 
+	karma, err := args.CmdHandler.db.GetKarma(member.User.ID, args.Guild.ID)
+	if !database.IsErrDatabaseNotFound(err) && err != nil {
+		return err
+	}
+
+	karmaTotal, err := args.CmdHandler.db.GetKarmaSum(member.User.ID)
+	if !database.IsErrDatabaseNotFound(err) && err != nil {
+		return err
+	}
+
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,
 		Title: fmt.Sprintf("Info about member %s#%s", member.User.Username, member.User.Discriminator),
@@ -136,6 +147,11 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 				Name: "Account Created",
 				Value: util.EnsureNotEmpty(createdTime.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
+			},
+			{
+				Name: "Karma",
+				Value: fmt.Sprintf("On this Guild: **%d**\nTotal: **%d**",
+					karma, karmaTotal),
 			},
 			{
 				Name:  "Permissions",
