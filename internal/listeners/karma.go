@@ -13,20 +13,23 @@ import (
 )
 
 const (
+	// reactions used to add or remove karma
 	reactionsAddKarma    = "👍👌⭐✔"
 	reactionsRemoveKarma = "👎❌"
 
+	// duration until a user can differ karma
+	// with the same message
 	lifetimePerMessage = 24 * time.Hour
 
-	rateLimiterTokens   = 5
-	rateLimiterRestore  = time.Hour / rateLimiterTokens
-	lifetimeRateLimiter = rateLimiterRestore * rateLimiterTokens
+	rateLimiterTokens   = 5                                      // RL bucket size
+	rateLimiterRestore  = time.Hour / rateLimiterTokens          // RL restore duration
+	lifetimeRateLimiter = rateLimiterRestore * rateLimiterTokens // lifetime of a RL in cache
 )
 
 const (
-	typNull   = 0
-	typAdd    = 1
-	typRemove = -1
+	typNull   = 0  // no change
+	typAdd    = 1  // add 1 karma
+	typRemove = -1 // remove 1 karma
 )
 
 type ListenerKarma struct {
@@ -43,16 +46,20 @@ func NewListenerKarma(db database.Database) *ListenerKarma {
 		db:    db,
 		cache: cache,
 
+		// save the pointers to the sections on instance
+		// creation to bypass allocations later
 		msgsApplied: cache.Section(0),
 		limiters:    cache.Section(1),
 	}
 }
 
 func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+	// Return when reaction was added by the bot itself
 	if e.UserID == s.State.User.ID {
 		return
 	}
 
+	// Get the type of karma change by the emote used
 	var typ int
 	if strings.Contains(reactionsAddKarma, e.MessageReaction.Emoji.Name) {
 		typ = typAdd
@@ -60,29 +67,36 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		typ = typRemove
 	}
 
+	// When none of the specified emotes was used, return
 	if typ == typNull {
 		return
 	}
 
+	// Get the hydrated user object who created the reaction
 	user, err := s.User(e.UserID)
 	if err != nil {
 		util.Log.Errorf("failed getting user %s: %s", e.UserID, err.Error())
 		return
 	}
 
+	// If the user created the reaction is a bot, return
 	if user.Bot {
 		return
 	}
 
+	// Chceck if the message is appliable
 	if l.isMessageAlreadyApplied(e.UserID, e.MessageID) {
 		return
 	}
 
+	// Take a karma token from the users rate limiter
 	if !l.rateLimiterTake(e.UserID, e.GuildID) {
 		// TODO: Send message that karma credits are exceeded
 		return
 	}
 
+	// Get the hydradet message object where the reaction
+	// was added to
 	msg, err := s.State.Message(e.ChannelID, e.MessageID)
 	if err != nil {
 		if msg, err = s.ChannelMessage(e.ChannelID, e.MessageID); err != nil {
@@ -91,28 +105,42 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		}
 	}
 
+	// Check if the author of the message is a bot or the
+	// message was created by the user created the react.
+	// If this is true, return
 	if msg.Author.Bot || msg.Author.ID == e.UserID {
 		return
 	}
 
+	// Update the karma in the database of the specified
+	// user on the specified guild
 	if err = l.db.UpdateKarma(msg.Author.ID, e.GuildID, typ); err != nil {
 		util.Log.Errorf("failed updating karma: %s", err.Error())
 		return
 	}
 
+	// Mark the message as applied by the user
 	l.applyMessage(e.UserID, e.MessageID)
 }
 
+// isMessageAlreadyApplied returns true, if the user has already
+// changed karma by reaction to the specified message in the
+// time span of lifetimePerMessage.
 func (l *ListenerKarma) isMessageAlreadyApplied(userID, msgID string) bool {
 	key := fmt.Sprintf("%s:%s", userID, msgID)
 	return l.msgsApplied.Contains(key)
 }
 
+// applyMessage registers this message as karma change from
+// the specified user for the time span of lifetimePerMessage.
 func (l *ListenerKarma) applyMessage(userID, msgID string) {
 	key := fmt.Sprintf("%s:%s", userID, msgID)
 	l.msgsApplied.Set(key, true, lifetimePerMessage)
 }
 
+// rateLimiterTake tries to take a ticket from the users
+// karma change rate limiter. If all tickets are exceed,
+// false will be returned; otherwise the result is true.
 func (l *ListenerKarma) rateLimiterTake(userID, guildID string) bool {
 	key := fmt.Sprintf("%s:%s", userID, guildID)
 
