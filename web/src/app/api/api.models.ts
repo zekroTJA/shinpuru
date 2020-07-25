@@ -38,6 +38,8 @@ export interface Member {
   roles: string[];
   created_at?: string;
   dominance?: number;
+  karma: number;
+  karma_total: number;
 }
 
 export interface Channel {

@@ -79,7 +79,7 @@
             <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
         </div>
 
-        <h4 class="mt-4">General User Information</h4>
+        <h4 class="mt-4 mb-3">General User Information</h4>
         <table class="general-user-info mt-2">
             <tbody>
                 <tr>
@@ -90,6 +90,16 @@
                     <th>Created Account</th>
                     <td>{{ dateFormat(member.created_at, "ddd, mmm dS, yyyy - HH:MM:ss Z") }}</td>
                 </tr>
+                <br>
+                <tr>
+                    <th>Karma on Guild</th>
+                    <td>{{ member.karma }}</td>
+                </tr>
+                <tr>
+                    <th>Karma Total</th>
+                    <td>{{ member.karma_total }}</td>
+                </tr>
+                <br>
                 <tr>
                     <th>Permissions</th>
                     <td>
