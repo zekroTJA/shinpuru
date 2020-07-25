@@ -103,6 +103,11 @@ type Database interface {
 	GetAPIToken(userID string) (*models.APITokenEntry, error)
 	DeleteAPIToken(userID string) error
 
+	GetKarma(userID, guildID string) (int, error)
+	GetKarmaSum(userID string) (int, error)
+	SetKarma(userID, guildID string, val int) error
+	UpdateKarma(userID, guildID string, diff int) error
+
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
 	// Deprecated

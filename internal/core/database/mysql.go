@@ -117,15 +117,6 @@ func (m *MySQLDriver) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	// _, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (" +
-	// 	"`iid` int(11) NOT NULL AUTO_INCREMENT," +
-	// 	"`sessionkey` text NOT NULL DEFAULT ''," +
-	// 	"`userID` text NOT NULL DEFAULT ''," +
-	// 	"`expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
-	// 	"PRIMARY KEY (`iid`)" +
-	// 	") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	// mErr.Append(err)
-
 	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`salt` text NOT NULL," +
@@ -134,6 +125,15 @@ func (m *MySQLDriver) setup() {
 		"`lastAccess` timestamp NOT NULL," +
 		"`hits` bigint(20) NOT NULL," +
 		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` text NOT NULL DEFAULT ''," +
+		"`userID` text NOT NULL DEFAULT ''," +
+		"`value` bigint(20) NOT NULL DEFAULT '0'," +
+		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -858,4 +858,58 @@ func (m *MySQLDriver) DeleteAPIToken(userID string) error {
 		return ErrDatabaseNotFound
 	}
 	return err
+}
+
+func (m *MySQLDriver) GetKarma(userID, guildID string) (i int, err error) {
+	err = m.db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
+		userID, guildID).Scan(&i)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MySQLDriver) GetKarmaSum(userID string) (i int, err error) {
+	err = m.db.QueryRow("SELECT SUM(value) FROM karma WHERE userID = ?",
+		userID).Scan(&i)
+	if err == sql.ErrNoRows {
+		err = ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MySQLDriver) SetKarma(userID, guildID string, val int) (err error) {
+	res, err := m.db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
+		val, userID, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
+			userID, guildID, val)
+	}
+	return
+}
+
+func (m *MySQLDriver) UpdateKarma(userID, guildID string, diff int) (err error) {
+	res, err := m.db.Exec("UPDATE karma SET value = value + ? WHERE userID = ? AND guildID = ?",
+		diff, userID, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
+			userID, guildID, diff)
+	}
+	return
 }

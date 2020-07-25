@@ -654,3 +654,19 @@ func (m *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
 
 	return m.db.DeleteAPIToken(userID)
 }
+
+func (m *RedisMiddleware) GetKarma(userID, guildID string) (int, error) {
+	return m.db.GetKarma(userID, guildID)
+}
+
+func (m *RedisMiddleware) GetKarmaSum(userID string) (int, error) {
+	return m.db.GetKarmaSum(userID)
+}
+
+func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
+	return m.db.SetKarma(userID, guildID, val)
+}
+
+func (m *RedisMiddleware) UpdateKarma(userID, guildID string, diff int) error {
+	return m.db.UpdateKarma(userID, guildID, diff)
+}
