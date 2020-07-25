@@ -4,10 +4,9 @@ import (
 	"flag"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
-
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/inits"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 var (
@@ -26,7 +25,7 @@ func main() {
 		Discord: &config.Discord{},
 	}
 
-	database := new(database.MySQLDriver)
+	database := new(middleware.SqliteMiddleware)
 
 	cmdHandler := inits.InitCommandHandler(nil, config, database, nil, nil, nil)
 	if err := cmdHandler.ExportCommandManual(*flagExportFile); err != nil {
