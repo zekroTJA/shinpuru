@@ -5,6 +5,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -14,16 +15,16 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 
 	switch strings.ToLower(databaseCfg.Type) {
 	case "mysql", "mariadb":
-		db = new(database.MySQLDriver)
+		db = new(middleware.MySQLDriver)
 		err = db.Connect(databaseCfg.MySql)
 	case "sqlite", "sqlite3":
-		db = new(database.SqliteDriver)
+		db = new(middleware.SqliteDriver)
 		err = db.Connect(databaseCfg.Sqlite)
 		printSqliteWraning()
 	}
 
 	if databaseCfg.Redis != nil && databaseCfg.Redis.Enable {
-		db = database.NewRedisMiddleware(databaseCfg.Redis, db)
+		db = middleware.NewRedisMiddleware(databaseCfg.Redis, db)
 		util.Log.Info("Enabled redis as database cache")
 	}
 

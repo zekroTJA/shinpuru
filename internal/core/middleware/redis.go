@@ -1,4 +1,4 @@
-package database
+package middleware
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 
 	"github.com/bwmarrin/discordgo"
@@ -54,10 +55,10 @@ const (
 // same as in the cache.
 type RedisMiddleware struct {
 	client *redis.Client
-	db     Database
+	db     database.Database
 }
 
-func NewRedisMiddleware(config *config.DatabaseRedis, db Database) *RedisMiddleware {
+func NewRedisMiddleware(config *config.DatabaseRedis, db database.Database) *RedisMiddleware {
 	r := &RedisMiddleware{
 		db: db,
 	}
