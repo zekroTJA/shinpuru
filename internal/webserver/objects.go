@@ -41,9 +41,11 @@ type User struct {
 type Member struct {
 	*discordgo.Member
 
-	AvatarURL string    `json:"avatar_url"`
-	CreatedAt time.Time `json:"created_at"`
-	Dominance int       `json:"dominance"`
+	AvatarURL  string    `json:"avatar_url"`
+	CreatedAt  time.Time `json:"created_at"`
+	Dominance  int       `json:"dominance"`
+	Karma      int       `json:"karma"`
+	KarmaTotal int       `json:"karma_total"`
 }
 
 // Guild extends a discordgo.Guild as

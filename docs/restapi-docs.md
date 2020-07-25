@@ -98,6 +98,8 @@ A Discord Guild Member object.
 | `avatar_url` | `string` | Public url of the avatar image file. |
 | `created_at` | `timestamp` | Timestamp of user account creation. |
 | `dominance` | `int` | The permission dominance of the member:<br>`1` - Guild Admin<br>`2` - Guild Owner<br>`3` - Bot Owner |
+| `karma` | `int` | `Karma points for the member on the specified guild.` |
+| `karma_total` | `int` | `Sum of all karma points across all guilds.` | 
 
 Example: 
 ```json
@@ -121,7 +123,9 @@ Example:
   "premium_since": "2020-04-15T09:24:24.174000+00:00",
   "avatar_url": "https://cdn.discordapp.com/avatars/221905671296253953/a_752a15d01e68fb5f6f6ec83400461a6a.gif",
   "created_at": "2016-09-04T08:38:26.976834845Z",
-  "dominance": 1
+  "dominance": 1,
+  "karma": 189,
+  "karma_total": 784
 }
 ```
 
