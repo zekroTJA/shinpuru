@@ -73,3 +73,13 @@ func GetGuild(s *discordgo.Session, guildID string) (g *discordgo.Guild, err err
 	}
 	return
 }
+
+// GetMember first tries to retrieve a member object by passed
+// ID from the discordgo state cache. If there is no value
+// available, the member will be fetched via API.
+func GetMember(s *discordgo.Session, guildID, userID string) (m *discordgo.Member, err error) {
+	if m, err = s.State.Member(guildID, userID); err != nil {
+		m, err = s.GuildMember(guildID, userID)
+	}
+	return
+}

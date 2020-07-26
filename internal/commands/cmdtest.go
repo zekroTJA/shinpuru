@@ -2,8 +2,6 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
 type CmdTest struct {
@@ -38,10 +36,9 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(args *CommandArgs) error {
-	roles := args.Guild.Roles
-	roleutil.SortRoles(roles, false)
-	for i, r := range roles {
-		fmt.Printf("%d - %s\n", i, r.Name)
+	res, _ := args.CmdHandler.db.GetKarmaGuild(args.Guild.ID, 10)
+	for _, v := range res {
+		fmt.Printf("%+v\n", v)
 	}
 	return nil
 }
