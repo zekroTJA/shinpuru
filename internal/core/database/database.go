@@ -105,6 +105,7 @@ type Database interface {
 
 	GetKarma(userID, guildID string) (int, error)
 	GetKarmaSum(userID string) (int, error)
+	GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error)
 	SetKarma(userID, guildID string, val int) error
 	UpdateKarma(userID, guildID string, diff int) error
 

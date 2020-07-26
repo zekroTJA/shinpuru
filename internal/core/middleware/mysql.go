@@ -879,6 +879,38 @@ func (m *MysqlMiddleware) GetKarmaSum(userID string) (i int, err error) {
 	return
 }
 
+func (m *MysqlMiddleware) GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error) {
+	if limit < 1 {
+		limit = 1000
+	}
+
+	res := make([]*models.GuildKarma, limit)
+
+	rows, err := m.db.Query(
+		`SELECT userID, value FROM karma WHERE guildID = ?
+		ORDER BY value DESC
+		LIMIT ?`,
+		guildID, limit)
+	if err == sql.ErrNoRows {
+		return nil, database.ErrDatabaseNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	i := 0
+	for rows.Next() {
+		v := new(models.GuildKarma)
+		v.GuildID = guildID
+		if err = rows.Scan(&v.UserID, &v.Value); err != nil {
+			return nil, err
+		}
+		res[i] = v
+		i++
+	}
+
+	return res[:i], nil
+}
+
 func (m *MysqlMiddleware) SetKarma(userID, guildID string, val int) (err error) {
 	res, err := m.db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
 		val, userID, guildID)
