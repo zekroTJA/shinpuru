@@ -10,9 +10,9 @@
         </div>
 
         <!-- LOGGED IN MEMBER INFO -->
-        <div id="user-info" class="mb-4">
+        <a id="user-info" class="mb-4" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
             <img [src]="guild.self_member.avatar_url"/>
-            <a class="info-container" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
+            <div class="info-container">
                 <div class="d-flex">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
                     <p class="embeded">{{ guild.self_member.user.id }}</p>
@@ -22,8 +22,8 @@
                         <app-rolebadge [role]="r"></app-rolebadge>
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
 
         <!-- GUILD MEMBERS -->
         <div class="d-flex">
