@@ -89,7 +89,7 @@
                     <span>Prevents members of sending guild invite links.</span>
                 </div>
                 <div>
-                    <button *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')" (click)="toggleInviteBlocing()">{{ guild.invite_block_enabled ? 'Disable' : 'Dnable' }}</button>
+                    <button *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')" (click)="toggleInviteBlocing()">{{ guild.invite_block_enabled ? 'Disable' : 'Enable' }}</button>
                 </div>
             </div>
         </div>
