@@ -861,7 +861,7 @@ func (m *SqliteMiddleware) GetKarma(userID, guildID string) (i int, err error) {
 }
 
 func (m *SqliteMiddleware) GetKarmaSum(userID string) (i int, err error) {
-	err = m.db.QueryRow("SELECT SUM(value) FROM karma WHERE userID = ?",
+	err = m.db.QueryRow("SELECT COALESCE(SUM(value), 0) FROM karma WHERE userID = ?",
 		userID).Scan(&i)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
