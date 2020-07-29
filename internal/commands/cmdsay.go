@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -24,6 +25,10 @@ var embedColors = map[string]int{
 	"white":  0xF5F5F5,
 	"black":  0x263238,
 }
+
+var (
+	msgLinkRx = regexp.MustCompile(`https?:\/\/(?:canary\.)?discord(?:app)?\.com\/channels\/\d+\/(\d+)\/(\d+)`)
+)
 
 type CmdSay struct {
 }
@@ -48,15 +53,17 @@ func (c *CmdSay) GetHelp() string {
 		i++
 	}
 	return "`say [flags] <message>`\n\n**Flags:** \n```\n" +
-		"-c string\n" +
-		"	color (default \"orange\")\n" +
-		"-f string\n" +
-		"	footer\n" +
-		"-raw string\n" +
-		"	raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)\n" +
-		"-t string\n" +
-		"	title\n```\n" +
-		"**Colors:**\n" + strings.Join(colors, ", ")
+		`-c string
+      color (default "orange")
+-e string
+      Message Link or [ChannelID/]MessageID of the message to be edited
+-f string
+      footer
+-raw
+      parses following content as raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)
+-t string
+      title
+` + "\n```\n**Colors:**\n" + strings.Join(colors, ", ")
 }
 
 func (c *CmdSay) GetGroup() string {
@@ -71,13 +78,34 @@ func (c *CmdSay) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdSay) Exec(args *CommandArgs) error {
+func (c *CmdSay) Exec(args *CommandArgs) (err error) {
 	f := flag.NewFlagSet("sayflags", flag.ContinueOnError)
 	fcolor := f.String("c", "orange", "color")
 	ftitle := f.String("t", "", "title")
 	ffooter := f.String("f", "", "footer")
 	fraw := f.Bool("raw", false, "parses following content as raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)")
-	f.Parse(args.Args)
+	fedit := f.String("e", "", "Message Link or [ChannelID/]MessageID of the message to be edited")
+
+	if err = f.Parse(args.Args); err != nil {
+		return err
+	}
+
+	var editMsg *discordgo.Message
+
+	if *fedit != "" {
+		msgID, chanID := getMsgID(*fedit, args.Channel.ID)
+		editMsg, err = args.Session.ChannelMessage(chanID, msgID)
+		if err != nil {
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				fmt.Sprintf("The message to be edited could not be found:\n```\n%s\n```", err.Error())).
+				DeleteAfter(10 * time.Second).Error()
+		}
+		if editMsg.Author.ID != args.Session.State.User.ID {
+			return util.SendEmbedError(args.Session, args.Channel.ID,
+				"You can only edit messages which were created by shinpuru.").
+				DeleteAfter(8 * time.Second).Error()
+		}
+	}
 
 	authorField := &discordgo.MessageEmbedAuthor{
 		IconURL: args.User.AvatarURL(""),
@@ -130,7 +158,32 @@ func (c *CmdSay) Exec(args *CommandArgs) error {
 		}
 	}
 
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	if editMsg != nil {
+		_, err = args.Session.ChannelMessageEditEmbed(editMsg.ChannelID, editMsg.ID, emb)
+	} else {
+		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	}
 
-	return err
+	return
+}
+
+func getMsgID(v, altChanID string) (msgID, chanID string) {
+	res := msgLinkRx.FindAllStringSubmatch(v, -1)
+	if res != nil && len(res) >= 1 && len(res[0]) >= 3 {
+		chanID = res[0][1]
+		msgID = res[0][2]
+		return
+	}
+
+	i := strings.Index(v, "/")
+	if i >= 0 && i < len(v)-1 {
+		chanID = v[:i]
+		msgID = v[i+1:]
+		return
+	}
+
+	msgID = v
+	chanID = altChanID
+
+	return
 }
