@@ -125,6 +125,8 @@ github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5 h1:EryoK8mdGm7q
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5/go.mod h1:5aXVBC8pKM3Tva/5YihZ0yOLD+ULDq5P73lpRuBSLNg=
 github.com/zekroTJA/timedmap v1.1.2 h1:ZoF5OF1No1TyBiEvYj+tJK160qNjzzckFJ74mhHRnqs=
 github.com/zekroTJA/timedmap v1.1.2/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
+github.com/zekroTJA/timedmap v1.2.0 h1:6HqQF89K7oEYatCEuS7ylZSFkL8Yf7luJyBTbgAafyI=
+github.com/zekroTJA/timedmap v1.2.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 h1:psW17arqaxU48Z5kZ0CQnkZWQJsqcURM6tKiBApRjXI=

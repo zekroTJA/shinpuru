@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -43,23 +44,27 @@ func (c *CmdKarma) IsExecutableInDMChannels() bool {
 func (c *CmdKarma) Exec(args *CommandArgs) error {
 
 	karma, err := args.CmdHandler.db.GetKarma(args.User.ID, args.Guild.ID)
-	if err != nil {
+	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
 	karmaSum, err := args.CmdHandler.db.GetKarmaSum(args.User.ID)
-	if err != nil {
+	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
 	karmaList, err := args.CmdHandler.db.GetKarmaGuild(args.Guild.ID, 20)
-	if err != nil {
+	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
 	var karmaListStr string
 
-	karmaListLn := len(karmaList)
+	var karmaListLn int
+	if karmaList != nil {
+		karmaListLn = len(karmaList)
+	}
+
 	if karmaListLn == 0 {
 		karmaListStr = "*No entries for this guild.*"
 	}

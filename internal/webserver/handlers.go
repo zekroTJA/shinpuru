@@ -901,6 +901,52 @@ func (ws *WebServer) handlerPostGuildInviteBlock(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/scoreboard
+
+func (ws *WebServer) handlerGetGuildScoreboard(ctx *routing.Context) error {
+	guildID := ctx.Param("guildid")
+	limitQ := ctx.QueryArgs().Peek("limit")
+
+	limit := 25
+
+	if len(limitQ) > 0 {
+		limit, err := strconv.Atoi(string(limitQ))
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if limit < 0 || limit > 100 {
+			return jsonError(ctx,
+				fmt.Errorf("limit must be in range [0, 100]"), fasthttp.StatusBadRequest)
+		}
+	}
+
+	karmaList, err := ws.db.GetKarmaGuild(guildID, limit)
+
+	if err == database.ErrDatabaseNotFound {
+		return jsonError(ctx, nil, fasthttp.StatusNotFound)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	results := make([]*GuildKarmaEntry, len(karmaList))
+
+	var i int
+	for _, e := range karmaList {
+		member, err := discordutil.GetMember(ws.session, guildID, e.UserID)
+		if err != nil {
+			continue
+		}
+		results[i] = &GuildKarmaEntry{
+			Member: MemberFromMember(member),
+			Value:  e.Value,
+		}
+		i++
+	}
+
+	return jsonResponse(ctx, ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - GET /api/reports/:id
 
 func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
