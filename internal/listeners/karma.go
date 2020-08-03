@@ -151,13 +151,7 @@ func (l *ListenerKarma) rateLimiterTake(userID, guildID string) bool {
 		l.limiters.Set(key, limiter, lifetimeRateLimiter)
 	}
 
-	expires, err := l.limiters.GetExpires(key)
-	if err != nil {
-		expires = time.Now()
-	}
-
-	refresh := lifetimeRateLimiter - expires.Sub(time.Now())
-	l.limiters.Refresh(key, refresh)
+	l.limiters.SetExpires(key, lifetimeRateLimiter)
 
 	return limiter.Allow()
 }
