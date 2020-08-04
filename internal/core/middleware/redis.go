@@ -667,7 +667,7 @@ func (m *RedisMiddleware) GetKarmaSum(userID string) (int, error) {
 }
 
 func (m *RedisMiddleware) GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error) {
-	return m.GetKarmaGuild(guildID, limit)
+	return m.db.GetKarmaGuild(guildID, limit)
 }
 
 func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
