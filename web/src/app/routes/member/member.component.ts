@@ -44,7 +44,6 @@ export class MemberRouteComponent {
   constructor(
     public modal: NgbModal,
     private api: APIService,
-    private spinner: SpinnerService,
     private toasts: ToastService,
     private route: ActivatedRoute,
     private router: Router

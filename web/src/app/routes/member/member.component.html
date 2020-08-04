@@ -75,15 +75,19 @@
                 <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
             </div>
         </div>
-        <div class="d-flex overflow-wrap">
+        <div *ngIf="memberRoles.length > 0" class="d-flex overflow-wrap mb-2">
             <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
         </div>
 
-        <h4 class="mt-4 mb-3">Karma</h4>
+        <h4 class="mb-3">Karma</h4>
 
         <div class="d-flex">
-            <app-karma-tile title="Guild" [value]="member.karma" class="mr-3"></app-karma-tile>
-            <app-karma-tile title="Total" [value]="member.karma_total"></app-karma-tile>
+            <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="mr-3 karma-tile">
+                <app-karma-tile title="Guild" [value]="member.karma"></app-karma-tile>
+            </a>
+            <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="karma-tile">
+                <app-karma-tile title="Total" [value]="member.karma_total"></app-karma-tile>
+            </a>
         </div>
 
         <h4 class="mt-4 mb-3">General User Information</h4>

@@ -22,6 +22,7 @@ import {
   SystemInfo,
   APIToken,
   GuildBackup,
+  GuildScoreboardEntry,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -103,6 +104,9 @@ export class APIService {
 
   private readonly rcGuildInviteBlock = (guildID: string) =>
     `${this.rcGuilds(guildID)}/inviteblock`;
+
+  private readonly rcGuildScoreboard = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/scoreboard`;
 
   private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/kick`;
@@ -393,6 +397,18 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildInviteBlock(guildID), { enabled }, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildScoreboard(
+    guildID: string,
+    limit: number = 25
+  ): Observable<ListReponse<GuildScoreboardEntry>> {
+    return this.http
+      .get<Presence>(
+        `${this.rcGuildScoreboard(guildID)}?limit=${limit}`,
+        this.defopts()
+      )
       .pipe(catchError(this.errorCatcher));
   }
 

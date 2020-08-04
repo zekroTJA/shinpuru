@@ -27,6 +27,7 @@ import { InfoComponent } from './routes/info/info.component';
 import { SliderComponent } from './components/slider/slider.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
 import { KarmaTileComponent } from './components/karma-tile/karma-tile.component';
+import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { KarmaTileComponent } from './components/karma-tile/karma-tile.component
     SliderComponent,
     APITokenComponent,
     KarmaTileComponent,
+    ScoreboardComponent,
   ],
   imports: [
     NgbModule,
