@@ -221,6 +221,14 @@ type SessionTokenClaims struct {
 	jwt.StandardClaims
 }
 
+// GuildKarmaEntry wraps a Member model and karma
+// value for an entry of the karma scoreboard
+// of a guild.
+type GuildKarmaEntry struct {
+	Member *Member `json:"member"`
+	Value  int     `json:"value"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

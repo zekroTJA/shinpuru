@@ -169,3 +169,8 @@ export interface GuildBackup {
   timestamp: Date;
   file_id: string;
 }
+
+export interface GuildScoreboardEntry {
+  member: Member;
+  value: number;
+}

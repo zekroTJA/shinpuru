@@ -1372,6 +1372,53 @@ Toggle guild invite block enable.
 }
 ```
 
+### Get Guild Karma Scoreboard
+
+> ### `GET /api/guilds/:guildid/scoreboard`
+
+Returns a list of members sorted decremented by their karma value on the specified guild.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit` | `number` | The maximum ammount of scoreboard entries to return. |
+
+```json
+{
+  "n": 1,
+  "data": [
+    {
+      "member": {
+        "guild_id": "526196711962705925",
+        "joined_at": "2020-07-22T10:52:36.424682+00:00",
+        "nick": "",
+        "deaf": false,
+        "mute": false,
+        "user": {
+          "id": "661175627105173514",
+          "email": "",
+          "username": "0x7a656b726f",
+          "avatar": "36c7f473d55f7cf8ff39675bed5c8ebb",
+          "locale": "",
+          "discriminator": "7375",
+          "token": "",
+          "verified": false,
+          "mfa_enabled": false,
+          "bot": false
+        },
+        "roles": [],
+        "premium_since": "",
+        "avatar_url": "https://cdn.discordapp.com/avatars/661175627105173514/36c7f473d55f7cf8ff39675bed5c8ebb.png",
+        "created_at": "2019-12-30T13:22:10.706953551+01:00",
+        "dominance": 0,
+        "karma": 0,
+        "karma_total": 0
+      },
+      "value": 126
+    }
+  ]
+}
+```
+
 ### Get Report
 
 > ### `GET /api/reports/:caseid`

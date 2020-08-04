@@ -185,12 +185,12 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		mm.Dominance = 3
 	}
 
-	mm.Karma, err = ws.db.GetKarma(userID, guildID)
+	mm.Karma, err = ws.db.GetKarma(memberID, guildID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	mm.KarmaTotal, err = ws.db.GetKarmaSum(userID)
+	mm.KarmaTotal, err = ws.db.GetKarmaSum(memberID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
@@ -898,6 +898,52 @@ func (ws *WebServer) handlerPostGuildInviteBlock(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/scoreboard
+
+func (ws *WebServer) handlerGetGuildScoreboard(ctx *routing.Context) error {
+	guildID := ctx.Param("guildid")
+	limitQ := ctx.QueryArgs().Peek("limit")
+
+	limit := 25
+
+	if len(limitQ) > 0 {
+		limit, err := strconv.Atoi(string(limitQ))
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if limit < 0 || limit > 100 {
+			return jsonError(ctx,
+				fmt.Errorf("limit must be in range [0, 100]"), fasthttp.StatusBadRequest)
+		}
+	}
+
+	karmaList, err := ws.db.GetKarmaGuild(guildID, limit)
+
+	if err == database.ErrDatabaseNotFound {
+		return jsonError(ctx, nil, fasthttp.StatusNotFound)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	results := make([]*GuildKarmaEntry, len(karmaList))
+
+	var i int
+	for _, e := range karmaList {
+		member, err := discordutil.GetMember(ws.session, guildID, e.UserID)
+		if err != nil {
+			continue
+		}
+		results[i] = &GuildKarmaEntry{
+			Member: MemberFromMember(member),
+			Value:  e.Value,
+		}
+		i++
+	}
+
+	return jsonResponse(ctx, ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------

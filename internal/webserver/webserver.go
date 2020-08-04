@@ -186,6 +186,8 @@ func (ws *WebServer) registerHandlers() {
 		Get("/members", ws.handlerGetGuildMembers)
 	guild.
 		Post("/inviteblock", ws.handlerPostGuildInviteBlock)
+	guild.
+		Get("/scoreboard", ws.handlerGetGuildScoreboard)
 
 	guildReports := guild.Group("/reports")
 	guildReports.

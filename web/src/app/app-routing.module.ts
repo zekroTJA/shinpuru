@@ -9,6 +9,8 @@ import { MemberRouteComponent } from './routes/member/member.component';
 import { SettingsComponent } from './routes/settings/settings.component';
 import { InfoComponent } from './routes/info/info.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
+import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -26,6 +28,10 @@ const routes: Routes = [
   {
     path: 'guilds/:id',
     component: GuildComponent,
+  },
+  {
+    path: 'guilds/:guildid/scoreboard',
+    component: ScoreboardComponent,
   },
   {
     path: 'guilds/:guildid/:memberid',
