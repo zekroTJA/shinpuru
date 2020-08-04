@@ -185,12 +185,12 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		mm.Dominance = 3
 	}
 
-	mm.Karma, err = ws.db.GetKarma(userID, guildID)
+	mm.Karma, err = ws.db.GetKarma(memberID, guildID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	mm.KarmaTotal, err = ws.db.GetKarmaSum(userID)
+	mm.KarmaTotal, err = ws.db.GetKarmaSum(memberID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
