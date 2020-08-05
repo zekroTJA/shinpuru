@@ -12,6 +12,7 @@ import {
   GuildSettings,
   Channel,
   GuildBackup,
+  GuildScoreboardEntry,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -42,6 +43,7 @@ export class GuildComponent {
   public settings: GuildSettings;
   public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
+  public scoreboard: GuildScoreboardEntry[];
 
   public guildSettingsAllowed: string[] = [];
 
@@ -107,6 +109,10 @@ export class GuildComponent {
 
     this.api.getGuildBackups(guildID).subscribe((backups) => {
       this.backups = backups.data;
+    });
+
+    this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
+      this.scoreboard = scoreboard.data;
     });
   }
 

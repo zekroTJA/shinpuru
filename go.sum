@@ -123,8 +123,6 @@ github.com/wcharczuk/go-chart v2.0.1+incompatible h1:0pz39ZAycJFF7ju/1mepnk26RLV
 github.com/wcharczuk/go-chart v2.0.1+incompatible/go.mod h1:PF5tmL4EIx/7Wf+hEkpCqYi5He4u90sw+0+6FhrryuE=
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5 h1:EryoK8mdGm7qU0FZjxpt+7Bd9VGBmzsV880DQKq10W4=
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5/go.mod h1:5aXVBC8pKM3Tva/5YihZ0yOLD+ULDq5P73lpRuBSLNg=
-github.com/zekroTJA/timedmap v1.1.2 h1:ZoF5OF1No1TyBiEvYj+tJK160qNjzzckFJ74mhHRnqs=
-github.com/zekroTJA/timedmap v1.1.2/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 github.com/zekroTJA/timedmap v1.2.0 h1:6HqQF89K7oEYatCEuS7ylZSFkL8Yf7luJyBTbgAafyI=
 github.com/zekroTJA/timedmap v1.2.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
