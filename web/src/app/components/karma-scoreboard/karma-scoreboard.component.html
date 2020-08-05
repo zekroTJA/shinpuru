@@ -7,16 +7,12 @@
             *ngFor="let s of scoreboard; index as i" 
             class="scoreboard-entry"
             routerLink="/guilds/{{ guildID }}/{{ s.member.user.id }}"
+            title="{{s.member.user.username}}#{{s.member.user.discriminator}}"
         >
-            <div class="index">
-                <span>#{{ i + 1 }}</span>
-            </div>
-            <img [src]="s.member.avatar_url" width="40" height="40"/>
-            <div>
-                <p class="m-0 ellipsis">{{s.member.user.username}}</p>
-                <p class="embeded m-0">#{{s.member.user.discriminator}}</p>
-            </div>
-            <app-karma-tile class="ml-auto" [value]="s.value"></app-karma-tile>
+            <span class="index">#{{ i + 1 }}</span>
+            <img [src]="s.member.avatar_url"/>
+            <p class="m-0 ellipsis">{{s.member.user.username}}#{{s.member.user.discriminator}}</p>
+            <app-karma-tile class="ml-auto pl-2" [value]="s.value" [small]="true"></app-karma-tile>
         </a>
     </ng-template>
 </div>

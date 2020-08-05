@@ -13,6 +13,7 @@ import {
   Channel,
   GuildBackup,
   GuildScoreboardEntry,
+  User,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';

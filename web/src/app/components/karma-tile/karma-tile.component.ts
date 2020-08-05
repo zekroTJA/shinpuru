@@ -10,6 +10,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class KarmaTileComponent implements OnInit {
   @Input() public value: number;
   @Input() public title: string;
+  @Input() public small: boolean;
 
   constructor() {}
 
@@ -20,6 +21,7 @@ export class KarmaTileComponent implements OnInit {
       bad: this.value < 0,
       good: this.value > 0,
       supreme: this.value >= 1000,
+      small: this.small,
     };
   }
 }
