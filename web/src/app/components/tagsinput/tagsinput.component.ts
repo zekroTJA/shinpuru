@@ -29,9 +29,7 @@ export class TagsInputComponent implements ControlValueAccessor {
     v: any,
     inpt: string
   ) => {
-    return this.formatter(v)
-      .toLowerCase()
-      .includes(inpt);
+    return this.formatter(v).toLowerCase().includes(inpt.toLowerCase());
   };
 
   private onTouchedCallback: () => void = () => {};

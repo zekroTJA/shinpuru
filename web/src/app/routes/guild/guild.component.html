@@ -2,7 +2,7 @@
     <app-spinner *ngIf="!guild" id="spinner-load-guild" [started]="true"></app-spinner>
 
     <div class="scoreboard-container">
-        <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild.id"></app-karma-scoreboard>
+        <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
     </div>
 
     <div *ngIf="guild" class="guild-container">
@@ -232,7 +232,13 @@
                         <p class="mb-0 mr-2">sp.</p>
                         <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/>
                     </div>
-                    <app-tags [available]="guild.roles" [formatter]="roleNameFormatter" placeholder="role name" [(ngModel)]="addPermissionRoles"></app-tags>
+                    <app-tags 
+                        [available]="guild.roles" 
+                        [formatter]="roleNameFormatter" 
+                        [filter]="permissionsInputFilter"
+                        placeholder="role name" 
+                        [(ngModel)]="addPermissionRoles"
+                    ></app-tags>
                 </div>
                 <button class="ml-auto mb-auto" (click)="addPermissionRule()">ADD RULE</button>
             </div>

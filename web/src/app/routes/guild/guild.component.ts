@@ -1,6 +1,6 @@
 /** @format */
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
@@ -342,5 +342,13 @@ export class GuildComponent {
           true
         );
       });
+  }
+
+  public permissionsInputFilter(v: Role, inpt: string): boolean {
+    if (v.id === inpt) {
+      return true;
+    }
+
+    return v.name.toLowerCase().includes(inpt.toLowerCase());
   }
 }
