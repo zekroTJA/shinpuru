@@ -5,6 +5,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | GitHub | Issues / PRs |
 |--------|--------------|
 | [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |
+| [codacy-badger](https://github.com/codacy-badger) | [#136](https://github.com/zekroTJA/shinpuru/pull/136) |
 | [DarkAmy](https://github.com/DarkAmy) | [#46](https://github.com/zekroTJA/shinpuru/issues/46) |
 | [dependabot](https://github.com/dependabot) | [#84](https://github.com/zekroTJA/shinpuru/pull/84), [#87](https://github.com/zekroTJA/shinpuru/pull/87), [#89](https://github.com/zekroTJA/shinpuru/pull/89) |
 | [Eli-Dev](https://github.com/Eli-Dev) | [#45](https://github.com/zekroTJA/shinpuru/issues/45), [#47](https://github.com/zekroTJA/shinpuru/issues/47), [#49](https://github.com/zekroTJA/shinpuru/issues/49) |
@@ -16,8 +17,9 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57) |
 | [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53), [#56](https://github.com/zekroTJA/shinpuru/pull/56) |
 | [pavll](https://github.com/pavll) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |
-| [rmcproductions](https://github.com/rmcproductions) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67) |
+| [rmcproductions](https://github.com/rmcproductions) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67), [#147](https://github.com/zekroTJA/shinpuru/issues/147), [#148](https://github.com/zekroTJA/shinpuru/issues/148) |
 | [Ron31](https://github.com/Ron31) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#33](https://github.com/zekroTJA/shinpuru/pull/33) |
+| [ShowMeYourSkil](https://github.com/ShowMeYourSkil) | [#140](https://github.com/zekroTJA/shinpuru/issues/140) |
 | [Skillkiller](https://github.com/Skillkiller) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) |
-| [SnowLeoo](https://github.com/SnowLeoo) | [#129](https://github.com/zekroTJA/shinpuru/issues/129) |
+| [SnowLeoo](https://github.com/SnowLeoo) | [#129](https://github.com/zekroTJA/shinpuru/issues/129), [#145](https://github.com/zekroTJA/shinpuru/issues/145) |
 | [zori4004](https://github.com/zori4004) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |
