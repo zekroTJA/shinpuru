@@ -1,6 +1,6 @@
 /** @format */
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
@@ -12,6 +12,8 @@ import {
   GuildSettings,
   Channel,
   GuildBackup,
+  GuildScoreboardEntry,
+  User,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -42,6 +44,7 @@ export class GuildComponent {
   public settings: GuildSettings;
   public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
+  public scoreboard: GuildScoreboardEntry[];
 
   public guildSettingsAllowed: string[] = [];
 
@@ -107,6 +110,10 @@ export class GuildComponent {
 
     this.api.getGuildBackups(guildID).subscribe((backups) => {
       this.backups = backups.data;
+    });
+
+    this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
+      this.scoreboard = scoreboard.data;
     });
   }
 
@@ -335,5 +342,13 @@ export class GuildComponent {
           true
         );
       });
+  }
+
+  public permissionsInputFilter(v: Role, inpt: string): boolean {
+    if (v.id === inpt) {
+      return true;
+    }
+
+    return v.name.toLowerCase().includes(inpt.toLowerCase());
   }
 }

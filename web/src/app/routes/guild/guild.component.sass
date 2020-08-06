@@ -3,6 +3,7 @@
     
 #heading-container
     display: flex
+    flex-wrap: wrap
     margin-bottom: 20px
 
     img
@@ -57,6 +58,21 @@
             .pl-lvl
                 font-size: 22px
                 font-weight: bold
+
+
+.guild-container
+    @media only screen and (min-width: 900px)
+        margin-right: 360px
+
+
+.scoreboard-container
+    @media only screen and (min-width: 900px)
+        display: block
+
+    display: none
+    position: fixed
+    top: 50px + 20px
+    right: 20px
 
 
 .settingsTile
