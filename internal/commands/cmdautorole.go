@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdAutorole struct {
@@ -29,14 +30,14 @@ func (c *CmdAutorole) GetHelp() string {
 }
 
 func (c *CmdAutorole) GetGroup() string {
-	return GroupGuildConfig
+	return shireikan.GroupGuildConfig
 }
 
 func (c *CmdAutorole) GetDomainName() string {
 	return "sp.guild.config.autorole"
 }
 
-func (c *CmdAutorole) GetSubPermissionRules() []SubPermission {
+func (c *CmdAutorole) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -44,45 +45,47 @@ func (c *CmdAutorole) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdAutorole) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		currAutoRoleID, err := args.CmdHandler.db.GetGuildAutoRole(args.Guild.ID)
+func (c *CmdAutorole) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	if len(ctx.GetArgs()) < 1 {
+		currAutoRoleID, err := db.GetGuildAutoRole(ctx.GetGuild().ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
 		}
 		if currAutoRoleID == "" {
-			return util.SendEmbed(args.Session, args.Channel.ID,
+			return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 				"There is no autorole set on this guild currently.", "", 0).Error()
 		}
-		_, err = fetch.FetchRole(args.Session, args.Guild.ID, currAutoRoleID)
+		_, err = fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, currAutoRoleID)
 		if err != nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"**ATTENTION:** The set auto role is no more existent on the guild!").Error()
 		}
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			fmt.Sprintf("Currently, <@&%s> is set as auto role.", currAutoRoleID), "", 0).Error()
 	}
 
-	if strings.ToLower(args.Args[0]) == "reset" {
-		err := args.CmdHandler.db.SetGuildAutoRole(args.Guild.ID, "")
+	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "reset" {
+		err := db.SetGuildAutoRole(ctx.GetGuild().ID, "")
 		if err != nil {
 			return err
 		}
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			"Autorole reseted.", "", static.ColorEmbedUpdated).Error()
 	}
 
-	newAutoRole, err := fetch.FetchRole(args.Session, args.Guild.ID, args.Args[0])
+	newAutoRole, err := fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(0).AsString())
 	if err != nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Sorry, but the entered role could not be fetched :(").
 			DeleteAfter(5 * time.Second).Error()
 	}
-	err = args.CmdHandler.db.SetGuildAutoRole(args.Guild.ID, newAutoRole.ID)
+	err = db.SetGuildAutoRole(ctx.GetGuild().ID, newAutoRole.ID)
 	if err != nil {
 		return err
 	}
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Autorole set to <@&%s>.", newAutoRole.ID), "", static.ColorEmbedUpdated).
 		Error()
 }

@@ -3,16 +3,35 @@ package inits
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
+	"github.com/zekroTJA/shinpuru/internal/core/backup"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
+	"github.com/zekroTJA/shireikan"
 )
 
 func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage, tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) *commands.CmdHandler {
-	cmdHandler := commands.NewCmdHandler(s, db, st, cfg, tnw, lct)
+	cmdHandler := shireikan.NewHandler(&shireikan.Config{
+		GeneralPrefix:         cfg.Discord.GeneralPrefix,
+		AllowBots:             false,
+		AllowDM:               true,
+		DeleteMessageAfter:    true,
+		ExecuteOnEdit:         true,
+		InvokeToLower:         true,
+		UseDefaultHelpCommand: false,
+
+		GuildPrefixGetter: db.GetGuildPrefix,
+	})
+
+	cmdHandler.SetObject("db", db)
+	cmdHandler.SetObject("config", cfg)
+	cmdHandler.SetObject("storage", st)
+	cmdHandler.SetObject("tnw", tnw)
+	cmdHandler.SetObject("lct", lct)
+	cmdHandler.SetObject("backup", backup.New(s, db, st))
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})
@@ -53,7 +72,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 
-	util.Log.Infof("%d commands registered", cmdHandler.GetCommandListLen())
+	util.Log.Infof("%d commands registered", len(cmdHandler.GetCommandInstances()))
 
 	return cmdHandler
 }
