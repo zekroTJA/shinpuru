@@ -5,6 +5,7 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
@@ -12,7 +13,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, lct *lctimer.LifeCycleTimer) {
+func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database,
+	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware) {
 
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
@@ -24,7 +26,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(database)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
 	listenerGhostPing := listeners.NewListenerGhostPing(database)
 	listenerJDoodle := listeners.NewListenerJdoodle(database)
 

@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/webserver"
@@ -14,10 +15,10 @@ import (
 )
 
 func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storage,
-	cmdHandler shireikan.Handler, lct *lctimer.LifeCycleTimer, cfg *config.Config) (ws *webserver.WebServer) {
+	cmdHandler shireikan.Handler, lct *lctimer.LifeCycleTimer, cfg *config.Config, pmw *middleware.PermissionsMiddleware) (ws *webserver.WebServer) {
 
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
-		ws, err := webserver.New(db, st, s, cmdHandler, lct, cfg)
+		ws, err := webserver.New(db, st, s, cmdHandler, lct, cfg, pmw)
 		if err != nil {
 			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}

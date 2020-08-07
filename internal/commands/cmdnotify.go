@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -54,7 +55,6 @@ func (c *CmdNotify) IsExecutableInDMChannels() bool {
 
 func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject("db").(database.Database)
-	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
 
 	if len(ctx.GetArgs()) < 1 {
 		notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetGuild().ID)
@@ -100,8 +100,8 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 	}
 
 	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "setup" {
-		// TODO: Refactor permission check; needs to be done also for permissions middleware
-		ok, override, err := cmdhandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, c.GetDomainName()+".setup")
+		pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+		ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
 		}

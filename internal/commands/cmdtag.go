@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/snowflake"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -171,7 +172,8 @@ func (c *CmdTag) editTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".edit")
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".edit")
 	if err != nil {
 		return err
 	}
@@ -204,13 +206,14 @@ func (c *CmdTag) deleteTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".delete")
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
 	if itag.CreatorID != ctx.GetUser().ID && !ok && !override {
-		return printNotPermitted(args, "delete")
+		return printNotPermitted(ctx, "delete")
 	}
 
 	if err = db.DeleteTag(itag.ID); err != nil {
@@ -291,7 +294,8 @@ func printNotPermitted(ctx shireikan.Context, t string) error {
 }
 
 func checkPermission(ctx shireikan.Context, dn string) (error, bool) {
-	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, dn)
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, dn)
 	if err != nil {
 		return err, false
 	}

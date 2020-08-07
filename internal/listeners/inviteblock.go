@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,12 +18,14 @@ var (
 )
 
 type ListenerInviteBlock struct {
-	db database.Database
+	db  database.Database
+	pmw *middleware.PermissionsMiddleware
 }
 
-func NewListenerInviteBlock(db database.Database) *ListenerInviteBlock {
+func NewListenerInviteBlock(db database.Database, pmw *middleware.PermissionsMiddleware) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
-		db: db,
+		db:  db,
+		pmw: pmw,
 	}
 }
 
@@ -84,7 +87,7 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 		return nil
 	}
 
-	ok, override, err := l.cmdHandler.CheckPermissions(s, e.GuildID, e.Author.ID, "!sp.guild.mod.inviteblock.send")
+	ok, override, err := l.pmw.CheckPermissions(s, e.GuildID, e.Author.ID, "!sp.guild.mod.inviteblock.send")
 	if err != nil {
 		return err
 	}

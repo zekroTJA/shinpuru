@@ -6,6 +6,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -14,7 +15,7 @@ import (
 )
 
 func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage,
-	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) shireikan.Handler {
+	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware) shireikan.Handler {
 
 	cmdHandler := shireikan.NewHandler(&shireikan.Config{
 		GeneralPrefix:         cfg.Discord.GeneralPrefix,
@@ -34,6 +35,9 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.SetObject("tnw", tnw)
 	cmdHandler.SetObject("lct", lct)
 	cmdHandler.SetObject("backup", backup.New(s, db, st))
+	cmdHandler.SetObject("pmw", pmw)
+
+	cmdHandler.RegisterMiddleware(pmw)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})
@@ -75,6 +79,8 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	}
 
 	util.Log.Infof("%d commands registered", len(cmdHandler.GetCommandInstances()))
+
+	cmdHandler.RegisterHandlers(s)
 
 	return cmdHandler
 }

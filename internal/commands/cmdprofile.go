@@ -9,6 +9,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -87,7 +88,8 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	perms, _, err := args.CmdHandler.GetPermissions(ctx.GetSession(), ctx.GetGuild().ID, member.User.ID)
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	perms, _, err := pmw.GetPermissions(ctx.GetSession(), ctx.GetGuild().ID, member.User.ID)
 	if err != nil {
 		return err
 	}

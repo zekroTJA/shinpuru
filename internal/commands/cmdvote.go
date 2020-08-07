@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -251,7 +252,8 @@ func (c *CmdVote) close(ctx shireikan.Context) error {
 		}
 	}
 
-	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".close")
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".close")
 	if ivote.CreatorID != ctx.GetUser().ID && !ok && !override {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You do not have the permission to close another ones votes.").

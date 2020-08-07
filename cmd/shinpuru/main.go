@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/inits"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -60,15 +61,17 @@ func main() {
 
 	st := inits.InitStorage(conf)
 
-	inits.InitDiscordBotSession(session, conf, database, lct)
+	pmw := middleware.NewPermissionMiddleware(database, conf)
+
+	inits.InitDiscordBotSession(session, conf, database, lct, pmw)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
 
-	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct)
+	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct, pmw)
 
-	inits.InitWebServer(session, database, st, cmdHandler, lct, conf)
+	inits.InitWebServer(session, database, st, cmdHandler, lct, conf, pmw)
 
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
 	sc := make(chan os.Signal, 1)
