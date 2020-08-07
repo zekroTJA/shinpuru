@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"fmt"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdTest struct {
@@ -20,14 +20,14 @@ func (c *CmdTest) GetHelp() string {
 }
 
 func (c *CmdTest) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdTest) GetDomainName() string {
 	return "sp.test"
 }
 
-func (c *CmdTest) GetSubPermissionRules() []SubPermission {
+func (c *CmdTest) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -35,10 +35,7 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdTest) Exec(args *CommandArgs) error {
-	res, _ := args.CmdHandler.db.GetKarmaGuild(args.Guild.ID, 10)
-	for _, v := range res {
-		fmt.Printf("%+v\n", v)
-	}
+func (c *CmdTest) Exec(ctx shireikan.Context) error {
+
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdQuote struct {
@@ -28,14 +29,14 @@ func (c *CmdQuote) GetHelp() string {
 }
 
 func (c *CmdQuote) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdQuote) GetDomainName() string {
 	return "sp.chat.quote"
 }
 
-func (c *CmdQuote) GetSubPermissionRules() []SubPermission {
+func (c *CmdQuote) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -43,35 +44,38 @@ func (c *CmdQuote) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdQuote) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdQuote) Exec(ctx shireikan.Context) error {
+	args := ctx.GetArgs()
+
+	if len(args) < 1 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a message ID or URL which should be quoted.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if strings.HasPrefix(args.Args[0], "https://discordapp.com/channels/") ||
-		strings.HasPrefix(args.Args[0], "https://discord.com/channels/") ||
-		strings.HasPrefix(args.Args[0], "https://canary.discordapp.com/channels/") ||
-		strings.HasPrefix(args.Args[0], "https://canary.discord.com/channels/") {
-		urlSplit := strings.Split(args.Args[0], "/")
-		args.Args[0] = urlSplit[len(urlSplit)-1]
+	if strings.HasPrefix(ctx.GetArgs().Get(0).AsString(), "https://discordapp.com/channels/") ||
+		strings.HasPrefix(ctx.GetArgs().Get(0).AsString(), "https://discord.com/channels/") ||
+		strings.HasPrefix(ctx.GetArgs().Get(0).AsString(), "https://canary.discordapp.com/channels/") ||
+		strings.HasPrefix(ctx.GetArgs().Get(0).AsString(), "https://canary.discord.com/channels/") {
+
+		urlSplit := strings.Split(ctx.GetArgs().Get(0).AsString(), "/")
+		args[0] = urlSplit[len(urlSplit)-1]
 	}
 
-	comment := strings.Join(args.Args[1:], " ")
+	comment := strings.Join(ctx.GetArgs()[1:], " ")
 
 	msgSearchEmb := &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGray,
-		Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", args.Channel.ID),
+		Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", ctx.GetChannel().ID),
 	}
 
-	msgSearch, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, msgSearchEmb)
+	msgSearch, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, msgSearchEmb)
 	if err != nil {
 		return err
 	}
 
 	var textChans []*discordgo.Channel
-	for _, ch := range args.Guild.Channels {
+	for _, ch := range ctx.GetGuild().Channels {
 		if ch.Type == discordgo.ChannelTypeGuildText {
 			textChans = append(textChans, ch)
 		}
@@ -81,13 +85,13 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	results := make(chan *discordgo.Message, loopLen)
 	timeout := make(chan bool, 1)
 	timeOuted := false
-	quoteMsg, _ := args.Session.ChannelMessage(args.Channel.ID, args.Args[0])
+	quoteMsg, _ := ctx.GetSession().ChannelMessage(ctx.GetChannel().ID, ctx.GetArgs().Get(0).AsString())
 	if quoteMsg == nil {
 		msgSearchEmb.Description = ":hourglass_flowing_sand:  Searching for message in other channels..."
-		args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
+		ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
 		for _, ch := range textChans {
 			go func(c *discordgo.Channel) {
-				quoteMsg, _ := args.Session.ChannelMessage(c.ID, args.Args[0])
+				quoteMsg, _ := ctx.GetSession().ChannelMessage(c.ID, ctx.GetArgs().Get(0).AsString())
 				results <- quoteMsg
 			}(ch)
 		}
@@ -119,28 +123,28 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	if timeOuted {
 		msgSearchEmb.Description = "Searching worker timeout."
 		msgSearchEmb.Color = static.ColorEmbedError
-		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		discordutil.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
+		_, err := ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
+		discordutil.DeleteMessageLater(ctx.GetSession(), msgSearch, 5*time.Second)
 		return err
 	}
 
 	if quoteMsg == nil {
 		msgSearchEmb.Description = "Could not find any message with this ID. :disappointed:"
 		msgSearchEmb.Color = static.ColorEmbedError
-		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		discordutil.DeleteMessageLater(args.Session, msgSearch, 5*time.Second)
+		_, err := ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
+		discordutil.DeleteMessageLater(ctx.GetSession(), msgSearch, 5*time.Second)
 		return err
 	}
 
 	if len(quoteMsg.Content) < 1 && len(quoteMsg.Attachments) < 1 {
 		msgSearchEmb.Description = "Found messages content is empty. Maybe, it is an embed message itself, which can not be quoted."
 		msgSearchEmb.Color = static.ColorEmbedError
-		_, err := args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
-		discordutil.DeleteMessageLater(args.Session, msgSearch, 8*time.Second)
+		_, err := ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
+		discordutil.DeleteMessageLater(ctx.GetSession(), msgSearch, 8*time.Second)
 		return err
 	}
 
-	quoteMsgChannel, err := args.Session.Channel(quoteMsg.ChannelID)
+	quoteMsgChannel, err := ctx.GetSession().Channel(quoteMsg.ChannelID)
 	if err != nil {
 		return err
 	}
@@ -152,10 +156,10 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 			Name:    quoteMsg.Author.Username + "#" + quoteMsg.Author.Discriminator,
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg, args.Guild.ID)),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg, ctx.GetGuild().ID)),
 		Footer: &discordgo.MessageEmbedFooter{
-			IconURL: args.User.AvatarURL("16"),
-			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, args.User.Username, args.User.Discriminator),
+			IconURL: ctx.GetUser().AvatarURL("16"),
+			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, ctx.GetUser().Username, ctx.GetUser().Discriminator),
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
@@ -171,10 +175,10 @@ func (c *CmdQuote) Exec(args *CommandArgs) error {
 	}
 
 	if comment != "" {
-		args.Session.ChannelMessageEdit(args.Channel.ID, msgSearch.ID,
-			fmt.Sprintf("**%s:**\n%s\n", args.User.String(), comment))
+		ctx.GetSession().ChannelMessageEdit(ctx.GetChannel().ID, msgSearch.ID,
+			fmt.Sprintf("**%s:**\n%s\n", ctx.GetUser().String(), comment))
 	}
 
-	args.Session.ChannelMessageEditEmbed(args.Channel.ID, msgSearch.ID, msgSearchEmb)
+	ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdId struct {
@@ -27,14 +28,14 @@ func (c *CmdId) GetHelp() string {
 }
 
 func (c *CmdId) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdId) GetDomainName() string {
 	return "sp.etc.id"
 }
 
-func (c *CmdId) GetSubPermissionRules() []SubPermission {
+func (c *CmdId) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -42,28 +43,28 @@ func (c *CmdId) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdId) Exec(args *CommandArgs) error {
+func (c *CmdId) Exec(ctx shireikan.Context) error {
 	var user *discordgo.User
 	var role *discordgo.Role
 	var textChannel *discordgo.Channel
 	var voiceChannel *discordgo.Channel
 
-	if len(args.Args) < 1 {
-		user = args.User
+	if len(ctx.GetArgs()) < 1 {
+		user = ctx.GetUser()
 	} else {
-		joinedArgs := strings.Join(args.Args, " ")
-		if u, err := fetch.FetchMember(args.Session, args.Guild.ID, joinedArgs); err == nil {
+		joinedArgs := strings.Join(ctx.GetArgs(), " ")
+		if u, err := fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, joinedArgs); err == nil {
 			user = u.User
 		}
-		if r, err := fetch.FetchRole(args.Session, args.Guild.ID, joinedArgs); err == nil {
+		if r, err := fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, joinedArgs); err == nil {
 			role = r
 		}
-		if tc, err := fetch.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
+		if tc, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, joinedArgs, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		}); err == nil {
 			textChannel = tc
 		}
-		if vc, err := fetch.FetchChannel(args.Session, args.Guild.ID, joinedArgs, func(c *discordgo.Channel) bool {
+		if vc, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, joinedArgs, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildVoice
 		}); err == nil {
 			voiceChannel = vc
@@ -71,7 +72,7 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 
 	if user == nil && role == nil && textChannel == nil && voiceChannel == nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Could not fetch any member, role or channel by this resolvable.").
 			DeleteAfter(8 * time.Second).Error()
 	}
@@ -107,9 +108,9 @@ func (c *CmdId) Exec(args *CommandArgs) error {
 	}
 	emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 		Name:  "Guild",
-		Value: fmt.Sprintf("%s\n```\n%s\n```", args.Guild.Name, args.Guild.ID),
+		Value: fmt.Sprintf("%s\n```\n%s\n```", ctx.GetGuild().Name, ctx.GetGuild().ID),
 	})
 
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

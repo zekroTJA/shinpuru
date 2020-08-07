@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdPerms struct {
@@ -38,14 +40,14 @@ func (c *CmdPerms) GetHelp() string {
 }
 
 func (c *CmdPerms) GetGroup() string {
-	return GroupGuildConfig
+	return shireikan.GroupGuildConfig
 }
 
 func (c *CmdPerms) GetDomainName() string {
 	return "sp.guild.config.perms"
 }
 
-func (c *CmdPerms) GetSubPermissionRules() []SubPermission {
+func (c *CmdPerms) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -53,15 +55,16 @@ func (c *CmdPerms) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdPerms) Exec(args *CommandArgs) error {
-	db := args.CmdHandler.db
-	perms, err := db.GetGuildPermissions(args.Guild.ID)
+func (c *CmdPerms) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	perms, err := db.GetGuildPermissions(ctx.GetGuild().ID)
 	if err != nil {
 		return err
 	}
 
-	if len(args.Args) == 0 {
-		sortedGuildRoles, err := roleutil.GetSortedGuildRoles(args.Session, args.Guild.ID, true)
+	if len(ctx.GetArgs()) == 0 {
+		sortedGuildRoles, err := roleutil.GetSortedGuildRoles(ctx.GetSession(), ctx.GetGuild().ID, true)
 		if err != nil {
 			return err
 		}
@@ -74,29 +77,29 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 			}
 		}
 
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			msgstr+"\n*Guild owners does always have permissions over the domains `sp.guild`, `sp.chat` and `sp.etc` "+
 				"and the owner of the bot has everywhere permissions over `sp`.*", "Permission settings for this guild", 0).
 			Error()
 	}
 
-	if len(args.Args) < 2 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+	if len(ctx.GetArgs()) < 2 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid arguments. Use `help perms` to get information how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	perm := strings.ToLower(args.Args[0])
+	perm := strings.ToLower(ctx.GetArgs().Get(0).AsString())
 	sperm := perm[1:]
 	if !strings.HasPrefix(sperm, "sp.guild") && !strings.HasPrefix(sperm, "sp.etc") && !strings.HasPrefix(sperm, "sp.chat") {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You are only able to set permissions for the domains `sp.guild`, `sp.etc` and `sp.chat`").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
 	roles := make([]*discordgo.Role, 0)
-	for _, roleID := range args.Args[1:] {
-		if r, err := fetch.FetchRole(args.Session, args.Guild.ID, roleID); err == nil {
+	for _, roleID := range ctx.GetArgs()[1:] {
+		if r, err := fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, roleID); err == nil {
 			roles = append(roles, r)
 		}
 	}
@@ -112,7 +115,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 
 		cPerm = cPerm.Update(perm, false)
 
-		err := db.SetGuildRolePermission(args.Guild.ID, r.ID, cPerm)
+		err := db.SetGuildRolePermission(ctx.GetGuild().ID, r.ID, cPerm)
 		if err != nil {
 			return err
 		}
@@ -123,7 +126,7 @@ func (c *CmdPerms) Exec(args *CommandArgs) error {
 		multipleRoles = "'s"
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Set permission `%s` for role%s %s.",
 			perm, multipleRoles, strings.Join(rolesIds, ", ")),
 		"", static.ColorEmbedUpdated).

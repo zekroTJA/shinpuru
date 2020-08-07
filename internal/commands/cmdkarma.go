@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdKarma struct {
@@ -26,14 +27,14 @@ func (c *CmdKarma) GetHelp() string {
 }
 
 func (c *CmdKarma) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdKarma) GetDomainName() string {
 	return "sp.chat.karma"
 }
 
-func (c *CmdKarma) GetSubPermissionRules() []SubPermission {
+func (c *CmdKarma) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -41,19 +42,20 @@ func (c *CmdKarma) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdKarma) Exec(args *CommandArgs) error {
+func (c *CmdKarma) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
 
-	karma, err := args.CmdHandler.db.GetKarma(args.User.ID, args.Guild.ID)
+	karma, err := db.GetKarma(ctx.GetUser().ID, ctx.GetGuild().ID)
 	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
-	karmaSum, err := args.CmdHandler.db.GetKarmaSum(args.User.ID)
+	karmaSum, err := db.GetKarmaSum(ctx.GetUser().ID)
 	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
-	karmaList, err := args.CmdHandler.db.GetKarmaGuild(args.Guild.ID, 20)
+	karmaList, err := db.GetKarmaGuild(ctx.GetGuild().ID, 20)
 	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
@@ -70,7 +72,7 @@ func (c *CmdKarma) Exec(args *CommandArgs) error {
 	}
 
 	for i, v := range karmaList {
-		m, err := discordutil.GetMember(args.Session, v.GuildID, v.UserID)
+		m, err := discordutil.GetMember(ctx.GetSession(), v.GuildID, v.UserID)
 		if err != nil {
 			continue
 		}
@@ -94,5 +96,5 @@ func (c *CmdKarma) Exec(args *CommandArgs) error {
 		},
 	}
 
-	return util.SendEmbedRaw(args.Session, args.Channel.ID, emb).Error()
+	return util.SendEmbedRaw(ctx.GetSession(), ctx.GetChannel().ID, emb).Error()
 }

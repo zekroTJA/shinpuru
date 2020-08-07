@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdLeaveMsg struct {
@@ -31,14 +32,14 @@ func (c *CmdLeaveMsg) GetHelp() string {
 }
 
 func (c *CmdLeaveMsg) GetGroup() string {
-	return GroupGuildConfig
+	return shireikan.GroupGuildConfig
 }
 
 func (c *CmdLeaveMsg) GetDomainName() string {
 	return "sp.guild.config.leavemsg"
 }
 
-func (c *CmdLeaveMsg) GetSubPermissionRules() []SubPermission {
+func (c *CmdLeaveMsg) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -46,17 +47,17 @@ func (c *CmdLeaveMsg) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
-	db := args.CmdHandler.db
+func (c *CmdLeaveMsg) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
 
-	chanID, msg, err := db.GetGuildLeaveMsg(args.Guild.ID)
+	chanID, msg, err := db.GetGuildLeaveMsg(ctx.GetGuild().ID)
 	if err != nil && err != database.ErrDatabaseNotFound {
 		return err
 	}
 
 	var resTxt string
 
-	if len(args.Args) < 1 {
+	if len(ctx.GetArgs()) < 1 {
 
 		if msg == "" && chanID == "" {
 			resTxt = "*Leave message and channel not set.*"
@@ -65,8 +66,8 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 		} else if chanID == "" {
 			resTxt = "*Leave channel not set.*"
 		} else {
-			ch, err := args.Session.Channel(chanID)
-			if ch == nil || err != nil || ch.GuildID != args.Guild.ID {
+			ch, err := ctx.GetSession().Channel(chanID)
+			if ch == nil || err != nil || ch.GuildID != ctx.GetGuild().ID {
 				resTxt = "*Leave channel not set.*"
 			} else {
 				resTxt = fmt.Sprintf("```\n%s\n``` is set as leave message and will be posted "+
@@ -74,65 +75,65 @@ func (c *CmdLeaveMsg) Exec(args *CommandArgs) error {
 			}
 		}
 
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			resTxt, "", 0).
 			DeleteAfter(10 * time.Second).Error()
 	}
 
-	argsJoined := strings.Join(args.Args[1:], " ")
+	argsJoined := strings.Join(ctx.GetArgs()[1:], " ")
 
-	switch strings.ToLower(args.Args[0]) {
+	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 
 	case "msg", "message", "text":
-		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
+		if ok, err := c.checkReqArgs(ctx, 2); !ok || err != nil {
 			return err
 		}
-		if err = db.SetGuildLeaveMsg(args.Guild.ID, chanID, argsJoined); err != nil {
+		if err = db.SetGuildLeaveMsg(ctx.GetGuild().ID, chanID, argsJoined); err != nil {
 			return err
 		}
 		resTxt = "Leave message set."
 
 	case "chan", "channel", "ch":
-		if ok, err := c.checkReqArgs(args, 2); !ok || err != nil {
+		if ok, err := c.checkReqArgs(ctx, 2); !ok || err != nil {
 			return err
 		}
-		ch, err := fetch.FetchChannel(args.Session, args.Guild.ID, argsJoined, func(c *discordgo.Channel) bool {
+		ch, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, argsJoined, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
 		if err != nil {
 			return err
 		}
 		if ch == nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Text channel could not be found.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 
-		if err = db.SetGuildLeaveMsg(args.Guild.ID, ch.ID, msg); err != nil {
+		if err = db.SetGuildLeaveMsg(ctx.GetGuild().ID, ch.ID, msg); err != nil {
 			return err
 		}
 		resTxt = "Leave message channel set."
 
 	case "reset", "remove", "rem":
-		if err = db.SetGuildLeaveMsg(args.Guild.ID, "", ""); err != nil {
+		if err = db.SetGuildLeaveMsg(ctx.GetGuild().ID, "", ""); err != nil {
 			return err
 		}
 		resTxt = "Leave message reset and disabled."
 
 	default:
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		resTxt, "", static.ColorEmbedGreen).
 		DeleteAfter(10 * time.Second).Error()
 }
 
-func (c *CmdLeaveMsg) checkReqArgs(args *CommandArgs, req int) (bool, error) {
-	if len(args.Args) < req {
-		err := util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdLeaveMsg) checkReqArgs(ctx shireikan.Context, req int) (bool, error) {
+	if len(ctx.GetArgs()) < req {
+		err := util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid arguments. Use `help leavemsg` to get help about how to use this command.").
 			DeleteAfter(10 * time.Second).Error()
 		return false, err

@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdInviteBlock struct {
@@ -27,15 +28,15 @@ func (c *CmdInviteBlock) GetHelp() string {
 }
 
 func (c *CmdInviteBlock) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdInviteBlock) GetDomainName() string {
 	return "sp.guild.mod.inviteblock"
 }
 
-func (c *CmdInviteBlock) GetSubPermissionRules() []SubPermission {
-	return []SubPermission{
+func (c *CmdInviteBlock) GetSubPermissionRules() []shireikan.SubPermission {
+	return []shireikan.SubPermission{
 		{
 			Term:        "send",
 			Explicit:    true,
@@ -48,23 +49,25 @@ func (c *CmdInviteBlock) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdInviteBlock) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		return c.printStatus(args)
+func (c *CmdInviteBlock) Exec(ctx shireikan.Context) error {
+	if len(ctx.GetArgs()) < 1 {
+		return c.printStatus(ctx)
 	}
 
-	switch strings.ToLower(args.Args[0]) {
+	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 	case "enable", "e", "on":
-		return c.enable(args)
+		return c.enable(ctx)
 	case "disable", "d", "off":
-		return c.disable(args)
+		return c.disable(ctx)
 	default:
-		return c.printStatus(args)
+		return c.printStatus(ctx)
 	}
 }
 
-func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
-	status, err := args.CmdHandler.db.GetGuildInviteBlock(args.Guild.ID)
+func (c *CmdInviteBlock) printStatus(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	status, err := db.GetGuildInviteBlock(ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -76,31 +79,35 @@ func (c *CmdInviteBlock) printStatus(args *CommandArgs) error {
 		color = static.ColorEmbedGreen
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Discord invite link blocking is currently **%s** on this guild.\n\n"+
 			"*You can enable or disable this with the command `inv enable` or `inv disable`*.", strStat),
 		"", color).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdInviteBlock) enable(args *CommandArgs) error {
-	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, "1")
+func (c *CmdInviteBlock) enable(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	err := db.SetGuildInviteBlock(ctx.GetGuild().ID, "1")
 	if err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"Enabled invite link blocking.", "", 0).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdInviteBlock) disable(args *CommandArgs) error {
-	err := args.CmdHandler.db.SetGuildInviteBlock(args.Guild.ID, "")
+func (c *CmdInviteBlock) disable(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	err := db.SetGuildInviteBlock(ctx.GetGuild().ID, "")
 	if err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"Discord invite links will **no more be blocked** on this guild now.",
 		"", 0).
 		DeleteAfter(6 * time.Second).Error()

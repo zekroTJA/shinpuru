@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
+	"github.com/zekroTJA/shireikan"
 )
 
 var reserved = []string{"create", "add", "edit", "delete", "remove", "rem", "raw"}
@@ -37,15 +38,15 @@ func (c *CmdTag) GetHelp() string {
 }
 
 func (c *CmdTag) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdTag) GetDomainName() string {
 	return "sp.chat.tag"
 }
 
-func (c *CmdTag) GetSubPermissionRules() []SubPermission {
-	return []SubPermission{
+func (c *CmdTag) GetSubPermissionRules() []shireikan.SubPermission {
+	return []shireikan.SubPermission{
 		{
 			Term:        "create",
 			Explicit:    true,
@@ -68,11 +69,11 @@ func (c *CmdTag) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdTag) Exec(args *CommandArgs) error {
-	db := args.CmdHandler.db
+func (c *CmdTag) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
 
-	if len(args.Args) < 1 {
-		tags, err := db.GetGuildTags(args.Guild.ID)
+	if len(ctx.GetArgs()) < 1 {
+		tags, err := db.GetGuildTags(ctx.GetGuild().ID)
 		if err != nil {
 			return err
 		}
@@ -84,50 +85,50 @@ func (c *CmdTag) Exec(args *CommandArgs) error {
 		} else {
 			tlist := make([]string, len(tags))
 			for i, t := range tags {
-				tlist[i] = t.AsEntry(args.Session)
+				tlist[i] = t.AsEntry(ctx.GetSession())
 			}
 			resTxt = strings.Join(tlist, "\n")
 		}
 
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			resTxt, "Tags", 0).Error()
 	}
 
-	switch strings.ToLower(args.Args[0]) {
+	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 	case "create", "add":
-		if err, ok := checkPermission(args, "!"+c.GetDomainName()+".create"); !ok || err != nil {
+		if err, ok := checkPermission(ctx, "!"+c.GetDomainName()+".create"); !ok || err != nil {
 			return err
 		}
-		return c.addTag(args, db)
+		return c.addTag(ctx, db)
 	case "edit":
-		return c.editTag(args, db)
+		return c.editTag(ctx, db)
 	case "delete", "remove", "rem":
-		return c.deleteTag(args, db)
+		return c.deleteTag(ctx, db)
 	case "raw":
-		return c.getRawTag(args, db)
+		return c.getRawTag(ctx, db)
 	default:
-		return c.getTag(args, db)
+		return c.getTag(ctx, db)
 	}
 }
 
-func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
-	if len(args.Args) < 3 {
-		return printInvalidArguments(args)
+func (c *CmdTag) addTag(ctx shireikan.Context, db database.Database) error {
+	if len(ctx.GetArgs()) < 3 {
+		return printInvalidArguments(ctx)
 	}
 
-	ident := strings.ToLower(args.Args[1])
+	ident := strings.ToLower(ctx.GetArgs().Get(1).AsString())
 
 	for _, r := range reserved {
 		if r == ident {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"A tag sub command can not be used as tag identifier.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 	}
 
-	itag, err := db.GetTagByIdent(ident, args.Guild.ID)
+	itag, err := db.GetTagByIdent(ident, ctx.GetGuild().ID)
 	if itag != nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			fmt.Sprintf("The tag `%s` already exists. Use `tag edit %s` to edit this tag or use another tag name.",
 				ident, ident)).
 			DeleteAfter(8 * time.Second).Error()
@@ -137,15 +138,15 @@ func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 	}
 
 	now := time.Now()
-	argsJoined := strings.Join(args.Args[:2], " ")
-	contentOffset := strings.Index(args.Message.Content, argsJoined) + len(argsJoined) + 1
-	content := args.Message.Content[contentOffset:]
+	argsJoined := strings.Join(ctx.GetArgs()[:2], " ")
+	contentOffset := strings.Index(ctx.GetMessage().Content, argsJoined) + len(argsJoined) + 1
+	content := ctx.GetMessage().Content[contentOffset:]
 
 	itag = &tag.Tag{
 		Content:   content,
 		Created:   now,
-		CreatorID: args.User.ID,
-		GuildID:   args.Guild.ID,
+		CreatorID: ctx.GetUser().ID,
+		GuildID:   ctx.GetGuild().ID,
 		ID:        snowflakenodes.NodeTags.Generate(),
 		Ident:     ident,
 		LastEdit:  now,
@@ -155,60 +156,60 @@ func (c *CmdTag) addTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Tag `%s` was created with ID `%s`.", ident, itag.ID), "", static.ColorEmbedGreen).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdTag) editTag(args *CommandArgs, db database.Database) error {
-	if len(args.Args) < 3 {
-		return printInvalidArguments(args)
+func (c *CmdTag) editTag(ctx shireikan.Context, db database.Database) error {
+	if len(ctx.GetArgs()) < 3 {
+		return printInvalidArguments(ctx)
 	}
 
-	tag, err, ok := getTag(args.Args[1], args, db)
+	tag, err, ok := getTag(ctx.GetArgs().Get(1).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".edit")
+	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".edit")
 	if err != nil {
 		return err
 	}
 
-	if tag.CreatorID != args.User.ID && !ok && !override {
-		return printNotPermitted(args, "edit")
+	if tag.CreatorID != ctx.GetUser().ID && !ok && !override {
+		return printNotPermitted(ctx, "edit")
 	}
 
-	argsJoined := strings.Join(args.Args[:2], " ")
-	contentOffset := strings.Index(args.Message.Content, argsJoined) + len(argsJoined) + 1
-	tag.Content = args.Message.Content[contentOffset:]
+	argsJoined := strings.Join(ctx.GetArgs()[:2], " ")
+	contentOffset := strings.Index(ctx.GetMessage().Content, argsJoined) + len(argsJoined) + 1
+	tag.Content = ctx.GetMessage().Content[contentOffset:]
 	tag.LastEdit = time.Now()
 
 	if err = db.EditTag(tag); err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Tag `%s` (ID `%s`) was updated.", tag.Ident, tag.ID), "", static.ColorEmbedGreen).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
-	if len(args.Args) < 2 {
-		return printInvalidArguments(args)
+func (c *CmdTag) deleteTag(ctx shireikan.Context, db database.Database) error {
+	if len(ctx.GetArgs()) < 2 {
+		return printInvalidArguments(ctx)
 	}
 
-	itag, err, ok := getTag(args.Args[1], args, db)
+	itag, err, ok := getTag(ctx.GetArgs().Get(1).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, "!"+c.GetDomainName()+".delete")
+	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
 	}
 
-	if itag.CreatorID != args.User.ID && !ok && !override {
+	if itag.CreatorID != ctx.GetUser().ID && !ok && !override {
 		return printNotPermitted(args, "delete")
 	}
 
@@ -216,37 +217,37 @@ func (c *CmdTag) deleteTag(args *CommandArgs, db database.Database) error {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"Tag was deleted.", "", static.ColorEmbedGreen).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdTag) getRawTag(args *CommandArgs, db database.Database) error {
-	if len(args.Args) < 2 {
-		return printInvalidArguments(args)
+func (c *CmdTag) getRawTag(ctx shireikan.Context, db database.Database) error {
+	if len(ctx.GetArgs()) < 2 {
+		return printInvalidArguments(ctx)
 	}
 
-	tag, err, ok := getTag(args.Args[1], args, db)
+	tag, err, ok := getTag(ctx.GetArgs().Get(1).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	_, err = args.Session.ChannelMessageSend(args.Channel.ID, tag.RawContent())
+	_, err = ctx.GetSession().ChannelMessageSend(ctx.GetChannel().ID, tag.RawContent())
 	return err
 }
 
-func (c CmdTag) getTag(args *CommandArgs, db database.Database) error {
-	tag, err, ok := getTag(args.Args[0], args, db)
+func (c CmdTag) getTag(ctx shireikan.Context, db database.Database) error {
+	tag, err, ok := getTag(ctx.GetArgs().Get(0).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, tag.AsEmbed(args.Session))
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, tag.AsEmbed(ctx.GetSession()))
 	return err
 }
 
-func getTag(ident string, args *CommandArgs, db database.Database) (*tag.Tag, error, bool) {
-	itag, err := db.GetTagByIdent(strings.ToLower(ident), args.Guild.ID)
+func getTag(ident string, ctx shireikan.Context, db database.Database) (*tag.Tag, error, bool) {
+	itag, err := db.GetTagByIdent(strings.ToLower(ident), ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return nil, err, false
 	}
@@ -256,7 +257,7 @@ func getTag(ident string, args *CommandArgs, db database.Database) (*tag.Tag, er
 
 	id, err := snowflake.ParseString(ident)
 	if err != nil {
-		return nil, printTagNotFound(args), false
+		return nil, printTagNotFound(ctx), false
 	}
 
 	itag, err = db.GetTagByID(id)
@@ -264,39 +265,39 @@ func getTag(ident string, args *CommandArgs, db database.Database) (*tag.Tag, er
 		return nil, err, false
 	}
 
-	if itag == nil || itag.GuildID != args.Guild.ID {
-		return nil, printTagNotFound(args), false
+	if itag == nil || itag.GuildID != ctx.GetGuild().ID {
+		return nil, printTagNotFound(ctx), false
 	}
 
 	return itag, nil, true
 }
 
-func printInvalidArguments(args *CommandArgs) error {
-	return util.SendEmbedError(args.Session, args.Channel.ID,
+func printInvalidArguments(ctx shireikan.Context) error {
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 		"Invalid arguments. Use `help tag` to ge thelp about how to use this command.").
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func printTagNotFound(args *CommandArgs) error {
-	return util.SendEmbedError(args.Session, args.Channel.ID,
+func printTagNotFound(ctx shireikan.Context) error {
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 		"Could not find any tag by the given identifier.").
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func printNotPermitted(args *CommandArgs, t string) error {
-	return util.SendEmbedError(args.Session, args.Channel.ID,
+func printNotPermitted(ctx shireikan.Context, t string) error {
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("You are not permitted to %s this tag.", t)).
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func checkPermission(args *CommandArgs, dn string) (error, bool) {
-	ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, dn)
+func checkPermission(ctx shireikan.Context, dn string) (error, bool) {
+	ok, override, err := args.CmdHandler.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, dn)
 	if err != nil {
 		return err, false
 	}
 
 	if !ok && !override {
-		err := util.SendEmbedError(args.Session, args.Channel.ID,
+		err := util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You are not permitted to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 		return err, false

@@ -7,6 +7,9 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
@@ -15,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdBan struct {
@@ -33,14 +37,14 @@ func (c *CmdBan) GetHelp() string {
 }
 
 func (c *CmdBan) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdBan) GetDomainName() string {
 	return "sp.guild.mod.ban"
 }
 
-func (c *CmdBan) GetSubPermissionRules() []SubPermission {
+func (c *CmdBan) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -48,37 +52,37 @@ func (c *CmdBan) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdBan) Exec(args *CommandArgs) error {
-	if len(args.Args) < 2 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdBan) Exec(ctx shireikan.Context) error {
+	if len(ctx.GetArgs()) < 2 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid command arguments. Please use `help ban` to see how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(0).AsString())
 	if err != nil || victim == nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Sorry, could not find any member :cry:").
 			DeleteAfter(10 * time.Second).Error()
 	}
 
-	if victim.User.ID == args.User.ID {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+	if victim.User.ID == ctx.GetUser().ID {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You can not ban yourself...").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	authorMemb, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
+	authorMemb, err := ctx.GetSession().GuildMember(ctx.GetGuild().ID, ctx.GetUser().ID)
 	if err != nil {
 		return err
 	}
 
-	if roleutil.PositionDiff(victim, authorMemb, args.Guild) >= 0 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+	if roleutil.PositionDiff(victim, authorMemb, ctx.GetGuild()) >= 0 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You can only ban members with lower permissions than yours.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	repMsg := strings.Join(args.Args[1:], " ")
+	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
 	var repType int
 	for i, v := range static.ReportTypes {
 		if v == "BAN" {
@@ -88,11 +92,12 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	var attachment string
-	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			err = args.CmdHandler.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			st, _ := ctx.GetObject("storage").(storage.Storage)
+			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
 				return err
@@ -100,6 +105,9 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 			attachment = img.ID.String()
 		}
 	}
+
+	cfg, _ := ctx.GetObject("config").(*config.Config)
+	db, _ := ctx.GetObject("db").(database.Database)
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
@@ -126,33 +134,33 @@ func (c *CmdBan) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: imgstore.GetLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
+				URL: imgstore.GetLink(attachment, cfg.WebServer.PublicAddr),
 			},
 		},
-		Session:        args.Session,
-		UserID:         args.User.ID,
+		Session:        ctx.GetSession(),
+		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
 			rep, err := shared.PushBan(
-				args.Session,
-				args.CmdHandler.db,
-				args.CmdHandler.config.WebServer.PublicAddr,
-				args.Guild.ID,
-				args.User.ID,
+				ctx.GetSession(),
+				db,
+				cfg.WebServer.PublicAddr,
+				ctx.GetGuild().ID,
+				ctx.GetUser().ID,
 				victim.User.ID,
 				repMsg,
 				attachment)
 
 			if err != nil {
-				util.SendEmbedError(args.Session, args.Channel.ID,
+				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Failed banning member: ```\n"+err.Error()+"\n```")
 			} else {
-				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
+				ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
 			}
 		},
 	}
 
-	_, err = acceptMsg.Send(args.Channel.ID)
+	_, err = acceptMsg.Send(ctx.GetChannel().ID)
 
 	return err
 }

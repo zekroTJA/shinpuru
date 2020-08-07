@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 const (
@@ -40,14 +41,14 @@ func (c *CmdChannelStats) GetHelp() string {
 }
 
 func (c *CmdChannelStats) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdChannelStats) GetDomainName() string {
 	return "sp.chat.chanstats"
 }
 
-func (c *CmdChannelStats) GetSubPermissionRules() []SubPermission {
+func (c *CmdChannelStats) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -55,13 +56,14 @@ func (c *CmdChannelStats) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
+func (c *CmdChannelStats) Exec(ctx shireikan.Context) (err error) {
 	const hardLimit = 10000
 
-	channel := args.Channel
+	channel := ctx.GetChannel()
 	typ := cStatsTypeMsgs
 	limit := hardLimit
-	lenArgs := len(args.Args)
+	args := ctx.GetArgs()
+	lenArgs := len(args)
 
 	// Check for limit:<limit> argument and parse parameter
 	// from it. After that, the limit argument is removed
@@ -69,21 +71,21 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	if lenArgs > 0 {
 		const limitPrefix = "limit:"
 
-		last := args.Args[lenArgs-1]
+		last := args.Get(lenArgs - 1).AsString()
 		if strings.HasPrefix(strings.ToLower(last), limitPrefix) {
 			limit, err = strconv.Atoi(last[len(limitPrefix):])
 			if err != nil {
-				return util.SendEmbedError(args.Session, args.Channel.ID,
+				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
 					DeleteAfter(8 * time.Second).Error()
 			}
 			if limit > hardLimit || limit < 1 {
-				return util.SendEmbedError(args.Session, args.Channel.ID,
+				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					fmt.Sprintf("Invalid command arguments. Limit must be in range of [1, %d].", hardLimit)).
 					DeleteAfter(8 * time.Second).Error()
 			}
 			lenArgs--
-			args.Args = args.Args.Splice(lenArgs, 1)
+			args = args.Splice(lenArgs, 1)
 		}
 	}
 
@@ -91,16 +93,16 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	// If no type is specified, `cStatsTypeMsgs` stays unchanged
 	// and channel will be tried to be fetched by first argument.
 	if lenArgs == 1 {
-		t := c.getTyp(args.Args[0])
+		t := c.getTyp(args.Get(0).AsString())
 		if t == -1 {
-			channel, err = fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+			channel, err = fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, args.Get(0).AsString(), func(c *discordgo.Channel) bool {
 				return c.Type == discordgo.ChannelTypeGuildText
 			})
 			if err != nil {
 				return
 			}
 			if channel == nil {
-				return util.SendEmbedError(args.Session, args.Channel.ID,
+				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
 					DeleteAfter(8 * time.Second).Error()
 			}
@@ -113,22 +115,22 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	// not a type specifier, this will be interpreted as error.
 	// From the first argument, the channel will be tried to
 	// be fetched.
-	if len(args.Args) == 2 {
-		typ := c.getTyp(args.Args[0])
+	if len(ctx.GetArgs()) == 2 {
+		typ := c.getTyp(args.Get(0).AsString())
 		if typ == -1 {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 
-		channel, err = fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+		channel, err = fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, args.Get(0).AsString(), func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText
 		})
 		if err != nil {
 			return
 		}
 		if channel == nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Invalid command arguments. Please use `help chanstats` to see how to use this command.").
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -136,7 +138,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 
 	// Generate and send a status messgae which shows the current count
 	// of collected messages.
-	statusMsg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, c.getCollectedEmbed(0))
+	statusMsg, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, c.getCollectedEmbed(0))
 	if err != nil {
 		return err
 	}
@@ -150,7 +152,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	// the request needs to be paginated.
 	for {
 		// Fetch channel messages.
-		msgs, err = args.Session.ChannelMessages(channel.ID, 100, lastMsgID, "", "")
+		msgs, err = ctx.GetSession().ChannelMessages(channel.ID, 100, lastMsgID, "", "")
 		if err != nil {
 			return
 		}
@@ -162,7 +164,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 		allMsgs = append(allMsgs, msgs...)
 		lastMsgID = msgs[len(msgs)-1].ID
 		// Update status message.
-		statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, c.getCollectedEmbed(len(allMsgs)))
+		statusMsg, err = ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, statusMsg.ID, c.getCollectedEmbed(len(allMsgs)))
 		if err != nil {
 			return
 		}
@@ -233,7 +235,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	var myIndex int
 	var myValue float64
 	for i, v := range values {
-		if v.Label == args.User.Username {
+		if v.Label == ctx.GetUser().Username {
 			myIndex = i + 1
 			myValue = v.Value
 		}
@@ -251,7 +253,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	valuesStr := make([]string, len(values))
 	for i, v := range values {
 		valuesStr[i] = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", i+1, v.Label, v.Value, (v.Value/summVals)*100)
-		if v.Label == args.User.Username {
+		if v.Label == ctx.GetUser().Username {
 			valuesStr[i] = fmt.Sprintf("__%s__", valuesStr[i])
 		}
 	}
@@ -260,9 +262,9 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	// sent status embed.
 	myPositionStr := "*You did not contributed any messages in this channel in the given range.*"
 	if myValue > 0 {
-		myPositionStr = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", myIndex, args.User.Username, myValue, (myValue/summVals)*100)
+		myPositionStr = fmt.Sprintf("%d. %s - **%.0f** *(%.2f%%)*", myIndex, ctx.GetUser().Username, myValue, (myValue/summVals)*100)
 	}
-	statusMsg, err = args.Session.ChannelMessageEditEmbed(args.Channel.ID, statusMsg.ID, &discordgo.MessageEmbed{
+	statusMsg, err = ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, statusMsg.ID, &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: fmt.Sprintf("Finished. Collected %d messages.", len(allMsgs)),
 		Fields: []*discordgo.MessageEmbedField{
@@ -327,7 +329,7 @@ func (c *CmdChannelStats) Exec(args *CommandArgs) (err error) {
 	}
 
 	// Send the rendered chart from buffer into the channel.
-	_, err = args.Session.ChannelFileSend(args.Channel.ID,
+	_, err = ctx.GetSession().ChannelFileSend(ctx.GetChannel().ID,
 		"channel_stats_chart.png", buff)
 
 	return

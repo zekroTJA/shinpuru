@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdClear struct {
@@ -29,14 +29,14 @@ func (c *CmdClear) GetHelp() string {
 }
 
 func (c *CmdClear) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdClear) GetDomainName() string {
 	return "sp.guild.mod.clear"
 }
 
-func (c *CmdClear) GetSubPermissionRules() []SubPermission {
+func (c *CmdClear) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -44,34 +44,34 @@ func (c *CmdClear) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdClear) Exec(args *CommandArgs) error {
+func (c *CmdClear) Exec(ctx shireikan.Context) error {
 	var msgsStructs []*discordgo.Message
 	var err error
 
-	if len(args.Args) == 0 {
-		msgsStructs, err = args.Session.ChannelMessages(args.Channel.ID, 1, "", "", "")
+	if len(ctx.GetArgs()) == 0 {
+		msgsStructs, err = ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, 1, "", "", "")
 	} else {
 		var memb *discordgo.Member
-		n, err := strconv.Atoi(args.Args[0])
+		n, err := ctx.GetArgs().Get(0).AsInt()
 		if err != nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Sorry, but the member can not be found on this guild. :cry:").
 				DeleteAfter(8 * time.Second).Error()
 		} else if n < 0 || n > 100 {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Number of messages is invald and must be between *(including)* 0 and 100.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 
-		if len(args.Args) >= 2 {
-			memb, err = fetch.FetchMember(args.Session, args.Guild.ID, args.Args[1])
+		if len(ctx.GetArgs()) >= 2 {
+			memb, err = fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(1).AsString())
 			if err != nil {
-				return util.SendEmbedError(args.Session, args.Channel.ID,
+				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Sorry, but the member can not be found on this guild. :cry:").
 					DeleteAfter(8 * time.Second).Error()
 			}
 		}
-		msgsStructsUnsorted, err := args.Session.ChannelMessages(args.Channel.ID, n, "", "", "")
+		msgsStructsUnsorted, err := ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, n, "", "", "")
 		if err != nil {
 			return err
 		}
@@ -96,7 +96,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		msgs[i] = m.ID
 	}
 
-	err = args.Session.ChannelMessagesBulkDelete(args.Channel.ID, msgs)
+	err = ctx.GetSession().ChannelMessagesBulkDelete(ctx.GetChannel().ID, msgs)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (c *CmdClear) Exec(args *CommandArgs) error {
 		multipleMsgs = "s"
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", static.ColorEmbedUpdated).
 		DeleteAfter(6 * time.Second).Error()
 }
