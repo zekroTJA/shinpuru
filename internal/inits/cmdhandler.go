@@ -1,6 +1,9 @@
 package inits
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/backup"
@@ -10,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shireikan"
 )
@@ -26,6 +30,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 		InvokeToLower:         true,
 		UseDefaultHelpCommand: false,
 
+		OnError:           errorHandler,
 		GuildPrefixGetter: db.GetGuildPrefix,
 	})
 
@@ -83,4 +88,57 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.RegisterHandlers(s)
 
 	return cmdHandler
+}
+
+func errorHandler(ctx shireikan.Context, errTyp shireikan.ErrorType, err error) {
+	switch errTyp {
+
+	// Command execution failed
+	case shireikan.ErrTypCommandExec:
+		msg, _ := ctx.ReplyEmbedError(
+			fmt.Sprintf("Command execution failed unexpectedly: ```\n%s\n```", err.Error()),
+			"Command Execution Failed")
+		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 60*time.Second)
+
+	// Failed getting channel
+	case shireikan.ErrTypGetChannel:
+		msg, _ := ctx.ReplyEmbedError(
+			fmt.Sprintf("Failed getting channel: ```\n%s\n```", err.Error()),
+			"Unexpected Error")
+		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 60*time.Second)
+
+	// Failed getting channel
+	case shireikan.ErrTypGetGuild:
+		msg, _ := ctx.ReplyEmbedError(
+			fmt.Sprintf("Failed getting guild: ```\n%s\n```", err.Error()),
+			"Unexpected Error")
+		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 60*time.Second)
+
+	// Failed getting guild prefix
+	case shireikan.ErrTypGuildPrefixGetter:
+		if !database.IsErrDatabaseNotFound(err) {
+			msg, _ := ctx.ReplyEmbedError(
+				fmt.Sprintf("Failed getting guild specific prefix: ```\n%s\n```", err.Error()),
+				"Unexpected Error")
+			discordutil.DeleteMessageLater(ctx.GetSession(), msg, 60*time.Second)
+		}
+
+	// Middleware failed
+	case shireikan.ErrTypMiddleware:
+		msg, _ := ctx.ReplyEmbedError(
+			fmt.Sprintf("Command Handler Middleware failed: ```\n%s\n```", err.Error()),
+			"Unexpected Error")
+		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 60*time.Second)
+
+	// Middleware failed
+	case shireikan.ErrTypNotExecutableInDM:
+		msg, _ := ctx.ReplyEmbedError(
+			"This command is not executable in DM channels.", "")
+		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 8*time.Second)
+
+	// Ignored Errors
+	case shireikan.ErrTypCommandNotFound, shireikan.ErrTypDeleteCommandMessage:
+		return
+
+	}
 }
