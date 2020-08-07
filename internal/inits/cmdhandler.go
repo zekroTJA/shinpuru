@@ -19,7 +19,8 @@ import (
 )
 
 func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage,
-	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware) shireikan.Handler {
+	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware,
+	gpim *middleware.GhostPingIgnoreMiddleware) shireikan.Handler {
 
 	cmdHandler := shireikan.NewHandler(&shireikan.Config{
 		GeneralPrefix:         cfg.Discord.GeneralPrefix,
@@ -43,6 +44,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.SetObject("pmw", pmw)
 
 	cmdHandler.RegisterMiddleware(pmw)
+	cmdHandler.RegisterMiddleware(gpim)
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})

@@ -62,14 +62,16 @@ func main() {
 	st := inits.InitStorage(conf)
 
 	pmw := middleware.NewPermissionMiddleware(database, conf)
+	gpim := middleware.NewGhostPingIgnoreMiddleware()
 
-	inits.InitDiscordBotSession(session, conf, database, lct, pmw)
+	inits.InitDiscordBotSession(session, conf, database, lct, pmw, gpim)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
 
-	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct, pmw)
+	cmdHandler := inits.InitCommandHandler(
+		session, conf, database, st, tnw, lct, pmw, gpim)
 
 	inits.InitWebServer(session, database, st, cmdHandler, lct, conf, pmw)
 

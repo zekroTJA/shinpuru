@@ -14,7 +14,7 @@ import (
 )
 
 func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database,
-	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware) {
+	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware, gpim *middleware.GhostPingIgnoreMiddleware) {
 
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
@@ -27,7 +27,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
-	listenerGhostPing := listeners.NewListenerGhostPing(database)
+	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
 	listenerJDoodle := listeners.NewListenerJdoodle(database)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
