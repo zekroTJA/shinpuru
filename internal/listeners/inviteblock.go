@@ -9,7 +9,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/commands"
 )
 
 var (
@@ -18,14 +17,12 @@ var (
 )
 
 type ListenerInviteBlock struct {
-	db         database.Database
-	cmdHandler *commands.CmdHandler
+	db database.Database
 }
 
-func NewListenerInviteBlock(db database.Database, cmdHandler *commands.CmdHandler) *ListenerInviteBlock {
+func NewListenerInviteBlock(db database.Database) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
-		db:         db,
-		cmdHandler: cmdHandler,
+		db: db,
 	}
 }
 

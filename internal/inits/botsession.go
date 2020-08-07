@@ -3,7 +3,6 @@ package inits
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
@@ -13,7 +12,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, cmdHandler *commands.CmdHandler, lct *lctimer.LifeCycleTimer) {
+func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, lct *lctimer.LifeCycleTimer) {
+
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -24,12 +24,11 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(database, cmdHandler)
-	listenerGhostPing := listeners.NewListenerGhostPing(database, cmdHandler)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(database)
+	listenerGhostPing := listeners.NewListenerGhostPing(database)
 	listenerJDoodle := listeners.NewListenerJdoodle(database)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
-	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)

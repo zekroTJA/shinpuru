@@ -8,13 +8,13 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
+	"github.com/zekroTJA/shireikan"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
@@ -54,7 +54,7 @@ type WebServer struct {
 	auth       *Auth
 	dcoauth    *discordoauth.DiscordOAuth
 	session    *discordgo.Session
-	cmdhandler *commands.CmdHandler
+	cmdhandler shireikan.Handler
 
 	config *config.Config
 
@@ -65,7 +65,7 @@ type WebServer struct {
 // database provider, storage provider, discordgo session, command
 // handler, life cycle timer and configuration.
 func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd *commands.CmdHandler, lct *lctimer.LifeCycleTimer, config *config.Config) (ws *WebServer, err error) {
+	cmd shireikan.Handler, lct *lctimer.LifeCycleTimer, config *config.Config) (ws *WebServer, err error) {
 
 	ws = new(WebServer)
 

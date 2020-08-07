@@ -60,12 +60,13 @@ func main() {
 
 	st := inits.InitStorage(conf)
 
-	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct)
-	inits.InitDiscordBotSession(session, conf, database, cmdHandler, lct)
+	inits.InitDiscordBotSession(session, conf, database, lct)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()
 	}()
+
+	cmdHandler := inits.InitCommandHandler(session, conf, database, st, tnw, lct)
 
 	inits.InitWebServer(session, database, st, cmdHandler, lct, conf)
 

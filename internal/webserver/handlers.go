@@ -102,7 +102,7 @@ func (ws *WebServer) handlerGuildsGetGuild(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	gRes := GuildFromGuild(guild, memb, ws.cmdhandler, ws.db)
+	gRes := GuildFromGuild(guild, memb, ws.db, ws.config.Discord.OwnerID)
 	return jsonResponse(ctx, gRes, fasthttp.StatusOK)
 }
 
@@ -181,7 +181,7 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		mm.Dominance = 1
 	case guild.OwnerID == memberID:
 		mm.Dominance = 2
-	case ws.cmdhandler.IsBotOwner(memberID):
+	case ws.config.Discord.OwnerID == memb.User.ID:
 		mm.Dominance = 3
 	}
 
@@ -312,7 +312,7 @@ func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) er
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	cmds := ws.cmdhandler.GetCmdInstances()
+	cmds := ws.cmdhandler.GetCommandInstances()
 
 	allowed := make([]string, len(cmds))
 	i := 0
@@ -1103,7 +1103,7 @@ func (ws *WebServer) handlerGetInviteSettings(ctx *routing.Context) error {
 	}
 
 	res := &InviteSettingsResponse{
-		Guild:     GuildFromGuild(guild, nil, nil, nil),
+		Guild:     GuildFromGuild(guild, nil, nil, ""),
 		Message:   message,
 		InviteURL: fmt.Sprintf("https://discord.gg/%s", inviteCode),
 	}

@@ -115,7 +115,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	backup.Guild = &backupmodels.Guild{
 		AfkChannelID:                g.AfkChannelID,
 		AfkTimeout:                  g.AfkTimeout,
-		DefaultMessageNotifications: g.DefaultMessageNotifications,
+		DefaultMessageNotifications: int(g.DefaultMessageNotifications),
 		Name:                        g.Name,
 		VerificationLevel:           int(g.VerificationLevel),
 	}

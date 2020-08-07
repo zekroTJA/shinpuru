@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
@@ -20,16 +19,14 @@ const (
 
 type ListenerGhostPing struct {
 	db              database.Database
-	cmdHandler      *commands.CmdHandler
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 }
 
-func NewListenerGhostPing(db database.Database, cmdHandler *commands.CmdHandler) *ListenerGhostPing {
+func NewListenerGhostPing(db database.Database) *ListenerGhostPing {
 	return &ListenerGhostPing{
-		db:         db,
-		cmdHandler: cmdHandler,
-		msgCache:   timedmap.New(gpTick),
+		db:       db,
+		msgCache: timedmap.New(gpTick),
 	}
 }
 
@@ -56,10 +53,11 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
-	if l.cmdHandler.GetNotifiedCommandMsgs().Contains(e.ID) {
-		l.cmdHandler.GetNotifiedCommandMsgs().Remove(e.ID)
-		return
-	}
+	// TODO: Replace with ghostping bypass command handler middleware
+	// if l.cmdHandler.GetNotifiedCommandMsgs().Contains(e.ID) {
+	// 	l.cmdHandler.GetNotifiedCommandMsgs().Remove(e.ID)
+	// 	return
+	// }
 
 	v := l.msgCache.GetValue(e.ID)
 	if v == nil {

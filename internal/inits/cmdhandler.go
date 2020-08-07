@@ -13,7 +13,9 @@ import (
 	"github.com/zekroTJA/shireikan"
 )
 
-func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage, tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) *commands.CmdHandler {
+func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage,
+	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer) shireikan.Handler {
+
 	cmdHandler := shireikan.NewHandler(&shireikan.Config{
 		GeneralPrefix:         cfg.Discord.GeneralPrefix,
 		AllowBots:             false,
