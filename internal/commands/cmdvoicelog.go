@@ -48,7 +48,7 @@ func (c *CmdVoicelog) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdVoicelog) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("dbtnw").(database.Database)
+	db, _ := ctx.GetObject("db").(database.Database)
 
 	if len(ctx.GetArgs()) < 1 {
 		acceptMsg := &acceptmsg.AcceptMessage{

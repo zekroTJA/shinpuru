@@ -56,7 +56,7 @@ func (c *CmdVote) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdVote) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("dbtnw").(database.Database)
+	db, _ := ctx.GetObject("db").(database.Database)
 
 	if len(ctx.GetArgs()) > 0 {
 		switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
