@@ -1,10 +1,6 @@
 <div>
     <app-spinner *ngIf="!guild" id="spinner-load-guild" [started]="true"></app-spinner>
 
-    <div class="scoreboard-container">
-        <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
-    </div>
-
     <div *ngIf="guild" class="guild-container">
 
         <!-- HEADING -->
@@ -281,6 +277,10 @@
                     ><img src="assets/download.svg"/></a>
                 </span>
             </div>
+        </div>
+
+        <div class="scoreboard-container">
+            <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
         </div>
     </div>
 </div>
