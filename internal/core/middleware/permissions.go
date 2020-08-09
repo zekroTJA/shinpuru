@@ -21,7 +21,7 @@ func NewPermissionMiddleware(db database.Database, cfg *config.Config) *Permissi
 	return &PermissionsMiddleware{db, cfg}
 }
 
-func (m *PermissionsMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (err error, next bool) {
+func (m *PermissionsMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (next bool, err error) {
 	if m.db == nil {
 		m.db, _ = ctx.GetObject("db").(database.Database)
 	}
@@ -38,7 +38,7 @@ func (m *PermissionsMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Cont
 	ok, _, err := m.CheckPermissions(ctx.GetSession(), guildID, ctx.GetUser().ID, cmd.GetDomainName())
 
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err, false
+		return false, err
 	}
 
 	if !ok {
@@ -46,7 +46,11 @@ func (m *PermissionsMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Cont
 		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 8*time.Second)
 	}
 
-	return nil, true
+	return true, nil
+}
+
+func (m *PermissionsMiddleware) GetLayer() shireikan.MiddlewareLayer {
+	return shireikan.LayerBeforeCommand
 }
 
 // GetPermissions tries to fetch the permissions array of

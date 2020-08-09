@@ -17,7 +17,7 @@ func NewGhostPingIgnoreMiddleware() *GhostPingIgnoreMiddleware {
 	}
 }
 
-func (m *GhostPingIgnoreMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (err error, next bool) {
+func (m *GhostPingIgnoreMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (next bool, err error) {
 	next = true
 
 	mentions := ctx.GetMessage().Mentions
@@ -34,6 +34,10 @@ func (m *GhostPingIgnoreMiddleware) Handle(cmd shireikan.Command, ctx shireikan.
 	m.reg.Set(ctx.GetMessage().ID, mentionsStr, 10*time.Minute)
 
 	return
+}
+
+func (m *GhostPingIgnoreMiddleware) GetLayer() shireikan.MiddlewareLayer {
+	return shireikan.LayerBeforeCommand
 }
 
 func (m *GhostPingIgnoreMiddleware) ContainsAndRemove(msgID string) bool {
