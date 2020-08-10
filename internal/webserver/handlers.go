@@ -991,7 +991,7 @@ func (ws *WebServer) handlerPostReportRevoke(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, rep.GuildID, userID, "sp.guild.mod.report"); err != nil {
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, rep.GuildID, userID, "sp.guild.mod.report"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	} else if !ok {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
