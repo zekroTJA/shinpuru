@@ -130,7 +130,7 @@ func RevokeReport(rep *report.Report, executorID, reason,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Revoke Executor",
-				Value: fmt.Sprintf("<@%s>"),
+				Value: fmt.Sprintf("<@%s>", executorID),
 			},
 			{
 				Name:  "Revocation Reason",
