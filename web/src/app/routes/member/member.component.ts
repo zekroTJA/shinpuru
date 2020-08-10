@@ -36,6 +36,7 @@ export class MemberRouteComponent {
   @ViewChild('modalReport') private modalReport: TemplateRef<any>;
   @ViewChild('modalKick') private modalKick: TemplateRef<any>;
   @ViewChild('modalBan') private modalBan: TemplateRef<any>;
+  @ViewChild('modalRevoke') private modalRevoke: TemplateRef<any>;
 
   public repModalType = 3;
   public repModalReason = '';
@@ -181,6 +182,33 @@ export class MemberRouteComponent {
                       true
                     );
                   });
+              }
+            });
+        }
+        this.clearReportModalModels();
+      })
+      .catch(() => this.clearReportModalModels());
+  }
+
+  public revokeReport(report: Report) {
+    this.openModal(this.modalRevoke)
+      .then((res) => {
+        if (res && this.checkReason()) {
+          this.api
+            .postReportRevoke(report.id, this.repModalReason)
+            .subscribe((revRes) => {
+              if (revRes) {
+                const i = this.reports.indexOf(report);
+                if (i >= 0) {
+                  this.reports.splice(i, 1);
+                }
+                this.toasts.push(
+                  'Report revoked.',
+                  'Revoked',
+                  'success',
+                  5000,
+                  true
+                );
               }
             });
         }

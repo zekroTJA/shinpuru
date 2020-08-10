@@ -1,6 +1,6 @@
 /** @format */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { Report, Member } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import dateFormat from 'dateformat';
@@ -16,6 +16,8 @@ export class ReportComponent implements OnInit {
   @Input() public report: Report;
   @Input() public victim: Member;
   @Input() public executor: Member;
+
+  @Output() public revoke = new EventEmitter<any>();
 
   public dateFormat = dateFormat;
 
