@@ -257,38 +257,20 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 				DeleteAfter(8 * time.Second)
 		},
 		AcceptFunc: func(m *discordgo.Message) {
-			err := db.DeleteReport(rep.ID)
+			emb, err := shared.RevokeReport(
+				rep,
+				ctx.GetUser().ID,
+				reason,
+				cfg.WebServer.PublicAddr,
+				db,
+				ctx.GetSession())
+
 			if err != nil {
 				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					fmt.Sprintf("An error occured while deleting report from database: ```\n%s\n```", err.Error()))
-				return
+					fmt.Sprintf("An error occured while revoking the report: ```\n%s\n```", err.Error()))
 			}
 
-			repRevEmb := &discordgo.MessageEmbed{
-				Color:       static.ReportRevokedColor,
-				Title:       "REPORT REVOCATION",
-				Description: "Revoked reports are deleted from the database and no more visible in any commands.",
-				Fields: []*discordgo.MessageEmbedField{
-					{
-						Name:  "Revoke Executor",
-						Value: ctx.GetUser().Mention(),
-					},
-					{
-						Name:  "Revocation Reason",
-						Value: reason,
-					},
-					rep.AsEmbedField(cfg.WebServer.PublicAddr),
-				},
-			}
-
-			ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, repRevEmb)
-			if modlogChan, err := db.GetGuildModLog(ctx.GetGuild().ID); err == nil {
-				ctx.GetSession().ChannelMessageSendEmbed(modlogChan, repRevEmb)
-			}
-			dmChan, err := ctx.GetSession().UserChannelCreate(rep.VictimID)
-			if err == nil {
-				ctx.GetSession().ChannelMessageSendEmbed(dmChan.ID, repRevEmb)
-			}
+			ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 		},
 	}
 

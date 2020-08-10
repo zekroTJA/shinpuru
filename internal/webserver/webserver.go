@@ -226,8 +226,11 @@ func (ws *WebServer) registerHandlers() {
 		Get("/count", ws.handlerGetReportsCount)
 
 	reports := api.Group("/reports")
-	reports.
-		Get("/<id:[0-9]+>", ws.handlerGetReport)
+	report := reports.Group("/<id:[0-9]+>")
+	report.
+		Get("", ws.handlerGetReport)
+	report.
+		Post("/revoke", ws.handlerPostReportRevoke)
 
 	api.
 		Get("/token", ws.handlerGetToken).

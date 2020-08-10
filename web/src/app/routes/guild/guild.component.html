@@ -1,9 +1,19 @@
 <div>
-    <app-spinner *ngIf="!guild" id="spinner-load-guild" [started]="true"></app-spinner>
+    <ng-template #modalRevoke let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title">REVOKE</h4>
+        </div>
+        <div class="modal-body">            
+            <h5 class="mb-2">REASON</h5>
+            <textarea #revReason rows="5" class="rep-reason" placeholder="Report description should be as detailed as possible."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close(revReason.value)" class="bg-orange">REVOKE</button>
+            <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+        </div>
+    </ng-template>
 
-    <div class="scoreboard-container">
-        <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
-    </div>
+    <app-spinner *ngIf="!guild" id="spinner-load-guild" [started]="true"></app-spinner>
 
     <div *ngIf="guild" class="guild-container">
 
@@ -108,7 +118,11 @@
         </div>
         <div *ngIf="modlogToggle">
             <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
-            <app-report *ngFor="let rep of reports" [report]="rep"></app-report>
+            <app-report 
+                *ngFor="let rep of reports" 
+                [report]="rep"
+                (revoke)="revokeReport(rep)"
+            ></app-report>
             <div class="d-flex">
                 <app-spinner-button 
                     *ngIf="reportsTotalCount > MAX_SHOWN_MODLOG && 
@@ -281,6 +295,10 @@
                     ><img src="assets/download.svg"/></a>
                 </span>
             </div>
+        </div>
+
+        <div class="scoreboard-container">
+            <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
         </div>
     </div>
 </div>

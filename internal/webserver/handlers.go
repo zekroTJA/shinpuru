@@ -971,6 +971,56 @@ func (ws *WebServer) handlerGetReport(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/reports/:id/revoke
+
+func (ws *WebServer) handlerPostReportRevoke(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	_id := ctx.Param("id")
+
+	id, err := snowflake.ParseString(_id)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	rep, err := ws.db.GetReport(id)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, errNotFound, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if ok, _, err := ws.cmdhandler.CheckPermissions(ws.session, rep.GuildID, userID, "sp.guild.mod.report"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	var reason struct {
+		Reason string `json:"reason"`
+	}
+
+	if err := parseJSONBody(ctx, &reason); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	_, err = shared.RevokeReport(
+		rep,
+		userID,
+		reason.Reason,
+		ws.config.WebServer.Addr,
+		ws.db,
+		ws.session)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - GET /api/settings/presence
 
 func (ws *WebServer) handlerGetPresence(ctx *routing.Context) error {

@@ -59,6 +59,20 @@
         </div>
     </ng-template>
 
+    <ng-template #modalRevoke let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title">REVOKE</h4>
+        </div>
+        <div class="modal-body">            
+            <h5 class="mb-2">REASON</h5>
+            <textarea rows="5" class="rep-reason" [(ngModel)]="repModalReason" placeholder="Report description should be as detailed as possible."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close(true)" class="bg-orange">REVOKE</button>
+            <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+        </div>
+    </ng-template>
+
     <!-- ------------------------------------------------------- -->
 
     <app-spinner *ngIf="!member && !guild" id="spinner-load-member" [started]="true"></app-spinner>
@@ -157,7 +171,12 @@
         <app-spinner *ngIf="!reports" id="spinner-load-reports" [started]="true"></app-spinner>
         <div>
             <i *ngIf="reports?.length === 0">{{ member.user.username }} has a white vest! 👌</i>
-            <app-report *ngFor="let rep of reports" [report]="rep" [victim]="member"></app-report>
+            <app-report 
+                *ngFor="let rep of reports" 
+                [report]="rep" 
+                [victim]="member"
+                (revoke)="revokeReport(rep)"
+            ></app-report>
         </div>
 
     </div>
