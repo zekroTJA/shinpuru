@@ -149,7 +149,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	}
 	_, err = ctx.GetSession().ChannelMessageSendEmbed(userChan.ID, emb)
 	if err != nil {
-		if strings.Contains(err.Error(), `{"code": 50007, "message": "Cannot send messages to this user"}`) {
+		if strings.Contains(err.Error(), `"Cannot send messages to this user"`) {
 			emb.Footer = &discordgo.MessageEmbedFooter{
 				Text: "Actually, this message appears in your DM, but you have deactivated receiving DMs from" +
 					"server members, so I can not send you this message via DM and you see this here right now.",
