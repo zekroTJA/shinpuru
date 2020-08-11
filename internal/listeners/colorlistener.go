@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
-	"image/jpeg"
+	"image/png"
 	"net/url"
 	"regexp"
 	"strings"
@@ -91,14 +91,14 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	draw.Draw(img, img.Bounds(), &image.Uniform{*clr}, image.ZP, draw.Src)
 
 	buff := bytes.NewBuffer([]byte{})
-	if err = jpeg.Encode(buff, img, &jpeg.Options{Quality: 1}); err != nil {
+	if err = png.Encode(buff, img); err != nil {
 		util.Log.Error("[ColorListener] failed generating image data:", err)
 		return
 	}
 
 	b64Data := base64.StdEncoding.EncodeToString(buff.Bytes())
 
-	dataUri := fmt.Sprintf("data:image/jpeg;base64,%s", b64Data)
+	dataUri := fmt.Sprintf("data:image/png;base64,%s", b64Data)
 
 	emoji, err := s.GuildEmojiCreate(guild.ID, hexClr, dataUri, nil)
 	if err != nil {
