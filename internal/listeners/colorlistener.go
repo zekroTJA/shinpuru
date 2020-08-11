@@ -20,10 +20,8 @@ import (
 )
 
 var (
-	rxColorHex = regexp.MustCompile(`(^|\s)#?([\dA-Fa-f]{6,8})($|\s)`)
+	rxColorHex = regexp.MustCompile(`^#?[\dA-Fa-f]{6,8}$`)
 )
-
-// TODO: add docs
 
 type ColorListener struct {
 	db database.Database
@@ -46,9 +44,14 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 		return
 	}
 
-	matches := rxColorHex.FindAllString(m.Content, -1)
-	if len(matches) < 1 {
-		return
+	matches := make([]string, 0)
+
+	// Find color hex in message content using
+	// predefined regex.
+	for _, v := range strings.Split(m.Content, " ") {
+		if rxColorHex.MatchString(v) {
+			matches = append(matches, v)
+		}
 	}
 
 	active, err := l.db.GetGuildColorReaction(m.GuildID)

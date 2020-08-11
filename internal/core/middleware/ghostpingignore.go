@@ -7,6 +7,8 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
+// TODO: docs
+
 type GhostPingIgnoreMiddleware struct {
 	reg *timedmap.TimedMap
 }

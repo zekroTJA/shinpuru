@@ -12,6 +12,8 @@ import (
 	"github.com/zekroTJA/shireikan"
 )
 
+// TODO: Docs
+
 type PermissionsMiddleware struct {
 	db  database.Database
 	cfg *config.Config
