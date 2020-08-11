@@ -22,6 +22,17 @@ var (
 	flagExportFile = flag.String("o", "commandsManual.md", "output location of manual file")
 )
 
+//////////////////////////////////////////////////////////////////////
+//
+//   CMDMAN
+//   ------
+//   This tool initializes the command handler of shinpuru with all
+//   commands and automatically generates a markdown manual from the
+//   commands metadata which is then output in a file.
+//   You can specify the output location with the parameter '-o'.
+//
+//////////////////////////////////////////////////////////////////////
+
 func main() {
 	flag.Parse()
 
@@ -44,6 +55,10 @@ func main() {
 	util.Log.Info("Successfully exported command manual file to " + *flagExportFile)
 }
 
+// exportCommandManual generates a markdown text file
+// from the registered command instances of the passed
+// command handler. The file is then exported to the
+// given file location. Occuring errors are returned.
 func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 	document := "> Auto generated command manual | " + time.Now().Format(time.RFC1123) + "\n\n" +
 		"# Explicit Sub Commands\n\n" +
