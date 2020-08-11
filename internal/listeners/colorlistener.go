@@ -16,7 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 var (
@@ -54,6 +53,8 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 		}
 	}
 
+	// Get color reaction enabled guild setting
+	// and return when disabled
 	active, err := l.db.GetGuildColorReaction(m.GuildID)
 	if err != nil {
 		util.Log.Error("[ColorListener] could not get setting from database:", err)
@@ -63,57 +64,64 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 		return
 	}
 
-	guild, err := discordutil.GetGuild(s, m.GuildID)
-	if err != nil {
-		util.Log.Error("[ColorListener] could not fetch guild:", err)
-		return
-	}
-
+	// Execute reaction for each match
 	for _, hexClr := range matches {
-		l.createReaction(s, m, guild, hexClr)
+		l.createReaction(s, m, hexClr)
 	}
 }
 
-func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, guild *discordgo.Guild, hexClr string) {
+func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, hexClr string) {
+	// Remove # when color code starts with it.
 	if strings.HasPrefix(hexClr, "#") {
 		hexClr = hexClr[1:]
 	}
 
-	hexClr = strings.ToLower(hexClr)
-	hexClr = strings.Trim(hexClr, " ")
+	// Trim and lowercase color code
+	hexClr = strings.Trim(
+		strings.ToLower(hexClr), " ")
 
+	// Get color.RGBA object from color code
 	clr, err := colors.FromHex(hexClr)
 	if err != nil {
 		return
 	}
 
+	// Create image and fill it with the color
+	// of the clr color object.
 	img := image.NewRGBA(image.Rect(0, 0, 24, 24))
 	draw.Draw(img, img.Bounds(), &image.Uniform{*clr}, image.ZP, draw.Src)
 
+	// Encode image object to image data using
+	// the png encoder
 	buff := bytes.NewBuffer([]byte{})
 	if err = png.Encode(buff, img); err != nil {
 		util.Log.Error("[ColorListener] failed generating image data:", err)
 		return
 	}
 
+	// Encode the raw image data to a base64 string
 	b64Data := base64.StdEncoding.EncodeToString(buff.Bytes())
 
+	// Envelope the base64 data into data uri format
 	dataUri := fmt.Sprintf("data:image/png;base64,%s", b64Data)
 
-	emoji, err := s.GuildEmojiCreate(guild.ID, hexClr, dataUri, nil)
+	// Upload guild emote
+	emoji, err := s.GuildEmojiCreate(m.GuildID, hexClr, dataUri, nil)
 	if err != nil {
 		util.Log.Error("[ColorListener] failed uploading emoji:", err)
 		return
 	}
 
+	// Add reaction of the uploaded emote to the message
 	err = s.MessageReactionAdd(m.ChannelID, m.ID, url.QueryEscape(":"+emoji.Name+":"+emoji.ID))
 	if err != nil {
 		util.Log.Error("[ColorListener] failed creating message reaction:", err)
 		return
 	}
 
+	// Delete the uploaded emote after 5 seconds
 	time.AfterFunc(5*time.Second, func() {
-		if err = s.GuildEmojiDelete(guild.ID, emoji.ID); err != nil {
+		if err = s.GuildEmojiDelete(m.GuildID, emoji.ID); err != nil {
 			util.Log.Error("[ColorListener] failed deleting emoji:", err)
 		}
 	})
