@@ -82,7 +82,10 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 		member, _ := s.GuildMember(guildID, userID)
 
 		if userID == guild.OwnerID || (member != nil && discordutil.IsAdmin(guild, member)) {
-			defAdminRoles := m.cfg.Permissions.DefaultAdminRules
+			var defAdminRoles []string
+			if m.cfg.Permissions != nil {
+				defAdminRoles = m.cfg.Permissions.DefaultAdminRules
+			}
 			if defAdminRoles == nil {
 				defAdminRoles = static.DefaultAdminRules
 			}
@@ -92,7 +95,10 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 		}
 	}
 
-	defUserRoles := m.cfg.Permissions.DefaultUserRules
+	var defUserRoles []string
+	if m.cfg.Permissions != nil {
+		defUserRoles = m.cfg.Permissions.DefaultUserRules
+	}
 	if defUserRoles == nil {
 		defUserRoles = static.DefaultUserRules
 	}
