@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -36,6 +39,13 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
+	// const emojiID = "742680847429271654"
 
-	return nil
+	// for _, e := range ctx.GetGuild().Emojis {
+	// 	fmt.Printf("%+v\n", e)
+	// }
+
+	fmt.Println(url.QueryEscape(":myrunes:742680847429271654"))
+	return ctx.GetSession().MessageReactionAdd(ctx.GetChannel().ID, ctx.GetMessage().ID,
+		url.QueryEscape(":myrunes:742680847429271654"))
 }

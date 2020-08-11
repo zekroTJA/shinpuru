@@ -36,6 +36,7 @@ const (
 	keyGuildJoinMsg       = "GUILD:JOINMSG"
 	keyGuildLeaveMsg      = "GUILD:LEAVEMSG"
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
+	keyGuildColorReaction = "GUILD:COLORREACTION"
 
 	keyUserAPIToken = "USER:APITOKEN"
 
@@ -434,6 +435,37 @@ func (r *RedisMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg
 	}
 
 	return r.db.SetGuildLeaveMsg(guildID, channelID, msg)
+}
+
+func (r *RedisMiddleware) GetGuildColorReaction(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildColorReaction, guildID)
+
+	var val bool
+	err := r.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = r.db.GetGuildColorReaction(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = r.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildColorReaction(guildID string, enabled bool) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildColorReaction, guildID)
+
+	if err := r.client.Set(key, enabled, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.db.SetGuildColorReaction(guildID, enabled)
 }
 
 func (r *RedisMiddleware) AddReport(rep *report.Report) error {

@@ -62,6 +62,9 @@ type Database interface {
 	GetGuildLeaveMsg(guildID string) (string, string, error)
 	SetGuildLeaveMsg(guildID string, channelID string, msg string) error
 
+	GetGuildColorReaction(guildID string) (bool, error)
+	SetGuildColorReaction(guildID string, enable bool) error
+
 	AddReport(rep *report.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*report.Report, error)

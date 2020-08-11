@@ -49,7 +49,8 @@ func (m *SqliteMiddleware) setup() {
 		"`backup` text NOT NULL DEFAULT ''," +
 		"`inviteBlock` text NOT NULL DEFAULT ''," +
 		"`joinMsg` text NOT NULL DEFAULT ''," +
-		"`leaveMsg` text NOT NULL DEFAULT ''" +
+		"`leaveMsg` text NOT NULL DEFAULT ''," +
+		"`colorReaction` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
@@ -236,6 +237,19 @@ func (m *SqliteMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) 
 
 func (m *SqliteMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
+}
+
+func (m *SqliteMiddleware) GetGuildColorReaction(guildID string) (enabled bool, err error) {
+	val, err := m.getGuildSetting(guildID, "colorReaction")
+	return val != "", err
+}
+
+func (m *SqliteMiddleware) SetGuildColorReaction(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "colorReaction", val)
 }
 
 func (m *SqliteMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {

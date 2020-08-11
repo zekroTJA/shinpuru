@@ -49,6 +49,7 @@ func (m *MysqlMiddleware) setup() {
 		"`inviteBlock` text NOT NULL DEFAULT ''," +
 		"`joinMsg` text NOT NULL DEFAULT ''," +
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
+		"`colorReaction` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -246,6 +247,19 @@ func (m *MysqlMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
 
 func (m *MysqlMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 	return m.setGuildSetting(guildID, "ghostPingMsg", msg)
+}
+
+func (m *MysqlMiddleware) GetGuildColorReaction(guildID string) (enabled bool, err error) {
+	val, err := m.getGuildSetting(guildID, "colorReaction")
+	return val != "", err
+}
+
+func (m *MysqlMiddleware) SetGuildColorReaction(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "colorReaction", val)
 }
 
 func (m *MysqlMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
