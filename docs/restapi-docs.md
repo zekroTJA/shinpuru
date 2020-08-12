@@ -1441,6 +1441,31 @@ Returns information about a report by case ID.
 }
 ```
 
+### Revoke Report
+
+> ### `POST /api/reports/:caseid/revoke`
+
+Revoke a report.
+
+**Required Permissions**
+
+- `sp.guild.mod.report`
+
+**Body Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reason` | `string` | The report revokation reason. |
+
+**Example Response**
+
+```json
+{
+  "code": 200,
+  "message": "ok"
+}
+```
+
 ### Get Bot Presence
 
 > ### `GET /api/settings/presence`
@@ -1637,4 +1662,51 @@ Deletes the generated API token for the authenticated user and makes it invalid.
   "code": 200,
   "message": "ok"
 }
+```
+
+
+## Imagestore
+
+shinpuru exposes an endpoint exposing images saved in the imagestore. These image resources 
+are publicly available without authentication to embed the images in Discord message embeds.
+
+This is the endpoint to access images from the imagestore:
+
+```
+GET /imagestore/:imgid
+```
+
+`imgid` is the snowflake ID of the image.
+
+
+## Utility API
+
+shinpuru also exposes a utility API which is also accessable without authentication. These
+endpoints are general purpose utilities.
+
+### Color Image Generator
+
+Generates a PNG image with the passed `hexcode` HEX RGBA color.
+
+> ### `GET /api/util/color/:hexcode`
+
+**Query Parameters**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `size?` | `int/string` | Image size. This value can either be one or two dimensional:<br>- `?size=64` → 64x64 px<br>- `?size=128x64` → 128x64 px |
+
+**Example Response**
+
+```
+HTTP/1.1 200 OK
+Date: Wed, 12 Aug 2020 09:08:48 GMT
+Content-Type: image/png
+Content-Length: 161
+Connection: keep-alive
+X-Content-Type-Options: nosniff
+Cache-Control: public, max-age=31536000, immutable
+Etag: "cb75bd95eeb110119df52872d583e827d349607f"
+
+{ img data }
 ```
