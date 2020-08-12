@@ -11,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shireikan"
 )
 
 var embedColors = map[string]int{
@@ -38,10 +39,10 @@ func (c *CmdSay) GetInvokes() []string {
 }
 
 func (c *CmdSay) GetDescription() string {
-	return "send an embeded message with the bot"
+	return "Send an embeded message with the bot."
 }
 
-func (c *CmdSay) GetSubPermissionRules() []SubPermission {
+func (c *CmdSay) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -67,7 +68,7 @@ func (c *CmdSay) GetHelp() string {
 }
 
 func (c *CmdSay) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdSay) GetDomainName() string {
@@ -78,7 +79,7 @@ func (c *CmdSay) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdSay) Exec(args *CommandArgs) (err error) {
+func (c *CmdSay) Exec(ctx shireikan.Context) (err error) {
 	f := flag.NewFlagSet("sayflags", flag.ContinueOnError)
 	fcolor := f.String("c", "orange", "color")
 	ftitle := f.String("t", "", "title")
@@ -86,45 +87,45 @@ func (c *CmdSay) Exec(args *CommandArgs) (err error) {
 	fraw := f.Bool("raw", false, "parses following content as raw embed from json (see https://discord.com/developers/docs/resources/channel#embed-object)")
 	fedit := f.String("e", "", "Message Link or [ChannelID/]MessageID of the message to be edited")
 
-	if err = f.Parse(args.Args); err != nil {
+	if err = f.Parse(ctx.GetArgs()); err != nil {
 		return err
 	}
 
 	var editMsg *discordgo.Message
 
 	if *fedit != "" {
-		msgID, chanID := getMsgID(*fedit, args.Channel.ID)
-		editMsg, err = args.Session.ChannelMessage(chanID, msgID)
+		msgID, chanID := getMsgID(*fedit, ctx.GetChannel().ID)
+		editMsg, err = ctx.GetSession().ChannelMessage(chanID, msgID)
 		if err != nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("The message to be edited could not be found:\n```\n%s\n```", err.Error())).
 				DeleteAfter(10 * time.Second).Error()
 		}
-		if editMsg.Author.ID != args.Session.State.User.ID {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+		if editMsg.Author.ID != ctx.GetSession().State.User.ID {
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"You can only edit messages which were created by shinpuru.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 	}
 
 	authorField := &discordgo.MessageEmbedAuthor{
-		IconURL: args.User.AvatarURL(""),
-		Name:    args.User.Username,
+		IconURL: ctx.GetUser().AvatarURL(""),
+		Name:    ctx.GetUser().Username,
 	}
 
 	var emb *discordgo.MessageEmbed
 	if *fraw {
-		offset := strings.IndexRune(args.Message.Content, '{')
-		if offset < 0 || offset >= len(args.Message.Content) {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+		offset := strings.IndexRune(ctx.GetMessage().Content, '{')
+		if offset < 0 || offset >= len(ctx.GetMessage().Content) {
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Wrong JSON format. The JSON object must start with `{`."+
 					"If you need help building an embed with raw json, take a look here:\nhttps://discord.com/developers/docs/resources/channel#embed-object").
 				DeleteAfter(20 * time.Second).Error()
 		}
-		content := args.Message.Content[offset:]
+		content := ctx.GetMessage().Content[offset:]
 		err := json.Unmarshal([]byte(content), &emb)
 		if err != nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("Failed parsing message embed from input: ```\n%s\n```", err.Error())+
 					"If you need help building an embed with raw json, take a look here:\nhttps://discord.com/developers/docs/resources/channel#embed-object").
 				DeleteAfter(20 * time.Second).Error()
@@ -133,13 +134,13 @@ func (c *CmdSay) Exec(args *CommandArgs) (err error) {
 	} else {
 		content := strings.Join(f.Args(), " ")
 		if len(content) < 1 {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Please enter something you want to say :wink:").
 				DeleteAfter(8 * time.Second).Error()
 		}
 		embColor, ok := embedColors[strings.ToLower(*fcolor)]
 		if !ok {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("Sorry, but I don't know the color `%s`. Please enter `help say` to get a list of valid colors.", *fcolor)).
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -159,9 +160,9 @@ func (c *CmdSay) Exec(args *CommandArgs) (err error) {
 	}
 
 	if editMsg != nil {
-		_, err = args.Session.ChannelMessageEditEmbed(editMsg.ChannelID, editMsg.ID, emb)
+		_, err = ctx.GetSession().ChannelMessageEditEmbed(editMsg.ChannelID, editMsg.ID, emb)
 	} else {
-		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	}
 
 	return

@@ -3,9 +3,9 @@ package inits
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
@@ -13,7 +13,9 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, cmdHandler *commands.CmdHandler, lct *lctimer.LifeCycleTimer) {
+func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database,
+	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware, gpim *middleware.GhostPingIgnoreMiddleware) {
+
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -24,12 +26,12 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(database, cmdHandler)
-	listenerGhostPing := listeners.NewListenerGhostPing(database, cmdHandler)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
+	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
 	listenerJDoodle := listeners.NewListenerJdoodle(database)
+	listenerColors := listeners.NewColorListener(database, config.WebServer.PublicAddr)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
-	session.AddHandler(listeners.NewListenerCmd(config, database, cmdHandler).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
 	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)
@@ -46,6 +48,10 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(listenerJDoodle.HandlerMessageCreate)
 	session.AddHandler(listenerJDoodle.HandlerMessageUpdate)
 	session.AddHandler(listenerJDoodle.HandlerReactionAdd)
+
+	session.AddHandler(listenerColors.HandlerMessageCreate)
+	session.AddHandler(listenerColors.HandlerMessageEdit)
+	session.AddHandler(listenerColors.HandlerMessageReaction)
 
 	err = session.Open()
 	if err != nil {

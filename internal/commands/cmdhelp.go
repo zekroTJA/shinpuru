@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdHelp struct {
@@ -18,7 +19,7 @@ func (c *CmdHelp) GetInvokes() []string {
 }
 
 func (c *CmdHelp) GetDescription() string {
-	return "display list of command or get help for a specific command"
+	return "Display list of command or get help for a specific command."
 }
 
 func (c *CmdHelp) GetHelp() string {
@@ -27,14 +28,14 @@ func (c *CmdHelp) GetHelp() string {
 }
 
 func (c *CmdHelp) GetGroup() string {
-	return GroupGeneral
+	return shireikan.GroupGeneral
 }
 
 func (c *CmdHelp) GetDomainName() string {
 	return "sp.etc.help"
 }
 
-func (c *CmdHelp) GetSubPermissionRules() []SubPermission {
+func (c *CmdHelp) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -42,18 +43,20 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdHelp) Exec(args *CommandArgs) error {
+func (c *CmdHelp) Exec(ctx shireikan.Context) error {
+	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
+
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,
 		Fields: make([]*discordgo.MessageEmbedField, 0),
 	}
 
-	if len(args.Args) == 0 {
-		cmds := make(map[string][]Command)
-		for _, c := range args.CmdHandler.registeredCmdInstances {
+	if len(ctx.GetArgs()) == 0 {
+		cmds := make(map[string][]shireikan.Command)
+		for _, c := range cmdhandler.GetCommandInstances() {
 			group := c.GetGroup()
 			if _, ok := cmds[group]; !ok {
-				cmds[group] = make([]Command, 0)
+				cmds[group] = make([]shireikan.Command, 0)
 			}
 			cmds[group] = append(cmds[group], c)
 		}
@@ -74,10 +77,10 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 			})
 		}
 	} else {
-		cmd, ok := args.CmdHandler.GetCommand(args.Args[0])
+		cmd, ok := cmdhandler.GetCommand(ctx.GetArgs().Get(0).AsString())
 		if !ok {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
-				fmt.Sprintf("Sorry, there is no command with the invoke `%s`", args.Args[0])).
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+				fmt.Sprintf("Sorry, there is no command with the invoke `%s`", ctx.GetArgs().Get(0).AsString())).
 				DeleteAfter(5 * time.Second).Error()
 		}
 
@@ -140,18 +143,18 @@ func (c *CmdHelp) Exec(args *CommandArgs) error {
 		}
 	}
 
-	userChan, err := args.Session.UserChannelCreate(args.User.ID)
+	userChan, err := ctx.GetSession().UserChannelCreate(ctx.GetUser().ID)
 	if err != nil {
 		return err
 	}
-	_, err = args.Session.ChannelMessageSendEmbed(userChan.ID, emb)
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(userChan.ID, emb)
 	if err != nil {
-		if strings.Contains(err.Error(), `{"code": 50007, "message": "Cannot send messages to this user"}`) {
+		if strings.Contains(err.Error(), `"Cannot send messages to this user"`) {
 			emb.Footer = &discordgo.MessageEmbedFooter{
 				Text: "Actually, this message appears in your DM, but you have deactivated receiving DMs from" +
 					"server members, so I can not send you this message via DM and you see this here right now.",
 			}
-			_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 			return err
 		}
 	}

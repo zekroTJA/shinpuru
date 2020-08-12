@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	"github.com/bwmarrin/discordgo"
@@ -20,16 +20,16 @@ const (
 
 type ListenerGhostPing struct {
 	db              database.Database
-	cmdHandler      *commands.CmdHandler
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
+	gpim            *middleware.GhostPingIgnoreMiddleware
 }
 
-func NewListenerGhostPing(db database.Database, cmdHandler *commands.CmdHandler) *ListenerGhostPing {
+func NewListenerGhostPing(db database.Database, gpim *middleware.GhostPingIgnoreMiddleware) *ListenerGhostPing {
 	return &ListenerGhostPing{
-		db:         db,
-		cmdHandler: cmdHandler,
-		msgCache:   timedmap.New(gpTick),
+		db:       db,
+		gpim:     gpim,
+		msgCache: timedmap.New(gpTick),
 	}
 }
 
@@ -56,8 +56,7 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
 
-	if l.cmdHandler.GetNotifiedCommandMsgs().Contains(e.ID) {
-		l.cmdHandler.GetNotifiedCommandMsgs().Remove(e.ID)
+	if l.gpim.ContainsAndRemove(e.ID) {
 		return
 	}
 

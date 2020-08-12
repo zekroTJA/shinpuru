@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/bytecount"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdStats struct {
@@ -20,7 +21,7 @@ func (c *CmdStats) GetInvokes() []string {
 }
 
 func (c *CmdStats) GetDescription() string {
-	return "display some stats like uptime or guilds/user count"
+	return "Display some stats like uptime or guilds/user count."
 }
 
 func (c *CmdStats) GetHelp() string {
@@ -28,14 +29,14 @@ func (c *CmdStats) GetHelp() string {
 }
 
 func (c *CmdStats) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdStats) GetDomainName() string {
 	return "sp.etc.stats"
 }
 
-func (c *CmdStats) GetSubPermissionRules() []SubPermission {
+func (c *CmdStats) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -43,7 +44,7 @@ func (c *CmdStats) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdStats) Exec(args *CommandArgs) error {
+func (c *CmdStats) Exec(ctx shireikan.Context) error {
 	uptime := int(time.Since(util.StatsStartupTime).Seconds())
 	uptimeDays := int(uptime / (3600 * 24))
 	uptimeHours := int(uptime % (3600 * 24) / 3600)
@@ -51,7 +52,7 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 	uptimeSeconds := uptime % (3600 * 24) % 3600 % 60
 
 	var guildUsers int
-	for _, g := range args.Session.State.Guilds {
+	for _, g := range ctx.GetSession().State.Guilds {
 		guildUsers += g.MemberCount
 	}
 
@@ -79,7 +80,7 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 			{
 				Name: "Guilds & Members",
 				Value: fmt.Sprintf("Serving **%d** guilds with **%d** members in total.",
-					len(args.Session.State.Guilds), guildUsers),
+					len(ctx.GetSession().State.Guilds), guildUsers),
 			},
 			{
 				Name: "Runtime Stats",
@@ -88,6 +89,6 @@ func (c *CmdStats) Exec(args *CommandArgs) error {
 			},
 		},
 	}
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

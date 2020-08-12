@@ -7,11 +7,14 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdProfile struct {
@@ -23,7 +26,7 @@ func (c *CmdProfile) GetInvokes() []string {
 }
 
 func (c *CmdProfile) GetDescription() string {
-	return "Get information about a user"
+	return "Get information about a user."
 }
 
 func (c *CmdProfile) GetHelp() string {
@@ -31,14 +34,14 @@ func (c *CmdProfile) GetHelp() string {
 }
 
 func (c *CmdProfile) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdProfile) GetDomainName() string {
 	return "sp.chat.profile"
 }
 
-func (c *CmdProfile) GetSubPermissionRules() []SubPermission {
+func (c *CmdProfile) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -48,15 +51,15 @@ func (c *CmdProfile) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdProfile) Exec(args *CommandArgs) error {
-	member, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
+func (c *CmdProfile) Exec(ctx shireikan.Context) error {
+	member, err := ctx.GetSession().GuildMember(ctx.GetGuild().ID, ctx.GetUser().ID)
 	if err != nil {
 		return err
 	}
-	if len(args.Args) > 0 {
-		member, err = fetch.FetchMember(args.Session, args.Guild.ID, strings.Join(args.Args, " "))
+	if len(ctx.GetArgs()) > 0 {
+		member, err = fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, strings.Join(ctx.GetArgs(), " "))
 		if err != nil || member == nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Could not fetch any member by the passed resolvable.").
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -67,9 +70,9 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		membRoleIDs[rID] = struct{}{}
 	}
 
-	maxPos := len(args.Guild.Roles)
+	maxPos := len(ctx.GetGuild().Roles)
 	roleColor := static.ColorEmbedGray
-	for _, guildRole := range args.Guild.Roles {
+	for _, guildRole := range ctx.GetGuild().Roles {
 		if _, ok := membRoleIDs[guildRole.ID]; ok && guildRole.Position < maxPos && guildRole.Color != 0 {
 			maxPos = guildRole.Position
 			roleColor = guildRole.Color
@@ -85,12 +88,15 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		return err
 	}
 
-	perms, _, err := args.CmdHandler.GetPermissions(args.Session, args.Guild.ID, member.User.ID)
+	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	perms, _, err := pmw.GetPermissions(ctx.GetSession(), ctx.GetGuild().ID, member.User.ID)
 	if err != nil {
 		return err
 	}
 
-	guildReps, err := args.CmdHandler.db.GetReportsFiltered(args.Guild.ID, member.User.ID, -1)
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	guildReps, err := db.GetReportsFiltered(ctx.GetGuild().ID, member.User.ID, -1)
 	if err != nil {
 		return err
 	}
@@ -105,21 +111,23 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		roles[i] = "<@&" + rID + ">"
 	}
 
-	karma, err := args.CmdHandler.db.GetKarma(member.User.ID, args.Guild.ID)
+	karma, err := db.GetKarma(member.User.ID, ctx.GetGuild().ID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return err
 	}
 
-	karmaTotal, err := args.CmdHandler.db.GetKarmaSum(member.User.ID)
+	karmaTotal, err := db.GetKarmaSum(member.User.ID)
 	if !database.IsErrDatabaseNotFound(err) && err != nil {
 		return err
 	}
+
+	cfg, _ := ctx.GetObject("config").(*config.Config)
 
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,
 		Title: fmt.Sprintf("Info about member %s#%s", member.User.Username, member.User.Discriminator),
 		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users profile in the web interface.",
-			args.CmdHandler.config.WebServer.PublicAddr, args.Guild.ID, member.User.ID),
+			cfg.WebServer.PublicAddr, ctx.GetGuild().ID, member.User.ID),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: member.User.AvatarURL(""),
 		},
@@ -172,6 +180,6 @@ func (c *CmdProfile) Exec(args *CommandArgs) error {
 		embed.Description = ":robot:  **This is a bot account**"
 	}
 
-	_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, embed)
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, embed)
 	return err
 }

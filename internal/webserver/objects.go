@@ -9,7 +9,6 @@ import (
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -248,7 +247,7 @@ func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
 
 // GuildFromGuild returns a Guild model from the passed
 // discordgo.Guild g, discordgo.Member m and cmdHandler.
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *commands.CmdHandler, db database.Database) *Guild {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Database, botOwnerID string) *Guild {
 	if g == nil {
 		return nil
 	}
@@ -261,7 +260,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, cmdHandler *command
 			selfmm.Dominance = 1
 		case g.OwnerID == m.User.ID:
 			selfmm.Dominance = 2
-		case cmdHandler.IsBotOwner(m.User.ID):
+		case botOwnerID == m.User.ID:
 			selfmm.Dominance = 3
 		}
 	}

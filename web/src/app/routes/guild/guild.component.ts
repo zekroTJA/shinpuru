@@ -1,6 +1,6 @@
 /** @format */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, TemplateRef } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute } from '@angular/router';
@@ -18,6 +18,7 @@ import {
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
 import dateFormat from 'dateformat';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface Perms {
   id: string;
@@ -31,6 +32,8 @@ interface Perms {
   styleUrls: ['./guild.component.sass'],
 })
 export class GuildComponent {
+  @ViewChild('modalRevoke') private modalRevoke: TemplateRef<any>;
+
   public readonly MAX_SHOWN_USERS = 200;
   public readonly MAX_SHOWN_MODLOG = 20;
   public readonly MAX_LOAD_USERS = 1000;
@@ -68,6 +71,7 @@ export class GuildComponent {
   public dateFormat = dateFormat;
 
   constructor(
+    public modal: NgbModal,
     private api: APIService,
     private route: ActivatedRoute,
     private toasts: ToastService
@@ -350,5 +354,30 @@ export class GuildComponent {
     }
 
     return v.name.toLowerCase().includes(inpt.toLowerCase());
+  }
+
+  public revokeReport(report: Report) {
+    this.modal
+      .open(this.modalRevoke, { windowClass: 'dark-modal' })
+      .result.then((res) => {
+        if (res) {
+          this.api.postReportRevoke(report.id, res).subscribe((revRes) => {
+            if (revRes) {
+              const i = this.reports.indexOf(report);
+              if (i >= 0) {
+                this.reports.splice(i, 1);
+              }
+              this.toasts.push(
+                'Report revoked.',
+                'Revoked',
+                'success',
+                5000,
+                true
+              );
+            }
+          });
+        }
+      })
+      .catch(() => {});
   }
 }

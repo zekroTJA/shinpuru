@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/timeutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 const (
@@ -29,7 +30,7 @@ func (c *CmdSnowflake) GetInvokes() []string {
 }
 
 func (c *CmdSnowflake) GetDescription() string {
-	return "Calculate information about a Discord or Shinpuru snowflake"
+	return "Calculate information about a Discord or Shinpuru snowflake."
 }
 
 func (c *CmdSnowflake) GetHelp() string {
@@ -39,14 +40,14 @@ func (c *CmdSnowflake) GetHelp() string {
 }
 
 func (c *CmdSnowflake) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdSnowflake) GetDomainName() string {
 	return "sp.etc.snowflake"
 }
 
-func (c *CmdSnowflake) GetSubPermissionRules() []SubPermission {
+func (c *CmdSnowflake) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -54,15 +55,15 @@ func (c *CmdSnowflake) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdSnowflake) Exec(args *CommandArgs) error {
+func (c *CmdSnowflake) Exec(ctx shireikan.Context) error {
 	if c.rx == nil {
 		c.rx = regexp.MustCompile(`(\d+)\s*([a-zA-Z]+)?`)
 	}
 
-	matches := c.rx.FindStringSubmatch(strings.Join(args.Args, " "))
+	matches := c.rx.FindStringSubmatch(strings.Join(ctx.GetArgs(), " "))
 
 	if len(matches) < 2 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a Snowflake which should be calculated.").
 			DeleteAfter(8 * time.Second).Error()
 	}
@@ -100,17 +101,17 @@ func (c *CmdSnowflake) Exec(args *CommandArgs) error {
 
 	switch sfTyp {
 	case snowflakeTypeDiscord:
-		return c.printSfDc(args, sfAsDc)
+		return c.printSfDc(ctx, sfAsDc)
 	case snowflakeTypeShinpuru:
-		return c.printSfSp(args, sfAsSp)
+		return c.printSfSp(ctx, sfAsSp)
 	}
 
-	return util.SendEmbedError(args.Session, args.Channel.ID,
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 		"Unknown snowflake type was provided.").
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdSnowflake) printSfDc(args *CommandArgs, sf *snowflakenodes.DiscordSnowflake) error {
+func (c *CmdSnowflake) printSfDc(ctx shireikan.Context, sf *snowflakenodes.DiscordSnowflake) error {
 	emb := &discordgo.MessageEmbed{
 		Title: "Snowflake Info",
 		Color: 0x7289DA,
@@ -145,11 +146,11 @@ func (c *CmdSnowflake) printSfDc(args *CommandArgs, sf *snowflakenodes.DiscordSn
 		},
 	}
 
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }
 
-func (c *CmdSnowflake) printSfSp(args *CommandArgs, sf snowflake.ID) error {
+func (c *CmdSnowflake) printSfSp(ctx shireikan.Context, sf snowflake.ID) error {
 	emb := &discordgo.MessageEmbed{
 		Title: "Snowflake Info",
 		Color: static.ColorEmbedDefault,
@@ -185,6 +186,6 @@ func (c *CmdSnowflake) printSfSp(args *CommandArgs, sf snowflake.ID) error {
 		},
 	}
 
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

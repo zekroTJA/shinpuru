@@ -8,13 +8,14 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
+	"github.com/zekroTJA/shireikan"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
@@ -54,7 +55,8 @@ type WebServer struct {
 	auth       *Auth
 	dcoauth    *discordoauth.DiscordOAuth
 	session    *discordgo.Session
-	cmdhandler *commands.CmdHandler
+	cmdhandler shireikan.Handler
+	pmw        *middleware.PermissionsMiddleware
 
 	config *config.Config
 
@@ -65,7 +67,7 @@ type WebServer struct {
 // database provider, storage provider, discordgo session, command
 // handler, life cycle timer and configuration.
 func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd *commands.CmdHandler, lct *lctimer.LifeCycleTimer, config *config.Config) (ws *WebServer, err error) {
+	cmd shireikan.Handler, lct *lctimer.LifeCycleTimer, config *config.Config, pmw *middleware.PermissionsMiddleware) (ws *WebServer, err error) {
 
 	ws = new(WebServer)
 
@@ -91,6 +93,7 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 	ws.st = st
 	ws.session = s
 	ws.cmdhandler = cmd
+	ws.pmw = pmw
 	ws.rlm = NewRateLimitManager()
 	ws.router = routing.New()
 	ws.server = &fasthttp.Server{
@@ -145,11 +148,15 @@ func (ws *WebServer) registerHandlers() {
 	imagestore.
 		Get("/<id>", ws.handlerGetImage)
 
-	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
-	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+	util := ws.router.Group("/api/util")
+	util.
+		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
 
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
+
+	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
+	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
 
 	ws.router.Use(ws.auth.checkAuth)
 
@@ -223,8 +230,11 @@ func (ws *WebServer) registerHandlers() {
 		Get("/count", ws.handlerGetReportsCount)
 
 	reports := api.Group("/reports")
-	reports.
-		Get("/<id:[0-9]+>", ws.handlerGetReport)
+	report := reports.Group("/<id:[0-9]+>")
+	report.
+		Get("", ws.handlerGetReport)
+	report.
+		Post("/revoke", ws.handlerPostReportRevoke)
 
 	api.
 		Get("/token", ws.handlerGetToken).

@@ -8,9 +8,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdNotify struct {
@@ -21,7 +23,7 @@ func (c *CmdNotify) GetInvokes() []string {
 }
 
 func (c *CmdNotify) GetDescription() string {
-	return "get, remove or setup the notify rule"
+	return "Get, remove or setup the notify rule."
 }
 
 func (c *CmdNotify) GetHelp() string {
@@ -30,15 +32,15 @@ func (c *CmdNotify) GetHelp() string {
 }
 
 func (c *CmdNotify) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdNotify) GetDomainName() string {
 	return "sp.chat.notify"
 }
 
-func (c *CmdNotify) GetSubPermissionRules() []SubPermission {
-	return []SubPermission{
+func (c *CmdNotify) GetSubPermissionRules() []shireikan.SubPermission {
+	return []shireikan.SubPermission{
 		{
 			Term:        "setup",
 			Explicit:    true,
@@ -51,11 +53,13 @@ func (c *CmdNotify) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdNotify) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
+func (c *CmdNotify) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	if len(ctx.GetArgs()) < 1 {
+		notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetGuild().ID)
 		if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"No notify role  was set up for this guild.").
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -63,52 +67,53 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 			return err
 		}
 		var roleExists bool
-		for _, role := range args.Guild.Roles {
+		for _, role := range ctx.GetGuild().Roles {
 			if notifyRoleID == role.ID && !roleExists {
 				roleExists = true
 			}
 		}
 		if !roleExists {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"The set notify role does not exist on this guild anymore. Please notify a "+
 					"moderator aor admin about this to fix this. ;)").
 				DeleteAfter(8 * time.Second).Error()
 		}
-		member, err := args.Session.GuildMember(args.Guild.ID, args.User.ID)
+		member, err := ctx.GetSession().GuildMember(ctx.GetGuild().ID, ctx.GetUser().ID)
 		if err != nil {
 			return err
 		}
 		msgStr := "Removed notify role."
 		if util.IndexOfStrArray(notifyRoleID, member.Roles) > -1 {
-			err = args.Session.GuildMemberRoleRemove(args.Guild.ID, args.User.ID, notifyRoleID)
+			err = ctx.GetSession().GuildMemberRoleRemove(ctx.GetGuild().ID, ctx.GetUser().ID, notifyRoleID)
 			if err != nil {
 				return err
 			}
 		} else {
-			err = args.Session.GuildMemberRoleAdd(args.Guild.ID, args.User.ID, notifyRoleID)
+			err = ctx.GetSession().GuildMemberRoleAdd(ctx.GetGuild().ID, ctx.GetUser().ID, notifyRoleID)
 			if err != nil {
 				return err
 			}
 			msgStr = "Added notify role."
 		}
-		return util.SendEmbed(args.Session, args.Channel.ID, msgStr, "", 0).
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID, msgStr, "", 0).
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if strings.ToLower(args.Args[0]) == "setup" {
-		ok, override, err := args.CmdHandler.CheckPermissions(args.Session, args.Guild.ID, args.User.ID, c.GetDomainName()+".setup")
+	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "setup" {
+		pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+		ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
 		}
 		if !ok && !override {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Sorry, but you do'nt have the permission to setup the notify role.").
 				DeleteAfter(8 * time.Second).Error()
 		}
 		var notifyRoleExists bool
-		notifyRoleID, err := args.CmdHandler.db.GetGuildNotifyRole(args.Guild.ID)
+		notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetGuild().ID)
 		if err == nil {
-			for _, role := range args.Guild.Roles {
+			for _, role := range ctx.GetGuild().Roles {
 				if notifyRoleID == role.ID && !notifyRoleExists {
 					notifyRoleExists = true
 				}
@@ -118,8 +123,8 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 			"`ment` command or toggling it manually in the discord settings.*"
 		if notifyRoleExists {
 			am := &acceptmsg.AcceptMessage{
-				Session:        args.Session,
-				UserID:         args.User.ID,
+				Session:        ctx.GetSession(),
+				UserID:         ctx.GetUser().ID,
 				DeleteMsgAfter: true,
 				Embed: &discordgo.MessageEmbed{
 					Color: static.ColorEmbedDefault,
@@ -128,61 +133,63 @@ func (c *CmdNotify) Exec(args *CommandArgs) error {
 						notifyRoleID, notifyRoleID),
 				},
 				AcceptFunc: func(m *discordgo.Message) {
-					role, err := c.setup(args)
+					role, err := c.setup(ctx)
 					if err != nil {
-						util.SendEmbedError(args.Session, args.Channel.ID,
+						util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 							"Failed setup: "+err.Error()).
 							DeleteAfter(8 * time.Second)
 						return
 					}
-					err = args.Session.GuildRoleDelete(args.Guild.ID, notifyRoleID)
+					err = ctx.GetSession().GuildRoleDelete(ctx.GetGuild().ID, notifyRoleID)
 					if err != nil {
-						util.SendEmbedError(args.Session, args.Channel.ID,
+						util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 							"Failed deleting old notify role: "+err.Error()).
 							DeleteAfter(8 * time.Second)
 						return
 					}
-					util.SendEmbed(args.Session, args.Channel.ID,
+					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 						fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID), "", 0).
 						DeleteAfter(8 * time.Second)
 				},
 				DeclineFunc: func(m *discordgo.Message) {
-					util.SendEmbed(args.Session, args.Channel.ID,
+					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 						"Canceled.", "", 0).
 						DeleteAfter(8 * time.Second)
 				},
 			}
-			_, err := am.Send(args.Channel.ID)
+			_, err := am.Send(ctx.GetChannel().ID)
 			return err
 		}
 
-		role, err := c.setup(args)
+		role, err := c.setup(ctx)
 		if err != nil {
 			return err
 		}
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			fmt.Sprintf("Set notify role to <@&%s>.", role.ID)+notifiableStr, "", 0).
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	return util.SendEmbedError(args.Session, args.Channel.ID,
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 		"Invalid command arguments. Please use `help notify` to get help about this command.").
 		DeleteAfter(8 * time.Second).Error()
 }
 
-func (c *CmdNotify) setup(args *CommandArgs) (*discordgo.Role, error) {
+func (c *CmdNotify) setup(ctx shireikan.Context) (*discordgo.Role, error) {
+	db, _ := ctx.GetObject("db").(database.Database)
+
 	name := "Notify"
-	if len(args.Args) > 1 {
-		name = strings.Join(args.Args[1:], " ")
+	if len(ctx.GetArgs()) > 1 {
+		name = strings.Join(ctx.GetArgs()[1:], " ")
 	}
-	role, err := args.Session.GuildRoleCreate(args.Guild.ID)
+	role, err := ctx.GetSession().GuildRoleCreate(ctx.GetGuild().ID)
 	if err != nil {
 		return nil, err
 	}
-	role, err = args.Session.GuildRoleEdit(args.Guild.ID, role.ID, name, 0, false, 0, false)
+	role, err = ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, role.ID, name, 0, false, 0, false)
 	if err != nil {
 		return nil, err
 	}
-	err = args.CmdHandler.db.SetGuildNotifyRole(args.Guild.ID, role.ID)
+	err = db.SetGuildNotifyRole(ctx.GetGuild().ID, role.ID)
 	return role, err
 }

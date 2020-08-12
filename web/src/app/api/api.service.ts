@@ -90,8 +90,8 @@ export class APIService {
     memberID: string
   ) => `${this.rcGuildMemberReports(guildID, memberID)}/count`;
 
-  private readonly rcReports = (reportID: string) =>
-    `${this.rcAPI('reports')}/${reportID}`;
+  private readonly rcReports = (reportID: string, rc: string = '') =>
+    `${this.rcAPI('reports')}/${reportID}${rc ? '/' + rc : ''}`;
 
   private readonly rcGuildSettings = (guildID: string) =>
     `${this.rcGuilds(guildID)}/settings`;
@@ -292,6 +292,12 @@ export class APIService {
       map((c) => c.count),
       catchError(this.errorCatcher)
     );
+  }
+
+  public postReportRevoke(reportID: string, reason: string): Observable<any> {
+    return this.http
+      .post(this.rcReports(reportID, 'revoke'), { reason }, this.defopts())
+      .pipe(catchError(this.errorCatcher));
   }
 
   public getGuildSettings(guildID: string): Observable<GuildSettings> {

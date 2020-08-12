@@ -9,8 +9,10 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shireikan"
 )
 
 const (
@@ -28,7 +30,7 @@ func (c *CmdExec) GetInvokes() []string {
 }
 
 func (c *CmdExec) GetDescription() string {
-	return "setup code execution of code embeds"
+	return "Setup code execution of code embeds."
 }
 
 func (c *CmdExec) GetHelp() string {
@@ -37,14 +39,14 @@ func (c *CmdExec) GetHelp() string {
 }
 
 func (c *CmdExec) GetGroup() string {
-	return GroupChat
+	return shireikan.GroupChat
 }
 
 func (c *CmdExec) GetDomainName() string {
 	return "sp.chat.exec"
 }
 
-func (c *CmdExec) GetSubPermissionRules() []SubPermission {
+func (c *CmdExec) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -52,41 +54,41 @@ func (c *CmdExec) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdExec) Exec(args *CommandArgs) error {
-	errHelpMsg := func(args *CommandArgs) error {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdExec) Exec(ctx shireikan.Context) error {
+	errHelpMsg := func(ctx shireikan.Context) error {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid command arguments. Please use `help exec` to see how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if len(args.Args) < 1 {
-		return errHelpMsg(args)
+	if len(ctx.GetArgs()) < 1 {
+		return errHelpMsg(ctx)
 	}
 
-	switch strings.ToLower(args.Args[0]) {
+	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 	case "setup":
-		return c.setup(args)
+		return c.setup(ctx)
 	case "reset":
-		return c.reset(args)
+		return c.reset(ctx)
 	default:
-		return errHelpMsg(args)
+		return errHelpMsg(ctx)
 	}
 }
 
-func (c *CmdExec) setup(args *CommandArgs) error {
-	dmChan, err := args.Session.UserChannelCreate(args.User.ID)
+func (c *CmdExec) setup(ctx shireikan.Context) error {
+	dmChan, err := ctx.GetSession().UserChannelCreate(ctx.GetUser().ID)
 	if err != nil {
 		return err
 	}
 
-	err = util.SendEmbed(args.Session, dmChan.ID,
+	err = util.SendEmbed(ctx.GetSession(), dmChan.ID,
 		"We need an [jsdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
 			"saved as clear text in our database to pass it to the API, so please, be careful which data you want to use, also, if we secure our \n"+
 			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0).
 		Error()
 	if err != nil {
 		if strings.Contains(err.Error(), "Cannot send messages to this user") {
-			err := util.SendEmbedError(args.Session, args.Channel.ID,
+			err := util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"In order to setup [jsdoodle's](https://www.jdoodle.com) API, we need to get your jsdoodle API client ID and secret. "+
 					"Because of security, we don't want that you send your credentials into a guilds chat, that would be done via DM.\n"+
 					"So, please enable DM's for this guild to proceed.").
@@ -98,7 +100,7 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 	var removeHandler func()
 	var state int
 	var clientID, token string
-	removeHandler = args.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
+	removeHandler = ctx.GetSession().AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		if e.ChannelID != dmChan.ID || e.Author.ID == s.State.User.ID {
 			return
 		}
@@ -110,17 +112,17 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 			case 0:
 				clientID = e.Content
 				if len(clientID) < apiIDLen {
-					util.SendEmbedError(args.Session, dmChan.ID,
+					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API clientID, please enter again or enter `cancel` to exit.")
 					return
 				}
 				state++
-				util.SendEmbed(args.Session, dmChan.ID, "Okay, now, please enter your API **secret** or enter `cancel` to exit:", "", 0)
+				util.SendEmbed(ctx.GetSession(), dmChan.ID, "Okay, now, please enter your API **secret** or enter `cancel` to exit:", "", 0)
 				return
 			case 1:
 				token = e.Content
 				if len(token) < apiKeyLen {
-					util.SendEmbedError(args.Session, dmChan.ID,
+					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API secret, please enter again or enter `cancel` to exit.")
 					return
 				}
@@ -132,21 +134,22 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 			})
 			res, err := http.Post(apiUrl, "application/json", bytes.NewReader(bodyBuffer))
 			if err != nil {
-				util.SendEmbedError(args.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
 				return
 			}
 
 			if res.StatusCode != 200 {
-				util.SendEmbedError(args.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"Sorry, but it seems like your entered credentials are not correct. Please try again entering your **clientID** or exit with `cancel`:")
 				state = 0
 				return
 			}
 
-			err = args.CmdHandler.db.SetGuildJdoodleKey(args.Guild.ID, clientID+"#"+token)
+			db, _ := ctx.GetObject("db").(database.Database)
+			err = db.SetGuildJdoodleKey(ctx.GetGuild().ID, clientID+"#"+token)
 			if err != nil {
-				util.SendEmbedError(args.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
 			}
 
@@ -161,13 +164,14 @@ func (c *CmdExec) setup(args *CommandArgs) error {
 	return nil
 }
 
-func (c *CmdExec) reset(args *CommandArgs) error {
-	err := args.CmdHandler.db.SetGuildJdoodleKey(args.Guild.ID, "")
+func (c *CmdExec) reset(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+	err := db.SetGuildJdoodleKey(ctx.GetGuild().ID, "")
 	if err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"API key was deleted from database and system was disabled.", "", static.ColorEmbedYellow).
 		DeleteAfter(8 * time.Second).Error()
 }

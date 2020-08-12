@@ -2,6 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"net/url"
+
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdTest struct {
@@ -12,7 +15,7 @@ func (c *CmdTest) GetInvokes() []string {
 }
 
 func (c *CmdTest) GetDescription() string {
-	return "just for testing purposes"
+	return "Just for testing purposes."
 }
 
 func (c *CmdTest) GetHelp() string {
@@ -20,14 +23,14 @@ func (c *CmdTest) GetHelp() string {
 }
 
 func (c *CmdTest) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdTest) GetDomainName() string {
 	return "sp.test"
 }
 
-func (c *CmdTest) GetSubPermissionRules() []SubPermission {
+func (c *CmdTest) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -35,10 +38,14 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdTest) Exec(args *CommandArgs) error {
-	res, _ := args.CmdHandler.db.GetKarmaGuild(args.Guild.ID, 10)
-	for _, v := range res {
-		fmt.Printf("%+v\n", v)
-	}
-	return nil
+func (c *CmdTest) Exec(ctx shireikan.Context) error {
+	// const emojiID = "742680847429271654"
+
+	// for _, e := range ctx.GetGuild().Emojis {
+	// 	fmt.Printf("%+v\n", e)
+	// }
+
+	fmt.Println(url.QueryEscape(":myrunes:742680847429271654"))
+	return ctx.GetSession().MessageReactionAdd(ctx.GetChannel().ID, ctx.GetMessage().ID,
+		url.QueryEscape(":myrunes:742680847429271654"))
 }

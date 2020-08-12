@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdBug struct {
@@ -13,7 +14,7 @@ func (c *CmdBug) GetInvokes() []string {
 }
 
 func (c *CmdBug) GetDescription() string {
-	return "Get information how to submit a bug report or feature request"
+	return "Get information how to submit a bug report or feature request."
 }
 
 func (c *CmdBug) GetHelp() string {
@@ -21,14 +22,14 @@ func (c *CmdBug) GetHelp() string {
 }
 
 func (c *CmdBug) GetGroup() string {
-	return GroupEtc
+	return shireikan.GroupEtc
 }
 
 func (c *CmdBug) GetDomainName() string {
 	return "sp.etc.bug"
 }
 
-func (c *CmdBug) GetSubPermissionRules() []SubPermission {
+func (c *CmdBug) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -36,7 +37,7 @@ func (c *CmdBug) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdBug) Exec(args *CommandArgs) error {
+func (c *CmdBug) Exec(ctx shireikan.Context) error {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "How to report a bug or request a feature",
@@ -59,6 +60,6 @@ func (c *CmdBug) Exec(args *CommandArgs) error {
 			},
 		},
 	}
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 const defMsgPattern = "{pinger} ghost pinged {pinged} with message:\n\n{msg}"
@@ -21,7 +22,7 @@ func (c *CmdGhostping) GetInvokes() []string {
 }
 
 func (c *CmdGhostping) GetDescription() string {
-	return "Send a message when someone ghost pinged a member"
+	return "Send a message when someone ghost pinged a member."
 }
 
 func (c *CmdGhostping) GetHelp() string {
@@ -38,14 +39,14 @@ func (c *CmdGhostping) GetHelp() string {
 }
 
 func (c *CmdGhostping) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdGhostping) GetDomainName() string {
 	return "sp.guild.mod.ghostping"
 }
 
-func (c *CmdGhostping) GetSubPermissionRules() []SubPermission {
+func (c *CmdGhostping) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -53,22 +54,22 @@ func (c *CmdGhostping) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdGhostping) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		return c.info(args)
+func (c *CmdGhostping) Exec(ctx shireikan.Context) error {
+	if len(ctx.GetArgs()) < 1 {
+		return c.info(ctx)
 	}
 
-	switch strings.ToLower(args.Args[0]) {
+	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 	case "set", "setup", "create":
-		return c.set(args)
+		return c.set(ctx)
 	case "reset", "remove", "delete":
-		return c.reset(args)
+		return c.reset(ctx)
 	default:
-		return c.info(args)
+		return c.info(ctx)
 	}
 }
 
-func (c *CmdGhostping) info(args *CommandArgs) error {
+func (c *CmdGhostping) info(ctx shireikan.Context) error {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Fields: []*discordgo.MessageEmbedField{
@@ -80,7 +81,8 @@ func (c *CmdGhostping) info(args *CommandArgs) error {
 		},
 	}
 
-	gpMsg, err := args.CmdHandler.db.GetGuildGhostpingMsg(args.Guild.ID)
+	db, _ := ctx.GetObject("db").(database.Database)
+	gpMsg, err := db.GetGuildGhostpingMsg(ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -91,34 +93,36 @@ func (c *CmdGhostping) info(args *CommandArgs) error {
 		emb.Description = "*Currently, no message was set so this function is disabled.*"
 	}
 
-	msg, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
-	discordutil.DeleteMessageLater(args.Session, msg, 15*time.Second)
+	msg, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+	discordutil.DeleteMessageLater(ctx.GetSession(), msg, 15*time.Second)
 	return err
 }
 
-func (c *CmdGhostping) set(args *CommandArgs) error {
+func (c *CmdGhostping) set(ctx shireikan.Context) error {
 	msgPattern := defMsgPattern
 
-	if len(args.Args) > 2 {
-		msgPattern = strings.Join(args.Args[1:], " ")
+	if len(ctx.GetArgs()) > 2 {
+		msgPattern = strings.Join(ctx.GetArgs()[1:], " ")
 	}
 
-	if err := args.CmdHandler.db.SetGuildGhostpingMsg(args.Guild.ID, msgPattern); err != nil {
+	db, _ := ctx.GetObject("db").(database.Database)
+	if err := db.SetGuildGhostpingMsg(ctx.GetGuild().ID, msgPattern); err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"Set message pattern as ghost ping warn:\n"+msgPattern+"\n\n"+
 			"*Use `ghost reset` to disable ghost ping warnings or use `help ghost` for further information.*", "", static.ColorEmbedUpdated).
 		DeleteAfter(15 * time.Second).Error()
 }
 
-func (c *CmdGhostping) reset(args *CommandArgs) error {
-	if err := args.CmdHandler.db.SetGuildGhostpingMsg(args.Guild.ID, ""); err != nil {
+func (c *CmdGhostping) reset(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+	if err := db.SetGuildGhostpingMsg(ctx.GetGuild().ID, ""); err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"Warn message reset and ghost ping warnings disabled.", "", static.ColorEmbedUpdated).
 		DeleteAfter(8 * time.Second).Error()
 }

@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdVoicelog struct {
@@ -20,7 +22,7 @@ func (c *CmdVoicelog) GetInvokes() []string {
 }
 
 func (c *CmdVoicelog) GetDescription() string {
-	return "set the mod log channel for a guild"
+	return "Set the mod log channel for a guild."
 }
 
 func (c *CmdVoicelog) GetHelp() string {
@@ -30,14 +32,14 @@ func (c *CmdVoicelog) GetHelp() string {
 }
 
 func (c *CmdVoicelog) GetGroup() string {
-	return GroupGuildConfig
+	return shireikan.GroupGuildConfig
 }
 
 func (c *CmdVoicelog) GetDomainName() string {
 	return "sp.guild.config.voicelog"
 }
 
-func (c *CmdVoicelog) GetSubPermissionRules() []SubPermission {
+func (c *CmdVoicelog) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -45,58 +47,60 @@ func (c *CmdVoicelog) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdVoicelog) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
+func (c *CmdVoicelog) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	if len(ctx.GetArgs()) < 1 {
 		acceptMsg := &acceptmsg.AcceptMessage{
-			Session: args.Session,
+			Session: ctx.GetSession(),
 			Embed: &discordgo.MessageEmbed{
 				Color:       static.ColorEmbedDefault,
 				Description: "Do you want to set this channel as voicelog channel?",
 			},
-			UserID:         args.User.ID,
+			UserID:         ctx.GetUser().ID,
 			DeleteMsgAfter: true,
 			AcceptFunc: func(msg *discordgo.Message) {
-				err := args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, args.Channel.ID)
+				err := db.SetGuildVoiceLog(ctx.GetGuild().ID, ctx.GetChannel().ID)
 				if err != nil {
-					util.SendEmbedError(args.Session, args.Channel.ID,
+					util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 						"Failed setting voicelog channel: ```\n"+err.Error()+"\n```")
 				} else {
-					util.SendEmbed(args.Session, args.Channel.ID,
+					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 						"Set this channel as voicelog channel.", "", static.ColorEmbedUpdated).
 						DeleteAfter(8 * time.Second)
 				}
 			},
 		}
-		_, err := acceptMsg.Send(args.Channel.ID)
+		_, err := acceptMsg.Send(ctx.GetChannel().ID)
 		return err
 	}
 
-	if strings.ToLower(args.Args[0]) == "reset" {
-		err := args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, "")
+	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "reset" {
+		err := db.SetGuildVoiceLog(ctx.GetGuild().ID, "")
 		if err != nil {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Failed reseting voice log channel: ```\n"+err.Error()+"\n```").
 				DeleteAfter(15 * time.Second).Error()
 		}
-		return util.SendEmbed(args.Session, args.Channel.ID,
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 			"Voicelog channel reset.", "", static.ColorEmbedUpdated).
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	mlChan, err := fetch.FetchChannel(args.Session, args.Guild.ID, args.Args[0], func(c *discordgo.Channel) bool {
+	mlChan, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(0).AsString(), func(c *discordgo.Channel) bool {
 		return c.Type == discordgo.ChannelTypeGuildText
 	})
 	if err != nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Could not find any channel on this guild passing this resolvable.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-	err = args.CmdHandler.db.SetGuildVoiceLog(args.Guild.ID, mlChan.ID)
+	err = db.SetGuildVoiceLog(ctx.GetGuild().ID, mlChan.ID)
 	if err != nil {
 		return err
 	}
 
-	return util.SendEmbed(args.Session, args.Channel.ID,
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		fmt.Sprintf("Set <#%s> as voicelog channel.", mlChan.ID), "", static.ColorEmbedUpdated).
 		DeleteAfter(8 * time.Second).Error()
 }

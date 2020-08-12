@@ -44,39 +44,49 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 	if vsOld != nil && vsOld.ChannelID == vsNew.ChannelID {
 		return
 	}
+
 	voiceStateCashe[e.UserID] = vsNew
+
 	voiceLogChan, err := l.db.GetGuildVoiceLog(e.GuildID)
 	if err != nil || voiceLogChan == "" {
 		return
 	}
+
 	_, err = s.Channel(voiceLogChan)
 	if err != nil {
 		l.db.SetGuildVoiceLog(e.GuildID, "")
 		return
 	}
+
 	if vsOld == nil || (vsOld != nil && vsOld.ChannelID == "") {
 		newChan, err := s.Channel(e.ChannelID)
 		if err != nil {
 			return
 		}
+
 		msgTxt := fmt.Sprintf(":arrow_right:  Joined **`%s`**", newChan.Name)
 		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedGreen)
+
 	} else if vsOld != nil && vsNew.ChannelID != "" && vsOld.ChannelID != vsNew.ChannelID {
 		newChan, err := s.Channel(e.ChannelID)
 		if err != nil {
 			return
 		}
+
 		oldChan, err := s.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
 		}
+
 		msgTxt := fmt.Sprintf(":left_right_arrow:  Moved from **`%s`** to **`%s`**", oldChan.Name, newChan.Name)
 		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedCyan)
+
 	} else if vsOld != nil && vsNew.ChannelID == "" {
 		oldChan, err := s.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
 		}
+
 		msgTxt := fmt.Sprintf(":arrow_left:  Left **`%s`**", oldChan.Name)
 		l.sendVLCMessage(s, voiceLogChan, e.UserID, msgTxt, static.ColorEmbedOrange)
 	}

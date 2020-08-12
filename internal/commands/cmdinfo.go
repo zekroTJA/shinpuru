@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shireikan"
 )
 
 type CmdInfo struct {
@@ -17,7 +18,7 @@ func (c *CmdInfo) GetInvokes() []string {
 }
 
 func (c *CmdInfo) GetDescription() string {
-	return "display some information about this bot"
+	return "Display some information about this bot."
 }
 
 func (c *CmdInfo) GetHelp() string {
@@ -25,14 +26,14 @@ func (c *CmdInfo) GetHelp() string {
 }
 
 func (c *CmdInfo) GetGroup() string {
-	return GroupGeneral
+	return shireikan.GroupGeneral
 }
 
 func (c *CmdInfo) GetDomainName() string {
 	return "sp.etc.info"
 }
 
-func (c *CmdInfo) GetSubPermissionRules() []SubPermission {
+func (c *CmdInfo) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -40,15 +41,15 @@ func (c *CmdInfo) IsExecutableInDMChannels() bool {
 	return true
 }
 
-func (c *CmdInfo) Exec(args *CommandArgs) error {
+func (c *CmdInfo) Exec(ctx shireikan.Context) error {
 	invLink := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-		args.Session.State.User.ID, static.InvitePermission)
+		ctx.GetSession().State.User.ID, static.InvitePermission)
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "Info",
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: args.Session.State.User.AvatarURL(""),
+			URL: ctx.GetSession().State.User.AvatarURL(""),
 		},
 		Description: "シンプル (shinpuru), a simple *(as the name says)*, multi purpose Discord Bot written in Go, " +
 			"using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. " +
@@ -92,6 +93,6 @@ func (c *CmdInfo) Exec(args *CommandArgs) error {
 			Text: fmt.Sprintf("© 2018-%s zekro Development (Ringo Hoffmann)", time.Now().Format("2006")),
 		},
 	}
-	_, err := args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

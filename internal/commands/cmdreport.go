@@ -7,12 +7,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shireikan"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -28,7 +31,7 @@ func (c *CmdReport) GetInvokes() []string {
 }
 
 func (c *CmdReport) GetDescription() string {
-	return "report a user"
+	return "Report a user."
 }
 
 func (c *CmdReport) GetHelp() string {
@@ -44,14 +47,14 @@ func (c *CmdReport) GetHelp() string {
 }
 
 func (c *CmdReport) GetGroup() string {
-	return GroupModeration
+	return shireikan.GroupModeration
 }
 
 func (c *CmdReport) GetDomainName() string {
 	return "sp.guild.mod.report"
 }
 
-func (c *CmdReport) GetSubPermissionRules() []SubPermission {
+func (c *CmdReport) GetSubPermissionRules() []shireikan.SubPermission {
 	return nil
 }
 
@@ -59,33 +62,36 @@ func (c *CmdReport) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdReport) Exec(args *CommandArgs) error {
-	if len(args.Args) < 1 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdReport) Exec(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+	cfg, _ := ctx.GetObject("config").(*config.Config)
+
+	if len(ctx.GetArgs()) < 1 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid command arguments. Please use `help report` to see how to use this command.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if strings.ToLower(args.Args[0]) == "revoke" {
-		return c.revoke(args)
+	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "revoke" {
+		return c.revoke(ctx)
 	}
 
-	victim, err := fetch.FetchMember(args.Session, args.Guild.ID, args.Args[0])
+	victim, err := fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(0).AsString())
 	if err != nil || victim == nil {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Sorry, could not find any member :cry:").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	if len(args.Args) == 1 {
+	if len(ctx.GetArgs()) == 1 {
 		emb := &discordgo.MessageEmbed{
 			Color: static.ColorEmbedDefault,
 			Title: fmt.Sprintf("Reports for %s#%s",
 				victim.User.Username, victim.User.Discriminator),
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
-				args.CmdHandler.config.WebServer.PublicAddr, args.Guild.ID, victim.User.ID),
+				cfg.WebServer.PublicAddr, ctx.GetGuild().ID, victim.User.ID),
 		}
-		reps, err := args.CmdHandler.db.GetReportsFiltered(args.Guild.ID, victim.User.ID, -1)
+		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1)
 		if err != nil {
 			return err
 		}
@@ -94,30 +100,30 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		} else {
 			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
 			for _, r := range reps {
-				emb.Fields = append(emb.Fields, r.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr))
+				emb.Fields = append(emb.Fields, r.AsEmbedField(cfg.WebServer.PublicAddr))
 			}
 		}
-		_, err = args.Session.ChannelMessageSendEmbed(args.Channel.ID, emb)
+		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 		return err
 	}
 
 	msgOffset := 1
-	repType, err := strconv.Atoi(args.Args[1])
+	repType, err := strconv.Atoi(ctx.GetArgs().Get(1).AsString())
 	maxType := len(static.ReportTypes) - 1
 	minType := static.ReportTypesReserved
 	if repType == 0 {
 		repType = minType
 	}
 
-	if victim.User.ID == args.User.ID {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+	if victim.User.ID == ctx.GetUser().ID {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You can not report yourself...").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
 	if err == nil {
 		if repType < minType || repType > maxType {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", minType, maxType)+
 					"Use `help report` to get all types of report which can be used.").
 				DeleteAfter(8 * time.Second).Error()
@@ -125,19 +131,20 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 		msgOffset++
 	}
 
-	if len(args.Args[msgOffset:]) < 1 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+	if len(ctx.GetArgs()[msgOffset:]) < 1 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a valid report description.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-	repMsg := strings.Join(args.Args[msgOffset:], " ")
+	repMsg := strings.Join(ctx.GetArgs()[msgOffset:], " ")
 
 	var attachment string
-	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, args.Message.Attachments)
+	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			err = args.CmdHandler.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			st, _ := ctx.GetObject("storage").(storage.Storage)
+			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
 				return err
@@ -167,56 +174,59 @@ func (c *CmdReport) Exec(args *CommandArgs) error {
 				},
 			},
 			Image: &discordgo.MessageEmbedImage{
-				URL: imgstore.GetLink(attachment, args.CmdHandler.config.WebServer.PublicAddr),
+				URL: imgstore.GetLink(attachment, cfg.WebServer.PublicAddr),
 			},
 		},
-		Session:        args.Session,
-		UserID:         args.User.ID,
+		Session:        ctx.GetSession(),
+		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
 			rep, err := shared.PushReport(
-				args.Session,
-				args.CmdHandler.db,
-				args.CmdHandler.config.WebServer.PublicAddr,
-				args.Guild.ID,
-				args.User.ID,
+				ctx.GetSession(),
+				db,
+				cfg.WebServer.PublicAddr,
+				ctx.GetGuild().ID,
+				ctx.GetUser().ID,
 				victim.User.ID,
 				repMsg,
 				attachment,
 				repType)
 
 			if err != nil {
-				util.SendEmbedError(args.Session, args.Channel.ID,
+				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Failed creating report: ```\n"+err.Error()+"\n```")
 			} else {
-				args.Session.ChannelMessageSendEmbed(args.Channel.ID, rep.AsEmbed(args.CmdHandler.config.WebServer.PublicAddr))
+				ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
 			}
 		},
 	}
 
-	_, err = acceptMsg.Send(args.Channel.ID)
+	_, err = acceptMsg.Send(ctx.GetChannel().ID)
 
 	return err
 }
 
-func (c *CmdReport) revoke(args *CommandArgs) error {
-	if len(args.Args) < 3 {
-		return util.SendEmbedError(args.Session, args.Channel.ID,
+func (c *CmdReport) revoke(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+	cfg, _ := ctx.GetObject("config").(*config.Config)
+
+	if len(ctx.GetArgs()) < 3 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid command arguments. Please use `help report` for more information.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	id, err := strconv.Atoi(args.Args[1])
+	id, err := strconv.Atoi(ctx.GetArgs().Get(1).AsString())
 	if err != nil {
 		return err
 	}
 
-	reason := strings.Join(args.Args[2:], " ")
+	reason := strings.Join(ctx.GetArgs()[2:], " ")
 
-	rep, err := args.CmdHandler.db.GetReport(snowflake.ID(id))
+	rep, err := db.GetReport(snowflake.ID(id))
 	if err != nil {
 		if database.IsErrDatabaseNotFound(err) {
-			return util.SendEmbedError(args.Session, args.Channel.ID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("Could not find any report with ID `%d`", id)).
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -235,53 +245,35 @@ func (c *CmdReport) revoke(args *CommandArgs) error {
 					Name:  "Revocation Reason",
 					Value: reason,
 				},
-				rep.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr),
+				rep.AsEmbedField(cfg.WebServer.PublicAddr),
 			},
 		},
-		Session:        args.Session,
+		Session:        ctx.GetSession(),
 		DeleteMsgAfter: true,
-		UserID:         args.User.ID,
+		UserID:         ctx.GetUser().ID,
 		DeclineFunc: func(m *discordgo.Message) {
-			util.SendEmbedError(args.Session, args.Channel.ID,
+			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Canceled.").
 				DeleteAfter(8 * time.Second)
 		},
 		AcceptFunc: func(m *discordgo.Message) {
-			err := args.CmdHandler.db.DeleteReport(rep.ID)
+			emb, err := shared.RevokeReport(
+				rep,
+				ctx.GetUser().ID,
+				reason,
+				cfg.WebServer.PublicAddr,
+				db,
+				ctx.GetSession())
+
 			if err != nil {
-				util.SendEmbedError(args.Session, args.Channel.ID,
-					fmt.Sprintf("An error occured while deleting report from database: ```\n%s\n```", err.Error()))
-				return
+				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+					fmt.Sprintf("An error occured while revoking the report: ```\n%s\n```", err.Error()))
 			}
 
-			repRevEmb := &discordgo.MessageEmbed{
-				Color:       static.ReportRevokedColor,
-				Title:       "REPORT REVOCATION",
-				Description: "Revoked reports are deleted from the database and no more visible in any commands.",
-				Fields: []*discordgo.MessageEmbedField{
-					{
-						Name:  "Revoke Executor",
-						Value: args.User.Mention(),
-					},
-					{
-						Name:  "Revocation Reason",
-						Value: reason,
-					},
-					rep.AsEmbedField(args.CmdHandler.config.WebServer.PublicAddr),
-				},
-			}
-
-			args.Session.ChannelMessageSendEmbed(args.Channel.ID, repRevEmb)
-			if modlogChan, err := args.CmdHandler.db.GetGuildModLog(args.Guild.ID); err == nil {
-				args.Session.ChannelMessageSendEmbed(modlogChan, repRevEmb)
-			}
-			dmChan, err := args.Session.UserChannelCreate(rep.VictimID)
-			if err == nil {
-				args.Session.ChannelMessageSendEmbed(dmChan.ID, repRevEmb)
-			}
+			ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 		},
 	}
 
-	_, err = aceptMsg.Send(args.Channel.ID)
+	_, err = aceptMsg.Send(ctx.GetChannel().ID)
 	return err
 }
