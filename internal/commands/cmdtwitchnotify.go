@@ -23,7 +23,7 @@ func (c *CmdTwitchNotify) GetInvokes() []string {
 }
 
 func (c *CmdTwitchNotify) GetDescription() string {
-	return "Get notifications in channels when someone goes live on twitch"
+	return "Get notifications in channels when someone goes live on Twitch."
 }
 
 func (c *CmdTwitchNotify) GetHelp() string {

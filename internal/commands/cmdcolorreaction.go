@@ -18,7 +18,7 @@ func (c *CmdColorReaction) GetInvokes() []string {
 }
 
 func (c *CmdColorReaction) GetDescription() string {
-	return "toggle color reactions enable or disable"
+	return "Toggle color reactions enable or disable."
 }
 
 func (c *CmdColorReaction) GetHelp() string {

@@ -20,7 +20,7 @@ func (c *CmdGame) GetInvokes() []string {
 }
 
 func (c *CmdGame) GetDescription() string {
-	return "set the presence of the bot"
+	return "Set the presence of the bot."
 }
 
 func (c *CmdGame) GetHelp() string {

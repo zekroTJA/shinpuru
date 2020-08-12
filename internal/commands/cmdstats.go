@@ -21,7 +21,7 @@ func (c *CmdStats) GetInvokes() []string {
 }
 
 func (c *CmdStats) GetDescription() string {
-	return "display some stats like uptime or guilds/user count"
+	return "Display some stats like uptime or guilds/user count."
 }
 
 func (c *CmdStats) GetHelp() string {

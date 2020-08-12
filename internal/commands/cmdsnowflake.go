@@ -30,7 +30,7 @@ func (c *CmdSnowflake) GetInvokes() []string {
 }
 
 func (c *CmdSnowflake) GetDescription() string {
-	return "Calculate information about a Discord or Shinpuru snowflake"
+	return "Calculate information about a Discord or Shinpuru snowflake."
 }
 
 func (c *CmdSnowflake) GetHelp() string {

@@ -14,7 +14,7 @@ func (c *CmdBug) GetInvokes() []string {
 }
 
 func (c *CmdBug) GetDescription() string {
-	return "Get information how to submit a bug report or feature request"
+	return "Get information how to submit a bug report or feature request."
 }
 
 func (c *CmdBug) GetHelp() string {

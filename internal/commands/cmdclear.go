@@ -19,7 +19,7 @@ func (c *CmdClear) GetInvokes() []string {
 }
 
 func (c *CmdClear) GetDescription() string {
-	return "clear messages in a channel"
+	return "Clear messages in a channel."
 }
 
 func (c *CmdClear) GetHelp() string {

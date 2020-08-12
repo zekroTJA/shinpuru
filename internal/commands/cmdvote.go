@@ -23,7 +23,7 @@ func (c *CmdVote) GetInvokes() []string {
 }
 
 func (c *CmdVote) GetDescription() string {
-	return "create and manage polls"
+	return "Create and manage polls."
 }
 
 func (c *CmdVote) GetHelp() string {

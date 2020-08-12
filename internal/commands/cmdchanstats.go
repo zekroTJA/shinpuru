@@ -31,7 +31,7 @@ func (c *CmdChannelStats) GetInvokes() []string {
 }
 
 func (c *CmdChannelStats) GetDescription() string {
-	return "get channel contribution statistics"
+	return "Get channel contribution statistics."
 }
 
 func (c *CmdChannelStats) GetHelp() string {

@@ -30,7 +30,7 @@ func (c *CmdExec) GetInvokes() []string {
 }
 
 func (c *CmdExec) GetDescription() string {
-	return "setup code execution of code embeds"
+	return "Setup code execution of code embeds."
 }
 
 func (c *CmdExec) GetHelp() string {

@@ -21,7 +21,7 @@ func (c *CmdQuote) GetInvokes() []string {
 }
 
 func (c *CmdQuote) GetDescription() string {
-	return "quote a message from any chat"
+	return "Quote a message from any chat."
 }
 
 func (c *CmdQuote) GetHelp() string {

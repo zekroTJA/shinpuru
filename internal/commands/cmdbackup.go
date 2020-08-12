@@ -29,7 +29,7 @@ func (c *CmdBackup) GetInvokes() []string {
 }
 
 func (c *CmdBackup) GetDescription() string {
-	return "enable, disable and manage guild backups"
+	return "Enable, disable and manage guild backups."
 }
 
 func (c *CmdBackup) GetHelp() string {

@@ -22,7 +22,7 @@ func (c *CmdGhostping) GetInvokes() []string {
 }
 
 func (c *CmdGhostping) GetDescription() string {
-	return "Send a message when someone ghost pinged a member"
+	return "Send a message when someone ghost pinged a member."
 }
 
 func (c *CmdGhostping) GetHelp() string {

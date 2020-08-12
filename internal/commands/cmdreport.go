@@ -31,7 +31,7 @@ func (c *CmdReport) GetInvokes() []string {
 }
 
 func (c *CmdReport) GetDescription() string {
-	return "report a user"
+	return "Report a user."
 }
 
 func (c *CmdReport) GetHelp() string {

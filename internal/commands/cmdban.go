@@ -29,7 +29,7 @@ func (c *CmdBan) GetInvokes() []string {
 }
 
 func (c *CmdBan) GetDescription() string {
-	return "ban users with creating a report entry"
+	return "Ban users with creating a report entry."
 }
 
 func (c *CmdBan) GetHelp() string {

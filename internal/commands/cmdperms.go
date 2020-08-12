@@ -23,7 +23,7 @@ func (c *CmdPerms) GetInvokes() []string {
 }
 
 func (c *CmdPerms) GetDescription() string {
-	return "Set the permission for specific groups on your server"
+	return "Set the permission for specific groups on your server."
 }
 
 func (c *CmdPerms) GetHelp() string {

@@ -26,7 +26,7 @@ func (c *CmdProfile) GetInvokes() []string {
 }
 
 func (c *CmdProfile) GetDescription() string {
-	return "Get information about a user"
+	return "Get information about a user."
 }
 
 func (c *CmdProfile) GetHelp() string {

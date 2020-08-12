@@ -26,7 +26,7 @@ func (c *CmdTag) GetInvokes() []string {
 }
 
 func (c *CmdTag) GetDescription() string {
-	return "set texts as tags which can be fastly re-posted later"
+	return "Set texts as tags which can be fastly re-posted later."
 }
 
 func (c *CmdTag) GetHelp() string {

@@ -31,7 +31,7 @@ func (c *CmdMute) GetInvokes() []string {
 }
 
 func (c *CmdMute) GetDescription() string {
-	return "Mute members in text channels"
+	return "Mute members in text channels."
 }
 
 func (c *CmdMute) GetHelp() string {

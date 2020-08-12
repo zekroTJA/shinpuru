@@ -18,7 +18,7 @@ func (c *CmdPrefix) GetInvokes() []string {
 }
 
 func (c *CmdPrefix) GetDescription() string {
-	return "set a custom prefix for your guild"
+	return "Set a custom prefix for your guild."
 }
 
 func (c *CmdPrefix) GetHelp() string {

@@ -23,7 +23,7 @@ func (c *CmdNotify) GetInvokes() []string {
 }
 
 func (c *CmdNotify) GetDescription() string {
-	return "get, remove or setup the notify rule"
+	return "Get, remove or setup the notify rule."
 }
 
 func (c *CmdNotify) GetHelp() string {

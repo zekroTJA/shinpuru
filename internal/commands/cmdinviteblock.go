@@ -19,7 +19,7 @@ func (c *CmdInviteBlock) GetInvokes() []string {
 }
 
 func (c *CmdInviteBlock) GetDescription() string {
-	return "manage Discord invite blocking in chat"
+	return "Manage Discord invite blocking in chat."
 }
 
 func (c *CmdInviteBlock) GetHelp() string {

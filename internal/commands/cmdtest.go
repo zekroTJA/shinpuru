@@ -15,7 +15,7 @@ func (c *CmdTest) GetInvokes() []string {
 }
 
 func (c *CmdTest) GetDescription() string {
-	return "just for testing purposes"
+	return "Just for testing purposes."
 }
 
 func (c *CmdTest) GetHelp() string {

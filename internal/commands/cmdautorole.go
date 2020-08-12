@@ -20,7 +20,7 @@ func (c *CmdAutorole) GetInvokes() []string {
 }
 
 func (c *CmdAutorole) GetDescription() string {
-	return "set the autorole for the current guild"
+	return "Set the autorole for the current guild."
 }
 
 func (c *CmdAutorole) GetHelp() string {

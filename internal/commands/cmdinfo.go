@@ -18,7 +18,7 @@ func (c *CmdInfo) GetInvokes() []string {
 }
 
 func (c *CmdInfo) GetDescription() string {
-	return "display some information about this bot"
+	return "Display some information about this bot."
 }
 
 func (c *CmdInfo) GetHelp() string {

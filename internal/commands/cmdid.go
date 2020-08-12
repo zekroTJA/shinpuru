@@ -20,7 +20,7 @@ func (c *CmdId) GetInvokes() []string {
 }
 
 func (c *CmdId) GetDescription() string {
-	return "Get the discord ID(s) by resolvable"
+	return "Get the discord ID(s) by resolvable."
 }
 
 func (c *CmdId) GetHelp() string {

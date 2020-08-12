@@ -20,7 +20,7 @@ func (c *CmdMvall) GetInvokes() []string {
 }
 
 func (c *CmdMvall) GetDescription() string {
-	return "move all members in your current voice channel into another one"
+	return "Move all members in your current voice channel into another one."
 }
 
 func (c *CmdMvall) GetHelp() string {

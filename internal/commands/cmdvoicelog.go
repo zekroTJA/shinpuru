@@ -22,7 +22,7 @@ func (c *CmdVoicelog) GetInvokes() []string {
 }
 
 func (c *CmdVoicelog) GetDescription() string {
-	return "set the mod log channel for a guild"
+	return "Set the mod log channel for a guild."
 }
 
 func (c *CmdVoicelog) GetHelp() string {

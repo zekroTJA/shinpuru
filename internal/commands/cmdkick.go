@@ -29,7 +29,7 @@ func (c *CmdKick) GetInvokes() []string {
 }
 
 func (c *CmdKick) GetDescription() string {
-	return "kick users with creating a report entry"
+	return "Kick users with creating a report entry."
 }
 
 func (c *CmdKick) GetHelp() string {

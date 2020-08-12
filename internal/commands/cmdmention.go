@@ -20,7 +20,7 @@ func (c *CmdMention) GetInvokes() []string {
 }
 
 func (c *CmdMention) GetDescription() string {
-	return "toggle the mentionability of a role"
+	return "Toggle the mentionability of a role."
 }
 
 func (c *CmdMention) GetHelp() string {
