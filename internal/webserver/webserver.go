@@ -148,11 +148,15 @@ func (ws *WebServer) registerHandlers() {
 	imagestore.
 		Get("/<id>", ws.handlerGetImage)
 
-	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
-	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
+	util := ws.router.Group("/api/util")
+	util.
+		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
 
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
+
+	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
+	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
 
 	ws.router.Use(ws.auth.checkAuth)
 

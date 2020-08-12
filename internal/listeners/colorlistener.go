@@ -1,12 +1,9 @@
 package listeners
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
-	"image"
-	"image/draw"
-	"image/png"
+	"image/color"
 	"net/url"
 	"regexp"
 	"strings"
@@ -16,18 +13,24 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
+	"github.com/zekroTJA/timedmap"
 )
 
 var (
 	rxColorHex = regexp.MustCompile(`^#?[\dA-Fa-f]{6,8}$`)
 )
 
+type emojiCacheEntry struct {
+	clr *color.RGBA
+}
+
 type ColorListener struct {
-	db database.Database
+	db         database.Database
+	emojiCahce *timedmap.TimedMap
 }
 
 func NewColorListener(db database.Database) *ColorListener {
-	return &ColorListener{db}
+	return &ColorListener{db, timedmap.New(1 * time.Minute)}
 }
 
 func (l *ColorListener) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
@@ -36,6 +39,10 @@ func (l *ColorListener) HandlerMessageCreate(s *discordgo.Session, e *discordgo.
 
 func (l *ColorListener) HandlerMessageEdit(s *discordgo.Session, e *discordgo.MessageUpdate) {
 	l.process(s, e.Message)
+}
+
+func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+	// e.
 }
 
 func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
@@ -71,30 +78,8 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 }
 
 func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, hexClr string) {
-	// Remove # when color code starts with it.
-	if strings.HasPrefix(hexClr, "#") {
-		hexClr = hexClr[1:]
-	}
-
-	// Trim and lowercase color code
-	hexClr = strings.Trim(
-		strings.ToLower(hexClr), " ")
-
-	// Get color.RGBA object from color code
-	clr, err := colors.FromHex(hexClr)
+	buff, err := colors.CreateImage(hexClr, 24, 24)
 	if err != nil {
-		return
-	}
-
-	// Create image and fill it with the color
-	// of the clr color object.
-	img := image.NewRGBA(image.Rect(0, 0, 24, 24))
-	draw.Draw(img, img.Bounds(), &image.Uniform{*clr}, image.ZP, draw.Src)
-
-	// Encode image object to image data using
-	// the png encoder
-	buff := bytes.NewBuffer([]byte{})
-	if err = png.Encode(buff, img); err != nil {
 		util.Log.Error("[ColorListener] failed generating image data:", err)
 		return
 	}
@@ -120,6 +105,8 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	}
 
 	// Delete the uploaded emote after 5 seconds
+	// to give discords caching or whatever some
+	// time to save the emoji.
 	time.AfterFunc(5*time.Second, func() {
 		if err = s.GuildEmojiDelete(m.GuildID, emoji.ID); err != nil {
 			util.Log.Error("[ColorListener] failed deleting emoji:", err)

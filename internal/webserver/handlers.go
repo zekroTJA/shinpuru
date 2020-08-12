@@ -3,6 +3,7 @@ package webserver
 import (
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"io"
 	"runtime"
@@ -24,6 +25,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
@@ -1322,6 +1324,59 @@ func (ws *WebServer) handlerGetImage(ctx *routing.Context) error {
 	ctx.Response.Header.Set("Cache-Control", "public, max-age=2592000, immutable")
 	ctx.Response.Header.Set("ETag", etag)
 	ctx.SetBody(img.Data)
+
+	return nil
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/util/color/:hexcode
+
+func (ws *WebServer) handlerGetColor(ctx *routing.Context) error {
+	hexcode := ctx.Param("hexcode")
+	size := strings.ToLower(
+		string(ctx.QueryArgs().Peek("size")))
+
+	var xSize, ySize int
+	var err error
+
+	if size == "" {
+		xSize, ySize = 24, 24
+	} else if strings.Contains(size, "x") {
+		split := strings.Split(size, "x")
+		if len(split) != 2 {
+			return jsonError(ctx, errors.New("invalid size parameter; must provide two size dimensions"), fasthttp.StatusBadRequest)
+		}
+		if xSize, err = strconv.Atoi(split[0]); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if ySize, err = strconv.Atoi(split[1]); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+	} else {
+		if xSize, err = strconv.Atoi(size); err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		ySize = xSize
+	}
+
+	if xSize < 1 || ySize < 1 || xSize > 5000 || ySize > 5000 {
+		return jsonError(ctx, errors.New("invalid size parameter; value must be in range [1..5000]"), fasthttp.StatusBadRequest)
+	}
+
+	buff, err := colors.CreateImage(hexcode, xSize, ySize)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	data := buff.Bytes()
+
+	etag := etag.Generate(data, false)
+
+	ctx.Response.Header.SetContentType("image/png")
+	// 365 days browser caching
+	ctx.Response.Header.Set("Cache-Control", "public, max-age=31536000, immutable")
+	ctx.Response.Header.Set("ETag", etag)
+	ctx.SetBody(data)
 
 	return nil
 }
