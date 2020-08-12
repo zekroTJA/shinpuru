@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image/color"
-	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -155,7 +154,7 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	}
 
 	// Add reaction of the uploaded emote to the message
-	err = s.MessageReactionAdd(m.ChannelID, m.ID, url.QueryEscape(":"+emoji.Name+":"+emoji.ID))
+	err = s.MessageReactionAdd(m.ChannelID, m.ID, emoji.APIName())
 	if err != nil {
 		util.Log.Error("[ColorListener] failed creating message reaction:", err)
 		return
