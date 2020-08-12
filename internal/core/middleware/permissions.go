@@ -12,13 +12,18 @@ import (
 	"github.com/zekroTJA/shireikan"
 )
 
-// TODO: Docs
-
+// PermissionsMiddleware is a command handler middleware
+// processing permissions for command execution.
+//
+// Implements the shireikan.Middleware interface and
+// exposes functions to check permissions.
 type PermissionsMiddleware struct {
 	db  database.Database
 	cfg *config.Config
 }
 
+// NewPermissionMiddleware returns a new PermissionsMiddleware
+// instance with the passed database and config instances.
 func NewPermissionMiddleware(db database.Database, cfg *config.Config) *PermissionsMiddleware {
 	return &PermissionsMiddleware{db, cfg}
 }

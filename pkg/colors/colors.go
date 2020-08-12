@@ -1,3 +1,5 @@
+// Package color provides general utilities for
+// image/color objects and color codes.
 package colors
 
 import (
@@ -11,8 +13,11 @@ import (
 	"image/png"
 )
 
-// TODO: Docs
-
+// FromHex returns a color.RGBA object reference
+// from the passed hexVal HEX RGBA color code.
+//
+// When the passed color code is malformed, an
+// error is returned.
 func FromHex(hexVal string) (*color.RGBA, error) {
 	if hexVal == "" {
 		return nil, errors.New("invalid color format")
@@ -34,14 +39,25 @@ func FromHex(hexVal string) (*color.RGBA, error) {
 	return &color.RGBA{v[0], v[1], v[2], v[3]}, nil
 }
 
+// ToInt returns an integer color value from
+// the oassed color.RGBA object reference.
 func ToInt(clr *color.RGBA) int {
 	return int(clr.B) | int(clr.G)<<8 | int(clr.R)<<16
 }
 
+// ToHex returns a HEX RBGA color string from
+// the passed color.RGBA object reference.
 func ToHex(clr *color.RGBA) string {
 	return fmt.Sprintf("%x", ToInt(clr))
 }
 
+// CreateImage generates a PNG image filled with
+// the passed color in the size of the passed
+// xSize and ySize dimensions.
+//
+// The generated image is returned as bytes.Buffer
+// reference. When the image generation fails, an
+// error is returned.
 func CreateImage(clr *color.RGBA, xSize, ySize int) (*bytes.Buffer, error) {
 	// Create image and fill it with the color
 	// of the clr color object.

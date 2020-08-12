@@ -7,12 +7,15 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
-// TODO: docs
-
+// GhostPingIgnoreMiddleware implements the shireikan.Middleware
+// interface to provide message chaching for command messages
+// containing user mentions to dodge the ghostping trigger.
 type GhostPingIgnoreMiddleware struct {
 	reg *timedmap.TimedMap
 }
 
+// NewGhostPingIgnoreMiddleware returns a new instance of
+// GhostPingIgnoreMiddleware.
 func NewGhostPingIgnoreMiddleware() *GhostPingIgnoreMiddleware {
 	return &GhostPingIgnoreMiddleware{
 		timedmap.New(15 * time.Minute),
@@ -42,6 +45,9 @@ func (m *GhostPingIgnoreMiddleware) GetLayer() shireikan.MiddlewareLayer {
 	return shireikan.LayerBeforeCommand
 }
 
+// ContainsAndRemove returns true when the passed msgID is
+// present in the mentions cache register. If this is true,
+// the entry is removed from the register.
 func (m *GhostPingIgnoreMiddleware) ContainsAndRemove(msgID string) bool {
 	mentions, ok := m.reg.GetValue(msgID).([]string)
 	if !ok || mentions == nil {
