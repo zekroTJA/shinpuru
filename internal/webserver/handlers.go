@@ -1363,7 +1363,12 @@ func (ws *WebServer) handlerGetColor(ctx *routing.Context) error {
 		return jsonError(ctx, errors.New("invalid size parameter; value must be in range [1..5000]"), fasthttp.StatusBadRequest)
 	}
 
-	buff, err := colors.CreateImage(hexcode, xSize, ySize)
+	clr, err := colors.FromHex(hexcode)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	buff, err := colors.CreateImage(clr, xSize, ySize)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusBadRequest)
 	}

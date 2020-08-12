@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
-	"strings"
 )
+
+// TODO: Docs
 
 func FromHex(hexVal string) (*color.RGBA, error) {
 	if hexVal == "" {
@@ -32,22 +34,15 @@ func FromHex(hexVal string) (*color.RGBA, error) {
 	return &color.RGBA{v[0], v[1], v[2], v[3]}, nil
 }
 
-func CreateImage(hexVal string, xSize, ySize int) (*bytes.Buffer, error) {
-	// Remove # when color code starts with it.
-	if strings.HasPrefix(hexVal, "#") {
-		hexVal = hexVal[1:]
-	}
+func ToInt(clr *color.RGBA) int {
+	return int(clr.B) | int(clr.G)<<8 | int(clr.R)<<16
+}
 
-	// Trim and lowercase color code
-	hexVal = strings.Trim(
-		strings.ToLower(hexVal), " ")
+func ToHex(clr *color.RGBA) string {
+	return fmt.Sprintf("%x", ToInt(clr))
+}
 
-	// Get color.RGBA object from color code
-	clr, err := FromHex(hexVal)
-	if err != nil {
-		return nil, err
-	}
-
+func CreateImage(clr *color.RGBA, xSize, ySize int) (*bytes.Buffer, error) {
 	// Create image and fill it with the color
 	// of the clr color object.
 	img := image.NewRGBA(image.Rect(0, 0, xSize, ySize))
@@ -56,7 +51,7 @@ func CreateImage(hexVal string, xSize, ySize int) (*bytes.Buffer, error) {
 	// Encode image object to image data using
 	// the png encoder
 	buff := bytes.NewBuffer([]byte{})
-	if err = png.Encode(buff, img); err != nil {
+	if err := png.Encode(buff, img); err != nil {
 		return nil, err
 	}
 

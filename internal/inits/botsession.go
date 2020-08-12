@@ -29,7 +29,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
 	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
 	listenerJDoodle := listeners.NewListenerJdoodle(database)
-	listenerColors := listeners.NewColorListener(database)
+	listenerColors := listeners.NewColorListener(database, config.WebServer.PublicAddr)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
@@ -51,6 +51,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 
 	session.AddHandler(listenerColors.HandlerMessageCreate)
 	session.AddHandler(listenerColors.HandlerMessageEdit)
+	session.AddHandler(listenerColors.HandlerMessageReaction)
 
 	err = session.Open()
 	if err != nil {
