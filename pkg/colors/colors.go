@@ -23,7 +23,7 @@ func FromHex(hexVal string) (*color.RGBA, error) {
 		return nil, errors.New("invalid color format")
 	}
 
-	if hexVal[1] == '#' {
+	if hexVal[0] == '#' {
 		return FromHex(hexVal[1:])
 	}
 

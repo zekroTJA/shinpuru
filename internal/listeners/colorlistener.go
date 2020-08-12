@@ -125,6 +125,10 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 }
 
 func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, hexClr string) {
+	if strings.HasPrefix(hexClr, "#") {
+		hexClr = hexClr[1:]
+	}
+
 	clr, err := colors.FromHex(hexClr)
 	if err != nil {
 		util.Log.Error("[ColorListener] failed parsing color code:", err)
