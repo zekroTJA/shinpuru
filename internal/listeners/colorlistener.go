@@ -86,6 +86,8 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 	if err != nil {
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}
+
+	l.emojiCahce.Remove(e.MessageID)
 }
 
 func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
@@ -94,6 +96,8 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 	}
 
 	matches := make([]string, 0)
+
+	m.Content = strings.ReplaceAll(m.Content, "\n", " ")
 
 	// Find color hex in message content using
 	// predefined regex.
