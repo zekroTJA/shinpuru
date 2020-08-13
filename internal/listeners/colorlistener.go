@@ -43,11 +43,12 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
-	if !l.emojiCahce.Contains(e.MessageID) {
+	cacheKey := e.MessageID + e.Emoji.ID
+	if !l.emojiCahce.Contains(cacheKey) {
 		return
 	}
 
-	clr, ok := l.emojiCahce.GetValue(e.MessageID).(*color.RGBA)
+	clr, ok := l.emojiCahce.GetValue(cacheKey).(*color.RGBA)
 	if !ok {
 		return
 	}
@@ -86,7 +87,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}
 
-	l.emojiCahce.Remove(e.MessageID)
+	l.emojiCahce.Remove(cacheKey)
 }
 
 func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
@@ -124,16 +125,21 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 }
 
 func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, hexClr string) {
+	// Remove trailing '#' from color code,
+	// when existent
 	if strings.HasPrefix(hexClr, "#") {
 		hexClr = hexClr[1:]
 	}
 
+	// Parse hex color code to color.RGBA object
 	clr, err := colors.FromHex(hexClr)
 	if err != nil {
 		util.Log.Error("[ColorListener] failed parsing color code:", err)
 		return
 	}
 
+	// Create a 24x24 px image with the parsed color
+	// rendered as PNG into a buffer
 	buff, err := colors.CreateImage(clr, 24, 24)
 	if err != nil {
 		util.Log.Error("[ColorListener] failed generating image data:", err)
@@ -160,7 +166,9 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
-	l.emojiCahce.Set(m.ID, clr, 24*time.Hour)
+	// Set messageID + emojiID with RGBA color object
+	// to emojiCache
+	l.emojiCahce.Set(m.ID+emoji.ID, clr, 24*time.Hour)
 
 	// Delete the uploaded emote after 5 seconds
 	// to give discords caching or whatever some
