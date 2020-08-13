@@ -13,15 +13,27 @@ html, body
     color:   $c-font-general !important
     font-family: 'Roboto', sans-serif
 
+    &::-webkit-scrollbar
+        width: 10px
+        
+    &::-webkit-scrollbar-track
+        background: rgba(0, 0, 0, 0.15)
+    
+    &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.15)
+
+
 h1, h2, h3, h4, h5, h6
     font-family: 'Montserrat', sans-serif
     font-weight: 200
     margin: 0 !important
 
+
 a
     color: $c-font-general !important
     text-decoration: none !important
     cursor: pointer
+
 
 button
     background-color: $c-blurple
@@ -38,8 +50,10 @@ button
     &:disabled
       background-color: desaturate($c-blurple, 20)
 
+
 hr
     border-top: 3px solid $c-nqblack !important
+
 
 input
     background-color: transparent
@@ -53,30 +67,37 @@ input
         &:focus
             border-bottom: solid 3px white
 
+
 select
     background-color: $c-nqblack
     border: solid 1px white
     color: white
     +transition25
 
+
 //-----------------------------------
+
 
 .bg-red
     background-color: $c-red
     &:hover
         background-color: darken($c-red, 5)
 
+
 .bg-orange
     background-color: $c-orange
     &:hover
         background-color: darken($c-orange, 5)
+
 
 .bg-green
     background-color: $c-green
     &:hover
         background-color: darken($c-green, 5)
 
+
 //-----------------------------------
+
 
 .embeded
     padding: 2px 5px
@@ -88,37 +109,48 @@ select
     font-family: 'Roboto Mono', monospace
     font-size: .7em
 
+
 .overflow-wrap
     flex-wrap: wrap !important
+
 
 .font-gray
     color: $c-font-gray
 
+
 .w-fc
     width: fit-content
+
 
 .mw-100
     max-width: 100%
 
+
 .cursor-pointer
     cursor: pointer
+
 
 .allowed
     background-color: transparentize($c-green, .4)
 
+
 .disallowed
     background-color: transparentize($c-red, .4)
+
 
 .link
     color: cyan !important
     text-decoration: underline !important
 
+
 .dark-modal .modal-content
       background-color: #292b2c
       color: white
     
+
 .dark-modal .close
     color: white
+
 
 .cbadge
     font-size: .8rem
