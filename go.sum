@@ -127,6 +127,8 @@ github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5 h1:EryoK8mdGm7q
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5/go.mod h1:5aXVBC8pKM3Tva/5YihZ0yOLD+ULDq5P73lpRuBSLNg=
 github.com/zekroTJA/shireikan v0.2.0 h1:Xk0kyYvnHddVHhRgESyimQsIrsn3LhR5WMk1PcByBjs=
 github.com/zekroTJA/shireikan v0.2.0/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
+github.com/zekroTJA/shireikan v0.3.0 h1:3bmNmFE81U8xje/PGhUKYbdl+P8uE/hU41b4ffczPdQ=
+github.com/zekroTJA/shireikan v0.3.0/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
 github.com/zekroTJA/timedmap v1.2.0 h1:6HqQF89K7oEYatCEuS7ylZSFkL8Yf7luJyBTbgAafyI=
 github.com/zekroTJA/timedmap v1.2.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=

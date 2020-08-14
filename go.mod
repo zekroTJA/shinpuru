@@ -29,7 +29,7 @@ require (
 	github.com/valyala/fasthttp v1.14.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5
-	github.com/zekroTJA/shireikan v0.2.0
+	github.com/zekroTJA/shireikan v0.3.0
 	github.com/zekroTJA/timedmap v1.2.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
