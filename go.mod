@@ -25,6 +25,7 @@ require (
 	github.com/onsi/ginkgo v1.13.0 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
+	github.com/sahilm/fuzzy v0.1.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.14.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
