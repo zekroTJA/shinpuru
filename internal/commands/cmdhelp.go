@@ -64,7 +64,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 			invokes := make([]string, len(cmdhandler.GetCommandMap()))
 
 			i := 0
-			for k, _ := range cmdhandler.GetCommandMap() {
+			for k := range cmdhandler.GetCommandMap() {
 				invokes[i] = k
 				i++
 			}
