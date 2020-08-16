@@ -110,7 +110,7 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 	// Get color reaction enabled guild setting
 	// and return when disabled
 	active, err := l.db.GetGuildColorReaction(m.GuildID)
-	if err != nil {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		util.Log.Error("[ColorListener] could not get setting from database:", err)
 		return
 	}
