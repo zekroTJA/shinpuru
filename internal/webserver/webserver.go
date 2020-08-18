@@ -151,6 +151,8 @@ func (ws *WebServer) registerHandlers() {
 	util := ws.router.Group("/api/util")
 	util.
 		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
+	util.
+		Get("/commands", ws.handlerGetCommands)
 
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH

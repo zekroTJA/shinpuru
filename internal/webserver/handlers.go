@@ -1438,3 +1438,19 @@ func (ws *WebServer) handlerDeleteToken(ctx *routing.Context) error {
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - GET /api/commands
+
+func (ws *WebServer) handlerGetCommands(ctx *routing.Context) error {
+	cmdInstances := ws.cmdhandler.GetCommandInstances()
+	cmdInfos := make([]*CommandInfo, len(cmdInstances))
+
+	for i, c := range cmdInstances {
+		cmdInfo := GetCommandInfoFromCommand(c)
+		cmdInfos[i] = cmdInfo
+	}
+
+	list := ListResponse{N: len(cmdInfos), Data: cmdInfos}
+	return jsonResponse(ctx, list, fasthttp.StatusOK)
+}

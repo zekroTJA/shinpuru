@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shireikan"
 )
 
 // ListResponse wraps a list response object
@@ -228,6 +229,19 @@ type GuildKarmaEntry struct {
 	Value  int     `json:"value"`
 }
 
+// CommandInfo wraps a shireikan.Command object
+// containing all information of a command
+// instance.
+type CommandInfo struct {
+	Invokes            []string                  `json:"invokes"`
+	Description        string                    `json:"description"`
+	Help               string                    `json:"help"`
+	Group              string                    `json:"group"`
+	DomainName         string                    `json:"domain_name"`
+	SubPermissionRules []shireikan.SubPermission `json:"sub_permission_rules"`
+	IsExecutableInDM   bool                      `json:"is_executable_in_dm"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
@@ -361,6 +375,18 @@ func ReportFromReport(r *report.Report, publicAddr string) *Report {
 		Report:   r,
 		TypeName: rtype,
 		Created:  r.GetTimestamp(),
+	}
+}
+
+func GetCommandInfoFromCommand(cmd shireikan.Command) *CommandInfo {
+	return &CommandInfo{
+		Invokes:            cmd.GetInvokes(),
+		Description:        cmd.GetDescription(),
+		DomainName:         cmd.GetDomainName(),
+		Group:              cmd.GetGroup(),
+		Help:               cmd.GetHelp(),
+		IsExecutableInDM:   cmd.IsExecutableInDMChannels(),
+		SubPermissionRules: cmd.GetSubPermissionRules(),
 	}
 }
 

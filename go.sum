@@ -149,6 +149,8 @@ github.com/zekroTJA/shireikan v0.2.0 h1:Xk0kyYvnHddVHhRgESyimQsIrsn3LhR5WMk1PcBy
 github.com/zekroTJA/shireikan v0.2.0/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
 github.com/zekroTJA/shireikan v0.3.0 h1:3bmNmFE81U8xje/PGhUKYbdl+P8uE/hU41b4ffczPdQ=
 github.com/zekroTJA/shireikan v0.3.0/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
+github.com/zekroTJA/shireikan v0.3.1 h1:47yGg4JS+OH9pRAFd1lEyqxhe62TLzlcbavy89cE7rY=
+github.com/zekroTJA/shireikan v0.3.1/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
 github.com/zekroTJA/timedmap v1.2.0 h1:6HqQF89K7oEYatCEuS7ylZSFkL8Yf7luJyBTbgAafyI=
 github.com/zekroTJA/timedmap v1.2.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
