@@ -10,6 +10,7 @@ import { SettingsComponent } from './routes/settings/settings.component';
 import { InfoComponent } from './routes/info/info.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
+import { CommandsComponent } from './routes/commands/commands.component';
 
 const routes: Routes = [
   {
@@ -48,6 +49,10 @@ const routes: Routes = [
   {
     path: 'apitoken',
     component: APITokenComponent,
+  },
+  {
+    path: 'commands',
+    component: CommandsComponent,
   },
   {
     path: '**',

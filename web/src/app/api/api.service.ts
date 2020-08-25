@@ -23,6 +23,7 @@ import {
   APIToken,
   GuildBackup,
   GuildScoreboardEntry,
+  CommandInfo,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -116,6 +117,9 @@ export class APIService {
 
   private readonly rcSetting = (rc: string = '') =>
     `${this.rcAPI('settings')}${rc ? '/' + rc : ''}`;
+
+  private readonly rcUtil = (rc: string = '') =>
+    `${this.rcAPI('util')}${rc ? '/' + rc : ''}`;
 
   private readonly errorCatcher = (err) => {
     console.error(err);
@@ -468,6 +472,12 @@ export class APIService {
   public deleteAPIToken(): Observable<any> {
     return this.http
       .delete(this.rcAPI('token'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getCommandInfos(): Observable<ListReponse<CommandInfo>> {
+    return this.http
+      .get(this.rcUtil('commands'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

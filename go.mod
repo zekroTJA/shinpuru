@@ -9,7 +9,6 @@ require (
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.1.1
-	github.com/generaltso/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/generaltso/vibrant v0.0.0-20200703055536-90f922bee78c
 	github.com/go-ini/ini v1.58.0 // indirect
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
@@ -19,6 +18,7 @@ require (
 	github.com/golang/gddo v0.0.0-20200715224205-051695c33a3f // indirect
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -27,7 +27,6 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/sahilm/fuzzy v0.1.0
-	github.com/sclevine/agouti v3.0.0+incompatible // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.15.1
 	github.com/wcharczuk/go-chart v2.0.1+incompatible

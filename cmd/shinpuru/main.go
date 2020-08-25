@@ -8,16 +8,18 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/inits"
-
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
+
+	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
 
 var (
 	flagConfigLocation = flag.String("c", "config.yml", "The location of the main config file")
 	flagDocker         = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
+	flagDevMode        = flag.Bool("devmode", false, "start in development mode")
 )
 
 //////////////////////////////////////////////////////////////////////
@@ -107,6 +109,30 @@ func main() {
 
 	// Initialize web server
 	inits.InitWebServer(session, database, st, cmdHandler, lct, conf, pmw)
+
+	// -----> DEV MODE INITIALIZATIONS
+	if *flagDevMode {
+		if util.Release == "TRUE" {
+			util.Log.Fatal("development mode is not available in production builds")
+		}
+
+		// Angular dev server
+		angServ := angularservice.New(angularservice.Options{
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			Cd:     "web",
+			Port:   8081,
+		})
+		util.Log.Info("Starting Angular dev server...")
+		if err = angServ.Start(); err != nil {
+			util.Log.Fatalf("Failed starting Angular dev server: %s", err.Error())
+		}
+		defer func() {
+			util.Log.Info("Shutting down Angular dev server...")
+			angServ.Stop()
+		}()
+	}
+	// <----- DEV MODE INITIALIZATIONS
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
