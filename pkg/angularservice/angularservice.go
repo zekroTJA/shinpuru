@@ -32,9 +32,14 @@ func New(options Options) *AngularService {
 // process.
 func (s *AngularService) Start() (err error) {
 	if s.options.Cd != "" {
+		var currDir string
+		if currDir, err = os.Getwd(); err != nil {
+			return
+		}
 		if err = os.Chdir(s.options.Cd); err != nil {
 			return
 		}
+		defer os.Chdir(currDir)
 	}
 
 	var ctx context.Context
