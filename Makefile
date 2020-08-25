@@ -84,7 +84,7 @@ run:
 		$(CURDIR)/cmd/$(APPNAME)/*.go -c $(CONFIG)
 
 PHONY += rundev
-run:
+rundev:
 	$(GO) run -v \
 		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG)
 
