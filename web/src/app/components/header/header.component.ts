@@ -27,6 +27,9 @@ export class HeaderComponent implements OnInit {
   @ViewChild('documentation', { static: true })
   private documentationTemplate: TemplateRef<any>;
 
+  @ViewChild('commands', { static: true })
+  private commandsTemplate: TemplateRef<any>;
+
   public selfUser: User;
 
   public popupVisible = false;
@@ -57,6 +60,10 @@ export class HeaderComponent implements OnInit {
       {
         el: this.documentationTemplate,
         action: this.documentaiton.bind(this),
+      } as PopupElement,
+      {
+        el: this.commandsTemplate,
+        action: this.commands.bind(this),
       } as PopupElement,
       {
         el: this.apiTokenTemplate,
@@ -97,5 +104,9 @@ export class HeaderComponent implements OnInit {
 
   private documentaiton() {
     window.open('https://github.com/zekroTJA/shinpuru/wiki', '_blank');
+  }
+
+  private commands() {
+    this.router.navigate(['/commands']);
   }
 }

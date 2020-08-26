@@ -31,6 +31,8 @@ import { KarmaTileComponent } from './components/karma-tile/karma-tile.component
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-scoreboard.component';
 import { CommandsComponent } from './routes/commands/commands.component';
+import { KeyValuePipe } from './routes/pipes/key-value.pipe';
+import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
 
 @NgModule({
   declarations: [
@@ -57,6 +59,8 @@ import { CommandsComponent } from './routes/commands/commands.component';
     ScoreboardComponent,
     KarmaScoreboardComponent,
     CommandsComponent,
+    KeyValuePipe,
+    CommandSortPipe,
   ],
   imports: [
     NgbModule,
