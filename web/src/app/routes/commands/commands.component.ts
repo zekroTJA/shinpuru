@@ -30,6 +30,13 @@ export class CommandsComponent implements OnInit {
     } catch (err) {
       console.error(err);
     }
+
+    console.log(
+      this.commands
+        .find((c) => c.invokes[0] == 'joinmsg')
+        .help.split('\n')
+        .join('<br />')
+    );
   }
 
   public scrollTo(selector: string) {

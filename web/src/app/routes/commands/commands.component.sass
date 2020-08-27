@@ -1,4 +1,5 @@
 @import '../../../sass/mixins.sass'
+@import '../../../sass/vars.sass'
     
 .group-tile-container
     display: flex
@@ -31,8 +32,8 @@
     width: 100%
     background-color: rgba(black, 0.15)
     border-radius: 8px
-    padding: 10px
-    margin-top: 10px
+    padding: 15px
+    margin-top: 20px
 
     .invoke
         background-color: rgba(black, 0.5)
@@ -57,3 +58,16 @@
             
             pre
                 color: white
+
+    .dmc-badge
+        font-size: 9px
+        padding: 1px 3px
+        background-color: rgba($c-lime, 0.25)
+        color: $c-lime
+        border: solid 1px $c-lime
+        border-radius: 3px
+        margin-left: 10px
+
+
+.group-header
+    margin-top: 50px !important
