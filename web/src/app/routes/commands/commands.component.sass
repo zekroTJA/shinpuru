@@ -16,7 +16,7 @@
 button.back-top
     position: fixed
     bottom: 20px
-    right: 20px
+    left: 20px
     opacity: 0.5
     background-color: transparent
     border: solid 1px white
@@ -30,17 +30,26 @@ button.back-top
 
 
 .group-tile-container
+    position: relative
     display: flex
     flex-wrap: wrap
 
-    > div
+    @media only screen and (min-width: 1600px)
+        display: block
+        position: fixed
+        top: 75px
+        right: 20px
+        width: calc(50% - 1100px / 2)
+        max-width: 600px
+
+    .group-tile
         background-color: rgba(black, 0.15)
         border-radius: 8px
         padding: 10px
         margin: 0 10px 10px 0
         width: 100%
 
-        @media only screen and (min-width: 900px)
+        @media only screen and (min-width: 900px) and (max-width: 1600px)
             width: calc(33% - 10px)
 
         > div
