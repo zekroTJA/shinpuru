@@ -1,6 +1,34 @@
 @import '../../../sass/mixins.sass'
 @import '../../../sass/vars.sass'
     
+
+.search-bar
+    display: flex
+    margin-top: 20px
+    margin-bottom: 40px
+    
+    > input
+        width: 100%
+        margin-left: 20px
+        margin-right: 20px
+
+
+button.back-top
+    position: fixed
+    bottom: 20px
+    right: 20px
+    opacity: 0.5
+    background-color: transparent
+    border: solid 1px white
+    +transition25
+
+    > img
+        transform: rotate(-90deg)
+
+    &:hover
+        opacity: 1
+
+
 .group-tile-container
     display: flex
     flex-wrap: wrap

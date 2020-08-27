@@ -1,5 +1,14 @@
 <!-- @format -->
 
+<div class="search-bar">
+  <img width="24" src="/assets/search.svg" />
+  <input type="text" (input)="onSearchBarChange($event)" />
+</div>
+
+<button class="back-top" (click)="onScrollToTop()">
+  <img width="24" src="/assets/arrow.svg" />
+</button>
+
 <div class="group-tile-container">
   <div *ngFor="let kv of groupMap | keyValue">
     <h5>{{ kv.key }}</h5>

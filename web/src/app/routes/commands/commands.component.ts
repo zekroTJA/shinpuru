@@ -17,35 +17,66 @@ export class CommandsComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      const groups: { [key: string]: CommandInfo[] } = {};
-
       this.commands = (await this.api.getCommandInfos().toPromise()).data;
-      this.commands.forEach((c) => {
-        if (!(c.group in groups)) {
-          groups[c.group] = [];
-        }
-        groups[c.group].push(c);
-      });
-      this.groupMap = groups;
+      this.fetchGroups();
     } catch (err) {
       console.error(err);
     }
-
-    console.log(
-      this.commands
-        .find((c) => c.invokes[0] == 'joinmsg')
-        .help.split('\n')
-        .join('<br />')
-    );
   }
 
   public scrollTo(selector: string) {
     const el = document.querySelector(selector);
     if (el) {
-      el.scrollIntoView();
-      window.scrollBy({
-        top: -60,
+      el.scrollIntoView({
+        block: 'center',
       });
+      console.log(el);
+      // window.scrollBy({
+      //   top: -60,
+      // });
     }
+  }
+
+  public onScrollToTop() {
+    window.scrollTo({
+      top: 0,
+    });
+  }
+
+  public onSearchBarChange(e: InputEvent) {
+    const val = (e.currentTarget as HTMLInputElement).value;
+    this.fetchGroups(val);
+  }
+
+  private fetchGroups(filter?: string) {
+    const groups: { [key: string]: CommandInfo[] } = {};
+
+    this.commands
+      .filter((c) => !filter || this.commandFilterFunc(c, filter))
+      .forEach((c) => {
+        if (!(c.group in groups)) {
+          groups[c.group] = [];
+        }
+        groups[c.group].push(c);
+      });
+    this.groupMap = groups;
+  }
+
+  private commandFilterFunc(c: CommandInfo, f: string): boolean {
+    f = f.toLowerCase();
+
+    if (c.invokes.find((i) => i.toLowerCase().includes(f))) {
+      return true;
+    }
+
+    if (c.domain_name.toLowerCase().includes(f)) {
+      return true;
+    }
+
+    if (c.description.toLowerCase().includes(f)) {
+      return true;
+    }
+
+    return false;
   }
 }
