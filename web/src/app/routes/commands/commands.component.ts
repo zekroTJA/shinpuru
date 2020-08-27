@@ -30,10 +30,6 @@ export class CommandsComponent implements OnInit {
       el.scrollIntoView({
         block: 'center',
       });
-      console.log(el);
-      // window.scrollBy({
-      //   top: -60,
-      // });
     }
   }
 
