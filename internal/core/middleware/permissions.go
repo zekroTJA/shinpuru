@@ -28,7 +28,9 @@ func NewPermissionMiddleware(db database.Database, cfg *config.Config) *Permissi
 	return &PermissionsMiddleware{db, cfg}
 }
 
-func (m *PermissionsMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (next bool, err error) {
+func (m *PermissionsMiddleware) Handle(
+	cmd shireikan.Command, ctx shireikan.Context, layer shireikan.MiddlewareLayer) (next bool, err error) {
+
 	if m.db == nil {
 		m.db, _ = ctx.GetObject("db").(database.Database)
 	}

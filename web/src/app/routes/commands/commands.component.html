@@ -1,0 +1,70 @@
+<!-- @format -->
+
+<div class="search-bar">
+  <img width="24" src="/assets/search.svg" />
+  <input type="text" (input)="onSearchBarChange($event)" />
+</div>
+
+<button class="back-top" (click)="onScrollToTop()">
+  <img width="24" src="/assets/arrow.svg" />
+</button>
+
+<div class="group-tile-container">
+  <div *ngFor="let kv of groupMap | keyValue" class="group-tile">
+    <h5>{{ kv.key }}</h5>
+    <div>
+      <a
+        *ngFor="let c of kv.value | commandSort"
+        (click)="scrollTo('#' + c.invokes[0])"
+        >{{ c.invokes[0] }}</a
+      >
+    </div>
+  </div>
+</div>
+
+<div *ngFor="let kv of groupMap | keyValue" class="mt-4">
+  <h3 class="group-header">{{ kv.key }}</h3>
+  <div
+    *ngFor="let c of kv.value | commandSort"
+    class="command-tile"
+    [id]="c.invokes[0]"
+  >
+    <div class="flex-center">
+      <h5>{{ c.invokes[0] }}</h5>
+      <p class="embeded ml-2">{{ c.domain_name }}</p>
+      <span
+        *ngIf="c.is_executable_in_dm"
+        class="dmc-badge"
+        [ngbTooltip]="dmcToolTipContent"
+        >DMC</span
+      >
+    </div>
+    <div class="mt-3">
+      <span *ngFor="let invoke of c.invokes" class="invoke">{{ invoke }}</span>
+    </div>
+    <div class="mt-4 details">
+      <h6>Description</h6>
+      <span>{{ c.description }}</span>
+    </div>
+    <div class="mt-4 details">
+      <h6>Help</h6>
+      <markdown [data]="c.help.split('\n').join('<br />')"></markdown>
+    </div>
+    <div *ngIf="c.sub_permission_rules?.length > 0" class="mt-3 details">
+      <h6>Sub Permission Rules</h6>
+      <ul>
+        <li *ngFor="let spr of c.sub_permission_rules">
+          <span>{{ spr.term }} - </span>
+          <span *ngIf="spr.explicit">[EXPLICIT] - </span>
+          <span>{{ spr.description }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<ng-template #dmcToolTipContent>
+  <strong>D</strong>irect <strong>M</strong>essage
+  <strong>C</strong>apable<br />
+  This command can be used in a direct message channel to shinpuru.
+</ng-template>

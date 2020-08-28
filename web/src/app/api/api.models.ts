@@ -174,3 +174,19 @@ export interface GuildScoreboardEntry {
   member: Member;
   value: number;
 }
+
+export interface SubPermission {
+  term: string;
+  explicit: boolean;
+  description: string;
+}
+
+export interface CommandInfo {
+  invokes: string[];
+  description: string;
+  help: string;
+  group: string;
+  domain_name: string;
+  is_executable_in_dm: boolean;
+  sub_permission_rules: SubPermission[];
+}

@@ -60,20 +60,30 @@
                 font-weight: bold
 
 
-.guild-container
-    @media only screen and (min-width: 900px)
-        // margin-right: 360px
-
-
 .scoreboard-container
     @media only screen and (min-width: 1650px)
         display: block
         position: fixed
-        top: 50px + 20px
+        top: 50px
+        bottom: 20px
         right: 20px
         width: 320px
+        overflow: auto
+        border-radius: 10px
+
+        &::-webkit-scrollbar
+            width: 5px
+        
+        &::-webkit-scrollbar-track
+            background: rgba(0, 0, 0, 0.15)
+            border-radius: 5px
+        
+        &::-webkit-scrollbar-thumb
+            background: rgba(0, 0, 0, 0.15)
+            border-radius: 5px
 
     margin-top: 30px
+    widows: 100%
 
 
 .settingsTile

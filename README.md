@@ -136,6 +136,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 Some of the independant utilities and functionalities shinpuru uses are publicly available via `go get <package>`. I will try to keep the API and general behaviour of those functionalities as "frozen" as possible to make those packages long-time reliable.
 
 - [`github.com/zekroTJA/shinpuru/pkg/acceptmsg`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg)
+- [`github.com/zekroTJA/shinpuru/pkg/angularservice`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/angularservice)
 - [`github.com/zekroTJA/shinpuru/pkg/bytecount`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/bytecount)
 - [`github.com/zekroTJA/shinpuru/pkg/ctypes`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/ctypes)
 - [`github.com/zekroTJA/shinpuru/pkg/discordoauth`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordoauth)

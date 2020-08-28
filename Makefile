@@ -83,6 +83,11 @@ run:
 	$(GO) run -v \
 		$(CURDIR)/cmd/$(APPNAME)/*.go -c $(CONFIG)
 
+PHONY += rundev
+rundev:
+	$(GO) run -v \
+		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG)
+
 PHONY += cleanup
 cleanup:
 

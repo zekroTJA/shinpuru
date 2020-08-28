@@ -53,6 +53,10 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(listenerColors.HandlerMessageEdit)
 	session.AddHandler(listenerColors.HandlerMessageReaction)
 
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
+		util.StatsMessagesAnalysed++
+	})
+
 	err = session.Open()
 	if err != nil {
 		util.Log.Fatal("Failed connecting Discord bot session:", err)

@@ -22,7 +22,9 @@ func NewGhostPingIgnoreMiddleware() *GhostPingIgnoreMiddleware {
 	}
 }
 
-func (m *GhostPingIgnoreMiddleware) Handle(cmd shireikan.Command, ctx shireikan.Context) (next bool, err error) {
+func (m *GhostPingIgnoreMiddleware) Handle(
+	cmd shireikan.Command, ctx shireikan.Context, layer shireikan.MiddlewareLayer) (next bool, err error) {
+
 	next = true
 
 	mentions := ctx.GetMessage().Mentions

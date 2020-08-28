@@ -45,6 +45,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
+	cmdHandler.RegisterMiddleware(&middleware.CommandStatsMiddleware{})
 
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})

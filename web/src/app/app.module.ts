@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,6 +30,9 @@ import { APITokenComponent } from './routes/apitoken/apitoken.component';
 import { KarmaTileComponent } from './components/karma-tile/karma-tile.component';
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-scoreboard.component';
+import { CommandsComponent } from './routes/commands/commands.component';
+import { KeyValuePipe } from './routes/pipes/key-value.pipe';
+import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
 
 @NgModule({
   declarations: [
@@ -54,6 +58,9 @@ import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-sc
     KarmaTileComponent,
     ScoreboardComponent,
     KarmaScoreboardComponent,
+    CommandsComponent,
+    KeyValuePipe,
+    CommandSortPipe,
   ],
   imports: [
     NgbModule,
@@ -61,6 +68,7 @@ import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-sc
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    MarkdownModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],
