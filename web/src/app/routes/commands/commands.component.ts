@@ -3,6 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { CommandInfo } from 'src/app/api/api.models';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-commands',
@@ -13,12 +14,16 @@ export class CommandsComponent implements OnInit {
   public commands: CommandInfo[];
   public groupMap: { [key: string]: CommandInfo[] } = {};
 
-  constructor(private api: APIService) {}
+  constructor(private api: APIService, private route: ActivatedRoute) {}
 
   async ngOnInit() {
     try {
       this.commands = (await this.api.getCommandInfos().toPromise()).data;
       this.fetchGroups();
+
+      this.route.fragment.subscribe((fragment) => {
+        setTimeout(() => this.scrollTo(`#${fragment}`), 500);
+      });
     } catch (err) {
       console.error(err);
     }
