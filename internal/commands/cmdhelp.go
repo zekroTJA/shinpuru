@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sahilm/fuzzy"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
@@ -46,6 +47,7 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 
 func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
+	cfg, _ := ctx.GetObject("config").(*config.Config)
 
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,
@@ -53,13 +55,13 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	}
 
 	if len(ctx.GetArgs()) == 0 {
-		commandListEmbed(cmdhandler.GetCommandInstances(), emb)
+		commandListEmbed(cmdhandler.GetCommandInstances(), cfg, emb)
 	} else {
 		query := strings.ToLower(ctx.GetArgs().Get(0).AsString())
 		cmd, ok := cmdhandler.GetCommand(query)
 
 		if ok {
-			commandEmbed(cmd, emb)
+			commandEmbed(cmd, cfg, emb)
 		} else {
 			invokes := make([]string, len(cmdhandler.GetCommandMap()))
 
@@ -80,7 +82,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 
 			if matches.Len() == 1 {
 				cmd, _ := cmdhandler.GetCommand(matches[0].Str)
-				commandEmbed(cmd, emb)
+				commandEmbed(cmd, cfg, emb)
 			} else {
 				cmdInstancesMap := make(map[string]shireikan.Command)
 				for _, match := range matches {
@@ -95,7 +97,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 					i++
 				}
 
-				commandListEmbed(cmdInstances, emb)
+				commandListEmbed(cmdInstances, cfg, emb)
 			}
 		}
 	}
@@ -103,7 +105,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	return sendUserOrInChannel(ctx, emb)
 }
 
-func commandListEmbed(cmdInstances []shireikan.Command, emb *discordgo.MessageEmbed) {
+func commandListEmbed(cmdInstances []shireikan.Command, cfg *config.Config, emb *discordgo.MessageEmbed) {
 	cmds := make(map[string][]shireikan.Command)
 	for _, c := range cmdInstances {
 		group := c.GetGroup()
@@ -113,10 +115,15 @@ func commandListEmbed(cmdInstances []shireikan.Command, emb *discordgo.MessageEm
 		cmds[group] = append(cmds[group], c)
 	}
 
+	manualURL := static.CommandManualDocument
+	if cfg.WebServer != nil && cfg.WebServer.Enabled && cfg.WebServer.PublicAddr != "" {
+		manualURL = cfg.WebServer.PublicAddr + "/commands"
+	}
+
 	emb.Title = "Command List"
 	emb.Description = fmt.Sprintf(
 		"[**Here**](%s) you can find the full list of commands with all details in one document.",
-		static.CommandManualDocument)
+		manualURL)
 
 	for cat, catCmds := range cmds {
 		commandHelpLines := ""
@@ -130,11 +137,16 @@ func commandListEmbed(cmdInstances []shireikan.Command, emb *discordgo.MessageEm
 	}
 }
 
-func commandEmbed(cmd shireikan.Command, emb *discordgo.MessageEmbed) {
+func commandEmbed(cmd shireikan.Command, cfg *config.Config, emb *discordgo.MessageEmbed) {
+	manualURL := static.CommandManualDocument
+	if cfg.WebServer != nil && cfg.WebServer.Enabled && cfg.WebServer.PublicAddr != "" {
+		manualURL = cfg.WebServer.PublicAddr + "/commands"
+	}
+
 	emb.Title = "Command Description"
 	emb.Description = fmt.Sprintf(
 		"[**Here**](%s#%s) you can find the command description online.",
-		static.CommandManualDocument, cmd.GetInvokes()[0])
+		manualURL, cmd.GetInvokes()[0])
 
 	emb.Fields = []*discordgo.MessageEmbedField{
 		{
