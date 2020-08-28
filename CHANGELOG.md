@@ -1,8 +1,6 @@
-1.2.0-rc.1
+1.2.0
 
-> MAJOR PREVIEW PATCH
-
-> This is a prerelease issue and the changelog displays all changes since the last release [`1.1.1`](https://github.com/zekroTJA/shinpuru/releases/tag/1.1.1).
+> MAJOR PATCH
 
 ## Major
 
@@ -25,11 +23,16 @@
   Color reactions are a system which, when enabled by the [`color`](https://github.com/zekroTJA/shinpuru/wiki/Commands#color) command, scrapes messages for hexadecimal color codes. Then, a reaction is added which shows the color. After clicking the reaction, more information about the color is shown.  
   ![](https://i.imgur.com/VICm9BV.gif)
 
+- **Command overview in web interface.** [#158]  
+  Add a command list in the web interface where you have a clear overview over all commands of shinpuru and how they are used.  
+  ![](https://i.imgur.com/sTHzdEN.gif)
+
 ## Minor
 
 - Add edit flag to [say command](https://github.com/zekroTJA/shinpuru/wiki/Commands#say). [#142]
 - Update Header in Web Interface which is now static at the top of the window and has a drop shadow for better visual seperation.
 - Optimize permission role input in web interface. [#148]
+- Add fuzzy search for help command. [#157]
 
 ## Fixes
 
@@ -40,6 +43,7 @@
 ## Backstage
 
 - Database drivers are now moved to the internal package `internal/core/middleware` to make middleware drivers available for usage as database and general purpose cache or other use cases.
+- Add service which starts the Angular dev server alongside with shinpuru when passing the `-devmode` flag on start.
 
 # Docker
 
