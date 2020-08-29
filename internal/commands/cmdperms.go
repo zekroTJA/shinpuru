@@ -113,11 +113,13 @@ func (c *CmdPerms) Exec(ctx shireikan.Context) error {
 			cPerm = make(permissions.PermissionArray, 0)
 		}
 
-		cPerm = cPerm.Update(perm, false)
+		cPerm, changed := cPerm.Update(perm, false)
 
-		err := db.SetGuildRolePermission(ctx.GetGuild().ID, r.ID, cPerm)
-		if err != nil {
-			return err
+		if changed {
+			err := db.SetGuildRolePermission(ctx.GetGuild().ID, r.ID, cPerm)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

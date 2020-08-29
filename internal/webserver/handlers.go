@@ -548,10 +548,12 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 			rperms = make(permissions.PermissionArray, 0)
 		}
 
-		rperms = rperms.Update(update.Perm, false)
+		rperms, changed := rperms.Update(update.Perm, false)
 
-		if err = ws.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
-			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		if changed {
+			if err = ws.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
+				return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+			}
 		}
 	}
 
