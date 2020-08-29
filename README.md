@@ -48,6 +48,7 @@ Following, you will find a selected set of core features of shinpuru.
 
 shinpuru offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
+[**Demo**](https://i.imgur.com/hieLAua.gif)  
 ![](https://i.imgur.com/hieLAua.gif)
 
 ## Permission System
