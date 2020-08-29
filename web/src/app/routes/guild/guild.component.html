@@ -121,6 +121,7 @@
             <app-report 
                 *ngFor="let rep of reports" 
                 [report]="rep"
+                [allowRevoke]="canRevoke"
                 (revoke)="revokeReport(rep)"
             ></app-report>
             <div class="d-flex">

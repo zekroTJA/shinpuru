@@ -175,6 +175,7 @@
                 *ngFor="let rep of reports" 
                 [report]="rep" 
                 [victim]="member"
+                [allowRevoke]="canRevoke"
                 (revoke)="revokeReport(rep)"
             ></app-report>
         </div>

@@ -244,6 +244,8 @@ export class APIService {
     guildID: string,
     memberID: string
   ): Observable<string[]> {
+    // TODO: Cache response
+
     return this.http
       .get<ListReponse<string>>(
         this.rcGuildMembersPermissionsAllowed(guildID, memberID),

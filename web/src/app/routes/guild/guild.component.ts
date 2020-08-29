@@ -54,6 +54,7 @@ export class GuildComponent {
   public addPermissionPerm: string;
   public addPermissionRoles: Role[] = [];
   public addPermissionAllow = true;
+  public canRevoke = false;
 
   public guildToggle = false;
   public modlogToggle = false;
@@ -91,6 +92,7 @@ export class GuildComponent {
           this.guildSettingsAllowed = this.allowed.filter((a) =>
             a.startsWith('sp.guild.')
           );
+          this.canRevoke = allowed.includes('sp.guild.mod.report');
         });
     });
 

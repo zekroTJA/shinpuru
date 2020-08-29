@@ -47,8 +47,8 @@
     
         <p class="footer">
             Case-ID: {{ report.id }}&nbsp;&nbsp;|&nbsp;&nbsp;
-            Created {{ dateFormat(report.created, 'yyyy.mm.dd - HH:MM:ss Z') }}&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a (click)="revoke.emit()">Revoke Report</a>
+            Created {{ dateFormat(report.created, 'yyyy.mm.dd - HH:MM:ss Z') }}
+            <span *ngIf="allowRevoke">&nbsp;&nbsp;|&nbsp;&nbsp;<a (click)="revoke.emit()">Revoke Report</a></span>
         </p>
     </div>
 
