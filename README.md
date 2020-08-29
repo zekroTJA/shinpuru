@@ -1,5 +1,6 @@
 <div align="center">
-    <img src="https://zekro.de/src/shinpuru_avi_circle.png" height="300" />
+    <img src=".media/rendered/sp-banner-slim.png" width="100%" />
+    <hr>
     <h1>~ シンプル ~</h1>
     <strong>
         A simple multi purpose discord bot written in Go (discord.go)<br>
@@ -31,23 +32,23 @@ Here you can choose between the stable or canary version of shinpuru:
 
 # Intro
 
-シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. The focus on this bot is not to punch in as many features and commands as possible, just some commands and features which I thought would be useful and which were the most used with my older Discord bots, like [zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.
+シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [shireikan](https://github.com/zekroTJA/shireikan) as command parser. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability.
 
-Also, I want to use this project as a chance for me, to get some deeper into Go and larger Go project structures.
+This bot is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Drop by to see shinpuru in action! 😉
 
 ---
 
 # Features 
 
-In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of all commands and their manuals.
+> In this [**wiki article**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of all commands and their manuals.
+
+Following, you will find a selected set of core features of shinpuru.
 
 ## Web Interface
 
 shinpuru offers a web interface to view members profiles, reports, the guild mod log and also configure the guilds settings for shinpuru like mod log channel, voice log channel or join/leave messages and channels.
 
-![](https://i.zekro.de/chrome_2019-08-12_09-30-45.png)
-![](https://i.zekro.de/chrome_2019-08-12_09-34-04.png)
-![](https://i.zekro.de/chrome_2019-08-12_09-36-45.png)
+![](https://i.imgur.com/hieLAua.gif)
 
 ## Permission System
 
@@ -169,6 +170,7 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [valyala/fasthttp ](https://github.com/valyala/fasthttp)
 - [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart)
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit)
+- [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan)
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
 
