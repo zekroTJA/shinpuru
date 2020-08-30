@@ -30,13 +30,17 @@ const (
 	keyGuildVoiceLog      = "GUILD:VOICELOG"
 	keyGuildNotifyRole    = "GUILD:NOTROLE"
 	keyGuildGhostPingMsg  = "GUILD:GPMSG"
-	keyGuildJDoodleKey    = "GuUILD:JDOODLE"
+	keyGuildJDoodleKey    = "GUILD:JDOODLE"
 	keyGuildInviteBlock   = "GUILD:INVBLOCK"
 	keyGuildBackupEnabled = "GUILD:BACKUP"
 	keyGuildJoinMsg       = "GUILD:JOINMSG"
 	keyGuildLeaveMsg      = "GUILD:LEAVEMSG"
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
 	keyGuildColorReaction = "GUILD:COLORREACTION"
+
+	keyKarmaState  = "KARMA:STATE"
+	keyKarmaEmotes = "KARMA:EMOTES"
+	keyKarmaTokens = "KARMA:TOKENS"
 
 	keyUserAPIToken = "USER:APITOKEN"
 
@@ -704,4 +708,96 @@ func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
 
 func (m *RedisMiddleware) UpdateKarma(userID, guildID string, diff int) error {
 	return m.db.UpdateKarma(userID, guildID, diff)
+}
+
+func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+
+	if err := m.client.Set(key, state, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaState(guildID, state)
+}
+
+func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+
+	var val bool
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetKarmaState(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotes string) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaEmotes, guildID)
+
+	if err := m.client.Set(key, emotes, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaEmotes(guildID, emotes)
+}
+
+func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (string, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
+
+	val, err := m.client.Get(key).Result()
+	if err == redis.Nil {
+		val, err = m.db.GetKarmaEmotes(guildID)
+		if err != nil {
+			return "", err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return "", err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
+
+	if err := m.client.Set(key, tokens, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaTokens(guildID, tokens)
+}
+
+func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
+	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+
+	var val int
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetKarmaTokens(guildID)
+		if err != nil {
+			return 0, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
 }

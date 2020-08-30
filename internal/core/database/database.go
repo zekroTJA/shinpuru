@@ -137,6 +137,15 @@ type Database interface {
 	SetKarma(userID, guildID string, val int) error
 	UpdateKarma(userID, guildID string, diff int) error
 
+	SetKarmaState(guildID string, state bool) error
+	GetKarmaState(guildID string) (bool, error)
+
+	SetKarmaEmotes(guildID, emotes string) error
+	GetKarmaEmotes(guildID string) (string, error)
+
+	SetKarmaTokens(guildID string, tokens int) error
+	GetKarmaTokens(guildID string) (int, error)
+
 	//////////////////////////////////////////////////////
 
 	// Deprecated

@@ -130,6 +130,14 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`emotes` text NOT NULL DEFAULT ''," +
+		"`tokens` bigint(20)" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -932,5 +940,92 @@ func (m *SqliteMiddleware) UpdateKarma(userID, guildID string, diff int) (err er
 		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
 			userID, guildID, diff)
 	}
+	return
+}
+
+func (m *SqliteMiddleware) SetKarmaState(guildID string, state bool) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET state = ? WHERE guildID = ?",
+		state, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, state) VALUES (?, ?)",
+			guildID, state)
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) GetKarmaState(guildID string) (state bool, err error) {
+	err = m.db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) SetKarmaEmotes(guildID, emotes string) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET emotes = ? WHERE guildID = ?",
+		emotes, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, emotes) VALUES (?, ?)",
+			guildID, emotes)
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) GetKarmaEmotes(guildID string) (emotes string, err error) {
+	err = m.db.QueryRow("SELECT emotes FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&emotes)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) SetKarmaTokens(guildID string, tokens int) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET tokens = ? WHERE guildID = ?",
+		tokens, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, tokens) VALUES (?, ?)",
+			guildID, tokens)
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
+	err = m.db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&tokens)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
 	return
 }

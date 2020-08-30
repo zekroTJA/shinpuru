@@ -139,6 +139,15 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`emotes` text NOT NULL DEFAULT ''," +
+		"`tokens` bigint(20)," +
+		"PRIMARY KEY (`guildID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -942,5 +951,93 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
 			userID, guildID, diff)
 	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET state = ? WHERE guildID = ?",
+		state, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, state) VALUES (?, ?)",
+			guildID, state)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) {
+	err = m.db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotes string) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET emotes = ? WHERE guildID = ?",
+		emotes, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, emotes) VALUES (?, ?)",
+			guildID, emotes)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotes string, err error) {
+	err = m.db.QueryRow("SELECT emotes FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&emotes)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET tokens = ? WHERE guildID = ?",
+		tokens, guildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, tokens) VALUES (?, ?)",
+			guildID, tokens)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
+	err = m.db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&tokens)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
 	return
 }
