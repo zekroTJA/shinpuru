@@ -507,28 +507,12 @@ func (m *SqliteMiddleware) DeleteVote(voteID string) error {
 	return err
 }
 
-func (m *SqliteMiddleware) GetMuteRoles() (map[string]string, error) {
-	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
-	results := make(map[string]string)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var guildID, roleID string
-		err = rows.Scan(&guildID, &roleID)
-		if err == nil {
-			results[guildID] = roleID
-		}
-	}
-	return results, nil
-}
-
-func (m *SqliteMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *SqliteMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *SqliteMiddleware) SetMuteRole(guildID, roleID string) error {
+func (m *SqliteMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 

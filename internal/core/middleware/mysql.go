@@ -517,28 +517,12 @@ func (m *MysqlMiddleware) DeleteVote(voteID string) error {
 	return err
 }
 
-func (m *MysqlMiddleware) GetMuteRoles() (map[string]string, error) {
-	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
-	results := make(map[string]string)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var guildID, roleID string
-		err = rows.Scan(&guildID, &roleID)
-		if err == nil {
-			results[guildID] = roleID
-		}
-	}
-	return results, nil
-}
-
-func (m *MysqlMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *MysqlMiddleware) SetMuteRole(guildID, roleID string) error {
+func (m *MysqlMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 

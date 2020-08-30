@@ -129,7 +129,7 @@ func (c *CmdMute) setup(ctx shireikan.Context) error {
 				}
 			}
 
-			err := db.SetMuteRole(ctx.GetGuild().ID, muteRole.ID)
+			err := db.SetGuildMuteRole(ctx.GetGuild().ID, muteRole.ID)
 			if err != nil {
 				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Failed setting mute role in database: ```\n"+err.Error()+"\n```").
@@ -178,7 +178,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 
 	db, _ := ctx.GetObject("db").(database.Database)
 
-	muteRoleID, err := db.GetMuteRoleGuild(ctx.GetGuild().ID)
+	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if database.IsErrDatabaseNotFound(err) {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Mute command is not set up. Please enter the command `mute setup`.").
@@ -299,7 +299,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 func (c *CmdMute) list(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject("db").(database.Database)
 
-	muteRoleID, err := db.GetMuteRoleGuild(ctx.GetGuild().ID)
+	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {
 		return err
 	}
@@ -345,7 +345,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 func (c *CmdMute) displayMuteRole(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject("db").(database.Database)
 
-	roleID, err := db.GetMuteRoleGuild(ctx.GetGuild().ID)
+	roleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {
 		return err
 	}

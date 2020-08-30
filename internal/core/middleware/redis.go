@@ -538,16 +538,12 @@ func (r *RedisMiddleware) DeleteVote(voteID string) error {
 	return r.db.DeleteVote(voteID)
 }
 
-func (r *RedisMiddleware) GetMuteRoles() (map[string]string, error) {
-	return r.db.GetMuteRoles()
-}
-
-func (r *RedisMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
+func (r *RedisMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetMuteRoleGuild(guildID)
+		val, err = r.db.GetGuildMuteRole(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -562,14 +558,14 @@ func (r *RedisMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
 	return val, nil
 }
 
-func (r *RedisMiddleware) SetMuteRole(guildID, roleID string) error {
+func (r *RedisMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
 
 	if err := r.client.Set(key, roleID, 0).Err(); err != nil {
 		return err
 	}
 
-	return r.db.SetMuteRole(guildID, roleID)
+	return r.db.SetGuildMuteRole(guildID, roleID)
 }
 
 func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
