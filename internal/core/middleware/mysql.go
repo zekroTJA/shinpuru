@@ -10,7 +10,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
@@ -20,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"

@@ -148,9 +148,11 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [`github.com/zekroTJA/shinpuru/pkg/lctimer`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/lctimer)
 - [`github.com/zekroTJA/shinpuru/pkg/msgcollector`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/msgcollector)
 - [`github.com/zekroTJA/shinpuru/pkg/multierror`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/multierror)
+- [`github.com/zekroTJA/shinpuru/pkg/permissions`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/permissions)
 - [`github.com/zekroTJA/shinpuru/pkg/random`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/random)
 - [`github.com/zekroTJA/shinpuru/pkg/roleutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/roleutil)
 - [`github.com/zekroTJA/shinpuru/pkg/timeutil`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/timeutil)
+- [`github.com/zekroTJA/shinpuru/pkg/twitchnotify`](https://github.com/zekroTJA/shinpuru/tree/master/pkg/twitchnotify)
 
 ---
 
