@@ -18,7 +18,6 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
@@ -28,6 +27,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
+	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 

@@ -1,3 +1,10 @@
+// Package permissions provides functionalities to
+// calculate, update and merge arrays of permission
+// domain rules.
+//
+// Read this to get more information about how
+// permission domains and rules are working:
+// https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide
 package permissions
 
 import (
