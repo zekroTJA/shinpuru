@@ -31,11 +31,11 @@ func NewColorListener(db database.Database, publicAddr string) *ColorListener {
 }
 
 func (l *ColorListener) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
-	l.process(s, e.Message)
+	l.process(s, e.Message, false)
 }
 
 func (l *ColorListener) HandlerMessageEdit(s *discordgo.Session, e *discordgo.MessageUpdate) {
-	l.process(s, e.Message)
+	l.process(s, e.Message, true)
 }
 
 func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
@@ -90,7 +90,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 	l.emojiCahce.Remove(cacheKey)
 }
 
-func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
+func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, removeReactions bool) {
 	if len(m.Content) < 6 {
 		return
 	}
@@ -116,6 +116,12 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message) {
 	}
 	if !active {
 		return
+	}
+
+	if removeReactions && len(matches) > 0 {
+		if err := s.MessageReactionsRemoveAll(m.ChannelID, m.ID); err != nil {
+			util.Log.Error("[ColorListener] could not remove previous color reactions:", err)
+		}
 	}
 
 	// Execute reaction for each match
@@ -159,6 +165,15 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
+	// Delete the uploaded emote after 5 seconds
+	// to give discords caching or whatever some
+	// time to save the emoji.
+	defer time.AfterFunc(5*time.Second, func() {
+		if err = s.GuildEmojiDelete(m.GuildID, emoji.ID); err != nil {
+			util.Log.Error("[ColorListener] failed deleting emoji:", err)
+		}
+	})
+
 	// Add reaction of the uploaded emote to the message
 	err = s.MessageReactionAdd(m.ChannelID, m.ID, emoji.APIName())
 	if err != nil {
@@ -169,13 +184,4 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// Set messageID + emojiID with RGBA color object
 	// to emojiCache
 	l.emojiCahce.Set(m.ID+emoji.ID, clr, 24*time.Hour)
-
-	// Delete the uploaded emote after 5 seconds
-	// to give discords caching or whatever some
-	// time to save the emoji.
-	time.AfterFunc(5*time.Second, func() {
-		if err = s.GuildEmojiDelete(m.GuildID, emoji.ID); err != nil {
-			util.Log.Error("[ColorListener] failed deleting emoji:", err)
-		}
-	})
 }
