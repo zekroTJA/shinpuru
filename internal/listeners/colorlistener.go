@@ -15,6 +15,10 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
+const (
+	colorMatchesCap = 5
+)
+
 var (
 	rxColorHex = regexp.MustCompile(`^#?[\dA-Fa-f]{6,8}$`)
 )
@@ -103,7 +107,7 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 	// predefined regex.
 	for _, v := range strings.Split(m.Content, " ") {
 		if rxColorHex.MatchString(v) {
-			matches = append(matches, v)
+			matches = appendIfUnique(matches, v)
 		}
 	}
 
@@ -118,7 +122,19 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 		return
 	}
 
-	if removeReactions && len(matches) > 0 {
+	cMatches := len(matches)
+
+	// Cancel when no matches were found
+	if cMatches == 0 {
+		return
+	}
+
+	// Cap matches count to colorMatchesCap
+	if cMatches > colorMatchesCap {
+		matches = matches[:colorMatchesCap]
+	}
+
+	if removeReactions {
 		if err := s.MessageReactionsRemoveAll(m.ChannelID, m.ID); err != nil {
 			util.Log.Error("[ColorListener] could not remove previous color reactions:", err)
 		}
@@ -184,4 +200,18 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// Set messageID + emojiID with RGBA color object
 	// to emojiCache
 	l.emojiCahce.Set(m.ID+emoji.ID, clr, 24*time.Hour)
+}
+
+// appendIfUnique appends the given elem to the
+// passed slice only if the elem is not already
+// contained in slice. Otherwise, slice will
+// be returned unchanged.
+func appendIfUnique(slice []string, elem string) []string {
+	for _, m := range slice {
+		if m == elem {
+			return slice
+		}
+	}
+
+	return append(slice, elem)
 }
