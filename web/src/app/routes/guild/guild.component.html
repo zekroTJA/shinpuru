@@ -19,14 +19,14 @@
 
         <!-- HEADING -->
         <div id="heading-container">
-            <img [src]="guild.icon ? guild.icon_url : '/assets/dc-logo.svg'"/>
+            <img [src]="guild.icon_url | discordAsset:'/assets/dc-logo.svg':64:(!!guild.icon)"/>
             <h3>{{ guild.name }}</h3>
             <p class="embeded">{{ guild.id }}</p>
         </div>
 
         <!-- LOGGED IN MEMBER INFO -->
         <a id="user-info" class="mb-4" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
-            <img [src]="guild.self_member.avatar_url"/>
+            <img [src]="guild.self_member.avatar_url | discordAsset:'':80"/>
             <div class="info-container">
                 <div class="d-flex">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>

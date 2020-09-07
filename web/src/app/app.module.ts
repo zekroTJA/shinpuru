@@ -33,6 +33,7 @@ import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-sc
 import { CommandsComponent } from './routes/commands/commands.component';
 import { KeyValuePipe } from './routes/pipes/key-value.pipe';
 import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
+import { DiscordAssetPipe } from './routes/pipes/discord-asset.pipe';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
     CommandsComponent,
     KeyValuePipe,
     CommandSortPipe,
+    DiscordAssetPipe,
   ],
   imports: [
     NgbModule,

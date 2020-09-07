@@ -10,7 +10,7 @@
             title="{{s.member.user.username}}#{{s.member.user.discriminator}}"
         >
             <span class="index">#{{ i + 1 }}</span>
-            <img [src]="s.member.avatar_url"/>
+            <img [src]="s.member.avatar_url | discordAsset:'':32"/>
             <p class="m-0 ellipsis">{{s.member.user.username}}#{{s.member.user.discriminator}}</p>
             <app-karma-tile class="ml-auto pl-2" [value]="s.value" [small]="true"></app-karma-tile>
         </a>
