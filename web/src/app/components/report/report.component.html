@@ -7,7 +7,7 @@
             <div class="col">
                 <h4>Executor</h4>
                 <div *ngIf="executor;else executorid" class="d-flex">
-                    <img class="avi" [src]="executor?.avatar_url"/>
+                    <img class="avi" [src]="executor?.avatar_url | discordAsset:'':32"/>
                     <div>
                         <p>{{ executor?.user.username }}#{{ executor?.user.discriminator }}</p>
                         <p class="small">{{ report.executor_id }}</p>
@@ -18,7 +18,7 @@
             <div class="col">
                 <h4>Victim</h4>
                 <div *ngIf="victim;else victimid" class="d-flex">
-                    <img class="avi" [src]="victim?.avatar_url"/>
+                    <img class="avi" [src]="victim?.avatar_url | discordAsset:'':32"/>
                     <div>
                         <p>{{ victim?.user.username }}#{{ victim?.user.discriminator }}</p>
                         <p class="small">{{ report.victim_id }}</p>

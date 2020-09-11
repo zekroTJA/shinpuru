@@ -22,7 +22,7 @@
     ></app-popup>
     <a class="logout-btn" (click)="popupVisible = true">&#9660;</a>
     <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
-    <img class="avatar" [(src)]="selfUser.avatar_url" />
+    <img class="avatar" [src]="selfUser.avatar_url | discordAsset:'':32" />
   </div>
 </div>
 
