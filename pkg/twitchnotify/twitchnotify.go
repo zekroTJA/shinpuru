@@ -1,3 +1,7 @@
+// Package twitchnotify provides functionalities
+// to watch the state of twitch streams and
+// notifying changes by polling the twitch REST
+// API.
 package twitchnotify
 
 import (
@@ -10,7 +14,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 )
 
@@ -42,11 +45,18 @@ var (
 // stream data as well as the user data of the streamer.
 type NotifyHandler func(*Stream, *User)
 
+// Credentials hold the client ID and client secret
+// of a twitch API application.
+type Credentials struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
 // NotifyWorker provides general utilities to fetch
 // watched online streamers and call notify handler
 // callbacks when a stream goes online or offline.
 type NotifyWorker struct {
-	conf               *config.TwitchApp
+	creds              *Credentials
 	wentOnlineHandler  NotifyHandler
 	wentOfflineHandler NotifyHandler
 
@@ -59,69 +69,11 @@ type NotifyWorker struct {
 	bearerValid time.Time
 }
 
-// Stream wraps information about a twitch stream.
-type Stream struct {
-	ID           string   `json:"id"`
-	UserID       string   `json:"user_id"`
-	UserName     string   `json:"user_name"`
-	GameID       string   `json:"game_id"`
-	CommunityIDs []string `json:"community_ids"`
-	Type         string   `json:"type"`
-	Title        string   `json:"title"`
-	ViewerCount  int      `json:"viewer_count"`
-	StartedAt    string   `json:"started_at"`
-	Language     string   `json:"language"`
-	ThumbnailURL string   `json:"thumbnail_url"`
-
-	Game *Game
-}
-
-// User wraps information about a twitch streamer.
-type User struct {
-	ID          string `json:"id"`
-	DisplayName string `json:"display_name"`
-	LoginName   string `json:"login"`
-	Description string `json:"description"`
-	AviURL      string `json:"profile_image_url"`
-}
-
-// Game wraps information about a twitch game type.
-type Game struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	IconURL string `json:"box_art_url"`
-}
-
-// DBEntry specifies a database entry for tracking
-// twitch users.
-type DBEntry struct {
-	GuildID      string
-	ChannelID    string
-	TwitchUserID string
-}
-
-type usersDataWrapper struct {
-	Data []*User `json:"data"`
-}
-
-type streamsDataWrapper struct {
-	Data []*Stream `json:"data"`
-}
-
-type gamesDataWrapper struct {
-	Data []*Game `json:"data"`
-}
-
-type bearerTokenResponse struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int    `json:"expires_in"`
-}
-
 // New initializes a new NotifyWorker instance and
 // starts the worker timer loop.
-func New(conf *config.TwitchApp, wentOnlineHandler NotifyHandler, wentOfflineHandler NotifyHandler) (*NotifyWorker, error) {
+func New(creds Credentials, wentOnlineHandler NotifyHandler, wentOfflineHandler NotifyHandler) (*NotifyWorker, error) {
 	worker := &NotifyWorker{
-		conf:               conf,
+		creds:              &creds,
 		wentOfflineHandler: wentOfflineHandler,
 		wentOnlineHandler:  wentOnlineHandler,
 
@@ -218,7 +170,7 @@ func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 // is then used for further request authentication.
 func (w *NotifyWorker) getBearerToken() error {
 	url := fmt.Sprintf("%s?client_id=%s&client_secret=%s&grant_type=client_credentials",
-		oAuth2Endpoint, w.conf.ClientID, w.conf.ClientSecret)
+		oAuth2Endpoint, w.creds.ClientID, w.creds.ClientSecret)
 
 	res, err := httpreq.Post(url, nil, nil)
 	if err != nil {
@@ -251,7 +203,7 @@ func (w *NotifyWorker) doAuthenticatedGet(url string, data interface{}) (err err
 
 	res, err := httpreq.Get(url, map[string]string{
 		"Authorization": fmt.Sprintf("Bearer %s", w.bearerToken),
-		"Client-ID":     w.conf.ClientID,
+		"Client-ID":     w.creds.ClientID,
 	})
 	if err != nil {
 		return

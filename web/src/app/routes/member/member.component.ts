@@ -42,6 +42,8 @@ export class MemberRouteComponent {
   public repModalReason = '';
   public repModalAttachment = '';
 
+  public canRevoke = false;
+
   constructor(
     public modal: NgbModal,
     private api: APIService,
@@ -69,6 +71,7 @@ export class MemberRouteComponent {
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
         .subscribe((perms) => {
           this.permissionsAllowed = perms;
+          this.canRevoke = this.hasPermission('sp.guild.mod.report');
         });
     });
 

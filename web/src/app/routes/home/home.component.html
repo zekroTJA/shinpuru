@@ -9,7 +9,7 @@
       routerLink="/guilds/{{ g.id }}"
     >
       <div class="guild-tn">
-        <img [src]="g.icon ? g.icon_url : '/assets/dc-logo.svg'" />
+        <img [src]="g.icon_url | discordAsset:'/assets/dc-logo.svg':256:(!!g.icon)" />
       </div>
       <div class="info-container">
         <h1>{{ g.name }}</h1>
@@ -35,11 +35,7 @@
         >
           <div class="guild-tn">
             <img
-              [src]="
-                inviteSettings.guild.icon
-                  ? inviteSettings.guild.icon_url
-                  : '/assets/dc-logo.svg'
-              "
+              [src]="inviteSettings.guild.icon_url | discordAsset:'/assets/dc-logo.svg':512:(!!inviteSettings.guild.icon)"
             />
           </div>
           <div class="info-container">

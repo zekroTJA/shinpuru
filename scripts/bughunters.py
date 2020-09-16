@@ -14,6 +14,33 @@ HEADERS = {
     'Authorization': "bearer " + os.environ.get('GITHUB_TOKEN')
 }
 
+POINTS_FOR_ISSUE = 1
+POINTS_FOR_PR = 2
+
+class BHEntry:
+    def __init__(self):
+        self.issues = []
+        self.prs = []
+        self.points = 0
+
+    def add_issue(self, issue):
+        self.issues.append(issue)
+        self.points += POINTS_FOR_ISSUE
+  
+    def add_pr(self, pr):
+        self.prs.append(pr)
+        self.points += POINTS_FOR_PR
+  
+    def sort_items(self):
+        self.issues.sort(key=lambda n: int(n.get("number")))
+        self.prs.sort(key=lambda n: int(n.get("number")))
+  
+    def get_formatted_issues(self):
+        return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.issues]
+  
+    def get_formatted_prs(self):
+        return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.prs]
+
 
 def do_req(query: str) -> Dict:
     data = json.dumps({
@@ -63,7 +90,8 @@ def query_prs(login: str, repo: str, after: str = None) -> Dict:
                   login
                 },
                 number,
-                url
+                url,
+                merged
               }
             }
           }
@@ -108,32 +136,44 @@ if __name__ == "__main__":
     issues = [i for i in issues if i.get("author") and i.get("author").get("login") != "zekroTJA"]
     
     prs = query_all_prs("zekroTJA", "shinpuru")
-    prs = [p for p in prs if p.get("author") and p.get("author").get("login") != "zekroTJA"]
+    prs = [p for p in prs if p.get("merged") and p.get("author") and p.get("author").get("login") != "zekroTJA"]
 
     bhs = {}
 
     for i in issues:
         author = i.get("author").get("login")
         if author not in bhs:
-            bhs[author] = []
-        bhs[author].append(i)
+            bhs[author] = BHEntry()
+        bhs[author].add_issue(i)
 
     for p in prs:
         author = p.get("author").get("login")
         if author not in bhs:
-            bhs[author] = []
-        bhs[author].append(p)
+            bhs[author] = BHEntry()
+        bhs[author].add_pr(p)
 
     data = "# Bug Hunters\n\n" + \
-           "A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️\n\n" + \
-           "| GitHub | Issues / PRs |\n" + \
-           "|--------|--------------|\n"
+           "A list to honor all people who found some bugs, had some great ideas " + \
+           "or contributed directly to shinpuru. ❤️\n\n" + \
+           "| GitHub | Issues | PRs | Points* |\n" + \
+           "|--------|--------|-----|---------|\n"
 
-    items = sorted(bhs.items(), key=lambda x: x[0].lower())
+    items = sorted(bhs.items(), key=lambda x: x[1].points, reverse=True)
+
     for k, v in items:
-        v.sort(key=lambda n: int(n.get("number")))
-        nums = ["[#{}]({})".format(n.get("number"), n.get("url")) for n in v]
-        data += "| [{}](https://github.com/{}) | {} |\n".format(k, k, ', '.join(nums))
+        v.sort_items()
+
+        issues = v.get_formatted_issues()
+        prs = v.get_formatted_prs()
+        points = v.points
+        
+        data += "| [{}](https://github.com/{}) | {} | {} | `{}` |\n".format(
+            k, k, ', '.join(issues), ', '.join(prs), points)
+
+
+    data += ("\n\n---\n*For explaination: A contributor gets `{}` point(s) for each " + \
+             "created issue and `{}` point(s) for each **merged** pull request.").format(
+             POINTS_FOR_ISSUE, POINTS_FOR_PR)
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:
         f.write(data)

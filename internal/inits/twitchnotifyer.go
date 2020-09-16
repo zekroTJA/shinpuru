@@ -4,9 +4,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/twitchnotify"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
 func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) (*twitchnotify.NotifyWorker, *listeners.ListenerTwitchNotify) {
@@ -15,8 +15,10 @@ func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db da
 	}
 
 	listener := listeners.NewListenerTwitchNotify(session, config, db)
-	tnw, err := twitchnotify.New(config.TwitchApp,
-		listener.HandlerWentOnline, listener.HandlerWentOffline)
+	tnw, err := twitchnotify.New(twitchnotify.Credentials{
+		ClientID:     config.TwitchApp.ClientID,
+		ClientSecret: config.TwitchApp.ClientSecret,
+	}, listener.HandlerWentOnline, listener.HandlerWentOffline)
 
 	if err != nil {
 		util.Log.Fatalf("twitch app credentials are invalid: %s", err)

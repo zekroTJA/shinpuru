@@ -18,7 +18,6 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/permissions"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
@@ -28,6 +27,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
+	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 )
 
@@ -548,10 +548,12 @@ func (ws *WebServer) handlerPostGuildPermissions(ctx *routing.Context) error {
 			rperms = make(permissions.PermissionArray, 0)
 		}
 
-		rperms = rperms.Update(update.Perm, false)
+		rperms, changed := rperms.Update(update.Perm, false)
 
-		if err = ws.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
-			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		if changed {
+			if err = ws.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
+				return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+			}
 		}
 	}
 

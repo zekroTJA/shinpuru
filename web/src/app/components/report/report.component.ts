@@ -16,6 +16,7 @@ export class ReportComponent implements OnInit {
   @Input() public report: Report;
   @Input() public victim: Member;
   @Input() public executor: Member;
+  @Input() public allowRevoke: boolean;
 
   @Output() public revoke = new EventEmitter<any>();
 

@@ -79,7 +79,7 @@
     <div *ngIf="member && guild">
 
         <div id="heading-container">
-            <img [src]="member.avatar_url"/>
+            <img [src]="member.avatar_url | discordAsset:'':64"/>
             <div>
                 <div class="d-flex">
                     <h3>{{ member.user.username }}#{{ member.user.discriminator }}</h3>
@@ -175,6 +175,7 @@
                 *ngFor="let rep of reports" 
                 [report]="rep" 
                 [victim]="member"
+                [allowRevoke]="canRevoke"
                 (revoke)="revokeReport(rep)"
             ></app-report>
         </div>

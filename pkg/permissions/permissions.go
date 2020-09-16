@@ -1,3 +1,10 @@
+// Package permissions provides functionalities to
+// calculate, update and merge arrays of permission
+// domain rules.
+//
+// Read this to get more information about how
+// permission domains and rules are working:
+// https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide
 package permissions
 
 import (
@@ -27,8 +34,8 @@ type PermissionArray []string
 // and newPerm is '-sp.guild.mod.ban', the
 // returned permission array will be
 //   +sp.guild.*
-func (p PermissionArray) Update(newPerm string, override bool) PermissionArray {
-	newPermsArray := make(PermissionArray, len(p)+1)
+func (p PermissionArray) Update(newPerm string, override bool) (newPermsArray PermissionArray, changed bool) {
+	newPermsArray = make(PermissionArray, len(p)+1)
 
 	i := 0
 	add := true
@@ -38,7 +45,7 @@ func (p PermissionArray) Update(newPerm string, override bool) PermissionArray {
 		// newPermsArray.
 		// Otherwise, if the prefix of perm and newPerm
 		// are unequal and prefix of newPerm is '-',
-		// the is not being added.
+		// newPerm is not being added.
 		// If prefix of perm and newPerm are unequal and
 		// prefix of newPerm is '+', newPerm will be added
 		// to newPermsArray.
@@ -67,7 +74,11 @@ func (p PermissionArray) Update(newPerm string, override bool) PermissionArray {
 		i++
 	}
 
-	return newPermsArray[:i]
+	newPermsArray = newPermsArray[:i]
+
+	changed = !p.Equals(newPermsArray)
+
+	return
 }
 
 // Merge updates all entries of p using Update one
@@ -78,9 +89,25 @@ func (p PermissionArray) Update(newPerm string, override bool) PermissionArray {
 // resulting permission rule set.
 func (p PermissionArray) Merge(newPerms PermissionArray, override bool) PermissionArray {
 	for _, cp := range newPerms {
-		p = p.Update(cp, override)
+		p, _ = p.Update(cp, override)
 	}
 	return p
+}
+
+// Equals returns true when p2 has the same elements
+// in the same order as p.
+func (p PermissionArray) Equals(p2 PermissionArray) bool {
+	if len(p) != len(p2) {
+		return false
+	}
+
+	for i, v := range p {
+		if v != p2[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 // Check returns true if the passed domainName
