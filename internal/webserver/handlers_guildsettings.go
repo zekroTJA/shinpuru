@@ -305,3 +305,34 @@ func (ws *WebServer) handlerGetGuildSettingsKarma(ctx *routing.Context) (err err
 
 	return jsonResponse(ctx, settings, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/settings/karma
+
+func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.karma"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	settings := new(KarmaSettings)
+
+	if err = ws.db.SetKarmaState(guildID, settings.State); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetKarmaEmotes(guildID, strings.Join(settings.Emotes, "")); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetKarmaTokens(guildID, settings.Tokens); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}

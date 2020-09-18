@@ -197,7 +197,8 @@ func (ws *WebServer) registerHandlers() {
 
 	guildSettings := guild.Group("/settings")
 	guildSettings.
-		Get("/karma", ws.handlerGetGuildSettingsKarma)
+		Get("/karma", ws.handlerGetGuildSettingsKarma).
+		Post(ws.handlerPostGuildSettingsKarma)
 
 	guild.
 		Get("/settings", ws.handlerGetGuildSettings).
