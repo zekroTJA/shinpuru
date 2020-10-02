@@ -142,6 +142,10 @@
             <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
         </div>
         <div *ngIf="guildSettingsToggle">
+            <div class="settingsTile advanced">
+                <h5>Advanced</h5>
+                <button class="advanced-button" ngbTooltip="Karma Settings" (click)="navigateSetting('karma')"><img src="/assets/karma.svg"/></button>
+            </div>
             <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">
                 <h5>Prefix</h5>
                 <div class="d-flex">

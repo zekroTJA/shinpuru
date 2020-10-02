@@ -11,6 +11,7 @@ import { InfoComponent } from './routes/info/info.component';
 import { APITokenComponent } from './routes/apitoken/apitoken.component';
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { CommandsComponent } from './routes/commands/commands.component';
+import { GuildAdminKarmaComponent } from './routes/guild-admin/karma/ga-karma.component';
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/scoreboard',
     component: ScoreboardComponent,
+  },
+  {
+    path: 'guilds/:guildid/guildadmin/karma',
+    component: GuildAdminKarmaComponent,
   },
   {
     path: 'guilds/:guildid/:memberid',
