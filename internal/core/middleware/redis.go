@@ -709,3 +709,19 @@ func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
 func (m *RedisMiddleware) UpdateKarma(userID, guildID string, diff int) error {
 	return m.db.UpdateKarma(userID, guildID, diff)
 }
+
+func (m *RedisMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	return m.db.SetLockChan(chanID, guildID, executorID, permissions)
+}
+
+func (m *RedisMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	return m.db.GetLockChan(chanID)
+}
+
+func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	return m.db.GetLockChannels(guildID)
+}
+
+func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
+	return m.db.DeleteAPIToken(chanID)
+}

@@ -112,6 +112,11 @@ type Database interface {
 	SetKarma(userID, guildID string, val int) error
 	UpdateKarma(userID, guildID string, diff int) error
 
+	SetLockChan(chanID, guildID, executorID, permissions string) error
+	GetLockChan(chanID string) (guildID, executorID, permissions string, err error)
+	GetLockChannels(guildID string) (chanIDs []string, err error)
+	DeleteLockChan(chanID string) error
+
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
 	// Deprecated

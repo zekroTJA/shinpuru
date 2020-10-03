@@ -130,6 +130,14 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+		"`chanID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`guildID` text NOT NULL DEFAULT ''," +
+		"`executorID` text NOT NULL DEFAULT ''," +
+		"`permissions` text NOT NULL DEFAULT ''" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -949,4 +957,40 @@ func (m *SqliteMiddleware) UpdateKarma(userID, guildID string, diff int) (err er
 			userID, guildID, diff)
 	}
 	return
+}
+
+func (m *SqliteMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	_, err := m.db.Exec("INSERT INTO chanlock (chanID, guildID, executorID, permissions) VALUES (?, ?, ?, ?)",
+		chanID, guildID, executorID, permissions)
+	return err
+}
+
+func (m *SqliteMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	err = m.db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
+		Scan(&guildID, &executorID, &permissions)
+	return
+}
+
+func (m *SqliteMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	chanIDs = make([]string, 0)
+	rows, err := m.db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var id string
+		if err = rows.Scan(&id); err != nil {
+			return
+		}
+		chanIDs = append(chanIDs, id)
+	}
+
+	return
+}
+
+func (m *SqliteMiddleware) DeleteLockChan(chanID string) error {
+	_, err := m.db.Exec("DELETE FROM chanlock WHERE chanID = ?",
+		chanID)
+	return err
 }
