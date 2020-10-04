@@ -979,12 +979,18 @@ func (m *MysqlMiddleware) SetLockChan(chanID, guildID, executorID, permissions s
 func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
 	err = m.db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
 		Scan(&guildID, &executorID, &permissions)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	return
 }
 
 func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
 	chanIDs = make([]string, 0)
 	rows, err := m.db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	if err != nil {
 		return
 	}
@@ -1003,5 +1009,8 @@ func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err
 func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
 	_, err := m.db.Exec("DELETE FROM chanlock WHERE chanID = ?",
 		chanID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	return err
 }
