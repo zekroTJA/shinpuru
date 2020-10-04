@@ -139,6 +139,15 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+		"`chanID` varchar(25) NOT NULL," +
+		"`guildID` text NOT NULL DEFAULT ''," +
+		"`executorID` text NOT NULL DEFAULT ''," +
+		"`permissions` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`chanID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -959,4 +968,49 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 			userID, guildID, diff)
 	}
 	return
+}
+
+func (m *MysqlMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	_, err := m.db.Exec("INSERT INTO chanlock (chanID, guildID, executorID, permissions) VALUES (?, ?, ?, ?)",
+		chanID, guildID, executorID, permissions)
+	return err
+}
+
+func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	err = m.db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
+		Scan(&guildID, &executorID, &permissions)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	chanIDs = make([]string, 0)
+	rows, err := m.db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var id string
+		if err = rows.Scan(&id); err != nil {
+			return
+		}
+		chanIDs = append(chanIDs, id)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
+	_, err := m.db.Exec("DELETE FROM chanlock WHERE chanID = ?",
+		chanID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return err
 }
