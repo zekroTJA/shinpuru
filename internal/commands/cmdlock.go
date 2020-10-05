@@ -116,10 +116,6 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		}
 	}
 
-	rolesMap[target.GuildID] = &discordgo.Role{
-		Position: 0,
-	}
-
 	// The info message needs to be sent before all permissions are set
 	// to prevent occuring errors due to potential missing permissions.
 	err = util.SendEmbed(ctx.GetSession(), target.ID,
@@ -131,11 +127,7 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		return err
 	}
 
-	if err = ctx.GetSession().ChannelPermissionSet(
-		target.ID, ctx.GetSession().State.User.ID, "member", discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
-		return err
-	}
-
+	hasSetEveryone := false
 	for _, po := range target.PermissionOverwrites {
 		if po.Type == "role" {
 			if r, ok := rolesMap[po.ID]; ok && r.Position < highest {
@@ -150,6 +142,21 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 				target.ID, po.ID, "member", po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 				return err
 			}
+			if po.ID == target.GuildID {
+				hasSetEveryone = true
+			}
+		}
+	}
+
+	if err = ctx.GetSession().ChannelPermissionSet(
+		target.ID, ctx.GetSession().State.User.ID, "member", discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
+		return err
+	}
+
+	if !hasSetEveryone {
+		if err = ctx.GetSession().ChannelPermissionSet(
+			target.ID, target.GuildID, "role", 0, discordgo.PermissionSendMessages); err != nil {
+			return err
 		}
 	}
 
