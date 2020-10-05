@@ -723,5 +723,5 @@ func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err
 }
 
 func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
-	return m.db.DeleteAPIToken(chanID)
+	return m.db.DeleteLockChan(chanID)
 }
