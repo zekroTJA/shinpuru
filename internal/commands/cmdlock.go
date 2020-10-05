@@ -120,6 +120,17 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		Position: 0,
 	}
 
+	// The info message needs to be sent before all permissions are set
+	// to prevent occuring errors due to potential missing permissions.
+	err = util.SendEmbed(ctx.GetSession(), target.ID,
+		fmt.Sprintf("This channel is chat-locked by %s.\nYou may not be able to chat "+
+			"into this channel until the channel is unlocked again.", ctx.GetUser().Mention()),
+		"", static.ColorEmbedOrange).
+		Error()
+	if err != nil {
+		return err
+	}
+
 	if err = ctx.GetSession().ChannelPermissionSet(
 		target.ID, ctx.GetSession().State.User.ID, "member", discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
 		return err
@@ -146,11 +157,7 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		return err
 	}
 
-	return util.SendEmbed(ctx.GetSession(), target.ID,
-		fmt.Sprintf("This channel is chat-locked by %s.\nYou may not be able to chat "+
-			"into this channel until the channel is unlocked again.", ctx.GetUser().Mention()),
-		"", static.ColorEmbedOrange).
-		Error()
+	return nil
 }
 
 func (c *CmdLock) unlock(target *discordgo.Channel, ctx shireikan.Context, db database.Database, executorID, encodedPerms string) error {
