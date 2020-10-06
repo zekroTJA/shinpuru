@@ -801,3 +801,19 @@ func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 
 	return val, nil
 }
+
+func (m *RedisMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	return m.db.SetLockChan(chanID, guildID, executorID, permissions)
+}
+
+func (m *RedisMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	return m.db.GetLockChan(chanID)
+}
+
+func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	return m.db.GetLockChannels(guildID)
+}
+
+func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
+	return m.db.DeleteLockChan(chanID)
+}

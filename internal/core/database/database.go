@@ -147,6 +147,12 @@ type Database interface {
 	GetKarmaTokens(guildID string) (int, error)
 
 	//////////////////////////////////////////////////////
+	//// CHAN LOCK
+
+	SetLockChan(chanID, guildID, executorID, permissions string) error
+	GetLockChan(chanID string) (guildID, executorID, permissions string, err error)
+	GetLockChannels(guildID string) (chanIDs []string, err error)
+	DeleteLockChan(chanID string) error
 
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
