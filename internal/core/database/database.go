@@ -140,8 +140,8 @@ type Database interface {
 	SetKarmaState(guildID string, state bool) error
 	GetKarmaState(guildID string) (bool, error)
 
-	SetKarmaEmotes(guildID, emotes string) error
-	GetKarmaEmotes(guildID string) (string, error)
+	SetKarmaEmotes(guildID, emotesInc, emotesDec string) error
+	GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error)
 
 	SetKarmaTokens(guildID string, tokens int) error
 	GetKarmaTokens(guildID string) (int, error)

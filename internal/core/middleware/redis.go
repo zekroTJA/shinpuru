@@ -38,9 +38,10 @@ const (
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
 	keyGuildColorReaction = "GUILD:COLORREACTION"
 
-	keyKarmaState  = "KARMA:STATE"
-	keyKarmaEmotes = "KARMA:EMOTES"
-	keyKarmaTokens = "KARMA:TOKENS"
+	keyKarmaState     = "KARMA:STATE"
+	keyKarmaemotesInc = "KARMA:EMOTES:ENC"
+	keyKarmaEmotesDec = "KARMA:EMOTES:DEC"
+	keyKarmaTokens    = "KARMA:TOKENS"
 
 	keyUserAPIToken = "USER:APITOKEN"
 
@@ -741,34 +742,45 @@ func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
 	return val, nil
 }
 
-func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotes string) error {
-	var key = fmt.Sprintf("%s:%s", keyKarmaEmotes, guildID)
-
-	if err := m.client.Set(key, emotes, 0).Err(); err != nil {
+func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
+	if err := m.client.Set(key, emotesInc, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.db.SetKarmaEmotes(guildID, emotes)
+	key = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
+	if err := m.client.Set(key, emotesDec, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaEmotes(guildID, emotesInc, emotesDec)
 }
 
-func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (string, error) {
-	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
+func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
+	var keyEnc = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
+	emotesInc, err1 := m.client.Get(keyEnc).Result()
 
-	val, err := m.client.Get(key).Result()
-	if err == redis.Nil {
-		val, err = m.db.GetKarmaEmotes(guildID)
+	var keyDec = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
+	emotesDec, err2 := m.client.Get(keyDec).Result()
+
+	if err1 == redis.Nil || err2 == redis.Nil {
+		emotesInc, emotesDec, err = m.db.GetKarmaEmotes(guildID)
 		if err != nil {
-			return "", err
+			return
 		}
 
-		err = m.client.Set(key, val, 0).Err()
-		return val, err
+		if err = m.client.Set(keyEnc, emotesInc, 0).Err(); err != nil {
+			return
+		}
+		if err = m.client.Set(keyDec, emotesDec, 0).Err(); err != nil {
+			return
+		}
 	}
 	if err != nil {
-		return "", err
+		return
 	}
 
-	return val, nil
+	return
 }
 
 func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {

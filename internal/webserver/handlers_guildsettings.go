@@ -289,19 +289,20 @@ func (ws *WebServer) handlerGetGuildSettingsKarma(ctx *routing.Context) (err err
 
 	settings := new(KarmaSettings)
 
-	if settings.State, err = ws.db.GetKarmaState(guildID); err != nil {
+	if settings.State, err = ws.db.GetKarmaState(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if settings.Tokens, err = ws.db.GetKarmaTokens(guildID); err != nil {
+	if settings.Tokens, err = ws.db.GetKarmaTokens(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	emotes, err := ws.db.GetKarmaEmotes(guildID)
-	if err != nil {
+	emotesInc, emotesDec, err := ws.db.GetKarmaEmotes(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
-	settings.Emotes = strings.Split(emotes, "")
+	settings.EmotesIncrease = strings.Split(emotesInc, "")
+	settings.EmotesDecrease = strings.Split(emotesDec, "")
 
 	return jsonResponse(ctx, settings, fasthttp.StatusOK)
 }
@@ -326,7 +327,9 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	if err = ws.db.SetKarmaEmotes(guildID, strings.Join(settings.Emotes, "")); err != nil {
+	emotesInc := strings.Join(settings.EmotesIncrease, "")
+	emotesDec := strings.Join(settings.EmotesDecrease, "")
+	if err = ws.db.SetKarmaEmotes(guildID, emotesInc, emotesDec); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 

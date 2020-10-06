@@ -142,7 +142,8 @@ func (m *MysqlMiddleware) setup() {
 	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
-		"`emotes` text NOT NULL DEFAULT ''," +
+		"`emotesInc` text NOT NULL DEFAULT ''," +
+		"`emotesDec` text NOT NULL DEFAULT ''," +
 		"`tokens` bigint(20)," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
@@ -993,9 +994,9 @@ func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) 
 	return
 }
 
-func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotes string) (err error) {
-	res, err := m.db.Exec("UPDATE karmaSettings SET emotes = ? WHERE guildID = ?",
-		emotes, guildID)
+func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (err error) {
+	res, err := m.db.Exec("UPDATE karmaSettings SET emotesInc = ?, emotesDec = ? WHERE guildID = ?",
+		emotesInc, emotesDec, guildID)
 	if err != nil {
 		return
 	}
@@ -1005,16 +1006,16 @@ func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotes string) (err error) {
 		return
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, emotes) VALUES (?, ?)",
-			guildID, emotes)
+		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, emotesInc, emotesDec) VALUES (?, ?, ?)",
+			guildID, emotesInc, emotesDec)
 	}
 
 	return
 }
 
-func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotes string, err error) {
-	err = m.db.QueryRow("SELECT emotes FROM karmaSettings WHERE guildID = ?",
-		guildID).Scan(&emotes)
+func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
+	err = m.db.QueryRow("SELECT emotesInc, emotesDec FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&emotesInc, &emotesDec)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}

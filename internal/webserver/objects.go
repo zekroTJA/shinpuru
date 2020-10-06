@@ -245,9 +245,10 @@ type CommandInfo struct {
 // KarmaSettings wraps settings properties for
 // guild karma settings.
 type KarmaSettings struct {
-	State  bool     `json:"state"`
-	Emotes []string `json:"emotes"`
-	Tokens int      `json:"tokens"`
+	State          bool     `json:"state"`
+	EmotesIncrease []string `json:"emotes_increase"`
+	EmotesDecrease []string `json:"emotes_decrease"`
+	Tokens         int      `json:"tokens"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

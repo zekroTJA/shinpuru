@@ -1,4 +1,9 @@
 <app-guild-admin-navbar></app-guild-admin-navbar>
 <div class="guild-settings-container">
-    <input />
+    <app-spinner *ngIf="!karmaSettings" [started]="true"></app-spinner>
+    <div *ngIf="karmaSettings">
+        <app-slider [(ngModel)]="karmaSettings.state">Karma-System enabled</app-slider>
+        <label for="i-emotes">Emotes</label>
+        <input id="i-emotes" type="text">
+    </div>
 </div>
