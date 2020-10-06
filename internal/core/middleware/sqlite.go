@@ -17,8 +17,6 @@ import (
 // for SQLite.
 type SqliteMiddleware struct {
 	*MysqlMiddleware
-
-	db *sql.DB
 }
 
 func (m *SqliteMiddleware) setup() {
@@ -132,14 +130,19 @@ func (m *SqliteMiddleware) setup() {
 }
 
 func (m *SqliteMiddleware) Connect(credentials ...interface{}) error {
+	m.MysqlMiddleware = new(MysqlMiddleware)
+
 	var err error
+
 	creds := credentials[0].(*config.DatabaseFile)
 	if creds == nil {
 		return errors.New("Database credentials from config were nil")
 	}
+
 	dsn := fmt.Sprintf("file:" + creds.DBFile)
 	m.db, err = sql.Open("sqlite3", dsn)
 	m.setup()
+
 	return err
 }
 
