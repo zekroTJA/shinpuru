@@ -13,17 +13,17 @@ import (
 )
 
 const (
-	// reactions used to add or remove karma
-	reactionsAddKarma    = "👍👌⭐✔"
-	reactionsRemoveKarma = "👎❌"
+	// // reactions used to add or remove karma
+	// reactionsAddKarma    = "👍👌⭐✔"
+	// reactionsRemoveKarma = "👎❌"
 
 	// duration until a user can differ karma
 	// with the same message
 	lifetimePerMessage = 24 * time.Hour
 
-	rateLimiterTokens   = 5                                      // RL bucket size
-	rateLimiterRestore  = time.Hour / rateLimiterTokens          // RL restore duration
-	lifetimeRateLimiter = rateLimiterRestore * rateLimiterTokens // lifetime of a RL in cache
+	// rateLimiterTokens   = 5                                      // RL bucket size
+	// rateLimiterRestore  = time.Hour / rateLimiterTokens          // RL restore duration
+	// lifetimeRateLimiter = rateLimiterRestore * rateLimiterTokens // lifetime of a RL in cache
 )
 
 const (
@@ -56,6 +56,24 @@ func NewListenerKarma(db database.Database) *ListenerKarma {
 func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
 	// Return when reaction was added by the bot itself
 	if e.UserID == s.State.User.ID {
+		return
+	}
+
+	// Get karma enabled state for this guild
+	if enabled, err := l.db.GetKarmaState(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		util.Log.Errorf("failed getting karma state (gid %s): %s", e.GuildID, err.Error())
+		return
+	} else if !enabled {
+		return
+	}
+
+	// Get karma emotes
+	reactionsAddKarma, reactionsRemoveKarma, err := l.db.GetKarmaEmotes(e.GuildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		util.Log.Errorf("failed getting karma emotes (gid %s): %s", e.GuildID, err.Error())
+		return
+	}
+	if reactionsAddKarma == "" || reactionsRemoveKarma == "" {
 		return
 	}
 
@@ -145,6 +163,18 @@ func (l *ListenerKarma) rateLimiterTake(userID, guildID string) bool {
 	key := fmt.Sprintf("%s:%s", userID, guildID)
 
 	limiter, ok := l.limiters.GetValue(key).(*ratelimit.Limiter)
+
+	rateLimiterTokens, err := l.db.GetKarmaTokens(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		util.Log.Errorf("failed getting karma tokens (gid %s): %s", guildID, err.Error())
+		return false
+	}
+	if rateLimiterTokens < 1 {
+		return false
+	}
+
+	rateLimiterRestore := time.Hour / time.Duration(rateLimiterTokens)
+	lifetimeRateLimiter := rateLimiterRestore * time.Duration(rateLimiterTokens)
 
 	if !ok || limiter == nil {
 		limiter = ratelimit.NewLimiter(rateLimiterRestore, rateLimiterTokens)

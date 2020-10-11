@@ -59,7 +59,7 @@ export class GuildComponent {
   public guildToggle = false;
   public modlogToggle = false;
   public securityToggle = false;
-  public guildSettingsToggle = true; // TODO: SET TO FALSE
+  public guildSettingsToggle = false;
   public permissionsToggle = false;
   public backupsToggle = false;
 

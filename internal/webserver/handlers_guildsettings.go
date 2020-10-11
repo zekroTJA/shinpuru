@@ -322,6 +322,9 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 	}
 
 	settings := new(KarmaSettings)
+	if err := parseJSONBody(ctx, settings); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
 
 	if err = ws.db.SetKarmaState(guildID, settings.State); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)

@@ -144,7 +144,7 @@ func (m *MysqlMiddleware) setup() {
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`emotesInc` text NOT NULL DEFAULT ''," +
 		"`emotesDec` text NOT NULL DEFAULT ''," +
-		"`tokens` bigint(20)," +
+		"`tokens` bigint(20) NOT NULL DEFAULT '1'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -966,20 +966,11 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 }
 
 func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) {
-	res, err := m.db.Exec("UPDATE karmaSettings SET state = ? WHERE guildID = ?",
-		state, guildID)
-	if err != nil {
-		return
-	}
-
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, state) VALUES (?, ?)",
-			guildID, state)
-	}
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, state) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE state = ?",
+		guildID, state, state)
 
 	return
 }
@@ -995,20 +986,11 @@ func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) 
 }
 
 func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (err error) {
-	res, err := m.db.Exec("UPDATE karmaSettings SET emotesInc = ?, emotesDec = ? WHERE guildID = ?",
-		emotesInc, emotesDec, guildID)
-	if err != nil {
-		return
-	}
-
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, emotesInc, emotesDec) VALUES (?, ?, ?)",
-			guildID, emotesInc, emotesDec)
-	}
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, emotesInc, emotesDec) "+
+			"VALUES (?, ?, ?) "+
+			"ON DUPLICATE KEY UPDATE emotesInc = ?, emotesDec = ?",
+		guildID, emotesInc, emotesDec, emotesInc, emotesDec)
 
 	return
 }
@@ -1024,20 +1006,11 @@ func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec s
 }
 
 func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error) {
-	res, err := m.db.Exec("UPDATE karmaSettings SET tokens = ? WHERE guildID = ?",
-		tokens, guildID)
-	if err != nil {
-		return
-	}
-
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karmaSettings (guildID, tokens) VALUES (?, ?)",
-			guildID, tokens)
-	}
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, tokens) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE tokens = ?",
+		guildID, tokens, tokens)
 
 	return
 }

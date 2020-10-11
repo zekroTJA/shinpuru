@@ -120,7 +120,7 @@ func (m *SqliteMiddleware) setup() {
 		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`emotes` text NOT NULL DEFAULT ''," +
-		"`tokens` bigint(20)" +
+		"`tokens` bigint(20) NOT NULL DEFAULT '1'" +
 		");")
 	mErr.Append(err)
 
