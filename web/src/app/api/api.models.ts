@@ -149,7 +149,9 @@ export interface SystemInfo {
   arch: string;
   cpus: number;
   go_routines: number;
+  stack_use: number;
   stack_use_str: string;
+  heap_use: number;
   heap_use_str: string;
   bot_user_id: string;
   bot_invite: string;
@@ -189,4 +191,11 @@ export interface CommandInfo {
   domain_name: string;
   is_executable_in_dm: boolean;
   sub_permission_rules: SubPermission[];
+}
+
+export interface KarmaSettings {
+  state: boolean;
+  emotes_increase: string[];
+  emotes_decrease: string[];
+  tokens: number;
 }

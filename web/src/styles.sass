@@ -62,7 +62,7 @@ input
     color: white
     +transition25
     
-    &[type=text]
+    &[type=text], &[type=password], &[type=number]
         border-bottom: solid 1px white
 
         &:focus
@@ -165,3 +165,11 @@ select
 .flex-center
     display: flex
     align-items: center
+
+
+.guild-settings-container
+    position: absolute
+    top: 50px
+    left: $guild-settings-nav-width
+    padding-top: 30px
+    padding-left: 40px

@@ -24,6 +24,7 @@ import {
   GuildBackup,
   GuildScoreboardEntry,
   CommandInfo,
+  KarmaSettings,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -96,6 +97,9 @@ export class APIService {
 
   private readonly rcGuildSettings = (guildID: string) =>
     `${this.rcGuilds(guildID)}/settings`;
+
+  private readonly rcGuildSettingsKarma = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/karma`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -480,6 +484,21 @@ export class APIService {
   public getCommandInfos(): Observable<ListReponse<CommandInfo>> {
     return this.http
       .get(this.rcUtil('commands'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsKarma(guildID: string): Observable<KarmaSettings> {
+    return this.http
+      .get(this.rcGuildSettingsKarma(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsKarma(
+    guildID: string,
+    settings: KarmaSettings
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsKarma(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

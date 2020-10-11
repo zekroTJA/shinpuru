@@ -186,9 +186,6 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("", ws.handlerGuildsGetGuild)
 	guild.
-		Get("/settings", ws.handlerGetGuildSettings).
-		Post(ws.handlerPostGuildSettings)
-	guild.
 		Get("/permissions", ws.handlerGetGuildPermissions).
 		Post(ws.handlerPostGuildPermissions)
 	guild.
@@ -197,6 +194,15 @@ func (ws *WebServer) registerHandlers() {
 		Post("/inviteblock", ws.handlerPostGuildInviteBlock)
 	guild.
 		Get("/scoreboard", ws.handlerGetGuildScoreboard)
+
+	guildSettings := guild.Group("/settings")
+	guildSettings.
+		Get("/karma", ws.handlerGetGuildSettingsKarma).
+		Post(ws.handlerPostGuildSettingsKarma)
+
+	guild.
+		Get("/settings", ws.handlerGetGuildSettings).
+		Post(ws.handlerPostGuildSettings)
 
 	guildReports := guild.Group("/reports")
 	guildReports.

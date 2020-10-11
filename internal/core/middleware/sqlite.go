@@ -116,6 +116,14 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`emotes` text NOT NULL DEFAULT ''," +
+		"`tokens` bigint(20) NOT NULL DEFAULT '1'" +
+		");")
+	mErr.Append(err)
+
 	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`guildID` text NOT NULL DEFAULT ''," +

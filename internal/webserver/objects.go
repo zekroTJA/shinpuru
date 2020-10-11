@@ -242,6 +242,15 @@ type CommandInfo struct {
 	IsExecutableInDM   bool                      `json:"is_executable_in_dm"`
 }
 
+// KarmaSettings wraps settings properties for
+// guild karma settings.
+type KarmaSettings struct {
+	State          bool     `json:"state"`
+	EmotesIncrease []string `json:"emotes_increase"`
+	EmotesDecrease []string `json:"emotes_decrease"`
+	Tokens         int      `json:"tokens"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
