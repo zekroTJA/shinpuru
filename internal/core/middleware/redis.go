@@ -794,7 +794,7 @@ func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
 }
 
 func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
-	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
 
 	var val int
 	err := m.client.Get(key).Scan(&val)
