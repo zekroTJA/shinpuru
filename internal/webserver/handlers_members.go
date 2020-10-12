@@ -6,6 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
@@ -222,6 +223,13 @@ func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) er
 	for _, cmd := range cmds {
 		if perms.Check(cmd.GetDomainName()) {
 			allowed[i] = cmd.GetDomainName()
+			i++
+		}
+	}
+
+	for _, p := range static.AdditionalPermissions {
+		if perms.Check(p) {
+			allowed[i] = p
 			i++
 		}
 	}
