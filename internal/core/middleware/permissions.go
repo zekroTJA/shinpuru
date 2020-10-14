@@ -139,7 +139,7 @@ func (m *PermissionsMiddleware) GetMemberPermission(s *discordgo.Session, guildI
 		return nil, err
 	}
 
-	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false)
+	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false, true)
 	if err != nil {
 		return nil, err
 	}
