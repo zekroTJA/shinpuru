@@ -33,6 +33,12 @@ export class GuildAdminKarmaComponent implements OnInit {
 
   public async onSave() {
     try {
+      this.karmaSettings.emotes_increase = this.karmaSettings.emotes_increase.filter(
+        (e) => !!e
+      );
+      this.karmaSettings.emotes_decrease = this.karmaSettings.emotes_decrease.filter(
+        (e) => !!e
+      );
       await this.api
         .postGuildSettingsKarma(this.guildID, this.karmaSettings)
         .toPromise();
