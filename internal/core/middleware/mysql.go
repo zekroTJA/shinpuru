@@ -18,10 +18,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
-	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -279,31 +277,6 @@ func (m *MysqlMiddleware) SetGuildColorReaction(guildID string, enabled bool) er
 		val = "1"
 	}
 	return m.setGuildSetting(guildID, "colorReaction", val)
-}
-
-func (m *MysqlMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
-	guildPerms, err := m.GetGuildPermissions(guildID)
-	if err != nil {
-		return nil, err
-	}
-
-	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false)
-	if err != nil {
-		return nil, err
-	}
-
-	var res permissions.PermissionArray
-	for _, r := range membRoles {
-		if p, ok := guildPerms[r.ID]; ok {
-			if res == nil {
-				res = p
-			} else {
-				res = res.Merge(p, true)
-			}
-		}
-	}
-
-	return res, nil
 }
 
 func (m *MysqlMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {

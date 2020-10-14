@@ -9,7 +9,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
@@ -275,10 +274,6 @@ func (r *RedisMiddleware) GetGuildPermissions(guildID string) (map[string]permis
 
 func (r *RedisMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	return r.db.SetGuildRolePermission(guildID, roleID, p)
-}
-
-func (r *RedisMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
-	return r.db.GetMemberPermission(s, guildID, memberID)
 }
 
 func (r *RedisMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {

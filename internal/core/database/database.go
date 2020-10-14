@@ -3,7 +3,6 @@ package database
 import (
 	"errors"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
@@ -54,7 +53,6 @@ type Database interface {
 
 	GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error)
 	SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error
-	GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error)
 
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
