@@ -1,9 +1,11 @@
 package webserver
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/makeworld-the-better-one/go-isemoji"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -330,6 +332,10 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
+	if !checkEmojis(settings.EmotesIncrease) || !checkEmojis(settings.EmotesDecrease) {
+		return jsonError(ctx, errors.New("invalid emoji"), fasthttp.StatusBadRequest)
+	}
+
 	emotesInc := strings.Join(settings.EmotesIncrease, "")
 	emotesDec := strings.Join(settings.EmotesDecrease, "")
 	if err = ws.db.SetKarmaEmotes(guildID, emotesInc, emotesDec); err != nil {
@@ -341,4 +347,16 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 	}
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - HELPERS
+
+func checkEmojis(emojis []string) bool {
+	for _, e := range emojis {
+		if !isemoji.IsEmoji(e) {
+			return false
+		}
+	}
+	return true
 }
