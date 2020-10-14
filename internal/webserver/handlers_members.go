@@ -218,7 +218,7 @@ func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) er
 
 	cmds := ws.cmdhandler.GetCommandInstances()
 
-	allowed := make([]string, len(cmds))
+	allowed := make([]string, len(cmds) + len(static.AdditionalPermissions))
 	i := 0
 	for _, cmd := range cmds {
 		if perms.Check(cmd.GetDomainName()) {
