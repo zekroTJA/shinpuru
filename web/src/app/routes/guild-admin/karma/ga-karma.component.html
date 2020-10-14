@@ -10,11 +10,11 @@
         <div class="d-flex">
             <div class="mt-3 mr-3">
                 <label for="i-emotes-inc">Increase Karma</label>
-                <input id="i-emotes-inc" type="text" [value]="karmaSettings.emotes_increase.join('')" (input)="onIncChange($event)">
+                <input id="i-emotes-inc" type="text" [value]="karmaSettings.emotes_increase.join(', ')" (input)="onIncChange($event)">
             </div>
             <div class="mt-3">
                 <label for="i-emotes-dec">Decrease Karma</label>
-                <input id="i-emotes-dec" type="text" [value]="karmaSettings.emotes_decrease.join('')" (input)="onDecChange($event)">
+                <input id="i-emotes-dec" type="text" [value]="karmaSettings.emotes_decrease.join(', ')" (input)="onDecChange($event)">
             </div>
         </div>
 

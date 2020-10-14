@@ -47,13 +47,13 @@ export class GuildAdminKarmaComponent implements OnInit {
 
   public onIncChange(event: any) {
     this.karmaSettings.emotes_increase = event.target.value
-      .split()
+      .split(',')
       .map((v: string) => v.trim());
   }
 
   public onDecChange(event: any) {
     this.karmaSettings.emotes_decrease = event.target.value
-      .split()
+      .split(',')
       .map((v: string) => v.trim());
   }
 }

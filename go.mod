@@ -19,7 +19,7 @@ require (
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	github.com/makeworld-the-better-one/go-isemoji v1.1.0 // indirect
+	github.com/makeworld-the-better-one/go-isemoji v1.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/mitchellh/go-homedir v1.1.0 // indirect

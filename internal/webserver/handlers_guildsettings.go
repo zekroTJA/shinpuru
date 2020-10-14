@@ -354,7 +354,7 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 
 func checkEmojis(emojis []string) bool {
 	for _, e := range emojis {
-		if !isemoji.IsEmoji(e) {
+		if !isemoji.IsEmojiNonStrict(e) {
 			return false
 		}
 	}
