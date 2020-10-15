@@ -57,6 +57,7 @@ type WebServer struct {
 	session    *discordgo.Session
 	cmdhandler shireikan.Handler
 	pmw        *middleware.PermissionsMiddleware
+	af         *AntiForgery
 
 	config *config.Config
 
@@ -95,6 +96,7 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 	ws.cmdhandler = cmd
 	ws.pmw = pmw
 	ws.rlm = NewRateLimitManager()
+	ws.af = NewAntiForgery()
 	ws.router = routing.New()
 	ws.server = &fasthttp.Server{
 		Handler: ws.router.HandleRequest,
@@ -142,7 +144,7 @@ func (ws *WebServer) registerHandlers() {
 	// --------------------------------
 	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.handlerFiles)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.af.Handler, ws.handlerFiles)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.
