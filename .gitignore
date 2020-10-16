@@ -10,3 +10,4 @@ __debug_bin
 deploy/
 data/
 .vscode/.ropeproject
+cmd/test/*

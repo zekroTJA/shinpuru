@@ -57,6 +57,7 @@ type WebServer struct {
 	session    *discordgo.Session
 	cmdhandler shireikan.Handler
 	pmw        *middleware.PermissionsMiddleware
+	af         *AntiForgery
 
 	config *config.Config
 
@@ -95,6 +96,7 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 	ws.cmdhandler = cmd
 	ws.pmw = pmw
 	ws.rlm = NewRateLimitManager()
+	ws.af = NewAntiForgery()
 	ws.router = routing.New()
 	ws.server = &fasthttp.Server{
 		Handler: ws.router.HandleRequest,
@@ -160,11 +162,11 @@ func (ws *WebServer) registerHandlers() {
 	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
 	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
 
-	ws.router.Use(ws.auth.checkAuth)
+	ws.router.Use(ws.auth.checkAuth, ws.af.Handler)
 
 	api := ws.router.Group("/api")
 	api.
-		Get("/me", ws.handlerGetMe)
+		Get("/me", ws.af.SessionSetHandler, ws.handlerGetMe)
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
 	api.
@@ -186,9 +188,6 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("", ws.handlerGuildsGetGuild)
 	guild.
-		Get("/settings", ws.handlerGetGuildSettings).
-		Post(ws.handlerPostGuildSettings)
-	guild.
 		Get("/permissions", ws.handlerGetGuildPermissions).
 		Post(ws.handlerPostGuildPermissions)
 	guild.
@@ -197,6 +196,15 @@ func (ws *WebServer) registerHandlers() {
 		Post("/inviteblock", ws.handlerPostGuildInviteBlock)
 	guild.
 		Get("/scoreboard", ws.handlerGetGuildScoreboard)
+
+	guildSettings := guild.Group("/settings")
+	guildSettings.
+		Get("/karma", ws.handlerGetGuildSettingsKarma).
+		Post(ws.handlerPostGuildSettingsKarma)
+
+	guild.
+		Get("/settings", ws.handlerGetGuildSettings).
+		Post(ws.handlerPostGuildSettings)
 
 	guildReports := guild.Group("/reports")
 	guildReports.

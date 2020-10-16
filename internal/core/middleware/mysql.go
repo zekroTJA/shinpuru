@@ -18,10 +18,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
-	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -136,6 +134,25 @@ func (m *MysqlMiddleware) setup() {
 		"`userID` text NOT NULL DEFAULT ''," +
 		"`value` bigint(20) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`emotesInc` text NOT NULL DEFAULT ''," +
+		"`emotesDec` text NOT NULL DEFAULT ''," +
+		"`tokens` bigint(20) NOT NULL DEFAULT '1'," +
+		"PRIMARY KEY (`guildID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+		"`chanID` varchar(25) NOT NULL," +
+		"`guildID` text NOT NULL DEFAULT ''," +
+		"`executorID` text NOT NULL DEFAULT ''," +
+		"`permissions` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`chanID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -260,31 +277,6 @@ func (m *MysqlMiddleware) SetGuildColorReaction(guildID string, enabled bool) er
 		val = "1"
 	}
 	return m.setGuildSetting(guildID, "colorReaction", val)
-}
-
-func (m *MysqlMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
-	guildPerms, err := m.GetGuildPermissions(guildID)
-	if err != nil {
-		return nil, err
-	}
-
-	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false)
-	if err != nil {
-		return nil, err
-	}
-
-	var res permissions.PermissionArray
-	for _, r := range membRoles {
-		if p, ok := guildPerms[r.ID]; ok {
-			if res == nil {
-				res = p
-			} else {
-				res = res.Merge(p, true)
-			}
-		}
-	}
-
-	return res, nil
 }
 
 func (m *MysqlMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
@@ -517,28 +509,12 @@ func (m *MysqlMiddleware) DeleteVote(voteID string) error {
 	return err
 }
 
-func (m *MysqlMiddleware) GetMuteRoles() (map[string]string, error) {
-	rows, err := m.db.Query("SELECT guildID, muteRoleID FROM guilds")
-	results := make(map[string]string)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var guildID, roleID string
-		err = rows.Scan(&guildID, &roleID)
-		if err == nil {
-			results[guildID] = roleID
-		}
-	}
-	return results, nil
-}
-
-func (m *MysqlMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 	val, err := m.getGuildSetting(guildID, "muteRoleID")
 	return val, err
 }
 
-func (m *MysqlMiddleware) SetMuteRole(guildID, roleID string) error {
+func (m *MysqlMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
@@ -958,5 +934,111 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
 			userID, guildID, diff)
 	}
+
 	return
+}
+
+func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, state) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE state = ?",
+		guildID, state, state)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) {
+	err = m.db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, emotesInc, emotesDec) "+
+			"VALUES (?, ?, ?) "+
+			"ON DUPLICATE KEY UPDATE emotesInc = ?, emotesDec = ?",
+		guildID, emotesInc, emotesDec, emotesInc, emotesDec)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
+	err = m.db.QueryRow("SELECT emotesInc, emotesDec FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&emotesInc, &emotesDec)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO karmaSettings (guildID, tokens) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE tokens = ?",
+		guildID, tokens, tokens)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
+	err = m.db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&tokens)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	_, err := m.db.Exec("INSERT INTO chanlock (chanID, guildID, executorID, permissions) VALUES (?, ?, ?, ?)",
+		chanID, guildID, executorID, permissions)
+	return err
+}
+
+func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	err = m.db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
+		Scan(&guildID, &executorID, &permissions)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	chanIDs = make([]string, 0)
+	rows, err := m.db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var id string
+		if err = rows.Scan(&id); err != nil {
+			return
+		}
+		chanIDs = append(chanIDs, id)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
+	_, err := m.db.Exec("DELETE FROM chanlock WHERE chanID = ?",
+		chanID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return err
 }

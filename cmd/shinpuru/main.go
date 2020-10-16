@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"os/signal"
+	"runtime/pprof"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -20,6 +21,11 @@ var (
 	flagConfigLocation = flag.String("c", "config.yml", "The location of the main config file")
 	flagDocker         = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
 	flagDevMode        = flag.Bool("devmode", false, "start in development mode")
+	flagProfile        = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
+)
+
+const (
+	envKeyProfile = "CPUPROFILE"
 )
 
 //////////////////////////////////////////////////////////////////////
@@ -49,6 +55,16 @@ func main() {
 	util.Log.Info("© zekro Development (Ringo Hoffmann)")
 	util.Log.Info("Covered by MIT Licence")
 	util.Log.Info("Starting up...")
+
+	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
+		f, err := os.Create(profLoc)
+		if err != nil {
+			util.Log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		util.Log.Warningf("CPU profiling is active (loc: %s)", profLoc)
+		defer pprof.StopCPUProfile()
+	}
 
 	// Initialize discordgo session
 	session, err := discordgo.New()

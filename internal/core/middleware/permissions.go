@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
+	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -69,7 +70,7 @@ func (m *PermissionsMiddleware) GetLayer() shireikan.MiddlewareLayer {
 // guild owner or an admin of the guild.
 func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
 	if guildID != "" {
-		perm, err = m.db.GetMemberPermission(s, guildID, userID)
+		perm, err = m.GetMemberPermission(s, guildID, userID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return
 		}
@@ -128,4 +129,31 @@ func (m *PermissionsMiddleware) CheckPermissions(s *discordgo.Session, guildID, 
 	}
 
 	return perms.Check(dn), overrideExplicits, nil
+}
+
+// GetMemberPermissions returns a PermissionsArray based on the passed
+// members roles permissions rulesets for the given guild.
+func (m *PermissionsMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
+	guildPerms, err := m.db.GetGuildPermissions(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	membRoles, err := roleutil.GetSortedMemberRoles(s, guildID, memberID, false, true)
+	if err != nil {
+		return nil, err
+	}
+
+	var res permissions.PermissionArray
+	for _, r := range membRoles {
+		if p, ok := guildPerms[r.ID]; ok {
+			if res == nil {
+				res = p
+			} else {
+				res = res.Merge(p, true)
+			}
+		}
+	}
+
+	return res, nil
 }

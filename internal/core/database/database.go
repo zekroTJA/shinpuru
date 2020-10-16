@@ -3,7 +3,6 @@ package database
 import (
 	"errors"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
@@ -22,8 +21,17 @@ var ErrDatabaseNotFound = errors.New("value not found")
 // Database describes functionalities of a database
 // driver.
 type Database interface {
+	//////////////////////////////////////////////////////
+	//// INITIALIZATION
+
 	Connect(credentials ...interface{}) error
 	Close()
+
+	//////////////////////////////////////////////////////
+	//// GUILD SETTINGS
+
+	GetSetting(setting string) (string, error)
+	SetSetting(setting, value string) error
 
 	GetGuildPrefix(guildID string) (string, error)
 	SetGuildPrefix(guildID, newPrefix string) error
@@ -45,7 +53,6 @@ type Database interface {
 
 	GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error)
 	SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error
-	GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error)
 
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
@@ -65,6 +72,12 @@ type Database interface {
 	GetGuildColorReaction(guildID string) (bool, error)
 	SetGuildColorReaction(guildID string, enable bool) error
 
+	GetGuildMuteRole(guildID string) (string, error)
+	SetGuildMuteRole(guildID, roleID string) error
+
+	//////////////////////////////////////////////////////
+	//// REPORTS
+
 	AddReport(rep *report.Report) error
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (*report.Report, error)
@@ -73,27 +86,31 @@ type Database interface {
 	GetReportsGuildCount(guildID string) (int, error)
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
 
-	GetSetting(setting string) (string, error)
-	SetSetting(setting, value string) error
+	//////////////////////////////////////////////////////
+	//// VOTES
 
 	GetVotes() (map[string]*vote.Vote, error)
-
 	AddUpdateVote(votes *vote.Vote) error
 	DeleteVote(voteID string) error
 
-	GetMuteRoles() (map[string]string, error)
-	GetMuteRoleGuild(guildID string) (string, error)
-	SetMuteRole(guildID, roleID string) error
+	//////////////////////////////////////////////////////
+	//// TWITCHNOTIFY
 
 	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error)
 	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error)
 	SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
 
+	//////////////////////////////////////////////////////
+	//// GUILD BACKUPS
+
 	AddBackup(guildID, fileID string) error
 	DeleteBackup(guildID, fileID string) error
 	GetBackups(guildID string) ([]*backupmodels.Entry, error)
 	GetGuilds() ([]string, error)
+
+	//////////////////////////////////////////////////////
+	//// TAGS
 
 	AddTag(tag *tag.Tag) error
 	EditTag(tag *tag.Tag) error
@@ -102,15 +119,38 @@ type Database interface {
 	GetGuildTags(guildID string) ([]*tag.Tag, error)
 	DeleteTag(id snowflake.ID) error
 
+	//////////////////////////////////////////////////////
+	//// API TOKEN
+
 	SetAPIToken(token *models.APITokenEntry) error
 	GetAPIToken(userID string) (*models.APITokenEntry, error)
 	DeleteAPIToken(userID string) error
+
+	//////////////////////////////////////////////////////
+	//// KARMA
 
 	GetKarma(userID, guildID string) (int, error)
 	GetKarmaSum(userID string) (int, error)
 	GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error)
 	SetKarma(userID, guildID string, val int) error
 	UpdateKarma(userID, guildID string, diff int) error
+
+	SetKarmaState(guildID string, state bool) error
+	GetKarmaState(guildID string) (bool, error)
+
+	SetKarmaEmotes(guildID, emotesInc, emotesDec string) error
+	GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error)
+
+	SetKarmaTokens(guildID string, tokens int) error
+	GetKarmaTokens(guildID string) (int, error)
+
+	//////////////////////////////////////////////////////
+	//// CHAN LOCK
+
+	SetLockChan(chanID, guildID, executorID, permissions string) error
+	GetLockChan(chanID string) (guildID, executorID, permissions string, err error)
+	GetLockChannels(guildID string) (chanIDs []string, err error)
+	DeleteLockChan(chanID string) error
 
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)

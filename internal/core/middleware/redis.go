@@ -9,7 +9,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
@@ -30,13 +29,18 @@ const (
 	keyGuildVoiceLog      = "GUILD:VOICELOG"
 	keyGuildNotifyRole    = "GUILD:NOTROLE"
 	keyGuildGhostPingMsg  = "GUILD:GPMSG"
-	keyGuildJDoodleKey    = "GuUILD:JDOODLE"
+	keyGuildJDoodleKey    = "GUILD:JDOODLE"
 	keyGuildInviteBlock   = "GUILD:INVBLOCK"
 	keyGuildBackupEnabled = "GUILD:BACKUP"
 	keyGuildJoinMsg       = "GUILD:JOINMSG"
 	keyGuildLeaveMsg      = "GUILD:LEAVEMSG"
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
 	keyGuildColorReaction = "GUILD:COLORREACTION"
+
+	keyKarmaState     = "KARMA:STATE"
+	keyKarmaemotesInc = "KARMA:EMOTES:ENC"
+	keyKarmaEmotesDec = "KARMA:EMOTES:DEC"
+	keyKarmaTokens    = "KARMA:TOKENS"
 
 	keyUserAPIToken = "USER:APITOKEN"
 
@@ -270,10 +274,6 @@ func (r *RedisMiddleware) GetGuildPermissions(guildID string) (map[string]permis
 
 func (r *RedisMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	return r.db.SetGuildRolePermission(guildID, roleID, p)
-}
-
-func (r *RedisMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
-	return r.db.GetMemberPermission(s, guildID, memberID)
 }
 
 func (r *RedisMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
@@ -538,16 +538,12 @@ func (r *RedisMiddleware) DeleteVote(voteID string) error {
 	return r.db.DeleteVote(voteID)
 }
 
-func (r *RedisMiddleware) GetMuteRoles() (map[string]string, error) {
-	return r.db.GetMuteRoles()
-}
-
-func (r *RedisMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
+func (r *RedisMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetMuteRoleGuild(guildID)
+		val, err = r.db.GetGuildMuteRole(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -562,14 +558,14 @@ func (r *RedisMiddleware) GetMuteRoleGuild(guildID string) (string, error) {
 	return val, nil
 }
 
-func (r *RedisMiddleware) SetMuteRole(guildID, roleID string) error {
+func (r *RedisMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
 
 	if err := r.client.Set(key, roleID, 0).Err(); err != nil {
 		return err
 	}
 
-	return r.db.SetMuteRole(guildID, roleID)
+	return r.db.SetGuildMuteRole(guildID, roleID)
 }
 
 func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
@@ -708,4 +704,123 @@ func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
 
 func (m *RedisMiddleware) UpdateKarma(userID, guildID string, diff int) error {
 	return m.db.UpdateKarma(userID, guildID, diff)
+}
+
+func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+
+	if err := m.client.Set(key, state, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaState(guildID, state)
+}
+
+func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
+
+	var val bool
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetKarmaState(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
+	if err := m.client.Set(key, emotesInc, 0).Err(); err != nil {
+		return err
+	}
+
+	key = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
+	if err := m.client.Set(key, emotesDec, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaEmotes(guildID, emotesInc, emotesDec)
+}
+
+func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
+	var keyEnc = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
+	emotesInc, err1 := m.client.Get(keyEnc).Result()
+
+	var keyDec = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
+	emotesDec, err2 := m.client.Get(keyDec).Result()
+
+	if err1 == redis.Nil || err2 == redis.Nil {
+		emotesInc, emotesDec, err = m.db.GetKarmaEmotes(guildID)
+		if err != nil {
+			return
+		}
+
+		if err = m.client.Set(keyEnc, emotesInc, 0).Err(); err != nil {
+			return
+		}
+		if err = m.client.Set(keyDec, emotesDec, 0).Err(); err != nil {
+			return
+		}
+	}
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
+
+	if err := m.client.Set(key, tokens, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaTokens(guildID, tokens)
+}
+
+func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
+	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
+
+	var val int
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetKarmaTokens(guildID)
+		if err != nil {
+			return 0, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
+	return m.db.SetLockChan(chanID, guildID, executorID, permissions)
+}
+
+func (m *RedisMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
+	return m.db.GetLockChan(chanID)
+}
+
+func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
+	return m.db.GetLockChannels(guildID)
+}
+
+func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
+	return m.db.DeleteLockChan(chanID)
 }

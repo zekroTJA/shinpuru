@@ -1,0 +1,31 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+    <app-spinner *ngIf="!karmaSettings" [started]="true"></app-spinner>
+    <div *ngIf="karmaSettings">
+
+        <app-slider [(ngModel)]="karmaSettings.state">Karma-System enabled</app-slider>
+
+        <h3 class="mb-3">Emotes</h3>
+        <i>Tipp: On Windows 10, press the windows key and the point/colon key together to open an emote keyboard.</i>
+        <div class="d-flex">
+            <div class="mt-3 mr-3">
+                <label for="i-emotes-inc">Increase Karma</label>
+                <input id="i-emotes-inc" type="text" [value]="karmaSettings.emotes_increase.join(', ')" (input)="onIncChange($event)">
+            </div>
+            <div class="mt-3">
+                <label for="i-emotes-dec">Decrease Karma</label>
+                <input id="i-emotes-dec" type="text" [value]="karmaSettings.emotes_decrease.join(', ')" (input)="onDecChange($event)">
+            </div>
+        </div>
+
+        <h3 class="mt-4">Tokens</h3>
+        <div class="mt-3">
+            <label for="i-tokens"><i>The ammount of up and downvotes a user can perform per hour.</i></label>
+            <input id="i-tokens" type="number" min="1" [(ngModel)]="karmaSettings.tokens">
+        </div>
+
+        <div class="mt-5">
+            <button (click)="onSave()">SAVE</button>
+        </div>
+    </div>
+</div>

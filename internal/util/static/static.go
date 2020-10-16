@@ -98,4 +98,8 @@ var (
 		"+sp.etc.*",
 		"+sp.chat.*",
 	}
+
+	AdditionalPermissions = []string{
+		"sp.guild.config.karma",
+	}
 )

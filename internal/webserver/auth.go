@@ -275,6 +275,8 @@ func (auth *Auth) checkAPIToken(ctx *routing.Context) (string, error) {
 //
 // If the authorization failed, a redirect to /login is sent.
 func (auth *Auth) checkAuth(ctx *routing.Context) error {
+	var usedAPIToken bool
+
 	uid, err := auth.checkSessionCookie(ctx)
 	if err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
@@ -285,10 +287,12 @@ func (auth *Auth) checkAuth(ctx *routing.Context) error {
 		if err != nil {
 			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 		}
+		usedAPIToken = true
 	}
 
 	if uid != "" {
 		ctx.Set("uid", uid)
+		ctx.Set("usedApiToken", usedAPIToken)
 		return nil
 	}
 

@@ -3,7 +3,7 @@
 import { Component, Input, ViewChild, TemplateRef } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SpinnerService } from 'src/app/components/spinner/spinner.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   Guild,
   Role,
@@ -75,6 +75,7 @@ export class GuildComponent {
     public modal: NgbModal,
     private api: APIService,
     private route: ActivatedRoute,
+    private router: Router,
     private toasts: ToastService
   ) {
     const guildID = this.route.snapshot.paramMap.get('id');
@@ -381,5 +382,9 @@ export class GuildComponent {
         }
       })
       .catch(() => {});
+  }
+
+  public navigateSetting(to: string) {
+    this.router.navigate(['guilds', this.guild.id, 'guildadmin', to]);
   }
 }
