@@ -144,7 +144,7 @@ func (ws *WebServer) registerHandlers() {
 	// --------------------------------
 	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.af.Handler, ws.handlerFiles)
+	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.handlerFiles)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.
@@ -162,11 +162,11 @@ func (ws *WebServer) registerHandlers() {
 	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
 	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
 
-	ws.router.Use(ws.auth.checkAuth)
+	ws.router.Use(ws.auth.checkAuth, ws.af.Handler)
 
 	api := ws.router.Group("/api")
 	api.
-		Get("/me", ws.handlerGetMe)
+		Get("/me", ws.af.SessionSetHandler, ws.handlerGetMe)
 	api.
 		Post("/logout", ws.auth.LogOutHandler)
 	api.
