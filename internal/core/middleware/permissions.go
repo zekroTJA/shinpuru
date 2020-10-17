@@ -54,6 +54,7 @@ func (m *PermissionsMiddleware) Handle(
 	if !ok {
 		msg, _ := ctx.ReplyEmbedError("You are not permitted to use this command!", "Missing Permission")
 		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 8*time.Second)
+		return false, nil
 	}
 
 	return true, nil
