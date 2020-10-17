@@ -90,6 +90,11 @@ func (c *CmdLock) getTargetChan(ctx shireikan.Context) (ch *discordgo.Channel, e
 }
 
 func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db database.Database) error {
+	procMsg := util.SendEmbed(ctx.GetSession(), target.ID, ":clock4: Locking channel...", "", static.ColorEmbedGray)
+	if procMsg.Error() != nil {
+		return procMsg.Error()
+	}
+
 	encodedPerms, err := c.encodePermissionOverrides(target.PermissionOverwrites)
 	if err != nil {
 		return err
@@ -118,7 +123,7 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 
 	// The info message needs to be sent before all permissions are set
 	// to prevent occuring errors due to potential missing permissions.
-	err = util.SendEmbed(ctx.GetSession(), target.ID,
+	err = procMsg.Edit(
 		fmt.Sprintf("This channel is chat-locked by %s.\nYou may not be able to chat "+
 			"into this channel until the channel is unlocked again.", ctx.GetUser().Mention()),
 		"", static.ColorEmbedOrange).
@@ -168,6 +173,11 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 }
 
 func (c *CmdLock) unlock(target *discordgo.Channel, ctx shireikan.Context, db database.Database, executorID, encodedPerms string) error {
+	procMsg := util.SendEmbed(ctx.GetSession(), target.ID, ":clock4: Unlocking channel...", "", static.ColorEmbedGray)
+	if procMsg.Error() != nil {
+		return procMsg.Error()
+	}
+
 	permissionOverrides, err := c.decodePermissionOverrrides(encodedPerms)
 	if err != nil {
 		return err
@@ -185,14 +195,14 @@ func (c *CmdLock) unlock(target *discordgo.Channel, ctx shireikan.Context, db da
 	}
 
 	if failed > 0 {
-		return util.SendEmbed(ctx.GetSession(), target.ID,
+		return procMsg.Edit(
 			fmt.Sprintf("This channel is now unlocked. You can now chat here again.\n*(Unlocked by %s)*\n\n"+
 				"**Attention:** %d permission actions failed on reset!", ctx.GetUser().Mention(), failed),
 			"", static.ColorEmbedOrange).
 			Error()
 	}
 
-	return util.SendEmbed(ctx.GetSession(), target.ID,
+	return procMsg.Edit(
 		fmt.Sprintf("This channel is now unlocked. You can now chat here again.\n*(Unlocked by %s)*", ctx.GetUser().Mention()),
 		"", static.ColorEmbedGreen).
 		Error()

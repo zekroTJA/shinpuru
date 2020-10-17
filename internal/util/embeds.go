@@ -33,6 +33,31 @@ func (emb *EmbedMessage) Error() error {
 	return emb.err
 }
 
+// Edit updates the current embed message with
+// the given content replacing the internal message
+// and error of this embed instance.
+func (emb *EmbedMessage) Edit(content string, title string, color int) *EmbedMessage {
+	newEmb := &discordgo.MessageEmbed{
+		Description: content,
+		Color:       color,
+	}
+
+	newEmb.Title = title
+	if color == 0 {
+		newEmb.Color = static.ColorEmbedDefault
+	}
+
+	return emb.EditRaw(newEmb)
+}
+
+// EditRaw updates the current embed message with
+// the given raw embed replacing the internal message
+// and error of this embed instance.
+func (emb *EmbedMessage) EditRaw(newEmb *discordgo.MessageEmbed) *EmbedMessage {
+	emb.Message, emb.err = emb.s.ChannelMessageEditEmbed(emb.ChannelID, emb.ID, newEmb)
+	return emb
+}
+
 // SendEmbed creates an discordgo.MessageEmbed from the passed
 // content, title and color and sends it to the specified channel.
 //
