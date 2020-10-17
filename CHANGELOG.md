@@ -1,14 +1,10 @@
-1.3.1
+1.3.2
 
 > MINOR PATCH
 
-## Minor Improvements
-
-- The `lock` command now has a process visualization for better clarity.
-
 ## Bug Fixes
 
-- A critical flaw in the permissions middleware which would practically bypass the whole permission system is now fixed. [#169]
+- Remove autonick function on ready which might cause long rate limit timeouts during startup.
 
 # Docker
 
@@ -16,5 +12,5 @@
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.3.1
+$ docker pull zekro/shinpuru:1.3.2
 ```
