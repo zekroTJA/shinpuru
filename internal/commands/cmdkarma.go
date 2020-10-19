@@ -71,14 +71,16 @@ func (c *CmdKarma) Exec(ctx shireikan.Context) error {
 		karmaListStr = "*No entries for this guild.*"
 	}
 
-	for i, v := range karmaList {
+	var i int
+	for _, v := range karmaList {
 		m, err := discordutil.GetMember(ctx.GetSession(), v.GuildID, v.UserID)
 		if err != nil {
 			continue
 		}
 
+		i++
 		karmaListStr = fmt.Sprintf("%s\n`%d` - %s - **%d**",
-			karmaListStr, i+1, m.User.String(), v.Value)
+			karmaListStr, i, m.User.String(), v.Value)
 	}
 
 	emb := &discordgo.MessageEmbed{

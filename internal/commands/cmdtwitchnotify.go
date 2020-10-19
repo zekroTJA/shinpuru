@@ -50,7 +50,7 @@ func (c *CmdTwitchNotify) IsExecutableInDMChannels() bool {
 
 func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
 	tnw, _ := ctx.GetObject("tnw").(*twitchnotify.NotifyWorker)
-	db, _ := ctx.GetObject("dbtnw").(database.Database)
+	db, _ := ctx.GetObject("db").(database.Database)
 
 	if tnw == nil {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
