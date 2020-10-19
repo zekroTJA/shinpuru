@@ -1,10 +1,11 @@
-1.3.2
+1.3.3
 
 > MINOR PATCH
 
 ## Bug Fixes
 
-- Remove autonick function on ready which might cause long rate limit timeouts during startup.
+- The `twitchnotify` does not cause a runtime crash anymore. [#173]
+- The `karma` list command does now display the correct indexes. [#171]
 
 # Docker
 
@@ -12,5 +13,5 @@
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.3.2
+$ docker pull zekro/shinpuru:1.3.3
 ```
