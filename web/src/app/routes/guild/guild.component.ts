@@ -191,6 +191,10 @@ export class GuildComponent {
     return this.guildSettingsAllowed.includes(str);
   }
 
+  public guildSettingsContainsAny(str: string[]): boolean {
+    return !!str.find((s) => this.guildSettingsContains(s));
+  }
+
   public saveGuildSettings() {
     this.api
       .postGuildSettings(this.guild.id, this.updatedSettings)

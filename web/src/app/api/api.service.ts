@@ -25,6 +25,7 @@ import {
   GuildScoreboardEntry,
   CommandInfo,
   KarmaSettings,
+  AntiraidSettings,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -100,6 +101,9 @@ export class APIService {
 
   private readonly rcGuildSettingsKarma = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/karma`;
+
+  private readonly rcGuildSettingsAntiraid = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/antiraid`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -499,6 +503,23 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildSettingsKarma(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsAntiraid(
+    guildID: string
+  ): Observable<AntiraidSettings> {
+    return this.http
+      .get(this.rcGuildSettingsAntiraid(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsAntiraid(
+    guildID: string,
+    settings: AntiraidSettings
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsAntiraid(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

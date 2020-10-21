@@ -35,6 +35,7 @@ import { KeyValuePipe } from './routes/pipes/key-value.pipe';
 import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
 import { DiscordAssetPipe } from './routes/pipes/discord-asset.pipe';
 import { GuildAdminKarmaComponent } from './routes/guild-admin/karma/ga-karma.component';
+import { GuildAdminAntiraidComponent } from './routes/guild-admin/antiraid/ga-antiraid.component';
 import { GuildAdminNavbarComponent } from './components/guild-admin-navbar/guild-admin-navbar.component';
 
 @NgModule({
@@ -66,6 +67,7 @@ import { GuildAdminNavbarComponent } from './components/guild-admin-navbar/guild
     CommandSortPipe,
     DiscordAssetPipe,
     GuildAdminKarmaComponent,
+    GuildAdminAntiraidComponent,
     GuildAdminNavbarComponent,
   ],
   imports: [

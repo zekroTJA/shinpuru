@@ -142,8 +142,9 @@
             <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
         </div>
         <div *ngIf="guildSettingsToggle">
-            <div *ngIf="guildSettingsContains('sp.guild.config.karma')" class="settingsTile advanced">
+            <div *ngIf="guildSettingsContainsAny(['sp.guild.config.karma', 'sp.guild.config.antiraid'])" class="settingsTile advanced">
                 <h5>Advanced</h5>
+                <button *ngIf="guildSettingsContains('sp.guild.config.antiraid')" class="advanced-button" ngbTooltip="Antiraid Settings" (click)="navigateSetting('antiraid')"><img src="/assets/antiraid.svg"/></button>
                 <button *ngIf="guildSettingsContains('sp.guild.config.karma')" class="advanced-button" ngbTooltip="Karma Settings" (click)="navigateSetting('karma')"><img src="/assets/karma.svg"/></button>
             </div>
             <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">

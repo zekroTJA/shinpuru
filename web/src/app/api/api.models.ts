@@ -199,3 +199,9 @@ export interface KarmaSettings {
   emotes_decrease: string[];
   tokens: number;
 }
+
+export interface AntiraidSettings {
+  state: boolean;
+  regeneration_period: number;
+  burst: number;
+}
