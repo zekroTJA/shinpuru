@@ -1074,16 +1074,16 @@ func (m *MysqlMiddleware) GetAntiraidState(guildID string) (state bool, err erro
 
 func (m *MysqlMiddleware) SetAntiraidRegeneration(guildID string, limit int) (err error) {
 	_, err = m.db.Exec(
-		"INSERT INTO antiraidSettings (guildID, limit) "+
+		"INSERT INTO antiraidSettings (guildID, `limit`) "+
 			"VALUES (?, ?) "+
-			"ON DUPLICATE KEY UPDATE limit = ?",
+			"ON DUPLICATE KEY UPDATE `limit` = ?",
 		guildID, limit, limit)
 
 	return
 }
 
 func (m *MysqlMiddleware) GetAntiraidRegeneration(guildID string) (limit int, err error) {
-	err = m.db.QueryRow("SELECT limit FROM antiraidSettings WHERE guildID = ?",
+	err = m.db.QueryRow("SELECT `limit` FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&limit)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
