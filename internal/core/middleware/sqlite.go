@@ -132,6 +132,14 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
+		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
+		"`burst` bigint(20) NOT NULL DEFAULT '0'" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}

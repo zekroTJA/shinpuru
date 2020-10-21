@@ -201,6 +201,9 @@ func (ws *WebServer) registerHandlers() {
 	guildSettings.
 		Get("/karma", ws.handlerGetGuildSettingsKarma).
 		Post(ws.handlerPostGuildSettingsKarma)
+	guildSettings.
+		Get("/antiraid", ws.handlerGetGuildSettingsAntiraid).
+		Post(ws.handlerPostGuildSettingsAntiraid)
 
 	guild.
 		Get("/settings", ws.handlerGetGuildSettings).

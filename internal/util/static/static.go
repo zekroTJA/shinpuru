@@ -100,5 +100,6 @@ var (
 
 	AdditionalPermissions = []string{
 		"sp.guild.config.karma",
+		"sp.guild.config.antiraid",
 	}
 )
