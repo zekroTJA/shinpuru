@@ -156,6 +156,15 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`state` int(1) NOT NULL DEFAULT '1'," +
+		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
+		"`burst` bigint(20) NOT NULL DEFAULT '0'," +
+		"PRIMARY KEY (`guildID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -1041,4 +1050,64 @@ func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
 		err = database.ErrDatabaseNotFound
 	}
 	return err
+}
+
+func (m *MysqlMiddleware) SetAntiraidState(guildID string, state bool) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO antiraidSettings (guildID, state) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE state = ?",
+		guildID, state, state)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidState(guildID string) (state bool, err error) {
+	err = m.db.QueryRow("SELECT state FROM antiraidSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetAntiraidRegeneration(guildID string, limit int) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO antiraidSettings (guildID, limit) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE limit = ?",
+		guildID, limit, limit)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidRegeneration(guildID string) (limit int, err error) {
+	err = m.db.QueryRow("SELECT limit FROM antiraidSettings WHERE guildID = ?",
+		guildID).Scan(&limit)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetAntiraidBurst(guildID string, burst int) (err error) {
+	_, err = m.db.Exec(
+		"INSERT INTO antiraidSettings (guildID, burst) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE burst = ?",
+		guildID, burst, burst)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error) {
+	err = m.db.QueryRow("SELECT burst FROM antiraidSettings WHERE guildID = ?",
+		guildID).Scan(&burst)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
 }

@@ -42,6 +42,10 @@ const (
 	keyKarmaEmotesDec = "KARMA:EMOTES:DEC"
 	keyKarmaTokens    = "KARMA:TOKENS"
 
+	keyAntiraidState = "ANTIRAID:STATE"
+	keyAntiraidLimit = "ANTIRAID:LIMIT"
+	keyAntiraidBurst = "ANTIRAID:BURST"
+
 	keyUserAPIToken = "USER:APITOKEN"
 
 	keyAPISession = "API:SESSION"
@@ -823,4 +827,97 @@ func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err
 
 func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
 	return m.db.DeleteLockChan(chanID)
+}
+
+func (m *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidState, guildID)
+
+	if err := m.client.Set(key, state, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetAntiraidState(guildID, state)
+}
+
+func (m *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidState, guildID)
+
+	var val bool
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetAntiraidState(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) error {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidLimit, guildID)
+
+	if err := m.client.Set(key, limit, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetKarmaTokens(guildID, limit)
+}
+
+func (m *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidLimit, guildID)
+
+	var val int
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetAntiraidRegeneration(guildID)
+		if err != nil {
+			return 0, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidBurst, guildID)
+
+	if err := m.client.Set(key, burst, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.db.SetAntiraidBurst(guildID, burst)
+}
+
+func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
+	var key = fmt.Sprintf("%s:%s", keyAntiraidBurst, guildID)
+
+	var val int
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.db.GetAntiraidBurst(guildID)
+		if err != nil {
+			return 0, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
 }

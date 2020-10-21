@@ -152,6 +152,20 @@ type Database interface {
 	GetLockChannels(guildID string) (chanIDs []string, err error)
 	DeleteLockChan(chanID string) error
 
+	//////////////////////////////////////////////////////
+	//// ANTI RAID
+
+	SetAntiraidState(guildID string, state bool) error
+	GetAntiraidState(guildID string) (bool, error)
+
+	SetAntiraidRegeneration(guildID string, periodSecs int) error
+	GetAntiraidRegeneration(guildID string) (int, error)
+
+	SetAntiraidBurst(guildID string, burst int) error
+	GetAntiraidBurst(guildID string) (int, error)
+
+	//////////////////////////////////////////////////////
+
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
 	// Deprecated
