@@ -83,3 +83,25 @@ func GetMember(s *discordgo.Session, guildID, userID string) (m *discordgo.Membe
 	}
 	return
 }
+
+// GetMembers fetches all members of the guild by utilizing
+// paged requests until all members are requested.
+func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, error) {
+	lastID := ""
+	members := make([]*discordgo.Member, 0)
+
+	for {
+		membs, err := s.GuildMembers(guildID, lastID, 1000)
+		if err != nil {
+			return nil, err
+		}
+
+		members = append(members, membs...)
+
+		if len(membs) < 1000 {
+			return members, nil
+		}
+
+		lastID = membs[999].User.ID
+	}
+}

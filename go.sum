@@ -139,6 +139,8 @@ github.com/wcharczuk/go-chart v2.0.1+incompatible h1:0pz39ZAycJFF7ju/1mepnk26RLV
 github.com/wcharczuk/go-chart v2.0.1+incompatible/go.mod h1:PF5tmL4EIx/7Wf+hEkpCqYi5He4u90sw+0+6FhrryuE=
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5 h1:EryoK8mdGm7qU0FZjxpt+7Bd9VGBmzsV880DQKq10W4=
 github.com/zekroTJA/ratelimit v0.0.0-20190321090824-219ca33049a5/go.mod h1:5aXVBC8pKM3Tva/5YihZ0yOLD+ULDq5P73lpRuBSLNg=
+github.com/zekroTJA/ratelimit v1.0.0 h1:n8Zhu1+E1m6FrxqKx7B/4kDQGGU2uC4ILaGA5MJH4ac=
+github.com/zekroTJA/ratelimit v1.0.0/go.mod h1:vMj8LMv+KSN8vQASf1Y7f5Lxz12XTMXFhNVghnzOIgI=
 github.com/zekroTJA/shireikan v0.3.1 h1:47yGg4JS+OH9pRAFd1lEyqxhe62TLzlcbavy89cE7rY=
 github.com/zekroTJA/shireikan v0.3.1/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
 github.com/zekroTJA/shireikan v0.3.2 h1:rBJh2g/HDFQm8zAyA+f4lEpiPYLKIGUqjMsUGlV6+uc=
