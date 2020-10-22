@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	arTriggerCleanupDuration = 1 * time.Hour
-	arTriggerRecordLifetime  = 24 * time.Hour
-	arTriggerLifetime        = 48 * time.Hour
+	arTriggerCleanupDuration = 10 * time.Second // 1 * time.Hour
+	arTriggerRecordLifetime  = 1 * time.Minute  // 24 * time.Hour
+	arTriggerLifetime        = 2 * arTriggerRecordLifetime
 )
 
 type ListenerAntiraid struct {

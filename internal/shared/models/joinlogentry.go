@@ -3,8 +3,8 @@ package models
 import "time"
 
 type JoinLogEntry struct {
-	GuildID   string
-	UserID    string
-	Tag       string
-	Timestamp time.Time
+	GuildID   string    `json:"guild_id"`
+	UserID    string    `json:"user_id"`
+	Tag       string    `json:"tag"`
+	Timestamp time.Time `json:"timestamp"`
 }

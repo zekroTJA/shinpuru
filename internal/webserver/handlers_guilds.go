@@ -7,6 +7,7 @@ import (
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
@@ -108,4 +109,33 @@ func (ws *WebServer) handlerGetGuildScoreboard(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/antiraid/joinlog
+
+func (ws *WebServer) handlerGetGuildAntiraidJoinlog(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.antiraid"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	joinlog, err := ws.db.GetAntiraidJoinList(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if joinlog == nil {
+		joinlog = make([]*models.JoinLogEntry, 0)
+	}
+
+	return jsonResponse(ctx, &ListResponse{
+		N:    len(joinlog),
+		Data: joinlog,
+	}, fasthttp.StatusOK)
 }
