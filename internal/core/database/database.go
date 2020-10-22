@@ -164,6 +164,10 @@ type Database interface {
 	SetAntiraidBurst(guildID string, burst int) error
 	GetAntiraidBurst(guildID string) (int, error)
 
+	AddToAntiraidJoinList(guildID, userID, userTag string) error
+	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
+	FlushAntiraidJoinList(guildID string) error
+
 	//////////////////////////////////////////////////////
 
 	// Deprecated

@@ -921,3 +921,15 @@ func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 
 	return val, nil
 }
+
+func (m *RedisMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) error {
+	return m.db.AddToAntiraidJoinList(guildID, userID, userTag)
+}
+
+func (m *RedisMiddleware) GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error) {
+	return m.db.GetAntiraidJoinList(guildID)
+}
+
+func (m *RedisMiddleware) FlushAntiraidJoinList(guildID string) error {
+	return m.db.FlushAntiraidJoinList(guildID)
+}

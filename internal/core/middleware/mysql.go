@@ -165,6 +165,15 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`tag` text NOT NULL DEFAULT ''," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -1105,6 +1114,52 @@ func (m *MysqlMiddleware) SetAntiraidBurst(guildID string, burst int) (err error
 func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error) {
 	err = m.db.QueryRow("SELECT burst FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&burst)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) (err error) {
+	_, err = m.db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag) "+
+		"VALUES (?, ?, ?)", userID, guildID, userTag)
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.JoinLogEntry, err error) {
+	var count int
+	err = m.db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
+		Scan(&count)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	res = make([]*models.JoinLogEntry, count)
+
+	rows, err := m.db.Query("SELECT userID, tag, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
+	if err != nil {
+		return
+	}
+
+	var i int
+	for rows.Next() {
+		entry := &models.JoinLogEntry{GuildID: guildID}
+		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Timestamp); err != nil {
+			return
+		}
+		res[i] = entry
+		i++
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
+	_, err = m.db.Exec("DELETE FROM antiraidJoinlog WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
