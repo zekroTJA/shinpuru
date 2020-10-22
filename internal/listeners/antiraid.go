@@ -10,22 +10,40 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/timedmap"
+)
+
+const (
+	arTriggerCleanupDuration = 1 * time.Hour
+	arTriggerRecordLifetime  = 24 * time.Hour
+	arTriggerLifetime        = 48 * time.Hour
 )
 
 type ListenerAntiraid struct {
 	db database.Database
 
 	limiters map[string]*ratelimit.Limiter
+	triggers *timedmap.TimedMap
 }
 
 func NewListenerAntiraid(db database.Database) *ListenerAntiraid {
 	return &ListenerAntiraid{
 		db:       db,
 		limiters: make(map[string]*ratelimit.Limiter),
+		triggers: timedmap.New(arTriggerCleanupDuration),
 	}
 }
 
-func (l *ListenerAntiraid) Handler(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
+func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
+	if v, ok := l.triggers.GetValue(e.GuildID).(time.Time); ok {
+		if time.Since(v) < arTriggerRecordLifetime {
+			if err := l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String()); err != nil {
+				util.Log.Errorf("failed adding user to joinlist (gid: %s, uid: %s): %s", e.GuildID, e.User.ID, err.Error())
+			}
+		}
+		return
+	}
+
 	ok, limit, burst := l.getGuildSettings(e.GuildID)
 	if !ok {
 		if _, ok := l.limiters[e.GuildID]; ok {
@@ -84,6 +102,12 @@ func (l *ListenerAntiraid) Handler(s *discordgo.Session, e *discordgo.GuildMembe
 		util.Log.Errorf("failed getting guild members (gid: %s): %s", e.GuildID, err.Error())
 		return
 	}
+
+	l.triggers.Set(e.GuildID, time.Now(), arTriggerLifetime, func(v interface{}) {
+		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+			util.Log.Errorf("failed flushing joinlist (gid: %s): %s", e.GuildID, err.Error())
+		}
+	})
 
 	for _, m := range members {
 		if discordutil.IsAdmin(guild, m) || guild.OwnerID == m.User.ID {
