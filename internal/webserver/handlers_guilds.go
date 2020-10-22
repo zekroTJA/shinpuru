@@ -139,3 +139,24 @@ func (ws *WebServer) handlerGetGuildAntiraidJoinlog(ctx *routing.Context) error 
 		Data: joinlog,
 	}, fasthttp.StatusOK)
 }
+
+// ---------------------------------------------------------------------------
+// - DELETE /api/guilds/:guildid/antiraid/joinlog
+
+func (ws *WebServer) handlerDeleteGuildAntiraidJoinlog(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.antiraid"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	if err := ws.db.FlushAntiraidJoinList(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}

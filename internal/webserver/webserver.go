@@ -197,7 +197,8 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/scoreboard", ws.handlerGetGuildScoreboard)
 	guild.
-		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog)
+		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
+		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
 
 	guildSettings := guild.Group("/settings")
 	guildSettings.
