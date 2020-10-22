@@ -534,4 +534,10 @@ export class APIService {
       .get(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
+
+  public deleteGuildAntiraidJoinlog(guildID: string): Observable<any> {
+    return this.http
+      .delete(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
 }

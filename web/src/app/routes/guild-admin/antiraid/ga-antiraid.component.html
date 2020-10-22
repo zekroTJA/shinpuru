@@ -5,11 +5,22 @@
 
         <app-slider [(ngModel)]="antiraidSettings.state">Antiraid-System enabled</app-slider>
 
-        <div class="mt-3">
+        <div class="mt-3 mw">
             <h3>Explaination</h3>
+            <i class="small">
+                The antiraid system works with the <a href="https://en.wikipedia.org/wiki/Token_bucket" target="_blank">token bucket</a>
+                system. Imagine a bucket which can fit the number of <span class="embeded">Burst Ammount</span> of tokens. At the start,
+                the bucket is completely filled up with tokens.
+                Everytime a member joins, one of these tokens is consumed and everytime, the specified 
+                <span class="embeded">Regeneration Period</span> is elapsed, one token is added to the bucket until it is completely
+                filled again. If the bucket is empty and another token is tried to be reserved, the antiraid system triggers.<br />
+                Following, the servers <span class="embeded">verification level</span> is set to <span class="embeded">highest</span>
+                and over the next 24 hours, all joining members are listed in the joinlog below. This list is then saved for the following
+                48 hours after the system has triggered.
+            </i>
         </div>
 
-        <div class="mt-3 mw">
+        <div class="mt-4 mw">
             <label for="i-regeneration">
                 Regeneration Duration<br />
                 <i class="small">This is the average, nominal ammount of seconds between two users join your server. 
@@ -37,16 +48,21 @@
             <div class="d-flex justify-content-between">
                 <h3>Antiraid Joinlog Records</h3>
                 <div>
-                    <button (click)="onDownloadJoinlog()" class="sec-btn mr-2" [disabled]="joinlog?.length < 1" title="Download ad JSON">
+                    <button (click)="onDownloadJoinlog()" class="sec-btn mr-2" [disabled]="joinlog?.length < 1" title="Download as JSON">
                         <img height="25" src="/assets/download.svg"/>
                     </button>
-                    <button (click)="fetchJoinlog()" class="refresh sec-btn"><img height="25" src="/assets/refresh.svg"/></button>
+                    <button (click)="flushJoinlog()" class="refresh sec-btn mr-2" title="Delete all list entries">
+                        <img height="25" src="/assets/delete.svg"/>
+                    </button>
+                    <button (click)="fetchJoinlog()" class="refresh sec-btn" title="Refresh">
+                        <img height="25" src="/assets/refresh.svg"/>
+                    </button>
                 </div>
             </div>
             <div class="mt-4">
                 <i *ngIf="joinlog?.length < 1; else joinlogTable">No entries available currently.</i>
                 <ng-template #joinlogTable>
-                    <i class="small">The data in this table only persists for 42 hours after the trigger of the antiraid system.</i>
+                    <i class="small">The data in this table only persists for 48 hours after the trigger of the antiraid system.</i>
                     <table class="w-100 mt-2">
                         <tbody>
                             <tr>

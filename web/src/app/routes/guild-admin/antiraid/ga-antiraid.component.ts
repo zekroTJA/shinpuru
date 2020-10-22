@@ -2,11 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  AntiraidSettings,
-  JoinlogEntry,
-  KarmaSettings,
-} from 'src/app/api/api.models';
+import { AntiraidSettings, JoinlogEntry } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import dateFormat from 'dateformat';
@@ -75,5 +71,12 @@ export class GuildAdminAntiraidComponent implements OnInit {
     element.click();
 
     document.body.removeChild(element);
+  }
+
+  public async flushJoinlog() {
+    try {
+      await this.api.deleteGuildAntiraidJoinlog(this.guildID).toPromise();
+      this.joinlog = [];
+    } catch {}
   }
 }
