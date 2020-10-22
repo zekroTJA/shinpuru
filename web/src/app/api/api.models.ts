@@ -205,3 +205,10 @@ export interface AntiraidSettings {
   regeneration_period: number;
   burst: number;
 }
+
+export interface JoinlogEntry {
+  guild_id: string;
+  user_id: string;
+  tag: string;
+  timestamp: Date;
+}

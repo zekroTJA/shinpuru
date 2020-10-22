@@ -28,5 +28,37 @@
         <div class="mt-5">
             <button (click)="onSave()">SAVE</button>
         </div>
+
+        <div class="mt-5">
+            <div class="d-flex justify-content-between">
+                <h3>Antiraid Joinlog Records</h3>
+                <div>
+                    <button (click)="onDownloadJoinlog()" class="sec-btn mr-2" [disabled]="joinlog?.length < 1" title="Download ad JSON">
+                        <img height="25" src="/assets/download.svg"/>
+                    </button>
+                    <button (click)="fetchJoinlog()" class="refresh sec-btn"><img height="25" src="/assets/refresh.svg"/></button>
+                </div>
+            </div>
+            <div class="mt-4">
+                <i *ngIf="joinlog?.length < 1; else joinlogTable">No entries available currently.</i>
+                <ng-template #joinlogTable>
+                    <i class="small">The data in this table only persists for 42 hours after the trigger of the antiraid system.</i>
+                    <table class="w-100 mt-2">
+                        <tbody>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Tag</th>
+                                <th>Timestamp</th>
+                            </tr>
+                            <tr *ngFor="let e of joinlog">
+                                <td>{{ e.user_id }}</td>
+                                <td>{{ e.tag }}</td>
+                                <td>{{ dateFormat(e.timestamp, 'yyyy.mm.dd - HH:MM:ss Z') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ng-template>
+            </div>
+        </div>
     </div>
 </div>

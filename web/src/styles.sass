@@ -50,6 +50,11 @@ button
 
     &:disabled
         background-color: desaturate($c-blurple, 20)
+        opacity: 0.75
+        cursor: not-allowed
+        
+        &:hover
+            transform: none
 
 
 hr
@@ -102,7 +107,7 @@ select
 
 .embeded
     padding: 2px 5px
-    background-color: rgba(0, 0, 0, .4)
+    background-color: #2e0e0e66
     width: fit-content
     height: fit-content
     border-radius: 5px
