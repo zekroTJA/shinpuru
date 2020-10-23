@@ -12,7 +12,10 @@ func InitMetrics(cfg *config.Config) {
 			cfg.Metrics.Addr = ":9091"
 		}
 
-		ms := metrics.NewMetricsServer(cfg.Metrics.Addr)
+		ms, err := metrics.NewMetricsServer(cfg.Metrics.Addr)
+		if err != nil {
+			util.Log.Fatalf("failed initializing metrics server: %s", err.Error())
+		}
 
 		go func() {
 			util.Log.Infof("Metrics server listening on %s...", cfg.Metrics.Addr)

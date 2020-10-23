@@ -2,7 +2,9 @@ package metrics
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/go-ping/ping"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -10,8 +12,13 @@ import (
 var (
 	DiscordEventTriggers = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "discord_eventtriggers_total",
-		Help: "Total number of discord events triggered",
+		Help: "Total number of discord events triggered.",
 	}, []string{"event"})
+
+	DiscordGatewayPing = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "discord_gatewayping",
+		Help: "The ping time in milliseconds to the discord API gateay.",
+	})
 )
 
 // MetricsServer wraps a simple HTTP server serving
@@ -23,9 +30,22 @@ type MetricsServer struct {
 // NewMetricsServer initializes a new MectricsServer
 // instance with the given addr and registers all
 // instruments.
-func NewMetricsServer(addr string) (ms *MetricsServer) {
+func NewMetricsServer(addr string) (ms *MetricsServer, err error) {
 	prometheus.MustRegister(
-		DiscordEventTriggers)
+		DiscordEventTriggers,
+		DiscordGatewayPing)
+
+	pw, err := NewPingWatcher(30 * time.Second)
+	if err != nil {
+		return
+	}
+	pw.OnElapsed = func(p *ping.Statistics, err error) {
+		var v float64
+		if err == nil && p != nil {
+			v = float64(p.AvgRtt.Milliseconds())
+		}
+		DiscordGatewayPing.Set(v)
+	}
 
 	ms = new(MetricsServer)
 
