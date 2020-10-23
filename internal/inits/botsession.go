@@ -58,6 +58,10 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 		util.StatsMessagesAnalysed++
 	})
 
+	if config.Metrics != nil && config.Metrics.Enable {
+		session.AddHandler(listeners.NewListenerMetrics().Listener)
+	}
+
 	err = session.Open()
 	if err != nil {
 		util.Log.Fatal("Failed connecting Discord bot session:", err)

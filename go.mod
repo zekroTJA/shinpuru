@@ -28,6 +28,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
+	github.com/prometheus/client_golang v1.8.0
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
@@ -39,8 +40,9 @@ require (
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect
 	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0 // indirect
-	golang.org/x/sys v0.0.0-20201017003518-b09fb700fbb7 // indirect
+	golang.org/x/sys v0.0.0-20201022201747-fb209a7c41cd // indirect
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.58.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )
