@@ -84,7 +84,12 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 
 	alertDescrition := fmt.Sprintf(
 		"Following guild you are admin on is currently being raided!\n\n"+
-			"**%s (`%s`)**", guild.Name, e.GuildID)
+			"**%s (`%s`)**\n\n"+
+			"Because an atypical burst of members joined the guild, "+
+			"the guilds verification level was raised to `verry high` and all admins "+
+			"were informed.\n\n"+
+			"Also, all joining users from now are saved in a log list for the following "+
+			"24 hours. This log is saved for 48 hours toal.", guild.Name, e.GuildID)
 	if err != nil {
 		alertDescrition = fmt.Sprintf("%s\n\n"+
 			"**Attention:** Failed to raise guilds verification level because "+
@@ -125,7 +130,9 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 			Title: "⚠ GUILD RAID ALERT",
 			Description: "Because an atypical burst of members joined the guild, " +
 				"the guilds verification level was raised to `verry high` and all admins " +
-				"were informed.",
+				"were informed.\n\n" +
+				"Also, all joining users from now are saved in a log list for the following " +
+				"24 hours. This log is saved for 48 hours toal.",
 		})
 	}
 }
