@@ -7,6 +7,7 @@ import (
 	"github.com/go-ping/ping"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 var (
@@ -43,6 +44,8 @@ func NewMetricsServer(addr string) (ms *MetricsServer, err error) {
 		var v float64
 		if err == nil && p != nil {
 			v = float64(p.AvgRtt.Milliseconds())
+		} else if err != nil {
+			util.Log.Warningf("failed getting rtt to discord API: %s", err.Error())
 		}
 		DiscordGatewayPing.Set(v)
 	}

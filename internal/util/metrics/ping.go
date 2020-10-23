@@ -28,6 +28,7 @@ func NewPingWatcher(interval time.Duration) (pw *PingWatcher, err error) {
 	if err != nil {
 		return
 	}
+
 	pw.pinger.SetPrivileged(true)
 	pw.pinger.Count = 3
 
