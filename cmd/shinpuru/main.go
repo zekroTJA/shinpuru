@@ -87,6 +87,9 @@ func main() {
 	// Setting log level from config
 	util.SetLogLevel(conf.Logging.LogLevel)
 
+	// Initialize metrics server
+	inits.InitMetrics(conf)
+
 	// Initialize database middleware and shutdown routine
 	database := inits.InitDatabase(conf.Database)
 	defer func() {
