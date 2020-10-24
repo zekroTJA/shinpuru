@@ -2,6 +2,22 @@ version: '3'
 
 services:
 
+  traefik:
+    image: "traefik:v2.2"
+    command:
+      - "--providers.docker"
+      - "--providers.file.directory=/etc/traefik/dynamic_conf"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--providers.docker.exposedByDefault=false"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/config:/etc/traefik/dynamic_conf"
+      - "/etc/cert:/etc/cert:ro"
+
   minio:
     image: 'minio/minio:latest'
     expose:
@@ -38,6 +54,35 @@ services:
     volumes:
       - './shinpuru/config:/etc/config'
       - '/etc/cert:/etc/cert'
-    ports:
-      - '442:8080'
+    expose:
+      - '8080'
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shinpuru.entrypoints=https"
+      - "traefik.http.routers.shinpuru.tls=true"
+      - "traefik.http.routers.shinpuru.rule=Host(`example.com`)"
+
+  ###############################################################################
+  # The following two services are only important if
+  # you want to monitor metrics of your shinpuru
+  # instance using prometheus and grafana.
+
+  prometheus:
+    image: "prom/prometheus:latest"
+    expose:
+      - "9090"
+    volumes:
+      # Change this if you want to use another prometheus config.
+      - "./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    restart: always
+
+  grafana:
+    image: "grafana/grafana"
+    expose:
+      - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=https"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.example.com`)"
