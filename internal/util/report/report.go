@@ -65,7 +65,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 
 // AsEmbedField creates a discordgo.MessageEmbedField from
 // the report. publicAddr is passed to generate a publicly
-// vailable link embeded in the embed field.
+// vailable link embedded in the embed field.
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {
