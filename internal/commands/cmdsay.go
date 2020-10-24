@@ -39,7 +39,7 @@ func (c *CmdSay) GetInvokes() []string {
 }
 
 func (c *CmdSay) GetDescription() string {
-	return "Send an embeded message with the bot."
+	return "Send an embedded message with the bot."
 }
 
 func (c *CmdSay) GetSubPermissionRules() []shireikan.SubPermission {

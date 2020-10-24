@@ -84,7 +84,7 @@
                 <div class="d-flex">
                     <h3>{{ member.user.username }}#{{ member.user.discriminator }}</h3>
                     <p *ngIf="member.user.bot" class="bot-tag">BOT</p>
-                    <p class="embeded">{{ member.user.id }}</p>
+                    <p class="embedded">{{ member.user.id }}</p>
                 </div>
                 <p *ngIf="member.nick" class="font-gray">aka. "{{ member.nick }}"</p>
             </div>
@@ -125,13 +125,13 @@
                             <div class="d-flex overflow-wrap">
                                 <p 
                                     *ngFor="let p of getPerms(true)" 
-                                    class="permissions embeded allowed"
+                                    class="permissions embedded allowed"
                                 >{{ p }}</p>
                             </div>
                             <div class="d-flex overflow-wrap">
                                 <p 
                                     *ngFor="let p of getPerms(false)" 
-                                    class="permissions embeded disallowed"
+                                    class="permissions embedded disallowed"
                                 >{{ p }}</p>
                             </div>
                         </ng-template>
