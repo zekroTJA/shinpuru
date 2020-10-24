@@ -1,35 +1,37 @@
-1.3.0
+1.4.0-rc1
 
 > MAJOR PATCH
 
 ## Major Implementations
 
-**Karma System Settings** [#146]
+### Antiraid System [#159]
 
-The Karma System is now configurable via the web interface. If you have the permission `sp.guild.config.karma`, you will see this entry in the guild settings of the web interface:  
-![](https://i.imgur.com/HiaUhJO.png)
-There, you can enter the advanced guild settings interface where you can define preferences like enable or disable the karma system, emojis used to increase or decrease karma or the ammount of tokens available per hour per user.  
-![](https://i.imgur.com/CC7AgCV.png)
+A new guild security feature has been added to shinpuru: The Antiraid System.
 
-**Channel Locking** [#165]
+> **What is a "Raid"?**  
+> A guild raid is mostly refered to a large, burst-like ammount of accounts joining the guild in a short period of time. This is mostly caused by a single user or a group of users which utilize bot-created or hijacked accounts to flood a guild.
 
-Added the [`lock`](https://github.com/zekroTJA/shinpuru/wiki/Commands#lock) command to write-lock text channels. By either typing `sp!lock` into the channel which shall be locked or remotely by passing a channel resolvable (i.e. `sp!lock general`), you can write-lock channels. That means, that all roles in this channel (*below the role of the executor*) are explicitly disallowed to write messages in this channel. When hitting the same command again onto this channel, the permission state before the first execution of the `lock` command are restored.  
-![](https://i.imgur.com/wLJMDmP.gif)
+To counteract this, the antiraid system constantly checks the rate of users joining your guild. If the rate increases over a certain threshold, the antiraid system triggers. Following, the guilds security level is raised to `verry high` and for the following 24 hours, all users joining the guild are logged in a list which is accessable via the web interface. Also, all admins of the guild will be informed about the incident.
 
-## Security
+Of course, the antiraid system can be toggled and the trigger threshold values can be managed in the web interface *(if you have the `sp.guild.config.antiraid` permission)*.  
+![](https://i.imgur.com/vLMgrM9.png)
 
-Because shinpuru is using cookies containing a singed JWT with session information to authenticate requests against the HTTP REST API, it was vulnerable to [XSRF (Cross-site request forgery) attacks](https://en.wikipedia.org/wiki/Cross-site_request_forgery). This is now fixed by generating session-bound anti-forgery tokens, which are set using the `XSRF-TOKEN` cookie, which is readable by JavaScript. Angular then reads the cookie and sets it as `X-XSRF-TOKEN` header for each following `POST`, `PUT` or `DELETE` request. API-Token based authentications do not need to send the `X-XSRF-TOKEN`, be cause they are already authenticated using headers.
+### Metrics Monitoring
 
-## Bug Fixes
+You are now able to monitor core metrics of shinpuru using Prometheus and Grafana.
 
-- Permission rules bound to `@everyone` are now correctly processed.
-- Also non-command specific permission rules are now correctly listed by the `GET /api/guilds/:guildID/:userID/permissions/allowed` endpoint.
+You can enable the prometheus scraping endpoint by adding this to your shinpuru config:
+```yml
+metrics:
+  enable: true
+  addr: ":9091"
+```
 
-## Backstage
+[Here](https://github.com/zekroTJA/shinpuru/blob/master/config/prometheus/prometheus.yml) you can find an example Prometheus configuration and [here](https://github.com/zekroTJA/shinpuru/blob/master/config/grafana/example-dashboard.json) you can find an example grafana dashboard to monitor shinpuru's metrics.  
 
-- Refactored the [SQLite3 database middleware](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/middleware/sqlite.go) so that it inherits all bindings from the MySQL middleware which redured it from 952 to only 161 lines of code.
-- API handlers are now split up in seperate files for better overview.
-- The `GetMemberPermissions` function is now moved from the database middlewares to the permission middleware.
+*Example dashboard. Data from shinpuru Canary instance.*  
+![](https://i.imgur.com/Srr8CwE.png)
+
 
 # Docker
 
@@ -37,5 +39,5 @@ Because shinpuru is using cookies containing a singed JWT with session informati
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.3.0
+$ docker pull zekro/shinpuru:1.4.0-rc1
 ```

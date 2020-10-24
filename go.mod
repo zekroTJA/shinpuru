@@ -1,6 +1,6 @@
 module github.com/zekroTJA/shinpuru
 
-go 1.13
+go 1.14
 
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
@@ -32,7 +32,6 @@ require (
 	github.com/prometheus/client_golang v1.8.0
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/sahilm/fuzzy v0.1.0
-	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.16.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/ratelimit v1.0.0
