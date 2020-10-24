@@ -7,7 +7,7 @@ import (
 func TestNewVoidBuffer(t *testing.T) {
 	const size = 5
 
-	vb := NewVoidBuffer(size)
+	vb := New(size)
 
 	if vb == nil {
 		t.Error("new voidbuffer was nil")
@@ -46,7 +46,7 @@ func TestGet(t *testing.T) {
 		t.Errorf("recovered value was invalid (was %d, must %d)", v, 5)
 	}
 
-	vb = NewVoidBuffer(5)
+	vb = New(5)
 	vi := vb.Get(1)
 	if vi != nil {
 		t.Errorf("nil value was not nil: %v", vi)
@@ -68,7 +68,7 @@ func TestContains(t *testing.T) {
 // --- HELPERS ---------------------------------------
 
 func getPreFilled() (vb *VoidBuffer) {
-	vb = NewVoidBuffer(5)
+	vb = New(5)
 
 	// 1 2 3 4 5
 	// 6 7 8 4 5

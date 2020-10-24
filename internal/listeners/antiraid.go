@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
 	"github.com/zekroTJA/timedmap"
 )
 
@@ -19,18 +20,23 @@ const (
 	arTriggerLifetime        = 2 * arTriggerRecordLifetime
 )
 
+type guildState struct {
+	rl *ratelimit.Limiter
+	bf *voidbuffer.VoidBuffer
+}
+
 type ListenerAntiraid struct {
 	db database.Database
 
-	limiters map[string]*ratelimit.Limiter
-	triggers *timedmap.TimedMap
+	guildStates map[string]*guildState
+	triggers    *timedmap.TimedMap
 }
 
 func NewListenerAntiraid(db database.Database) *ListenerAntiraid {
 	return &ListenerAntiraid{
-		db:       db,
-		limiters: make(map[string]*ratelimit.Limiter),
-		triggers: timedmap.New(arTriggerCleanupDuration),
+		db:          db,
+		guildStates: make(map[string]*guildState),
+		triggers:    timedmap.New(arTriggerCleanupDuration),
 	}
 }
 
@@ -46,30 +52,39 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 
 	ok, limit, burst := l.getGuildSettings(e.GuildID)
 	if !ok {
-		if _, ok := l.limiters[e.GuildID]; ok {
-			delete(l.limiters, e.GuildID)
+		if _, ok := l.guildStates[e.GuildID]; ok {
+			delete(l.guildStates, e.GuildID)
 		}
 		return
 	}
 
 	limitDur := time.Duration(limit) * time.Second
 
-	limiter, ok := l.limiters[e.GuildID]
-	if !ok || limiter == nil {
-		limiter = ratelimit.NewLimiter(limitDur, burst)
-		l.limiters[e.GuildID] = limiter
-	} else {
-		if limiter.Burst() != burst {
-			limiter.SetBurst(burst)
+	state, ok := l.guildStates[e.GuildID]
+	if !ok || state == nil {
+		state = &guildState{
+			rl: ratelimit.NewLimiter(limitDur, burst),
+			bf: voidbuffer.New(50),
 		}
-		if limiter.Limit() != limitDur {
-			limiter.SetLimit(limitDur)
+		l.guildStates[e.GuildID] = state
+	} else {
+		if state.rl.Burst() != burst {
+			state.rl.SetBurst(burst)
+		}
+		if state.rl.Limit() != limitDur {
+			state.rl.SetLimit(limitDur)
 		}
 	}
 
-	if limiter.Allow() {
+	if state.bf.Contains(e.User.ID) {
 		return
 	}
+
+	if state.rl.Allow() {
+		return
+	}
+
+	state.bf.Push(e.User.ID)
 
 	verificationLvl := discordgo.VerificationLevelVeryHigh
 	_, err := s.GuildEdit(e.GuildID, discordgo.GuildParams{

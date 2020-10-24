@@ -16,9 +16,9 @@ type VoidBuffer struct {
 	size int
 }
 
-// NewVoidBuffer initializes a new VoidBuffer with
+// New initializes a new VoidBuffer with
 // the passed size.
-func NewVoidBuffer(size int) *VoidBuffer {
+func New(size int) *VoidBuffer {
 	return &VoidBuffer{
 		m:    &sync.RWMutex{},
 		buf:  make([]interface{}, size),
