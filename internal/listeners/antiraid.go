@@ -80,11 +80,11 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		return
 	}
 
+	state.bf.Push(e.User.ID)
+
 	if state.rl.Allow() {
 		return
 	}
-
-	state.bf.Push(e.User.ID)
 
 	verificationLvl := discordgo.VerificationLevelVeryHigh
 	_, err := s.GuildEdit(e.GuildID, discordgo.GuildParams{
