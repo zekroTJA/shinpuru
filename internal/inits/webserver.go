@@ -9,7 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/webserver"
+	"github.com/zekroTJA/shinpuru/internal/core/webserver"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shireikan"
 )
