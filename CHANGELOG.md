@@ -32,6 +32,9 @@ metrics:
 *Example dashboard. Data from shinpuru Canary instance.*  
 ![](https://i.imgur.com/Srr8CwE.png)
 
+## Backstage
+
+- Updated a bit of the project structure: The packages `listeners` and `webserver` are now moved into the `internal/core` package.
 
 # Docker
 
