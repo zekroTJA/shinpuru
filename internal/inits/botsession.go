@@ -5,8 +5,8 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -39,6 +39,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
 	session.AddHandler(listeners.NewListenerKarma(database).Handler)
+	session.AddHandler(listeners.NewListenerAntiraid(database).HandlerMemberAdd)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
@@ -56,6 +57,10 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		util.StatsMessagesAnalysed++
 	})
+
+	if config.Metrics != nil && config.Metrics.Enable {
+		session.AddHandler(listeners.NewListenerMetrics().Listener)
+	}
 
 	err = session.Open()
 	if err != nil {

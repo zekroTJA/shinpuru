@@ -120,6 +120,13 @@ type StorageType struct {
 	File  *StorageFile  `json:"file"`
 }
 
+// Metrics holds the settings for the prometheus
+// metrics server.
+type Metrics struct {
+	Enable bool   `json:"enable"`
+	Addr   string `json:"addr"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -133,6 +140,7 @@ type Config struct {
 	TwitchApp   *TwitchApp
 	Storage     *StorageType
 	WebServer   *WebServer
+	Metrics     *Metrics
 }
 
 // Parser describes a general configuration parser
@@ -200,6 +208,10 @@ func GetDefaultConfig() *Config {
 			TLS: &WebServerTLS{
 				Enabled: false,
 			},
+		},
+		Metrics: &Metrics{
+			Enable: false,
+			Addr:   ":9091",
 		},
 	}
 }

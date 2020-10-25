@@ -25,6 +25,8 @@ import {
   GuildScoreboardEntry,
   CommandInfo,
   KarmaSettings,
+  AntiraidSettings,
+  JoinlogEntry,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -101,6 +103,9 @@ export class APIService {
   private readonly rcGuildSettingsKarma = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/karma`;
 
+  private readonly rcGuildSettingsAntiraid = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/antiraid`;
+
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
 
@@ -112,6 +117,9 @@ export class APIService {
 
   private readonly rcGuildScoreboard = (guildID: string) =>
     `${this.rcGuilds(guildID)}/scoreboard`;
+
+  public readonly rcGuildAntiraidJoinlog = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/antiraid/joinlog`;
 
   private readonly rcGuildMemberKick = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/kick`;
@@ -499,6 +507,37 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildSettingsKarma(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsAntiraid(
+    guildID: string
+  ): Observable<AntiraidSettings> {
+    return this.http
+      .get(this.rcGuildSettingsAntiraid(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsAntiraid(
+    guildID: string,
+    settings: AntiraidSettings
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsAntiraid(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildAntiraidJoinlog(
+    guildID: string
+  ): Observable<ListReponse<JoinlogEntry>> {
+    return this.http
+      .get(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteGuildAntiraidJoinlog(guildID: string): Observable<any> {
+    return this.http
+      .delete(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

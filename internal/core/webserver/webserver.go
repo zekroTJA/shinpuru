@@ -196,11 +196,17 @@ func (ws *WebServer) registerHandlers() {
 		Post("/inviteblock", ws.handlerPostGuildInviteBlock)
 	guild.
 		Get("/scoreboard", ws.handlerGetGuildScoreboard)
+	guild.
+		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
+		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
 
 	guildSettings := guild.Group("/settings")
 	guildSettings.
 		Get("/karma", ws.handlerGetGuildSettingsKarma).
 		Post(ws.handlerPostGuildSettingsKarma)
+	guildSettings.
+		Get("/antiraid", ws.handlerGetGuildSettingsAntiraid).
+		Post(ws.handlerPostGuildSettingsAntiraid)
 
 	guild.
 		Get("/settings", ws.handlerGetGuildSettings).

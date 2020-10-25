@@ -21,7 +21,7 @@
         <div id="heading-container">
             <img [src]="guild.icon_url | discordAsset:'/assets/dc-logo.svg':64:(!!guild.icon)"/>
             <h3>{{ guild.name }}</h3>
-            <p class="embeded">{{ guild.id }}</p>
+            <p class="embedded">{{ guild.id }}</p>
         </div>
 
         <!-- LOGGED IN MEMBER INFO -->
@@ -30,7 +30,7 @@
             <div class="info-container">
                 <div class="d-flex">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
-                    <p class="embeded">{{ guild.self_member.user.id }}</p>
+                    <p class="embedded">{{ guild.self_member.user.id }}</p>
                 </div>
                 <div class="d-flex mt-2 overflow-wrap">
                     <div *ngFor="let r of userRoles">
@@ -142,8 +142,9 @@
             <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
         </div>
         <div *ngIf="guildSettingsToggle">
-            <div *ngIf="guildSettingsContains('sp.guild.config.karma')" class="settingsTile advanced">
+            <div *ngIf="guildSettingsContainsAny(['sp.guild.config.karma', 'sp.guild.config.antiraid'])" class="settingsTile advanced">
                 <h5>Advanced</h5>
+                <button *ngIf="guildSettingsContains('sp.guild.config.antiraid')" class="advanced-button" ngbTooltip="Antiraid Settings" (click)="navigateSetting('antiraid')"><img src="/assets/antiraid.svg"/></button>
                 <button *ngIf="guildSettingsContains('sp.guild.config.karma')" class="advanced-button" ngbTooltip="Karma Settings" (click)="navigateSetting('karma')"><img src="/assets/karma.svg"/></button>
             </div>
             <div *ngIf="guildSettingsContains('sp.guild.config.prefix')" class="settingsTile">
@@ -183,7 +184,7 @@
             <div *ngIf="guildSettingsContains('sp.guild.config.joinmsg')" class="settingsTile">
                 <h5>Join Message</h5>
                 <i>
-                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the joined user.
+                    You can use <span class="embedded">[user]</span> to display the name or <span class="embedded">[ment]</span> to mention the joined user.
                 </i>
                 <div class="d-flex mt-3">
                     <select [(ngModel)]="settings.joinmessagechannel" (input)="updatedSettings.joinmessagechannel = getSelectedValue($event)">
@@ -207,7 +208,7 @@
             <div *ngIf="guildSettingsContains('sp.guild.config.leavemsg')" class="settingsTile">
                 <h5>Leave Message</h5>
                 <i>
-                    You can use <span class="embeded">[user]</span> to display the name or <span class="embeded">[ment]</span> to mention the left user.
+                    You can use <span class="embedded">[user]</span> to display the name or <span class="embedded">[ment]</span> to mention the left user.
                 </i>
                 <div class="d-flex mt-3">
                     <select [(ngModel)]="settings.leavemessagechannel" (input)="updatedSettings.leavemessagechannel = getSelectedValue($event)">
@@ -262,11 +263,11 @@
                 <button class="ml-auto mb-auto" (click)="addPermissionRule()">ADD RULE</button>
             </div>
             <div *ngFor="let p of objectAsArray(settings?.perms)" class="permission-view">
-                <p class="embeded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
+                <p class="embedded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
                 <ul>
                     <li *ngFor="let perm of p.perms">
                         <div class="d-flex">
-                            <p class="embeded" [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'">{{ perm }}</p>
+                            <p class="embedded" [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'">{{ perm }}</p>
                             <a class="remove-btn" (click)="removePermission(p, perm)"></a>
                         </div>
                     </li>
@@ -292,7 +293,7 @@
                 <span *ngFor="let b of backups; index as i" class="backups-entry">
                     <strong class="number">{{ i }}</strong>
                     <span>{{ dateFormat(b.timestamp) }}</span> 
-                    <span class="embeded">(ID: {{b.file_id}})</span>
+                    <span class="embedded">(ID: {{b.file_id}})</span>
                     <a 
                         title="Download backup file" 
                         [href]="getBackupDownloadLink(b.file_id)" 

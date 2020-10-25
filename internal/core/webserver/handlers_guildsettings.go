@@ -350,6 +350,78 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/settings/antiraid
+
+func (ws *WebServer) handlerGetGuildSettingsAntiraid(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.antiraid"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	settings := new(AntiraidSettings)
+
+	if settings.State, err = ws.db.GetAntiraidState(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if settings.RegenerationPeriod, err = ws.db.GetAntiraidRegeneration(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if settings.Burst, err = ws.db.GetAntiraidBurst(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, settings, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/settings/antiraid
+
+func (ws *WebServer) handlerPostGuildSettingsAntiraid(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.antiraid"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	settings := new(AntiraidSettings)
+	if err := parseJSONBody(ctx, settings); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	if settings.RegenerationPeriod < 1 {
+		return jsonError(ctx, errors.New("regeneration period must be larger than 0"), fasthttp.StatusBadRequest)
+	}
+	if settings.Burst < 1 {
+		return jsonError(ctx, errors.New("burst must be larger than 0"), fasthttp.StatusBadRequest)
+	}
+
+	if err = ws.db.SetAntiraidState(guildID, settings.State); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetAntiraidRegeneration(guildID, settings.RegenerationPeriod); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if err = ws.db.SetAntiraidBurst(guildID, settings.Burst); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - HELPERS
 
 func checkEmojis(emojis []string) bool {

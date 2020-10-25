@@ -28,7 +28,7 @@ func (emb *EmbedMessage) DeleteAfter(d time.Duration) *EmbedMessage {
 	return emb
 }
 
-// Error returns the embeded error.
+// Error returns the embedded error.
 func (emb *EmbedMessage) Error() error {
 	return emb.err
 }

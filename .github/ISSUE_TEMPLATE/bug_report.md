@@ -23,5 +23,5 @@ assignees: zekroTJA
 
 ## Images and Logs
 > Here you can embed images or crash logs or command lines.
-> Please use embeded markdown images and code blocks for that.
+> Please use embedded markdown images and code blocks for that.
 ...

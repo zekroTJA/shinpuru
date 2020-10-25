@@ -136,3 +136,13 @@ twitchapp:
   clientid: "zcwbsvg71qmo6to9813jkdvsh1rch4"
   # Client Secret
   clientsecret: "nlf6pl00vf4hz4oszgxytlpo9q6h52"
+
+# Prometheus metrics endpoint configuration
+metrics:
+  # Whether or not to enable the prometheus
+  # metrics and HTTP endpoint
+  enable: true
+  # The address the metrics HTTP server binds
+  # to. This is defaultly ":9091" if not
+  # specified
+  addr: ":9091"

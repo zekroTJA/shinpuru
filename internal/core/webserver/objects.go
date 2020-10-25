@@ -251,6 +251,14 @@ type KarmaSettings struct {
 	Tokens         int      `json:"tokens"`
 }
 
+// AntiraidSettings wraps settings properties for
+// guild antiraid settings.
+type AntiraidSettings struct {
+	State              bool `json:"state"`
+	RegenerationPeriod int  `json:"regeneration_period"`
+	Burst              int  `json:"burst"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

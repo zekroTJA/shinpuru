@@ -1,5 +1,5 @@
 <div class="navbar">
-    <div *ngFor="let r of routes" class="item" [class.active]="currentPath === r.route">
+    <div *ngFor="let r of routes" class="item" [class.active]="currentPath === r.route" (click)="navigate(r)">
         <img src="/assets/{{ r.icon }}" />
         <span>{{ r.displayname }}</span>
     </div>

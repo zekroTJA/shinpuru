@@ -5,8 +5,8 @@
 
         <app-slider [(ngModel)]="karmaSettings.state">Karma-System enabled</app-slider>
 
-        <h3 class="mb-3">Emotes</h3>
-        <i>Tipp: On Windows 10, press the windows key and the point/colon key together to open an emote keyboard.</i>
+        <h3 class="mb-2">Emotes</h3>
+        <i class="small">Tipp: On Windows 10, press the windows key and the point/colon key together to open an emote keyboard.</i>
         <div class="d-flex">
             <div class="mt-3 mr-3">
                 <label for="i-emotes-inc">Increase Karma</label>
@@ -19,8 +19,8 @@
         </div>
 
         <h3 class="mt-4">Tokens</h3>
-        <div class="mt-3">
-            <label for="i-tokens"><i>The ammount of up and downvotes a user can perform per hour.</i></label>
+        <div class="mt-2">
+            <label for="i-tokens"><i class="small">The ammount of up and downvotes a user can perform per hour.</i></label>
             <input id="i-tokens" type="number" min="1" [(ngModel)]="karmaSettings.tokens">
         </div>
 
