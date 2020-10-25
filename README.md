@@ -68,6 +68,15 @@ You can combine that function with the [`ment`](https://github.com/zekroTJA/shin
 
 Another feature is the [`autorole`](https://github.com/zekroTJA/shinpuru/wiki/Commands#autorole) system: You can specify a role, which will be added to every user joined the guild.
 
+## Antiraid
+![](https://i.imgur.com/vLMgrM9.png)
+Having trouble with Raids? Shinpuru can help you with this by limiting the Amount of Users who can join to your guild by giving them an interval between joins.
+
+First you can limit how many people can join in a specific amount of time. You can also limit what the amount of time should be between the join of two Users.
+
+You can also see the logs of the Antiraid to see if you got raided by Users. These logs can be downloaded or deleted in the web interface.
+
+
 ## Chat
 
 Of course, there are some chats supporting commands like the [`say`](https://github.com/zekroTJA/shinpuru/wiki/Commands#say) command, where you can create embedded messages with the bot with custom colors, titles, footers, images, and so on. Also, it is possible to create embeds from raw json data (like documented in [Discords API docs](https://discordapp.com/developers/docs/resources/channel#embed-object)). For example, [here](https://github.com/dev-schueppchen/rules-and-docs/blob/master/embeds/welcome-msg.json) you can find the format of our development Discord guilds welcome message.
