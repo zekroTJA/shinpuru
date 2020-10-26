@@ -30,7 +30,7 @@ func getUnparameterizedPath(ctx *routing.Context) string {
 			continue
 		}
 
-		strings.ReplaceAll(path, paramValue, ":"+paramName)
+		path = strings.ReplaceAll(path, paramValue, ":"+paramName)
 	}
 
 	return path
