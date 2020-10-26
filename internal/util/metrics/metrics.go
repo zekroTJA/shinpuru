@@ -14,6 +14,11 @@ var (
 		Help: "Total number of discord events triggered.",
 	}, []string{"event"})
 
+	RestapiRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "restapi_requests_total",
+		Help: "Total number of HTTP requests processed.",
+	}, []string{"endpoint", "method"})
+
 	DiscordGatewayPing = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "discord_gatewayping",
 		Help: "The ping time in milliseconds to the discord API gateay.",

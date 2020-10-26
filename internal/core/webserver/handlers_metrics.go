@@ -3,14 +3,16 @@ package webserver
 import (
 	"strings"
 
+	"github.com/prometheus/client_golang/prometheus"
 	routing "github.com/qiangxue/fasthttp-routing"
+	"github.com/zekroTJA/shinpuru/internal/util/metrics"
 )
 
 func (ws *WebServer) handleMetrics(ctx *routing.Context) error {
-	// method := string(ctx.Method())
-	// endpoint := getUnparameterizedPath(ctx)
+	method := strings.ToUpper(string(ctx.Method()))
+	endpoint := strings.ToLower(getUnparameterizedPath(ctx))
 
-	// metrics.RestapiRequest
+	metrics.RestapiRequests.With(prometheus.Labels{"endpoint": endpoint, "method": method})
 
 	return nil
 }
