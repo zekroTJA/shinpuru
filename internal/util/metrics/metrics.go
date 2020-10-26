@@ -43,6 +43,7 @@ func NewMetricsServer(addr string) (ms *MetricsServer, err error) {
 	prometheus.MustRegister(
 		DiscordEventTriggers,
 		DiscordGatewayPing,
+		DiscordCommandsProcessed,
 		RestapiRequests)
 
 	_, err = startPingWatcher(30 * time.Second)
