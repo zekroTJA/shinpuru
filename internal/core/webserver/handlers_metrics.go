@@ -12,7 +12,9 @@ func (ws *WebServer) handleMetrics(ctx *routing.Context) error {
 	method := strings.ToUpper(string(ctx.Method()))
 	endpoint := strings.ToLower(getUnparameterizedPath(ctx))
 
-	metrics.RestapiRequests.With(prometheus.Labels{"endpoint": endpoint, "method": method})
+	metrics.RestapiRequests.
+		With(prometheus.Labels{"endpoint": endpoint, "method": method}).
+		Add(1)
 
 	return nil
 }
