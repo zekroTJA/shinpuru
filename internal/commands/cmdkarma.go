@@ -15,7 +15,7 @@ type CmdKarma struct {
 }
 
 func (c *CmdKarma) GetInvokes() []string {
-	return []string{"karma", "scoreboard"}
+	return []string{"karma", "scoreboard", "leaderboard", "lb", "sb", "top"}
 }
 
 func (c *CmdKarma) GetDescription() string {
