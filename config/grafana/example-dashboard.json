@@ -16,6 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
+  "iteration": 1603793889972,
   "links": [],
   "panels": [
     {
@@ -23,7 +24,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -33,8 +34,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 14,
-        "w": 24,
+        "h": 11,
+        "w": 12,
         "x": 0,
         "y": 0
       },
@@ -57,8 +58,8 @@
       },
       "percentage": false,
       "pluginVersion": "7.2.2",
-      "pointradius": 1,
-      "points": true,
+      "pointradius": 2,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -66,7 +67,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(discord_eventtriggers_total[1m])",
+          "expr": "rate(discord_eventtriggers_total{job=\"$instance\"}[$interval])",
           "interval": "",
           "legendFormat": "{{event}}",
           "refId": "A"
@@ -76,7 +77,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Discord Event Rate",
+      "title": "Discord Events Trigger Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -118,35 +119,20 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
-      "description": "",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "custom": {}
         },
         "overrides": []
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 0,
-        "y": 14
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 0
       },
       "hiddenSeries": false,
       "id": 4,
@@ -167,8 +153,8 @@
       },
       "percentage": false,
       "pluginVersion": "7.2.2",
-      "pointradius": 1,
-      "points": true,
+      "pointradius": 2,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -176,25 +162,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "go_goroutines",
-          "instant": false,
+          "expr": "rate(restapi_requests_total{job=\"$instance\"}[$interval])",
           "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "# goroutines",
+          "legendFormat": "{{method}} {{endpoint}}",
           "refId": "A"
-        },
-        {
-          "expr": "go_threads",
-          "interval": "",
-          "legendFormat": "# threads",
-          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "# Goroutines",
+      "title": "REST API Request Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -246,10 +224,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 8,
-        "y": 14
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 6,
@@ -270,8 +248,8 @@
       },
       "percentage": false,
       "pluginVersion": "7.2.2",
-      "pointradius": 1,
-      "points": true,
+      "pointradius": 2,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -279,38 +257,23 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "go_memstats_sys_bytes/1024/1024",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "MiB sys",
+          "expr": "go_goroutines{job=\"$instance\"}",
+          "interval": "$interval",
+          "legendFormat": "# goroutines",
           "refId": "A"
         },
         {
-          "expr": "go_memstats_alloc_bytes/1024/1024",
-          "interval": "",
-          "legendFormat": "MiB alloc",
+          "expr": "go_threads{job=\"$instance\"}",
+          "interval": "$interval",
+          "legendFormat": "# threads",
           "refId": "B"
-        },
-        {
-          "expr": "go_memstats_heap_idle_bytes/1024/1024",
-          "interval": "",
-          "legendFormat": "MiB heap idle",
-          "refId": "C"
-        },
-        {
-          "expr": "go_memstats_heap_inuse_bytes/1024/1024",
-          "interval": "",
-          "legendFormat": "MiB heap inuse",
-          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "MB Allocated RAM",
+      "title": "# goroutines / threads",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -362,10 +325,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 16,
-        "y": 14
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 8,
@@ -386,8 +349,8 @@
       },
       "percentage": false,
       "pluginVersion": "7.2.2",
-      "pointradius": 1,
-      "points": true,
+      "pointradius": 2,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -395,9 +358,122 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "discord_gatewayping",
+          "expr": "go_memstats_alloc_bytes{job=\"$instance\"}/1024/1024",
+          "interval": "$interval",
+          "legendFormat": "MiB alloc",
+          "refId": "A"
+        },
+        {
+          "expr": "go_memstats_sys_bytes{job=\"$instance\"}/1024/1024",
+          "interval": "$interval",
+          "legendFormat": "MiB sys",
+          "refId": "B"
+        },
+        {
+          "expr": "go_memstats_heap_idle_bytes{job=\"$instance\"}/1024/1024",
+          "interval": "$interval",
+          "legendFormat": "MiB heap idle",
+          "refId": "C"
+        },
+        {
+          "expr": "go_memstats_heap_alloc_bytes{job=\"$instance\"}/1024/1024",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "MiB heap inuse",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Panel Title",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "discord_gatewayping{job=\"$instance\"}",
+          "interval": "$interval",
+          "legendFormat": "ms",
           "refId": "A"
         }
       ],
@@ -405,7 +481,94 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Discord Gateway RTT",
+      "title": "Discord Gateway Ping RTT",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Panel Title",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -443,12 +606,117 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "shinpuru-latest",
+          "value": "shinpuru-latest"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "instance",
+        "options": [
+          {
+            "selected": false,
+            "text": "shinpuru-latest",
+            "value": "shinpuru-latest"
+          },
+          {
+            "selected": true,
+            "text": "shinpuru-canary",
+            "value": "shinpuru-canary"
+          }
+        ],
+        "query": "shinpuru-latest,shinpuru-canary",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": false,
+          "text": "1m",
+          "value": "1m"
+        },
+        "hide": 0,
+        "label": null,
+        "name": "interval",
+        "options": [
+          {
+            "selected": true,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "12h",
+            "value": "12h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "14d",
+            "value": "14d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ],
+        "query": "1m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "queryValue": "",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
+      }
+    ]
   },
   "time": {
     "from": "now-30m",
@@ -456,7 +724,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "shinpuru-canary",
-  "uid": "azCXnptGk",
-  "version": 13
+  "title": "shinpuru",
+  "uid": "Cn05HLpGk",
+  "version": 4
 }
