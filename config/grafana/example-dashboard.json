@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1603793889972,
+  "iteration": 1603801925744,
   "links": [],
   "panels": [
     {
@@ -550,7 +550,7 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -564,11 +564,19 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(discord_commands_prcessed_total{job=\"$instance\"}[$interval])",
+          "interval": "",
+          "legendFormat": "{{command}}",
+          "refId": "A"
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Panel Title",
+      "title": "Command Processing Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -606,7 +614,7 @@
       }
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -615,7 +623,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "shinpuru-latest",
           "value": "shinpuru-latest"
         },
@@ -626,12 +634,12 @@
         "name": "instance",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "shinpuru-latest",
             "value": "shinpuru-latest"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "shinpuru-canary",
             "value": "shinpuru-canary"
           }
@@ -719,12 +727,12 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "shinpuru",
   "uid": "Cn05HLpGk",
-  "version": 4
+  "version": 6
 }
