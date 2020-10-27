@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -15,7 +16,7 @@ type CmdKarma struct {
 }
 
 func (c *CmdKarma) GetInvokes() []string {
-	return []string{"karma", "scoreboard"}
+	return []string{"karma", "scoreboard", "leaderboard", "lb", "sb", "top"}
 }
 
 func (c *CmdKarma) GetDescription() string {
@@ -23,7 +24,8 @@ func (c *CmdKarma) GetDescription() string {
 }
 
 func (c *CmdKarma) GetHelp() string {
-	return "`karma` - Display karma scoreboard"
+	return "`karma` - Display karma scoreboard\n" +
+		"`karma <userResolvable>` - Display karma count of this user\n"
 }
 
 func (c *CmdKarma) GetGroup() string {
@@ -44,6 +46,11 @@ func (c *CmdKarma) IsExecutableInDMChannels() bool {
 
 func (c *CmdKarma) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject("db").(database.Database)
+
+	userRes := ctx.GetArgs().Get(0).AsString()
+	if userRes != "" {
+		return c.userKarma(ctx, db, userRes)
+	}
 
 	karma, err := db.GetKarma(ctx.GetUser().ID, ctx.GetGuild().ID)
 	if err != nil && err != database.ErrDatabaseNotFound {
@@ -99,4 +106,26 @@ func (c *CmdKarma) Exec(ctx shireikan.Context) error {
 	}
 
 	return util.SendEmbedRaw(ctx.GetSession(), ctx.GetChannel().ID, emb).Error()
+}
+
+func (c *CmdKarma) userKarma(ctx shireikan.Context, db database.Database, userRes string) error {
+	memb, err := fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, userRes)
+	if err != nil {
+		return err
+	}
+
+	guildKarma, err := db.GetKarma(memb.User.ID, ctx.GetGuild().ID)
+	if err != nil {
+		return err
+	}
+
+	globalKarma, err := db.GetKarmaSum(memb.User.ID)
+	if err != nil {
+		return err
+	}
+
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+		fmt.Sprintf("Guild Karma: **`%d`**\nGlobal Karma: **`%d`**", guildKarma, globalKarma),
+		memb.User.String()+"'s Karma Stats", 0).
+		Error()
 }

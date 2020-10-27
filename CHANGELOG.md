@@ -1,4 +1,4 @@
-1.4.0-rc1
+1.4.0
 
 > MAJOR PATCH
 
@@ -16,7 +16,7 @@ To counteract this, the antiraid system constantly checks the rate of users join
 Of course, the antiraid system can be toggled and the trigger threshold values can be managed in the web interface *(if you have the `sp.guild.config.antiraid` permission)*.  
 ![](https://i.imgur.com/vLMgrM9.png)
 
-### Metrics Monitoring
+### Metrics Monitoring [#170]
 
 You are now able to monitor core metrics of shinpuru using Prometheus and Grafana.
 
@@ -30,7 +30,17 @@ metrics:
 [Here](https://github.com/zekroTJA/shinpuru/blob/master/config/prometheus/prometheus.yml) you can find an example Prometheus configuration and [here](https://github.com/zekroTJA/shinpuru/blob/master/config/grafana/example-dashboard.json) you can find an example grafana dashboard to monitor shinpuru's metrics.  
 
 *Example dashboard. Data from shinpuru Canary instance.*  
-![](https://i.imgur.com/Srr8CwE.png)
+![](https://i.imgur.com/fEkV7fe.png)
+
+
+## Minor Updates
+
+- Add aliases to `karma` command: `leaderboard`, `lb`, `sb` and `top`. [#181]
+- The `karma` command now shows the karma points of a user when specified as argument. [#179]
+
+## Bug Fixes
+
+- The web frontend route `/guilds/:guildid/guildadmin` now redirects to `/guilds/:guildid/guildadmin/antiraid` instead of firing errors. [#180]
 
 ## Backstage
 
@@ -42,5 +52,5 @@ metrics:
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.4.0-rc1
+$ docker pull zekro/shinpuru:1.4.0
 ```

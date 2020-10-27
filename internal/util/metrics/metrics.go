@@ -4,22 +4,30 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-ping/ping"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
 var (
 	DiscordEventTriggers = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "discord_eventtriggers_total",
-		Help: "Total number of discord events triggered.",
+		Help: "Total number of Discord events triggered.",
 	}, []string{"event"})
+
+	DiscordCommandsProcessed = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "discord_commands_prcessed_total",
+		Help: "Total number of chat commands processed.",
+	}, []string{"command"})
 
 	DiscordGatewayPing = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "discord_gatewayping",
 		Help: "The ping time in milliseconds to the discord API gateay.",
 	})
+
+	RestapiRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "restapi_requests_total",
+		Help: "Total number of HTTP requests processed.",
+	}, []string{"endpoint", "method"})
 )
 
 // MetricsServer wraps a simple HTTP server serving
@@ -34,20 +42,13 @@ type MetricsServer struct {
 func NewMetricsServer(addr string) (ms *MetricsServer, err error) {
 	prometheus.MustRegister(
 		DiscordEventTriggers,
-		DiscordGatewayPing)
+		DiscordGatewayPing,
+		DiscordCommandsProcessed,
+		RestapiRequests)
 
-	pw, err := NewPingWatcher(30 * time.Second)
+	_, err = startPingWatcher(30 * time.Second)
 	if err != nil {
 		return
-	}
-	pw.OnElapsed = func(p *ping.Statistics, err error) {
-		var v float64
-		if err == nil && p != nil {
-			v = float64(p.AvgRtt.Milliseconds())
-		} else if err != nil {
-			util.Log.Warningf("failed getting rtt to discord API: %s", err.Error())
-		}
-		DiscordGatewayPing.Set(v)
 	}
 
 	ms = new(MetricsServer)

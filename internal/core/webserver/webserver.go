@@ -144,7 +144,9 @@ func (ws *WebServer) registerHandlers() {
 	// --------------------------------
 	// AVAILABLE WITHOUT AUTH
 
-	ws.router.Use(ws.addHeaders, ws.optionsHandler, ws.handlerFiles)
+	ws.router.Use(
+		ws.addHeaders, ws.optionsHandler,
+		ws.handlerFiles, ws.handleMetrics)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.
