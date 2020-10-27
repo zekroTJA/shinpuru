@@ -45,6 +45,11 @@ const routes: Routes = [
     component: GuildAdminKarmaComponent,
   },
   {
+    path: 'guilds/:guildid/guildadmin',
+    redirectTo: 'guilds/:guildid/guildadmin/antiraid',
+    pathMatch: 'full',
+  },
+  {
     path: 'guilds/:guildid/:memberid',
     component: MemberRouteComponent,
   },
