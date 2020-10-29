@@ -57,6 +57,11 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
+	user, err := s.User(e.UserID)
+	if err != nil {
+		return
+	}
+
 	hexClr := colors.ToHex(clr)
 	intClr := colors.ToInt(clr)
 	cC, cM, cY, cK := color.RGBToCMYK(clr.R, clr.G, clr.B)
@@ -81,12 +86,15 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		Color:       intClr,
 		Title:       "#" + hexClr,
 		Description: desc,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "Activated by " + user.String(),
+		},
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: fmt.Sprintf("%s/api/util/color/%s?size=64", l.publicAddr, hexClr),
 		},
 	}
 
-	_, err := s.ChannelMessageSendEmbed(e.ChannelID, emb)
+	_, err = s.ChannelMessageSendEmbed(e.ChannelID, emb)
 	if err != nil {
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}
