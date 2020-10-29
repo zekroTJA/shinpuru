@@ -57,7 +57,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
-	hexClr := strings.ToUpper(colors.ToHex(clr))
+	hexClr := colors.ToHex(clr)
 	intClr := colors.ToInt(clr)
 	cC, cM, cY, cK := color.RGBToCMYK(clr.R, clr.G, clr.B)
 	yY, yCb, yCr := color.RGBToYCbCr(clr.R, clr.G, clr.B)
