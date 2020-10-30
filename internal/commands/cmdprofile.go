@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -140,7 +141,7 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 			{
 				Inline: true,
 				Name:   "Nickname",
-				Value:  util.EnsureNotEmpty(member.Nick, "*no nick*"),
+				Value:  stringutil.EnsureNotEmpty(member.Nick, "*no nick*"),
 			},
 			{
 				Name:  "ID",
@@ -148,12 +149,12 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 			},
 			{
 				Name: "Guild Joined",
-				Value: util.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
+				Value: stringutil.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
 			},
 			{
 				Name: "Account Created",
-				Value: util.EnsureNotEmpty(createdTime.Format(time.RFC1123),
+				Value: stringutil.EnsureNotEmpty(createdTime.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
 			},
 			{
@@ -163,7 +164,7 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 			},
 			{
 				Name:  "Permissions",
-				Value: util.EnsureNotEmpty(strings.Join(perms, "\n"), "*no permissions defined*"),
+				Value: stringutil.EnsureNotEmpty(strings.Join(perms, "\n"), "*no permissions defined*"),
 			},
 			{
 				Name:  "Reports",
@@ -171,7 +172,7 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 			},
 			{
 				Name:  "Roles",
-				Value: util.EnsureNotEmpty(strings.Join(roles, ", "), "*no roles assigned*"),
+				Value: stringutil.EnsureNotEmpty(strings.Join(roles, ", "), "*no roles assigned*"),
 			},
 		},
 	}

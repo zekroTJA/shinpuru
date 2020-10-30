@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -166,17 +167,17 @@ func commandEmbed(cmd shireikan.Command, cfg *config.Config, emb *discordgo.Mess
 		},
 		{
 			Name: "DM Capable",
-			Value: util.BoolAsString(
+			Value: stringutil.FromBool(
 				cmd.IsExecutableInDMChannels(), "Yes", "No"),
 			Inline: true,
 		},
 		{
 			Name:  "Description",
-			Value: util.EnsureNotEmpty(cmd.GetDescription(), "`no description`"),
+			Value: stringutil.EnsureNotEmpty(cmd.GetDescription(), "`no description`"),
 		},
 		{
 			Name:  "Usage",
-			Value: util.EnsureNotEmpty(cmd.GetHelp(), "`no uage information`"),
+			Value: stringutil.EnsureNotEmpty(cmd.GetHelp(), "`no uage information`"),
 		},
 	}
 

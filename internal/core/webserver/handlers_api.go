@@ -78,8 +78,7 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 		HeapUseStr:  fmt.Sprintf("%d", memStats.HeapInuse),
 
 		BotUserID: ws.session.State.User.ID,
-		BotInvite: fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-			ws.session.State.User.ID, static.InvitePermission),
+		BotInvite: util.GetInviteLink(ws.session),
 
 		Guilds: len(ws.session.State.Guilds),
 	}

@@ -31,8 +31,7 @@ func NewListenerReady(config *config.Config, db database.Database, lct *lctimer.
 func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 	util.Log.Infof("Logged in as %s#%s (%s) - Running on %d servers",
 		e.User.Username, e.User.Discriminator, e.User.ID, len(e.Guilds))
-	util.Log.Infof("Invite link: https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-		e.User.ID, static.InvitePermission)
+	util.Log.Info("Invite Link: " + util.GetInviteLink(s))
 
 	s.UpdateStatus(0, static.StdMotd)
 

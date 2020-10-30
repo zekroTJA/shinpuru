@@ -42,8 +42,7 @@ func (c *CmdInfo) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdInfo) Exec(ctx shireikan.Context) error {
-	invLink := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-		ctx.GetSession().State.User.ID, static.InvitePermission)
+	invLink := util.GetInviteLink(ctx.GetSession())
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,

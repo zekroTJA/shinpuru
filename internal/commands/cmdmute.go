@@ -17,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 
 	"github.com/bwmarrin/discordgo"
@@ -187,7 +188,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		return err
 	}
 
-	repType := util.IndexOfStrArray("MUTE", static.ReportTypes)
+	repType := stringutil.IndexOf("MUTE", static.ReportTypes)
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	var roleExists bool
@@ -316,7 +317,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetGuild().ID, "",
-		util.IndexOfStrArray("MUTE", static.ReportTypes))
+		stringutil.IndexOf("MUTE", static.ReportTypes))
 
 	muteReportsMap := make(map[string]*report.Report)
 	for _, r := range muteReports {
@@ -324,7 +325,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	for _, m := range ctx.GetGuild().Members {
-		if util.IndexOfStrArray(muteRoleID, m.Roles) > -1 {
+		if stringutil.IndexOf(muteRoleID, m.Roles) > -1 {
 			if r, ok := muteReportsMap[m.User.ID]; ok {
 				emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 					Name: fmt.Sprintf("CaseID: %d", r.ID),

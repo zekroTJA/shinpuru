@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekroTJA/shireikan"
 )
@@ -130,17 +131,17 @@ func (c *CmdSnowflake) printSfDc(ctx shireikan.Context, sf *snowflakenodes.Disco
 			},
 			{
 				Name:   "Worker ID",
-				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.WorkerID), "*<empty>*"),
+				Value:  stringutil.EnsureNotEmpty(fmt.Sprintf("%d", sf.WorkerID), "*<empty>*"),
 				Inline: true,
 			},
 			{
 				Name:   "Process ID",
-				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.ProcessID), "*<empty>*"),
+				Value:  stringutil.EnsureNotEmpty(fmt.Sprintf("%d", sf.ProcessID), "*<empty>*"),
 				Inline: true,
 			},
 			{
 				Name:   "Incremental ID",
-				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.IncrementalID), "*<empty>*"),
+				Value:  stringutil.EnsureNotEmpty(fmt.Sprintf("%d", sf.IncrementalID), "*<empty>*"),
 				Inline: true,
 			},
 		},
@@ -171,16 +172,16 @@ func (c *CmdSnowflake) printSfSp(ctx shireikan.Context, sf snowflake.ID) error {
 			},
 			{
 				Name:  "Node Name",
-				Value: util.EnsureNotEmpty(snowflakenodes.GetNodeName(sf.Node()), "*<empty>*"),
+				Value: stringutil.EnsureNotEmpty(snowflakenodes.GetNodeName(sf.Node()), "*<empty>*"),
 			},
 			{
 				Name:   "Node ID",
-				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.Node()), "*<empty>*"),
+				Value:  stringutil.EnsureNotEmpty(fmt.Sprintf("%d", sf.Node()), "*<empty>*"),
 				Inline: true,
 			},
 			{
 				Name:   "Incremental ID",
-				Value:  util.EnsureNotEmpty(fmt.Sprintf("%d", sf.Step()), "*<empty>*"),
+				Value:  stringutil.EnsureNotEmpty(fmt.Sprintf("%d", sf.Step()), "*<empty>*"),
 				Inline: true,
 			},
 		},
