@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
 var emptyResponseBody = []byte("{}")
@@ -125,15 +125,13 @@ func getIPAddr(ctx *routing.Context) string {
 func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	path := string(ctx.Path())
 
-	if strings.HasPrefix(path, "/api/") || strings.HasPrefix(path, "/imagestore/") || strings.HasPrefix(path, "/_/") {
+	if stringutil.HasPrefixAny(path, "/api/", "/imagestore/", "/_/", "/invite") {
 		ctx.Next()
 		return nil
 	}
 
-	if strings.HasSuffix(path, ".js") ||
-		strings.HasSuffix(path, ".css") ||
-		strings.HasPrefix(path, "/assets") ||
-		strings.HasPrefix(path, "/favicon.ico") {
+	if stringutil.HasSuffixAny(path, ".js", ".css") ||
+		stringutil.HasPrefixAny(path, "/assets", "favicon.ico") {
 
 		fileHandlerStatic.NewRequestHandler()(ctx.RequestCtx)
 		ctx.Abort()
@@ -142,6 +140,15 @@ func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 
 	ctx.SendFile("./web/dist/web/index.html")
 	ctx.Abort()
+	return nil
+}
+
+// handlerGetInvite redirects to the bot's invite link.
+func (ws *WebServer) handlerGetInvite(ctx *routing.Context) error {
+	inviteLink := util.GetInviteLink(ws.session)
+
+	ctx.Redirect(inviteLink, fasthttp.StatusPermanentRedirect)
+
 	return nil
 }
 

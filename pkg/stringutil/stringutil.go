@@ -2,6 +2,7 @@ package stringutil
 
 import (
 	"regexp"
+	"strings"
 )
 
 var (
@@ -47,4 +48,28 @@ func IndexOf(str string, arr []string) int {
 // in arr.
 func ContainsAny(str string, arr []string) bool {
 	return IndexOf(str, arr) > -1
+}
+
+// HasPrefixAny returns true if the given str has
+// any of the given prefixes.
+func HasPrefixAny(str string, prefixes ...string) bool {
+	for _, p := range prefixes {
+		if strings.HasPrefix(str, p) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// HasSuffixAny returns true if the given str has
+// any of the given suffixes.
+func HasSuffixAny(str string, suffixes ...string) bool {
+	for _, s := range suffixes {
+		if strings.HasSuffix(str, s) {
+			return true
+		}
+	}
+
+	return false
 }

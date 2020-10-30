@@ -158,6 +158,8 @@ func (ws *WebServer) registerHandlers() {
 	util.
 		Get("/commands", ws.handlerGetCommands)
 
+	ws.router.Get("/invite", ws.handlerGetInvite)
+
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
 
