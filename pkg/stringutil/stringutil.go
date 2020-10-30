@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	rxNumber = regexp.MustCompile(`^\d+$`)
+	rxNumber = regexp.MustCompile(`^-?\d+$`)
 )
 
-// IsNumber returns true if the passed string is
+// IsInteger returns true if the passed string is
 // a valid number.
-func IsNumber(str string) bool {
+func IsInteger(str string) bool {
 	return rxNumber.MatchString(str)
 }
 
