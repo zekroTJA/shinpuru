@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -131,7 +132,7 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 					"**Usage**  \n"+
 					"%s\n\n",
 				cmd.GetInvokes()[0], cmd.GetDescription(), cmd.GetDomainName(), cmd.GetGroup(),
-				aliases, util.BoolAsString(cmd.IsExecutableInDMChannels(), "Yes", "No"), help)
+				aliases, stringutil.FromBool(cmd.IsExecutableInDMChannels(), "Yes", "No"), help)
 
 			if spr := cmd.GetSubPermissionRules(); spr != nil {
 				cmdDetails += "\n**Sub Permission Rules**\n"
