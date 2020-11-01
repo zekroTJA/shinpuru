@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.sass'],
 })
-export class LoginComponent {}
+export class LoginComponent {
+  public scrollTo(id: string) {
+    const e = document.querySelector('#' + id);
+    if (e) {
+      e.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
+  }
+}

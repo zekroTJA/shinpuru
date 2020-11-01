@@ -1,10 +1,55 @@
 <div class="login-container">
     <div class="header-box">
-        <a>
-            <img height="200" src="/assets/landingpage/banner.png"/>
-        </a>
-        <div class="overlay">
+        <div class="logo">
+            <a>
+                <img height="200" src="/assets/landingpage/banner.png"/>
+            </a>
+        </div>
+        <div class="button">
+            <button (click)="scrollTo('start-features')">DISCOVER FEATURES</button>
+            <button>GETTING STARTED</button>
         </div>
     </div>
-    <p>asd</p>
+
+    <a id="start-features"></a>
+    
+    <!-- REPORT SYSTEM -->
+    <div class="exmaple-tile">
+        <img src="/assets/landingpage/ex-report.png"/>
+        <div>
+            <h3>REPORT SYSTEM</h3>
+            <p>
+                A simple to use system to keep track of user
+                reports, bans, kicks and chat-mutes.
+            </p>
+        </div>
+    </div>
+    <!-- GUILD BACKUPS -->
+    <div class="exmaple-tile">
+        <div>
+            <h3>GUILD BACKUPS</h3>
+            <p>
+                A fully automatic system which records the current 
+                guild state every 12 hours. Just pick a backup and
+                recover it or download it as JSON file.
+            </p>
+        </div>
+        <img src="/assets/landingpage/ex-backups.png"/>
+    </div>
+    <!-- KARMA SYSTEM -->
+    <div class="exmaple-tile">
+        <img src="/assets/landingpage/ex-karma.png"/>
+        <div>
+            <h3>KARMA SYSTEM</h3>
+            <p>
+                Honor users which post high quality content by giving
+                them karma points via reactions like 👍 or punishing
+                low quality content by lowering their karma using a
+                reaction like 👎. 
+                <br/><br/>
+                Of course, caps and emotes are fully
+                customizable.
+            </p>
+        </div>
+    </div>
 </div>
