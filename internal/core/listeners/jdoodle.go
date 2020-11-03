@@ -1,10 +1,7 @@
 package listeners
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -15,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/jdoodle"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -47,8 +45,6 @@ var (
 		"python":     "python3",
 		"py":         "python3",
 	}
-
-	apiURL = "https://api.jdoodle.com/v1/execute"
 )
 
 type ListenerJdoodle struct {
@@ -60,26 +56,11 @@ type ListenerJdoodle struct {
 type jdoodleMessage struct {
 	*discordgo.Message
 
-	rb *jdoodleRequestBody
+	wrapper *jdoodle.Wrapper
+	lang    string
+	script  string
 
 	embLang string
-}
-
-type jdoodleRequestBody struct {
-	ClientID     string `json:"clientId"`
-	ClientSecret string `json:"clientSecret"`
-	Script       string `json:"script"`
-	Language     string `json:"language"`
-}
-
-type jdoodleResponseError struct {
-	Error string `json:"error"`
-}
-
-type jdoodleResponseResult struct {
-	Output  string `json:"output"`
-	Memory  string `json:"memory"`
-	CPUTime string `json:"cpuTime"`
 }
 
 func NewListenerJdoodle(db database.Database) *ListenerJdoodle {
@@ -109,8 +90,6 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 	}
 
 	embLang := lang
-
-	fmt.Println("<" + cont + ">")
 
 	if lang == "" || cont == "" {
 		return
@@ -149,12 +128,9 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	jdMsg := &jdoodleMessage{
 		Message: e,
-		rb: &jdoodleRequestBody{
-			ClientID:     jdCredsSplit[0],
-			ClientSecret: jdCredsSplit[1],
-			Script:       cont,
-			Language:     lang,
-		},
+		wrapper: jdoodle.New(jdCredsSplit[0], jdCredsSplit[1]),
+		lang:    lang,
+		script:  cont,
 		embLang: embLang,
 	}
 
@@ -189,51 +165,16 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	bodyBuffer, err := json.Marshal(jdMsg.rb)
+	result, err := jdMsg.wrapper.ExecuteScript(jdMsg.lang, jdMsg.script)
+
 	if err != nil {
-		unexpectedError(s, eReact.ChannelID, err)
-		return
-	}
-	req, err := http.NewRequest("POST", apiURL, bytes.NewReader(bodyBuffer))
-	if err != nil {
-		unexpectedError(s, eReact.ChannelID, err)
-		return
-	}
-	req.Header.Add("Content-Type", "application/json")
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		unexpectedError(s, eReact.ChannelID, err)
-		return
-	}
-
-	dec := json.NewDecoder(res.Body)
-	if res.StatusCode != 200 {
-		errBody := new(jdoodleResponseError)
-		err = dec.Decode(errBody)
-
-		if err != nil {
-			unexpectedError(s, eReact.ChannelID, err)
-			return
-		}
-
 		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, &discordgo.MessageEmbed{
 			Color:       static.ColorEmbedError,
 			Title:       "Execution Error",
-			Description: fmt.Sprintf("API responded with following error: ```\nCode: %d\nMsg:  %s\n```", res.StatusCode, errBody.Error),
+			Description: fmt.Sprintf("API responded with following error: ```\n%s\n```", err.Error()),
 		})
 		discordutil.DeleteMessageLater(s, resMsg.Message, 15*time.Second)
-
 	} else {
-
-		result := new(jdoodleResponseResult)
-		err = dec.Decode(result)
-
-		if err != nil {
-			unexpectedError(s, eReact.ChannelID, err)
-			return
-		}
-
 		executor, _ := s.GuildMember(eReact.GuildID, eReact.UserID)
 
 		emb := &discordgo.MessageEmbed{
@@ -242,7 +183,7 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:  "Code",
-					Value: fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.rb.Script),
+					Value: fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script),
 				},
 				{
 					Name:  "Output",
@@ -260,7 +201,7 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 				},
 			},
 			Footer: &discordgo.MessageEmbedFooter{
-				Text: strings.ToUpper(jdMsg.rb.Language),
+				Text: strings.ToUpper(jdMsg.lang),
 			},
 		}
 
@@ -301,8 +242,4 @@ func (l *ListenerJdoodle) checkLimit(userID string) bool {
 	}
 
 	return limiter.Allow()
-}
-
-func unexpectedError(s *discordgo.Session, chanID string, err error) {
-	util.SendEmbedError(s, chanID, "An unexpected error occured. Please inform the host of this bot about that: ```\n"+err.Error()+"\n```")
 }
