@@ -1,3 +1,5 @@
+// Package stringutil provides generl string
+// utility functions.
 package stringutil
 
 import (
