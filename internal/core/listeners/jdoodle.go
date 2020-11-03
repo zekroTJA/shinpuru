@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -33,8 +32,6 @@ const (
 
 var (
 	runReactionEmoji = "▶"
-
-	embRx = regexp.MustCompile("```([\\w\\+\\#]+)(\\n|\\s)((.|\\n)*)```")
 
 	langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
 		"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
@@ -106,23 +103,14 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
-	if !embRx.MatchString(e.Content) {
+	lang, cont, ok := l.parseMessageContent(e.Content)
+	if !ok {
 		return
 	}
 
-	_matches := embRx.FindAllStringSubmatch(e.Content, 1)
-	if len(_matches) < 1 {
-		return
-	}
-	matches := _matches[0]
-
-	if len(matches) < 4 {
-		return
-	}
-
-	lang := strings.ToLower(strings.Trim(matches[1], " \t"))
-	cont := strings.Trim(matches[3], " \t")
 	embLang := lang
+
+	fmt.Println("<" + cont + ">")
 
 	if lang == "" || cont == "" {
 		return
@@ -284,6 +272,25 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 
 		l.msgMap.Remove(jdMsg.ID)
 	}
+}
+
+func (l *ListenerJdoodle) parseMessageContent(content string) (lang string, script string, ok bool) {
+	spl := strings.Split(content, "```")
+	if len(spl) < 3 {
+		return
+	}
+
+	inner := spl[1]
+	iFirstLineBreak := strings.Index(inner, "\n")
+	if iFirstLineBreak < 0 || len(inner)+1 <= iFirstLineBreak {
+		return
+	}
+
+	lang = inner[:iFirstLineBreak]
+	script = inner[iFirstLineBreak+1:]
+	ok = len(lang) > 0 && len(script) > 0
+
+	return
 }
 
 func (l *ListenerJdoodle) checkLimit(userID string) bool {
