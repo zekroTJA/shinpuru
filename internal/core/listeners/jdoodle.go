@@ -128,7 +128,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	jdMsg := &jdoodleMessage{
 		Message: e,
-		wrapper: jdoodle.New(jdCredsSplit[0], jdCredsSplit[1]),
+		wrapper: jdoodle.NewWrapper(jdCredsSplit[0], jdCredsSplit[1]),
 		lang:    lang,
 		script:  cont,
 		embLang: embLang,
