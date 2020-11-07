@@ -1,5 +1,5 @@
 // Package jdoodle provides an API wrapper for
-// the jdoodle execute and credits-spent REST API.
+// the jdoodle execute and credit-spent REST API.
 package jdoodle
 
 import (
@@ -53,7 +53,7 @@ func (jd *Wrapper) CreditsSpent() (res *CreditsResponse, err error) {
 	}
 
 	res = new(CreditsResponse)
-	err = request("credits-spend", payload, res)
+	err = request("credit-spent", payload, res)
 
 	return
 }
