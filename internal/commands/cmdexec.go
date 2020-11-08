@@ -83,7 +83,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 	}
 
 	err = util.SendEmbed(ctx.GetSession(), dmChan.ID,
-		"We need an [jsdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
+		"We need a [jdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
 			"saved as clear text in our database to pass it to the API, so please, be careful which data you want to use, also, if we secure our \n"+
 			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0).
 		Error()
