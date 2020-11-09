@@ -34,6 +34,7 @@ require (
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/valyala/fasthttp v1.16.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
+	github.com/zekroTJA/colorname v1.0.0
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.3.3
 	github.com/zekroTJA/timedmap v1.2.0
