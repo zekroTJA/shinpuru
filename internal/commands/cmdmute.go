@@ -13,7 +13,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/mute"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
-	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -188,9 +187,6 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		return err
 	}
 
-	repType := stringutil.IndexOf("MUTE", static.ReportTypes)
-	repID := snowflakenodes.NodesReport[repType].Generate()
-
 	var roleExists bool
 	for _, r := range ctx.GetGuild().Roles {
 		if r.ID == muteRoleID && !roleExists {
@@ -209,45 +205,25 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			victimIsMuted = true
 		}
 	}
+
+	cfg, _ := ctx.GetObject("config").(*config.Config)
+
 	if victimIsMuted {
-		err := ctx.GetSession().GuildMemberRoleRemove(ctx.GetGuild().ID, victim.User.ID, muteRoleID)
+		emb, err := shared.RevokeMute(
+			ctx.GetSession(),
+			db,
+			cfg.WebServer.PublicAddr,
+			ctx.GetGuild().ID,
+			ctx.GetUser().ID,
+			victim.User.ID,
+			strings.Join(ctx.GetArgs()[1:], " "),
+			muteRoleID)
 		if err != nil {
 			return err
 		}
-		// TODO: Use shared API and push to DB
-		emb := &discordgo.MessageEmbed{
-			Title: "Case " + repID.String(),
-			Color: static.ReportColors[repType],
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Inline: true,
-					Name:   "Executor",
-					Value:  fmt.Sprintf("<@%s>", ctx.GetUser().ID),
-				},
-				{
-					Inline: true,
-					Name:   "Victim",
-					Value:  fmt.Sprintf("<@%s>", victim.User.ID),
-				},
-				{
-					Name:  "Type",
-					Value: "UNMUTE",
-				},
-				{
-					Name:  "Description",
-					Value: "MANUAL UNMUTE",
-				},
-			},
-			Timestamp: time.Unix(repID.Time()/1000, 0).Format("2006-01-02T15:04:05.000Z"),
-		}
-		ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
-		if modlogChan, err := db.GetGuildModLog(ctx.GetGuild().ID); err == nil {
-			ctx.GetSession().ChannelMessageSendEmbed(modlogChan, emb)
-		}
-		dmChan, err := ctx.GetSession().UserChannelCreate(victim.User.ID)
-		if err == nil {
-			ctx.GetSession().ChannelMessageSendEmbed(dmChan.ID, emb)
-		}
+
+		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+
 		return err
 	}
 
@@ -272,8 +248,6 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			attachment = img.ID.String()
 		}
 	}
-
-	cfg, _ := ctx.GetObject("config").(*config.Config)
 
 	rep, err := shared.PushMute(
 		ctx.GetSession(),

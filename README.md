@@ -225,6 +225,7 @@ Some of the independant utilities and functionalities shinpuru uses are publicly
 - [op/go-logging](https://github.com/op/go-logging)
 - [valyala/fasthttp ](https://github.com/valyala/fasthttp)
 - [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart)
+- [zekroTJA/colorname](https://github.com/zekroTJA/colorname)
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit)
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan)
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
