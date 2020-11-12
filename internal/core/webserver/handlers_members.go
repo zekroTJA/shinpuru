@@ -99,6 +99,15 @@ func (ws *WebServer) handlerGuildsGetMember(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
+	if muteRoleID, err := ws.db.GetGuildMuteRole(guildID); err == nil {
+		for _, roleID := range memb.Roles {
+			if roleID == muteRoleID {
+				mm.ChatMuted = true
+				break
+			}
+		}
+	}
+
 	return jsonResponse(ctx, mm, fasthttp.StatusOK)
 }
 
@@ -218,7 +227,7 @@ func (ws *WebServer) handlerGetMemberPermissionsAllowed(ctx *routing.Context) er
 
 	cmds := ws.cmdhandler.GetCommandInstances()
 
-	allowed := make([]string, len(cmds) + len(static.AdditionalPermissions))
+	allowed := make([]string, len(cmds)+len(static.AdditionalPermissions))
 	i := 0
 	for _, cmd := range cmds {
 		if perms.Check(cmd.GetDomainName()) {
