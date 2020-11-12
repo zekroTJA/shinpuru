@@ -40,6 +40,7 @@ export interface Member {
   dominance?: number;
   karma: number;
   karma_total: number;
+  chat_muted: boolean;
 }
 
 export interface Channel {

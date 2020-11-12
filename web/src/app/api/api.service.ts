@@ -127,6 +127,12 @@ export class APIService {
   private readonly rcGuildMemberBan = (guildID: string, memberID: string) =>
     `${this.rcGuildMembers(guildID, memberID)}/ban`;
 
+  private readonly rcGuildMemberMute = (guildID: string, memberID: string) =>
+    `${this.rcGuildMembers(guildID, memberID)}/mute`;
+
+  private readonly rcGuildMemberUnmute = (guildID: string, memberID: string) =>
+    `${this.rcGuildMembers(guildID, memberID)}/unmute`;
+
   private readonly rcSetting = (rc: string = '') =>
     `${this.rcAPI('settings')}${rc ? '/' + rc : ''}`;
 
@@ -389,6 +395,34 @@ export class APIService {
     return this.http
       .post<Report>(
         this.rcGuildMemberBan(guildID, memberID),
+        rep,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postMute(
+    guildID: string,
+    memberID: string,
+    rep: ReasonRequest
+  ): Observable<Report> {
+    return this.http
+      .post<Report>(
+        this.rcGuildMemberMute(guildID, memberID),
+        rep,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUnmute(
+    guildID: string,
+    memberID: string,
+    rep: ReasonRequest
+  ): Observable<any> {
+    return this.http
+      .post<any>(
+        this.rcGuildMemberUnmute(guildID, memberID),
         rep,
         this.defopts()
       )
