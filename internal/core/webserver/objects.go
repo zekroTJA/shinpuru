@@ -168,6 +168,12 @@ type Count struct {
 	Count int `json:"count"`
 }
 
+type LandingPageResponse struct {
+	LocalInvite        string `json:"localinvite"`
+	PublicMainInvite   string `json:"publicmaininvite"`
+	PublicCanaryInvite string `json:"publiccaranyinvite"`
+}
+
 // SystemInfo is the response model for a
 // system info request.
 type SystemInfo struct {

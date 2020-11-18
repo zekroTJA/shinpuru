@@ -64,6 +64,9 @@ const (
 	DiscordAPIEndpoint = "https://discord.com/api"
 
 	CommandManualDocument = "https://github.com/zekroTJA/shinpuru/wiki/Commands"
+
+	PublicMainInvite   = "https://shnp.de/invite"
+	PublicCanaryInvite = "https://c.shnp.de/invite"
 )
 
 var (

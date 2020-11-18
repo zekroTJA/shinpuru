@@ -158,6 +158,8 @@ func (ws *WebServer) registerHandlers() {
 		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
 	utils.
 		Get("/commands", ws.handlerGetCommands)
+	utils.
+		Get("/landingpageinfo", ws.handlerGetLandingPageInfo)
 
 	ws.router.Get("/invite", ws.handlerGetInvite)
 
