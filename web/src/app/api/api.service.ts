@@ -574,4 +574,10 @@ export class APIService {
       .delete(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
+
+  public getLandingPageInfo(): Observable<any> {
+    return this.http
+      .get(this.rcUtil('landingpageinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
 }

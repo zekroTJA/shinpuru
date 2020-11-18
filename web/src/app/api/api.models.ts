@@ -213,3 +213,9 @@ export interface JoinlogEntry {
   tag: string;
   timestamp: Date;
 }
+
+export interface LandingPageInfo {
+  localinvite: string;
+  publicmaininvite: string;
+  publiccaranyinvite: string;
+}
