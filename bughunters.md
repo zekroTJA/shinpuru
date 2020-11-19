@@ -4,7 +4,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
-| [voxain](https://github.com/voxain) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67), [#147](https://github.com/zekroTJA/shinpuru/issues/147), [#148](https://github.com/zekroTJA/shinpuru/issues/148), [#150](https://github.com/zekroTJA/shinpuru/issues/150), [#153](https://github.com/zekroTJA/shinpuru/issues/153), [#159](https://github.com/zekroTJA/shinpuru/issues/159), [#163](https://github.com/zekroTJA/shinpuru/issues/163), [#165](https://github.com/zekroTJA/shinpuru/issues/165) |  | `10` |
+| [voxain](https://github.com/voxain) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67), [#147](https://github.com/zekroTJA/shinpuru/issues/147), [#148](https://github.com/zekroTJA/shinpuru/issues/148), [#150](https://github.com/zekroTJA/shinpuru/issues/150), [#153](https://github.com/zekroTJA/shinpuru/issues/153), [#159](https://github.com/zekroTJA/shinpuru/issues/159), [#163](https://github.com/zekroTJA/shinpuru/issues/163), [#165](https://github.com/zekroTJA/shinpuru/issues/165), [#183](https://github.com/zekroTJA/shinpuru/issues/183), [#187](https://github.com/zekroTJA/shinpuru/issues/187) |  | `12` |
 | [SnowLeoo](https://github.com/SnowLeoo) | [#129](https://github.com/zekroTJA/shinpuru/issues/129), [#145](https://github.com/zekroTJA/shinpuru/issues/145), [#169](https://github.com/zekroTJA/shinpuru/issues/169) | [#175](https://github.com/zekroTJA/shinpuru/pull/175), [#176](https://github.com/zekroTJA/shinpuru/pull/176), [#178](https://github.com/zekroTJA/shinpuru/pull/178) | `9` |
 | [error2507](https://github.com/error2507) | [#28](https://github.com/zekroTJA/shinpuru/issues/28), [#29](https://github.com/zekroTJA/shinpuru/issues/29), [#55](https://github.com/zekroTJA/shinpuru/issues/55) | [#1](https://github.com/zekroTJA/shinpuru/pull/1), [#2](https://github.com/zekroTJA/shinpuru/pull/2) | `7` |
 | [Ron31](https://github.com/Ron31) |  | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#181](https://github.com/zekroTJA/shinpuru/pull/181) | `4` |
@@ -21,6 +21,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
 | [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162) |  | `1` |
 | [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179) |  | `1` |
+| [ENOT1KK](https://github.com/ENOT1KK) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
 
 
 ---
