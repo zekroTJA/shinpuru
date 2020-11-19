@@ -51,7 +51,7 @@ def do_req(query: str) -> Dict:
 
 
 def query_issues(login: str, repo: str, after: str = None) -> Dict:
-    after = ', after: {}'.format(after) if after else ''
+    after = ', after: "{}"'.format(after) if after else ''
     query = '''
     query {
       user(login: "%s") {
@@ -59,6 +59,7 @@ def query_issues(login: str, repo: str, after: str = None) -> Dict:
           issues(first: 100%s) {
             totalCount,
             edges {
+              cursor,
               node {
                 author {
                   login
@@ -85,6 +86,7 @@ def query_prs(login: str, repo: str, after: str = None) -> Dict:
           pullRequests(first: 100%s) {
             totalCount,
             edges {
+              cursor,
               node {
                 author {
                   login
@@ -109,10 +111,12 @@ def query_all_issues(login: str, repo: str) -> List[Dict]:
     while True:
         res = query_issues(login, repo, after)
         iss_res = res.get("data").get("user").get("repository").get("issues")
-        n = iss_res.get("totalCount")
-        issues += [e.get("node") for e in iss_res.get("edges")]
+        edges = iss_res.get("edges")
+        n = len(edges)
+        issues += [e.get("node") for e in edges]
         if n < 100:
             break
+        after = edges[-1].get("cursor")
 
     return issues
 
@@ -123,10 +127,12 @@ def query_all_prs(login: str, repo: str) -> List[Dict]:
     while True:
         res = query_prs(login, repo, after)
         prs_res = res.get("data").get("user").get("repository").get("pullRequests")
-        n = prs_res.get("totalCount")
-        prs += [e.get("node") for e in prs_res.get("edges")]
+        edges = prs_res.get("edges")
+        n = len(edges)
+        prs += [e.get("node") for e in edges]
         if n < 100:
             break
+        after = edges[-1].get("cursor")
 
     return prs
 
