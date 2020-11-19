@@ -20,15 +20,23 @@ shinpurus `/login` page is now decorated by a landing page which shows off some 
 
   ![](https://i.imgur.com/4dzBN8z.png)
 
+- You are now able to chat mute/unmute members via the web interface. [#187]  
+![](https://i.imgur.com/dUJmuqy.png)
+
 - The web server endpoint `/invite` now redirects to the invite link of the current shinpuru instance (e.g. https://shnp.de/invite).
+
+- The `exec` command now shows the ammount of consumed JDoodle API tokens, when activated.
 
 ## Bug Fixes
 
 - Fix hex notation of color reaction embeds.
+- Fix a bug in the jdoodle listener which caused missing line breaks on pushing the snippet to the JDoodle API. [#186]
+- Fix the label of the Prometheus metric `discord_commands_processed_total`.
 
 ## Backstage
 
-- Move `stringutils` package to `pkg/stringutils`.
+- Moved `stringutils` package to `pkg/stringutils`.
+- Moved `jdoodle` package to `pkg/jdoodle`.
 
 # Docker
 
@@ -36,5 +44,5 @@ shinpurus `/login` page is now decorated by a landing page which shows off some 
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.4.0
+$ docker pull zekro/shinpuru:1.5.0
 ```
