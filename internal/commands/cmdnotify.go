@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -83,7 +84,7 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 			return err
 		}
 		msgStr := "Removed notify role."
-		if util.IndexOfStrArray(notifyRoleID, member.Roles) > -1 {
+		if stringutil.IndexOf(notifyRoleID, member.Roles) > -1 {
 			err = ctx.GetSession().GuildMemberRoleRemove(ctx.GetGuild().ID, ctx.GetUser().ID, notifyRoleID)
 			if err != nil {
 				return err

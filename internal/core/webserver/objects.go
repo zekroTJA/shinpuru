@@ -46,6 +46,7 @@ type Member struct {
 	Dominance  int       `json:"dominance"`
 	Karma      int       `json:"karma"`
 	KarmaTotal int       `json:"karma_total"`
+	ChatMuted  bool      `json:"chat_muted"`
 }
 
 // Guild extends a discordgo.Guild as
@@ -167,6 +168,12 @@ type Count struct {
 	Count int `json:"count"`
 }
 
+type LandingPageResponse struct {
+	LocalInvite        string `json:"localinvite"`
+	PublicMainInvite   string `json:"publicmaininvite"`
+	PublicCanaryInvite string `json:"publiccaranyinvite"`
+}
+
 // SystemInfo is the response model for a
 // system info request.
 type SystemInfo struct {
@@ -262,8 +269,8 @@ type AntiraidSettings struct {
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
-func (req *ReasonRequest) Validate(ctx *routing.Context) (bool, error) {
-	if len(req.Reason) < 3 {
+func (req *ReasonRequest) Validate(ctx *routing.Context, acceptEmptyReason bool) (bool, error) {
+	if !acceptEmptyReason && len(req.Reason) < 3 {
 		return false, jsonError(ctx, errInvalidArguments, fasthttp.StatusBadRequest)
 	}
 

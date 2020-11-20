@@ -1,50 +1,42 @@
-1.4.0
+1.5.0
 
 > MAJOR PATCH
 
 ## Major Implementations
 
-### Antiraid System [#159]
+### Landing Page
 
-A new guild security feature has been added to shinpuru: The Antiraid System.
+shinpurus `/login` page is now decorated by a landing page which shows off some of shinpurus core features, some invite links and options to self host as well as some links to dive deeper.
 
-> **What is a "Raid"?**  
-> A guild raid is mostly refered to a large, burst-like ammount of accounts joining the guild in a short period of time. This is mostly caused by a single user or a group of users which utilize bot-created or hijacked accounts to flood a guild.
+> This page is still in a kind of **beta state**. A lot of stuff is still missing like proper support for mobile devices as well as further feature spotlights.
 
-To counteract this, the antiraid system constantly checks the rate of users joining your guild. If the rate increases over a certain threshold, the antiraid system triggers. Following, the guilds security level is raised to `verry high` and for the following 24 hours, all users joining the guild are logged in a list which is accessable via the web interface. Also, all admins of the guild will be informed about the incident.
-
-Of course, the antiraid system can be toggled and the trigger threshold values can be managed in the web interface *(if you have the `sp.guild.config.antiraid` permission)*.  
-![](https://i.imgur.com/vLMgrM9.png)
-
-### Metrics Monitoring [#170]
-
-You are now able to monitor core metrics of shinpuru using Prometheus and Grafana.
-
-You can enable the prometheus scraping endpoint by adding this to your shinpuru config:
-```yml
-metrics:
-  enable: true
-  addr: ":9091"
-```
-
-[Here](https://github.com/zekroTJA/shinpuru/blob/master/config/prometheus/prometheus.yml) you can find an example Prometheus configuration and [here](https://github.com/zekroTJA/shinpuru/blob/master/config/grafana/example-dashboard.json) you can find an example grafana dashboard to monitor shinpuru's metrics.  
-
-*Example dashboard. Data from shinpuru Canary instance.*  
-![](https://i.imgur.com/fEkV7fe.png)
-
+![](https://i.imgur.com/4V6VVab.gif)
 
 ## Minor Updates
 
-- Add aliases to `karma` command: `leaderboard`, `lb`, `sb` and `top`. [#181]
-- The `karma` command now shows the karma points of a user when specified as argument. [#179]
+- Two imporvements of the color feature:  
+  1. A name of the color which is closest to the specified color is now displayed. This is provided by the [`zekroTJA/colorname`](https://github.com/zekroTJA/colorname) package.
+  2. The name of the embed executor is now displayed in the embed footer. [#183]
+
+  ![](https://i.imgur.com/4dzBN8z.png)
+
+- You are now able to chat mute/unmute members via the web interface. [#187]  
+![](https://i.imgur.com/dUJmuqy.png)
+
+- The web server endpoint `/invite` now redirects to the invite link of the current shinpuru instance (e.g. https://shnp.de/invite).
+
+- The `exec` command now shows the ammount of consumed JDoodle API tokens, when activated.
 
 ## Bug Fixes
 
-- The web frontend route `/guilds/:guildid/guildadmin` now redirects to `/guilds/:guildid/guildadmin/antiraid` instead of firing errors. [#180]
+- Fix hex notation of color reaction embeds.
+- Fix a bug in the jdoodle listener which caused missing line breaks on pushing the snippet to the JDoodle API. [#186]
+- Fix the label of the Prometheus metric `discord_commands_processed_total`.
 
 ## Backstage
 
-- Updated a bit of the project structure: The packages `listeners` and `webserver` are now moved into the `internal/core` package.
+- Moved `stringutils` package to `pkg/stringutils`.
+- Moved `jdoodle` package to `pkg/jdoodle`.
 
 # Docker
 
@@ -52,5 +44,5 @@ metrics:
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.4.0
+$ docker pull zekro/shinpuru:1.5.0
 ```

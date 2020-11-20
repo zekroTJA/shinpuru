@@ -75,6 +75,7 @@ type WebServer struct {
 	TLS             *WebServerTLS `json:"tls"`
 	APITokenKey     string        `json:"apitokenkey"`
 	PublicAddr      string        `json:"publicaddr"`
+	LandingPage     *LandingPage  `json:"landingpage"`
 	DebugPublicAddr string        `json:"debugpublicaddr,omitempty"`
 }
 
@@ -84,6 +85,13 @@ type WebServerTLS struct {
 	Enabled bool   `json:"enabled"`
 	Cert    string `json:"certfile"`
 	Key     string `json:"keyfile"`
+}
+
+// LandingPage wraps the settings for the web
+// interfaces landing page.
+type LandingPage struct {
+	ShowPublicInvites bool `json:"showpublicinvites"`
+	ShowLocalInvite   bool `json:"showlocalinvite"`
 }
 
 // Permissions wrap standard rulesets for specific
@@ -207,6 +215,10 @@ func GetDefaultConfig() *Config {
 			PublicAddr:  "https://example.com:8080",
 			TLS: &WebServerTLS{
 				Enabled: false,
+			},
+			LandingPage: &LandingPage{
+				ShowLocalInvite:   true,
+				ShowPublicInvites: true,
 			},
 		},
 		Metrics: &Metrics{

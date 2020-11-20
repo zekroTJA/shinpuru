@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/colorname"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
@@ -57,19 +58,32 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
-	hexClr := strings.ToUpper(colors.ToHex(clr))
+	user, err := s.User(e.UserID)
+	if err != nil {
+		return
+	}
+
+	hexClr := colors.ToHex(clr)
 	intClr := colors.ToInt(clr)
 	cC, cM, cY, cK := color.RGBToCMYK(clr.R, clr.G, clr.B)
 	yY, yCb, yCr := color.RGBToYCbCr(clr.R, clr.G, clr.B)
 
+	colorName := "*could not be fetched*"
+	matches := colorname.FindRGBA(clr)
+	if len(matches) > 0 {
+		precision := (1 - matches[0].AvgDiff/255) * 100
+		colorName = fmt.Sprintf("**%s** *(%0.1f%%)*", matches[0].Name, precision)
+	}
+
 	desc := fmt.Sprintf(
-		"```\n"+
+		"%s\n\n```\n"+
 			"Hex:    #%s\n"+
 			"Int:    %d\n"+
 			"RGBA:   %03d, %03d, %03d, %03d\n"+
 			"CMYK:   %03d, %03d, %03d, %03d\n"+
 			"YCbCr:  %03d, %03d, %03d\n"+
 			"```",
+		colorName,
 		hexClr,
 		intClr,
 		clr.R, clr.G, clr.B, clr.A,
@@ -81,12 +95,15 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		Color:       intClr,
 		Title:       "#" + hexClr,
 		Description: desc,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "Activated by " + user.String(),
+		},
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: fmt.Sprintf("%s/api/util/color/%s?size=64", l.publicAddr, hexClr),
 		},
 	}
 
-	_, err := s.ChannelMessageSendEmbed(e.ChannelID, emb)
+	_, err = s.ChannelMessageSendEmbed(e.ChannelID, emb)
 	if err != nil {
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}

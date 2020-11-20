@@ -47,6 +47,32 @@ func (ws *WebServer) handlerGetMe(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/util/landingpageinfo
+
+func (ws *WebServer) handlerGetLandingPageInfo(ctx *routing.Context) error {
+	res := new(LandingPageResponse)
+
+	publicInvites := true
+	localInvite := true
+
+	if ws.config.WebServer.LandingPage != nil {
+		publicInvites = ws.config.WebServer.LandingPage.ShowPublicInvites
+		localInvite = ws.config.WebServer.LandingPage.ShowLocalInvite
+	}
+
+	if publicInvites {
+		res.PublicCanaryInvite = static.PublicCanaryInvite
+		res.PublicMainInvite = static.PublicMainInvite
+	}
+
+	if localInvite {
+		res.LocalInvite = util.GetInviteLink(ws.session)
+	}
+
+	return jsonResponse(ctx, res, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - GET /api/sysinfo
 
 func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
@@ -78,8 +104,7 @@ func (ws *WebServer) handlerGetSystemInfo(ctx *routing.Context) error {
 		HeapUseStr:  fmt.Sprintf("%d", memStats.HeapInuse),
 
 		BotUserID: ws.session.State.User.ID,
-		BotInvite: fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&scope=bot&permissions=%d",
-			ws.session.State.User.ID, static.InvitePermission),
+		BotInvite: util.GetInviteLink(ws.session),
 
 		Guilds: len(ws.session.State.Guilds),
 	}

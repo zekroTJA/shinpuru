@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
+	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -12,14 +11,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/jdoodle"
 	"github.com/zekroTJA/shireikan"
 )
 
 const (
 	apiIDLen  = 32
 	apiKeyLen = 64
-
-	apiUrl = "https://api.jdoodle.com/v1/credit-spent"
 )
 
 type CmdExec struct {
@@ -35,7 +33,8 @@ func (c *CmdExec) GetDescription() string {
 
 func (c *CmdExec) GetHelp() string {
 	return "`exec setup` - enter jdoodle setup\n" +
-		"`exec reset` - disable and delete token from database\n"
+		"`exec reset` - disable and delete token from database\n" +
+		"`exec check` - retrurns the number of tokens consumed this day\n"
 }
 
 func (c *CmdExec) GetGroup() string {
@@ -66,10 +65,12 @@ func (c *CmdExec) Exec(ctx shireikan.Context) error {
 	}
 
 	switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
-	case "setup":
+	case "setup", "enable":
 		return c.setup(ctx)
-	case "reset":
+	case "reset", "remove":
 		return c.reset(ctx)
+	case "check", "stats":
+		return c.check(ctx)
 	default:
 		return errHelpMsg(ctx)
 	}
@@ -82,7 +83,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 	}
 
 	err = util.SendEmbed(ctx.GetSession(), dmChan.ID,
-		"We need an [jsdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
+		"We need a [jdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
 			"saved as clear text in our database to pass it to the API, so please, be careful which data you want to use, also, if we secure our \n"+
 			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0).
 		Error()
@@ -99,7 +100,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 
 	var removeHandler func()
 	var state int
-	var clientID, token string
+	var clientId, clientSecret string
 	removeHandler = ctx.GetSession().AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		if e.ChannelID != dmChan.ID || e.Author.ID == s.State.User.ID {
 			return
@@ -110,8 +111,8 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 		} else {
 			switch state {
 			case 0:
-				clientID = e.Content
-				if len(clientID) < apiIDLen {
+				clientId = e.Content
+				if len(clientId) < apiIDLen {
 					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API clientID, please enter again or enter `cancel` to exit.")
 					return
@@ -120,26 +121,16 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 				util.SendEmbed(ctx.GetSession(), dmChan.ID, "Okay, now, please enter your API **secret** or enter `cancel` to exit:", "", 0)
 				return
 			case 1:
-				token = e.Content
-				if len(token) < apiKeyLen {
+				clientSecret = e.Content
+				if len(clientSecret) < apiKeyLen {
 					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API secret, please enter again or enter `cancel` to exit.")
 					return
 				}
 			}
 
-			bodyBuffer, _ := json.Marshal(map[string]string{
-				"clientId":     clientID,
-				"clientSecret": token,
-			})
-			res, err := http.Post(apiUrl, "application/json", bytes.NewReader(bodyBuffer))
+			_, err := jdoodle.NewWrapper(clientId, clientSecret).CreditsSpent()
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
-					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
-				return
-			}
-
-			if res.StatusCode != 200 {
 				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"Sorry, but it seems like your entered credentials are not correct. Please try again entering your **clientID** or exit with `cancel`:")
 				state = 0
@@ -147,7 +138,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 			}
 
 			db, _ := ctx.GetObject("db").(database.Database)
-			err = db.SetGuildJdoodleKey(ctx.GetGuild().ID, clientID+"#"+token)
+			err = db.SetGuildJdoodleKey(ctx.GetGuild().ID, clientId+"#"+clientSecret)
 			if err != nil {
 				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
@@ -174,4 +165,35 @@ func (c *CmdExec) reset(ctx shireikan.Context) error {
 	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 		"API key was deleted from database and system was disabled.", "", static.ColorEmbedYellow).
 		DeleteAfter(8 * time.Second).Error()
+}
+
+func (c *CmdExec) check(ctx shireikan.Context) error {
+	db, _ := ctx.GetObject("db").(database.Database)
+	key, err := db.GetGuildJdoodleKey(ctx.GetGuild().ID)
+	if database.IsErrDatabaseNotFound(err) {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"Code execution is not set up on this guild. Use `exec setup` to set up code execution.").
+			DeleteAfter(6 * time.Second).
+			Error()
+	}
+	if err != nil {
+		return err
+	}
+
+	split := strings.Split(key, "#")
+	if len(split) < 2 {
+		return errors.New("invalid jdoodle credentials")
+	}
+	clientId, clientSecret := split[0], split[1]
+
+	res, err := jdoodle.NewWrapper(clientId, clientSecret).CreditsSpent()
+	if err != nil {
+		return err
+	}
+
+	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+		fmt.Sprintf("Today, you've spent **%d** tokens on this guild.", res.Used),
+		"JDoodle API Token Statistics", 0).
+		DeleteAfter(15 * time.Second).
+		Error()
 }

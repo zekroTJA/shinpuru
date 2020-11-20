@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
@@ -152,11 +153,15 @@ func (ws *WebServer) registerHandlers() {
 	imagestore.
 		Get("/<id>", ws.handlerGetImage)
 
-	util := ws.router.Group("/api/util")
-	util.
+	utils := ws.router.Group("/api/util")
+	utils.
 		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
-	util.
+	utils.
 		Get("/commands", ws.handlerGetCommands)
+	utils.
+		Get("/landingpageinfo", ws.handlerGetLandingPageInfo)
+
+	ws.router.Get("/invite", ws.handlerGetInvite)
 
 	// --------------------------------
 	// ONLY AVAILABLE AFTER AUTH
@@ -164,7 +169,10 @@ func (ws *WebServer) registerHandlers() {
 	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
 	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
 
-	ws.router.Use(ws.auth.checkAuth, ws.af.Handler)
+	ws.router.Use(ws.auth.checkAuth)
+	if !util.DevModeEnabled {
+		ws.router.Use(ws.af.Handler)
+	}
 
 	api := ws.router.Group("/api")
 	api.
@@ -239,6 +247,10 @@ func (ws *WebServer) registerHandlers() {
 		Post("/kick", ws.handlerPostGuildMemberKick)
 	member.
 		Post("/ban", ws.handlerPostGuildMemberBan)
+	member.
+		Post("/mute", ws.handlerPostGuildMemberMute)
+	member.
+		Post("/unmute", ws.handlerPostGuildMemberUnmute)
 
 	memberReports := member.Group("/reports")
 	memberReports.

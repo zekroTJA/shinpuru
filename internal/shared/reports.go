@@ -2,12 +2,14 @@ package shared
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
 // PushReport creates a new report.Report object with the given executorID,
@@ -112,6 +114,57 @@ func PushMute(s *discordgo.Session, db database.Database, publicAddr, guildID,
 	}
 
 	return rep, nil
+}
+
+// RevokeMute removes the mute role of the specified victim and sends
+// an unmute embed to the users DMs and to the mod log channel.
+func RevokeMute(s *discordgo.Session, db database.Database, publicAddr, guildID,
+	executorID, victimID, reason, muteRoleID string) (emb *discordgo.MessageEmbed, err error) {
+
+	err = s.GuildMemberRoleRemove(guildID, victimID, muteRoleID)
+	if err != nil {
+		return
+	}
+
+	repType := stringutil.IndexOf("MUTE", static.ReportTypes)
+	repID := snowflakenodes.NodesReport[repType].Generate()
+
+	emb = &discordgo.MessageEmbed{
+		Title: "Case " + repID.String(),
+		Color: static.ReportColors[repType],
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Inline: true,
+				Name:   "Executor",
+				Value:  fmt.Sprintf("<@%s>", executorID),
+			},
+			{
+				Inline: true,
+				Name:   "Victim",
+				Value:  fmt.Sprintf("<@%s>", victimID),
+			},
+			{
+				Name:  "Type",
+				Value: "UNMUTE",
+			},
+			{
+				Name:  "Description",
+				Value: "MANUAL UNMUTE",
+			},
+		},
+		Timestamp: time.Unix(repID.Time()/1000, 0).Format("2006-01-02T15:04:05.000Z"),
+	}
+
+	if modlogChan, err := db.GetGuildModLog(guildID); err == nil {
+		s.ChannelMessageSendEmbed(modlogChan, emb)
+	}
+
+	dmChan, err := s.UserChannelCreate(victimID)
+	if err == nil {
+		s.ChannelMessageSendEmbed(dmChan.ID, emb)
+	}
+
+	return
 }
 
 func RevokeReport(rep *report.Report, executorID, reason,

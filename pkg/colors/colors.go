@@ -48,7 +48,7 @@ func ToInt(clr *color.RGBA) int {
 // ToHex returns a HEX RBGA color string from
 // the passed color.RGBA object reference.
 func ToHex(clr *color.RGBA) string {
-	return fmt.Sprintf("%x", ToInt(clr))
+	return fmt.Sprintf("%06X", ToInt(clr))
 }
 
 // CreateImage generates a PNG image filled with

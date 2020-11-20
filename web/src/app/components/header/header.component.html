@@ -13,7 +13,7 @@
     </span>
   </div>
 
-  <div *ngIf="selfUser" id="user-info" class="d-flex">
+  <div *ngIf="selfUser; else tmpLogin" id="user-info" class="d-flex">
     <app-popup
       *ngIf="popupVisible"
       class="logout-popup"
@@ -24,6 +24,17 @@
     <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
     <img class="avatar" [src]="selfUser.avatar_url | discordAsset:'':32" />
   </div>
+
+  <ng-template #tmpLogin>
+    <div id="user-info" class="d-flex">
+      <a href="/_/loginwithdiscord">
+        <button class="btn-login">
+          <img height="20" src="/assets/dc-logo.svg"/>
+          LOGIN
+        </button>
+      </a>
+    </div>
+  </ng-template>
 </div>
 
 <ng-template #logout>

@@ -37,6 +37,8 @@ export class MemberRouteComponent {
   @ViewChild('modalKick') private modalKick: TemplateRef<any>;
   @ViewChild('modalBan') private modalBan: TemplateRef<any>;
   @ViewChild('modalRevoke') private modalRevoke: TemplateRef<any>;
+  @ViewChild('modalMute') private modalMute: TemplateRef<any>;
+  @ViewChild('modalUnmute') private modalUnmute: TemplateRef<any>;
 
   public repModalType = 3;
   public repModalReason = '';
@@ -128,9 +130,8 @@ export class MemberRouteComponent {
               }
             });
         }
-        this.clearReportModalModels();
       })
-      .catch(() => this.clearReportModalModels());
+      .finally(() => this.clearReportModalModels());
   }
 
   public kick() {
@@ -158,9 +159,8 @@ export class MemberRouteComponent {
               }
             });
         }
-        this.clearReportModalModels();
       })
-      .catch(() => this.clearReportModalModels());
+      .finally(() => this.clearReportModalModels());
   }
 
   public ban() {
@@ -188,9 +188,8 @@ export class MemberRouteComponent {
               }
             });
         }
-        this.clearReportModalModels();
       })
-      .catch(() => this.clearReportModalModels());
+      .finally(() => this.clearReportModalModels());
   }
 
   public revokeReport(report: Report) {
@@ -215,9 +214,42 @@ export class MemberRouteComponent {
               }
             });
         }
-        this.clearReportModalModels();
       })
-      .catch(() => this.clearReportModalModels());
+      .finally(() => this.clearReportModalModels());
+  }
+
+  public canPerform(perm: string): boolean {
+    return (
+      this.hasPermission(perm) &&
+      (!this.roleDiff ||
+        this.roleDiff > 0 ||
+        this.guild.self_member.dominance >= this.member.dominance)
+    );
+  }
+
+  public muteUnmute() {
+    const muted = this.member.chat_muted;
+    const modal = muted ? this.modalUnmute : this.modalMute;
+    const apiCall = muted ? this.api.postUnmute : this.api.postMute;
+    const message = muted ? 'Revoked chat mute.' : 'Member chat muted.';
+
+    this.openModal(modal)
+      .then((res) => {
+        if (res) {
+          apiCall
+            .call(this.api, this.guild.id, this.member.user.id, {
+              attachment: this.repModalAttachment,
+              reason: this.repModalReason,
+            })
+            .subscribe((resRep) => {
+              if (resRep) {
+                this.member.chat_muted = !muted;
+                this.toasts.push(message, 'Executed', 'success', 5000, true);
+              }
+            });
+        }
+      })
+      .finally(() => this.clearReportModalModels());
   }
 
   private openModal(modal: TemplateRef<any>): Promise<any> {

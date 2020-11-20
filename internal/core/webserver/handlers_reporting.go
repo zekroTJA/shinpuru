@@ -40,7 +40,7 @@ func (ws *WebServer) handlerPostGuildMemberReport(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("you can not report yourself"), fasthttp.StatusBadRequest)
 	}
 
-	if ok, err := repReq.Validate(ctx); !ok {
+	if ok, err := repReq.Validate(ctx, false); !ok {
 		return err
 	}
 
@@ -119,7 +119,7 @@ func (ws *WebServer) handlerPostGuildMemberKick(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("you can not kick members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 
-	if ok, err := req.Validate(ctx); !ok {
+	if ok, err := req.Validate(ctx, false); !ok {
 		return err
 	}
 
@@ -197,7 +197,7 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, fmt.Errorf("you can not ban members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 
-	if ok, err := req.Validate(ctx); !ok {
+	if ok, err := req.Validate(ctx, false); !ok {
 		return err
 	}
 
@@ -229,6 +229,160 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	}
 
 	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
+}
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/mute
+
+func (ws *WebServer) handlerPostGuildMemberMute(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.mute"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	muteRoleID, err := ws.db.GetGuildMuteRole(guildID)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, fmt.Errorf("mute role is not set up on this guild"), fasthttp.StatusBadRequest)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not mute yourself"), fasthttp.StatusBadRequest)
+	}
+
+	guild, err := discordutil.GetGuild(ws.session, guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	executor, err := ws.session.GuildMember(guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	victim, err := ws.session.GuildMember(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		return jsonError(ctx, fmt.Errorf("you can not mute members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
+	}
+
+	if ok, err := req.Validate(ctx, true); !ok {
+		return err
+	}
+
+	if req.Attachment != "" {
+		img, err := imgstore.DownloadFromURL(req.Attachment)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		err = ws.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
+		req.Attachment = img.ID.String()
+	}
+
+	rep, err := shared.PushMute(
+		ws.session,
+		ws.db,
+		ws.config.WebServer.PublicAddr,
+		guildID,
+		userID,
+		memberID,
+		req.Reason,
+		req.Attachment,
+		muteRoleID)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, ReportFromReport(rep, ws.config.WebServer.PublicAddr), fasthttp.StatusCreated)
+}
+
+// ---------------------------------------------------------------------------
+// - POST /api/guilds/:guildid/:memberid/unmute
+
+func (ws *WebServer) handlerPostGuildMemberUnmute(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	memberID := ctx.Param("memberid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.mute"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	req := new(ReasonRequest)
+	if err := parseJSONBody(ctx, req); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
+
+	muteRoleID, err := ws.db.GetGuildMuteRole(guildID)
+	if database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, fmt.Errorf("mute role is not set up on this guild"), fasthttp.StatusBadRequest)
+	} else if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if memberID == userID {
+		return jsonError(ctx, fmt.Errorf("you can not unmute yourself"), fasthttp.StatusBadRequest)
+	}
+
+	guild, err := discordutil.GetGuild(ws.session, guildID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	executor, err := ws.session.GuildMember(guildID, userID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	victim, err := ws.session.GuildMember(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		return jsonError(ctx, fmt.Errorf("you can not unmute members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
+	}
+
+	_, err = shared.RevokeMute(
+		ws.session,
+		ws.db,
+		ws.config.WebServer.PublicAddr,
+		guildID,
+		userID,
+		memberID,
+		req.Reason,
+		muteRoleID)
+
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------

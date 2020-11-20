@@ -73,6 +73,37 @@
         </div>
     </ng-template>
 
+    <ng-template #modalMute let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title">CHAT MUTE</h4>
+        </div>
+        <div class="modal-body">            
+            <h5 class="mb-2">REASON</h5>
+            <textarea rows="5" class="rep-reason" [(ngModel)]="repModalReason" placeholder="Report description should be as detailed as possible."></textarea>
+            
+            <h5 class="mt-3 mb-2">ATTACHMENT</h5>            
+            <input type="text" class="w-100" [(ngModel)]="repModalAttachment" placeholder="media URL (optional)"/>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close(true)" class="bg-purple">EXECUTE MUTE</button>
+            <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+        </div>
+    </ng-template>
+
+    <ng-template #modalUnmute let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title">REVOKE CHAT MUTE</h4>
+        </div>
+        <div class="modal-body">            
+            <h5 class="mb-2">REASON</h5>
+            <textarea rows="5" class="rep-reason" [(ngModel)]="repModalReason" placeholder="Revoke description (optional)."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close(true)" class="bg-purple">REVOKE MUTE</button>
+            <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+        </div>
+    </ng-template>
+
     <!-- ------------------------------------------------------- -->
 
     <app-spinner *ngIf="!member && !guild" id="spinner-load-member" [started]="true"></app-spinner>
@@ -147,19 +178,14 @@
                 <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
                     REPORT
                 </button>
-                <button *ngIf="
-                    hasPermission('sp.guild.mod.kick') && 
-                    ((!roleDiff || roleDiff > 0) || 
-                    guild.self_member.dominance >= member.dominance)
-                " class="bg-orange" (click)="kick()">
+                <button *ngIf="canPerform('sp.guild.mod.kick')" class="bg-orange" (click)="kick()">
                     KICK
                 </button>
-                <button *ngIf="
-                    hasPermission('sp.guild.mod.kick') && 
-                    ((!roleDiff || roleDiff > 0) || 
-                    guild.self_member.dominance >= member.dominance)
-                " class="bg-red" (click)="ban()">
+                <button *ngIf="canPerform('sp.guild.mod.kick')" class="bg-red" (click)="ban()">
                     BAN
+                </button>
+                <button *ngIf="canPerform('sp.guild.mod.mute')" class="bg-purple" (click)="muteUnmute()">
+                    {{ member.chat_muted ? 'CHAT UNMUTE' : 'CHAT MUTE' }}
                 </button>
             </div>
         </div>

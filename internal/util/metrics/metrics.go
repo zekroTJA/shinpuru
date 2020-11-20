@@ -15,7 +15,7 @@ var (
 	}, []string{"event"})
 
 	DiscordCommandsProcessed = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "discord_commands_prcessed_total",
+		Name: "discord_commands_processed_total",
 		Help: "Total number of chat commands processed.",
 	}, []string{"command"})
 

@@ -40,6 +40,7 @@ export interface Member {
   dominance?: number;
   karma: number;
   karma_total: number;
+  chat_muted: boolean;
 }
 
 export interface Channel {
@@ -211,4 +212,10 @@ export interface JoinlogEntry {
   user_id: string;
   tag: string;
   timestamp: Date;
+}
+
+export interface LandingPageInfo {
+  localinvite: string;
+  publicmaininvite: string;
+  publiccaranyinvite: string;
 }

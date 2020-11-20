@@ -18,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 
 	"github.com/bwmarrin/snowflake"
@@ -431,7 +432,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 }
 
 func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
-	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
+	if !stringutil.IsInteger(guildID) || !stringutil.IsInteger(memberID) {
 		return nil, fmt.Errorf("invalid argument type")
 	}
 
@@ -464,7 +465,7 @@ func (m *MysqlMiddleware) GetReportsGuildCount(guildID string) (count int, err e
 }
 
 func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
-	if !util.IsNumber(guildID) || !util.IsNumber(memberID) {
+	if !stringutil.IsInteger(guildID) || !stringutil.IsInteger(memberID) {
 		err = fmt.Errorf("invalid argument type")
 		return
 	}
