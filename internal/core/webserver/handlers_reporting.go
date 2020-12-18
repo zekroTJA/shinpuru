@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
@@ -160,8 +161,9 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
 	guildID := ctx.Param("guildid")
-
 	memberID := ctx.Param("memberid")
+
+	anonymous := ctx.QueryArgs().GetBool("anonymous")
 
 	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.ban"); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
@@ -188,12 +190,15 @@ func (ws *WebServer) handlerPostGuildMemberBan(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	victim, err := ws.session.GuildMember(guildID, memberID)
-	if err != nil {
-		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	var victim *discordgo.Member
+	if !anonymous {
+		victim, err = ws.session.GuildMember(guildID, memberID)
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+		}
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+	if !anonymous && roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return jsonError(ctx, fmt.Errorf("you can not ban members with higher or same permissions than/as yours"), fasthttp.StatusBadRequest)
 	}
 

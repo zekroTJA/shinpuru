@@ -13,6 +13,33 @@
         </div>
     </ng-template>
 
+    <ng-template #modalAnonymousReport let-modal>
+        <div class="modal-header">
+            <h4 class="modal-title">Anonymous Report</h4>
+        </div>
+        <div class="modal-body">
+            <h5 class="mb-2">VICTIM ID</h5>            
+            <input #repVictim type="text" class="w-100" placeholder="Victim ID"/>
+
+            <h5 class="mt-3 mb-2">TYPE</h5>
+            <select class="mb-2" #repType>
+                <option value="1">BAN</option>
+                <option value="3">WARN</option>
+                <option value="4">AD</option>
+            </select>
+
+            <h5 class="mt-3 mb-2">REASON</h5>
+            <textarea #repReason rows="5" class="rep-reason" placeholder="Report description should be as detailed as possible."></textarea>
+
+            <h5 class="mt-3 mb-2">ATTACHMENT</h5>            
+            <input #repAttachment type="text" class="w-100" placeholder="media URL (optional)"/>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close({victim: repVictim.value, type: repType.value, reason: repReason.value, attachment: repAttachment.value})" class="bg-red">EXECUTE</button>
+            <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+        </div>
+    </ng-template>
+
     <app-spinner *ngIf="!guild" id="spinner-load-guild" [started]="true"></app-spinner>
 
     <div *ngIf="guild" class="guild-container">
@@ -111,9 +138,10 @@
 
         <!-- MOD LOG -->
         <div class="d-flex mt-4 mb-2">
-            <app-spoiler [(ngModel)]="modlogToggle">
+            <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
                 <h4 class="mx-3">MOD LOG</h4>
                 <p class="cbadge">{{ modlogToggle ? (reports?.length + ' / ' + reportsTotalCount) : reportsTotalCount }}</p>
+                <button *ngIf="modlogToggle" class="spoiler-button" (click)="onAnonymousReport($event)">Create Anonymous Report</button>
             </app-spoiler>
         </div>
         <div *ngIf="modlogToggle">

@@ -13,7 +13,7 @@ import {
   Channel,
   GuildBackup,
   GuildScoreboardEntry,
-  User,
+  ReportRequest,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -26,13 +26,21 @@ interface Perms {
   perms: string[];
 }
 
+interface AnonymousReport extends ReportRequest {
+  victim: string;
+}
+
 @Component({
   selector: 'app-guild',
   templateUrl: './guild.component.html',
   styleUrls: ['./guild.component.sass'],
 })
 export class GuildComponent {
-  @ViewChild('modalRevoke') private modalRevoke: TemplateRef<any>;
+  @ViewChild('modalRevoke')
+  private modalRevoke: TemplateRef<any>;
+
+  @ViewChild('modalAnonymousReport')
+  private modalAnonymousReport: TemplateRef<any>;
 
   public readonly MAX_SHOWN_USERS = 200;
   public readonly MAX_SHOWN_MODLOG = 20;
@@ -390,5 +398,66 @@ export class GuildComponent {
 
   public navigateSetting(to: string) {
     this.router.navigate(['guilds', this.guild.id, 'guildadmin', to]);
+  }
+
+  public onAnonymousReport(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.modal
+      .open(this.modalAnonymousReport, { windowClass: 'dark-modal' })
+      .result.then((res: AnonymousReport) => {
+        if (res) {
+          res.type = parseInt(res.type.toString());
+          if (!res.victim) {
+            this.toasts.push(
+              'Report failed.',
+              'The ID of the victim must be given.',
+              'error',
+              5000,
+              true
+            );
+          } else if (!res.reason) {
+            this.toasts.push(
+              'Report failed.',
+              'A reason must be given.',
+              'error',
+              5000,
+              true
+            );
+          } else if (res.type >= 3) {
+            this.api
+              .postReport(this.guild.id, res.victim, res)
+              .subscribe((repRes) => {
+                if (repRes) {
+                  this.reports = [repRes].concat(this.reports);
+                  this.toasts.push(
+                    'Report created.',
+                    'Anonymous report created.',
+                    'success',
+                    5000,
+                    true
+                  );
+                }
+              });
+          } else {
+            this.api
+              .postBan(this.guild.id, res.victim, res, true)
+              .subscribe((repRes) => {
+                if (repRes) {
+                  this.reports = [repRes].concat(this.reports);
+                  this.toasts.push(
+                    'User banned.',
+                    'User banned anonymously.',
+                    'success',
+                    5000,
+                    true
+                  );
+                }
+              });
+          }
+        }
+      })
+      .catch(() => {});
   }
 }
