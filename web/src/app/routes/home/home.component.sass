@@ -38,10 +38,15 @@
 
     .info-container
         padding: 10px 10px
+        max-width: $width
 
-        h1
+        > *
+            text-overflow: ellipsis
+            white-space: nowrap
+            overflow: hidden
+        > h1
             font-size: 18px
-        p
+        > p
             font-size: 14px
             color: $c-font-gray
 
