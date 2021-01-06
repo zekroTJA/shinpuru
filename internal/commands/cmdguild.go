@@ -91,14 +91,14 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) error {
 	emb := embedbuilder.New().
 		WithThumbnail(g.IconURL(), "", 100, 100).
 		WithColor(clr).
-		AddField("Name", g.Name, false).
-		AddField("ID", fmt.Sprintf("```\n%s\n```", g.ID), false).
-		AddField("Created", createdTime.Format(time.RFC1123), false).
-		AddField("Owner", fmt.Sprintf("<@%s>", g.OwnerID), false).
-		AddField("Server Region", g.Region, false).
-		AddField("Channels", chans, false).
-		AddField("Member Count", fmt.Sprintf("State: %d / Approx.: %d", g.MemberCount, g.ApproximateMemberCount), false).
-		AddField("Roles", strings.Join(roles, ", "), false).
+		AddField("Name", g.Name).
+		AddField("ID", fmt.Sprintf("```\n%s\n```", g.ID)).
+		AddField("Created", createdTime.Format(time.RFC1123)).
+		AddField("Owner", fmt.Sprintf("<@%s>", g.OwnerID)).
+		AddField("Server Region", g.Region).
+		AddField("Channels", chans).
+		AddField("Member Count", fmt.Sprintf("State: %d / Approx.: %d", g.MemberCount, g.ApproximateMemberCount)).
+		AddField("Roles", strings.Join(roles, ", ")).
 		WithFooter(fmt.Sprintf("issued by %s", ctx.GetUser().String()), "", "").
 		Build()
 
