@@ -12,7 +12,7 @@
         <img [src]="g.icon_url | discordAsset:'/assets/dc-logo.svg':256:(!!g.icon)" />
       </div>
       <div class="info-container">
-        <h1>{{ g.name }}</h1>
+        <h1 [title]="g.name">{{ g.name }}</h1>
         <p>{{ g.member_count }} members</p>
       </div>
     </a>

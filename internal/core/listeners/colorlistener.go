@@ -103,7 +103,14 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		},
 	}
 
-	_, err = s.ChannelMessageSendEmbed(e.ChannelID, emb)
+	_, err = s.ChannelMessageSendComplex(e.ChannelID, &discordgo.MessageSend{
+		Embed: emb,
+		Reference: &discordgo.MessageReference{
+			MessageID: e.MessageID,
+			ChannelID: e.ChannelID,
+			GuildID:   e.GuildID,
+		},
+	})
 	if err != nil {
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}

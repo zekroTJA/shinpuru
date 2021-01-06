@@ -21,6 +21,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/discordutil`**](pkg/discordutil)  
   *Package discordutil provides general purpose extensuion functionalities for discordgo.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/embedbuilder`**](pkg/embedbuilder)  
+  *Package embedbuilder provides a builder pattern to create discordgo message embeds.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/etag`**](pkg/etag)  
   *Package etag implements generation functionalities for the ETag specification of RFC7273 2.3. https://tools.ietf.org/html/rfc7232#section-2.3.1*
 
@@ -31,7 +34,7 @@
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/jdoodle`**](pkg/jdoodle)  
-  *Package jdoodle provides an API wrapper for the jdoodle execute and credits-spent REST API.*
+  *Package jdoodle provides an API wrapper for the jdoodle execute and credit-spent REST API.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](pkg/lctimer)  
   *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse.*

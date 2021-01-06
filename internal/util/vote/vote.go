@@ -177,8 +177,17 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 			return nil, err
 		}
 
-		_, err := s.ChannelFileSend(v.ChannelID,
-			fmt.Sprintf("vote_chart_%s.png", v.ID), buff)
+		_, err := s.ChannelMessageSendComplex(v.ChannelID, &discordgo.MessageSend{
+			File: &discordgo.File{
+				Name:   fmt.Sprintf("vote_chart_%s.png", v.ID),
+				Reader: buff,
+			},
+			Reference: &discordgo.MessageReference{
+				MessageID: v.MsgID,
+				ChannelID: v.ChannelID,
+				GuildID:   v.GuildID,
+			},
+		})
 		if err != nil {
 			return nil, err
 		}

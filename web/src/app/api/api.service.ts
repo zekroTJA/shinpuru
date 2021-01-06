@@ -390,14 +390,14 @@ export class APIService {
   public postBan(
     guildID: string,
     memberID: string,
-    rep: ReasonRequest
+    rep: ReasonRequest,
+    anonymous: boolean = false
   ): Observable<Report> {
+    const opts = this.defopts({
+      params: new HttpParams().set('anonymous', anonymous ? '1' : '0'),
+    });
     return this.http
-      .post<Report>(
-        this.rcGuildMemberBan(guildID, memberID),
-        rep,
-        this.defopts()
-      )
+      .post<Report>(this.rcGuildMemberBan(guildID, memberID), rep, opts)
       .pipe(catchError(this.errorCatcher));
   }
 

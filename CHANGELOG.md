@@ -1,42 +1,42 @@
-1.5.0
+1.6.0
 
 > MAJOR PATCH
 
 ## Major Implementations
 
-### Landing Page
+### "Anonymous" Reports [#189]
 
-shinpurus `/login` page is now decorated by a landing page which shows off some of shinpurus core features, some invite links and options to self host as well as some links to dive deeper.
+Now, it is possible to report members by ID which are not actually on the guild. These reports are handled as same as "normal" reports without actual user validation.  
+This is especially useful to report members which violate the rules of your guild but leave the guild before you are able to report them.
 
-> This page is still in a kind of **beta state**. A lot of stuff is still missing like proper support for mobile devices as well as further feature spotlights.
+Also, you are actually able to ban members which are not on the guild so you are able to ban members which left the guild or never were a member of the guild.
 
-![](https://i.imgur.com/4V6VVab.gif)
+![](https://i.imgur.com/MNqwsCR.png)
+![](https://i.imgur.com/3trvWHm.png)
+
+### `guildinfo` Command [#191]
+
+shinpuru now has a new command: [`guild`](https://github.com/zekroTJA/shinpuru/wiki/Commands#guild).  
+It simply outputs some general information about the guild where the command was executed on.
+
+![](https://i.imgur.com/8RmrDT7.png)
 
 ## Minor Updates
 
-- Two imporvements of the color feature:  
-  1. A name of the color which is closest to the specified color is now displayed. This is provided by the [`zekroTJA/colorname`](https://github.com/zekroTJA/colorname) package.
-  2. The name of the embed executor is now displayed in the embed footer. [#183]
+- Some features like the vote command or color embed system now take advantage of the new [reply feature](https://support.discord.com/hc/en-us/articles/360057382374-Replies-FAQ) of Discord.  
+![](https://i.imgur.com/wOjcqyv.png)
 
-  ![](https://i.imgur.com/4dzBN8z.png)
-
-- You are now able to chat mute/unmute members via the web interface. [#187]  
-![](https://i.imgur.com/dUJmuqy.png)
-
-- The web server endpoint `/invite` now redirects to the invite link of the current shinpuru instance (e.g. https://shnp.de/invite).
-
-- The `exec` command now shows the ammount of consumed JDoodle API tokens, when activated.
+- The header of the web interface now uses the new logo of shinpuru. Also some spacings issues are fixed now.  
+![](https://i.imgur.com/vEU7PJv.png)
 
 ## Bug Fixes
 
-- Fix hex notation of color reaction embeds.
-- Fix a bug in the jdoodle listener which caused missing line breaks on pushing the snippet to the JDoodle API. [#186]
-- Fix the label of the Prometheus metric `discord_commands_processed_total`.
+- Fix guild tile titles in web interface [#190]
+- Fix API token route layout
 
 ## Backstage
 
-- Moved `stringutils` package to `pkg/stringutils`.
-- Moved `jdoodle` package to `pkg/jdoodle`.
+- Add package [embedbuilder](https://github.com/zekroTJA/shinpuru/tree/master/pkg/embedbuilder) to `/pkg`
 
 # Docker
 
@@ -44,5 +44,5 @@ shinpurus `/login` page is now decorated by a landing page which shows off some 
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.5.0
+$ docker pull zekro/shinpuru:1.6.0
 ```
