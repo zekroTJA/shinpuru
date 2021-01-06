@@ -8,6 +8,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
@@ -45,7 +47,9 @@ func (c *CmdGuild) IsExecutableInDMChannels() bool {
 	return false
 }
 
-func (c *CmdGuild) Exec(ctx shireikan.Context) error {
+func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
+	const maxGuildRoles = 30
+
 	g := ctx.GetGuild()
 	clr := 0
 
@@ -75,18 +79,69 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) error {
 	chans := fmt.Sprintf("Category Channels: `%d`\nText Channels: `%d`\nVoice Channels: `%d`",
 		nCategoryChans, nTextChans, nVoiceChans)
 
-	roles := make([]string, len(g.Roles))
-	for i, r := range g.Roles {
+	lenRoles := len(g.Roles) - 1
+	if lenRoles > maxGuildRoles {
+		lenRoles = maxGuildRoles + 1
+	}
+	roles := make([]string, lenRoles)
+	i := 0
+	for _, r := range g.Roles {
+		if r.ID == g.ID {
+			continue
+		}
+		if i == maxGuildRoles {
+			roles[i] = "..."
+			break
+		}
 		roles[i] = r.Mention()
+		i++
 	}
 
 	createdTime, err := discordutil.GetDiscordSnowflakeCreationTime(g.ID)
 	if err != nil {
-		return err
+		return
 	}
 	if err != nil {
-		return err
+		return
 	}
+
+	db, _ := ctx.GetObject("db").(database.Database)
+
+	totalReportCount := 0
+	reportCounts := make([]string, len(static.ReportTypes))
+	for i, typ := range static.ReportTypes {
+		c, err := db.GetReportsFilteredCount(g.ID, "", i)
+		if err != nil {
+			return err
+		}
+		reportCounts[i] = fmt.Sprintf("%s: `%d`", typ, c)
+		totalReportCount += c
+	}
+
+	prefix, err := db.GetGuildPrefix(g.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	if prefix == "" {
+		prefix = "unset"
+	} else {
+		prefix = fmt.Sprintf("`%s`", prefix)
+	}
+
+	backupsEnabled, err := db.GetGuildBackup(g.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	inviteBlockEnabled, err := db.GetGuildInviteBlock(g.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	antiraidEnabled, err := db.GetAntiraidState(g.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	guildSecurity := fmt.Sprintf("%s Backups Enabled\n%s Inviteblock Enabled\n%s Antiraid Enabled\n",
+		c.wrapBool(backupsEnabled), c.wrapBool(inviteBlockEnabled != ""), c.wrapBool(antiraidEnabled))
 
 	emb := embedbuilder.New().
 		WithThumbnail(g.IconURL(), "", 100, 100).
@@ -94,14 +149,24 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) error {
 		AddField("Name", g.Name).
 		AddField("ID", fmt.Sprintf("```\n%s\n```", g.ID)).
 		AddField("Created", createdTime.Format(time.RFC1123)).
+		AddField("Guild Prefix", prefix).
 		AddField("Owner", fmt.Sprintf("<@%s>", g.OwnerID)).
+		AddField(fmt.Sprintf("Channels (%d)", len(g.Channels)), chans).
 		AddField("Server Region", g.Region).
-		AddField("Channels", chans).
 		AddField("Member Count", fmt.Sprintf("State: %d / Approx.: %d", g.MemberCount, g.ApproximateMemberCount)).
-		AddField("Roles", strings.Join(roles, ", ")).
+		AddField(fmt.Sprintf("Reports (%d)", totalReportCount), strings.Join(reportCounts, "\n")).
+		AddField("Guild Security", guildSecurity).
+		AddField(fmt.Sprintf("Roles (%d)", len(g.Roles)-1), strings.Join(roles, ", ")).
 		WithFooter(fmt.Sprintf("issued by %s", ctx.GetUser().String()), "", "").
 		Build()
 
 	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
-	return err
+	return
+}
+
+func (c *CmdGuild) wrapBool(b bool) string {
+	if b {
+		return ":white_check_mark:"
+	}
+	return "x"
 }

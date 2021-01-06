@@ -465,7 +465,7 @@ func (m *MysqlMiddleware) GetReportsGuildCount(guildID string) (count int, err e
 }
 
 func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repType int) (count int, err error) {
-	if !stringutil.IsInteger(guildID) || !stringutil.IsInteger(memberID) {
+	if !stringutil.IsInteger(guildID) {
 		err = fmt.Errorf("invalid argument type")
 		return
 	}
