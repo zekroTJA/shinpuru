@@ -168,5 +168,5 @@ func (c *CmdGuild) wrapBool(b bool) string {
 	if b {
 		return ":white_check_mark:"
 	}
-	return "x"
+	return ":x:"
 }
