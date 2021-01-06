@@ -36,6 +36,7 @@ It simply outputs some general information about the guild where the command was
 
 ## Backstage
 
+- Add package [embedbuilder](https://github.com/zekroTJA/shinpuru/tree/master/pkg/embedbuilder) to `/pkg`
 
 # Docker
 
