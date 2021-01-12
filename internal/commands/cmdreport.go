@@ -43,7 +43,7 @@ func (c *CmdReport) GetHelp() string {
 		"`report <userResolvable> [<type>] <reason>` - report a user *(if type is empty, its defaultly 0 = warn)*\n" +
 		"`report revoke <caseID> <reason>` - revoke a report\n" +
 		"\n**TYPES:**\n" + strings.Join(repTypes, "\n") +
-		"\nTypes `BAN`, `KICK` and `MUTE` are reserved for bands and kicks executed with this bot."
+		"\nTypes `BAN`, `KICK` and `MUTE` are reserved for bans and kicks executed with this bot."
 }
 
 func (c *CmdReport) GetGroup() string {
