@@ -933,3 +933,23 @@ func (m *RedisMiddleware) GetAntiraidJoinList(guildID string) ([]*models.JoinLog
 func (m *RedisMiddleware) FlushAntiraidJoinList(guildID string) error {
 	return m.db.FlushAntiraidJoinList(guildID)
 }
+
+func (m *RedisMiddleware) GetGuildUnbanRequests(guildID string) ([]*report.UnbanRequest, error) {
+	return m.db.GetGuildUnbanRequests(guildID)
+}
+
+func (m *RedisMiddleware) GetGuildUserUnbanRequests(userID, guildID string) ([]*report.UnbanRequest, error) {
+	return m.db.GetGuildUserUnbanRequests(userID, guildID)
+}
+
+func (m *RedisMiddleware) GetUnbanRequest(id string) (*report.UnbanRequest, error) {
+	return m.db.GetUnbanRequest(id)
+}
+
+func (m *RedisMiddleware) AddUnbanRequest(request *report.UnbanRequest) error {
+	return m.db.AddUnbanRequest(request)
+}
+
+func (m *RedisMiddleware) UpdateUnbanRequest(request *report.UnbanRequest) error {
+	return m.db.UpdateUnbanRequest(request)
+}

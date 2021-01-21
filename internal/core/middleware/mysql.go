@@ -175,6 +175,19 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
+		"`id` varchar(25) NOT NULL DEFAULT ''," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userTag` text NOT NULL DEFAULT ''," +
+		"`message` text NOT NULL DEFAULT ''," +
+		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
+		"`status` int(8) NOT NULL DEFAULT '0'," +
+		"`processed` timestamp," +
+		"PRIMARY KEY (`id`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
@@ -1165,5 +1178,97 @@ func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
 		err = database.ErrDatabaseNotFound
 	}
 
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.UnbanRequest, err error) {
+	rows, err := m.db.Query(
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		FROM unbanRequests
+		WHERE guildID = ?`, guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	r = make([]*report.UnbanRequest, 0)
+	for rows.Next() {
+		req := new(report.UnbanRequest)
+		if err = rows.Scan(
+			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
+			&req.ProcessedBy, &req.Status, &req.Processed,
+		); err != nil {
+			return
+		}
+		r = append(r, req)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []*report.UnbanRequest, err error) {
+	rows, err := m.db.Query(
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		FROM unbanRequests
+		WHERE guildID = ? AND userID = ?`, guildID, userID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	r = make([]*report.UnbanRequest, 0)
+	for rows.Next() {
+		req := new(report.UnbanRequest)
+		if err = rows.Scan(
+			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
+			&req.ProcessedBy, &req.Status, &req.Processed,
+		); err != nil {
+			return
+		}
+		r = append(r, req)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetUnbanRequest(id string) (r *report.UnbanRequest, err error) {
+	row := m.db.QueryRow(
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		FROM unbanRequests
+		WHERE id = ?`, id)
+
+	r = new(report.UnbanRequest)
+	err = row.Scan(
+		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
+		&r.ProcessedBy, &r.Status, &r.Processed,
+	)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MysqlMiddleware) AddUnbanRequest(r *report.UnbanRequest) (err error) {
+	_, err = m.db.Exec(
+		`INSERT INTO unbanRequests
+		(id, userID, guildID, userTag, message, processedBy, status, processed) VALUES
+		(?, ?, ?, ?, ?, ?, ?, ?)`,
+		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy, r.Status, r.Processed)
+
+	return
+}
+
+func (m *MysqlMiddleware) UpdateUnbanRequest(r *report.UnbanRequest) (err error) {
+	_, err = m.db.Exec(
+		`UPDATE unbanRequests
+		SET processedBy = ?, status = ?, processed = ?`,
+		r.ProcessedBy, r.Status, r.Processed)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	return
 }

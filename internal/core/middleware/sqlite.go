@@ -140,6 +140,26 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+		"`userID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`tag` text NOT NULL DEFAULT ''," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()" +
+		");")
+	mErr.Append(err)
+
+	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userTag` text NOT NULL DEFAULT ''," +
+		"`message` text NOT NULL DEFAULT ''," +
+		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
+		"`status` int(8) NOT NULL DEFAULT '0'," +
+		"`processed` timestamp" +
+		");")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
 	}
