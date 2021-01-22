@@ -184,6 +184,7 @@ func (m *MysqlMiddleware) setup() {
 		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
 		"`status` int(8) NOT NULL DEFAULT '0'," +
 		"`processed` timestamp," +
+		"`processedMessage` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -445,18 +446,22 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 }
 
 func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
-	if !stringutil.IsInteger(guildID) || !stringutil.IsInteger(memberID) {
-		return nil, fmt.Errorf("invalid argument type")
+	args := []interface{}{}
+	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE true`
+	if guildID != "" {
+		query += " AND guildID = ?"
+		args = append(args, guildID)
+	}
+	if memberID != "" {
+		query += " AND victimID = ?"
+		args = append(args, memberID)
+	}
+	if repType > -1 {
+		query += " AND type = ?"
+		args = append(args, repType)
 	}
 
-	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = "%s"`, guildID)
-	if memberID != "" {
-		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
-	}
-	if repType != -1 {
-		query += fmt.Sprintf(` AND type = %d`, repType)
-	}
-	rows, err := m.db.Query(query)
+	rows, err := m.db.Query(query, args...)
 	var results []*report.Report
 	if err != nil {
 		return nil, err
@@ -1210,7 +1215,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.Unb
 
 func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []*report.UnbanRequest, err error) {
 	rows, err := m.db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
 		WHERE guildID = ? AND userID = ?`, guildID, userID)
 	if err == sql.ErrNoRows {
@@ -1225,7 +1230,7 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 		req := new(report.UnbanRequest)
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
-			&req.ProcessedBy, &req.Status, &req.Processed,
+			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
 		); err != nil {
 			return
 		}
@@ -1237,14 +1242,14 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 
 func (m *MysqlMiddleware) GetUnbanRequest(id string) (r *report.UnbanRequest, err error) {
 	row := m.db.QueryRow(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
 		WHERE id = ?`, id)
 
 	r = new(report.UnbanRequest)
 	err = row.Scan(
 		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
-		&r.ProcessedBy, &r.Status, &r.Processed,
+		&r.ProcessedBy, &r.Status, &r.Processed, &r.ProcessedMessage,
 	)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1255,9 +1260,10 @@ func (m *MysqlMiddleware) GetUnbanRequest(id string) (r *report.UnbanRequest, er
 func (m *MysqlMiddleware) AddUnbanRequest(r *report.UnbanRequest) (err error) {
 	_, err = m.db.Exec(
 		`INSERT INTO unbanRequests
-		(id, userID, guildID, userTag, message, processedBy, status, processed) VALUES
-		(?, ?, ?, ?, ?, ?, ?, ?)`,
-		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy, r.Status, r.Processed)
+		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy,
+		r.Status, r.Processed, r.ProcessedMessage)
 
 	return
 }
@@ -1265,8 +1271,8 @@ func (m *MysqlMiddleware) AddUnbanRequest(r *report.UnbanRequest) (err error) {
 func (m *MysqlMiddleware) UpdateUnbanRequest(r *report.UnbanRequest) (err error) {
 	_, err = m.db.Exec(
 		`UPDATE unbanRequests
-		SET processedBy = ?, status = ?, processed = ?`,
-		r.ProcessedBy, r.Status, r.Processed)
+		SET processedBy = ?, status = ?, processed = ?, processedMessage = ?`,
+		r.ProcessedBy, r.Status, r.Processed, r.ProcessedMessage)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}

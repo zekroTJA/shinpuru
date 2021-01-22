@@ -156,6 +156,7 @@ func (m *SqliteMiddleware) setup() {
 		"`message` text NOT NULL DEFAULT ''," +
 		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
 		"`status` int(8) NOT NULL DEFAULT '0'," +
+		"`processedMessage` text NOT NULL DEFAULT ''," +
 		"`processed` timestamp" +
 		");")
 	mErr.Append(err)

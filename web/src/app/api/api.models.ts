@@ -219,3 +219,21 @@ export interface LandingPageInfo {
   publicmaininvite: string;
   publiccaranyinvite: string;
 }
+
+export enum UnbanRequestState {
+  PENDING,
+  DECLINED,
+  ACCEPTED,
+}
+
+export interface UnbanRequest {
+  id: string;
+  user_id: string;
+  guild_id: string;
+  user_tag: string;
+  message: string;
+  status: UnbanRequestState;
+  processed_by: string;
+  processed: Date;
+  processed_message: string;
+}
