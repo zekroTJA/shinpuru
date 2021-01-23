@@ -1188,7 +1188,7 @@ func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
 
 func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.UnbanRequest, err error) {
 	rows, err := m.db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
 		WHERE guildID = ?`, guildID)
 	if err == sql.ErrNoRows {
@@ -1203,7 +1203,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.Unb
 		req := new(report.UnbanRequest)
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
-			&req.ProcessedBy, &req.Status, &req.Processed,
+			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
 		); err != nil {
 			return
 		}

@@ -34,7 +34,11 @@ func (ws *WebServer) handlerGetGuildUnbanrequests(ctx *routing.Context) error {
 		requests = make([]*report.UnbanRequest, 0)
 	}
 
-	return jsonResponse(ctx, &ListResponse{len(requests), requests}, fasthttp.StatusCreated)
+	for _, r := range requests {
+		r.Hydrate()
+	}
+
+	return jsonResponse(ctx, &ListResponse{len(requests), requests}, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +64,10 @@ func (ws *WebServer) handlerGetGuildMemberUnbanrequests(ctx *routing.Context) er
 		requests = make([]*report.UnbanRequest, 0)
 	}
 
+	for _, r := range requests {
+		r.Hydrate()
+	}
+
 	return jsonResponse(ctx, &ListResponse{len(requests), requests}, fasthttp.StatusOK)
 }
 
@@ -69,7 +77,7 @@ func (ws *WebServer) handlerGetGuildMemberUnbanrequests(ctx *routing.Context) er
 func (ws *WebServer) handlerGetGuildUnbanrequest(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	guildID := ctx.Param("guildID")
+	guildID := ctx.Param("guildid")
 	id := ctx.Param("id")
 
 	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.unbanrequests"); err != nil {
@@ -83,10 +91,10 @@ func (ws *WebServer) handlerGetGuildUnbanrequest(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 	if request == nil || request.GuildID != guildID {
-		jsonResponse(ctx, nil, fasthttp.StatusNotFound)
+		return jsonResponse(ctx, nil, fasthttp.StatusNotFound)
 	}
 
-	return jsonResponse(ctx, request, fasthttp.StatusOK)
+	return jsonResponse(ctx, request.Hydrate(), fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
@@ -95,7 +103,7 @@ func (ws *WebServer) handlerGetGuildUnbanrequest(ctx *routing.Context) error {
 func (ws *WebServer) handlerPostGuildUnbanrequest(ctx *routing.Context) error {
 	userID := ctx.Get("uid").(string)
 
-	guildID := ctx.Param("guildID")
+	guildID := ctx.Param("guildid")
 	id := ctx.Param("id")
 
 	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.unbanrequests"); err != nil {
@@ -136,7 +144,7 @@ func (ws *WebServer) handlerPostGuildUnbanrequest(ctx *routing.Context) error {
 		}
 	}
 
-	return jsonResponse(ctx, request, fasthttp.StatusOK)
+	return jsonResponse(ctx, request.Hydrate(), fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
@@ -207,7 +215,7 @@ func (ws *WebServer) handlerPostUnbanrequest(ctx *routing.Context) error {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
-	return jsonResponse(ctx, finalReq, fasthttp.StatusCreated)
+	return jsonResponse(ctx, finalReq.Hydrate(), fasthttp.StatusCreated)
 }
 
 // --- HELPERS ------------

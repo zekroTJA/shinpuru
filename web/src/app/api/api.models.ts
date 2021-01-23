@@ -236,4 +236,5 @@ export interface UnbanRequest {
   processed_by: string;
   processed: Date;
   processed_message: string;
+  created: Date;
 }

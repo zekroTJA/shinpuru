@@ -25,6 +25,7 @@ type UnbanRequest struct {
 	ProcessedBy      string            `json:"processed_by"`
 	Processed        time.Time         `json:"processed"`
 	ProcessedMessage string            `json:"processed_message"`
+	Created          time.Time         `json:"created"`
 }
 
 func (r *UnbanRequest) Validate() error {
@@ -36,4 +37,9 @@ func (r *UnbanRequest) Validate() error {
 	}
 
 	return nil
+}
+
+func (r *UnbanRequest) Hydrate() *UnbanRequest {
+	r.Created = time.Unix(r.ID.Time()/1000, 0)
+	return r
 }

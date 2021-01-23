@@ -31,12 +31,16 @@ import { KarmaTileComponent } from './components/karma-tile/karma-tile.component
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-scoreboard.component';
 import { CommandsComponent } from './routes/commands/commands.component';
-import { KeyValuePipe } from './routes/pipes/key-value.pipe';
-import { CommandSortPipe } from './routes/pipes/command-sort.pipe';
-import { DiscordAssetPipe } from './routes/pipes/discord-asset.pipe';
+import { KeyValuePipe } from './pipes/key-value.pipe';
+import { CommandSortPipe } from './pipes/command-sort.pipe';
+import { DiscordAssetPipe } from './pipes/discord-asset.pipe';
 import { GuildAdminKarmaComponent } from './routes/guild-admin/karma/ga-karma.component';
 import { GuildAdminAntiraidComponent } from './routes/guild-admin/antiraid/ga-antiraid.component';
 import { GuildAdminNavbarComponent } from './components/guild-admin-navbar/guild-admin-navbar.component';
+import { GuildUnbanRequestComponent } from './routes/guild-unbanrequests/guild-unbanrequests.component';
+import { UnbanrequestComponent } from './components/unbanrequest/unbanrequest.component';
+import { UnbanrequestStatePipe } from './pipes/unbanrequest-state.pipe';
+import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +73,10 @@ import { GuildAdminNavbarComponent } from './components/guild-admin-navbar/guild
     GuildAdminKarmaComponent,
     GuildAdminAntiraidComponent,
     GuildAdminNavbarComponent,
+    GuildUnbanRequestComponent,
+    UnbanrequestComponent,
+    UnbanrequestStatePipe,
+    MemberReportsComponent,
   ],
   imports: [
     NgbModule,
