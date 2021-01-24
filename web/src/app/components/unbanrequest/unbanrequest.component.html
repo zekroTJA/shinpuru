@@ -5,10 +5,10 @@
     <div class="inner-container">
         <div class="d-flex">
             <div>
-                <h4>VICTIM</h4>
+                <h4>REQUESTER</h4>
                 <p>{{ request.user_tag }} <span class="embedded">{{ request.user_id }}</span></p>
                 
-                <h4 class="mt-3">MESSAGE</h4>
+                <h4 class="mt-3">REQUESTERS MESSAGE</h4>
                 <p>{{ request.message }}</p>
 
                 <div *ngIf="request.status !== UnbanRequestState.PENDING">

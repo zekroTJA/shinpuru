@@ -152,7 +152,7 @@ export class APIService {
       id ? '/' + id : ''
     }`;
 
-  private readonly rcUnbanRequest = (rc: string = '') =>
+  private readonly rcUnbanRequests = (rc: string = '') =>
     `${this.rcAPI('unbanrequests')}${rc ? '/' + rc : ''}`;
 
   private readonly errorCatcher = (err) => {
@@ -638,15 +638,21 @@ export class APIService {
 
   public getUnbanrequestBannedguilds(): Observable<ListReponse<Guild>> {
     return this.http
-      .get(this.rcUnbanRequest('bannedguilds'), this.defopts())
+      .get(this.rcUnbanRequests('bannedguilds'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
-  public postUnbanrequest(
+  public getUnbanrequests(): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .get(this.rcUnbanRequests(), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUnbanrequests(
     request: UnbanRequest
   ): Observable<ListReponse<UnbanRequest>> {
     return this.http
-      .post(this.rcUnbanRequest(), request, this.defopts())
+      .post(this.rcUnbanRequests(), request, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

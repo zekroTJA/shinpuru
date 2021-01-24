@@ -41,6 +41,7 @@ import { GuildUnbanRequestComponent } from './routes/guild-unbanrequests/guild-u
 import { UnbanrequestComponent } from './components/unbanrequest/unbanrequest.component';
 import { UnbanrequestStatePipe } from './pipes/unbanrequest-state.pipe';
 import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
+import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { MemberReportsComponent } from './routes/member-reports/member-reports.c
     UnbanrequestComponent,
     UnbanrequestStatePipe,
     MemberReportsComponent,
+    UnbanmeComponent,
   ],
   imports: [
     NgbModule,
