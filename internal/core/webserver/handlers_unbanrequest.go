@@ -162,6 +162,27 @@ func (ws *WebServer) handlerGetUnbanrequestBannedguilds(ctx *routing.Context) er
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/unbanrequests
+
+func (ws *WebServer) handlerGetUnbanrequest(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	requests, err := ws.db.GetGuildUserUnbanRequests(userID, "")
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	for _, r := range requests {
+		r.Hydrate()
+	}
+
+	return jsonResponse(ctx, &ListResponse{len(requests), requests}, fasthttp.StatusCreated)
+}
+
+// ---------------------------------------------------------------------------
 // - POST /api/unbanrequests
 
 func (ws *WebServer) handlerPostUnbanrequest(ctx *routing.Context) error {

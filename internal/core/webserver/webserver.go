@@ -275,7 +275,8 @@ func (ws *WebServer) registerHandlers() {
 
 	unbanReqeusts := api.Group("/unbanrequests")
 	unbanReqeusts.
-		Post("", ws.handlerPostUnbanrequest)
+		Get("", ws.handlerGetUnbanrequest).
+		Post(ws.handlerPostUnbanrequest)
 	unbanReqeusts.
 		Get("/bannedguilds", ws.handlerGetUnbanrequestBannedguilds)
 

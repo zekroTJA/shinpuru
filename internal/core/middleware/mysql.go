@@ -1214,10 +1214,17 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.Unb
 }
 
 func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []*report.UnbanRequest, err error) {
-	rows, err := m.db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
-		WHERE guildID = ? AND userID = ?`, guildID, userID)
+		WHERE userID = ?`
+	params := []interface{}{userID}
+
+	if guildID != "" {
+		query += " AND userID = ?"
+		params = append(params, guildID)
+	}
+
+	rows, err := m.db.Query(query, params...)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
