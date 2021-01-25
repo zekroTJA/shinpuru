@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/bwmarrin/snowflake"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -129,6 +130,9 @@ func (ws *WebServer) handlerPostGuildUnbanrequest(ctx *routing.Context) error {
 		return jsonError(ctx, errors.New("process reason message must be provided"), fasthttp.StatusBadRequest)
 	}
 
+	if request.ID, err = snowflake.ParseString(id); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusBadRequest)
+	}
 	request.ProcessedBy = userID
 	request.Status = rUpdate.Status
 	request.Processed = time.Now()

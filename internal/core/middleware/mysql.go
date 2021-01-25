@@ -1278,8 +1278,10 @@ func (m *MysqlMiddleware) AddUnbanRequest(r *report.UnbanRequest) (err error) {
 func (m *MysqlMiddleware) UpdateUnbanRequest(r *report.UnbanRequest) (err error) {
 	_, err = m.db.Exec(
 		`UPDATE unbanRequests
-		SET processedBy = ?, status = ?, processed = ?, processedMessage = ?`,
-		r.ProcessedBy, r.Status, r.Processed, r.ProcessedMessage)
+		SET processedBy = ?, status = ?, processed = ?, processedMessage = ?
+		WHERE id = ?`,
+		r.ProcessedBy, r.Status, r.Processed, r.ProcessedMessage,
+		r.ID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}

@@ -648,9 +648,7 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
-  public postUnbanrequests(
-    request: UnbanRequest
-  ): Observable<ListReponse<UnbanRequest>> {
+  public postUnbanrequests(request: UnbanRequest): Observable<UnbanRequest> {
     return this.http
       .post(this.rcUnbanRequests(), request, this.defopts())
       .pipe(catchError(this.errorCatcher));

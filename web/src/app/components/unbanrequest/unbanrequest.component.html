@@ -26,15 +26,15 @@
                     <p>{{ request.processed_message }}</p>
                 </div>
             </div>
-            <div class="controls" *ngIf="request.status === UnbanRequestState.PENDING">
+            <div class="controls" *ngIf="showControls && request.status === UnbanRequestState.PENDING">
                 <button (click)="accept.emit()" class="bg-green">ACCEPT</button>
                 <button (click)="decline.emit()" class="bg-red">DECLINE</button>
             </div>
         </div>
 
         <div class="footer d-flex">
-            <p>Submitted: {{ dateFormat(request.created) }}&nbsp;&nbsp;|&nbsp;&nbsp;</p>
-            <a (click)="reports.emit()">Show Reports</a>
+            <p>Submitted: {{ dateFormat(request.created) }}</p>
+            <p *ngIf="showControls">&nbsp;&nbsp;|&nbsp;&nbsp;<a (click)="reports.emit()">Show Reports</a></p>
         </div>
     </div>
 </div>

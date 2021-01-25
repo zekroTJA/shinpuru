@@ -3,6 +3,7 @@
     <div *ngFor="let r of unbanRequests" class="mt-4">
         <app-unbanrequest 
             [request]="r" 
+            [showControls]="true"
             (reports)="onReports(r)" 
             (accept)="onAccept(r)" 
             (decline)="onDecline(r)"

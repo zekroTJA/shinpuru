@@ -81,8 +81,10 @@ export class GuildUnbanRequestComponent implements OnInit {
   }
 
   private requestsSortFunc(a: UnbanRequest, b: UnbanRequest) {
-    if (a.status === UnbanRequestState.PENDING) return 1;
-    if (b.status === UnbanRequestState.PENDING) return -1;
-    return a.created.getTime() - b.created.getTime();
+    if (a.status === UnbanRequestState.PENDING) return -1;
+    if (b.status === UnbanRequestState.PENDING) return 1;
+    if (typeof a.created === 'string') a.created = new Date(a.created);
+    if (typeof b.created === 'string') b.created = new Date(b.created);
+    return b.created.getTime() - a.created.getTime();
   }
 }

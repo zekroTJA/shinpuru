@@ -38,6 +38,11 @@
       <h4 class="modal-title">CREATE UNBAN REQUEST</h4>
   </div>
   <div class="modal-body">
+      <p>
+        Create an unban request for guild <strong>{{ newRequest.guild.name }}</strong>.
+        <br /><br />
+        Please describe below as detailed as prossible why you should be ubanned from the guild.
+      </p>
       <h4>MESSAGE</h4>
       <textarea rows="5" class="message mt-2" [(ngModel)]="newRequest.message"></textarea>
   </div>

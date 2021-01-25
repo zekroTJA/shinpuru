@@ -20,6 +20,7 @@ const typeColors = ['#fb8c00', '#d81b60', '#8BC34A'];
 })
 export class UnbanrequestComponent implements OnInit {
   @Input() public request: UnbanRequest;
+  @Input() public showControls: boolean = false;
 
   @Output() public accept = new EventEmitter<any>();
   @Output() public decline = new EventEmitter<any>();
