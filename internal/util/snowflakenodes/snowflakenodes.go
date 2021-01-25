@@ -21,6 +21,9 @@ var (
 	// NodeImages is the snowflake node for
 	// public images.
 	NodeImages *snowflake.Node
+	// NodeUnbanRequests is the snowflake node
+	// for unban requests.
+	NodeUnbanRequests *snowflake.Node
 
 	// nodeMap maps snowflake node IDs with
 	// their identifier strings.
@@ -45,11 +48,13 @@ func Setup() error {
 	NodeBackup, err = snowflake.NewNode(100)
 	NodeTags, err = snowflake.NewNode(120)
 	NodeImages, err = snowflake.NewNode(130)
+	NodeUnbanRequests, err = snowflake.NewNode(140)
 
 	nodeMap[100] = "backups"
 	nodeMap[110] = "lifecyclehandlers"
 	nodeMap[120] = "tags"
 	nodeMap[130] = "images"
+	nodeMap[140] = "unbanrequests"
 
 	return err
 }

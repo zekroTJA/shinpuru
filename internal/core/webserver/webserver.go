@@ -209,6 +209,11 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
 		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
+	guild.
+		Get("/unbanrequests", ws.handlerGetGuildUnbanrequests)
+	guild.
+		Get("/unbanrequests/<id:[0-9]+>", ws.handlerGetGuildUnbanrequest).
+		Post(ws.handlerPostGuildUnbanrequest)
 
 	guildSettings := guild.Group("/settings")
 	guildSettings.
@@ -251,6 +256,8 @@ func (ws *WebServer) registerHandlers() {
 		Post("/mute", ws.handlerPostGuildMemberMute)
 	member.
 		Post("/unmute", ws.handlerPostGuildMemberUnmute)
+	member.
+		Get("/unbanrequests", ws.handlerGetGuildMemberUnbanrequests)
 
 	memberReports := member.Group("/reports")
 	memberReports.
@@ -265,6 +272,13 @@ func (ws *WebServer) registerHandlers() {
 		Get("", ws.handlerGetReport)
 	report.
 		Post("/revoke", ws.handlerPostReportRevoke)
+
+	unbanReqeusts := api.Group("/unbanrequests")
+	unbanReqeusts.
+		Get("", ws.handlerGetUnbanrequest).
+		Post(ws.handlerPostUnbanrequest)
+	unbanReqeusts.
+		Get("/bannedguilds", ws.handlerGetUnbanrequestBannedguilds)
 
 	api.
 		Get("/token", ws.handlerGetToken).

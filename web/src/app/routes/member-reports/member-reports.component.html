@@ -1,0 +1,6 @@
+<div>
+    <app-spinner *ngIf="!reports"></app-spinner>
+    <div *ngFor="let r of reports" class="mt-4">
+        <app-report [report]="r"></app-report>
+    </div>
+</div>
