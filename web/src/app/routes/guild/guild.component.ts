@@ -56,6 +56,7 @@ export class GuildComponent {
   public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
   public scoreboard: GuildScoreboardEntry[];
+  public unbanReqeustsCount: number = 0;
 
   public guildSettingsAllowed: string[] = [];
 
@@ -130,6 +131,12 @@ export class GuildComponent {
     this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
       this.scoreboard = scoreboard.data;
     });
+
+    if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
+      this.api.getGuildUnbanrequestCount(guildID).subscribe((count) => {
+        this.unbanReqeustsCount = count.count;
+      });
+    }
   }
 
   private loadMembers(guildID: string, cb: () => void) {
@@ -398,6 +405,13 @@ export class GuildComponent {
 
   public navigateSetting(to: string) {
     this.router.navigate(['guilds', this.guild.id, 'guildadmin', to]);
+  }
+
+  public onUnbanRequests(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.router.navigate(['guilds', this.guild.id, 'unbanrequests']);
   }
 
   public onAnonymousReport(event: MouseEvent) {

@@ -141,7 +141,12 @@
             <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
                 <h4 class="mx-3">MOD LOG</h4>
                 <p class="cbadge">{{ modlogToggle ? (reports?.length + ' / ' + reportsTotalCount) : reportsTotalCount }}</p>
-                <button *ngIf="modlogToggle" class="spoiler-button" (click)="onAnonymousReport($event)">Create Anonymous Report</button>
+                <div class="spoiler-buttons">
+                    <button *ngIf="modlogToggle && guildSettingsContains('sp.guild.mod.unbanrequests')" (click)="onUnbanRequests($event)" [class.bg-purple]="unbanReqeustsCount > 0">
+                        Unban Requests ({{unbanReqeustsCount}} open)
+                    </button>
+                    <button *ngIf="modlogToggle" (click)="onAnonymousReport($event)">Create Anonymous Report</button>
+                </div>
             </app-spoiler>
         </div>
         <div *ngIf="modlogToggle">

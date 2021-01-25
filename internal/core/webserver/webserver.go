@@ -209,10 +209,14 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
 		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
-	guild.
-		Get("/unbanrequests", ws.handlerGetGuildUnbanrequests)
-	guild.
-		Get("/unbanrequests/<id:[0-9]+>", ws.handlerGetGuildUnbanrequest).
+
+	guildUnbanRequests := guild.Group("/unbanrequests")
+	guildUnbanRequests.
+		Get("", ws.handlerGetGuildUnbanrequests)
+	guildUnbanRequests.
+		Get("/count", ws.handlerGetGuildUnbanrequestsCount)
+	guildUnbanRequests.
+		Get("/<id:[0-9]+>", ws.handlerGetGuildUnbanrequest).
 		Post(ws.handlerPostGuildUnbanrequest)
 
 	guildSettings := guild.Group("/settings")

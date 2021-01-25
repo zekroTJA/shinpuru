@@ -623,6 +623,18 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
+  public getGuildUnbanrequestCount(
+    guildId: string,
+    stateFilter: number = -1
+  ): Observable<Count> {
+    const opts = this.defopts({
+      params: new HttpParams().set('state', stateFilter.toString()),
+    });
+    return this.http
+      .get(this.rcGuildUnbanRequest(guildId, 'count'), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
   public postGuildUnbanrequest(
     guildId: string,
     request: UnbanRequest
