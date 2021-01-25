@@ -43,6 +43,46 @@ func (ws *WebServer) handlerGetGuildUnbanrequests(ctx *routing.Context) error {
 }
 
 // ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/unbanrequests/count
+
+func (ws *WebServer) handlerGetGuildUnbanrequestsCount(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	stateFilter, err := ctx.QueryArgs().GetUint("state")
+	if err != nil {
+		stateFilter = -1
+	}
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.unbanrequests"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	requests, err := ws.db.GetGuildUnbanRequests(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	count := len(requests)
+	if stateFilter > -1 {
+		count = 0
+		for _, r := range requests {
+			if int(r.Status) == stateFilter {
+				count++
+			}
+		}
+	}
+
+	return jsonResponse(ctx, &Count{count}, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
 // - GET /api/guilds/:guildid/:memberid/unbanrequests
 
 func (ws *WebServer) handlerGetGuildMemberUnbanrequests(ctx *routing.Context) error {
@@ -70,6 +110,47 @@ func (ws *WebServer) handlerGetGuildMemberUnbanrequests(ctx *routing.Context) er
 	}
 
 	return jsonResponse(ctx, &ListResponse{len(requests), requests}, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/:memberid/unbanrequests/count
+
+func (ws *WebServer) handlerGetGuildMemberUnbanrequestsCount(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	stateFilter, err := ctx.QueryArgs().GetUint("state")
+	if err != nil {
+		stateFilter = -1
+	}
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.mod.unbanrequests"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	requests, err := ws.db.GetGuildUserUnbanRequests(guildID, memberID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	count := len(requests)
+	if stateFilter > -1 {
+		count = 0
+		for _, r := range requests {
+			if int(r.Status) == stateFilter {
+				count++
+			}
+		}
+	}
+
+	return jsonResponse(ctx, &Count{count}, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
