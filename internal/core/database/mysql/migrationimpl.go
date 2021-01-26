@@ -21,8 +21,9 @@ type migration struct {
 func (m *MysqlMiddleware) Migrate() (err error) {
 	mig, err := m.getLatestMigration()
 	if err == sql.ErrNoRows {
-		err = m.putCurrentVersion()
-		return
+		mig = &migration{
+			Version: 0,
+		}
 	} else if err != nil {
 		return
 	}
