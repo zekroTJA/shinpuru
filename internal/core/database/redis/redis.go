@@ -1,4 +1,4 @@
-package middleware
+package redis
 
 import (
 	"encoding/json"
