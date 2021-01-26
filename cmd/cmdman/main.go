@@ -12,7 +12,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -47,7 +47,7 @@ func main() {
 	}
 
 	s, _ := discordgo.New()
-	database := new(middleware.SqliteMiddleware)
+	database := new(sqlite.SqliteMiddleware)
 
 	cmdHandler := inits.InitCommandHandler(s, config, database, nil, nil, nil, nil, nil)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
