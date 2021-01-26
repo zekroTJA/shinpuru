@@ -33,6 +33,7 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 		if err = migrationFuncs[i](m); err != nil {
 			return
 		}
+		m.putMigrationVersion(i)
 	}
 
 	return
@@ -49,10 +50,10 @@ func (m *MysqlMiddleware) getLatestMigration() (mig *migration, err error) {
 	return
 }
 
-func (m *MysqlMiddleware) putCurrentVersion() (err error) {
+func (m *MysqlMiddleware) putMigrationVersion(i int) (err error) {
 	_, err = m.Db.Exec(
 		`INSERT INTO migrations (version, applied, releaseTag, releaseCommit)
 		VALUES (?, ?, ?, ?)`,
-		currentDbVersion, time.Now(), util.AppVersion, util.AppCommit)
+		i, time.Now(), util.AppVersion, util.AppCommit)
 	return
 }
