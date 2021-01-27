@@ -9,7 +9,7 @@ import (
 
 const currentDbVersion = 0
 
-type migrationFunc func(*MysqlMiddleware) error
+type migrationFunc func(*sql.Tx) error
 
 type migration struct {
 	Version       int
@@ -28,13 +28,20 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 		return
 	}
 
+	tx, err := m.Db.Begin()
+	if err != nil {
+		return
+	}
 	for i := mig.Version; i < len(migrationFuncs); i++ {
 		util.Log.Infof("Database: Applying migration version %d...", i)
-		if err = migrationFuncs[i](m); err != nil {
+		if err = migrationFuncs[i](tx); err != nil {
 			return
 		}
-		m.putMigrationVersion(i)
+		if err = putMigrationVersion(tx, i); err != nil {
+			return
+		}
 	}
+	err = tx.Commit()
 
 	return
 }
@@ -50,8 +57,8 @@ func (m *MysqlMiddleware) getLatestMigration() (mig *migration, err error) {
 	return
 }
 
-func (m *MysqlMiddleware) putMigrationVersion(i int) (err error) {
-	_, err = m.Db.Exec(
+func putMigrationVersion(tx *sql.Tx, i int) (err error) {
+	_, err = tx.Exec(
 		`INSERT INTO migrations (version, applied, releaseTag, releaseCommit)
 		VALUES (?, ?, ?, ?)`,
 		i, time.Now(), util.AppVersion, util.AppCommit)
