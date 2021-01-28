@@ -63,7 +63,7 @@ func (c *CmdMention) Exec(ctx shireikan.Context) error {
 	}
 
 	if role.Mentionable {
-		_, err := ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, false)
+		_, err := ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, int(role.Permissions), false)
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ func (c *CmdMention) Exec(ctx shireikan.Context) error {
 			DeleteAfter(10 * time.Second).Error()
 	}
 
-	_, err = ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, true)
+	_, err = ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, int(role.Permissions), true)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (c *CmdMention) Exec(ctx shireikan.Context) error {
 		if e.GuildID == ctx.GetGuild().ID && e.Author.ID == ctx.GetUser().ID && len(e.MentionRoles) > 0 {
 			for _, rID := range e.MentionRoles {
 				if rID == role.ID {
-					s.GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, false)
+					s.GuildRoleEdit(ctx.GetGuild().ID, role.ID, role.Name, role.Color, role.Hoist, int(role.Permissions), false)
 					if handlerRemove != nil {
 						handlerRemove()
 					}

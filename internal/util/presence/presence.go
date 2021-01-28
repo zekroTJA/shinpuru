@@ -43,8 +43,11 @@ func (p *Presence) Marshal() string {
 // from the presence object.
 func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 	return discordgo.UpdateStatusData{
-		Game: &discordgo.Game{
-			Name: p.Game,
+		Activities: []*discordgo.Activity{
+			{
+				Name: p.Game,
+				Type: discordgo.ActivityTypeGame,
+			},
 		},
 		Status: p.Status,
 	}

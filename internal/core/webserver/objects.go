@@ -62,7 +62,6 @@ type Guild struct {
 	Splash                   string                      `json:"splash"`
 	MemberCount              int                         `json:"member_count"`
 	VerificationLevel        discordgo.VerificationLevel `json:"verification_level"`
-	EmbedEnabled             bool                        `json:"embed_enabled"`
 	Large                    bool                        `json:"large"`
 	Unavailable              bool                        `json:"unavailable"`
 	MfaLevel                 discordgo.MfaLevel          `json:"mfa_level"`
@@ -308,7 +307,6 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		Banner:                   g.Banner,
 		Channels:                 g.Channels,
 		Description:              g.Description,
-		EmbedEnabled:             g.EmbedEnabled,
 		ID:                       g.ID,
 		Icon:                     g.Icon,
 		JoinedAt:                 g.JoinedAt,

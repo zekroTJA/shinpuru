@@ -29,7 +29,7 @@ func SetupChannels(s *discordgo.Session, guildID, roleID string) error {
 		if c.Type != discordgo.ChannelTypeGuildText {
 			continue
 		}
-		if err = s.ChannelPermissionSet(c.ID, roleID, "role", 0, 0x00000800); err != nil {
+		if err = s.ChannelPermissionSet(c.ID, roleID, discordgo.PermissionOverwriteTypeRole, 0, 0x00000800); err != nil {
 			return err
 		}
 	}
