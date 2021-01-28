@@ -14,6 +14,7 @@ import {
   GuildBackup,
   GuildScoreboardEntry,
   ReportRequest,
+  UnbanRequestState,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -103,6 +104,14 @@ export class GuildComponent {
             a.startsWith('sp.guild.')
           );
           this.canRevoke = allowed.includes('sp.guild.mod.report');
+
+          if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
+            this.api
+              .getGuildUnbanrequestCount(guildID, UnbanRequestState.PENDING)
+              .subscribe((count) => {
+                this.unbanReqeustsCount = count.count;
+              });
+          }
         });
     });
 
@@ -131,12 +140,6 @@ export class GuildComponent {
     this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
       this.scoreboard = scoreboard.data;
     });
-
-    if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
-      this.api.getGuildUnbanrequestCount(guildID).subscribe((count) => {
-        this.unbanReqeustsCount = count.count;
-      });
-    }
   }
 
   private loadMembers(guildID: string, cb: () => void) {
