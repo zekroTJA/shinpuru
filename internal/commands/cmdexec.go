@@ -46,7 +46,13 @@ func (c *CmdExec) GetDomainName() string {
 }
 
 func (c *CmdExec) GetSubPermissionRules() []shireikan.SubPermission {
-	return nil
+	return []shireikan.SubPermission{
+		{
+			Term:        "exec",
+			Explicit:    false,
+			Description: "Allows activating a code execution in chat via reaction",
+		},
+	}
 }
 
 func (c *CmdExec) IsExecutableInDMChannels() bool {
