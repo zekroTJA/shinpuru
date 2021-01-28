@@ -105,6 +105,7 @@ var (
 		"sp.guild.config.karma",
 		"sp.guild.config.antiraid",
 		"sp.guild.mod.unbanrequests",
-		"sp.chat.exec.exec",
+		// "sp.chat.exec.exec",
+		// "sp.chat.colorreactions",
 	}
 )

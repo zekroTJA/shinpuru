@@ -72,8 +72,8 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 
 			for _, perm := range spr {
 				if perm.Explicit {
-					document += fmt.Sprintf("- **`%s.%s`** - %s\n",
-						cmd.GetDomainName(), perm.Term, perm.Description)
+					document += fmt.Sprintf("- **`%s`** - %s\n",
+						getTermAssembly(cmd, perm.Term), perm.Description)
 				}
 			}
 
@@ -141,8 +141,8 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 					if perm.Explicit {
 						explicit = "`[EXPLICIT]` "
 					}
-					cmdDetails += fmt.Sprintf("- **`%s.%s`** %s- %s\n",
-						cmd.GetDomainName(), perm.Term, explicit, perm.Description)
+					cmdDetails += fmt.Sprintf("- **`%s`** %s- %s\n",
+						getTermAssembly(cmd, perm.Term), explicit, perm.Description)
 				}
 				cmdDetails += "\n\n"
 			}
@@ -160,4 +160,11 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 		}
 	}
 	return ioutil.WriteFile(fileName, []byte(document), 0644)
+}
+
+func getTermAssembly(cmd shireikan.Command, term string) string {
+	if strings.HasPrefix(term, "/") {
+		return term[1:]
+	}
+	return cmd.GetDomainName() + "." + term
 }
