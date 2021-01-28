@@ -22,7 +22,7 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 	mig, err := m.getLatestMigration()
 	if err == sql.ErrNoRows {
 		mig = &migration{
-			Version: 0,
+			Version: -1,
 		}
 	} else if err != nil {
 		return
@@ -32,7 +32,7 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 	if err != nil {
 		return
 	}
-	for i := mig.Version; i < len(migrationFuncs); i++ {
+	for i := mig.Version + 1; i < len(migrationFuncs); i++ {
 		util.Log.Infof("Database: Applying migration version %d...", i)
 		if err = migrationFuncs[i](tx); err != nil {
 			return
