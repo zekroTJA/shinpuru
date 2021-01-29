@@ -22,10 +22,17 @@ Members with the permission `sp.guild.mod.unbanrequests` can review and process 
   Database modules can now implement the [`Migration`](internal/core/database/migration.go) interface which allows automatic database model migration on startup.  
   For example of the `mysql` database model: A `migrations` table is created which holds latest applied migrations. For each database update, a migration function can be supplied which can be applied one-by-one on the startup of shinpuru. See the [`mysql`](internal/core/database/mysql) module for more details.
 
+- Executing code in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.exec.exec`.  
+  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
+
+- Executing color reactions in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.colorreactions`.  
+  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
+
 ## Bug Fixes
 
 - Fixed output of `ToUnix` function of [timeutil](pkg/timeutil) package
 - Fixed typo in report command description [#195]
+- Fixed sub permissions in the web interface command list
 
 ## Backstage
 
