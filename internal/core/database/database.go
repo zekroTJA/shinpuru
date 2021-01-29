@@ -87,6 +87,15 @@ type Database interface {
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
 
 	//////////////////////////////////////////////////////
+	//// UNBAN REQUESTS
+
+	GetGuildUnbanRequests(guildID string) ([]*report.UnbanRequest, error)
+	GetGuildUserUnbanRequests(userID, guildID string) ([]*report.UnbanRequest, error)
+	GetUnbanRequest(id string) (*report.UnbanRequest, error)
+	AddUnbanRequest(request *report.UnbanRequest) error
+	UpdateUnbanRequest(request *report.UnbanRequest) error
+
+	//////////////////////////////////////////////////////
 	//// VOTES
 
 	GetVotes() (map[string]*vote.Vote, error)

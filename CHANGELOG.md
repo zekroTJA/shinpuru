@@ -1,42 +1,42 @@
-1.6.0
+1.7.0
 
 > MAJOR PATCH
 
 ## Major Implementations
 
-### "Anonymous" Reports [#189]
+### Unban Requests [#196]
 
-Now, it is possible to report members by ID which are not actually on the guild. These reports are handled as same as "normal" reports without actual user validation.  
-This is especially useful to report members which violate the rules of your guild but leave the guild before you are able to report them.
+Finally, shinpuru now has the ability that banned users can create unban requests when they were banned from a guild where the shinpuru moderation system is used.
 
-Also, you are actually able to ban members which are not on the guild so you are able to ban members which left the guild or never were a member of the guild.
+Banned users can login to the shinpuru web interface and then navigate to `/unbanme`. There, they can select the guild(s) where they are banned and can submit an unban request.
 
-![](https://i.imgur.com/MNqwsCR.png)
-![](https://i.imgur.com/3trvWHm.png)
+![](https://i.imgur.com/9XxnUgH.gif)
 
-### `guildinfo` Command [#191]
+Members with the permission `sp.guild.mod.unbanrequests` can review and process pending unbanreqeusts. If a request is accepted, the user is automatically unbanned from the guild.
 
-shinpuru now has a new command: [`guild`](https://github.com/zekroTJA/shinpuru/wiki/Commands#guild).  
-It simply outputs some general information about the guild where the command was executed on.
-
-![](https://i.imgur.com/8RmrDT7.png)
+![](https://i.imgur.com/kEJ6ETu.gif)
 
 ## Minor Updates
 
-- Some features like the vote command or color embed system now take advantage of the new [reply feature](https://support.discord.com/hc/en-us/articles/360057382374-Replies-FAQ) of Discord.  
-![](https://i.imgur.com/wOjcqyv.png)
+- **Database Migration**  
+  Database modules can now implement the [`Migration`](internal/core/database/migration.go) interface which allows automatic database model migration on startup.  
+  For example of the `mysql` database model: A `migrations` table is created which holds latest applied migrations. For each database update, a migration function can be supplied which can be applied one-by-one on the startup of shinpuru. See the [`mysql`](internal/core/database/mysql) module for more details.
 
-- The header of the web interface now uses the new logo of shinpuru. Also some spacings issues are fixed now.  
-![](https://i.imgur.com/vEU7PJv.png)
+- Executing code in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.exec.exec`.  
+  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
+
+- Executing color reactions in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.colorreactions`.  
+  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
 
 ## Bug Fixes
 
-- Fix guild tile titles in web interface [#190]
-- Fix API token route layout
+- Fixed output of `ToUnix` function of [timeutil](pkg/timeutil) package
+- Fixed typo in report command description [#195]
+- Fixed sub permissions in the web interface command list
 
 ## Backstage
 
-- Add package [embedbuilder](https://github.com/zekroTJA/shinpuru/tree/master/pkg/embedbuilder) to `/pkg`
+- Added unit tests for various public packages
 
 # Docker
 
@@ -44,5 +44,5 @@ It simply outputs some general information about the guild where the command was
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.6.0
+$ docker pull zekro/shinpuru:1.7.0
 ```

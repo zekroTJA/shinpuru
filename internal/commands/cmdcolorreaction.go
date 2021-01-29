@@ -35,7 +35,13 @@ func (c *CmdColorReaction) GetDomainName() string {
 }
 
 func (c *CmdColorReaction) GetSubPermissionRules() []shireikan.SubPermission {
-	return nil
+	return []shireikan.SubPermission{
+		{
+			Term:        "/sp.chat.colorreactions",
+			Explicit:    false,
+			Description: "Allows executing color reactions in chat by reaction",
+		},
+	}
 }
 
 func (c *CmdColorReaction) IsExecutableInDMChannels() bool {

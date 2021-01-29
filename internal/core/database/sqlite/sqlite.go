@@ -1,4 +1,4 @@
-package middleware
+package sqlite
 
 import (
 	"database/sql"
@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/util"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,13 +17,13 @@ import (
 // SqliteMiddleware implements the Database interface
 // for SQLite.
 type SqliteMiddleware struct {
-	*MysqlMiddleware
+	*mysql.MysqlMiddleware
 }
 
 func (m *SqliteMiddleware) setup() {
 	mErr := multierror.New(nil)
 
-	_, err := m.db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
+	_, err := m.Db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
 		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
@@ -40,14 +41,14 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
 		"`roleID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
 		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`type` int(11) NOT NULL DEFAULT '3'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -58,20 +59,20 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
 		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"`setting` text NOT NULL DEFAULT ''," +
 		"`value` text NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
 		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`data` mediumtext NOT NULL DEFAULT ''" +
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
 		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`channelID` text NOT NULL DEFAULT ''," +
@@ -79,7 +80,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
 		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`timestamp` bigint(20) NOT NULL DEFAULT 0," +
@@ -87,7 +88,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
 		"`id` varchar(25) NOT NULL PRIMARY KEY," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
@@ -98,7 +99,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
 		"`userID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`salt` text NOT NULL," +
 		"`created` timestamp NOT NULL," +
@@ -108,7 +109,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
 		"`iid` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`userID` text NOT NULL DEFAULT ''," +
@@ -116,7 +117,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
 		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`emotes` text NOT NULL DEFAULT ''," +
@@ -124,7 +125,7 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
@@ -132,11 +133,32 @@ func (m *SqliteMiddleware) setup() {
 		");")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
 		"`guildID` varchar(25) NOT NULL PRIMARY KEY," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
 		"`burst` bigint(20) NOT NULL DEFAULT '0'" +
+		");")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+		"`userID` varchar(25) NOT NULL PRIMARY KEY," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`tag` text NOT NULL DEFAULT ''," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()" +
+		");")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
+		"`id` varchar(25) NOT NULL PRIMARY KEY," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userTag` text NOT NULL DEFAULT ''," +
+		"`message` text NOT NULL DEFAULT ''," +
+		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
+		"`status` int(8) NOT NULL DEFAULT '0'," +
+		"`processedMessage` text NOT NULL DEFAULT ''," +
+		"`processed` timestamp" +
 		");")
 	mErr.Append(err)
 
@@ -146,7 +168,7 @@ func (m *SqliteMiddleware) setup() {
 }
 
 func (m *SqliteMiddleware) Connect(credentials ...interface{}) error {
-	m.MysqlMiddleware = new(MysqlMiddleware)
+	m.MysqlMiddleware = new(mysql.MysqlMiddleware)
 
 	var err error
 
@@ -156,14 +178,14 @@ func (m *SqliteMiddleware) Connect(credentials ...interface{}) error {
 	}
 
 	dsn := fmt.Sprintf("file:" + creds.DBFile)
-	m.db, err = sql.Open("sqlite3", dsn)
+	m.Db, err = sql.Open("sqlite3", dsn)
 	m.setup()
 
 	return err
 }
 
 func (m *SqliteMiddleware) Close() {
-	if m.db != nil {
-		m.db.Close()
+	if m.Db != nil {
+		m.Db.Close()
 	}
 }

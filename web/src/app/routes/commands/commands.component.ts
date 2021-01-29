@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import { CommandInfo } from 'src/app/api/api.models';
+import { CommandInfo, SubPermission } from 'src/app/api/api.models';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -27,6 +27,11 @@ export class CommandsComponent implements OnInit {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  public getCommandSubPermTerm(cmd: CommandInfo, sp: SubPermission): string {
+    if (sp.term.startsWith('/')) return sp.term.substr(1);
+    return cmd.domain_name + '.' + sp.term;
   }
 
   public scrollTo(selector: string) {

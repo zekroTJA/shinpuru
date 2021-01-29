@@ -54,7 +54,7 @@
       <h6>Sub Permission Rules</h6>
       <ul>
         <li *ngFor="let spr of c.sub_permission_rules">
-          <span>{{ spr.term }} - </span>
+          <span>{{ getCommandSubPermTerm(c, spr) }} - </span>
           <span *ngIf="spr.explicit">[EXPLICIT] - </span>
           <span>{{ spr.description }}</span>
         </li>

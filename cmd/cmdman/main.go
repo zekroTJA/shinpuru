@@ -12,7 +12,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -47,7 +47,7 @@ func main() {
 	}
 
 	s, _ := discordgo.New()
-	database := new(middleware.SqliteMiddleware)
+	database := new(sqlite.SqliteMiddleware)
 
 	cmdHandler := inits.InitCommandHandler(s, config, database, nil, nil, nil, nil, nil)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
@@ -72,8 +72,8 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 
 			for _, perm := range spr {
 				if perm.Explicit {
-					document += fmt.Sprintf("- **`%s.%s`** - %s\n",
-						cmd.GetDomainName(), perm.Term, perm.Description)
+					document += fmt.Sprintf("- **`%s`** - %s\n",
+						getTermAssembly(cmd, perm.Term), perm.Description)
 				}
 			}
 
@@ -141,8 +141,8 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 					if perm.Explicit {
 						explicit = "`[EXPLICIT]` "
 					}
-					cmdDetails += fmt.Sprintf("- **`%s.%s`** %s- %s\n",
-						cmd.GetDomainName(), perm.Term, explicit, perm.Description)
+					cmdDetails += fmt.Sprintf("- **`%s`** %s- %s\n",
+						getTermAssembly(cmd, perm.Term), explicit, perm.Description)
 				}
 				cmdDetails += "\n\n"
 			}
@@ -160,4 +160,11 @@ func exportCommandManual(cmdHandler shireikan.Handler, fileName string) error {
 		}
 	}
 	return ioutil.WriteFile(fileName, []byte(document), 0644)
+}
+
+func getTermAssembly(cmd shireikan.Command, term string) string {
+	if strings.HasPrefix(term, "/") {
+		return term[1:]
+	}
+	return cmd.GetDomainName() + "." + term
 }

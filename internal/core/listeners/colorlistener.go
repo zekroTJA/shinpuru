@@ -11,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/colorname"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/timedmap"
@@ -26,13 +27,14 @@ var (
 
 type ColorListener struct {
 	db         database.Database
+	pmw        *middleware.PermissionsMiddleware
 	publicAddr string
 
 	emojiCahce *timedmap.TimedMap
 }
 
-func NewColorListener(db database.Database, publicAddr string) *ColorListener {
-	return &ColorListener{db, publicAddr, timedmap.New(1 * time.Minute)}
+func NewColorListener(db database.Database, pmw *middleware.PermissionsMiddleware, publicAddr string) *ColorListener {
+	return &ColorListener{db, pmw, publicAddr, timedmap.New(1 * time.Minute)}
 }
 
 func (l *ColorListener) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
@@ -45,6 +47,12 @@ func (l *ColorListener) HandlerMessageEdit(s *discordgo.Session, e *discordgo.Me
 
 func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
 	if e.MessageReaction.UserID == s.State.User.ID {
+		return
+	}
+
+	allowed, _, _ := l.pmw.CheckPermissions(s, e.GuildID, e.UserID, "sp.chat.colorreactions")
+	if !allowed {
+		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.APIName(), e.UserID)
 		return
 	}
 

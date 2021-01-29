@@ -9,6 +9,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -48,7 +49,9 @@ var (
 )
 
 type ListenerJdoodle struct {
-	db     database.Database
+	db  database.Database
+	pmw *middleware.PermissionsMiddleware
+
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
 }
@@ -63,9 +66,10 @@ type jdoodleMessage struct {
 	embLang string
 }
 
-func NewListenerJdoodle(db database.Database) *ListenerJdoodle {
+func NewListenerJdoodle(db database.Database, pmw *middleware.PermissionsMiddleware) *ListenerJdoodle {
 	return &ListenerJdoodle{
 		db:     db,
+		pmw:    pmw,
 		limits: timedmap.New(limitTMCleanupInterval),
 		msgMap: timedmap.New(removeHandlerCleanupInterval),
 	}
@@ -153,7 +157,8 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	if !l.checkLimit(eReact.UserID) {
+	allowed, err := l.checkPermission(s, eReact.GuildID, eReact.UserID)
+	if !allowed || !l.checkLimit(eReact.UserID) {
 		s.MessageReactionRemove(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name, eReact.UserID)
 		return
 	}
@@ -242,4 +247,9 @@ func (l *ListenerJdoodle) checkLimit(userID string) bool {
 	}
 
 	return limiter.Allow()
+}
+
+func (l *ListenerJdoodle) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
+	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec.exec")
+	return allowed, err
 }

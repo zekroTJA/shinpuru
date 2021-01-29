@@ -1,0 +1,57 @@
+<div>
+  <app-spinner *ngIf="bannedGuilds === null"></app-spinner>
+  <div *ngIf="bannedGuilds?.length === 0">
+    <h2 class="text-center mt-5">You are not banned on any guilds.<br />Everything is fine. :)</h2>
+  </div>
+  <div *ngIf="bannedGuilds?.length > 0">
+    <h3 class="mt-4">Applicable Guilds</h3>
+    <div class="mt-4">
+      <a *ngFor="let g of bannedGuilds" 
+        class="guild-button mb-2" 
+        (click)="createRequest(g)">
+        <img 
+          width="64" 
+          height="64"
+          class="avatar" 
+          [src]="g.icon_url | discordAsset:'/assets/dc-logo.svg':64:(!!g.icon)"
+        />
+        <div>
+          <span>
+            {{ g.name }}<br />
+            <span class="embedded">{{ g.id }}</span>
+          </span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="requests?.length > 0">
+    <h3 class="mt-4">Your Recent Requests</h3>
+    <div *ngFor="let r of requests" class="mt-3">
+      <app-unbanrequest [request]="r"></app-unbanrequest>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalRequest let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title">CREATE UNBAN REQUEST</h4>
+  </div>
+  <div class="modal-body">
+      <p>
+        Create an unban request for guild <strong>{{ newRequest.guild.name }}</strong>.
+        <br /><br />
+        Please describe below as detailed as prossible why you should be ubanned from the guild.
+      </p>
+      <h4>MESSAGE</h4>
+      <textarea rows="5" class="message mt-2" [(ngModel)]="newRequest.message"></textarea>
+  </div>
+  <div class="modal-footer">
+      <button 
+          (click)="modal.close(true)" 
+          class="bg-orange"
+          [disabled]="!newRequest.message"
+      >SEND UNBAN REQUEST</button>
+      <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+  </div>
+</ng-template>

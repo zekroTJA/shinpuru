@@ -85,7 +85,8 @@ func (auth *Auth) LoginFailedHandler(ctx *routing.Context, status int, msg strin
 // LoginSuccessHandler fetches the user by uid. If the user
 // exists, the user ID is set to the context as value for "id".
 func (auth *Auth) LoginSuccessHandler(ctx *routing.Context, uid string) error {
-	if u, _ := auth.session.User(uid); u == nil {
+	user, _ := auth.session.User(uid)
+	if user == nil {
 		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
 	}
 

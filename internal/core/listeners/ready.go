@@ -33,7 +33,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		e.User.Username, e.User.Discriminator, e.User.ID, len(e.Guilds))
 	util.Log.Info("Invite Link: " + util.GetInviteLink(s))
 
-	s.UpdateStatus(0, static.StdMotd)
+	s.UpdateGameStatus(0, static.StdMotd)
 
 	l.lct.Start()
 

@@ -27,6 +27,7 @@ import {
   KarmaSettings,
   AntiraidSettings,
   JoinlogEntry,
+  UnbanRequest,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -138,6 +139,21 @@ export class APIService {
 
   private readonly rcUtil = (rc: string = '') =>
     `${this.rcAPI('util')}${rc ? '/' + rc : ''}`;
+
+  private readonly rcGuildUnbanRequest = (guildId: string, id: string = '') =>
+    `${this.rcGuilds(guildId)}/unbanrequests${id ? '/' + id : ''}`;
+
+  private readonly rcGuildMemberUnbanRequest = (
+    guildId: string,
+    memberId: string,
+    id: string = ''
+  ) =>
+    `${this.rcGuildMembers(guildId, memberId)}/unbanrequests${
+      id ? '/' + id : ''
+    }`;
+
+  private readonly rcUnbanRequests = (rc: string = '') =>
+    `${this.rcAPI('unbanrequests')}${rc ? '/' + rc : ''}`;
 
   private readonly errorCatcher = (err) => {
     console.error(err);
@@ -578,6 +594,75 @@ export class APIService {
   public getLandingPageInfo(): Observable<any> {
     return this.http
       .get(this.rcUtil('landingpageinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildUnbanrequests(
+    guildId: string
+  ): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .get(this.rcGuildUnbanRequest(guildId), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildMemberUnbanrequests(
+    guildId: string,
+    memberId: string
+  ): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .get(this.rcGuildMemberUnbanRequest(guildId, memberId), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildUnbanrequest(
+    guildId: string,
+    id: string
+  ): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .get(this.rcGuildUnbanRequest(guildId, id), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildUnbanrequestCount(
+    guildId: string,
+    stateFilter: number = -1
+  ): Observable<Count> {
+    const opts = this.defopts({
+      params: new HttpParams().set('state', stateFilter.toString()),
+    });
+    return this.http
+      .get(this.rcGuildUnbanRequest(guildId, 'count'), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildUnbanrequest(
+    guildId: string,
+    request: UnbanRequest
+  ): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .post(
+        this.rcGuildUnbanRequest(guildId, request.id),
+        request,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUnbanrequestBannedguilds(): Observable<ListReponse<Guild>> {
+    return this.http
+      .get(this.rcUnbanRequests('bannedguilds'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUnbanrequests(): Observable<ListReponse<UnbanRequest>> {
+    return this.http
+      .get(this.rcUnbanRequests(), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUnbanrequests(request: UnbanRequest): Observable<UnbanRequest> {
+    return this.http
+      .post(this.rcUnbanRequests(), request, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

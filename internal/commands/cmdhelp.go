@@ -192,8 +192,8 @@ func commandEmbed(cmd shireikan.Command, cfg *config.Config, emb *discordgo.Mess
 				expl = "E"
 			}
 
-			txt = fmt.Sprintf("%s`[%s]` %s.%s - *%s*\n",
-				txt, expl, cmd.GetDomainName(), rule.Term, rule.Description)
+			txt = fmt.Sprintf("%s`[%s]` %s - *%s*\n",
+				txt, expl, getTermAssembly(cmd, rule.Term), rule.Description)
 		}
 
 		emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
@@ -222,4 +222,11 @@ func sendUserOrInChannel(ctx shireikan.Context, emb *discordgo.MessageEmbed) (er
 	}
 
 	return
+}
+
+func getTermAssembly(cmd shireikan.Command, term string) string {
+	if strings.HasPrefix(term, "/") {
+		return term[1:]
+	}
+	return cmd.GetDomainName() + "." + term
 }

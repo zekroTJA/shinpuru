@@ -11,7 +11,7 @@ func FromUnix(t int) time.Time {
 }
 
 // ToUnix returns the passed time.Time struct
-// as unix seconds timestamp.
+// as unix milliseconds timestamp.
 func ToUnix(t time.Time) int {
-	return int(t.Unix())
+	return int(t.UnixNano() / 1_000_000)
 }

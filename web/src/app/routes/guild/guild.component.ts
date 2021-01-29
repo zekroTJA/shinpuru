@@ -14,6 +14,7 @@ import {
   GuildBackup,
   GuildScoreboardEntry,
   ReportRequest,
+  UnbanRequestState,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
@@ -56,6 +57,7 @@ export class GuildComponent {
   public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
   public scoreboard: GuildScoreboardEntry[];
+  public unbanReqeustsCount: number = 0;
 
   public guildSettingsAllowed: string[] = [];
 
@@ -102,6 +104,14 @@ export class GuildComponent {
             a.startsWith('sp.guild.')
           );
           this.canRevoke = allowed.includes('sp.guild.mod.report');
+
+          if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
+            this.api
+              .getGuildUnbanrequestCount(guildID, UnbanRequestState.PENDING)
+              .subscribe((count) => {
+                this.unbanReqeustsCount = count.count;
+              });
+          }
         });
     });
 
@@ -398,6 +408,13 @@ export class GuildComponent {
 
   public navigateSetting(to: string) {
     this.router.navigate(['guilds', this.guild.id, 'guildadmin', to]);
+  }
+
+  public onUnbanRequests(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.router.navigate(['guilds', this.guild.id, 'unbanrequests']);
   }
 
   public onAnonymousReport(event: MouseEvent) {

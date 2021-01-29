@@ -1,4 +1,4 @@
-package middleware
+package mysql
 
 import (
 	"database/sql"
@@ -28,13 +28,22 @@ import (
 // MysqlMiddleware implements the Database interface for
 // MariaDB or MysqlMiddleware.
 type MysqlMiddleware struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func (m *MysqlMiddleware) setup() {
 	mErr := multierror.New(nil)
 
-	_, err := m.db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
+	_, err := m.Db.Exec("CREATE TABLE IF NOT EXISTS `migrations` (" +
+		"`version` int(16) NOT NULL DEFAULT '0'," +
+		"`applied` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"`releaseTag` text NOT NULL DEFAULT ''," +
+		"`releaseCommit` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`version`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
 		"`guildID` varchar(25) NOT NULL," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
@@ -53,7 +62,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
 		"`roleID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''," +
@@ -61,7 +70,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`type` int(11) NOT NULL DEFAULT '0'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -73,7 +82,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`setting` text NOT NULL DEFAULT ''," +
 		"`value` text NOT NULL DEFAULT ''," +
@@ -81,14 +90,14 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`data` mediumtext NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`channelID` text NOT NULL DEFAULT ''," +
@@ -97,7 +106,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`timestamp` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
@@ -106,7 +115,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
@@ -118,7 +127,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`salt` text NOT NULL," +
 		"`created` timestamp NOT NULL," +
@@ -129,7 +138,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`userID` text NOT NULL DEFAULT ''," +
@@ -138,7 +147,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`emotesInc` text NOT NULL DEFAULT ''," +
@@ -148,7 +157,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
@@ -157,7 +166,7 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
@@ -166,12 +175,26 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
-	_, err = m.db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`tag` text NOT NULL DEFAULT ''," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
+		"`id` varchar(25) NOT NULL DEFAULT ''," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userTag` text NOT NULL DEFAULT ''," +
+		"`message` text NOT NULL DEFAULT ''," +
+		"`processedBy` varchar(25) NOT NULL DEFAULT ''," +
+		"`status` int(8) NOT NULL DEFAULT '0'," +
+		"`processed` timestamp," +
+		"`processedMessage` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -188,20 +211,20 @@ func (m *MysqlMiddleware) Connect(credentials ...interface{}) error {
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci&parseTime=true",
 		creds.User, creds.Password, creds.Host, creds.Database)
-	m.db, err = sql.Open("mysql", dsn)
+	m.Db, err = sql.Open("mysql", dsn)
 	m.setup()
 	return err
 }
 
 func (m *MysqlMiddleware) Close() {
-	if m.db != nil {
-		m.db.Close()
+	if m.Db != nil {
+		m.Db.Close()
 	}
 }
 
 func (m *MysqlMiddleware) getGuildSetting(guildID, key string) (string, error) {
 	var value string
-	err := m.db.QueryRow(
+	err := m.Db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
 		guildID).Scan(&value)
 	if err == sql.ErrNoRows {
@@ -211,7 +234,7 @@ func (m *MysqlMiddleware) getGuildSetting(guildID, key string) (string, error) {
 }
 
 func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (err error) {
-	res, err := m.db.Exec(
+	res, err := m.Db.Exec(
 		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
 		value, guildID)
 	if err != nil {
@@ -223,7 +246,7 @@ func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (er
 		return
 	}
 	if ar == 0 {
-		_, err = m.db.Exec(
+		_, err = m.Db.Exec(
 			fmt.Sprintf("INSERT INTO guilds (guildID, %s) VALUES (?, ?)", key),
 			guildID, value)
 	}
@@ -300,7 +323,7 @@ func (m *MysqlMiddleware) SetGuildColorReaction(guildID string, enabled bool) er
 
 func (m *MysqlMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
 	results := make(map[string]permissions.PermissionArray)
-	rows, err := m.db.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
+	rows, err := m.Db.Query("SELECT roleID, permission FROM permissions WHERE guildID = ?",
 		guildID)
 	if err != nil {
 		return nil, err
@@ -319,12 +342,12 @@ func (m *MysqlMiddleware) GetGuildPermissions(guildID string) (map[string]permis
 
 func (m *MysqlMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
 	if len(p) == 0 {
-		_, err := m.db.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
+		_, err := m.Db.Exec("DELETE FROM permissions WHERE roleID = ?", roleID)
 		return err
 	}
 
 	pStr := strings.Join(p, ",")
-	res, err := m.db.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
+	res, err := m.Db.Exec("UPDATE permissions SET permission = ? WHERE roleID = ? AND guildID = ?",
 		pStr, roleID, guildID)
 	if err != nil {
 		return err
@@ -334,7 +357,7 @@ func (m *MysqlMiddleware) SetGuildRolePermission(guildID, roleID string, p permi
 		return err
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
+		_, err = m.Db.Exec("INSERT INTO permissions (roleID, guildID, permission) VALUES (?, ?, ?)",
 			roleID, guildID, pStr)
 	}
 	return err
@@ -364,7 +387,7 @@ func (m *MysqlMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 
 func (m *MysqlMiddleware) GetSetting(setting string) (string, error) {
 	var value string
-	err := m.db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
+	err := m.Db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
@@ -372,32 +395,32 @@ func (m *MysqlMiddleware) GetSetting(setting string) (string, error) {
 }
 
 func (m *MysqlMiddleware) SetSetting(setting, value string) error {
-	res, err := m.db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
+	res, err := m.Db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
 	ar, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
+		_, err = m.Db.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
 	}
 	return err
 }
 
 func (m *MysqlMiddleware) AddReport(rep *report.Report) error {
-	_, err := m.db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+	_, err := m.Db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
 	return err
 }
 
 func (m *MysqlMiddleware) DeleteReport(id snowflake.ID) error {
-	_, err := m.db.Exec("DELETE FROM reports WHERE id = ?", id)
+	_, err := m.Db.Exec("DELETE FROM reports WHERE id = ?", id)
 	return err
 }
 
 func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*report.Report, error) {
 	rep := new(report.Report)
 
-	row := m.db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
+	row := m.Db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
 	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -411,7 +434,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 		limit = 1000
 	}
 
-	rows, err := m.db.Query(
+	rows, err := m.Db.Query(
 		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
 			"FROM reports WHERE guildID = ? "+
 			"ORDER BY id DESC "+
@@ -432,18 +455,22 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 }
 
 func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
-	if !stringutil.IsInteger(guildID) || !stringutil.IsInteger(memberID) {
-		return nil, fmt.Errorf("invalid argument type")
+	args := []interface{}{}
+	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE true`
+	if guildID != "" {
+		query += " AND guildID = ?"
+		args = append(args, guildID)
+	}
+	if memberID != "" {
+		query += " AND victimID = ?"
+		args = append(args, memberID)
+	}
+	if repType > -1 {
+		query += " AND type = ?"
+		args = append(args, repType)
 	}
 
-	query := fmt.Sprintf(`SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE guildID = "%s"`, guildID)
-	if memberID != "" {
-		query += fmt.Sprintf(` AND victimID = "%s"`, memberID)
-	}
-	if repType != -1 {
-		query += fmt.Sprintf(` AND type = %d`, repType)
-	}
-	rows, err := m.db.Query(query)
+	rows, err := m.Db.Query(query, args...)
 	var results []*report.Report
 	if err != nil {
 		return nil, err
@@ -460,7 +487,7 @@ func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType i
 }
 
 func (m *MysqlMiddleware) GetReportsGuildCount(guildID string) (count int, err error) {
-	err = m.db.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
+	err = m.Db.QueryRow("SELECT COUNT(id) FROM reports WHERE guildID = ?", guildID).Scan(&count)
 	return
 }
 
@@ -478,12 +505,12 @@ func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repT
 		query += fmt.Sprintf(` AND type = %d`, repType)
 	}
 
-	err = m.db.QueryRow(query).Scan(&count)
+	err = m.Db.QueryRow(query).Scan(&count)
 	return
 }
 
 func (m *MysqlMiddleware) GetVotes() (map[string]*vote.Vote, error) {
-	rows, err := m.db.Query("SELECT id, data FROM votes")
+	rows, err := m.Db.Query("SELECT id, data FROM votes")
 	results := make(map[string]*vote.Vote)
 	if err != nil {
 		return nil, err
@@ -511,20 +538,20 @@ func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 		return err
 	}
 
-	res, err := m.db.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
+	res, err := m.Db.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
 	ar, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
+		_, err = m.Db.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
 	}
 
 	return err
 }
 
 func (m *MysqlMiddleware) DeleteVote(voteID string) error {
-	_, err := m.db.Exec("DELETE FROM votes WHERE id = ?", voteID)
+	_, err := m.Db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
 }
 
@@ -542,7 +569,7 @@ func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitch
 		TwitchUserID: twitchUserID,
 		GuildID:      guildID,
 	}
-	err := m.db.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
+	err := m.Db.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
 		twitchUserID, guildID).Scan(&t.ChannelID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -551,7 +578,7 @@ func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitch
 }
 
 func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
-	res, err := m.db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
+	res, err := m.Db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
 		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
 		return err
@@ -561,14 +588,14 @@ func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) er
 		return err
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
+		_, err = m.Db.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
 			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
 	}
 	return err
 }
 
 func (m *MysqlMiddleware) DeleteTwitchNotify(twitchUserID, guildID string) error {
-	_, err := m.db.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
+	_, err := m.Db.Exec("DELETE FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?", twitchUserID, guildID)
 	return err
 }
 
@@ -577,7 +604,7 @@ func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchno
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
 	}
-	rows, err := m.db.Query(query)
+	rows, err := m.Db.Query(query)
 	results := make([]*twitchnotify.DBEntry, 0)
 	if err != nil {
 		return nil, err
@@ -594,12 +621,12 @@ func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchno
 
 func (m *MysqlMiddleware) AddBackup(guildID, fileID string) error {
 	timestamp := time.Now().Unix()
-	_, err := m.db.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
+	_, err := m.Db.Exec("INSERT INTO backups (guildID, timestamp, fileID) VALUES (?, ?, ?)", guildID, timestamp, fileID)
 	return err
 }
 
 func (m *MysqlMiddleware) DeleteBackup(guildID, fileID string) error {
-	_, err := m.db.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
+	_, err := m.Db.Exec("DELETE FROM backups WHERE guildID = ? AND fileID = ?", guildID, fileID)
 	return err
 }
 
@@ -654,7 +681,7 @@ func (m *MysqlMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg
 }
 
 func (m *MysqlMiddleware) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
-	rows, err := m.db.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
+	rows, err := m.Db.Query("SELECT guildID, timestamp, fileID FROM backups WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
 	}
@@ -678,7 +705,7 @@ func (m *MysqlMiddleware) GetBackups(guildID string) ([]*backupmodels.Entry, err
 }
 
 func (m *MysqlMiddleware) GetGuilds() ([]string, error) {
-	rows, err := m.db.Query("SELECT guildID FROM guilds WHERE backup = '1'")
+	rows, err := m.Db.Query("SELECT guildID FROM guilds WHERE backup = '1'")
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
 	}
@@ -700,13 +727,13 @@ func (m *MysqlMiddleware) GetGuilds() ([]string, error) {
 }
 
 func (m *MysqlMiddleware) AddTag(tag *tag.Tag) error {
-	_, err := m.db.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
+	_, err := m.Db.Exec("INSERT INTO tags (id, ident, creatorID, guildID, content, created, lastEdit) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?)", tag.ID, tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix())
 	return err
 }
 
 func (m *MysqlMiddleware) EditTag(tag *tag.Tag) error {
-	_, err := m.db.Exec("UPDATE tags SET "+
+	_, err := m.Db.Exec("UPDATE tags SET "+
 		"ident = ?, creatorID = ?, guildID = ?, content = ?, created = ?, lastEdit = ? "+
 		"WHERE id = ?", tag.Ident, tag.CreatorID, tag.GuildID, tag.Content, tag.Created.Unix(), tag.LastEdit.Unix(), tag.ID)
 	if err == sql.ErrNoRows {
@@ -720,7 +747,7 @@ func (m *MysqlMiddleware) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 	var timestampCreated int64
 	var timestampLastEdit int64
 
-	row := m.db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	row := m.Db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE id = ?", id)
 
 	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
@@ -743,7 +770,7 @@ func (m *MysqlMiddleware) GetTagByIdent(ident string, guildID string) (*tag.Tag,
 	var timestampCreated int64
 	var timestampLastEdit int64
 
-	row := m.db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	row := m.Db.QueryRow("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE ident = ? AND guildID = ?", ident, guildID)
 
 	err := row.Scan(&tag.ID, &tag.Ident, &tag.CreatorID, &tag.GuildID,
@@ -762,7 +789,7 @@ func (m *MysqlMiddleware) GetTagByIdent(ident string, guildID string) (*tag.Tag,
 }
 
 func (m *MysqlMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
-	rows, err := m.db.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
+	rows, err := m.Db.Query("SELECT id, ident, creatorID, guildID, content, created, lastEdit FROM tags "+
 		"WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -790,7 +817,7 @@ func (m *MysqlMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 }
 
 func (m *MysqlMiddleware) DeleteTag(id snowflake.ID) error {
-	_, err := m.db.Exec("DELETE FROM tags WHERE id = ?", id)
+	_, err := m.Db.Exec("DELETE FROM tags WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
 	}
@@ -799,7 +826,7 @@ func (m *MysqlMiddleware) DeleteTag(id snowflake.ID) error {
 
 func (m *MysqlMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
 	img := new(imgstore.Image)
-	row := m.db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
+	row := m.Db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
 	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
@@ -814,12 +841,12 @@ func (m *MysqlMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error)
 }
 
 func (m *MysqlMiddleware) SaveImageData(img *imgstore.Image) error {
-	_, err := m.db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
+	_, err := m.Db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
 	return err
 }
 
 func (m *MysqlMiddleware) RemoveImageData(id snowflake.ID) error {
-	_, err := m.db.Exec("DELETE FROM imagestore WHERE id = ?", id)
+	_, err := m.Db.Exec("DELETE FROM imagestore WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
 	}
@@ -827,7 +854,7 @@ func (m *MysqlMiddleware) RemoveImageData(id snowflake.ID) error {
 }
 
 func (m *MysqlMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
-	res, err := m.db.Exec(
+	res, err := m.Db.Exec(
 		"UPDATE apitokens SET "+
 			"salt = ?, created = ?, expires = ?, lastAccess = ?, hits = ? "+
 			"WHERE userID = ?",
@@ -841,7 +868,7 @@ func (m *MysqlMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 		return
 	}
 	if ar == 0 {
-		_, err = m.db.Exec(
+		_, err = m.Db.Exec(
 			"INSERT INTO apitokens "+
 				"(userID, salt, created, expires, lastAccess, hits) "+
 				"VALUES (?, ?, ?, ?, ?, ?)",
@@ -852,7 +879,7 @@ func (m *MysqlMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 
 func (m *MysqlMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
 	t = new(models.APITokenEntry)
-	err = m.db.QueryRow(
+	err = m.Db.QueryRow(
 		"SELECT userID, salt, created, expires, lastAccess, hits "+
 			"FROM apitokens WHERE userID = ?", userID).
 		Scan(&t.UserID, &t.Salt, &t.Created, &t.Expires, &t.LastAccess, &t.Hits)
@@ -863,7 +890,7 @@ func (m *MysqlMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, e
 }
 
 func (m *MysqlMiddleware) DeleteAPIToken(userID string) error {
-	_, err := m.db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
+	_, err := m.Db.Exec("DELETE FROM apitokens WHERE userID = ?", userID)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
 	}
@@ -871,7 +898,7 @@ func (m *MysqlMiddleware) DeleteAPIToken(userID string) error {
 }
 
 func (m *MysqlMiddleware) GetKarma(userID, guildID string) (i int, err error) {
-	err = m.db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
+	err = m.Db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
 		userID, guildID).Scan(&i)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -880,7 +907,7 @@ func (m *MysqlMiddleware) GetKarma(userID, guildID string) (i int, err error) {
 }
 
 func (m *MysqlMiddleware) GetKarmaSum(userID string) (i int, err error) {
-	err = m.db.QueryRow("SELECT COALESCE(SUM(value), 0) FROM karma WHERE userID = ?",
+	err = m.Db.QueryRow("SELECT COALESCE(SUM(value), 0) FROM karma WHERE userID = ?",
 		userID).Scan(&i)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -895,7 +922,7 @@ func (m *MysqlMiddleware) GetKarmaGuild(guildID string, limit int) ([]*models.Gu
 
 	res := make([]*models.GuildKarma, limit)
 
-	rows, err := m.db.Query(
+	rows, err := m.Db.Query(
 		`SELECT userID, value FROM karma WHERE guildID = ?
 		ORDER BY value DESC
 		LIMIT ?`,
@@ -921,7 +948,7 @@ func (m *MysqlMiddleware) GetKarmaGuild(guildID string, limit int) ([]*models.Gu
 }
 
 func (m *MysqlMiddleware) SetKarma(userID, guildID string, val int) (err error) {
-	res, err := m.db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
+	res, err := m.Db.Exec("UPDATE karma SET value = ? WHERE userID = ? AND guildID = ?",
 		val, userID, guildID)
 	if err != nil {
 		return
@@ -932,14 +959,14 @@ func (m *MysqlMiddleware) SetKarma(userID, guildID string, val int) (err error) 
 		return
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
+		_, err = m.Db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
 			userID, guildID, val)
 	}
 	return
 }
 
 func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err error) {
-	res, err := m.db.Exec("UPDATE karma SET value = value + ? WHERE userID = ? AND guildID = ?",
+	res, err := m.Db.Exec("UPDATE karma SET value = value + ? WHERE userID = ? AND guildID = ?",
 		diff, userID, guildID)
 	if err != nil {
 		return
@@ -950,7 +977,7 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 		return
 	}
 	if ar == 0 {
-		_, err = m.db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
+		_, err = m.Db.Exec("INSERT INTO karma (userID, guildID, value) VALUES (?, ?, ?)",
 			userID, guildID, diff)
 	}
 
@@ -958,7 +985,7 @@ func (m *MysqlMiddleware) UpdateKarma(userID, guildID string, diff int) (err err
 }
 
 func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO karmaSettings (guildID, state) "+
 			"VALUES (?, ?) "+
 			"ON DUPLICATE KEY UPDATE state = ?",
@@ -968,7 +995,7 @@ func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) 
 }
 
 func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) {
-	err = m.db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&state)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -978,7 +1005,7 @@ func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) 
 }
 
 func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO karmaSettings (guildID, emotesInc, emotesDec) "+
 			"VALUES (?, ?, ?) "+
 			"ON DUPLICATE KEY UPDATE emotesInc = ?, emotesDec = ?",
@@ -988,7 +1015,7 @@ func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (
 }
 
 func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
-	err = m.db.QueryRow("SELECT emotesInc, emotesDec FROM karmaSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT emotesInc, emotesDec FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&emotesInc, &emotesDec)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -998,7 +1025,7 @@ func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec s
 }
 
 func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO karmaSettings (guildID, tokens) "+
 			"VALUES (?, ?) "+
 			"ON DUPLICATE KEY UPDATE tokens = ?",
@@ -1008,7 +1035,7 @@ func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error)
 }
 
 func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
-	err = m.db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&tokens)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1018,13 +1045,13 @@ func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error)
 }
 
 func (m *MysqlMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
-	_, err := m.db.Exec("INSERT INTO chanlock (chanID, guildID, executorID, permissions) VALUES (?, ?, ?, ?)",
+	_, err := m.Db.Exec("INSERT INTO chanlock (chanID, guildID, executorID, permissions) VALUES (?, ?, ?, ?)",
 		chanID, guildID, executorID, permissions)
 	return err
 }
 
 func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
-	err = m.db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
+	err = m.Db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
 		Scan(&guildID, &executorID, &permissions)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1034,7 +1061,7 @@ func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permi
 
 func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
 	chanIDs = make([]string, 0)
-	rows, err := m.db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
+	rows, err := m.Db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
@@ -1054,7 +1081,7 @@ func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err
 }
 
 func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
-	_, err := m.db.Exec("DELETE FROM chanlock WHERE chanID = ?",
+	_, err := m.Db.Exec("DELETE FROM chanlock WHERE chanID = ?",
 		chanID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1063,7 +1090,7 @@ func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
 }
 
 func (m *MysqlMiddleware) SetAntiraidState(guildID string, state bool) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO antiraidSettings (guildID, state) "+
 			"VALUES (?, ?) "+
 			"ON DUPLICATE KEY UPDATE state = ?",
@@ -1073,7 +1100,7 @@ func (m *MysqlMiddleware) SetAntiraidState(guildID string, state bool) (err erro
 }
 
 func (m *MysqlMiddleware) GetAntiraidState(guildID string) (state bool, err error) {
-	err = m.db.QueryRow("SELECT state FROM antiraidSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT state FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&state)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1083,7 +1110,7 @@ func (m *MysqlMiddleware) GetAntiraidState(guildID string) (state bool, err erro
 }
 
 func (m *MysqlMiddleware) SetAntiraidRegeneration(guildID string, limit int) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO antiraidSettings (guildID, `limit`) "+
 			"VALUES (?, ?) "+
 			"ON DUPLICATE KEY UPDATE `limit` = ?",
@@ -1093,7 +1120,7 @@ func (m *MysqlMiddleware) SetAntiraidRegeneration(guildID string, limit int) (er
 }
 
 func (m *MysqlMiddleware) GetAntiraidRegeneration(guildID string) (limit int, err error) {
-	err = m.db.QueryRow("SELECT `limit` FROM antiraidSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT `limit` FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&limit)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1103,7 +1130,7 @@ func (m *MysqlMiddleware) GetAntiraidRegeneration(guildID string) (limit int, er
 }
 
 func (m *MysqlMiddleware) SetAntiraidBurst(guildID string, burst int) (err error) {
-	_, err = m.db.Exec(
+	_, err = m.Db.Exec(
 		"INSERT INTO antiraidSettings (guildID, burst) "+
 			"VALUES (?, ?) "+
 			"ON DUPLICATE KEY UPDATE burst = ?",
@@ -1113,7 +1140,7 @@ func (m *MysqlMiddleware) SetAntiraidBurst(guildID string, burst int) (err error
 }
 
 func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error) {
-	err = m.db.QueryRow("SELECT burst FROM antiraidSettings WHERE guildID = ?",
+	err = m.Db.QueryRow("SELECT burst FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&burst)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1123,14 +1150,14 @@ func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error
 }
 
 func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) (err error) {
-	_, err = m.db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag) "+
+	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag) "+
 		"VALUES (?, ?, ?)", userID, guildID, userTag)
 	return
 }
 
 func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.JoinLogEntry, err error) {
 	var count int
-	err = m.db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
+	err = m.Db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
 		Scan(&count)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
@@ -1141,7 +1168,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 
 	res = make([]*models.JoinLogEntry, count)
 
-	rows, err := m.db.Query("SELECT userID, tag, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
+	rows, err := m.Db.Query("SELECT userID, tag, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
 	if err != nil {
 		return
 	}
@@ -1160,10 +1187,112 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 }
 
 func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
-	_, err = m.db.Exec("DELETE FROM antiraidJoinlog WHERE guildID = ?", guildID)
+	_, err = m.Db.Exec("DELETE FROM antiraidJoinlog WHERE guildID = ?", guildID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
 
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*report.UnbanRequest, err error) {
+	rows, err := m.Db.Query(
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		FROM unbanRequests
+		WHERE guildID = ?`, guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	r = make([]*report.UnbanRequest, 0)
+	for rows.Next() {
+		req := new(report.UnbanRequest)
+		if err = rows.Scan(
+			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
+			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+		); err != nil {
+			return
+		}
+		r = append(r, req)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []*report.UnbanRequest, err error) {
+	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		FROM unbanRequests
+		WHERE userID = ?`
+	params := []interface{}{userID}
+
+	if guildID != "" {
+		query += " AND userID = ?"
+		params = append(params, guildID)
+	}
+
+	rows, err := m.Db.Query(query, params...)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	r = make([]*report.UnbanRequest, 0)
+	for rows.Next() {
+		req := new(report.UnbanRequest)
+		if err = rows.Scan(
+			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
+			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+		); err != nil {
+			return
+		}
+		r = append(r, req)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) GetUnbanRequest(id string) (r *report.UnbanRequest, err error) {
+	row := m.Db.QueryRow(
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		FROM unbanRequests
+		WHERE id = ?`, id)
+
+	r = new(report.UnbanRequest)
+	err = row.Scan(
+		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
+		&r.ProcessedBy, &r.Status, &r.Processed, &r.ProcessedMessage,
+	)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MysqlMiddleware) AddUnbanRequest(r *report.UnbanRequest) (err error) {
+	_, err = m.Db.Exec(
+		`INSERT INTO unbanRequests
+		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy,
+		r.Status, r.Processed, r.ProcessedMessage)
+
+	return
+}
+
+func (m *MysqlMiddleware) UpdateUnbanRequest(r *report.UnbanRequest) (err error) {
+	_, err = m.Db.Exec(
+		`UPDATE unbanRequests
+		SET processedBy = ?, status = ?, processed = ?, processedMessage = ?
+		WHERE id = ?`,
+		r.ProcessedBy, r.Status, r.Processed, r.ProcessedMessage,
+		r.ID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	return
 }

@@ -13,6 +13,9 @@ import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { CommandsComponent } from './routes/commands/commands.component';
 import { GuildAdminKarmaComponent } from './routes/guild-admin/karma/ga-karma.component';
 import { GuildAdminAntiraidComponent } from './routes/guild-admin/antiraid/ga-antiraid.component';
+import { GuildUnbanRequestComponent } from './routes/guild-unbanrequests/guild-unbanrequests.component';
+import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
+import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
 
 const routes: Routes = [
   {
@@ -50,8 +53,16 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'guilds/:guildid/unbanrequests',
+    component: GuildUnbanRequestComponent,
+  },
+  {
     path: 'guilds/:guildid/:memberid',
     component: MemberRouteComponent,
+  },
+  {
+    path: 'guilds/:guildid/:memberid/reports',
+    component: MemberReportsComponent,
   },
   {
     path: 'settings',
@@ -68,6 +79,10 @@ const routes: Routes = [
   {
     path: 'commands',
     component: CommandsComponent,
+  },
+  {
+    path: 'unbanme',
+    component: UnbanmeComponent,
   },
   {
     path: '**',

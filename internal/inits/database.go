@@ -5,7 +5,9 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/core/database/mysql"
+	"github.com/zekroTJA/shinpuru/internal/core/database/redis"
+	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -15,16 +17,25 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 
 	switch strings.ToLower(databaseCfg.Type) {
 	case "mysql", "mariadb":
-		db = new(middleware.MysqlMiddleware)
+		db = new(mysql.MysqlMiddleware)
 		err = db.Connect(databaseCfg.MySql)
 	case "sqlite", "sqlite3":
-		db = new(middleware.SqliteMiddleware)
+		db = new(sqlite.SqliteMiddleware)
 		err = db.Connect(databaseCfg.Sqlite)
 		printSqliteWraning()
 	}
 
+	if m, ok := db.(database.Migration); ok {
+		util.Log.Info("Checking database for migrations and apply if needed...")
+		if err = m.Migrate(); err != nil {
+			util.Log.Fatal("Database migration failed:", err)
+		}
+	} else {
+		util.Log.Warning("Skip database migration: middleware does not support migrations")
+	}
+
 	if databaseCfg.Redis != nil && databaseCfg.Redis.Enable {
-		db = middleware.NewRedisMiddleware(databaseCfg.Redis, db)
+		db = redis.NewRedisMiddleware(databaseCfg.Redis, db)
 		util.Log.Info("Enabled redis as database cache")
 	}
 
