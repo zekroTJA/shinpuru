@@ -52,10 +52,8 @@ func (m *MultiError) Error() string {
 // Append adds an error object to the
 // MultiError cotainer if the error
 // is != nil
-func (m *MultiError) Append(err error) {
-	if err != nil {
-		m.errors = append(m.errors, err)
-	}
+func (m *MultiError) Append(err ...error) {
+	m.errors = append(m.errors, err...)
 }
 
 // Len returns the ammount of errors contained
@@ -64,9 +62,14 @@ func (m *MultiError) Len() int {
 	return len(m.errors)
 }
 
-// Concat creates one handable error object
-// from all errors in the MultiError container
-// using the formatting function.
+// DEPRECATED
+//
+// Returns the MultiError object as
+// error interface.
+//
+// This function is deprecated. Please simply
+// use the MultiError object itself as error,
+// because it implements the error interface.
 func (m *MultiError) Concat() error {
 	return m
 }
