@@ -182,6 +182,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](pkg/lctimer)  
   *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
+  *Package mimefix provides functionalities to bypass this issue with fasthttp on windows hosts*: https://github.com/golang/go/issues/32350*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/msgcollector`**](pkg/msgcollector)  
   *Package msgcollector provides functionalities to collect messages in a channel in conect of a single command request.*
 
