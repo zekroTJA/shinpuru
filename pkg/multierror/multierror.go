@@ -1,21 +1,30 @@
 // Package multierror impements handling
 // multiple errors as one error object.
-//   Authors: Ringo Hoffmann.
 package multierror
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
-// FormatFunc is the function used to format an
-// error element of a MulitError
-type FormatFunc func(i int, e error) string
+// FormatFunc is the function used to stringify
+// a MultiError.
+type FormatFunc func(errors []error) string
 
-// MultiError contains multiple error objects
-// and the frmatting function for concating into
-// one handable error object
+var (
+	defaultFormatFunc = func(errors []error) string {
+		ln := len(errors)
+		lines := make([]string, ln+1)
+		lines[0] = fmt.Sprintf("MultiError stack [%d inner errors]:", ln)
+		for i := 1; i < ln+1; i++ {
+			lines[i] = fmt.Sprintf("  [%02d] %s", i-1, errors[i-1].Error())
+		}
+		return strings.Join(lines, "\n")
+	}
+)
+
+// MultiError implements the error interface
+// and can contain and merge multiple errors.
 type MultiError struct {
 	errors     []error
 	formatFunc FormatFunc
@@ -24,16 +33,20 @@ type MultiError struct {
 // New creates a new instance of MultiError
 // using the passed format function. If this argument
 // is nil, the default format function will be used.
-func New(formatFunc FormatFunc) *MultiError {
-	if formatFunc == nil {
-		formatFunc = func(i int, e error) string {
-			return fmt.Sprintf("MultiError %02x: %s\n", i, e)
-		}
+func New(formatFunc ...FormatFunc) (m *MultiError) {
+	m = new(MultiError)
+
+	if formatFunc != nil && len(formatFunc) > 0 && formatFunc[0] != nil {
+		m.formatFunc = formatFunc[0]
+	} else {
+		m.formatFunc = defaultFormatFunc
 	}
 
-	return &MultiError{
-		formatFunc: formatFunc,
-	}
+	return
+}
+
+func (m *MultiError) Error() string {
+	return m.formatFunc(m.errors)
 }
 
 // Append adds an error object to the
@@ -55,18 +68,5 @@ func (m *MultiError) Len() int {
 // from all errors in the MultiError container
 // using the formatting function.
 func (m *MultiError) Concat() error {
-	if m.Len() == 0 {
-		return nil
-	}
-
-	if m.Len() == 1 {
-		return m.errors[0]
-	}
-
-	strErrArr := make([]string, m.Len())
-	for i, e := range m.errors {
-		strErrArr[i] = m.formatFunc(i, e)
-	}
-
-	return errors.New(strings.Join(strErrArr, ""))
+	return m
 }
