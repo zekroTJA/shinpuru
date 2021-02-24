@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -35,8 +36,8 @@ func (c *CmdReport) GetDescription() string {
 }
 
 func (c *CmdReport) GetHelp() string {
-	repTypes := make([]string, len(static.ReportTypes))
-	for i, t := range static.ReportTypes {
+	repTypes := make([]string, len(report.ReportTypes))
+	for i, t := range report.ReportTypes {
 		repTypes[i] = fmt.Sprintf("`%d` - %s", i, t)
 	}
 	return "`report <userResolvable>` - list all reports of a user\n" +
@@ -108,11 +109,9 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	}
 
 	msgOffset := 1
-	repType, err := strconv.Atoi(ctx.GetArgs().Get(1).AsString())
-	maxType := len(static.ReportTypes) - 1
-	minType := static.ReportTypesReserved
+	repType, err := report.TypeFromString(ctx.GetArgs().Get(1).AsString())
 	if repType == 0 {
-		repType = minType
+		repType = report.TypesReserved
 	}
 
 	if victim.User.ID == ctx.GetUser().ID {
@@ -122,9 +121,9 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	}
 
 	if err == nil {
-		if repType < minType || repType > maxType {
+		if repType < report.TypesReserved || repType > report.TypeMax {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", minType, maxType)+
+				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", report.TypesReserved, report.TypeMax)+
 					"Use `help report` to get all types of report which can be used.").
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -155,7 +154,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       static.ReportColors[repType],
+			Color:       report.ReportColors[repType],
 			Title:       "Report Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -166,7 +165,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 				},
 				{
 					Name:  "Type",
-					Value: static.ReportTypes[repType],
+					Value: report.ReportTypes[repType],
 				},
 				{
 					Name:  "Description",

@@ -73,23 +73,6 @@ var (
 	PermLvlBotOwner   = 1000
 	PermLvlGuildOwner = 10
 
-	ReportTypesReserved = 3
-	ReportTypes         = []string{
-		"KICK",
-		"BAN",
-		"MUTE",
-		"WARN",
-		"AD",
-	}
-
-	ReportColors = []int{
-		0xD81B60,
-		0xe53935,
-		0x009688,
-		0xFB8C00,
-		0x8E24AA,
-	}
-
 	DefaultAdminRules = []string{
 		"+sp.guild.*",
 		"+sp.etc.*",

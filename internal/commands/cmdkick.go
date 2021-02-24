@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -84,7 +85,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 
 	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
 	var repType int
-	for i, v := range static.ReportTypes {
+	for i, v := range report.ReportTypes {
 		if v == "KICK" {
 			repType = i
 		}
@@ -111,7 +112,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       static.ReportColors[repType],
+			Color:       report.ReportColors[repType],
 			Title:       "Kick Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -126,7 +127,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 				},
 				{
 					Name:  "Type",
-					Value: static.ReportTypes[repType],
+					Value: report.ReportTypes[repType],
 				},
 				{
 					Name:  "Description",

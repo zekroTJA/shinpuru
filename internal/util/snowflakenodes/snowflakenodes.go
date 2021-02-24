@@ -1,10 +1,7 @@
 package snowflakenodes
 
 import (
-	"strings"
-
 	"github.com/bwmarrin/snowflake"
-	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 var (
@@ -32,31 +29,20 @@ var (
 
 // Setup initializes the snowflake nodes and
 // nodesMap.
-func Setup() error {
+func Setup() (err error) {
 	nodeMap = make(map[int]string)
-	NodesReport = make([]*snowflake.Node, len(static.ReportTypes))
-	var err error
 
-	for i, t := range static.ReportTypes {
-		NodesReport[i], err = snowflake.NewNode(int64(i))
-		if err != nil {
-			return err
-		}
-		nodeMap[i] = "report." + strings.ToLower(t)
-	}
+	NodeBackup, err = RegisterNode(100, "backups")
+	NodeTags, err = RegisterNode(120, "tags")
+	NodeImages, err = RegisterNode(130, "images")
+	NodeUnbanRequests, err = RegisterNode(140, "unbanrequests")
 
-	NodeBackup, err = snowflake.NewNode(100)
-	NodeTags, err = snowflake.NewNode(120)
-	NodeImages, err = snowflake.NewNode(130)
-	NodeUnbanRequests, err = snowflake.NewNode(140)
+	return
+}
 
-	nodeMap[100] = "backups"
-	nodeMap[110] = "lifecyclehandlers"
-	nodeMap[120] = "tags"
-	nodeMap[130] = "images"
-	nodeMap[140] = "unbanrequests"
-
-	return err
+func RegisterNode(id int, name string) (*snowflake.Node, error) {
+	nodeMap[id] = name
+	return snowflake.NewNode(int64(id))
 }
 
 // GetNodeName returns the identifier name of

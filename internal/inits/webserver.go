@@ -35,7 +35,11 @@ func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storag
 			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}
 
-		go ws.ListenAndServeBlocking()
+		go func() {
+			if err = ws.ListenAndServeBlocking(); err != nil {
+				util.Log.Fatalf("Failed starting up web server: %s", err.Error())
+			}
+		}()
 		util.Log.Info(fmt.Sprintf("Web server running on address %s (%s)...", cfg.WebServer.Addr, cfg.WebServer.PublicAddr))
 	}
 	return

@@ -13,7 +13,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
-	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shireikan"
@@ -142,7 +141,7 @@ type ReasonRequest struct {
 type ReportRequest struct {
 	*ReasonRequest
 
-	Type int `json:"type"`
+	Type report.Type `json:"type"`
 }
 
 // InviteSettingsRequest is the request model
@@ -391,7 +390,7 @@ func MemberFromMember(m *discordgo.Member) *Member {
 // report.Report r and publicAddr to generate an
 // attachment URL.
 func ReportFromReport(r *report.Report, publicAddr string) *Report {
-	rtype := static.ReportTypes[r.Type]
+	rtype := report.ReportTypes[r.Type]
 	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
 	return &Report{
 		Report:   r,

@@ -18,7 +18,7 @@ import (
 // url assembled with publicAddr as image endpoint root. This embed is then sent to
 // the specified mod log channel for this guild, if existent.
 func PushReport(s *discordgo.Session, db database.Database, publicAddr,
-	guildID, executorID, victimID, reason, attachmentID string, typ int) (*report.Report, error) {
+	guildID, executorID, victimID, reason, attachmentID string, typ report.Type) (*report.Report, error) {
 
 	repID := snowflakenodes.NodesReport[typ].Generate()
 
@@ -126,12 +126,12 @@ func RevokeMute(s *discordgo.Session, db database.Database, publicAddr, guildID,
 		return
 	}
 
-	repType := stringutil.IndexOf("MUTE", static.ReportTypes)
+	repType := stringutil.IndexOf("MUTE", report.ReportTypes)
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
 	emb = &discordgo.MessageEmbed{
 		Title: "Case " + repID.String(),
-		Color: static.ReportColors[repType],
+		Color: report.ReportColors[repType],
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Inline: true,

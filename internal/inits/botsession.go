@@ -1,6 +1,8 @@
 package inits
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
@@ -8,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
@@ -20,6 +23,13 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	err := snowflakenodes.Setup()
 	if err != nil {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
+	}
+
+	snowflakenodes.NodesReport = make([]*snowflake.Node, len(report.ReportTypes))
+	for i, t := range report.ReportTypes {
+		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
+			util.Log.Fatal("Failed setting up snowflake nodes: ", err)
+		}
 	}
 
 	session.Token = "Bot " + config.Discord.Token

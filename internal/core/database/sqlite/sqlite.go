@@ -163,7 +163,7 @@ func (m *SqliteMiddleware) setup() {
 	mErr.Append(err)
 
 	if mErr.Len() > 0 {
-		util.Log.Fatalf("Failed database setup: %s", mErr.Concat().Error())
+		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
 	}
 }
 
