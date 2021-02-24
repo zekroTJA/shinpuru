@@ -283,7 +283,13 @@
                             <option [ngValue]="false">deny (-)</option>
                         </select>
                         <p class="mb-0 mr-2">sp.</p>
-                        <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/>
+                        <!-- <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/> -->
+                        <app-autocomplete-input 
+                            [(value)]="addPermissionPerm" 
+                            [selection]="allowed" 
+                            [filterFunc]="permSelectionFilter"
+                            [formatterFunc]="permSelectionFormatter"
+                        ></app-autocomplete-input>
                     </div>
                     <app-tags 
                         [available]="guild.roles" 

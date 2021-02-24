@@ -42,6 +42,7 @@ import { UnbanrequestComponent } from './components/unbanrequest/unbanrequest.co
 import { UnbanrequestStatePipe } from './pipes/unbanrequest-state.pipe';
 import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
 import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
+import { AutocompleteInputComponent } from './components/autocomplete-input/autocomplete-input.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
     UnbanrequestStatePipe,
     MemberReportsComponent,
     UnbanmeComponent,
+    AutocompleteInputComponent,
   ],
   imports: [
     NgbModule,

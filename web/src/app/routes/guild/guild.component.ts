@@ -61,7 +61,7 @@ export class GuildComponent {
 
   public guildSettingsAllowed: string[] = [];
 
-  public addPermissionPerm: string;
+  public addPermissionPerm: string = '';
   public addPermissionRoles: Role[] = [];
   public addPermissionAllow = true;
   public canRevoke = false;
@@ -277,6 +277,7 @@ export class GuildComponent {
   }
 
   public addPermissionRule() {
+    console.log(this.addPermissionPerm);
     if (!this.addPermissionPerm || this.addPermissionRoles.length === 0) {
       return;
     }
@@ -476,5 +477,18 @@ export class GuildComponent {
         }
       })
       .catch(() => {});
+  }
+
+  public permSelectionFilter(input: string, selection: string): boolean {
+    return selection.substr(3).startsWith(input.toLowerCase());
+  }
+
+  public permSelectionFormatter(input: string, val: string): string {
+    val = val.substr(3);
+
+    const curr = val.indexOf(input) + input.length;
+    const nextPoint = val.indexOf('.', curr);
+
+    return nextPoint > -1 ? val.substring(0, nextPoint) : val;
   }
 }
