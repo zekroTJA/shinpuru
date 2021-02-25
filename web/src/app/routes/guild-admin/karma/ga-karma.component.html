@@ -28,4 +28,30 @@
             <button (click)="onSave()">SAVE</button>
         </div>
     </div>
+
+    <app-spinner *ngIf="!blocklist" [started]="true"></app-spinner>
+    <div *ngIf="blocklist" class="mt-5">
+        <h3 class="mb-2">Blocklist</h3>
+        <i class="small">Blocked members are neither able to give or remove karma of other members nor able to gain karma points from other users.</i>
+        <div class="d-flex mt-3">
+            <input #iMemberBlock class="w-100 mr-3" type="text" placeholder="Member ID, username or nickname" />
+            <button class="nowrap" (click)="onMemberBlock(iMemberBlock.value)">Add to Blocklist</button>
+        </div>
+        <table class="w-100 mt-4">
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Nick</th>
+                    <th>Unblock</th>
+                </tr>
+                <tr *ngFor="let m of blocklist">
+                    <td>{{ m.user.id }}</td>
+                    <td>{{ m.user.username }}#{{ m.user.discriminator }}</td>
+                    <td>{{ m.nick || m.user.username }}</td>
+                    <td><button (click)="onMemberUnblock(m.user.id)">Unblock</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

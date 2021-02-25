@@ -104,6 +104,11 @@ export class APIService {
   private readonly rcGuildSettingsKarma = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/karma`;
 
+  private readonly rcGuildSettingsKarmaBlocklist = (
+    guildID: string,
+    rc: string = ''
+  ) => `${this.rcGuildSettingsKarma(guildID)}/blocklist${rc ? '/' + rc : ''}`;
+
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
 
@@ -162,6 +167,7 @@ export class APIService {
     } else {
       this.toasts.push(err.message, 'Request Error', 'error', 10000);
     }
+    // throw err;
     return of(null);
   };
 
@@ -557,6 +563,39 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildSettingsKarma(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsKarmaBlocklist(
+    guildID: string
+  ): Observable<ListReponse<Member>> {
+    return this.http
+      .get(this.rcGuildSettingsKarmaBlocklist(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public putGuildSettingsKarmaBlocklist(
+    guildID: string,
+    userIdent: string
+  ): Observable<any> {
+    return this.http
+      .put(
+        this.rcGuildSettingsKarmaBlocklist(guildID, userIdent),
+        null,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteGuildSettingsKarmaBlocklist(
+    guildID: string,
+    userID: string
+  ): Observable<any> {
+    return this.http
+      .delete(
+        this.rcGuildSettingsKarmaBlocklist(guildID, userID),
+        this.defopts()
+      )
       .pipe(catchError(this.errorCatcher));
   }
 

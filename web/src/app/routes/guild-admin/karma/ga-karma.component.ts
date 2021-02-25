@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { KarmaSettings } from 'src/app/api/api.models';
+import { KarmaSettings, Member } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
 
@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 })
 export class GuildAdminKarmaComponent implements OnInit {
   public karmaSettings: KarmaSettings;
+  public blocklist: Member[] = null;
   private guildID: string;
 
   constructor(
@@ -28,7 +29,15 @@ export class GuildAdminKarmaComponent implements OnInit {
       this.karmaSettings = await this.api
         .getGuildSettingsKarma(this.guildID)
         .toPromise();
+
+      await this.fetchBlocklist();
     });
+  }
+
+  private async fetchBlocklist() {
+    this.blocklist = (
+      await this.api.getGuildSettingsKarmaBlocklist(this.guildID).toPromise()
+    ).data;
   }
 
   public async onSave() {
@@ -61,5 +70,37 @@ export class GuildAdminKarmaComponent implements OnInit {
     this.karmaSettings.emotes_decrease = event.target.value
       .split(',')
       .map((v: string) => v.trim());
+  }
+
+  public async onMemberBlock(id: string) {
+    if (!id) return;
+    try {
+      await this.api
+        .putGuildSettingsKarmaBlocklist(this.guildID, id)
+        .toPromise();
+      await this.fetchBlocklist();
+      this.toasts.push(
+        'Member added to karma blocklist.',
+        'Member blocked',
+        'green'
+      );
+    } catch {}
+  }
+
+  public async onMemberUnblock(id: string) {
+    try {
+      await this.api
+        .deleteGuildSettingsKarmaBlocklist(this.guildID, id)
+        .toPromise();
+      const i = this.blocklist.findIndex((m) => m.user.id === id);
+      if (i >= 0) {
+        this.blocklist.splice(i, 1);
+      }
+      this.toasts.push(
+        'Member removed from karma blocklist.',
+        'Member unblocked',
+        'green'
+      );
+    } catch {}
   }
 }
