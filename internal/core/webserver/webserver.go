@@ -227,6 +227,12 @@ func (ws *WebServer) registerHandlers() {
 		Get("/antiraid", ws.handlerGetGuildSettingsAntiraid).
 		Post(ws.handlerPostGuildSettingsAntiraid)
 
+	guildSettingsKarmaBlocklist := guildSettings.Group("/karma/blocklist")
+	guildSettingsKarmaBlocklist.Get("", ws.handlerGetGuildSettingsKarmaBlocklist)
+	guildSettingsKarmaBlocklist.
+		Put("/<memberid>", ws.handlerPutGuildSettingsKarmaBlocklist).
+		Delete(ws.handlerDeleteGuildSettingsKarmaBlocklist)
+
 	guild.
 		Get("/settings", ws.handlerGetGuildSettings).
 		Post(ws.handlerPostGuildSettings)

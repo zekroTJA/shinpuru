@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/makeworld-the-better-one/go-isemoji"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 )
 
@@ -343,6 +346,109 @@ func (ws *WebServer) handlerPostGuildSettingsKarma(ctx *routing.Context) (err er
 	}
 
 	if err = ws.db.SetKarmaTokens(guildID, settings.Tokens); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/settings/karma/blocklist
+
+func (ws *WebServer) handlerGetGuildSettingsKarmaBlocklist(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.karma"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	idList, err := ws.db.GetKarmaBlockList(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	memberList := make([]*Member, len(idList))
+	var m *discordgo.Member
+	var i int
+	for _, id := range idList {
+		if m, err = discordutil.GetMember(ws.session, guildID, id); err != nil {
+			continue
+		}
+		memberList[i] = MemberFromMember(m)
+		i++
+	}
+
+	memberList = memberList[:i]
+
+	return jsonResponse(ctx, &ListResponse{len(memberList), memberList}, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - PUT /api/guilds/:guildid/settings/karma/blocklist/:id
+
+func (ws *WebServer) handlerPutGuildSettingsKarmaBlocklist(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.karma"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	memb, err := fetch.FetchMember(ws.session, guildID, memberID)
+	if err == fetch.ErrNotFound {
+		return jsonError(ctx, nil, fasthttp.StatusNotFound)
+	}
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	ok, err := ws.db.IsKarmaBlockListed(guildID, memb.User.ID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+	if ok {
+		return jsonError(ctx, errors.New("member is already blocklisted"), fasthttp.StatusBadRequest)
+	}
+
+	if err = ws.db.AddKarmaBlockList(guildID, memb.User.ID); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - DELETE /api/guilds/:guildid/settings/karma/blocklist/:id
+
+func (ws *WebServer) handlerDeleteGuildSettingsKarmaBlocklist(ctx *routing.Context) (err error) {
+	userID := ctx.Get("uid").(string)
+
+	guildID := ctx.Param("guildid")
+	memberID := ctx.Param("memberid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.config.karma"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
+
+	ok, err := ws.db.IsKarmaBlockListed(guildID, memberID)
+	if err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+	if !ok {
+		return jsonError(ctx, errors.New("member is not blocklisted"), fasthttp.StatusBadRequest)
+	}
+
+	if err = ws.db.RemoveKarmaBlockList(guildID, memberID); err != nil {
 		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
 	}
 
