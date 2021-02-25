@@ -1,42 +1,25 @@
-1.7.0
-
-> MAJOR PATCH
-
-## Major Implementations
-
-### Unban Requests [#196]
-
-Finally, shinpuru now has the ability that banned users can create unban requests when they were banned from a guild where the shinpuru moderation system is used.
-
-Banned users can login to the shinpuru web interface and then navigate to `/unbanme`. There, they can select the guild(s) where they are banned and can submit an unban request.
-
-![](https://i.imgur.com/9XxnUgH.gif)
-
-Members with the permission `sp.guild.mod.unbanrequests` can review and process pending unbanreqeusts. If a request is accepted, the user is automatically unbanned from the guild.
-
-![](https://i.imgur.com/kEJ6ETu.gif)
+1.8.0
 
 ## Minor Updates
 
-- **Database Migration**  
-  Database modules can now implement the [`Migration`](internal/core/database/migration.go) interface which allows automatic database model migration on startup.  
-  For example of the `mysql` database model: A `migrations` table is created which holds latest applied migrations. For each database update, a migration function can be supplied which can be applied one-by-one on the startup of shinpuru. See the [`mysql`](internal/core/database/mysql) module for more details.
+- **Web Interface: Permission Input Autocomplete [#203]**  
+  The permission input field in the guild settings of the web interface now has auto complete. 🎉  
+  ![](https://user-images.githubusercontent.com/16734205/109003709-13944700-76a8-11eb-92db-1eff56d1b520.gif)
 
-- Executing code in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.exec.exec`.  
-  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
+- **Ban message now contains unban link [#204]**  
+  The ban message, which is sent to a user banned from a guild with shinpuru's ban command, now contains a mention to the link to the unban request form in the web interface to submit unban requests.  
+  ![](https://i.imgur.com/XilUjgV.png)
 
-- Executing color reactions in chat *(when enabled)* is now only allowed to members which have the permission to `sp.chat.colorreactions`.  
-  This is also covered by wildcard allows like `sp.chat.*`. You can also disallow it explicitely to specific roles to create blacklist like behaviors. [#197]
+<!-- ## Bug Fixes
 
-## Bug Fixes
-
-- Fixed output of `ToUnix` function of [timeutil](pkg/timeutil) package
-- Fixed typo in report command description [#195]
-- Fixed sub permissions in the web interface command list
+-  -->
 
 ## Backstage
 
-- Added unit tests for various public packages
+- Update API of package [multierror](https://pkg.go.dev/github.com/zekroTJA/shinpuru/pkg/multierror).
+- Refactored all around the report packages to now use a proper type "enum" and for a bit more logical package structure.  
+<sub>(Tho, the general package structure of shinpuru is still horrible and really really really needs a complete refactor process...)</sub>
+- Frontend updated to Angular 11.
 
 # Docker
 
