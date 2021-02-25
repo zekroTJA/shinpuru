@@ -2,8 +2,8 @@ package commands
 
 import (
 	"fmt"
-	"net/url"
 
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -39,13 +39,11 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	// const emojiID = "742680847429271654"
+	db, _ := ctx.GetObject("db").(database.Database)
+	fmt.Println(db.AddKarmaBlockList(ctx.GetGuild().ID, ctx.GetUser().ID))
+	fmt.Println(db.IsKarmaBlockListed(ctx.GetGuild().ID, ctx.GetUser().ID))
+	fmt.Println(db.RemoveKarmaBlockList(ctx.GetGuild().ID, ctx.GetUser().ID))
+	fmt.Println(db.IsKarmaBlockListed(ctx.GetGuild().ID, ctx.GetUser().ID))
 
-	// for _, e := range ctx.GetGuild().Emojis {
-	// 	fmt.Printf("%+v\n", e)
-	// }
-
-	fmt.Println(url.QueryEscape(":myrunes:742680847429271654"))
-	return ctx.GetSession().MessageReactionAdd(ctx.GetChannel().ID, ctx.GetMessage().ID,
-		url.QueryEscape(":myrunes:742680847429271654"))
+	return nil
 }

@@ -157,6 +157,14 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaBlocklist` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -1041,6 +1049,52 @@ func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error)
 		err = database.ErrDatabaseNotFound
 	}
 
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaBlockList(guildID string) (list []string, err error) {
+	row, err := m.Db.Query("SELECT userID FROM karmaBlocklist WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	list = make([]string, 0)
+	var id string
+	for row.Next() {
+		if err = row.Scan(&id); err != nil {
+			return
+		}
+		list = append(list, id)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
+	err = m.Db.QueryRow("SELECT 1 FROM karmaBlocklist WHERE guildID = ? AND userID = ?",
+		guildID, userID).Scan(&ok)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	fmt.Println("HERE")
+	err = nil
+
+	return
+}
+
+func (m *MysqlMiddleware) AddKarmaBlockList(guildID, userID string) (err error) {
+	_, err = m.Db.Query("INSERT INTO karmaBlocklist (guildID, userID) VALUES (?, ?)",
+		guildID, userID)
+	return
+}
+
+func (m *MysqlMiddleware) RemoveKarmaBlockList(guildID, userID string) (err error) {
+	_, err = m.Db.Query("DELETE FROM karmaBlocklist WHERE guildID = ? AND userID = ?",
+		guildID, userID)
 	return
 }
 

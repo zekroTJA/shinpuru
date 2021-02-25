@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
+	"github.com/zekroTJA/shinpuru/pkg/boolutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -37,10 +38,11 @@ const (
 	keyGuildMuteRole      = "GUILD:MUTEROLE"
 	keyGuildColorReaction = "GUILD:COLORREACTION"
 
-	keyKarmaState     = "KARMA:STATE"
-	keyKarmaemotesInc = "KARMA:EMOTES:ENC"
-	keyKarmaEmotesDec = "KARMA:EMOTES:DEC"
-	keyKarmaTokens    = "KARMA:TOKENS"
+	keyKarmaState       = "KARMA:STATE"
+	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
+	keyKarmaEmotesDec   = "KARMA:EMOTES:DEC"
+	keyKarmaTokens      = "KARMA:TOKENS"
+	keyKarmaBlockListed = "KARMA:BLOCKLISTED"
 
 	keyAntiraidState = "ANTIRAID:STATE"
 	keyAntiraidLimit = "ANTIRAID:LIMIT"
@@ -811,6 +813,50 @@ func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	}
 
 	return val, nil
+}
+
+func (m *RedisMiddleware) GetKarmaBlockList(guildID string) ([]string, error) {
+	return m.db.GetKarmaBlockList(guildID)
+}
+
+func (m *RedisMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
+	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
+
+	err = m.client.Get(key).Scan(&ok)
+	if err == redis.Nil {
+		ok, err = m.db.IsKarmaBlockListed(guildID, userID)
+		if err != nil {
+			return
+		}
+
+		err = m.client.SetBit(key, 0, boolutil.AsInt(ok)).Err()
+		return
+	}
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (m *RedisMiddleware) AddKarmaBlockList(guildID, userID string) (err error) {
+	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
+
+	if err = m.client.Set(key, true, 0).Err(); err != nil {
+		return
+	}
+
+	return m.db.AddKarmaBlockList(guildID, userID)
+}
+
+func (m *RedisMiddleware) RemoveKarmaBlockList(guildID, userID string) (err error) {
+	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
+
+	if err = m.client.Set(key, false, 0).Err(); err != nil {
+		return
+	}
+
+	return m.db.RemoveKarmaBlockList(guildID, userID)
 }
 
 func (m *RedisMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {

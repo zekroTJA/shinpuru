@@ -153,6 +153,11 @@ type Database interface {
 	SetKarmaTokens(guildID string, tokens int) error
 	GetKarmaTokens(guildID string) (int, error)
 
+	GetKarmaBlockList(guildID string) ([]string, error)
+	IsKarmaBlockListed(guildID, userID string) (bool, error)
+	AddKarmaBlockList(guildID, userID string) error
+	RemoveKarmaBlockList(guildID, userID string) error
+
 	//////////////////////////////////////////////////////
 	//// CHAN LOCK
 
