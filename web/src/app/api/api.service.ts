@@ -167,7 +167,7 @@ export class APIService {
     } else {
       this.toasts.push(err.message, 'Request Error', 'error', 10000);
     }
-    // throw err;
+    throw err;
     return of(null);
   };
 
