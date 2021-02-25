@@ -90,6 +90,16 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		return
 	}
 
+	// Check if the executing user is karma blocklisted
+	isBlacklisted, err := l.db.IsKarmaBlockListed(e.GuildID, e.UserID)
+	if err != nil {
+		util.Log.Errorf("failed checking blocklist %s: %s", e.UserID, err.Error())
+		return
+	}
+	if isBlacklisted {
+		return
+	}
+
 	// Get the hydrated user object who created the reaction
 	user, err := s.User(e.UserID)
 	if err != nil {
