@@ -140,6 +140,16 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		return
 	}
 
+	// Check if the target user is karma blocklisted
+	isBlacklisted, err = l.db.IsKarmaBlockListed(msg.GuildID, msg.Author.ID)
+	if err != nil {
+		util.Log.Errorf("failed checking blocklist %s: %s", e.UserID, err.Error())
+		return
+	}
+	if isBlacklisted {
+		return
+	}
+
 	// Update the karma in the database of the specified
 	// user on the specified guild
 	if err = l.db.UpdateKarma(msg.Author.ID, e.GuildID, typ); err != nil {
