@@ -2,6 +2,10 @@
 
 ## Minor Updates
 
+- **Karma Blocklist [#201]**  
+  You can now block users from the karma system in the guild karma settings. Blocked users are not able to give or remove karma of other members and are also unable to gain karma by other users.  
+  ![](https://i.imgur.com/ZokXOze.gif)
+
 - **Web Interface: Permission Input Autocomplete [#203]**  
   The permission input field in the guild settings of the web interface now has auto complete. 🎉  
   ![](https://user-images.githubusercontent.com/16734205/109003709-13944700-76a8-11eb-92db-1eff56d1b520.gif)
@@ -27,5 +31,5 @@
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.7.0
+$ docker pull zekro/shinpuru:1.8.0
 ```
