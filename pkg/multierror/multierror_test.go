@@ -21,6 +21,15 @@ var (
 		errors.New("error 3"),
 		errors.New("error 4"),
 	}
+
+	poisonedTestErrors = []error{
+		errors.New("error 1"),
+		errors.New("error 2"),
+		nil,
+		errors.New("error 3"),
+		nil,
+		errors.New("error 4"),
+	}
 )
 
 func TestError(t *testing.T) {
@@ -44,6 +53,22 @@ func TestError(t *testing.T) {
 		t.Errorf(
 			"result was:\n>\n%s\n<\nbut should have been:\n>\n%s\n<\n",
 			result, expected)
+	}
+
+	err = New()
+	err.Append(poisonedTestErrors...)
+
+	result = err.Error()
+	expected = defaultFormatFunc(testErrors)
+	if result != expected {
+		t.Errorf(
+			"result was:\n>\n%s\n<\nbut should have been:\n>\n%s\n<\n",
+			result, expected)
+	}
+
+	err = New()
+	if err.Error() != "" {
+		t.Error("empty error should return an empty string")
 	}
 }
 

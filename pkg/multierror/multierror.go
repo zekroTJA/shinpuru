@@ -46,6 +46,9 @@ func New(formatFunc ...FormatFunc) (m *MultiError) {
 }
 
 func (m *MultiError) Error() string {
+	if m.Len() == 0 {
+		return ""
+	}
 	return m.formatFunc(m.errors)
 }
 
@@ -53,7 +56,11 @@ func (m *MultiError) Error() string {
 // MultiError cotainer if the error
 // is != nil
 func (m *MultiError) Append(err ...error) {
-	m.errors = append(m.errors, err...)
+	for _, e := range err {
+		if e != nil {
+			m.errors = append(m.errors, e)
+		}
+	}
 }
 
 // Len returns the ammount of errors contained
