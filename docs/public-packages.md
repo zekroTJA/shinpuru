@@ -6,6 +6,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
+  *Package boolutil provides simple utility functions around booleans.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/bytecount`**](pkg/bytecount)  
   *Package bytecount provides functionalities to format byte counts.*
 
@@ -46,7 +49,7 @@
   *Package msgcollector provides functionalities to collect messages in a channel in conect of a single command request.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/multierror`**](pkg/multierror)  
-  *Package multierror impements handling multiple errors as one error object.   Authors: Ringo Hoffmann.*
+  *Package multierror impements handling multiple errors as one error object.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/permissions`**](pkg/permissions)  
   *Package permissions provides functionalities to calculate, update and merge arrays of permission domain rules. Read this to get more information about how permission domains and rules are working: https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide*

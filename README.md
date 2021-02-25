@@ -149,6 +149,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
+  *Package boolutil provides simple utility functions around booleans.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/bytecount`**](pkg/bytecount)  
   *Package bytecount provides functionalities to format byte counts.*
 
@@ -189,7 +192,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
   *Package msgcollector provides functionalities to collect messages in a channel in conect of a single command request.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/multierror`**](pkg/multierror)  
-  *Package multierror impements handling multiple errors as one error object.   Authors: Ringo Hoffmann.*
+  *Package multierror impements handling multiple errors as one error object.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/permissions`**](pkg/permissions)  
   *Package permissions provides functionalities to calculate, update and merge arrays of permission domain rules. Read this to get more information about how permission domains and rules are working: https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide*
@@ -253,5 +256,5 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ---
 
-Copyright © 2018-2020 zekro Development (Ringo Hoffmann).  
+Copyright © 2018-2021 zekro Development (Ringo Hoffmann).  
 Covered by MIT License.
