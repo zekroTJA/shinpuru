@@ -141,7 +141,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	}
 
 	// Check if the target user is karma blocklisted
-	isBlacklisted, err = l.db.IsKarmaBlockListed(msg.GuildID, msg.Author.ID)
+	isBlacklisted, err = l.db.IsKarmaBlockListed(e.GuildID, msg.Author.ID)
 	if err != nil {
 		util.Log.Errorf("failed checking blocklist %s: %s", e.UserID, err.Error())
 		return

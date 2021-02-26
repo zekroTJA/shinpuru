@@ -1080,7 +1080,6 @@ func (m *MysqlMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, e
 		return
 	}
 
-	fmt.Println("HERE")
 	err = nil
 
 	return
