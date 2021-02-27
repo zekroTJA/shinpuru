@@ -9,16 +9,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 
-	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis"
-	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
-	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
-	"github.com/zekroTJA/shinpuru/internal/util/tag"
-	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/boolutil"
-	"github.com/zekroTJA/shinpuru/pkg/permissions"
-	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
 const (
@@ -65,13 +57,14 @@ const (
 // On setting database values, values are set in database as
 // same as in the cache.
 type RedisMiddleware struct {
+	database.Database
+
 	client *redis.Client
-	db     database.Database
 }
 
 func NewRedisMiddleware(config *config.DatabaseRedis, db database.Database) *RedisMiddleware {
 	r := &RedisMiddleware{
-		db: db,
+		Database: db,
 	}
 
 	r.client = redis.NewClient(&redis.Options{
@@ -86,12 +79,12 @@ func NewRedisMiddleware(config *config.DatabaseRedis, db database.Database) *Red
 // --- DATABASE INTERFACE IMPLEMENTATIONS -------------------------------------
 
 func (r *RedisMiddleware) Connect(credentials ...interface{}) error {
-	return r.db.Connect(credentials...)
+	return r.Database.Connect(credentials...)
 }
 
 func (r *RedisMiddleware) Close() {
 	r.client.Close()
-	r.db.Close()
+	r.Database.Close()
 }
 
 func (r *RedisMiddleware) GetGuildPrefix(guildID string) (string, error) {
@@ -99,7 +92,7 @@ func (r *RedisMiddleware) GetGuildPrefix(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildPrefix(guildID)
+		val, err = r.Database.GetGuildPrefix(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -121,7 +114,7 @@ func (r *RedisMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 		return err
 	}
 
-	return r.db.SetGuildPrefix(guildID, newPrefix)
+	return r.Database.SetGuildPrefix(guildID, newPrefix)
 }
 
 func (r *RedisMiddleware) GetGuildAutoRole(guildID string) (string, error) {
@@ -129,7 +122,7 @@ func (r *RedisMiddleware) GetGuildAutoRole(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildAutoRole(guildID)
+		val, err = r.Database.GetGuildAutoRole(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -151,7 +144,7 @@ func (r *RedisMiddleware) SetGuildAutoRole(guildID, autoRoleID string) error {
 		return err
 	}
 
-	return r.db.SetGuildAutoRole(guildID, autoRoleID)
+	return r.Database.SetGuildAutoRole(guildID, autoRoleID)
 }
 
 func (r *RedisMiddleware) GetGuildModLog(guildID string) (string, error) {
@@ -159,7 +152,7 @@ func (r *RedisMiddleware) GetGuildModLog(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildModLog(guildID)
+		val, err = r.Database.GetGuildModLog(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -181,7 +174,7 @@ func (r *RedisMiddleware) SetGuildModLog(guildID, chanID string) error {
 		return err
 	}
 
-	return r.db.SetGuildModLog(guildID, chanID)
+	return r.Database.SetGuildModLog(guildID, chanID)
 }
 
 func (r *RedisMiddleware) GetGuildVoiceLog(guildID string) (string, error) {
@@ -189,7 +182,7 @@ func (r *RedisMiddleware) GetGuildVoiceLog(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildVoiceLog(guildID)
+		val, err = r.Database.GetGuildVoiceLog(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -211,7 +204,7 @@ func (r *RedisMiddleware) SetGuildVoiceLog(guildID, chanID string) error {
 		return err
 	}
 
-	return r.db.SetGuildVoiceLog(guildID, chanID)
+	return r.Database.SetGuildVoiceLog(guildID, chanID)
 }
 
 func (r *RedisMiddleware) GetGuildNotifyRole(guildID string) (string, error) {
@@ -219,7 +212,7 @@ func (r *RedisMiddleware) GetGuildNotifyRole(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildNotifyRole(guildID)
+		val, err = r.Database.GetGuildNotifyRole(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -241,7 +234,7 @@ func (r *RedisMiddleware) SetGuildNotifyRole(guildID, roleID string) error {
 		return err
 	}
 
-	return r.db.SetGuildNotifyRole(guildID, roleID)
+	return r.Database.SetGuildNotifyRole(guildID, roleID)
 }
 
 func (r *RedisMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
@@ -249,7 +242,7 @@ func (r *RedisMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildGhostpingMsg(guildID)
+		val, err = r.Database.GetGuildGhostpingMsg(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -271,15 +264,7 @@ func (r *RedisMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 		return err
 	}
 
-	return r.db.SetGuildGhostpingMsg(guildID, msg)
-}
-
-func (r *RedisMiddleware) GetGuildPermissions(guildID string) (map[string]permissions.PermissionArray, error) {
-	return r.db.GetGuildPermissions(guildID)
-}
-
-func (r *RedisMiddleware) SetGuildRolePermission(guildID, roleID string, p permissions.PermissionArray) error {
-	return r.db.SetGuildRolePermission(guildID, roleID, p)
+	return r.Database.SetGuildGhostpingMsg(guildID, msg)
 }
 
 func (r *RedisMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
@@ -287,7 +272,7 @@ func (r *RedisMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildJdoodleKey(guildID)
+		val, err = r.Database.GetGuildJdoodleKey(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -309,7 +294,7 @@ func (r *RedisMiddleware) SetGuildJdoodleKey(guildID, jdkey string) error {
 		return err
 	}
 
-	return r.db.SetGuildJdoodleKey(guildID, jdkey)
+	return r.Database.SetGuildJdoodleKey(guildID, jdkey)
 }
 
 func (r *RedisMiddleware) GetGuildBackup(guildID string) (bool, error) {
@@ -318,7 +303,7 @@ func (r *RedisMiddleware) GetGuildBackup(guildID string) (bool, error) {
 	var val bool
 	err := r.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = r.db.GetGuildBackup(guildID)
+		val, err = r.Database.GetGuildBackup(guildID)
 		if err != nil {
 			return false, err
 		}
@@ -340,7 +325,7 @@ func (r *RedisMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 		return err
 	}
 
-	return r.db.SetGuildBackup(guildID, enabled)
+	return r.Database.SetGuildBackup(guildID, enabled)
 }
 
 func (r *RedisMiddleware) GetGuildInviteBlock(guildID string) (string, error) {
@@ -348,7 +333,7 @@ func (r *RedisMiddleware) GetGuildInviteBlock(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildInviteBlock(guildID)
+		val, err = r.Database.GetGuildInviteBlock(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -370,7 +355,7 @@ func (r *RedisMiddleware) SetGuildInviteBlock(guildID string, data string) error
 		return err
 	}
 
-	return r.db.SetGuildInviteBlock(guildID, data)
+	return r.Database.SetGuildInviteBlock(guildID, data)
 }
 
 func (r *RedisMiddleware) GetGuildJoinMsg(guildID string) (string, string, error) {
@@ -380,7 +365,7 @@ func (r *RedisMiddleware) GetGuildJoinMsg(guildID string) (string, string, error
 
 	raw, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val1, val2, err = r.db.GetGuildJoinMsg(guildID)
+		val1, val2, err = r.Database.GetGuildJoinMsg(guildID)
 		if err != nil {
 			return "", "", err
 		}
@@ -405,7 +390,7 @@ func (r *RedisMiddleware) SetGuildJoinMsg(guildID string, channelID string, msg 
 		return err
 	}
 
-	return r.db.SetGuildJoinMsg(guildID, channelID, msg)
+	return r.Database.SetGuildJoinMsg(guildID, channelID, msg)
 }
 
 func (r *RedisMiddleware) GetGuildLeaveMsg(guildID string) (string, string, error) {
@@ -415,7 +400,7 @@ func (r *RedisMiddleware) GetGuildLeaveMsg(guildID string) (string, string, erro
 
 	raw, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val1, val2, err = r.db.GetGuildLeaveMsg(guildID)
+		val1, val2, err = r.Database.GetGuildLeaveMsg(guildID)
 		if err != nil {
 			return "", "", err
 		}
@@ -440,7 +425,7 @@ func (r *RedisMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg
 		return err
 	}
 
-	return r.db.SetGuildLeaveMsg(guildID, channelID, msg)
+	return r.Database.SetGuildLeaveMsg(guildID, channelID, msg)
 }
 
 func (r *RedisMiddleware) GetGuildColorReaction(guildID string) (bool, error) {
@@ -449,7 +434,7 @@ func (r *RedisMiddleware) GetGuildColorReaction(guildID string) (bool, error) {
 	var val bool
 	err := r.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = r.db.GetGuildColorReaction(guildID)
+		val, err = r.Database.GetGuildColorReaction(guildID)
 		if err != nil {
 			return false, err
 		}
@@ -471,35 +456,7 @@ func (r *RedisMiddleware) SetGuildColorReaction(guildID string, enabled bool) er
 		return err
 	}
 
-	return r.db.SetGuildColorReaction(guildID, enabled)
-}
-
-func (r *RedisMiddleware) AddReport(rep *report.Report) error {
-	return r.db.AddReport(rep)
-}
-
-func (r *RedisMiddleware) DeleteReport(id snowflake.ID) error {
-	return r.db.DeleteReport(id)
-}
-
-func (r *RedisMiddleware) GetReport(id snowflake.ID) (*report.Report, error) {
-	return r.db.GetReport(id)
-}
-
-func (r *RedisMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]*report.Report, error) {
-	return r.db.GetReportsGuild(guildID, offset, limit)
-}
-
-func (r *RedisMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*report.Report, error) {
-	return r.db.GetReportsFiltered(guildID, memberID, repType)
-}
-
-func (r *RedisMiddleware) GetReportsGuildCount(guildID string) (int, error) {
-	return r.db.GetReportsGuildCount(guildID)
-}
-
-func (r *RedisMiddleware) GetReportsFilteredCount(guildID, memberID string, repType int) (int, error) {
-	return r.db.GetReportsFilteredCount(guildID, memberID, repType)
+	return r.Database.SetGuildColorReaction(guildID, enabled)
 }
 
 func (r *RedisMiddleware) GetSetting(setting string) (string, error) {
@@ -507,7 +464,7 @@ func (r *RedisMiddleware) GetSetting(setting string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetSetting(setting)
+		val, err = r.Database.GetSetting(setting)
 		if err != nil {
 			return "", err
 		}
@@ -529,19 +486,7 @@ func (r *RedisMiddleware) SetSetting(setting, value string) error {
 		return err
 	}
 
-	return r.db.SetSetting(setting, value)
-}
-
-func (r *RedisMiddleware) GetVotes() (map[string]*vote.Vote, error) {
-	return r.db.GetVotes()
-}
-
-func (r *RedisMiddleware) AddUpdateVote(votes *vote.Vote) error {
-	return r.db.AddUpdateVote(votes)
-}
-
-func (r *RedisMiddleware) DeleteVote(voteID string) error {
-	return r.db.DeleteVote(voteID)
+	return r.Database.SetSetting(setting, value)
 }
 
 func (r *RedisMiddleware) GetGuildMuteRole(guildID string) (string, error) {
@@ -549,7 +494,7 @@ func (r *RedisMiddleware) GetGuildMuteRole(guildID string) (string, error) {
 
 	val, err := r.client.Get(key).Result()
 	if err == redis.Nil {
-		val, err = r.db.GetGuildMuteRole(guildID)
+		val, err = r.Database.GetGuildMuteRole(guildID)
 		if err != nil {
 			return "", err
 		}
@@ -571,75 +516,7 @@ func (r *RedisMiddleware) SetGuildMuteRole(guildID, roleID string) error {
 		return err
 	}
 
-	return r.db.SetGuildMuteRole(guildID, roleID)
-}
-
-func (r *RedisMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
-	return r.db.GetAllTwitchNotifies(twitchUserID)
-}
-
-func (r *RedisMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
-	return r.db.GetTwitchNotify(twitchUserID, guildID)
-}
-
-func (r *RedisMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
-	return r.db.SetTwitchNotify(twitchNotify)
-}
-
-func (r *RedisMiddleware) DeleteTwitchNotify(twitchUserID, guildID string) error {
-	return r.db.DeleteTwitchNotify(twitchUserID, guildID)
-}
-
-func (r *RedisMiddleware) AddBackup(guildID, fileID string) error {
-	return r.db.AddBackup(guildID, fileID)
-}
-
-func (r *RedisMiddleware) DeleteBackup(guildID, fileID string) error {
-	return r.db.DeleteBackup(guildID, fileID)
-}
-
-func (r *RedisMiddleware) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
-	return r.db.GetBackups(guildID)
-}
-
-func (r *RedisMiddleware) GetGuilds() ([]string, error) {
-	return r.db.GetGuilds()
-}
-
-func (r *RedisMiddleware) AddTag(tag *tag.Tag) error {
-	return r.db.AddTag(tag)
-}
-
-func (r *RedisMiddleware) EditTag(tag *tag.Tag) error {
-	return r.db.EditTag(tag)
-}
-
-func (r *RedisMiddleware) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
-	return r.db.GetTagByID(id)
-}
-
-func (r *RedisMiddleware) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
-	return r.db.GetTagByIdent(ident, guildID)
-}
-
-func (r *RedisMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
-	return r.db.GetGuildTags(guildID)
-}
-
-func (r *RedisMiddleware) DeleteTag(id snowflake.ID) error {
-	return r.db.DeleteTag(id)
-}
-
-func (r *RedisMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
-	return r.db.GetImageData(id)
-}
-
-func (r *RedisMiddleware) SaveImageData(image *imgstore.Image) error {
-	return r.db.SaveImageData(image)
-}
-
-func (r *RedisMiddleware) RemoveImageData(id snowflake.ID) error {
-	return r.db.RemoveImageData(id)
+	return r.Database.SetGuildMuteRole(guildID, roleID)
 }
 
 func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
@@ -654,7 +531,7 @@ func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 		return
 	}
 
-	return m.db.SetAPIToken(token)
+	return m.Database.SetAPIToken(token)
 }
 
 func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
@@ -662,7 +539,7 @@ func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, e
 
 	resStr, err := m.client.Get(key).Result()
 	if err == redis.Nil {
-		if t, err = m.db.GetAPIToken(userID); err != nil {
+		if t, err = m.Database.GetAPIToken(userID); err != nil {
 			return
 		}
 		var resB []byte
@@ -689,27 +566,7 @@ func (m *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
 		return
 	}
 
-	return m.db.DeleteAPIToken(userID)
-}
-
-func (m *RedisMiddleware) GetKarma(userID, guildID string) (int, error) {
-	return m.db.GetKarma(userID, guildID)
-}
-
-func (m *RedisMiddleware) GetKarmaSum(userID string) (int, error) {
-	return m.db.GetKarmaSum(userID)
-}
-
-func (m *RedisMiddleware) GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error) {
-	return m.db.GetKarmaGuild(guildID, limit)
-}
-
-func (m *RedisMiddleware) SetKarma(userID, guildID string, val int) error {
-	return m.db.SetKarma(userID, guildID, val)
-}
-
-func (m *RedisMiddleware) UpdateKarma(userID, guildID string, diff int) error {
-	return m.db.UpdateKarma(userID, guildID, diff)
+	return m.Database.DeleteAPIToken(userID)
 }
 
 func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
@@ -719,7 +576,7 @@ func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
 		return err
 	}
 
-	return m.db.SetKarmaState(guildID, state)
+	return m.Database.SetKarmaState(guildID, state)
 }
 
 func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
@@ -728,7 +585,7 @@ func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
 	var val bool
 	err := m.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = m.db.GetKarmaState(guildID)
+		val, err = m.Database.GetKarmaState(guildID)
 		if err != nil {
 			return false, err
 		}
@@ -754,7 +611,7 @@ func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) e
 		return err
 	}
 
-	return m.db.SetKarmaEmotes(guildID, emotesInc, emotesDec)
+	return m.Database.SetKarmaEmotes(guildID, emotesInc, emotesDec)
 }
 
 func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
@@ -765,7 +622,7 @@ func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec s
 	emotesDec, err2 := m.client.Get(keyDec).Result()
 
 	if err1 == redis.Nil || err2 == redis.Nil {
-		emotesInc, emotesDec, err = m.db.GetKarmaEmotes(guildID)
+		emotesInc, emotesDec, err = m.Database.GetKarmaEmotes(guildID)
 		if err != nil {
 			return
 		}
@@ -791,7 +648,7 @@ func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
 		return err
 	}
 
-	return m.db.SetKarmaTokens(guildID, tokens)
+	return m.Database.SetKarmaTokens(guildID, tokens)
 }
 
 func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
@@ -800,7 +657,7 @@ func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	var val int
 	err := m.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = m.db.GetKarmaTokens(guildID)
+		val, err = m.Database.GetKarmaTokens(guildID)
 		if err != nil {
 			return 0, err
 		}
@@ -815,16 +672,12 @@ func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	return val, nil
 }
 
-func (m *RedisMiddleware) GetKarmaBlockList(guildID string) ([]string, error) {
-	return m.db.GetKarmaBlockList(guildID)
-}
-
 func (m *RedisMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
 	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
 
 	err = m.client.Get(key).Scan(&ok)
 	if err == redis.Nil {
-		ok, err = m.db.IsKarmaBlockListed(guildID, userID)
+		ok, err = m.Database.IsKarmaBlockListed(guildID, userID)
 		if err != nil {
 			return
 		}
@@ -846,7 +699,7 @@ func (m *RedisMiddleware) AddKarmaBlockList(guildID, userID string) (err error) 
 		return
 	}
 
-	return m.db.AddKarmaBlockList(guildID, userID)
+	return m.Database.AddKarmaBlockList(guildID, userID)
 }
 
 func (m *RedisMiddleware) RemoveKarmaBlockList(guildID, userID string) (err error) {
@@ -856,23 +709,7 @@ func (m *RedisMiddleware) RemoveKarmaBlockList(guildID, userID string) (err erro
 		return
 	}
 
-	return m.db.RemoveKarmaBlockList(guildID, userID)
-}
-
-func (m *RedisMiddleware) SetLockChan(chanID, guildID, executorID, permissions string) error {
-	return m.db.SetLockChan(chanID, guildID, executorID, permissions)
-}
-
-func (m *RedisMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
-	return m.db.GetLockChan(chanID)
-}
-
-func (m *RedisMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
-	return m.db.GetLockChannels(guildID)
-}
-
-func (m *RedisMiddleware) DeleteLockChan(chanID string) error {
-	return m.db.DeleteLockChan(chanID)
+	return m.Database.RemoveKarmaBlockList(guildID, userID)
 }
 
 func (m *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
@@ -882,7 +719,7 @@ func (m *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
 		return err
 	}
 
-	return m.db.SetAntiraidState(guildID, state)
+	return m.Database.SetAntiraidState(guildID, state)
 }
 
 func (m *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
@@ -891,7 +728,7 @@ func (m *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
 	var val bool
 	err := m.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = m.db.GetAntiraidState(guildID)
+		val, err = m.Database.GetAntiraidState(guildID)
 		if err != nil {
 			return false, err
 		}
@@ -913,7 +750,7 @@ func (m *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) err
 		return err
 	}
 
-	return m.db.SetKarmaTokens(guildID, limit)
+	return m.Database.SetKarmaTokens(guildID, limit)
 }
 
 func (m *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
@@ -922,7 +759,7 @@ func (m *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
 	var val int
 	err := m.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = m.db.GetAntiraidRegeneration(guildID)
+		val, err = m.Database.GetAntiraidRegeneration(guildID)
 		if err != nil {
 			return 0, err
 		}
@@ -944,7 +781,7 @@ func (m *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
 		return err
 	}
 
-	return m.db.SetAntiraidBurst(guildID, burst)
+	return m.Database.SetAntiraidBurst(guildID, burst)
 }
 
 func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
@@ -953,7 +790,7 @@ func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 	var val int
 	err := m.client.Get(key).Scan(&val)
 	if err == redis.Nil {
-		val, err = m.db.GetAntiraidBurst(guildID)
+		val, err = m.Database.GetAntiraidBurst(guildID)
 		if err != nil {
 			return 0, err
 		}
@@ -966,36 +803,4 @@ func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 	}
 
 	return val, nil
-}
-
-func (m *RedisMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) error {
-	return m.db.AddToAntiraidJoinList(guildID, userID, userTag)
-}
-
-func (m *RedisMiddleware) GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error) {
-	return m.db.GetAntiraidJoinList(guildID)
-}
-
-func (m *RedisMiddleware) FlushAntiraidJoinList(guildID string) error {
-	return m.db.FlushAntiraidJoinList(guildID)
-}
-
-func (m *RedisMiddleware) GetGuildUnbanRequests(guildID string) ([]*report.UnbanRequest, error) {
-	return m.db.GetGuildUnbanRequests(guildID)
-}
-
-func (m *RedisMiddleware) GetGuildUserUnbanRequests(userID, guildID string) ([]*report.UnbanRequest, error) {
-	return m.db.GetGuildUserUnbanRequests(userID, guildID)
-}
-
-func (m *RedisMiddleware) GetUnbanRequest(id string) (*report.UnbanRequest, error) {
-	return m.db.GetUnbanRequest(id)
-}
-
-func (m *RedisMiddleware) AddUnbanRequest(request *report.UnbanRequest) error {
-	return m.db.AddUnbanRequest(request)
-}
-
-func (m *RedisMiddleware) UpdateUnbanRequest(request *report.UnbanRequest) error {
-	return m.db.UpdateUnbanRequest(request)
 }
