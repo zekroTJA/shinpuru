@@ -45,6 +45,8 @@ const (
 	keyAPISession = "API:SESSION"
 )
 
+type getterFunc func() (interface{}, error)
+
 // RedisMiddleware implements the Database interface for
 // Redis.
 //

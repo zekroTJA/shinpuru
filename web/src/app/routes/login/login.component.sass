@@ -53,6 +53,10 @@ hr
     > .logo
         margin: 30vh auto 10vh auto
 
+        .header-image
+            width: 600px
+            max-width: 80vw
+
     > .button
         display: flex
         
@@ -125,6 +129,11 @@ hr
     width: 100%
     max-width: 1000px
     margin: 80px auto
+
+    @media only screen and (max-width: 1000px)
+        grid-template-columns: 100%
+        .self-host
+            margin-top: 50px
     
     > div.side
         padding: 0px 80px
