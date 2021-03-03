@@ -18,23 +18,23 @@ const (
 
 var jwtGenerationMethod = jwt.SigningMethodHS256
 
-type DMAuth struct {
+type OneTimeAuth struct {
 	signingKey []byte
 	duration   time.Duration
 }
 
-func New(duration time.Duration) (a *DMAuth, err error) {
+func New(duration time.Duration) (a *OneTimeAuth, err error) {
 	key, err := random.GetRandByteArray(keyLength)
 	if err != nil {
 		return
 	}
 
-	a = &DMAuth{key, duration}
+	a = &OneTimeAuth{key, duration}
 
 	return
 }
 
-func (a *DMAuth) GetKey(userID string) (token string, err error) {
+func (a *OneTimeAuth) GetKey(userID string) (token string, err error) {
 	now := time.Now()
 
 	claims := jwt.StandardClaims{}
@@ -50,7 +50,7 @@ func (a *DMAuth) GetKey(userID string) (token string, err error) {
 	return
 }
 
-func (a *DMAuth) ValidateKey(key string) (userID string, err error) {
+func (a *OneTimeAuth) ValidateKey(key string) (userID string, err error) {
 	token, err := jwt.Parse(key, func(t *jwt.Token) (interface{}, error) {
 		return a.signingKey, nil
 	})

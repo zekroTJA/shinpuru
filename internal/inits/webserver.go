@@ -10,13 +10,15 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/mimefix"
 	"github.com/zekroTJA/shireikan"
 )
 
 func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storage,
-	cmdHandler shireikan.Handler, lct *lctimer.LifeCycleTimer, cfg *config.Config, pmw *middleware.PermissionsMiddleware) (ws *webserver.WebServer) {
+	cmdHandler shireikan.Handler, lct *lctimer.LifeCycleTimer, cfg *config.Config,
+	pmw *middleware.PermissionsMiddleware, ota *onetimeauth.OneTimeAuth) (ws *webserver.WebServer) {
 
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
 		curr, ok := mimefix.Check()
@@ -30,7 +32,7 @@ func InitWebServer(s *discordgo.Session, db database.Database, st storage.Storag
 			}
 		}
 
-		ws, err := webserver.New(db, st, s, cmdHandler, lct, cfg, pmw)
+		ws, err := webserver.New(db, st, s, cmdHandler, lct, cfg, pmw, ota)
 		if err != nil {
 			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}

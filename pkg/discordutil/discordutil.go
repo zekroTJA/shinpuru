@@ -110,5 +110,5 @@ func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, erro
 // IsCanNotOpenDmToUserError returns true if an returned error
 // is caused because a DM channel to a user could not be opened.
 func IsCanNotOpenDmToUserError(err error) bool {
-	return strings.Contains(err.Error(), `"Cannot send messages to this user"`)
+	return err != nil && strings.Contains(err.Error(), `"Cannot send messages to this user"`)
 }

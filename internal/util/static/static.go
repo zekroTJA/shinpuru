@@ -73,6 +73,8 @@ var (
 	PermLvlBotOwner   = 1000
 	PermLvlGuildOwner = 10
 
+	RoutingBypassPrefixes = []string{"/api/", "/imagestore/", "/_/", "/invite", "/ota"}
+
 	DefaultAdminRules = []string{
 		"+sp.guild.*",
 		"+sp.etc.*",

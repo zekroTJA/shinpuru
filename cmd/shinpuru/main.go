@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"runtime/pprof"
 	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -148,12 +150,14 @@ func main() {
 		session.Close()
 	}()
 
+	ota, err := onetimeauth.New(1 * time.Minute)
+
 	// Initialize command handler
 	cmdHandler := inits.InitCommandHandler(
-		session, conf, database, st, tnw, lct, pmw, gpim)
+		session, conf, database, st, tnw, lct, pmw, gpim, ota)
 
 	// Initialize web server
-	inits.InitWebServer(session, database, st, cmdHandler, lct, conf, pmw)
+	inits.InitWebServer(session, database, st, cmdHandler, lct, conf, pmw, ota)
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.

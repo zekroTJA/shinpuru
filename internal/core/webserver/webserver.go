@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/random"
@@ -59,6 +60,7 @@ type WebServer struct {
 	cmdhandler shireikan.Handler
 	pmw        *middleware.PermissionsMiddleware
 	af         *AntiForgery
+	ota        *onetimeauth.OneTimeAuth
 
 	config *config.Config
 
@@ -69,7 +71,8 @@ type WebServer struct {
 // database provider, storage provider, discordgo session, command
 // handler, life cycle timer and configuration.
 func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd shireikan.Handler, lct *lctimer.LifeCycleTimer, config *config.Config, pmw *middleware.PermissionsMiddleware) (ws *WebServer, err error) {
+	cmd shireikan.Handler, lct *lctimer.LifeCycleTimer, config *config.Config,
+	pmw *middleware.PermissionsMiddleware, ota *onetimeauth.OneTimeAuth) (ws *WebServer, err error) {
 
 	ws = new(WebServer)
 
@@ -96,6 +99,7 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 	ws.session = s
 	ws.cmdhandler = cmd
 	ws.pmw = pmw
+	ws.ota = ota
 	ws.rlm = NewRateLimitManager()
 	ws.af = NewAntiForgery()
 	ws.router = routing.New()
@@ -148,6 +152,8 @@ func (ws *WebServer) registerHandlers() {
 	ws.router.Use(
 		ws.addHeaders, ws.optionsHandler,
 		ws.handlerFiles, ws.handleMetrics)
+
+	ws.router.Get("/ota", ws.handlerGetOta)
 
 	imagestore := ws.router.Group("/imagestore")
 	imagestore.

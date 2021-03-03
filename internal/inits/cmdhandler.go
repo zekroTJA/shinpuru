@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
@@ -20,7 +21,7 @@ import (
 
 func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage,
 	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware,
-	gpim *middleware.GhostPingIgnoreMiddleware) shireikan.Handler {
+	gpim *middleware.GhostPingIgnoreMiddleware, ota *onetimeauth.OneTimeAuth) shireikan.Handler {
 
 	cmdHandler := shireikan.NewHandler(&shireikan.Config{
 		GeneralPrefix:         cfg.Discord.GeneralPrefix,
@@ -42,6 +43,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.SetObject("lct", lct)
 	cmdHandler.SetObject("backup", backup.New(s, db, st))
 	cmdHandler.SetObject("pmw", pmw)
+	cmdHandler.SetObject("onetimeauth", ota)
 
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
@@ -84,6 +86,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.RegisterCommand(&commands.CmdColorReaction{})
 	cmdHandler.RegisterCommand(&commands.CmdLock{})
 	cmdHandler.RegisterCommand(&commands.CmdGuild{})
+	cmdHandler.RegisterCommand(&commands.CmdLogin{})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})

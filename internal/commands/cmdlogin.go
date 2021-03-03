@@ -1,8 +1,13 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
 )
@@ -11,7 +16,7 @@ type CmdLogin struct {
 }
 
 func (c *CmdLogin) GetInvokes() []string {
-	return []string{"login", "weblogin"}
+	return []string{"login", "weblogin", "token"}
 }
 
 func (c *CmdLogin) GetDescription() string {
@@ -39,7 +44,6 @@ func (c *CmdLogin) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
-
 	var ch *discordgo.Channel
 
 	if ctx.GetChannel().Type == discordgo.ChannelTypeGroupDM {
@@ -50,7 +54,20 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
-	emb := &discordgo.MessageEmbed{}
+	cfg := ctx.GetObject("config").(*config.Config)
+	ota := ctx.GetObject("onetimeauth").(*onetimeauth.OneTimeAuth)
+
+	token, err := ota.GetKey(ctx.GetUser().ID)
+	if err != nil {
+		return
+	}
+
+	link := fmt.Sprintf("%s/ota?token=%s", cfg.WebServer.PublicAddr, token)
+	emb := &discordgo.MessageEmbed{
+		Color: static.ColorEmbedDefault,
+		Description: "Click this [**this link**](" + link + ") and you will be automatically logged " +
+			"in to the shinpuru web interface.\n\nThis link is only valid for **one minute** from now!",
+	}
 
 	_, err = ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
 	if discordutil.IsCanNotOpenDmToUserError(err) {

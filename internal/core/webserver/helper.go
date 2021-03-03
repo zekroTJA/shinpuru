@@ -9,6 +9,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
@@ -125,7 +126,7 @@ func getIPAddr(ctx *routing.Context) string {
 func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	path := string(ctx.Path())
 
-	if stringutil.HasPrefixAny(path, "/api/", "/imagestore/", "/_/", "/invite") {
+	if stringutil.HasPrefixAny(path, static.RoutingBypassPrefixes...) {
 		ctx.Next()
 		return nil
 	}
