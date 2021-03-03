@@ -5,6 +5,7 @@ package discordutil
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -104,4 +105,10 @@ func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, erro
 
 		lastID = membs[999].User.ID
 	}
+}
+
+// IsCanNotOpenDmToUserError returns true if an returned error
+// is caused because a DM channel to a user could not be opened.
+func IsCanNotOpenDmToUserError(err error) bool {
+	return strings.Contains(err.Error(), `"Cannot send messages to this user"`)
 }

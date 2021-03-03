@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
@@ -211,7 +212,7 @@ func sendUserOrInChannel(ctx shireikan.Context, emb *discordgo.MessageEmbed) (er
 
 	_, err = ctx.GetSession().ChannelMessageSendEmbed(userChan.ID, emb)
 	if err != nil {
-		if strings.Contains(err.Error(), `"Cannot send messages to this user"`) {
+		if discordutil.IsCanNotOpenDmToUserError(err) {
 			emb.Footer = &discordgo.MessageEmbedFooter{
 				Text: "This message appears in this channel because you have " +
 					"disabled DM's from guild members.",
