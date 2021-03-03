@@ -49,7 +49,7 @@ func main() {
 	s, _ := discordgo.New()
 	database := new(sqlite.SqliteMiddleware)
 
-	cmdHandler := inits.InitCommandHandler(s, config, database, nil, nil, nil, nil, nil)
+	cmdHandler := inits.InitCommandHandler(s, config, database, nil, nil, nil, nil, nil, nil)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
 		util.Log.Fatal("Failed exporting command manual: ", err)
 	}

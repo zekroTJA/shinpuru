@@ -206,6 +206,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/stringutil`**](pkg/stringutil)  
   *Package stringutil provides generl string utility functions.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/timerstack`**](pkg/timerstack)  
+  *Package timerstack provides a timer which can execute multiple delayed functions one after one.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/timeutil`**](pkg/timeutil)  
   *Package timeutil provides some general purpose functionalities around the time package.*
 
