@@ -43,7 +43,6 @@ export class InfoComponent implements OnDestroy {
   }
 
   public refresh() {
-    console.log('REFRESH');
     this.api.getSystemInfo().subscribe((sysinfo) => {
       this.sysinfo = sysinfo;
       this.uptime = sysinfo.uptime;

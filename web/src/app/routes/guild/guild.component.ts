@@ -277,7 +277,6 @@ export class GuildComponent {
   }
 
   public addPermissionRule() {
-    console.log(this.addPermissionPerm);
     if (!this.addPermissionPerm || this.addPermissionRoles.length === 0) {
       return;
     }
