@@ -9,11 +9,11 @@ import { of } from 'rxjs';
 import { ToastService } from 'src/app/components/toast/toast.service';
 
 @Component({
-  selector: 'app-apitoken',
-  templateUrl: './apitoken.component.html',
-  styleUrls: ['./apitoken.component.sass'],
+  selector: 'app-usersettings',
+  templateUrl: './usersettings.component.html',
+  styleUrls: ['./usersettings.component.sass'],
 })
-export class APITokenComponent {
+export class UserSettingsComponent {
   public dateFormat = dateFormat;
 
   public token: APIToken;

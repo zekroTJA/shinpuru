@@ -1,0 +1,67 @@
+<div>
+    <h1 class="mt-3">USER SETTINGS</h1>
+
+    <div class="settings-container">
+        <div class="mb-4">
+            <h2>API TOKEN</h2>
+            <p class="mt-3">
+                <a href="https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs" target="_blank">
+                <strong>Here</strong>
+            </a> you can find the API documentation of shinpuru.</p>
+        </div>
+    
+        <app-spinner *ngIf="!token && !notGenerated" [started]="true"></app-spinner>
+        
+        <div *ngIf="notGenerated">
+            <i>No API token is generated.</i>
+        </div>
+    
+        <div *ngIf="token">
+            <div *ngIf="token.token" class="mb-4">
+                <div class="warning mb-3">
+                    <h3>WARNING</h3>
+                    <p>
+                        The token is only shown after re-initialization once. As soon as you reload
+                        this page, the token will not be shown again!
+                    </p>
+                </div>
+                <a (click)="revealToken = !revealToken">{{ revealToken ? 'Hide Token' : 'Reveal Token' }}</a>
+                <p *ngIf="revealToken" class="embed">{{ token.token }}</p>
+                <div class="mt-3">
+                    <button (click)="copyTokenToClipboard()">Copy Token</button>
+                </div>
+            </div>
+    
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Created</th>
+                        <td>{{ dateFormat(token.created) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Expires</th>
+                        <td>{{ dateFormat(token.expires) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Access</th>
+                        <td>{{ dateFormat(token.last_access) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Hits</th>
+                        <td>{{ token.hits }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="mt-4">
+            <button class="bg-orange mr-3" (click)="generateToken()">
+                {{ token ? 'REGENERATE TOKEN' : 'GENERATE TOKEN' }}
+            </button>
+            <button *ngIf="token" class="bg-red" (click)="resetToken()">
+                DELETE TOKEN
+            </button>
+        </div>
+    </div>
+    
+</div>
