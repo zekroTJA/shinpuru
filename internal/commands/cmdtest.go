@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"fmt"
+	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -39,11 +38,9 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
-	fmt.Println(db.AddKarmaBlockList(ctx.GetGuild().ID, ctx.GetUser().ID))
-	fmt.Println(db.IsKarmaBlockListed(ctx.GetGuild().ID, ctx.GetUser().ID))
-	fmt.Println(db.RemoveKarmaBlockList(ctx.GetGuild().ID, ctx.GetUser().ID))
-	fmt.Println(db.IsKarmaBlockListed(ctx.GetGuild().ID, ctx.GetUser().ID))
+	// db, _ := ctx.GetObject("db").(database.Database)
+
+	time.Sleep(30 * time.Second)
 
 	return nil
 }

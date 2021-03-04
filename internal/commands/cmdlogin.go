@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
@@ -9,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/timerstack"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -69,12 +71,21 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 			"in to the shinpuru web interface.\n\nThis link is only valid for **one minute** from now!",
 	}
 
-	_, err = ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
+	msg, err := ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
 	if discordutil.IsCanNotOpenDmToUserError(err) {
 		err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You need to enable DMs from users of this guild so that a secret authentication link "+
 				"can be sent to you via DM.").Error()
 	}
+
+	timerstack.New().After(1*time.Minute, func() bool {
+		emb := &discordgo.MessageEmbed{
+			Color:       static.ColorEmbedGray,
+			Description: "The login link has expired.",
+		}
+		ctx.GetSession().ChannelMessageEditEmbed(ch.ID, msg.ID, emb)
+		return true
+	}).RunBlocking()
 
 	return err
 }
