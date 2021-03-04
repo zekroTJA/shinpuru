@@ -333,7 +333,7 @@
                     <strong class="number">{{ i }}</strong>
                     <span>{{ dateFormat(b.timestamp) }}</span> 
                     <span class="embedded">(ID: {{b.file_id}})</span>
-                    <a 
+                    <a *ngIf="guildSettingsContains('sp.guild.admin.backup')"
                         title="Download backup file" 
                         [href]="getBackupDownloadLink(b.file_id)" 
                         download="backup_archive_{{guild.id}}_{{b.file_id}}"

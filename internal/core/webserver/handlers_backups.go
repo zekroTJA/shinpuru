@@ -31,8 +31,15 @@ func (ws *WebServer) handlerGetGuildBackups(ctx *routing.Context) error {
 // - GET /api/guilds/:guildid/backups/:backupid/download
 
 func (ws *WebServer) handlerGetGuildBackupDownload(ctx *routing.Context) error {
+	userID := ctx.Get("uid").(string)
 	guildID := ctx.Param("guildid")
 	backupID := ctx.Param("backupid")
+
+	if ok, _, err := ws.pmw.CheckPermissions(ws.session, guildID, userID, "sp.guild.admin.backup"); err != nil {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	} else if !ok {
+		return jsonError(ctx, errUnauthorized, fasthttp.StatusUnauthorized)
+	}
 
 	backupEntries, err := ws.db.GetBackups(guildID)
 	if database.IsErrDatabaseNotFound(err) {
@@ -42,11 +49,10 @@ func (ws *WebServer) handlerGetGuildBackupDownload(ctx *routing.Context) error {
 	}
 
 	var found bool
-backupEntriesLoop:
 	for _, e := range backupEntries {
 		if e.FileID == backupID {
 			found = true
-			break backupEntriesLoop
+			break
 		}
 	}
 
