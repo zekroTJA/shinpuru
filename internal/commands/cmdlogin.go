@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -58,6 +59,19 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 
 	cfg := ctx.GetObject("config").(*config.Config)
 	ota := ctx.GetObject("onetimeauth").(*onetimeauth.OneTimeAuth)
+	db := ctx.GetObject("db").(database.Database)
+
+	enabled, err := db.GetUserOTAEnabled(ctx.GetUser().ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+
+	if !enabled {
+		enableLink := fmt.Sprintf("%s/usersettings", cfg.WebServer.PublicAddr)
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"One Time Authorization is disabled by default. If you want to use it, you need "+
+				"to enable it first in your [**user settings page**]("+enableLink+").").Error()
+	}
 
 	token, err := ota.GetKey(ctx.GetUser().ID)
 	if err != nil {

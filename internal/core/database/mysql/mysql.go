@@ -62,6 +62,13 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
+		"`userID` varchar(25) NOT NULL," +
+		"`enableOTA` text NOT NULL DEFAULT '0'," +
+		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
 		"`roleID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -257,6 +264,38 @@ func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (er
 		_, err = m.Db.Exec(
 			fmt.Sprintf("INSERT INTO guilds (guildID, %s) VALUES (?, ?)", key),
 			guildID, value)
+	}
+
+	return nil
+}
+
+func (m *MysqlMiddleware) getUserSetting(userID, key string) (string, error) {
+	var value string
+	err := m.Db.QueryRow(
+		fmt.Sprintf("SELECT %s FROM users WHERE userID = ?", key),
+		userID).Scan(&value)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return value, err
+}
+
+func (m *MysqlMiddleware) setUserSetting(userID, key string, value string) (err error) {
+	res, err := m.Db.Exec(
+		fmt.Sprintf("UPDATE users SET %s = ? WHERE userID = ?", key),
+		value, userID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.Db.Exec(
+			fmt.Sprintf("INSERT INTO users (userID, %s) VALUES (?, ?)", key),
+			userID, value)
 	}
 
 	return nil
@@ -1348,4 +1387,18 @@ func (m *MysqlMiddleware) UpdateUnbanRequest(r *report.UnbanRequest) (err error)
 		err = database.ErrDatabaseNotFound
 	}
 	return
+}
+
+func (m *MysqlMiddleware) GetUserOTAEnabled(userID string) (enabled bool, err error) {
+	v, err := m.getUserSetting(userID, "enableOTA")
+	enabled = v == "1"
+	return
+}
+
+func (m *MysqlMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
+	v := "0"
+	if enabled {
+		v = "1"
+	}
+	return m.setUserSetting(userID, "enableOTA", v)
 }

@@ -76,6 +76,12 @@ type Database interface {
 	SetGuildMuteRole(guildID, roleID string) error
 
 	//////////////////////////////////////////////////////
+	//// USER SETTINGS
+
+	GetUserOTAEnabled(userID string) (bool, error)
+	SetUserOTAEnabled(userID string, enabled bool) error
+
+	//////////////////////////////////////////////////////
 	//// REPORTS
 
 	AddReport(rep *report.Report) error

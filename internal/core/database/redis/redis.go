@@ -40,7 +40,8 @@ const (
 	keyAntiraidLimit = "ANTIRAID:LIMIT"
 	keyAntiraidBurst = "ANTIRAID:BURST"
 
-	keyUserAPIToken = "USER:APITOKEN"
+	keyUserAPIToken  = "USER:APITOKEN"
+	keyUserEnableOTA = "USER:ENABLEOTA"
 
 	keyAPISession = "API:SESSION"
 )
@@ -805,4 +806,35 @@ func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 	}
 
 	return val, nil
+}
+
+func (m *RedisMiddleware) GetUserOTAEnabled(userID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyUserEnableOTA, userID)
+
+	var val bool
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.Database.GetUserOTAEnabled(userID)
+		if err != nil {
+			return false, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
+	var key = fmt.Sprintf("%s:%s", keyUserEnableOTA, userID)
+
+	if err := m.client.Set(key, enabled, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.Database.SetUserOTAEnabled(userID, enabled)
 }

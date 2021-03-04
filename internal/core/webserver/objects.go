@@ -264,6 +264,10 @@ type AntiraidSettings struct {
 	Burst              int  `json:"burst"`
 }
 
+type UsersettingsOTA struct {
+	Enabled bool `json:"enabled"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
