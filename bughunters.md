@@ -13,6 +13,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `3` |
 | [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
 | [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `3` |
+| [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
 | [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195) |  | `2` |
 | [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41) |  | `1` |
 | [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57) |  | `1` |
@@ -20,7 +21,6 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
 | [pavll](https://github.com/pavll) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `1` |
 | [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
-| [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162) |  | `1` |
 | [ENOT1KK](https://github.com/ENOT1KK) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
 | [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
 

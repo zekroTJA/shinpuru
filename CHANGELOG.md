@@ -12,16 +12,14 @@
   logged in in the browser, which is especially useful on mobile devices.  
   ![](https://i.imgur.com/BrpZcOY.png)
 
-<!-- ## Bug Fixes
+## Security Fixes
 
--  -->
+- The download of guild backups now requires the `sp.guild.admin.backup` permission, because the backup file
+  contains confidential information like hidden channel details or guild settings. [#208]
 
 ## Backstage
 
-- Update API of package [multierror](https://pkg.go.dev/github.com/zekroTJA/shinpuru/pkg/multierror).
-- Refactored all around the report packages to now use a proper type "enum" and for a bit more logical package structure.  
-<sub>(Tho, the general package structure of shinpuru is still horrible and really really really needs a complete refactor process...)</sub>
-- Frontend updated to Angular 11.
+- Add package [timerstack](https://pkg.go.dev/github.com/zekroTJA/shinpuru/pkg/timerstack).
 
 # Docker
 
