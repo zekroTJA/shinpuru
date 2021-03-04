@@ -26,7 +26,7 @@
 
   <ng-template #tmpLogin>
     <div id="user-info" class="d-flex">
-      <a href="/_/loginwithdiscord">
+      <a (click)="onLogin()">
         <button class="btn-login">
           <img height="20" src="/assets/dc-logo.svg"/>
           LOGIN
@@ -57,10 +57,10 @@
   </div>
 </ng-template>
 
-<ng-template #apitoken>
+<ng-template #usersettings>
   <div class="popup-entry">
-    <img src="/assets/key.svg" />
-    <p>api token</p>
+    <img src="/assets/settings.svg" />
+    <p>user settings</p>
   </div>
 </ng-template>
 

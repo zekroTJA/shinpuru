@@ -8,7 +8,7 @@ import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
 import { SettingsComponent } from './routes/settings/settings.component';
 import { InfoComponent } from './routes/info/info.component';
-import { APITokenComponent } from './routes/apitoken/apitoken.component';
+import { UserSettingsComponent } from './routes/usersettings/usersettingscomponent';
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { CommandsComponent } from './routes/commands/commands.component';
 import { GuildAdminKarmaComponent } from './routes/guild-admin/karma/ga-karma.component';
@@ -73,8 +73,8 @@ const routes: Routes = [
     component: InfoComponent,
   },
   {
-    path: 'apitoken',
-    component: APITokenComponent,
+    path: 'usersettings',
+    component: UserSettingsComponent,
   },
   {
     path: 'commands',

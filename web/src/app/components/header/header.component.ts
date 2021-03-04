@@ -21,8 +21,8 @@ export class HeaderComponent implements OnInit {
   @ViewChild('sysinfo', { static: true })
   private sysinfoTemplate: TemplateRef<any>;
 
-  @ViewChild('apitoken', { static: true })
-  private apiTokenTemplate: TemplateRef<any>;
+  @ViewChild('usersettings', { static: true })
+  private usersettingsTemplate: TemplateRef<any>;
 
   @ViewChild('documentation', { static: true })
   private documentationTemplate: TemplateRef<any>;
@@ -66,10 +66,14 @@ export class HeaderComponent implements OnInit {
         action: this.commands.bind(this),
       } as PopupElement,
       {
-        el: this.apiTokenTemplate,
-        action: this.apitoken.bind(this),
+        el: this.usersettingsTemplate,
+        action: this.usersettings.bind(this),
       } as PopupElement
     );
+  }
+
+  public onLogin() {
+    window.location.assign('/_/loginwithdiscord');
   }
 
   public get routes(): string[][] {
@@ -98,8 +102,8 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/info']);
   }
 
-  private apitoken() {
-    this.router.navigate(['/apitoken']);
+  private usersettings() {
+    this.router.navigate(['/usersettings']);
   }
 
   private documentaiton() {

@@ -163,7 +163,14 @@ export class APIService {
   private readonly errorCatcher = (err) => {
     console.error(err);
     if (err.status === 401) {
-      this.router.navigate(['/login']);
+      let path = window.location.pathname;
+      if (path.startsWith('/login')) return;
+      if (!(path?.length > 0)) path = null;
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirect: path,
+        },
+      });
     } else {
       this.toasts.push(err.message, 'Request Error', 'error', 10000);
     }

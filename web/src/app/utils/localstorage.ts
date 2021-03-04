@@ -13,4 +13,8 @@ export default class LocalStorageUtil {
     }
     return JSON.parse(valJSON) as T;
   }
+
+  public static remove(key: string) {
+    window.localStorage.removeItem(key);
+  }
 }

@@ -26,7 +26,7 @@ import { SettingsComponent } from './routes/settings/settings.component';
 import { SpinnerButtonComponent } from './components/spinner-button/spinner-button.component';
 import { InfoComponent } from './routes/info/info.component';
 import { SliderComponent } from './components/slider/slider.component';
-import { APITokenComponent } from './routes/apitoken/apitoken.component';
+import { UserSettingsComponent } from './routes/usersettings/usersettingscomponent';
 import { KarmaTileComponent } from './components/karma-tile/karma-tile.component';
 import { ScoreboardComponent } from './routes/scoreboard/scoreboard.component';
 import { KarmaScoreboardComponent } from './components/karma-scoreboard/karma-scoreboard.component';
@@ -65,7 +65,7 @@ import { ProtipComponent } from './components/protip/protip.component';
     SpinnerButtonComponent,
     InfoComponent,
     SliderComponent,
-    APITokenComponent,
+    UserSettingsComponent,
     KarmaTileComponent,
     ScoreboardComponent,
     KarmaScoreboardComponent,
