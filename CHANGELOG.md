@@ -1,18 +1,16 @@
-1.8.0
+1.9.0
 
 ## Minor Updates
 
-- **Karma Blocklist [#201]**  
-  You can now block users from the karma system in the guild karma settings. Blocked users are not able to give or remove karma of other members and are also unable to gain karma by other users.  
-  ![](https://i.imgur.com/ZokXOze.gif)
+- **Web Interface Responsiveness** [#172, #192]  
+  The web interface is now more web responsive and for better usability on mobile devices.
 
-- **Web Interface: Permission Input Autocomplete [#203]**  
-  The permission input field in the guild settings of the web interface now has auto complete. 🎉  
-  ![](https://user-images.githubusercontent.com/16734205/109003709-13944700-76a8-11eb-92db-1eff56d1b520.gif)
-
-- **Ban message now contains unban link [#204]**  
-  The ban message, which is sent to a user banned from a guild with shinpuru's ban command, now contains a mention to the link to the unban request form in the web interface to submit unban requests.  
-  ![](https://i.imgur.com/XilUjgV.png)
+- **Login Command** [#206]  
+  A new command [`sp!login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) was added which
+  sends a message to the executor via DM *(if enabeld by the user)* containing a Link with a one time
+  authentication token which is valid for 1 minute which logs you in to the web interface without being
+  logged in in the browser, which is especially useful on mobile devices.  
+  ![](https://i.imgur.com/BrpZcOY.png)
 
 <!-- ## Bug Fixes
 
@@ -31,5 +29,5 @@
 
 Pull the docker image of this release:
 ```
-$ docker pull zekro/shinpuru:1.8.0
+$ docker pull zekro/shinpuru:1.9.0
 ```
