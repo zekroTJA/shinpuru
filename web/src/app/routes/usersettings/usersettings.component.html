@@ -71,9 +71,10 @@
         <app-spinner *ngIf="!ota" [started]="true"></app-spinner>
         <div *ngIf="ota" class="mt-3">
             <p>
-                OTA is disabled by default, because it uses URL queries to pass the OTA credential, which is
-                considered to be unsafe. The risk of attack is minimized by setting the lifetime of the OTA token
-                to 60 seconds.
+                OTA is disabled by default, because it uses URL queries to pass the OTA credential, which
+                <i>might</i> be insecure. Read 
+                <a href="https://github.com/zekroTJA/shinpuru/wiki/One-Time-Authentication-(OTA)" target="_blank" class="link">here</a> 
+                about how OTA works and which security considerations are to keep in mind.
             </p>
             <app-slider [(ngModel)]="ota.enabled">Enable</app-slider>
             <button class="bg-green" (click)="onOTASave()">SAVE</button>
