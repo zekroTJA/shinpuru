@@ -49,7 +49,7 @@ func (c *CmdLogin) IsExecutableInDMChannels() bool {
 func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	var ch *discordgo.Channel
 
-	if ctx.GetChannel().Type == discordgo.ChannelTypeDM {
+	if ctx.GetChannel().Type == discordgo.ChannelTypeGroupDM {
 		ch = ctx.GetChannel()
 	} else {
 		if ch, err = ctx.GetSession().UserChannelCreate(ctx.GetUser().ID); err != nil {
@@ -68,9 +68,10 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 
 	if !enabled {
 		enableLink := fmt.Sprintf("%s/usersettings", cfg.WebServer.PublicAddr)
-		return util.SendEmbedError(ctx.GetSession(), ch.ID,
+		err = util.SendEmbedError(ctx.GetSession(), ch.ID,
 			"One Time Authorization is disabled by default. If you want to use it, you need "+
 				"to enable it first in your [**user settings page**]("+enableLink+").").Error()
+		return c.wrapDmError(ctx, err)
 	}
 
 	token, err := ota.GetKey(ctx.GetUser().ID)
@@ -86,12 +87,8 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	}
 
 	msg, err := ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
-	if discordutil.IsCanNotOpenDmToUserError(err) {
-		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-			"You need to enable DMs from users of this guild so that a secret authentication link "+
-				"can be sent to you via DM.").Error()
-	} else if err != nil {
-		return
+	if err != nil {
+		return c.wrapDmError(ctx, err)
 	}
 
 	timerstack.New().After(1*time.Minute, func() bool {
@@ -103,5 +100,14 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		return true
 	}).RunBlocking()
 
+	return err
+}
+
+func (c *CmdLogin) wrapDmError(ctx shireikan.Context, err error) error {
+	if discordutil.IsCanNotOpenDmToUserError(err) {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"You need to enable DMs from users of this guild so that a secret authentication link "+
+				"can be sent to you via DM.").Error()
+	}
 	return err
 }
