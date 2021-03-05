@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gabriel-vasile/mimetype"
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -86,6 +88,20 @@ func (ws *WebServer) handlerGetOta(ctx *routing.Context) error {
 
 	if !enabled {
 		return jsonError(ctx, errOTADisabled, fasthttp.StatusUnauthorized)
+	}
+
+	if ch, err := ws.session.UserChannelCreate(userID); err == nil {
+		ipaddr := ctx.Conn().RemoteAddr().String()
+		useragent := string(ctx.Request.Header.UserAgent())
+		emb := &discordgo.MessageEmbed{
+			Color: static.ColorEmbedOrange,
+			Description: fmt.Sprintf("Someone logged in to the web interface as you.\n"+
+				"\n**Details:**\nIP Address: ||`%s`||\nUser Agent: `%s`\n\n"+
+				"If this was not you, consider disabling OTA [**here**](%s/usersettings).",
+				ipaddr, useragent, ws.config.WebServer.PublicAddr),
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+		ws.session.ChannelMessageSendEmbed(ch.ID, emb)
 	}
 
 	return ws.auth.LoginSuccessHandler(ctx, userID)
