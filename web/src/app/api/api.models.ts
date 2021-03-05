@@ -238,3 +238,7 @@ export interface UnbanRequest {
   processed_message: string;
   created: Date;
 }
+
+export interface UserSettingsOTA {
+  enabled: boolean;
+}

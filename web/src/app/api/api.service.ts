@@ -28,6 +28,7 @@ import {
   AntiraidSettings,
   JoinlogEntry,
   UnbanRequest,
+  UserSettingsOTA,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -100,6 +101,9 @@ export class APIService {
 
   private readonly rcGuildSettings = (guildID: string) =>
     `${this.rcGuilds(guildID)}/settings`;
+
+  private readonly rcUserSettings = (rc: string) =>
+    `${this.rcAPI('usersettings')}${rc ? '/' + rc : ''}`;
 
   private readonly rcGuildSettingsKarma = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/karma`;
@@ -709,6 +713,20 @@ export class APIService {
   public postUnbanrequests(request: UnbanRequest): Observable<UnbanRequest> {
     return this.http
       .post(this.rcUnbanRequests(), request, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUserSettingsOTA(): Observable<UserSettingsOTA> {
+    return this.http
+      .get(this.rcUserSettings('ota'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUserSettingsOTA(
+    ota: UserSettingsOTA
+  ): Observable<UserSettingsOTA> {
+    return this.http
+      .post(this.rcUserSettings('ota'), ota, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

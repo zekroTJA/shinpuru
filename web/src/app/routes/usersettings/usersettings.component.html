@@ -64,4 +64,13 @@
         </div>
     </div>
     
+    <div class="settings-container">
+        <h2>ONE TIME AUTH</h2>
+        <app-spinner *ngIf="!ota" [started]="true"></app-spinner>
+        <div *ngIf="ota" class="mt-3">
+            <app-slider [(ngModel)]="ota.enabled">Enable</app-slider>
+            <button class="bg-green" (click)="onOTASave()">SAVE</button>
+        </div>
+    </div>
+
 </div>

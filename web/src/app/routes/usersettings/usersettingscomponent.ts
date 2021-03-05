@@ -3,7 +3,7 @@
 import { Component } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import dateFormat from 'dateformat';
-import { APIToken } from 'src/app/api/api.models';
+import { APIToken, UserSettingsOTA } from 'src/app/api/api.models';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ToastService } from 'src/app/components/toast/toast.service';
@@ -19,6 +19,8 @@ export class UserSettingsComponent {
   public token: APIToken;
   public notGenerated = false;
   public revealToken = false;
+
+  public ota: UserSettingsOTA;
 
   constructor(private api: APIService, private toats: ToastService) {
     this.fetch();
@@ -58,6 +60,18 @@ export class UserSettingsComponent {
     );
   }
 
+  public onOTASave() {
+    this.api.postUserSettingsOTA(this.ota).subscribe((data) => {
+      this.ota = data;
+      this.toats.push(
+        'One Time Auth settings successfully updated.',
+        'OTA Settings Updated',
+        'green',
+        3000
+      );
+    });
+  }
+
   private fetch() {
     this.api
       .getAPIToken(true)
@@ -66,5 +80,10 @@ export class UserSettingsComponent {
         this.notGenerated = data == null;
         this.token = data;
       });
+
+    this.api.getUserSettingsOTA().subscribe((data) => {
+      console.log(data);
+      this.ota = data;
+    });
   }
 }

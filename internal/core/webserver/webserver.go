@@ -301,4 +301,9 @@ func (ws *WebServer) registerHandlers() {
 		Get("/token", ws.handlerGetToken).
 		Post(ws.handlerPostToken).
 		Delete(ws.handlerDeleteToken)
+
+	usersettings := api.Group("/usersettings")
+	usersettings.
+		Get("/ota", ws.handlerGetUsersettingsOta).
+		Post(ws.handlerPostUsersettingsOta)
 }
