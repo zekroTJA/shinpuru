@@ -132,7 +132,7 @@ func (ws *WebServer) handlerFiles(ctx *routing.Context) error {
 	}
 
 	if stringutil.HasSuffixAny(path, ".js", ".css") ||
-		stringutil.HasPrefixAny(path, "/assets", "favicon.ico") {
+		stringutil.HasPrefixAny(path, "/assets", "/favicon.ico") {
 
 		fileHandlerStatic.NewRequestHandler()(ctx.RequestCtx)
 		ctx.Abort()
