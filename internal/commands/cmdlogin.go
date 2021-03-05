@@ -49,7 +49,7 @@ func (c *CmdLogin) IsExecutableInDMChannels() bool {
 func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	var ch *discordgo.Channel
 
-	if ctx.GetChannel().Type == discordgo.ChannelTypeGroupDM {
+	if ctx.GetChannel().Type == discordgo.ChannelTypeDM {
 		ch = ctx.GetChannel()
 	} else {
 		if ch, err = ctx.GetSession().UserChannelCreate(ctx.GetUser().ID); err != nil {
