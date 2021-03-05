@@ -91,7 +91,7 @@ func (ws *WebServer) handlerGetOta(ctx *routing.Context) error {
 	}
 
 	if ch, err := ws.session.UserChannelCreate(userID); err == nil {
-		ipaddr := ctx.Conn().RemoteAddr().String()
+		ipaddr := getIPAddr(ctx)
 		useragent := string(ctx.Request.Header.UserAgent())
 		emb := &discordgo.MessageEmbed{
 			Color: static.ColorEmbedOrange,
