@@ -10,12 +10,16 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 )
 
-var errInvalidOTAToken = errors.New("invalid one time auth token")
+var (
+	errInvalidOTAToken = errors.New("invalid one time auth token")
+	errOTADisabled     = errors.New("ota disabled by user")
+)
 
 // ---------------------------------------------------------------------------
 // - GET /imagestore/:id
@@ -73,6 +77,15 @@ func (ws *WebServer) handlerGetOta(ctx *routing.Context) error {
 	userID, err := ws.ota.ValidateKey(token)
 	if err != nil {
 		return jsonError(ctx, errInvalidOTAToken, fasthttp.StatusUnauthorized)
+	}
+
+	enabled, err := ws.db.GetUserOTAEnabled(userID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	if !enabled {
+		return jsonError(ctx, errOTADisabled, fasthttp.StatusUnauthorized)
 	}
 
 	return ws.auth.LoginSuccessHandler(ctx, userID)
