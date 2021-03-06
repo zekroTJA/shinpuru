@@ -6,7 +6,6 @@ import (
 	"os/signal"
 	"runtime/pprof"
 	"syscall"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -14,7 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -150,7 +149,10 @@ func main() {
 		session.Close()
 	}()
 
-	ota, err := onetimeauth.New(1 * time.Minute)
+	// Initialize OTA generator
+	ota, err := onetimeauth.New(&onetimeauth.Options{
+		Issuer: "shinpuru v." + util.AppVersion,
+	})
 
 	// Initialize command handler
 	cmdHandler := inits.InitCommandHandler(

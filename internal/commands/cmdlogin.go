@@ -8,9 +8,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
 	"github.com/zekroTJA/shinpuru/pkg/timerstack"
 	"github.com/zekroTJA/shireikan"
 )

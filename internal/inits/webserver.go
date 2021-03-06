@@ -10,9 +10,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/onetimeauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/mimefix"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
 	"github.com/zekroTJA/shireikan"
 )
 

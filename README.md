@@ -194,6 +194,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/multierror`**](pkg/multierror)  
   *Package multierror impements handling multiple errors as one error object.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/onetimeauth`**](pkg/onetimeauth)  
+  *Package onetimeout provides short duration valid JWT tokens which are only valid exactly once.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/permissions`**](pkg/permissions)  
   *Package permissions provides functionalities to calculate, update and merge arrays of permission domain rules. Read this to get more information about how permission domains and rules are working: https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide*
 
