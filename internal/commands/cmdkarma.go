@@ -103,6 +103,10 @@ func (c *CmdKarma) Exec(ctx shireikan.Context) error {
 				Value: karmaListStr,
 			},
 		},
+		Footer: &discordgo.MessageEmbedFooter{
+			Text:    "Issued by " + ctx.GetUser().String(),
+			IconURL: ctx.GetUser().AvatarURL("16x16"),
+		},
 	}
 
 	return util.SendEmbedRaw(ctx.GetSession(), ctx.GetChannel().ID, emb).Error()
