@@ -34,8 +34,14 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 
 	chanID, msg, err := l.db.GetGuildJoinMsg(e.GuildID)
 	if err == nil && msg != "" && chanID != "" {
+		txt := ""
+		if strings.Contains(msg, "[ment]") {
+			txt = e.User.Mention()
+		}
+
 		msg = strings.Replace(msg, "[user]", e.User.Username, -1)
 		msg = strings.Replace(msg, "[ment]", e.User.Mention(), -1)
-		util.SendEmbed(s, chanID, msg, "", 0)
+
+		util.SendEmbed(s, chanID, msg, txt, 0)
 	}
 }

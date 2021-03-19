@@ -21,8 +21,14 @@ func NewListenerMemberRemove(db database.Database) *ListenerMemberRemove {
 func (l *ListenerMemberRemove) Handler(s *discordgo.Session, e *discordgo.GuildMemberRemove) {
 	chanID, msg, err := l.db.GetGuildLeaveMsg(e.GuildID)
 	if err == nil && msg != "" && chanID != "" {
+		txt := ""
+		if strings.Contains(msg, "[ment]") {
+			txt = e.User.Mention()
+		}
+
 		msg = strings.Replace(msg, "[user]", e.User.Username, -1)
 		msg = strings.Replace(msg, "[ment]", e.User.Mention(), -1)
-		util.SendEmbed(s, chanID, msg, "", 0)
+
+		util.SendEmbed(s, chanID, msg, txt, 0)
 	}
 }
