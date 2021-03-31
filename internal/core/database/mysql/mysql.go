@@ -213,6 +213,14 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `voicelogBlocklist` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
 	}
@@ -1401,4 +1409,57 @@ func (m *MysqlMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 		v = "1"
 	}
 	return m.setUserSetting(userID, "enableOTA", v)
+}
+
+func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
+	row, err := m.Db.Query("SELECT channelID FROM voicelogBlocklist WHERE guildID = ?", guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	res = make([]string, 0)
+	var id string
+	for row.Next() {
+		if err = row.Scan(&id); err != nil {
+			return
+		}
+		res = append(res, id)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) IsGuildVoiceLogIgnored(guildID, channelID string) (ok bool, err error) {
+	err = m.Db.QueryRow("SELECT 1 FROM voicelogBlocklist WHERE guildID = ? AND channelID = ?",
+		guildID, channelID).Scan(&ok)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	err = nil
+
+	return
+}
+
+func (m *MysqlMiddleware) SetGuildVoiceLogIngore(guildID, channelID string) (err error) {
+	if ok, err := m.IsGuildVoiceLogIgnored(guildID, channelID); err != nil {
+		return err
+	} else if ok {
+		return nil
+	}
+	_, err = m.Db.Exec("INSERT INTO voicelogBlocklist (guildID, channelID) VALUES (?, ?)",
+		guildID, channelID)
+	return
+}
+
+func (m *MysqlMiddleware) RemoveGuildVoiceLogIgnore(guildID, channelID string) (err error) {
+	_, err = m.Db.Exec("DELETE FROM voicelogBlocklist WHERE guildID = ? AND channelID = ?",
+		guildID, channelID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
 }

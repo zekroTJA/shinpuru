@@ -45,6 +45,11 @@ type Database interface {
 	GetGuildVoiceLog(guildID string) (string, error)
 	SetGuildVoiceLog(guildID, chanID string) error
 
+	GetGuildVoiceLogIgnores(guildID string) ([]string, error)
+	IsGuildVoiceLogIgnored(guildID, channelID string) (bool, error)
+	SetGuildVoiceLogIngore(guildID, channelID string) error
+	RemoveGuildVoiceLogIgnore(guildID, channelID string) error
+
 	GetGuildNotifyRole(guildID string) (string, error)
 	SetGuildNotifyRole(guildID, roleID string) error
 
