@@ -198,9 +198,10 @@ type Database interface {
 
 	SetStarboardConfig(config *models.StarboardConfig) error
 	GetStarboardConfig(guildID string) (*models.StarboardConfig, error)
-	SetStarboardEntry(e *models.StarboardEntry) error
+	SetStarboardEntry(e *models.StarboardEntry) (err error)
 	RemoveStarboardEntry(msgID string) error
 	GetStarboardEntries(guildID string) ([]*models.StarboardEntry, error)
+	GetStarboardEntry(messageID string) (*models.StarboardEntry, error)
 
 	//////////////////////////////////////////////////////
 

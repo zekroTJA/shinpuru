@@ -1580,3 +1580,23 @@ func (m *MysqlMiddleware) GetStarboardEntries(guildID string) (res []*models.Sta
 
 	return
 }
+
+func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.StarboardEntry, err error) {
+	var mediaURLencoded string
+	e = new(models.StarboardEntry)
+	err = m.Db.QueryRow(
+		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score "+
+			"FROM starboardEntries "+
+			"WHERE messageID = ?",
+		messageID).
+		Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score)
+	if err != sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+	err = e.SetMediaURLs(mediaURLencoded)
+
+	return
+}

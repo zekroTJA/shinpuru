@@ -16,19 +16,20 @@ import (
 const (
 	keySetting = "PROP"
 
-	keyGuildPrefix        = "GUILD:PREFIX"
-	keyGuildAutoRole      = "GUILD:AUTOROLE"
-	keyGuildModLog        = "GUILD:MODLOG"
-	keyGuildVoiceLog      = "GUILD:VOICELOG"
-	keyGuildNotifyRole    = "GUILD:NOTROLE"
-	keyGuildGhostPingMsg  = "GUILD:GPMSG"
-	keyGuildJDoodleKey    = "GUILD:JDOODLE"
-	keyGuildInviteBlock   = "GUILD:INVBLOCK"
-	keyGuildBackupEnabled = "GUILD:BACKUP"
-	keyGuildJoinMsg       = "GUILD:JOINMSG"
-	keyGuildLeaveMsg      = "GUILD:LEAVEMSG"
-	keyGuildMuteRole      = "GUILD:MUTEROLE"
-	keyGuildColorReaction = "GUILD:COLORREACTION"
+	keyGuildPrefix          = "GUILD:PREFIX"
+	keyGuildAutoRole        = "GUILD:AUTOROLE"
+	keyGuildModLog          = "GUILD:MODLOG"
+	keyGuildVoiceLog        = "GUILD:VOICELOG"
+	keyGuildNotifyRole      = "GUILD:NOTROLE"
+	keyGuildGhostPingMsg    = "GUILD:GPMSG"
+	keyGuildJDoodleKey      = "GUILD:JDOODLE"
+	keyGuildInviteBlock     = "GUILD:INVBLOCK"
+	keyGuildBackupEnabled   = "GUILD:BACKUP"
+	keyGuildJoinMsg         = "GUILD:JOINMSG"
+	keyGuildLeaveMsg        = "GUILD:LEAVEMSG"
+	keyGuildMuteRole        = "GUILD:MUTEROLE"
+	keyGuildColorReaction   = "GUILD:COLORREACTION"
+	keyGuildStarboardConfig = "GUILD:STARBOARDCONFIG"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -837,4 +838,27 @@ func (m *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 	}
 
 	return m.Database.SetUserOTAEnabled(userID, enabled)
+}
+
+func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config *models.StarboardConfig, err error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, guildID)
+
+	config = new(models.StarboardConfig)
+	err = m.client.Get(key).Scan(config)
+	if err == redis.Nil {
+		config, err = m.Database.GetStarboardConfig(guildID)
+		if err != nil {
+			return
+		}
+		err = m.client.Set(key, config, 0).Err()
+		return
+	}
+
+	return
+}
+
+func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, config.GuildID)
+	err = m.client.Set(key, config, 0).Err()
+	return
 }
