@@ -221,6 +221,28 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `starboardConfig` (" +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
+		"`threshold` int(16) NOT NULL DEFAULT ''," +
+		"`emojiID` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`id`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `starboardEntries` (" +
+		"`messageID` varchar(25) NOT NULL DEFAULT ''," +
+		"`starboardID` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
+		"`authorID` varchar(25) NOT NULL DEFAULT ''," +
+		"`content` text NOT NULL DEFAULT ''," +
+		"`mediaURLs` text NOT NULL DEFAULT ''," +
+		"`score` int(24) NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`messageID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
 	}
@@ -1461,5 +1483,100 @@ func (m *MysqlMiddleware) RemoveGuildVoiceLogIgnore(guildID, channelID string) (
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
+	return
+}
+
+func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
+	res, err := m.Db.Exec(
+		"UPDATE starboardConfig SET "+
+			"channelID = ?, threshold = ?, emojiID = ? "+
+			"WHERE guildID = ?",
+		config.ChannelID, config.Threshold, config.EmojiID, config.GuildID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.Db.Exec(
+			"INSERT INTO apitokens "+
+				"(guildID, channelID, threshold, emojiID) "+
+				"VALUES (?, ?, ?, ?)",
+			config.GuildID, config.ChannelID, config.Threshold, config.EmojiID)
+	}
+	return
+}
+
+func (m *MysqlMiddleware) GetStarboardConfig(guildID string) (config *models.StarboardConfig, err error) {
+	config = new(models.StarboardConfig)
+
+	err = m.Db.QueryRow("SELECT channelID, threshold, emojiID FROM starboardConfig WHERE guildID = ?", guildID).
+		Scan(&config.ChannelID, &config.Threshold, &config.EmojiID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetStarboardEntry(e *models.StarboardEntry) (err error) {
+	res, err := m.Db.Exec(
+		"UPDATE starboardEntries SET "+
+			"score = ? "+
+			"WHERE messageID = ?",
+		e.Score, e.MessageID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.Db.Exec(
+			"INSERT INTO starboardEntries "+
+				"(messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score) "+
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			e.MessageID, e.StarboardID, e.GuildID, e.ChannelID, e.AuthorID, e.Content, e.MediaURLsEncoded(), e.Score)
+	}
+	return
+}
+
+func (m *MysqlMiddleware) RemoveStarboardEntry(msgID string) (err error) {
+	_, err = m.Db.Exec("DELETE FROM starboardEntries WHERE messageID = ?", msgID)
+	return
+}
+
+func (m *MysqlMiddleware) GetStarboardEntries(guildID string) (res []*models.StarboardEntry, err error) {
+	row, err := m.Db.Query(
+		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score "+
+			"FROM starboardEntries "+
+			"WHERE guildID = ?",
+		guildID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	res = make([]*models.StarboardEntry, 0)
+	for row.Next() {
+		e := new(models.StarboardEntry)
+		var mediaURLencoded string
+		err = row.Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score)
+		if err != nil {
+			return
+		}
+		if err = e.SetMediaURLs(mediaURLencoded); err != nil {
+			return
+		}
+		res = append(res, e)
+	}
+
 	return
 }

@@ -194,6 +194,15 @@ type Database interface {
 	FlushAntiraidJoinList(guildID string) error
 
 	//////////////////////////////////////////////////////
+	//// STARBOARD
+
+	SetStarboardConfig(config *models.StarboardConfig) error
+	GetStarboardConfig(guildID string) (*models.StarboardConfig, error)
+	SetStarboardEntry(e *models.StarboardEntry) error
+	RemoveStarboardEntry(msgID string) error
+	GetStarboardEntries(guildID string) ([]*models.StarboardEntry, error)
+
+	//////////////////////////////////////////////////////
 
 	// Deprecated
 	GetImageData(id snowflake.ID) (*imgstore.Image, error)
