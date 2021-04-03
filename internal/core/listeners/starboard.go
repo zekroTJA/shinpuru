@@ -71,7 +71,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil {
-		sbMsg, err := s.ChannelMessageSendEmbed(e.ChannelID, l.getEmbed(msg, e.GuildID, score))
+		sbMsg, err := s.ChannelMessageSendEmbed(starboardConfig.ChannelID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
 			util.Log.Errorf("STARBOARD :: failed sending starboard message: %s", err.Error())
 			return
@@ -91,7 +91,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 			starboardEntry.MediaURLs[i] = a.URL
 		}
 	} else {
-		_, err = s.ChannelMessageEditEmbed(e.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
+		_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
 			util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
 			return
@@ -164,7 +164,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 			return
 		}
 
-		_, err = s.ChannelMessageEditEmbed(e.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
+		_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
 			util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
 			return
