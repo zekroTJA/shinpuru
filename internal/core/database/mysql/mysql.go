@@ -1523,20 +1523,17 @@ func (m *MysqlMiddleware) GetStarboardConfig(guildID string) (config *models.Sta
 }
 
 func (m *MysqlMiddleware) SetStarboardEntry(e *models.StarboardEntry) (err error) {
-	res, err := m.Db.Exec(
-		"UPDATE starboardEntries SET "+
-			"score = ? "+
-			"WHERE messageID = ?",
-		e.Score, e.MessageID)
-	if err != nil {
-		return
-	}
+	var ok bool
+	m.Db.QueryRow("SELECT 1 FROM starboardEntries WHERE messageID = ?",
+		e.MessageID).Scan(&ok)
 
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if ar == 0 {
+	if ok {
+		_, err = m.Db.Exec(
+			"UPDATE starboardEntries SET "+
+				"score = ? "+
+				"WHERE messageID = ?",
+			e.Score, e.MessageID)
+	} else {
 		_, err = m.Db.Exec(
 			"INSERT INTO starboardEntries "+
 				"(messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score) "+
@@ -1590,7 +1587,7 @@ func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.Starboa
 			"WHERE messageID = ?",
 		messageID).
 		Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score)
-	if err != sql.ErrNoRows {
+	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
 	if err != nil {
