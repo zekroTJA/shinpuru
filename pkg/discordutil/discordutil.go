@@ -95,6 +95,16 @@ func GetChannel(s *discordgo.Session, channelID string) (c *discordgo.Channel, e
 	return
 }
 
+// GetMessage first tries to retrieve a message object by passed
+// ID from the discordgo state cache. If there is no value
+// available, the message will be fetched via API.
+func GetMessage(s *discordgo.Session, channelID, messageID string) (c *discordgo.Message, err error) {
+	if c, err = s.State.Message(channelID, messageID); err != nil {
+		c, err = s.ChannelMessage(channelID, messageID)
+	}
+	return
+}
+
 // GetMembers fetches all members of the guild by utilizing
 // paged requests until all members are requested.
 func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, error) {
