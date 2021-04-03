@@ -40,6 +40,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
 	listenerJDoodle := listeners.NewListenerJdoodle(database, pmw)
 	listenerColors := listeners.NewColorListener(database, pmw, config.WebServer.PublicAddr)
+	listenerStarboard := listeners.NewListenerStarboard(database)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
@@ -63,6 +64,9 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(listenerColors.HandlerMessageCreate)
 	session.AddHandler(listenerColors.HandlerMessageEdit)
 	session.AddHandler(listenerColors.HandlerMessageReaction)
+
+	session.AddHandler(listenerStarboard.ListenerReactionAdd)
+	session.AddHandler(listenerStarboard.ListenerReactionRemove)
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		util.StatsMessagesAnalysed++
