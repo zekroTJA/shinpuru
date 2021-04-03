@@ -144,7 +144,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 			ID:          r.ID,
 			Mentionable: r.Mentionable,
 			Name:        r.Name,
-			Permissions: int(r.Permissions),
+			Permissions: r.Permissions,
 			Position:    r.Position,
 		})
 	}

@@ -57,7 +57,7 @@ type Role struct {
 	Hoist       bool   `json:"hoist"`
 	Color       int    `json:"color"`
 	Position    int    `json:"position"`
-	Permissions int    `json:"permissions"`
+	Permissions int64  `json:"permissions"`
 }
 
 // Member contains general properties of the member.

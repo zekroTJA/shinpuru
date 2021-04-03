@@ -137,14 +137,14 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		if po.Type == discordgo.PermissionOverwriteTypeRole {
 			if r, ok := rolesMap[po.ID]; ok && r.Position < highest {
 				if err = ctx.GetSession().ChannelPermissionSet(
-					target.ID, po.ID, discordgo.PermissionOverwriteTypeRole, int(po.Allow&allowMask), int(po.Deny|discordgo.PermissionSendMessages)); err != nil {
+					target.ID, po.ID, discordgo.PermissionOverwriteTypeRole, po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 					return err
 				}
 			}
 		}
 		if po.Type == discordgo.PermissionOverwriteTypeMember && ctx.GetUser().ID != po.ID && ctx.GetSession().State.User.ID != po.ID {
 			if err = ctx.GetSession().ChannelPermissionSet(
-				target.ID, po.ID, discordgo.PermissionOverwriteTypeMember, int(po.Allow&allowMask), int(po.Deny|discordgo.PermissionSendMessages)); err != nil {
+				target.ID, po.ID, discordgo.PermissionOverwriteTypeMember, po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 				return err
 			}
 			if po.ID == target.GuildID {
@@ -185,7 +185,7 @@ func (c *CmdLock) unlock(target *discordgo.Channel, ctx shireikan.Context, db da
 
 	failed := 0
 	for _, po := range permissionOverrides {
-		if err = ctx.GetSession().ChannelPermissionSet(target.ID, po.ID, po.Type, int(po.Allow), int(po.Deny)); err != nil {
+		if err = ctx.GetSession().ChannelPermissionSet(target.ID, po.ID, po.Type, po.Allow, po.Deny); err != nil {
 			failed++
 		}
 	}

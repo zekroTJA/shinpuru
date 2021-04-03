@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
-	github.com/bwmarrin/discordgo v0.23.1
+	github.com/bwmarrin/discordgo v0.23.2
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
