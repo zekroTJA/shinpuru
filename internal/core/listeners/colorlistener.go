@@ -50,12 +50,6 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
-	allowed, _, _ := l.pmw.CheckPermissions(s, e.GuildID, e.UserID, "sp.chat.colorreactions")
-	if !allowed {
-		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.APIName(), e.UserID)
-		return
-	}
-
 	cacheKey := e.MessageID + e.Emoji.ID
 	if !l.emojiCahce.Contains(cacheKey) {
 		return
@@ -63,6 +57,12 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 
 	clr, ok := l.emojiCahce.GetValue(cacheKey).(*color.RGBA)
 	if !ok {
+		return
+	}
+
+	allowed, _, _ := l.pmw.CheckPermissions(s, e.GuildID, e.UserID, "sp.chat.colorreactions")
+	if !allowed {
+		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.APIName(), e.UserID)
 		return
 	}
 
