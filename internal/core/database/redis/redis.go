@@ -844,21 +844,33 @@ func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config *models.Sta
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, guildID)
 
 	config = new(models.StarboardConfig)
-	err = m.client.Get(key).Scan(config)
+	var configB []byte
+	err = m.client.Get(key).Scan(&configB)
 	if err == redis.Nil {
 		config, err = m.Database.GetStarboardConfig(guildID)
 		if err != nil {
 			return
 		}
-		err = m.client.Set(key, config, 0).Err()
+		if configB, err = json.Marshal(config); err != nil {
+			return
+		}
+		err = m.client.Set(key, configB, 0).Err()
+		return
+	}
+	if err != nil {
 		return
 	}
 
+	err = json.Unmarshal(configB, config)
 	return
 }
 
 func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, config.GuildID)
-	err = m.client.Set(key, config, 0).Err()
+	configB, err := json.Marshal(config)
+	if err != nil {
+		return
+	}
+	err = m.client.Set(key, configB, 0).Err()
 	return
 }

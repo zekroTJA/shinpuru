@@ -224,9 +224,9 @@ func (m *MysqlMiddleware) setup() {
 	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `starboardConfig` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
-		"`threshold` int(16) NOT NULL DEFAULT ''," +
+		"`threshold` int(16) NOT NULL DEFAULT '0'," +
 		"`emojiID` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`id`)" +
+		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -238,7 +238,7 @@ func (m *MysqlMiddleware) setup() {
 		"`authorID` varchar(25) NOT NULL DEFAULT ''," +
 		"`content` text NOT NULL DEFAULT ''," +
 		"`mediaURLs` text NOT NULL DEFAULT ''," +
-		"`score` int(24) NOT NULL DEFAULT ''," +
+		"`score` int(24) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`messageID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
