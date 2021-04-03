@@ -87,6 +87,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.RegisterCommand(&commands.CmdLock{})
 	cmdHandler.RegisterCommand(&commands.CmdGuild{})
 	cmdHandler.RegisterCommand(&commands.CmdLogin{})
+	cmdHandler.RegisterCommand(&commands.CmdStarboard{})
 
 	if util.Release != "TRUE" {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
