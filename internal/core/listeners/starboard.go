@@ -158,6 +158,9 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 			if err = l.db.RemoveStarboardEntry(msg.ID); err != nil {
 				util.Log.Errorf("STARBOARD :: failed removing entry: %s", err.Error())
 			}
+			if err = s.ChannelMessageDelete(starboardConfig.ChannelID, starboardEntry.StarboardID); err != nil {
+				util.Log.Errorf("STARBOARD :: failed removing starboard message: %s", err.Error())
+			}
 			return
 		}
 
@@ -189,7 +192,7 @@ func (l *ListenerStarboard) hitsThreshhold(msg *discordgo.Message, starboardConf
 }
 
 func (l *ListenerStarboard) getEmbed(msg *discordgo.Message, guildID string, count int) *discordgo.MessageEmbed {
-	return &discordgo.MessageEmbed{
+	emb := &discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    msg.Author.String(),
 			IconURL: msg.Author.AvatarURL("16x16"),
@@ -202,4 +205,14 @@ func (l *ListenerStarboard) getEmbed(msg *discordgo.Message, guildID string, cou
 			Text: fmt.Sprintf("%d ⭐", count),
 		},
 	}
+
+	if len(msg.Attachments) > 0 {
+		emb.Image = &discordgo.MessageEmbedImage{
+			URL:    msg.Attachments[0].URL,
+			Width:  msg.Attachments[0].Width,
+			Height: msg.Attachments[0].Height,
+		}
+	}
+
+	return emb
 }
