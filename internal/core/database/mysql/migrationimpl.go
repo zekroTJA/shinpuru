@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -62,5 +63,19 @@ func putMigrationVersion(tx *sql.Tx, i int) (err error) {
 		`INSERT INTO migrations (version, applied, releaseTag, releaseCommit)
 		VALUES (?, ?, ?, ?)`,
 		i, time.Now(), util.AppVersion, util.AppCommit)
+	return
+}
+
+// --- UTILITIES ---
+
+func createTableColumnIfNotExists(m *sql.Tx, table, definition string) (err error) {
+	_, err = m.Exec(
+		"ALTER TABLE `" + table +
+			"` ADD COLUMN " + definition)
+
+	if e, ok := err.(*mysql.MySQLError); ok && e.Number == 1060 {
+		err = nil
+	}
+
 	return
 }

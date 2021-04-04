@@ -1,6 +1,8 @@
 package mysql
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 var migrationFuncs = []migrationFunc{
 	migration_0,
@@ -16,9 +18,6 @@ func migration_0(m *sql.Tx) (err error) {
 // VERSION 1:
 // - add property `deleted` to `starboardEntries`
 func migration_1(m *sql.Tx) (err error) {
-	_, err = m.Exec(
-		"ALTER TABLE starboardEntries " +
-			"ADD COLUMN deleted int(1) NOT NULL DEFAULT '0'")
-
-	return
+	return createTableColumnIfNotExists(m,
+		"starboardEntries", "deleted int(1) NOT NULL DEFAULT '0'")
 }
