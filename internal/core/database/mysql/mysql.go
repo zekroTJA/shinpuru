@@ -1503,7 +1503,7 @@ func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 	}
 	if ar == 0 {
 		_, err = m.Db.Exec(
-			"INSERT INTO apitokens "+
+			"INSERT INTO starboardConfig "+
 				"(guildID, channelID, threshold, emojiID) "+
 				"VALUES (?, ?, ?, ?)",
 			config.GuildID, config.ChannelID, config.Threshold, config.EmojiID)
@@ -1531,9 +1531,9 @@ func (m *MysqlMiddleware) SetStarboardEntry(e *models.StarboardEntry) (err error
 	if ok {
 		_, err = m.Db.Exec(
 			"UPDATE starboardEntries SET "+
-				"score = ?, deleted = ? "+
+				"score = ?, deleted = ?, starboardID = ? "+
 				"WHERE messageID = ?",
-			e.Score, e.Deleted, e.MessageID)
+			e.Score, e.Deleted, e.StarboardID, e.MessageID)
 	} else {
 		_, err = m.Db.Exec(
 			"INSERT INTO starboardEntries "+

@@ -11,6 +11,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
+const starboardKarmaGain = 3
+
 type ListenerStarboard struct {
 	db database.Database
 }
@@ -67,7 +69,10 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
-	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil {
+	var giveKarma bool
+	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil || starboardEntry.Deleted {
+		giveKarma = database.IsErrDatabaseNotFound(err) && !starboardEntry.Deleted
+
 		sbMsg, err := s.ChannelMessageSendEmbed(starboardConfig.ChannelID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
 			util.Log.Errorf("STARBOARD :: failed sending starboard message: %s", err.Error())
@@ -83,6 +88,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 			Content:     msg.Content,
 			MediaURLs:   make([]string, len(msg.Attachments)),
 			Score:       score,
+			Deleted:     false,
 		}
 		for i, a := range msg.Attachments {
 			starboardEntry.MediaURLs[i] = a.URL
@@ -101,6 +107,10 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	if err != nil {
 		util.Log.Errorf("STARBOARD :: failed setting starboard entry: %s", err.Error())
 		return
+	}
+
+	if giveKarma {
+		l.addKarma(e.GuildID, msg.Author.ID)
 	}
 }
 
@@ -152,19 +162,15 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 	} else {
 		ok, score := l.hitsThreshhold(msg, starboardConfig)
 		if !ok {
-			if err = l.db.RemoveStarboardEntry(msg.ID); err != nil {
-				util.Log.Errorf("STARBOARD :: failed removing entry: %s", err.Error())
-			}
+			starboardEntry.Deleted = true
 			if err = s.ChannelMessageDelete(starboardConfig.ChannelID, starboardEntry.StarboardID); err != nil {
 				util.Log.Errorf("STARBOARD :: failed removing starboard message: %s", err.Error())
 			}
-			return
-		}
-
-		_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
-		if err != nil {
-			util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
-			return
+		} else {
+			_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
+			if err != nil {
+				util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
+			}
 		}
 
 		starboardEntry.Score = score
@@ -212,4 +218,29 @@ func (l *ListenerStarboard) getEmbed(msg *discordgo.Message, guildID string, cou
 	}
 
 	return emb
+}
+
+func (l *ListenerStarboard) addKarma(guildID, authorID string) {
+	enabled, err := l.db.GetKarmaState(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		util.Log.Errorf("failed getting karma state (gid %s): %s", guildID, err.Error())
+		return
+	}
+	if !enabled {
+		return
+	}
+
+	isBlacklisted, err := l.db.IsKarmaBlockListed(guildID, authorID)
+	if err != nil {
+		util.Log.Errorf("STARBOARD :: failed checking karma blocklist %s: %s", authorID, err.Error())
+		return
+	}
+	if isBlacklisted {
+		return
+	}
+
+	if err = l.db.UpdateKarma(authorID, guildID, starboardKarmaGain); err != nil {
+		util.Log.Errorf("STARBOARD :: failed adding user karma: %s", err.Error())
+		return
+	}
 }

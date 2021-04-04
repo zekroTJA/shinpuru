@@ -7,10 +7,14 @@ var migrationFuncs = []migrationFunc{
 	migration_1,
 }
 
+// VERSION 0
+// - base state
 func migration_0(m *sql.Tx) (err error) {
 	return
 }
 
+// VERSION 1:
+// - add property `deleted` to `starboardEntries`
 func migration_1(m *sql.Tx) (err error) {
 	_, err = m.Exec(
 		"ALTER TABLE starboardEntries " +
