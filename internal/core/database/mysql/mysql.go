@@ -239,6 +239,7 @@ func (m *MysqlMiddleware) setup() {
 		"`content` text NOT NULL DEFAULT ''," +
 		"`mediaURLs` text NOT NULL DEFAULT ''," +
 		"`score` int(24) NOT NULL DEFAULT '0'," +
+		"`deleted` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`messageID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -1530,15 +1531,15 @@ func (m *MysqlMiddleware) SetStarboardEntry(e *models.StarboardEntry) (err error
 	if ok {
 		_, err = m.Db.Exec(
 			"UPDATE starboardEntries SET "+
-				"score = ? "+
+				"score = ?, deleted = ? "+
 				"WHERE messageID = ?",
-			e.Score, e.MessageID)
+			e.Score, e.Deleted, e.MessageID)
 	} else {
 		_, err = m.Db.Exec(
 			"INSERT INTO starboardEntries "+
-				"(messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score) "+
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-			e.MessageID, e.StarboardID, e.GuildID, e.ChannelID, e.AuthorID, e.Content, e.MediaURLsEncoded(), e.Score)
+				"(messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score, deleted) "+
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			e.MessageID, e.StarboardID, e.GuildID, e.ChannelID, e.AuthorID, e.Content, e.MediaURLsEncoded(), e.Score, e.Deleted)
 	}
 	return
 }
@@ -1550,7 +1551,7 @@ func (m *MysqlMiddleware) RemoveStarboardEntry(msgID string) (err error) {
 
 func (m *MysqlMiddleware) GetStarboardEntries(guildID string) (res []*models.StarboardEntry, err error) {
 	row, err := m.Db.Query(
-		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score "+
+		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score, deleted "+
 			"FROM starboardEntries "+
 			"WHERE guildID = ?",
 		guildID)
@@ -1565,7 +1566,7 @@ func (m *MysqlMiddleware) GetStarboardEntries(guildID string) (res []*models.Sta
 	for row.Next() {
 		e := new(models.StarboardEntry)
 		var mediaURLencoded string
-		err = row.Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score)
+		err = row.Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score, &e.Deleted)
 		if err != nil {
 			return
 		}
@@ -1582,11 +1583,11 @@ func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.Starboa
 	var mediaURLencoded string
 	e = new(models.StarboardEntry)
 	err = m.Db.QueryRow(
-		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score "+
+		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score, deleted "+
 			"FROM starboardEntries "+
 			"WHERE messageID = ?",
 		messageID).
-		Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score)
+		Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score, &e.Deleted)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}

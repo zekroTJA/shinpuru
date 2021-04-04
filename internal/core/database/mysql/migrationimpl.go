@@ -7,7 +7,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-const currentDbVersion = 0
+const currentDbVersion = 1
 
 type migrationFunc func(*sql.Tx) error
 

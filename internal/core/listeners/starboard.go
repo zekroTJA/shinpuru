@@ -55,9 +55,6 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		util.Log.Errorf("STARBOARD :: failed getting message: %s", err.Error())
 		return
 	}
-	// if msg.Author.ID == e.UserID {
-	// 	return
-	// }
 
 	ok, score := l.hitsThreshhold(msg, starboardConfig)
 	if !ok {

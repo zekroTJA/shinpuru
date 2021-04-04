@@ -21,6 +21,7 @@ type StarboardEntry struct {
 	Content     string
 	MediaURLs   []string
 	Score       int
+	Deleted     bool
 }
 
 func (e *StarboardEntry) MediaURLsEncoded() string {
