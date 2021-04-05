@@ -43,7 +43,7 @@ require (
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
 	github.com/zekroTJA/ratelimit v1.0.0
-	github.com/zekroTJA/shireikan v0.3.4
+	github.com/zekroTJA/shireikan v0.4.0
 	github.com/zekroTJA/timedmap v1.3.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect

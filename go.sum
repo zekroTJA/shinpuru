@@ -554,6 +554,8 @@ github.com/zekroTJA/ratelimit v1.0.0 h1:n8Zhu1+E1m6FrxqKx7B/4kDQGGU2uC4ILaGA5MJH
 github.com/zekroTJA/ratelimit v1.0.0/go.mod h1:vMj8LMv+KSN8vQASf1Y7f5Lxz12XTMXFhNVghnzOIgI=
 github.com/zekroTJA/shireikan v0.3.4 h1:/4VnMlP6yN7hwwcK4X3OK9sd7ynUbAabizeWLPc5EsM=
 github.com/zekroTJA/shireikan v0.3.4/go.mod h1:RwaE2svJ/dUzKIpw04gC0loA5rWAMU8eKKCRDnmck+4=
+github.com/zekroTJA/shireikan v0.4.0 h1:P3cG3GJathHYkt68a08UXt3GtZGNkUIhzIZ6vU8ky6A=
+github.com/zekroTJA/shireikan v0.4.0/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
 github.com/zekroTJA/timedmap v1.3.0 h1:IDpZoOfqdCmQWMVUgh9Iswee+TDXBPve6pOCo3xy33U=
 github.com/zekroTJA/timedmap v1.3.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 go.etcd.io/bbolt v1.3.3 h1:MUGmc65QhB3pIlaQ5bB4LwqSj6GIonVJXpZiaKNyaKk=
