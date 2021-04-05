@@ -11,12 +11,18 @@ import (
 // to the Discord API application and using the
 // OAuth2 workflow for web frontend authorization.
 type Discord struct {
-	Token          string
-	GeneralPrefix  string
-	OwnerID        string
-	ClientID       string
-	ClientSecret   string
-	GuildBackupLoc string
+	Token                  string
+	GeneralPrefix          string
+	OwnerID                string
+	ClientID               string
+	ClientSecret           string
+	GuildBackupLoc         string
+	GlobalCommandRateLimit *GlobalCommandRatelimit
+}
+
+type GlobalCommandRatelimit struct {
+	Burst        int `json:"burst"`
+	LimitSeconds int `json:"limitseconds"`
 }
 
 // DatabaseCreds holds credentials to connect to
@@ -175,6 +181,10 @@ func GetDefaultConfig() *Config {
 		Version: 6,
 		Discord: &Discord{
 			GeneralPrefix: "sp!",
+			GlobalCommandRateLimit: &GlobalCommandRatelimit{
+				Burst:        5,
+				LimitSeconds: 3,
+			},
 		},
 		Permissions: &Permissions{
 			DefaultUserRules:  static.DefaultUserRules,

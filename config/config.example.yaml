@@ -19,6 +19,14 @@ discord:
   # The client secret for the bot's application account
   # Get this from https://discord.com/developers/applications
   clientsecret: "273n9awshbr3w7zb5cq3ucbq234q43q"
+  # Specify properties for the global command
+  # rate limiter middleware.
+  globalcommandratelimit:
+    # Rate limit bucket token size.
+    burst: 1
+    # Rate limit bucket token regeneration
+    # in seconds.
+    limitseconds: 10
 
 # Default permissions for users and admins
 permissions:

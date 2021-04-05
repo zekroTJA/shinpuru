@@ -45,6 +45,11 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 	cmdHandler.SetObject("pmw", pmw)
 	cmdHandler.SetObject("onetimeauth", ota)
 
+	if c := cfg.Discord.GlobalCommandRateLimit; c != nil && c.Burst > 0 && c.LimitSeconds > 0 {
+		cmdHandler.RegisterMiddleware(
+			middleware.NewGlobalRateLimitMiddleware(c.Burst, time.Duration(c.LimitSeconds)*time.Second))
+	}
+
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
 	cmdHandler.RegisterMiddleware(&middleware.CommandStatsMiddleware{})
