@@ -17,6 +17,7 @@ type StarboardConfig struct {
 	ChannelID string
 	Threshold int
 	EmojiID   string
+	KarmaGain int
 }
 
 type StarboardEntry struct {

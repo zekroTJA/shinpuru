@@ -226,6 +226,7 @@ func (m *MysqlMiddleware) setup() {
 		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
 		"`threshold` int(16) NOT NULL DEFAULT '0'," +
 		"`emojiID` text NOT NULL DEFAULT ''," +
+		"`karmaGain` int(16) NOT NULL DEFAULT '3'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -1490,9 +1491,9 @@ func (m *MysqlMiddleware) RemoveGuildVoiceLogIgnore(guildID, channelID string) (
 func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
 	res, err := m.Db.Exec(
 		"UPDATE starboardConfig SET "+
-			"channelID = ?, threshold = ?, emojiID = ? "+
+			"channelID = ?, threshold = ?, emojiID = ?, karmaGain = ? "+
 			"WHERE guildID = ?",
-		config.ChannelID, config.Threshold, config.EmojiID, config.GuildID)
+		config.ChannelID, config.Threshold, config.EmojiID, config.KarmaGain, config.GuildID)
 	if err != nil {
 		return
 	}
@@ -1504,9 +1505,9 @@ func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 	if ar == 0 {
 		_, err = m.Db.Exec(
 			"INSERT INTO starboardConfig "+
-				"(guildID, channelID, threshold, emojiID) "+
-				"VALUES (?, ?, ?, ?)",
-			config.GuildID, config.ChannelID, config.Threshold, config.EmojiID)
+				"(guildID, channelID, threshold, emojiID, karmaGain) "+
+				"VALUES (?, ?, ?, ?, ?)",
+			config.GuildID, config.ChannelID, config.Threshold, config.EmojiID, config.KarmaGain)
 	}
 	return
 }
@@ -1514,8 +1515,8 @@ func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 func (m *MysqlMiddleware) GetStarboardConfig(guildID string) (config *models.StarboardConfig, err error) {
 	config = new(models.StarboardConfig)
 
-	err = m.Db.QueryRow("SELECT channelID, threshold, emojiID FROM starboardConfig WHERE guildID = ?", guildID).
-		Scan(&config.ChannelID, &config.Threshold, &config.EmojiID)
+	err = m.Db.QueryRow("SELECT channelID, threshold, emojiID, karmaGain FROM starboardConfig WHERE guildID = ?", guildID).
+		Scan(&config.ChannelID, &config.Threshold, &config.EmojiID, &config.KarmaGain)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}

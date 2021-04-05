@@ -11,8 +11,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
-const starboardKarmaGain = 3
-
 type ListenerStarboard struct {
 	db database.Database
 }
@@ -110,7 +108,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	if giveKarma {
-		l.addKarma(e.GuildID, msg.Author.ID)
+		l.addKarma(e.GuildID, msg.Author.ID, starboardConfig.KarmaGain)
 	}
 }
 
@@ -220,7 +218,7 @@ func (l *ListenerStarboard) getEmbed(msg *discordgo.Message, guildID string, cou
 	return emb
 }
 
-func (l *ListenerStarboard) addKarma(guildID, authorID string) {
+func (l *ListenerStarboard) addKarma(guildID, authorID string, karmaGain int) {
 	enabled, err := l.db.GetKarmaState(guildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		util.Log.Errorf("failed getting karma state (gid %s): %s", guildID, err.Error())
@@ -239,7 +237,7 @@ func (l *ListenerStarboard) addKarma(guildID, authorID string) {
 		return
 	}
 
-	if err = l.db.UpdateKarma(authorID, guildID, starboardKarmaGain); err != nil {
+	if err = l.db.UpdateKarma(authorID, guildID, karmaGain); err != nil {
 		util.Log.Errorf("STARBOARD :: failed adding user karma: %s", err.Error())
 		return
 	}

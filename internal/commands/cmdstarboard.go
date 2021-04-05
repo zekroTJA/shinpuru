@@ -27,8 +27,9 @@ func (c *CmdStarboard) GetDescription() string {
 
 func (c *CmdStarboard) GetHelp() string {
 	return "`starboard channel (<channelResolvable>)` - define a starboard channel\n" +
-		"`starboard threshold <inr>` - define a threshold for reaction count\n" +
+		"`starboard threshold <int>` - define a threshold for reaction count\n" +
 		"`starboard emote <emoteName>` - define an emote to be used as starboard reaction\n" +
+		"`starboard karma <int>` - define the amount of karma gained\n" +
 		"`starboard disable` - disable starboard"
 }
 
@@ -111,6 +112,18 @@ func (c *CmdStarboard) Exec(ctx shireikan.Context) (err error) {
 		}
 		starboardConfig.EmojiID = emote
 
+	case "karma", "karmagain":
+		starboardConfig.KarmaGain, err = ctx.GetArgs().Get(1).AsInt()
+		if err != nil || starboardConfig.KarmaGain < 0 || starboardConfig.KarmaGain > 100_000 {
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+				"Threshold must be a valid number larger or equal `0`.").
+				DeleteAfter(15 * time.Second).
+				Error()
+		}
+
+	case "disable", "reset", "unset", "off":
+		starboardConfig.ChannelID = ""
+
 	default:
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid arguments. Use `help joinmsg` to get help about how to use this command.").
@@ -136,8 +149,11 @@ func (c *CmdStarboard) setConfig(
 	}
 
 	msg := fmt.Sprintf(
-		"Set starboard config:\n\nChannel: <#%s>\nThreshold: `%d`\nEmote: %s",
-		cfg.ChannelID, cfg.Threshold, cfg.EmojiID)
+		"Set starboard config:\n\nChannel: <#%s>\nThreshold: `%d`\nEmote: %s\nKarma Gain: `%d`",
+		cfg.ChannelID, cfg.Threshold, cfg.EmojiID, cfg.KarmaGain)
+	if cfg.ChannelID == "" {
+		msg = "Starboard disabled. Set a channel as starboard channel to enable the starboard."
+	}
 	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID, msg, "", 0).
 		Error()
 }
