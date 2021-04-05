@@ -62,6 +62,7 @@ func (c *CmdStarboard) Exec(ctx shireikan.Context) (err error) {
 		starboardConfig = &models.StarboardConfig{
 			Threshold: 5,
 			EmojiID:   "⭐",
+			KarmaGain: 3,
 		}
 	}
 	starboardConfig.GuildID = ctx.GetGuild().ID
