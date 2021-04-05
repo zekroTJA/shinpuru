@@ -29,6 +29,7 @@ import {
   JoinlogEntry,
   UnbanRequest,
   UserSettingsOTA,
+  GuildStarboardEntry,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -127,6 +128,9 @@ export class APIService {
 
   private readonly rcGuildScoreboard = (guildID: string) =>
     `${this.rcGuilds(guildID)}/scoreboard`;
+
+  private readonly rcGuildStarboard = (guildID: string) =>
+    `${this.rcGuilds(guildID)}/starboard`;
 
   public readonly rcGuildAntiraidJoinlog = (guildID: string) =>
     `${this.rcGuilds(guildID)}/antiraid/joinlog`;
@@ -498,6 +502,22 @@ export class APIService {
     return this.http
       .get<Presence>(
         `${this.rcGuildScoreboard(guildID)}?limit=${limit}`,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildStarboard(
+    guildID: string,
+    sort: string = 'latest',
+    limit: number = 20,
+    offset: number = 0
+  ): Observable<ListReponse<GuildStarboardEntry>> {
+    return this.http
+      .get<Presence>(
+        `${this.rcGuildStarboard(
+          guildID
+        )}?limit=${limit}&offset=${offset}&sort=${sort}`,
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));

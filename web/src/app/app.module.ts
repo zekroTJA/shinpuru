@@ -44,6 +44,9 @@ import { MemberReportsComponent } from './routes/member-reports/member-reports.c
 import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
 import { AutocompleteInputComponent } from './components/autocomplete-input/autocomplete-input.component';
 import { ProtipComponent } from './components/protip/protip.component';
+import { StarboardEntryComponent } from './components/starboard-entry/starboard-entry.component';
+import { StarboardComponent } from './components/starboard/starboard.component';
+import { CapTextPipe } from './pipes/cap-text.pipe';
 
 @NgModule({
   declarations: [
@@ -83,6 +86,9 @@ import { ProtipComponent } from './components/protip/protip.component';
     UnbanmeComponent,
     AutocompleteInputComponent,
     ProtipComponent,
+    StarboardComponent,
+    StarboardEntryComponent,
+    CapTextPipe,
   ],
   imports: [
     NgbModule,

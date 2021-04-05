@@ -346,5 +346,15 @@
         <div class="scoreboard-container">
             <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
         </div>
+
+        <!-- STARBOARD -->
+        <div class="starboard-container">
+            <app-starboard 
+                [starboard]="starboard" 
+                [guildID]="this.guild?.id" 
+                [sortOrder]="starboardSortOrder"
+                (sortOrderChange)="this.shuffleSortOrder()"
+            ></app-starboard>
+        </div>
     </div>
 </div>

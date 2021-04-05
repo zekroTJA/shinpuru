@@ -242,3 +242,18 @@ export interface UnbanRequest {
 export interface UserSettingsOTA {
   enabled: boolean;
 }
+
+export interface GuildStarboardEntry {
+  message_id: string;
+  starboard_id: string;
+  guild_id: string;
+  channel_id: string;
+  author_id: string;
+  content: string;
+  media_urls: string[];
+  score: number;
+
+  message_url: string;
+  author_username: string;
+  author_avatar_url: string;
+}

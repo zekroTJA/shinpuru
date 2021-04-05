@@ -15,11 +15,13 @@ import {
   GuildScoreboardEntry,
   ReportRequest,
   UnbanRequestState,
+  GuildStarboardEntry,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
 import dateFormat from 'dateformat';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import LocalStorageUtil from 'src/app/utils/localstorage';
 
 interface Perms {
   id: string;
@@ -57,7 +59,9 @@ export class GuildComponent {
   public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
   public scoreboard: GuildScoreboardEntry[];
+  public starboard: GuildStarboardEntry[];
   public unbanReqeustsCount: number = 0;
+  public starboardSortOrder: string;
 
   public guildSettingsAllowed: string[] = [];
 
@@ -140,6 +144,12 @@ export class GuildComponent {
     this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
       this.scoreboard = scoreboard.data;
     });
+
+    this.starboardSortOrder = LocalStorageUtil.get(
+      'STARBOARD_SORTORDER',
+      'latest'
+    );
+    this.loadStarboard(guildID);
   }
 
   private loadMembers(guildID: string, cb: () => void) {
@@ -164,6 +174,14 @@ export class GuildComponent {
         }
 
         cb();
+      });
+  }
+
+  private loadStarboard(guildID?: string) {
+    this.api
+      .getGuildStarboard(guildID ?? this.guild.id, this.starboardSortOrder)
+      .subscribe((starboard) => {
+        this.starboard = starboard.data;
       });
   }
 
@@ -489,5 +507,14 @@ export class GuildComponent {
     const nextPoint = val.indexOf('.', curr);
 
     return nextPoint > -1 ? val.substring(0, nextPoint) : val;
+  }
+
+  public shuffleSortOrder() {
+    const sortOrders = ['latest', 'top'];
+    let i = sortOrders.indexOf(this.starboardSortOrder) + 1;
+    if (i == sortOrders.length) i = 0;
+    this.starboardSortOrder = sortOrders[i];
+    this.loadStarboard();
+    LocalStorageUtil.set('STARBOARD_SORTORDER', this.starboardSortOrder);
   }
 }
