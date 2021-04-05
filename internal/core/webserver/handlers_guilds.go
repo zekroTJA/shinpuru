@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/bwmarrin/discordgo"
 	routing "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -108,7 +109,7 @@ func (ws *WebServer) handlerGetGuildScoreboard(ctx *routing.Context) error {
 		i++
 	}
 
-	return jsonResponse(ctx, ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
+	return jsonResponse(ctx, &ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
 }
 
 // ---------------------------------------------------------------------------
@@ -159,4 +160,85 @@ func (ws *WebServer) handlerDeleteGuildAntiraidJoinlog(ctx *routing.Context) err
 	}
 
 	return jsonResponse(ctx, nil, fasthttp.StatusOK)
+}
+
+// ---------------------------------------------------------------------------
+// - GET /api/guilds/:guildid/starboard
+
+func (ws *WebServer) handlerGetGuildStarboard(ctx *routing.Context) error {
+	guildID := ctx.Param("guildid")
+	limitQ := ctx.QueryArgs().Peek("limit")
+	offsetQ := ctx.QueryArgs().Peek("offset")
+	sortQ := ctx.QueryArgs().Peek("sort")
+
+	limit := 20
+	offset := 0
+	sort := models.StarboardSortByLatest
+
+	if len(limitQ) > 0 {
+		limit, err := strconv.Atoi(string(limitQ))
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if limit < 0 || limit > 100 {
+			return jsonError(ctx,
+				fmt.Errorf("limit must be in range [0, 100]"), fasthttp.StatusBadRequest)
+		}
+	}
+
+	if len(offsetQ) > 0 {
+		offset, err := strconv.Atoi(string(offsetQ))
+		if err != nil {
+			return jsonError(ctx, err, fasthttp.StatusBadRequest)
+		}
+		if offset < 0 {
+			return jsonError(ctx,
+				fmt.Errorf("offset must be larger or equal 0"), fasthttp.StatusBadRequest)
+		}
+	}
+
+	if len(sortQ) > 0 {
+		switch string(sortQ) {
+		case "latest":
+			sort = models.StarboardSortByLatest
+		case "top":
+			sort = models.StarboardSortByMostRated
+		default:
+			return jsonError(ctx,
+				fmt.Errorf("invalid sort property"), fasthttp.StatusBadRequest)
+		}
+	}
+
+	entries, err := ws.db.GetStarboardEntries(guildID, sort, limit, offset)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return jsonError(ctx, err, fasthttp.StatusInternalServerError)
+	}
+
+	results := make([]*StarboardEntryResponse, len(entries))
+
+	var i int
+	for _, e := range entries {
+		if e.Deleted {
+			continue
+		}
+
+		member, err := discordutil.GetMember(ws.session, guildID, e.AuthorID)
+		if err != nil {
+			continue
+		}
+
+		results[i] = &StarboardEntryResponse{
+			StarboardEntry: e,
+			AuthorUsername: member.User.String(),
+			AvatarURL:      member.User.AvatarURL(""),
+			MessageURL: discordutil.GetMessageLink(&discordgo.Message{
+				ChannelID: e.ChannelID,
+				ID:        e.MessageID,
+			}, guildID),
+		}
+
+		i++
+	}
+
+	return jsonResponse(ctx, &ListResponse{N: i, Data: results[:i]}, fasthttp.StatusOK)
 }

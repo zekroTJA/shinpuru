@@ -10,6 +10,7 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -266,6 +267,17 @@ type AntiraidSettings struct {
 
 type UsersettingsOTA struct {
 	Enabled bool `json:"enabled"`
+}
+
+// StarboardEntryResponse wraps a starboard entry
+// as response model containing hydrated information
+// of the author.
+type StarboardEntryResponse struct {
+	*models.StarboardEntry
+
+	MessageURL     string `json:"message_url"`
+	AuthorUsername string `json:"author_username"`
+	AvatarURL      string `json:"author_avatar_url"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

@@ -213,6 +213,8 @@ func (ws *WebServer) registerHandlers() {
 	guild.
 		Get("/scoreboard", ws.handlerGetGuildScoreboard)
 	guild.
+		Get("/starboard", ws.handlerGetGuildStarboard)
+	guild.
 		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
 		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
 

@@ -5,6 +5,13 @@ import (
 	"encoding/json"
 )
 
+type StarboardSortBy int
+
+const (
+	StarboardSortByLatest StarboardSortBy = iota
+	StarboardSortByMostRated
+)
+
 type StarboardConfig struct {
 	GuildID   string
 	ChannelID string
@@ -13,15 +20,15 @@ type StarboardConfig struct {
 }
 
 type StarboardEntry struct {
-	MessageID   string
-	StarboardID string
-	GuildID     string
-	ChannelID   string
-	AuthorID    string
-	Content     string
-	MediaURLs   []string
-	Score       int
-	Deleted     bool
+	MessageID   string   `json:"message_id"`
+	StarboardID string   `json:"starboard_id"`
+	GuildID     string   `json:"guild_id"`
+	ChannelID   string   `json:"channel_id"`
+	AuthorID    string   `json:"author_id"`
+	Content     string   `json:"content"`
+	MediaURLs   []string `json:"media_urls"`
+	Score       int      `json:"score"`
+	Deleted     bool     `json:"-"`
 }
 
 func (e *StarboardEntry) MediaURLsEncoded() string {

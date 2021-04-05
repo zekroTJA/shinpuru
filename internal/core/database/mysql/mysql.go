@@ -1549,12 +1549,23 @@ func (m *MysqlMiddleware) RemoveStarboardEntry(msgID string) (err error) {
 	return
 }
 
-func (m *MysqlMiddleware) GetStarboardEntries(guildID string) (res []*models.StarboardEntry, err error) {
-	row, err := m.Db.Query(
-		"SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score, deleted "+
-			"FROM starboardEntries "+
-			"WHERE guildID = ?",
-		guildID)
+func (m *MysqlMiddleware) GetStarboardEntries(
+	guildID string,
+	sortBy models.StarboardSortBy,
+	limit, offset int,
+) (res []*models.StarboardEntry, err error) {
+	var sort string
+	switch sortBy {
+	case models.StarboardSortByLatest:
+		sort = "ORDER BY starboardID DESC"
+	case models.StarboardSortByMostRated:
+		sort = "ORDER BY score DESC"
+	}
+
+	query := fmt.Sprintf("SELECT messageID, starboardID, guildID, channelID, authorID, content, mediaURLs, score, deleted "+
+		"FROM starboardEntries "+
+		"WHERE guildID = ? %s LIMIT %d OFFSET %d", sort, limit, offset)
+	row, err := m.Db.Query(query, guildID)
 	if err == sql.ErrNoRows {
 		err = database.ErrDatabaseNotFound
 	}
