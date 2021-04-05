@@ -45,10 +45,9 @@ require (
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.4.0
 	github.com/zekroTJA/timedmap v1.3.0
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
+	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
