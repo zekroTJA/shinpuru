@@ -8,7 +8,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
+
+	_ "embed"
 )
+
+//go:embed \../\../embed/cmd_info.md
+var infoMsg string
 
 type CmdInfo struct {
 }
@@ -50,11 +55,7 @@ func (c *CmdInfo) Exec(ctx shireikan.Context) error {
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: ctx.GetSession().State.User.AvatarURL(""),
 		},
-		Description: "シンプル (shinpuru), a simple *(as the name says)*, multi purpose Discord Bot written in Go, " +
-			"using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper. " +
-			"The focus on this bot is not to punch in as much features and commands as possible, just some commands and " +
-			"features which I thought would be useful and which were the most used with my older Discord bots, like " +
-			"[zekroBot 2](https://github.com/zekroTJA/zekroBot2), and more on making this bot as reliable and stable as possible.",
+		Description: infoMsg,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Repository",
