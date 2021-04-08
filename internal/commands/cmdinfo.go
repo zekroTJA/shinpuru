@@ -12,7 +12,7 @@ import (
 	_ "embed"
 )
 
-//go:embed \../\../embed/cmd_info.md
+//go:embed embed/cmd_info.md
 var infoMsg string
 
 type CmdInfo struct {
