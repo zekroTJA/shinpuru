@@ -51,6 +51,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
 	session.AddHandler(listeners.NewListenerKarma(database).Handler)
 	session.AddHandler(listeners.NewListenerAntiraid(database).HandlerMemberAdd)
+	session.AddHandler(listeners.NewListenerBotMention(config).Listener)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
