@@ -32,8 +32,13 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 		InvokeToLower:         true,
 		UseDefaultHelpCommand: false,
 
-		OnError:           errorHandler,
-		GuildPrefixGetter: db.GetGuildPrefix,
+		OnError: errorHandler,
+		GuildPrefixGetter: func(guildID string) (prefix string, err error) {
+			if prefix, err = db.GetGuildPrefix(guildID); database.IsErrDatabaseNotFound(err) {
+				err = nil
+			}
+			return
+		},
 	})
 
 	cmdHandler.SetObject("db", db)
