@@ -582,6 +582,8 @@ github.com/zekroTJA/shireikan v0.4.1 h1:7hk/yeYzI9hYKCFfowW8NmA/Zr8pEQ2DbNSYuAfj
 github.com/zekroTJA/shireikan v0.4.1/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
 github.com/zekroTJA/shireikan v0.4.2-0.20210408133432-bec70ee7c61b h1:0qurcmrFJ1DnRHiCn53ZsYNMVM5CEF1+IEAngzfqr8w=
 github.com/zekroTJA/shireikan v0.4.2-0.20210408133432-bec70ee7c61b/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
+github.com/zekroTJA/shireikan v0.4.2 h1:DzQAMuNnJUhlyf7bbs3Dji5hCS4NMXX1Hbql72oD5Qc=
+github.com/zekroTJA/shireikan v0.4.2/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
 github.com/zekroTJA/timedmap v1.3.0 h1:IDpZoOfqdCmQWMVUgh9Iswee+TDXBPve6pOCo3xy33U=
 github.com/zekroTJA/timedmap v1.3.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 github.com/zekroTJA/timedmap v1.3.1 h1:Tsm17mApGV+KaaoDyZiELWTv4ugtV++0uQbko1bz7QM=

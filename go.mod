@@ -1,6 +1,6 @@
 module github.com/zekroTJA/shinpuru
 
-go 1.14
+go 1.16
 
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
@@ -43,7 +43,7 @@ require (
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
 	github.com/zekroTJA/ratelimit v1.0.0
-	github.com/zekroTJA/shireikan v0.4.2-0.20210408133432-bec70ee7c61b
+	github.com/zekroTJA/shireikan v0.4.2
 	github.com/zekroTJA/timedmap v1.3.1
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
