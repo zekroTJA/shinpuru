@@ -26,7 +26,9 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		l.idLen = len(s.State.User.ID)
 	}
 
-	if len(e.Message.Content) < 3+l.idLen ||
+	cLen := len(e.Message.Content)
+	if cLen < 3+l.idLen ||
+		cLen > 5+l.idLen ||
 		e.Message.Content[0] != '<' ||
 		e.Message.Content[1] != '@' ||
 		e.Author.ID == s.State.User.ID {
