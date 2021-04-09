@@ -6,6 +6,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
 
 type ListenerMemberAdd struct {
@@ -42,6 +44,12 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 		msg = strings.Replace(msg, "[user]", e.User.Username, -1)
 		msg = strings.Replace(msg, "[ment]", e.User.Mention(), -1)
 
-		util.SendEmbed(s, chanID, msg, txt, 0)
+		s.ChannelMessageSendComplex(chanID, &discordgo.MessageSend{
+			Content: txt,
+			Embed: embedbuilder.New().
+				WithColor(static.ColorEmbedDefault).
+				WithDescription(msg).
+				Build(),
+		})
 	}
 }
