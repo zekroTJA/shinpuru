@@ -89,7 +89,7 @@ func (bck *GuildBackups) backupAllGuilds() {
 	for _, g := range guilds {
 		err = bck.BackupGuild(g)
 		if err != nil {
-			util.Log.Error("failed creating backup for guild '%s': %s", g, err.Error())
+			util.Log.Errorf("failed creating backup for guild '%s': %s", g, err.Error())
 		}
 		time.Sleep(1 * time.Second)
 	}
