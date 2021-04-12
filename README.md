@@ -209,6 +209,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/stringutil`**](pkg/stringutil)  
   *Package stringutil provides generl string utility functions.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/thumbnail`**](pkg/thumbnail)  
+  *Package thumbnail provides simple functionalities to generate thumbnails from images with a max witdh or height.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/timerstack`**](pkg/timerstack)  
   *Package timerstack provides a timer which can execute multiple delayed functions one after one.*
 
