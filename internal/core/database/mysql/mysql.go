@@ -1489,26 +1489,24 @@ func (m *MysqlMiddleware) RemoveGuildVoiceLogIgnore(guildID, channelID string) (
 }
 
 func (m *MysqlMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
-	res, err := m.Db.Exec(
-		"UPDATE starboardConfig SET "+
-			"channelID = ?, threshold = ?, emojiID = ?, karmaGain = ? "+
-			"WHERE guildID = ?",
-		config.ChannelID, config.Threshold, config.EmojiID, config.KarmaGain, config.GuildID)
-	if err != nil {
-		return
-	}
+	var ok bool
+	m.Db.QueryRow("SELECT 1 FROM starboardConfig WHERE guildID = ?",
+		config.GuildID).Scan(&ok)
 
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if ar == 0 {
+	if ok {
+		_, err = m.Db.Exec(
+			"UPDATE starboardConfig SET "+
+				"channelID = ?, threshold = ?, emojiID = ?, karmaGain = ? "+
+				"WHERE guildID = ?",
+			config.ChannelID, config.Threshold, config.EmojiID, config.KarmaGain, config.GuildID)
+	} else {
 		_, err = m.Db.Exec(
 			"INSERT INTO starboardConfig "+
 				"(guildID, channelID, threshold, emojiID, karmaGain) "+
 				"VALUES (?, ?, ?, ?, ?)",
 			config.GuildID, config.ChannelID, config.Threshold, config.EmojiID, config.KarmaGain)
 	}
+
 	return
 }
 

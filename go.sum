@@ -109,6 +109,8 @@ github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473 h1:4
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0 h1:EQciDnbrYxy13PgWoY8AqoxGiPrpgBZ1R8UNe3ddc+A=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
+github.com/esimov/stackblur-go v1.0.0 h1:PuXWrQ16VIh6Di+tn3CpKAyzkIIECo9DPGVecrzyDGc=
+github.com/esimov/stackblur-go v1.0.0/go.mod h1:a3zzeKuJKUpCcReHmEsuPaEnq42D2b/bHoCI8UjIuMY=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/franela/goblin v0.0.0-20200105215937-c9ffbefa60db h1:gb2Z18BhTPJPpLQWj4T+rfKHYCHxRHCtRxhKKjRidVw=
@@ -584,6 +586,8 @@ github.com/zekroTJA/shireikan v0.4.2-0.20210408133432-bec70ee7c61b h1:0qurcmrFJ1
 github.com/zekroTJA/shireikan v0.4.2-0.20210408133432-bec70ee7c61b/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
 github.com/zekroTJA/shireikan v0.4.2 h1:DzQAMuNnJUhlyf7bbs3Dji5hCS4NMXX1Hbql72oD5Qc=
 github.com/zekroTJA/shireikan v0.4.2/go.mod h1:8Yo5iamG3yR6giQZe52EKpO1h/FoPdCOFdymcVE8bZ0=
+github.com/zekroTJA/slicerdicer v0.0.0-20200726201335-fcc9e47090be h1:ZTWUooQqx1RRvva/cojcdwJFXW1nxzby7CIMapF9MXA=
+github.com/zekroTJA/slicerdicer v0.0.0-20200726201335-fcc9e47090be/go.mod h1:dGmKgakVnyNq5r0j1smqqIcOKLf7igCgCQ2Ajl/oeEA=
 github.com/zekroTJA/timedmap v1.3.0 h1:IDpZoOfqdCmQWMVUgh9Iswee+TDXBPve6pOCo3xy33U=
 github.com/zekroTJA/timedmap v1.3.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 github.com/zekroTJA/timedmap v1.3.1 h1:Tsm17mApGV+KaaoDyZiELWTv4ugtV++0uQbko1bz7QM=

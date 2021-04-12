@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
@@ -16,7 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database,
+func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, storage storage.Storage,
 	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware, gpim *middleware.GhostPingIgnoreMiddleware) {
 
 	snowflake.Epoch = static.DefEpoche
@@ -40,7 +41,12 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
 	listenerJDoodle := listeners.NewListenerJdoodle(database, pmw)
 	listenerColors := listeners.NewColorListener(database, pmw, config.WebServer.PublicAddr)
-	listenerStarboard := listeners.NewListenerStarboard(database)
+
+	publicAddr := ""
+	if config.WebServer != nil {
+		publicAddr = config.WebServer.PublicAddr
+	}
+	listenerStarboard := listeners.NewListenerStarboard(database, storage, publicAddr)
 
 	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
 	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
