@@ -9,6 +9,7 @@ require (
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/esimov/stackblur-go v1.0.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.2.0
 	github.com/generaltso/vibrant v0.0.0-20200703055536-90f922bee78c
 	github.com/go-ini/ini v1.62.0 // indirect

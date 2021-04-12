@@ -143,7 +143,7 @@ func main() {
 	gpim := middleware.NewGhostPingIgnoreMiddleware()
 
 	// Initialize discord bot session and shutdown routine
-	inits.InitDiscordBotSession(session, conf, database, lct, pmw, gpim)
+	inits.InitDiscordBotSession(session, conf, database, st, lct, pmw, gpim)
 	defer func() {
 		util.Log.Info("Shutting down bot session...")
 		session.Close()

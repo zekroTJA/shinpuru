@@ -1,22 +1,37 @@
 package listeners
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"image"
+	"image/jpeg"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/esimov/stackblur-go"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+)
+
+var (
+	errPublicAddrUnset = errors.New("publicAddr unset")
 )
 
 type ListenerStarboard struct {
+	publicAddr string
+
 	db database.Database
+	st storage.Storage
 }
 
-func NewListenerStarboard(db database.Database) *ListenerStarboard {
-	return &ListenerStarboard{db}
+func NewListenerStarboard(db database.Database, st storage.Storage, publicAddr string) *ListenerStarboard {
+	return &ListenerStarboard{publicAddr, db, st}
 }
 
 func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
@@ -50,6 +65,21 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	starboardChannel, err := discordutil.GetChannel(s, starboardConfig.ChannelID)
+	if err != nil {
+		starboardConfig.ChannelID = ""
+		if err = l.db.SetStarboardConfig(starboardConfig); err != nil {
+			util.Log.Errorf("STARBOARD :: failed disabling starboard: %s", err.Error())
+			return
+		}
+	}
+
+	msgChannel, err := discordutil.GetChannel(s, e.ChannelID)
+	if err != nil {
+		util.Log.Errorf("STARBOARD :: failed getting message channel: %s", err.Error())
+		return
+	}
+
 	msg, err := discordutil.GetMessage(s, e.ChannelID, e.MessageID)
 	if err != nil {
 		util.Log.Errorf("STARBOARD :: failed getting message: %s", err.Error())
@@ -67,9 +97,39 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	censorMedia := msgChannel.NSFW && !starboardChannel.NSFW
+
 	var giveKarma bool
 	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil || starboardEntry.Deleted {
 		giveKarma = database.IsErrDatabaseNotFound(err) && !starboardEntry.Deleted
+
+		if censorMedia {
+			newAttachments := make([]*discordgo.MessageAttachment, len(msg.Attachments))
+			i := 0
+			if starboardEntry != nil && len(starboardEntry.MediaURLs) > 0 {
+				for i, murl := range starboardEntry.MediaURLs {
+					newAttachments[i] = &discordgo.MessageAttachment{
+						URL: murl,
+					}
+				}
+			} else {
+				for _, attachment := range msg.Attachments {
+					newAttachment := &discordgo.MessageAttachment{
+						ID:     attachment.ID,
+						Width:  attachment.Width,
+						Height: attachment.Height,
+					}
+					newAttachment.URL, err = l.blurImage(attachment.URL)
+					if err != nil {
+						util.Log.Errorf("STARBOARD :: failed bluring image: %s", err.Error())
+						continue
+					}
+					newAttachments[i] = newAttachment
+					i++
+				}
+			}
+			msg.Attachments = newAttachments[:i]
+		}
 
 		sbMsg, err := s.ChannelMessageSendEmbed(starboardConfig.ChannelID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
@@ -88,6 +148,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 			Score:       score,
 			Deleted:     false,
 		}
+
 		for i, a := range msg.Attachments {
 			starboardEntry.MediaURLs[i] = a.URL
 		}
@@ -192,30 +253,25 @@ func (l *ListenerStarboard) hitsThreshhold(msg *discordgo.Message, starboardConf
 	return
 }
 
-func (l *ListenerStarboard) getEmbed(msg *discordgo.Message, guildID string, count int) *discordgo.MessageEmbed {
-	emb := &discordgo.MessageEmbed{
-		Author: &discordgo.MessageEmbedAuthor{
-			Name:    msg.Author.String(),
-			IconURL: msg.Author.AvatarURL("16x16"),
-		},
-		Description: fmt.Sprintf("%s\n\n[jump to message](%s)",
-			msg.Content, discordutil.GetMessageLink(msg, guildID)),
-		Timestamp: string(msg.Timestamp),
-		Color:     static.ColorEmbedDefault,
-		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("%d ⭐", count),
-		},
-	}
+func (l *ListenerStarboard) getEmbed(
+	msg *discordgo.Message,
+	guildID string,
+	count int,
+) *discordgo.MessageEmbed {
+	emb := embedbuilder.New().
+		WithAuthor(msg.Author.String(), "", msg.Author.AvatarURL("16x16"), "").
+		WithDescription(fmt.Sprintf("%s\n\n[jump to message](%s)",
+			msg.Content, discordutil.GetMessageLink(msg, guildID))).
+		WithTimestamp(string(msg.Timestamp)).
+		WithColor(static.ColorEmbedDefault).
+		WithFooter(fmt.Sprintf("%d ⭐", count), "", "")
 
 	if len(msg.Attachments) > 0 {
-		emb.Image = &discordgo.MessageEmbedImage{
-			URL:    msg.Attachments[0].URL,
-			Width:  msg.Attachments[0].Width,
-			Height: msg.Attachments[0].Height,
-		}
+		att := msg.Attachments[0]
+		emb.WithImage(att.URL, att.ProxyURL, att.Width, att.Height)
 	}
 
-	return emb
+	return emb.Build()
 }
 
 func (l *ListenerStarboard) addKarma(guildID, authorID string, karmaGain int) {
@@ -241,4 +297,43 @@ func (l *ListenerStarboard) addKarma(guildID, authorID string, karmaGain int) {
 		util.Log.Errorf("STARBOARD :: failed adding user karma: %s", err.Error())
 		return
 	}
+}
+
+func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err error) {
+	if l.publicAddr == "" {
+		err = errPublicAddrUnset
+		return
+	}
+
+	img, err := imgstore.DownloadFromURL(sourceURL)
+	if err != nil {
+		return
+	}
+
+	iimg, _, err := image.Decode(bytes.NewBuffer(img.Data))
+	if err != nil {
+		return
+	}
+
+	cDone := make(chan struct{}, 1)
+	iimg = stackblur.Process(iimg, uint32(iimg.Bounds().Dx()), uint32(iimg.Bounds().Dy()), 200, cDone)
+	<-cDone
+
+	newImgData := bytes.NewBuffer([]byte{})
+	err = jpeg.Encode(newImgData, iimg, &jpeg.Options{
+		Quality: 90,
+	})
+	if err != nil {
+		return
+	}
+
+	err = l.st.PutObject(static.StorageBucketImages, img.ID.String(),
+		newImgData, int64(newImgData.Len()), "image/jpeg")
+	if err != nil {
+		return
+	}
+
+	targetURL = fmt.Sprintf("%s/imagestore/%s.jpeg", l.publicAddr, img.ID.String())
+
+	return
 }
