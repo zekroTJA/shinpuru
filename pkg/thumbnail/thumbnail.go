@@ -36,8 +36,9 @@ func Make(in image.Image, maxSize int, scaler ...draw.Scaler) (out image.Image) 
 			height = int(maxSize)
 			width = int(math.Floor(float64(width) * scale))
 		}
-		outImg := image.NewRGBA(image.Rect(0, 0, width, height))
-		sc.Scale(outImg, out.Bounds(), in, in.Bounds(), draw.Over, &draw.Options{})
+		outRect := image.Rect(0, 0, width, height)
+		outImg := image.NewRGBA(outRect)
+		sc.Scale(outImg, outRect, in, in.Bounds(), draw.Over, nil)
 		out = outImg
 	}
 
