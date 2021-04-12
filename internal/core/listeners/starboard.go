@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	"math"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
@@ -17,7 +18,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+	"golang.org/x/image/draw"
 )
+
+const maxSize = 500.0
 
 var (
 	errPublicAddrUnset = errors.New("publicAddr unset")
@@ -315,8 +319,25 @@ func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err e
 		return
 	}
 
+	width, height := iimg.Bounds().Dx(), iimg.Bounds().Dy()
+	if width > maxSize || height > maxSize {
+		var scale float64
+		if width > height {
+			scale = maxSize / float64(width)
+			width = int(maxSize)
+			height = int(math.Floor(float64(height) * scale))
+		} else {
+			scale = maxSize / float64(height)
+			height = int(maxSize)
+			width = int(math.Floor(float64(width) * scale))
+		}
+		scaled := image.NewRGBA(image.Rect(0, 0, width, height))
+		draw.BiLinear.Scale(scaled, scaled.Bounds(), iimg, iimg.Bounds(), draw.Over, &draw.Options{})
+		iimg = scaled
+	}
+
 	cDone := make(chan struct{}, 1)
-	iimg = stackblur.Process(iimg, uint32(iimg.Bounds().Dx()), uint32(iimg.Bounds().Dy()), 200, cDone)
+	iimg = stackblur.Process(iimg, uint32(iimg.Bounds().Dx()), uint32(iimg.Bounds().Dy()), 50, cDone)
 	<-cDone
 
 	newImgData := bytes.NewBuffer([]byte{})
