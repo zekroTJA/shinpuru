@@ -13,9 +13,9 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `3` |
 | [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
 | [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `3` |
+| [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 | [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
 | [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195) |  | `2` |
-| [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41) |  | `1` |
 | [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57) |  | `1` |
 | [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
 | [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
