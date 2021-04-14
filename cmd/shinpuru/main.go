@@ -54,48 +54,6 @@ func main() {
 	// Parse command line flags
 	flag.Parse()
 
-	// Initial log output
-	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
-	util.Log.Info("© zekro Development (Ringo Hoffmann)")
-	util.Log.Info("Covered by MIT Licence")
-	util.Log.Info("Starting up...")
-
-	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
-		f, err := os.Create(profLoc)
-		if err != nil {
-			util.Log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		util.Log.Warningf("CPU profiling is active (loc: %s)", profLoc)
-		defer pprof.StopCPUProfile()
-	}
-
-	// -----> DEV MODE INITIALIZATIONS
-	if *flagDevMode {
-		if util.Release == "TRUE" {
-			util.Log.Fatal("development mode is not available in production builds")
-		}
-
-		util.DevModeEnabled = true
-
-		// Angular dev server
-		angServ := angularservice.New(angularservice.Options{
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-			Cd:     "web",
-			Port:   8081,
-		})
-		util.Log.Info("Starting Angular dev server...")
-		if err := angServ.Start(); err != nil {
-			util.Log.Fatalf("Failed starting Angular dev server: %s", err.Error())
-		}
-		defer func() {
-			util.Log.Info("Shutting down Angular dev server...")
-			angServ.Stop()
-		}()
-	}
-	// <----- DEV MODE INITIALIZATIONS
-
 	diBuilder, _ := di.NewBuilder()
 
 	diBuilder.Add(di.Def{
@@ -112,9 +70,6 @@ func main() {
 			return inits.InitConfig(*flagConfigLocation, ctn), nil
 		},
 	})
-
-	// Setting log level from config
-	// util.SetLogLevel(conf.Logging.LogLevel)
 
 	// Initialize metrics server
 	diBuilder.Add(di.Def{
@@ -218,7 +173,31 @@ func main() {
 	})
 
 	ctn := diBuilder.Build()
+
+	// Setting log level from config
+	// util.SetLogLevel(conf.Logging.LogLevel)
+	cfg := ctn.Get(static.DiConfig).(*config.Config)
+	util.SetLogLevel(cfg.Logging.LogLevel)
+
+	// Initial log output
+	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
+	util.Log.Info("© zekro Development (Ringo Hoffmann)")
+	util.Log.Info("Covered by MIT Licence")
+	util.Log.Info("Starting up...")
+
+	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
+		setupProfiler(profLoc)
+	}
+
+	if *flagDevMode {
+		setupDevMode()
+	}
+
+	// Get Discord Session to initialize Discord
+	// session and connection
 	ctn.Get(static.DiDiscordSession)
+	// Get Web WebServer instance to start web
+	// server listener
 	ctn.Get(static.DiWebserver)
 
 	// Block main go routine until one of the following
@@ -227,4 +206,41 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
+
+	// Tear down dependency instances
+	ctn.DeleteWithSubContainers()
+}
+
+func setupDevMode() {
+	if util.Release == "TRUE" {
+		util.Log.Fatal("development mode is not available in production builds")
+	}
+
+	util.DevModeEnabled = true
+
+	// Angular dev server
+	angServ := angularservice.New(angularservice.Options{
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Cd:     "web",
+		Port:   8081,
+	})
+	util.Log.Info("Starting Angular dev server...")
+	if err := angServ.Start(); err != nil {
+		util.Log.Fatalf("Failed starting Angular dev server: %s", err.Error())
+	}
+	defer func() {
+		util.Log.Info("Shutting down Angular dev server...")
+		angServ.Stop()
+	}()
+}
+
+func setupProfiler(profLoc string) {
+	f, err := os.Create(profLoc)
+	if err != nil {
+		util.Log.Fatal(err)
+	}
+	pprof.StartCPUProfile(f)
+	util.Log.Warningf("CPU profiling is active (loc: %s)", profLoc)
+	defer pprof.StopCPUProfile()
 }
