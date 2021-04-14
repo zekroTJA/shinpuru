@@ -12,7 +12,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
@@ -897,35 +896,6 @@ func (m *MysqlMiddleware) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 
 func (m *MysqlMiddleware) DeleteTag(id snowflake.ID) error {
 	_, err := m.Db.Exec("DELETE FROM tags WHERE id = ?", id)
-	if err == sql.ErrNoRows {
-		return database.ErrDatabaseNotFound
-	}
-	return err
-}
-
-func (m *MysqlMiddleware) GetImageData(id snowflake.ID) (*imgstore.Image, error) {
-	img := new(imgstore.Image)
-	row := m.Db.QueryRow("SELECT id, mimeType, data FROM imagestore WHERE id = ?", id)
-	err := row.Scan(&img.ID, &img.MimeType, &img.Data)
-	if err == sql.ErrNoRows {
-		return nil, database.ErrDatabaseNotFound
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	img.Size = len(img.Data)
-
-	return img, nil
-}
-
-func (m *MysqlMiddleware) SaveImageData(img *imgstore.Image) error {
-	_, err := m.Db.Exec("INSERT INTO imagestore (id, mimeType, data) VALUES (?, ?, ?)", img.ID, img.MimeType, img.Data)
-	return err
-}
-
-func (m *MysqlMiddleware) RemoveImageData(id snowflake.ID) error {
-	_, err := m.Db.Exec("DELETE FROM imagestore WHERE id = ?", id)
 	if err == sql.ErrNoRows {
 		return database.ErrDatabaseNotFound
 	}

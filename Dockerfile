@@ -16,8 +16,6 @@ RUN go build -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
         ./cmd/shinpuru/main.go
-# Build storagepatch tool
-RUN go build -o ./bin/storagepatch ./cmd/storagepatch/main.go
 # Build web assets
 WORKDIR /build/web
 RUN npm ci \

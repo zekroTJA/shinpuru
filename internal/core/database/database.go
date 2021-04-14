@@ -6,7 +6,6 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
-	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
@@ -202,15 +201,6 @@ type Database interface {
 	RemoveStarboardEntry(msgID string) error
 	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]*models.StarboardEntry, error)
 	GetStarboardEntry(messageID string) (*models.StarboardEntry, error)
-
-	//////////////////////////////////////////////////////
-
-	// Deprecated
-	GetImageData(id snowflake.ID) (*imgstore.Image, error)
-	// Deprecated
-	SaveImageData(image *imgstore.Image) error
-	// Deprecated
-	RemoveImageData(id snowflake.ID) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err
