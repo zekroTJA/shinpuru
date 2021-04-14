@@ -5,6 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
@@ -17,9 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, storage storage.Storage,
-	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware, gpim *middleware.GhostPingIgnoreMiddleware) {
-
+func InitDiscordBotSession(container di.Container) *discordgo.Session {
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -33,31 +32,43 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 		}
 	}
 
-	session.Token = "Bot " + config.Discord.Token
+	session, err := discordgo.New()
+	if err != nil {
+		util.Log.Fatal(err)
+	}
+
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+	storage := container.Get(static.DiObjectStorage).(storage.Storage)
+	lct := container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer)
+	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
+
+	session.Token = "Bot " + cfg.Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
-	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
-	listenerJDoodle := listeners.NewListenerJdoodle(database, pmw)
-	listenerColors := listeners.NewColorListener(database, pmw, config.WebServer.PublicAddr)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(db, pmw)
+	listenerGhostPing := listeners.NewListenerGhostPing(db, gpim)
+	listenerJDoodle := listeners.NewListenerJdoodle(db, pmw)
+	listenerColors := listeners.NewColorListener(db, pmw, cfg.WebServer.PublicAddr)
 
 	publicAddr := ""
-	if config.WebServer != nil {
-		publicAddr = config.WebServer.PublicAddr
+	if cfg.WebServer != nil {
+		publicAddr = cfg.WebServer.PublicAddr
 	}
-	listenerStarboard := listeners.NewListenerStarboard(database, storage, publicAddr)
+	listenerStarboard := listeners.NewListenerStarboard(db, storage, publicAddr)
 
-	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
-	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
-	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
-	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)
-	session.AddHandler(listeners.NewListenerVote(database).Handler)
-	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
-	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
-	session.AddHandler(listeners.NewListenerKarma(database).Handler)
-	session.AddHandler(listeners.NewListenerAntiraid(database).HandlerMemberAdd)
-	session.AddHandler(listeners.NewListenerBotMention(config).Listener)
+	session.AddHandler(listeners.NewListenerReady(cfg, db, lct).Handler)
+	session.AddHandler(listeners.NewListenerGuildJoin(cfg).Handler)
+	session.AddHandler(listeners.NewListenerMemberAdd(db).Handler)
+	session.AddHandler(listeners.NewListenerMemberRemove(db).Handler)
+	session.AddHandler(listeners.NewListenerVote(db).Handler)
+	session.AddHandler(listeners.NewListenerChannelCreate(db).Handler)
+	session.AddHandler(listeners.NewListenerVoiceUpdate(db).Handler)
+	session.AddHandler(listeners.NewListenerKarma(db).Handler)
+	session.AddHandler(listeners.NewListenerAntiraid(db).HandlerMemberAdd)
+	session.AddHandler(listeners.NewListenerBotMention(cfg).Listener)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
@@ -79,7 +90,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 		util.StatsMessagesAnalysed++
 	})
 
-	if config.Metrics != nil && config.Metrics.Enable {
+	if cfg.Metrics != nil && cfg.Metrics.Enable {
 		session.AddHandler(listeners.NewListenerMetrics().Listener)
 	}
 
@@ -87,4 +98,6 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 	if err != nil {
 		util.Log.Fatal("Failed connecting Discord bot session:", err)
 	}
+
+	return session
 }

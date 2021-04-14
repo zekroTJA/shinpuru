@@ -3,25 +3,29 @@ package inits
 import (
 	"strings"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/core/database/redis"
 	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
+func InitDatabase(container di.Container) database.Database {
 	var db database.Database
 	var err error
 
-	switch strings.ToLower(databaseCfg.Type) {
+	cfg := container.Get(static.DiConfig).(*config.Config)
+
+	switch strings.ToLower(cfg.Database.Type) {
 	case "mysql", "mariadb":
 		db = new(mysql.MysqlMiddleware)
-		err = db.Connect(databaseCfg.MySql)
+		err = db.Connect(cfg.Database.MySql)
 	case "sqlite", "sqlite3":
 		db = new(sqlite.SqliteMiddleware)
-		err = db.Connect(databaseCfg.Sqlite)
+		err = db.Connect(cfg.Database.Sqlite)
 		printSqliteWraning()
 	}
 
@@ -34,8 +38,8 @@ func InitDatabase(databaseCfg *config.DatabaseType) database.Database {
 		util.Log.Warning("Skip database migration: middleware does not support migrations")
 	}
 
-	if databaseCfg.Redis != nil && databaseCfg.Redis.Enable {
-		db = redis.NewRedisMiddleware(databaseCfg.Redis, db)
+	if cfg.Database.Redis != nil && cfg.Database.Redis.Enable {
+		db = redis.NewRedisMiddleware(cfg.Database.Redis, db)
 		util.Log.Info("Enabled redis as database cache")
 	}
 

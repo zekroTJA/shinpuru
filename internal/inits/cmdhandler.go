@@ -5,26 +5,28 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/core/backup"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
-	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 	"github.com/zekroTJA/shireikan"
 )
 
-func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Database, st storage.Storage,
-	tnw *twitchnotify.NotifyWorker, lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware,
-	gpim *middleware.GhostPingIgnoreMiddleware, ota *onetimeauth.OneTimeAuth) shireikan.Handler {
+func InitCommandHandler(container di.Container) shireikan.Handler {
 
-	cmdHandler := shireikan.NewHandler(&shireikan.Config{
-		GeneralPrefix:         cfg.Discord.GeneralPrefix,
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	config := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
+
+	cmdHandler := shireikan.New(&shireikan.Config{
+		GeneralPrefix:         config.Discord.GeneralPrefix,
 		AllowBots:             false,
 		AllowDM:               true,
 		DeleteMessageAfter:    true,
@@ -39,16 +41,9 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 			}
 			return
 		},
-	})
 
-	cmdHandler.SetObject("db", db)
-	cmdHandler.SetObject("config", cfg)
-	cmdHandler.SetObject("storage", st)
-	cmdHandler.SetObject("tnw", tnw)
-	cmdHandler.SetObject("lct", lct)
-	cmdHandler.SetObject("backup", backup.New(s, db, st))
-	cmdHandler.SetObject("pmw", pmw)
-	cmdHandler.SetObject("onetimeauth", ota)
+		ObjectContainer: container,
+	})
 
 	if c := cfg.Discord.GlobalCommandRateLimit; c != nil && c.Burst > 0 && c.LimitSeconds > 0 {
 		cmdHandler.RegisterMiddleware(
@@ -105,7 +100,7 @@ func InitCommandHandler(s *discordgo.Session, cfg *config.Config, db database.Da
 
 	util.Log.Infof("%d commands registered", len(cmdHandler.GetCommandInstances()))
 
-	cmdHandler.RegisterHandlers(s)
+	cmdHandler.Setup(session)
 
 	return cmdHandler
 }

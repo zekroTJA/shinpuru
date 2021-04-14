@@ -2,22 +2,29 @@ package inits
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
-func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) (*twitchnotify.NotifyWorker, *listeners.ListenerTwitchNotify) {
-	if config.TwitchApp == nil {
-		return nil, nil
+func InitTwitchNotifyer(container di.Container) *twitchnotify.NotifyWorker {
+
+	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+
+	if cfg.TwitchApp == nil {
+		return nil
 	}
 
-	listener := listeners.NewListenerTwitchNotify(session, config, db)
+	listener := listeners.NewListenerTwitchNotify(session, cfg, db)
 	tnw, err := twitchnotify.New(twitchnotify.Credentials{
-		ClientID:     config.TwitchApp.ClientID,
-		ClientSecret: config.TwitchApp.ClientSecret,
+		ClientID:     cfg.TwitchApp.ClientID,
+		ClientSecret: cfg.TwitchApp.ClientSecret,
 	}, listener.HandlerWentOnline, listener.HandlerWentOffline)
 
 	if err != nil {
@@ -35,5 +42,5 @@ func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db da
 		util.Log.Error("failed getting Twitch notify entreis: ", err)
 	}
 
-	return tnw, listener
+	return tnw
 }

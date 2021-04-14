@@ -3,12 +3,16 @@ package inits
 import (
 	"os"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
+func InitConfig(configLocation string, container di.Container) *config.Config {
+
+	cfgParser := container.Get(static.DiConfigParser).(config.Parser)
+
 	cfgFile, err := os.Open(configLocation)
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)

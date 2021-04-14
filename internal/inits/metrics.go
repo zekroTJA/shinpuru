@@ -1,18 +1,24 @@
 package inits
 
 import (
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/metrics"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitMetrics(cfg *config.Config) {
+func InitMetrics(container di.Container) (ms *metrics.MetricsServer) {
+	var err error
+
+	cfg := container.Get(static.DiConfig).(*config.Config)
+
 	if cfg.Metrics != nil && cfg.Metrics.Enable {
 		if cfg.Metrics.Addr == "" {
 			cfg.Metrics.Addr = ":9091"
 		}
 
-		ms, err := metrics.NewMetricsServer(cfg.Metrics.Addr)
+		ms, err = metrics.NewMetricsServer(cfg.Metrics.Addr)
 		if err != nil {
 			util.Log.Fatalf("failed initializing metrics server: %s", err.Error())
 		}
@@ -24,4 +30,6 @@ func InitMetrics(cfg *config.Config) {
 			}
 		}()
 	}
+
+	return
 }
