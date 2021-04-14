@@ -89,7 +89,7 @@ func (c *CmdMute) setup(ctx shireikan.Context) error {
 		desc = fmt.Sprintf("Follwoing, the role %s will be set as mute role.", muteRole.Mention())
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	acmsg := &acceptmsg.AcceptMessage{
 		Session: ctx.GetSession(),
@@ -176,7 +176,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if database.IsErrDatabaseNotFound(err) {
@@ -206,7 +206,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if victimIsMuted {
 		emb, err := shared.RevokeMute(
@@ -239,7 +239,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			st, _ := ctx.GetObject("storage").(storage.Storage)
+			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
@@ -272,7 +272,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 }
 
 func (c *CmdMute) list(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {
@@ -318,7 +318,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 }
 
 func (c *CmdMute) displayMuteRole(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	roleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {

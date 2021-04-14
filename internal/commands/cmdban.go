@@ -97,7 +97,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			st, _ := ctx.GetObject("storage").(storage.Storage)
+			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
@@ -107,8 +107,8 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
-	db, _ := ctx.GetObject("db").(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{

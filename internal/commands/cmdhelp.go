@@ -49,7 +49,7 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 
 func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,

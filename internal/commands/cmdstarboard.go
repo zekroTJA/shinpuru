@@ -8,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
@@ -51,7 +52,7 @@ func (c *CmdStarboard) IsExecutableInDMChannels() bool {
 
 func (c *CmdStarboard) Exec(ctx shireikan.Context) (err error) {
 
-	db := ctx.GetObject("db").(database.Database)
+	db := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	starboardConfig, err := db.GetStarboardConfig(ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {

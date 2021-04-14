@@ -57,9 +57,9 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
-	cfg := ctx.GetObject("config").(*config.Config)
-	ota := ctx.GetObject("onetimeauth").(*onetimeauth.OneTimeAuth)
-	db := ctx.GetObject("db").(database.Database)
+	cfg := ctx.GetObject(static.DiConfig).(*config.Config)
+	ota := ctx.GetObject(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
+	db := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	enabled, err := db.GetUserOTAEnabled(ctx.GetUser().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {

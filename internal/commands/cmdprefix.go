@@ -43,8 +43,8 @@ func (c *CmdPrefix) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdPrefix) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if len(ctx.GetArgs()) == 0 {
 		prefix, err := db.GetGuildPrefix(ctx.GetGuild().ID)

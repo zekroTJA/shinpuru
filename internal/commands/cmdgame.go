@@ -52,13 +52,13 @@ func (c *CmdGame) Exec(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	rawPresence, err := db.GetSetting(static.SettingPresence)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 	defPresence := &presence.Presence{
 		Game:   cfg.Discord.GeneralPrefix + "help | zekro.de",
 		Status: "online",

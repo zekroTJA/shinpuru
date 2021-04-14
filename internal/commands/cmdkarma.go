@@ -45,7 +45,7 @@ func (c *CmdKarma) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdKarma) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	userRes := ctx.GetArgs().Get(0).AsString()
 	if userRes != "" {

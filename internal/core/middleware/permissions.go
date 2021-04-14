@@ -33,11 +33,11 @@ func (m *PermissionsMiddleware) Handle(
 	cmd shireikan.Command, ctx shireikan.Context, layer shireikan.MiddlewareLayer) (next bool, err error) {
 
 	if m.db == nil {
-		m.db, _ = ctx.GetObject("db").(database.Database)
+		m.db, _ = ctx.GetObject(static.DiDatabase).(database.Database)
 	}
 
 	if m.cfg == nil {
-		m.cfg, _ = ctx.GetObject("config").(*config.Config)
+		m.cfg, _ = ctx.GetObject(static.DiConfig).(*config.Config)
 	}
 
 	var guildID string

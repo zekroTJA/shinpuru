@@ -49,7 +49,7 @@ func (c *CmdColorReaction) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	var enabled bool
 

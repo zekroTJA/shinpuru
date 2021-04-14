@@ -64,8 +64,8 @@ func (c *CmdReport) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdReport) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if len(ctx.GetArgs()) < 1 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
@@ -142,7 +142,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			st, _ := ctx.GetObject("storage").(storage.Storage)
+			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
@@ -206,8 +206,8 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdReport) revoke(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if len(ctx.GetArgs()) < 3 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,

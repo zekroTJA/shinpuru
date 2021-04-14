@@ -174,6 +174,14 @@ func main() {
 		},
 	})
 
+	// Initialize backup handler
+	diBuilder.Add(di.Def{
+		Name: static.DiBackupHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitBackupHandler(ctn), nil
+		},
+	})
+
 	// Initialize command handler
 	diBuilder.Add(di.Def{
 		Name: static.DiCommandHandler,

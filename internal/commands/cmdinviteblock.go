@@ -65,7 +65,7 @@ func (c *CmdInviteBlock) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdInviteBlock) printStatus(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	status, err := db.GetGuildInviteBlock(ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
@@ -87,7 +87,7 @@ func (c *CmdInviteBlock) printStatus(ctx shireikan.Context) error {
 }
 
 func (c *CmdInviteBlock) enable(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	err := db.SetGuildInviteBlock(ctx.GetGuild().ID, "1")
 	if err != nil {
@@ -100,7 +100,7 @@ func (c *CmdInviteBlock) enable(ctx shireikan.Context) error {
 }
 
 func (c *CmdInviteBlock) disable(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	err := db.SetGuildInviteBlock(ctx.GetGuild().ID, "")
 	if err != nil {

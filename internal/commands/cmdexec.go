@@ -143,7 +143,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 				return
 			}
 
-			db, _ := ctx.GetObject("db").(database.Database)
+			db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 			err = db.SetGuildJdoodleKey(ctx.GetGuild().ID, clientId+"#"+clientSecret)
 			if err != nil {
 				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
@@ -162,7 +162,7 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 }
 
 func (c *CmdExec) reset(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	err := db.SetGuildJdoodleKey(ctx.GetGuild().ID, "")
 	if err != nil {
 		return err
@@ -174,7 +174,7 @@ func (c *CmdExec) reset(ctx shireikan.Context) error {
 }
 
 func (c *CmdExec) check(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	key, err := db.GetGuildJdoodleKey(ctx.GetGuild().ID)
 	if database.IsErrDatabaseNotFound(err) {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,

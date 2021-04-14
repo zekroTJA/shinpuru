@@ -48,7 +48,7 @@ func (c *CmdLeaveMsg) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdLeaveMsg) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	chanID, msg, err := db.GetGuildLeaveMsg(ctx.GetGuild().ID)
 	if err != nil && err != database.ErrDatabaseNotFound {

@@ -55,7 +55,7 @@ func (c *CmdNotify) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdNotify) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if len(ctx.GetArgs()) < 1 {
 		notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetGuild().ID)
@@ -101,7 +101,7 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 	}
 
 	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "setup" {
-		pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+		pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 		ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err
@@ -177,7 +177,7 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdNotify) setup(ctx shireikan.Context) (*discordgo.Role, error) {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	name := "Notify"
 	if len(ctx.GetArgs()) > 1 {

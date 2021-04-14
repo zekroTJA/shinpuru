@@ -10,6 +10,7 @@ import (
 	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
@@ -105,7 +106,7 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 		return
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	totalReportCount := 0
 	reportCounts := make([]string, len(report.ReportTypes))

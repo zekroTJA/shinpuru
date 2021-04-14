@@ -15,4 +15,5 @@ const (
 	DiCommandHandler            = "commandhandler"
 	DiMetrics                   = "metrics"
 	DiWebserver                 = "webserver"
+	DiBackupHandler             = "backuphandler"
 )

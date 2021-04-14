@@ -48,7 +48,7 @@ func (c *CmdModlog) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdModlog) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if len(ctx.GetArgs()) < 1 {
 		acceptMsg := &acceptmsg.AcceptMessage{

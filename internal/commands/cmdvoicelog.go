@@ -52,7 +52,7 @@ func (c *CmdVoicelog) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdVoicelog) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	switch ctx.GetArgs().Get(0).AsString() {
 

@@ -56,7 +56,7 @@ func (c *CmdPerms) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdPerms) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	perms, err := db.GetGuildPermissions(ctx.GetGuild().ID)
 	if err != nil {
