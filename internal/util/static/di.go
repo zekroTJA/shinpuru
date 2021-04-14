@@ -9,6 +9,7 @@ const (
 	DiPermissionMiddleware      = "permissionmiddleware"
 	DiGhostpingIgnoreMiddleware = "ghostpingignoremiddleware"
 	DiTwitchNotifyWorker        = "twitchnotifyworker"
+	DiTwitchNotifyListener      = "twitchnotifylistener"
 	DiOneTimeAuth               = "onetimeauthhandler"
 	DiConfigParser              = "configparser"
 	DiCommandHandler            = "commandhandler"

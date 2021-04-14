@@ -11,9 +11,17 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
-func InitTwitchNotifyer(container di.Container) *twitchnotify.NotifyWorker {
-
+func InitTwitchNotifyListener(container di.Container) *listeners.ListenerTwitchNotify {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+
+	return listeners.NewListenerTwitchNotify(session, cfg, db)
+}
+
+func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
+
+	listener := container.Get(static.DiTwitchNotifyListener).(*listeners.ListenerTwitchNotify)
 	cfg := container.Get(static.DiConfig).(*config.Config)
 	db := container.Get(static.DiDatabase).(database.Database)
 
@@ -21,7 +29,6 @@ func InitTwitchNotifyer(container di.Container) *twitchnotify.NotifyWorker {
 		return nil
 	}
 
-	listener := listeners.NewListenerTwitchNotify(session, cfg, db)
 	tnw, err := twitchnotify.New(twitchnotify.Credentials{
 		ClientID:     cfg.TwitchApp.ClientID,
 		ClientSecret: cfg.TwitchApp.ClientSecret,

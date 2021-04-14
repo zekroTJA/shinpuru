@@ -12,6 +12,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -54,8 +55,10 @@ func main() {
 	// Parse command line flags
 	flag.Parse()
 
+	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
 
+	// Setup config parser
 	diBuilder.Add(di.Def{
 		Name: static.DiConfigParser,
 		Build: func(ctn di.Container) (interface{}, error) {
@@ -93,10 +96,25 @@ func main() {
 		},
 	})
 
+	// Initialize twitch notification listener
+	diBuilder.Add(di.Def{
+		Name: static.DiTwitchNotifyListener,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitTwitchNotifyListener(ctn), nil
+		},
+		Close: func(obj interface{}) error {
+			listener := obj.(*listeners.ListenerTwitchNotify)
+			util.Log.Info("Shutting down twitch notify listener...")
+			listener.TearDown()
+			return nil
+		},
+	})
+
+	// Initialize twitch notification worker
 	diBuilder.Add(di.Def{
 		Name: static.DiTwitchNotifyWorker,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitTwitchNotifyer(ctn), nil
+			return inits.InitTwitchNotifyWorker(ctn), nil
 		},
 	})
 
@@ -172,10 +190,10 @@ func main() {
 		},
 	})
 
+	// Build dependency injection container
 	ctn := diBuilder.Build()
 
 	// Setting log level from config
-	// util.SetLogLevel(conf.Logging.LogLevel)
 	cfg := ctn.Get(static.DiConfig).(*config.Config)
 	util.SetLogLevel(cfg.Logging.LogLevel)
 
