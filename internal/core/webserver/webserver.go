@@ -7,12 +7,14 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
 	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
@@ -70,34 +72,41 @@ type WebServer struct {
 // New creates a new instance of WebServer consuming the passed
 // database provider, storage provider, discordgo session, command
 // handler, life cycle timer and configuration.
-func New(db database.Database, st storage.Storage, s *discordgo.Session,
-	cmd shireikan.Handler, lct *lctimer.LifeCycleTimer, config *config.Config,
-	pmw *middleware.PermissionsMiddleware, ota *onetimeauth.OneTimeAuth) (ws *WebServer, err error) {
+func New(container di.Container) (ws *WebServer, err error) {
+
+	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+	storage := container.Get(static.DiObjectStorage).(storage.Storage)
+	lct := container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer)
+	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	ota := container.Get(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
+	cmdHandler := container.Get(static.DiCommandHandler).(shireikan.Handler)
 
 	ws = new(WebServer)
 
-	if !strings.HasPrefix(config.WebServer.PublicAddr, "http") {
+	if !strings.HasPrefix(cfg.WebServer.PublicAddr, "http") {
 		protocol := "http"
-		if config.WebServer.TLS != nil && config.WebServer.TLS.Enabled {
+		if cfg.WebServer.TLS != nil && cfg.WebServer.TLS.Enabled {
 			protocol += "s"
 		}
-		config.WebServer.PublicAddr = fmt.Sprintf("%s://%s", protocol, config.WebServer.PublicAddr)
+		cfg.WebServer.PublicAddr = fmt.Sprintf("%s://%s", protocol, cfg.WebServer.PublicAddr)
 	}
 
-	if config.WebServer.APITokenKey == "" {
-		config.WebServer.APITokenKey, err = random.GetRandBase64Str(32)
-	} else if len(config.WebServer.APITokenKey) < 32 {
+	if cfg.WebServer.APITokenKey == "" {
+		cfg.WebServer.APITokenKey, err = random.GetRandBase64Str(32)
+	} else if len(cfg.WebServer.APITokenKey) < 32 {
 		err = errors.New("APITokenKey must have at leats a length of 32 characters")
 	}
 	if err != nil {
 		return
 	}
 
-	ws.config = config
+	ws.config = cfg
 	ws.db = db
-	ws.st = st
-	ws.session = s
-	ws.cmdhandler = cmd
+	ws.st = storage
+	ws.session = session
+	ws.cmdhandler = cmdHandler
 	ws.pmw = pmw
 	ws.ota = ota
 	ws.rlm = NewRateLimitManager()
@@ -107,15 +116,15 @@ func New(db database.Database, st storage.Storage, s *discordgo.Session,
 		Handler: ws.router.HandleRequest,
 	}
 
-	ws.auth, err = NewAuth(db, s, lct, []byte(config.WebServer.APITokenKey))
+	ws.auth, err = NewAuth(db, session, lct, []byte(cfg.WebServer.APITokenKey))
 	if err != nil {
 		return
 	}
 
 	ws.dcoauth = discordoauth.NewDiscordOAuth(
-		config.Discord.ClientID,
-		config.Discord.ClientSecret,
-		config.WebServer.PublicAddr+endpointAuthCB,
+		cfg.Discord.ClientID,
+		cfg.Discord.ClientSecret,
+		cfg.WebServer.PublicAddr+endpointAuthCB,
 		ws.auth.LoginFailedHandler,
 		ws.auth.LoginSuccessHandler,
 	)

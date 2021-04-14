@@ -3,31 +3,17 @@ package inits
 import (
 	"fmt"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 	"github.com/zekroTJA/shinpuru/pkg/mimefix"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
-	"github.com/zekroTJA/shireikan"
 )
 
 func InitWebServer(container di.Container) (ws *webserver.WebServer) {
 
-	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	cfg := container.Get(static.DiConfig).(*config.Config)
-	db := container.Get(static.DiDatabase).(database.Database)
-	storage := container.Get(static.DiObjectStorage).(storage.Storage)
-	lct := container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
-	ota := container.Get(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
-	cmdHandler := container.Get(static.DiCommandHandler).(shireikan.Handler)
 
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
 		curr, ok := mimefix.Check()
@@ -41,7 +27,7 @@ func InitWebServer(container di.Container) (ws *webserver.WebServer) {
 			}
 		}
 
-		ws, err := webserver.New(db, storage, session, cmdHandler, lct, cfg, pmw, ota)
+		ws, err := webserver.New(container)
 		if err != nil {
 			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
 		}
