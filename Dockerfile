@@ -28,9 +28,6 @@ FROM alpine:3 AS final
 WORKDIR /app
 COPY --from=build /build/bin .
 
-RUN mv storagepatch /usr/bin/storagepatch \
-    && chmod +x /usr/bin/storagepatch
-
 RUN apk add ca-certificates
 
 RUN mkdir -p /etc/config &&\
