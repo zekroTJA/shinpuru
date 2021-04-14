@@ -225,6 +225,9 @@ func main() {
 	// Get Web WebServer instance to start web
 	// server listener
 	ctn.Get(static.DiWebserver)
+	// Get Backup Handler to ensure backup
+	// timer is running.
+	ctn.Get(static.DiBackupHandler)
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
