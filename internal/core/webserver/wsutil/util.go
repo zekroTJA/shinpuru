@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/zekroTJA/shinpuru/internal/core/database"
 )
 
 func GetQueryInt(ctx *fiber.Ctx, key string, def, min, max int) (int, error) {
@@ -40,4 +41,11 @@ func GetQueryBool(ctx *fiber.Ctx, key string, def bool) (bool, error) {
 	default:
 		return false, fiber.NewError(fiber.StatusBadRequest, "invalid boolean value")
 	}
+}
+
+func ErrInternalOrNotFound(err error) error {
+	if database.IsErrDatabaseNotFound(err) {
+		return fiber.ErrNotFound
+	}
+	return err
 }
