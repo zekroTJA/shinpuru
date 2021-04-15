@@ -29,7 +29,7 @@ func (c *GuildBackupsController) Setup(container di.Container, router fiber.Rout
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
 	router.Get("", c.getBackups)
-	router.Get("/toggle", pmw.HandleWs(session, "sp.guild.admin.backup"), c.postToggleBackups)
+	router.Post("/toggle", pmw.HandleWs(session, "sp.guild.admin.backup"), c.postToggleBackups)
 	router.Get("/:backupid/download", pmw.HandleWs(session, "sp.guild.admin.backup"), c.downloadBackup)
 }
 
@@ -106,5 +106,5 @@ func (c *GuildBackupsController) postToggleBackups(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }

@@ -63,5 +63,5 @@ func (h *OAuthHandlerImpl) LogoutHandler(ctx *fiber.Ctx) error {
 
 	ctx.ClearCookie(static.RefreshTokenCookieName)
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }

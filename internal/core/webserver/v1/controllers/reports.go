@@ -87,5 +87,5 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }

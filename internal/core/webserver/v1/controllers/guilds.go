@@ -42,7 +42,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/reports/count", c.getReportsCount)
 	router.Get("/:guildid/permissions", c.getGuildPermissions)
 	router.Post("/:guildid/permissions", c.pmw.HandleWs(c.session, "sp.guild.config.perms"), c.postGuildPermissions)
-	router.Post("/:guildid/inviteblock", c.pmw.HandleWs(c.session, "sp.guild.mod.inviteblock"), c.postGuildPermissions)
+	router.Post("/:guildid/inviteblock", c.pmw.HandleWs(c.session, "sp.guild.mod.inviteblock"), c.postGuildToggleInviteblock)
 	router.Get("/:guildid/settings", c.getGuildSettings)
 	router.Post("/:guildid/settings", c.postGuildSettings)
 	router.Get("/:guildid/settings/karma", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.getGuildSettingsKarma)
@@ -140,7 +140,7 @@ func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
@@ -400,7 +400,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
@@ -458,7 +458,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
@@ -481,7 +481,7 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
@@ -537,7 +537,7 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
@@ -588,7 +588,7 @@ func (c *GuildsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
@@ -607,7 +607,7 @@ func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) err
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
@@ -660,7 +660,7 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
 
 // ---------------------------------------------------------------------------

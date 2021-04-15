@@ -37,6 +37,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 	ws.app = fiber.New(fiber.Config{
 		ErrorHandler:          ws.errorHandler,
 		DisableStartupMessage: util.IsRelease(),
+		ProxyHeader:           "X-Forwarded-For",
 	})
 
 	if !util.IsRelease() {

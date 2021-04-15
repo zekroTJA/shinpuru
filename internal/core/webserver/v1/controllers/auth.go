@@ -56,5 +56,5 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 }
 
 func (c *AuthController) getCheck(ctx *fiber.Ctx) error {
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }

@@ -364,5 +364,5 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }

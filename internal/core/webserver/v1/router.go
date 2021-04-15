@@ -18,8 +18,6 @@ func (r *Router) SetContainer(container di.Container) {
 
 func (r *Router) Route(router fiber.Router) {
 	authMw := r.container.Get(static.DiAuthMiddleware).(auth.Middleware)
-	// session := r.container.Get(static.DiDiscordSession).(*discordgo.Session)
-	// pmw := r.container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
 	new(controllers.EtcController).Setup(r.container, router)
 	new(controllers.UtilController).Setup(r.container, router.Group("/util"))

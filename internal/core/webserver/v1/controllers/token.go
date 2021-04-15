@@ -68,5 +68,5 @@ func (c *TokenController) deleteToken(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(struct{}{})
 }
