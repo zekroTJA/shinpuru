@@ -15,16 +15,19 @@ type AuthController struct {
 	discordOAuth *discordoauth.DiscordOAuth
 	rth          auth.RefreshTokenHandler
 	ath          auth.AccessTokenHandler
+	authMw       auth.Middleware
 }
 
 func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	c.discordOAuth = container.Get(static.DiDiscordOAuthModule).(*discordoauth.DiscordOAuth)
 	c.rth = container.Get(static.DiAuthRefreshTokenHandler).(auth.RefreshTokenHandler)
 	c.ath = container.Get(static.DiAuthAccessTokenHandler).(auth.AccessTokenHandler)
+	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 
 	router.Get("/login", c.discordOAuth.HandlerInit)
 	router.Get("/oauthcallback", c.discordOAuth.HandlerCallback)
 	router.Get("/accesstoken", c.GetAccessToken)
+	router.Get("/check", c.authMw.Handle, c.GetCheck)
 }
 
 func (c *AuthController) GetAccessToken(ctx *fiber.Ctx) error {
@@ -50,4 +53,8 @@ func (c *AuthController) GetAccessToken(ctx *fiber.Ctx) error {
 		Token:   token,
 		Expires: expires,
 	})
+}
+
+func (c *AuthController) GetCheck(ctx *fiber.Ctx) error {
+	return ctx.SendStatus(fiber.StatusOK)
 }

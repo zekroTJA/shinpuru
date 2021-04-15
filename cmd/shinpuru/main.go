@@ -198,6 +198,13 @@ func main() {
 		},
 	})
 
+	diBuilder.Add(di.Def{
+		Name: static.DiAuthMiddleware,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return auth.NewMiddlewareImpl(ctn), nil
+		},
+	})
+
 	// Initialize OTA generator
 	diBuilder.Add(di.Def{
 		Name: static.DiOneTimeAuth,
