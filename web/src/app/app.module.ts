@@ -2,7 +2,7 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MarkdownModule } from 'ngx-markdown';
 
@@ -47,6 +47,7 @@ import { ProtipComponent } from './components/protip/protip.component';
 import { StarboardEntryComponent } from './components/starboard-entry/starboard-entry.component';
 import { StarboardComponent } from './components/starboard/starboard.component';
 import { CapTextPipe } from './pipes/cap-text.pipe';
+import AuthInterceptor from './api/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -98,7 +99,13 @@ import { CapTextPipe } from './pipes/cap-text.pipe';
     FormsModule,
     MarkdownModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -79,13 +79,13 @@
     <div class="getting-started-grid">
         <div class="side">
             <h3>INVITE</h3>
-            <a *ngIf="info.localinvite" [href]="info.localinvite">
+            <a *ngIf="info?.localinvite" [href]="info?.localinvite">
                 <button class="inv-button">THIS INSTANCE</button>
             </a>
-            <a *ngIf="info.publicmaininvite" [href]="info.publicmaininvite">
+            <a *ngIf="info?.publicmaininvite" [href]="info?.publicmaininvite">
                 <button class="inv-button bg-green">PUBLIC MAIN INSTANCE</button>
             </a>
-            <a *ngIf="info.publiccaranyinvite" [href]="info.publiccaranyinvite">
+            <a *ngIf="info?.publiccaranyinvite" [href]="info?.publiccaranyinvite">
                 <button class="inv-button bg-orange">PUBLIC CANARY INSTANCE</button>
             </a>
         </div>
