@@ -74,7 +74,8 @@ const (
 
 	EndpointAuthCB = "/api/auth/oauthcallback"
 
-	AuthSessionExpiration = 7 * 24 * time.Hour // 7 Days
+	AuthSessionExpiration  = 7 * 24 * time.Hour // 7 Days
+	RefreshTokenCookieName = "refreshToken"
 )
 
 var (

@@ -43,7 +43,7 @@ func (h *OAuthHandlerImpl) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error
 
 	expires := time.Now().Add(static.AuthSessionExpiration)
 	ctx.Cookie(&fiber.Cookie{
-		Name:     "refreshToken",
+		Name:     static.RefreshTokenCookieName,
 		Value:    refreshToken,
 		Path:     "/",
 		Expires:  expires,
@@ -61,7 +61,7 @@ func (h *OAuthHandlerImpl) LogoutHandler(ctx *fiber.Ctx) error {
 		}
 	}
 
-	ctx.ClearCookie("refreshToken")
+	ctx.ClearCookie(static.RefreshTokenCookieName)
 
 	return ctx.SendStatus(fiber.StatusOK)
 }

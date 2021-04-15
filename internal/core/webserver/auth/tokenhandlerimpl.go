@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -14,12 +15,14 @@ import (
 )
 
 type DatabaseRefreshTokenHandler struct {
-	db database.Database
+	db      database.Database
+	session *discordgo.Session
 }
 
 func NewDatabaseRefreshTokenHandler(container di.Container) *DatabaseRefreshTokenHandler {
 	return &DatabaseRefreshTokenHandler{
-		db: container.Get(static.DiDatabase).(database.Database),
+		db:      container.Get(static.DiDatabase).(database.Database),
+		session: container.Get(static.DiDiscordSession).(*discordgo.Session),
 	}
 }
 
@@ -41,6 +44,12 @@ func (rth *DatabaseRefreshTokenHandler) ValidateRefreshToken(token string) (iden
 
 	if time.Now().After(expires) {
 		err = errors.New("expired")
+	}
+
+	u, _ := rth.session.User(ident)
+	if u == nil {
+		err = errors.New("invalid user")
+		return
 	}
 
 	return
@@ -75,9 +84,9 @@ func NewJWTAccessTokenHandler(container di.Container) (ath *JWTAccessTokenHandle
 	return
 }
 
-func (ath *JWTAccessTokenHandler) GetAccessToken(ident string) (token string, err error) {
+func (ath *JWTAccessTokenHandler) GetAccessToken(ident string) (token string, expires time.Time, err error) {
 	now := time.Now()
-	expires := now.Add(ath.sessionExpiration)
+	expires = now.Add(ath.sessionExpiration)
 
 	claims := jwt.StandardClaims{}
 	claims.Issuer = fmt.Sprintf("shinpuru v.%s", util.AppVersion)
