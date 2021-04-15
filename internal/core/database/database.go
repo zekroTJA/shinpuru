@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
@@ -84,6 +85,10 @@ type Database interface {
 
 	GetUserOTAEnabled(userID string) (bool, error)
 	SetUserOTAEnabled(userID string, enabled bool) error
+
+	GetUserByRefreshToken(token string) (string, time.Time, error)
+	SetUserRefreshToken(userID, token string, expires time.Time) error
+	RevokeUserRefreshToken(userID string) error
 
 	//////////////////////////////////////////////////////
 	//// REPORTS

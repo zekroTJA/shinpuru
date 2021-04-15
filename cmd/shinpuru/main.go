@@ -14,6 +14,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/core/webserver/auth"
+	"github.com/zekroTJA/shinpuru/internal/core/webserver/auth/oauth"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -161,6 +163,38 @@ func main() {
 			util.Log.Info("Shutting down bot session...")
 			session.Close()
 			return nil
+		},
+	})
+
+	// Initialize Discord OAuth Module
+	diBuilder.Add(di.Def{
+		Name: static.DiDiscordOAuthModule,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitDiscordOAuth(ctn), nil
+		},
+	})
+
+	// Initialize auth refresh token handler
+	diBuilder.Add(di.Def{
+		Name: static.DiAuthRefreshTokenHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return auth.NewDatabaseRefreshTokenHandler(ctn), nil
+		},
+	})
+
+	// Initialize auth access token handler
+	diBuilder.Add(di.Def{
+		Name: static.DiAuthAccessTokenHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return auth.NewJWTAccessTokenHandler(ctn)
+		},
+	})
+
+	// Initialize OAuth API handler implementation
+	diBuilder.Add(di.Def{
+		Name: static.DiOAuthHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return oauth.NewOAuthHandlerImpl(ctn), nil
 		},
 	})
 

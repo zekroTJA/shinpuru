@@ -1,6 +1,10 @@
 package static
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 const (
 	InvitePermission = 0x1 | // CREATE INSTANT INVITE
@@ -67,6 +71,10 @@ const (
 
 	PublicMainInvite   = "https://shnp.de/invite"
 	PublicCanaryInvite = "https://c.shnp.de/invite"
+
+	EndpointAuthCB = "/api/auth/oauthcallback"
+
+	AuthSessionExpiration = 7 * 24 * time.Hour // 7 Days
 )
 
 var (

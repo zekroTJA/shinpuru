@@ -11,3 +11,7 @@ var (
 	AppDate    = "0"
 	Release    = "FALSE"
 )
+
+func IsRelease() bool {
+	return Release == "TRUE"
+}

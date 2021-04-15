@@ -2,319 +2,82 @@ package webserver
 
 import (
 	"errors"
-	"fmt"
-	"strings"
-	"time"
+	"net/http"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/sarulabs/di/v2"
-
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
+	v1 "github.com/zekroTJA/shinpuru/internal/core/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordoauth"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
-	"github.com/zekroTJA/shinpuru/pkg/random"
-	"github.com/zekroTJA/shireikan"
-
-	routing "github.com/qiangxue/fasthttp-routing"
-	"github.com/valyala/fasthttp"
 )
 
-// Error Objects
-var (
-	errNotFound         = errors.New("not found")
-	errInvalidArguments = errors.New("invalid arguments")
-	errNoAccess         = errors.New("access denied")
-	errUnauthorized     = errors.New("unauthorized")
-)
-
-const (
-	endpointLogInWithDC = "/_/loginwithdiscord"
-	endpointAuthCB      = "/_/authorizationcallback"
-)
-
-// Static File Handlers
-var (
-	fileHandlerStatic = fasthttp.FS{
-		Root:       "./web/dist/web",
-		IndexNames: []string{"index.html"},
-		Compress:   true,
-	}
-)
-
-// WebServer exposes HTTP REST API endpoints to
-// access shinpurus functionalities via a web app.
 type WebServer struct {
-	server *fasthttp.Server
-	router *routing.Router
-
-	db         database.Database
-	st         storage.Storage
-	rlm        *RateLimitManager
-	auth       *Auth
-	dcoauth    *discordoauth.DiscordOAuth
-	session    *discordgo.Session
-	cmdhandler shireikan.Handler
-	pmw        *middleware.PermissionsMiddleware
-	af         *AntiForgery
-	ota        *onetimeauth.OneTimeAuth
-
-	config *config.Config
-
-	lastAuthSecretRefresh time.Time
+	app       *fiber.App
+	cfg       *config.Config
+	container di.Container
 }
 
-// New creates a new instance of WebServer consuming the passed
-// database provider, storage provider, discordgo session, command
-// handler, life cycle timer and configuration.
 func New(container di.Container) (ws *WebServer, err error) {
-
-	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	cfg := container.Get(static.DiConfig).(*config.Config)
-	db := container.Get(static.DiDatabase).(database.Database)
-	storage := container.Get(static.DiObjectStorage).(storage.Storage)
-	lct := container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
-	ota := container.Get(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
-	cmdHandler := container.Get(static.DiCommandHandler).(shireikan.Handler)
-
 	ws = new(WebServer)
 
-	if !strings.HasPrefix(cfg.WebServer.PublicAddr, "http") {
-		protocol := "http"
-		if cfg.WebServer.TLS != nil && cfg.WebServer.TLS.Enabled {
-			protocol += "s"
-		}
-		cfg.WebServer.PublicAddr = fmt.Sprintf("%s://%s", protocol, cfg.WebServer.PublicAddr)
+	ws.container = container
+	ws.cfg = container.Get(static.DiConfig).(*config.Config)
+
+	ws.app = fiber.New(fiber.Config{
+		ErrorHandler:          ws.errorHandler,
+		DisableStartupMessage: util.IsRelease(),
+	})
+
+	if !util.IsRelease() {
+		ws.app.Use(cors.New(cors.Config{
+			AllowOrigins:     ws.cfg.WebServer.DebugPublicAddr,
+			AllowHeaders:     "authorization, content-type, set-cookie, cookie, server",
+			AllowMethods:     "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS",
+			AllowCredentials: true,
+		}))
+		ws.app.Use(logger.New())
 	}
 
-	if cfg.WebServer.APITokenKey == "" {
-		cfg.WebServer.APITokenKey, err = random.GetRandBase64Str(32)
-	} else if len(cfg.WebServer.APITokenKey) < 32 {
-		err = errors.New("APITokenKey must have at leats a length of 32 characters")
-	}
-	if err != nil {
-		return
-	}
+	ws.registerRouter(new(v1.Router), "/api/v1", "/api")
 
-	ws.config = cfg
-	ws.db = db
-	ws.st = storage
-	ws.session = session
-	ws.cmdhandler = cmdHandler
-	ws.pmw = pmw
-	ws.ota = ota
-	ws.rlm = NewRateLimitManager()
-	ws.af = NewAntiForgery()
-	ws.router = routing.New()
-	ws.server = &fasthttp.Server{
-		Handler: ws.router.HandleRequest,
-	}
-
-	ws.auth, err = NewAuth(db, session, lct, []byte(cfg.WebServer.APITokenKey))
-	if err != nil {
-		return
-	}
-
-	ws.dcoauth = discordoauth.NewDiscordOAuth(
-		cfg.Discord.ClientID,
-		cfg.Discord.ClientSecret,
-		cfg.WebServer.PublicAddr+endpointAuthCB,
-		ws.auth.LoginFailedHandler,
-		ws.auth.LoginSuccessHandler,
-	)
-
-	ws.registerHandlers()
+	ws.app.Use(filesystem.New(filesystem.Config{
+		Root:         http.Dir("web/dist/web"),
+		Browse:       true,
+		Index:        "index.html",
+		MaxAge:       3600,
+		NotFoundFile: "index.html",
+	}))
 
 	return
 }
 
-// ListenAndServeBlocking starts the listening and serving
-// loop of the web server which blocks the current goroutine.
-//
-// If an error is returned, the startup failed with the
-// specified error.
 func (ws *WebServer) ListenAndServeBlocking() error {
-	tls := ws.config.WebServer.TLS
+	tls := ws.cfg.WebServer.TLS
 
 	if tls != nil && tls.Enabled {
 		if tls.Cert == "" || tls.Key == "" {
 			return errors.New("cert file and key file must be specified")
 		}
-		return ws.server.ListenAndServeTLS(ws.config.WebServer.Addr, tls.Cert, tls.Key)
+		return ws.app.ListenTLS(ws.cfg.WebServer.Addr, tls.Cert, tls.Key)
 	}
 
-	return ws.server.ListenAndServe(ws.config.WebServer.Addr)
+	return ws.app.Listen(ws.cfg.WebServer.Addr)
 }
 
-// registerHandlers registers all request handler for the
-// request URL specified match tree.
-func (ws *WebServer) registerHandlers() {
-	// --------------------------------
-	// AVAILABLE WITHOUT AUTH
-
-	ws.router.Use(
-		ws.addHeaders, ws.optionsHandler,
-		ws.handlerFiles, ws.handleMetrics)
-
-	ws.router.Get("/ota", ws.handlerGetOta)
-
-	imagestore := ws.router.Group("/imagestore")
-	imagestore.
-		Get("/<id>", ws.handlerGetImage)
-
-	utils := ws.router.Group("/api/util")
-	utils.
-		Get(`/color/<hexcode:[\da-fA-F]{6,8}>`, ws.handlerGetColor)
-	utils.
-		Get("/commands", ws.handlerGetCommands)
-	utils.
-		Get("/landingpageinfo", ws.handlerGetLandingPageInfo)
-
-	ws.router.Get("/invite", ws.handlerGetInvite)
-
-	// --------------------------------
-	// ONLY AVAILABLE AFTER AUTH
-
-	ws.router.Get(endpointLogInWithDC, ws.dcoauth.HandlerInit)
-	ws.router.Get(endpointAuthCB, ws.dcoauth.HandlerCallback)
-
-	ws.router.Use(ws.auth.checkAuth)
-	if !util.DevModeEnabled {
-		ws.router.Use(ws.af.Handler)
+func (ws *WebServer) registerRouter(router Router, route ...string) {
+	router.SetContainer(ws.container)
+	for _, r := range route {
+		router.Route(ws.app.Group(r))
 	}
+}
 
-	api := ws.router.Group("/api")
-	api.
-		Get("/me", ws.af.SessionSetHandler, ws.handlerGetMe)
-	api.
-		Post("/logout", ws.auth.LogOutHandler)
-	api.
-		Get("/sysinfo", ws.handlerGetSystemInfo)
-
-	settings := api.Group("/settings")
-	settings.
-		Get("/presence", ws.handlerGetPresence).
-		Post(ws.handlerPostPresence)
-	settings.
-		Get("/noguildinvite", ws.handlerGetInviteSettings).
-		Post(ws.handlerPostInviteSettings)
-
-	guilds := api.Group("/guilds")
-	guilds.
-		Get("", ws.handlerGuildsGet)
-
-	guild := guilds.Group("/<guildid:[0-9]+>")
-	guild.
-		Get("", ws.handlerGuildsGetGuild)
-	guild.
-		Get("/permissions", ws.handlerGetGuildPermissions).
-		Post(ws.handlerPostGuildPermissions)
-	guild.
-		Get("/members", ws.handlerGetGuildMembers)
-	guild.
-		Post("/inviteblock", ws.handlerPostGuildInviteBlock)
-	guild.
-		Get("/scoreboard", ws.handlerGetGuildScoreboard)
-	guild.
-		Get("/starboard", ws.handlerGetGuildStarboard)
-	guild.
-		Get("/antiraid/joinlog", ws.handlerGetGuildAntiraidJoinlog).
-		Delete(ws.handlerDeleteGuildAntiraidJoinlog)
-
-	guildUnbanRequests := guild.Group("/unbanrequests")
-	guildUnbanRequests.
-		Get("", ws.handlerGetGuildUnbanrequests)
-	guildUnbanRequests.
-		Get("/count", ws.handlerGetGuildUnbanrequestsCount)
-	guildUnbanRequests.
-		Get("/<id:[0-9]+>", ws.handlerGetGuildUnbanrequest).
-		Post(ws.handlerPostGuildUnbanrequest)
-
-	guildSettings := guild.Group("/settings")
-	guildSettings.
-		Get("/karma", ws.handlerGetGuildSettingsKarma).
-		Post(ws.handlerPostGuildSettingsKarma)
-	guildSettings.
-		Get("/antiraid", ws.handlerGetGuildSettingsAntiraid).
-		Post(ws.handlerPostGuildSettingsAntiraid)
-
-	guildSettingsKarmaBlocklist := guildSettings.Group("/karma/blocklist")
-	guildSettingsKarmaBlocklist.
-		Get("", ws.handlerGetGuildSettingsKarmaBlocklist)
-	guildSettingsKarmaBlocklist.
-		Put("/<memberid>", ws.handlerPutGuildSettingsKarmaBlocklist).
-		Delete(ws.handlerDeleteGuildSettingsKarmaBlocklist)
-
-	guild.
-		Get("/settings", ws.handlerGetGuildSettings).
-		Post(ws.handlerPostGuildSettings)
-
-	guildReports := guild.Group("/reports")
-	guildReports.
-		Get("", ws.handlerGetReports)
-	guildReports.
-		Get("/count", ws.handlerGetReportsCount)
-
-	guildBackups := guild.Group("/backups")
-	guildBackups.
-		Get("", ws.handlerGetGuildBackups)
-	guildBackups.
-		Post("/toggle", ws.handlerPostGuildBackupsToggle)
-	guildBackups.
-		Get("/<backupid:[0-9]+>/download", ws.handlerGetGuildBackupDownload)
-
-	member := guilds.Group("/<guildid:[0-9]+>/<memberid:[0-9]+>")
-	member.
-		Get("", ws.handlerGuildsGetMember)
-	member.
-		Get("/permissions", ws.handlerGetMemberPermissions)
-	member.
-		Get("/permissions/allowed", ws.handlerGetMemberPermissionsAllowed)
-	member.
-		Post("/kick", ws.handlerPostGuildMemberKick)
-	member.
-		Post("/ban", ws.handlerPostGuildMemberBan)
-	member.
-		Post("/mute", ws.handlerPostGuildMemberMute)
-	member.
-		Post("/unmute", ws.handlerPostGuildMemberUnmute)
-	member.
-		Get("/unbanrequests", ws.handlerGetGuildMemberUnbanrequests)
-
-	memberReports := member.Group("/reports")
-	memberReports.
-		Get("", ws.handlerGetReports).
-		Post(ws.handlerPostGuildMemberReport)
-	memberReports.
-		Get("/count", ws.handlerGetReportsCount)
-
-	reports := api.Group("/reports")
-	report := reports.Group("/<id:[0-9]+>")
-	report.
-		Get("", ws.handlerGetReport)
-	report.
-		Post("/revoke", ws.handlerPostReportRevoke)
-
-	unbanReqeusts := api.Group("/unbanrequests")
-	unbanReqeusts.
-		Get("", ws.handlerGetUnbanrequest).
-		Post(ws.handlerPostUnbanrequest)
-	unbanReqeusts.
-		Get("/bannedguilds", ws.handlerGetUnbanrequestBannedguilds)
-
-	api.
-		Get("/token", ws.handlerGetToken).
-		Post(ws.handlerPostToken).
-		Delete(ws.handlerDeleteToken)
-
-	usersettings := api.Group("/usersettings")
-	usersettings.
-		Get("/ota", ws.handlerGetUsersettingsOta).
-		Post(ws.handlerPostUsersettingsOta)
+func (ws *WebServer) errorHandler(ctx *fiber.Ctx, err error) error {
+	if fErr, ok := err.(*fiber.Error); (ok && fErr.Code >= 500) || !ok {
+		// custom error handling here
+	}
+	return fiber.DefaultErrorHandler(ctx, err)
 }

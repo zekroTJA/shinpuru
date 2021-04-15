@@ -244,6 +244,14 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `refreshTokens` (" +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`token` text NOT NULL DEFAULT ''," +
+		"`expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
 	}
@@ -1576,5 +1584,46 @@ func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.Starboa
 	}
 	err = e.SetMediaURLs(mediaURLencoded)
 
+	return
+}
+
+func (m *MysqlMiddleware) GetUserByRefreshToken(token string) (userID string, expires time.Time, err error) {
+	err = m.Db.QueryRow("SELECT userID, expires FROM refreshTokens WHERE token = ?", token).Scan(
+		&userID, &expires)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return
+}
+
+func (m *MysqlMiddleware) SetUserRefreshToken(userID, token string, expires time.Time) (err error) {
+	res, err := m.Db.Exec(
+		"UPDATE refreshTokens SET "+
+			"token = ?, expires = ? "+
+			"WHERE userID = ?",
+		token, expires, userID)
+	if err != nil {
+		return
+	}
+
+	ar, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if ar == 0 {
+		_, err = m.Db.Exec(
+			"INSERT INTO refreshTokens "+
+				"(userID, token, expires) "+
+				"VALUES (?, ?, ?)",
+			userID, token, expires)
+	}
+	return
+}
+
+func (m *MysqlMiddleware) RevokeUserRefreshToken(userID string) (err error) {
+	_, err = m.Db.Exec("DELETE FROM refreshTokens WHERE userID = ?", userID)
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
 	return
 }
