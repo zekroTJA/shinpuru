@@ -26,11 +26,11 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 
 	router.Get("/login", c.discordOAuth.HandlerInit)
 	router.Get("/oauthcallback", c.discordOAuth.HandlerCallback)
-	router.Get("/accesstoken", c.GetAccessToken)
-	router.Get("/check", c.authMw.Handle, c.GetCheck)
+	router.Post("/accesstoken", c.postAccessToken)
+	router.Get("/check", c.authMw.Handle, c.getCheck)
 }
 
-func (c *AuthController) GetAccessToken(ctx *fiber.Ctx) error {
+func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies(static.RefreshTokenCookieName)
 	if refreshToken == "" {
 		return fiber.ErrUnauthorized
@@ -55,6 +55,6 @@ func (c *AuthController) GetAccessToken(ctx *fiber.Ctx) error {
 	})
 }
 
-func (c *AuthController) GetCheck(ctx *fiber.Ctx) error {
+func (c *AuthController) getCheck(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(fiber.StatusOK)
 }

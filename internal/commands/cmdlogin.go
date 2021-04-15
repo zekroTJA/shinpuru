@@ -79,7 +79,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		return
 	}
 
-	link := fmt.Sprintf("%s/ota?token=%s", cfg.WebServer.PublicAddr, token)
+	link := fmt.Sprintf("%s/api/ota?token=%s", cfg.WebServer.PublicAddr, token)
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Description: "Click this [**this link**](" + link + ") and you will be automatically logged " +

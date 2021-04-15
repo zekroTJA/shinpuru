@@ -75,14 +75,13 @@ const (
 	EndpointAuthCB = "/api/auth/oauthcallback"
 
 	AuthSessionExpiration  = 7 * 24 * time.Hour // 7 Days
+	ApiTokenExpiration     = 365 * 24 * time.Hour
 	RefreshTokenCookieName = "refreshToken"
 )
 
 var (
 	PermLvlBotOwner   = 1000
 	PermLvlGuildOwner = 10
-
-	RoutingBypassPrefixes = []string{"/api/", "/imagestore/", "/_/", "/invite", "/ota"}
 
 	DefaultAdminRules = []string{
 		"+sp.guild.*",

@@ -11,6 +11,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	v1 "github.com/zekroTJA/shinpuru/internal/core/webserver/v1"
+	"github.com/zekroTJA/shinpuru/internal/core/webserver/v1/controllers"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -19,6 +20,12 @@ type WebServer struct {
 	app       *fiber.App
 	cfg       *config.Config
 	container di.Container
+}
+
+type errorModel struct {
+	Error   string `json:"error"`
+	Code    int    `json:"code"`
+	Context string `json:"context,omitempty"`
 }
 
 func New(container di.Container) (ws *WebServer, err error) {
@@ -42,6 +49,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 		ws.app.Use(logger.New())
 	}
 
+	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
 	ws.registerRouter(new(v1.Router), "/api/v1", "/api")
 
 	ws.app.Use(filesystem.New(filesystem.Config{
@@ -76,8 +84,12 @@ func (ws *WebServer) registerRouter(router Router, route ...string) {
 }
 
 func (ws *WebServer) errorHandler(ctx *fiber.Ctx, err error) error {
-	if fErr, ok := err.(*fiber.Error); (ok && fErr.Code >= 500) || !ok {
-		// custom error handling here
+	if fErr, ok := err.(*fiber.Error); ok {
+		ctx.Status(fErr.Code)
+		return ctx.JSON(&errorModel{
+			Error: fErr.Message,
+			Code:  fErr.Code,
+		})
 	}
 	return fiber.DefaultErrorHandler(ctx, err)
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gofiber/fiber/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -58,6 +59,28 @@ func (m *PermissionsMiddleware) Handle(
 	}
 
 	return true, nil
+}
+
+func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		uid, _ := ctx.Locals("uid").(string)
+		guildID := ctx.Params("guildid")
+
+		if uid == "" || guildID == "" {
+			return fiber.ErrForbidden
+		}
+
+		ok, _, err := pmw.CheckPermissions(s, guildID, uid, required)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return fiber.ErrForbidden
+		}
+
+		ctx.Next()
+		return nil
+	}
 }
 
 func (m *PermissionsMiddleware) GetLayer() shireikan.MiddlewareLayer {

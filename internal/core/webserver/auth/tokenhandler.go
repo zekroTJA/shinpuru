@@ -12,3 +12,9 @@ type AccessTokenHandler interface {
 	GetAccessToken(ident string) (token string, expires time.Time, err error)
 	ValidateAccessToken(token string) (ident string, err error)
 }
+
+type APITokenHandler interface {
+	GetAPIToken(ident string) (token string, expires time.Time, err error)
+	ValidateAPIToken(token string) (ident string, err error)
+	RevokeToken(ident string) error
+}

@@ -20,5 +20,6 @@ const (
 	DiOAuthHandler              = "oauthhandler"
 	DiAuthAccessTokenHandler    = "authaccesstokenhandler"
 	DiAuthRefreshTokenHandler   = "authrefreshtokenhandler"
+	DiAuthAPITokenHandler       = "authapitokenhandler"
 	DiAuthMiddleware            = "authmiddleware"
 )

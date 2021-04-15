@@ -25,12 +25,12 @@ func NewMiddlewareImpl(container di.Container) *MiddlewareImpl {
 func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
 	authHeader := ctx.Get("authorization")
 	if authHeader == "" {
-		return fiber.ErrUnauthorized
+		return errInvalidAccessToken
 	}
 
 	split := strings.Split(authHeader, " ")
 	if len(split) < 2 {
-		return fiber.ErrUnauthorized
+		return errInvalidAccessToken
 	}
 
 	var ident string
@@ -42,11 +42,11 @@ func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
 		}
 
 	default:
-		return fiber.ErrUnauthorized
-
+		return errInvalidAccessToken
 	}
 
 	ctx.Locals("uid", ident)
+	ctx.Next()
 
 	return
 }
