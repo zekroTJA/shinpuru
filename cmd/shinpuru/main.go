@@ -124,7 +124,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiLifecycleTimer,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitLTCTimer(), nil
+			return inits.InitLTCTimer(ctn), nil
 		},
 	})
 

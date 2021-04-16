@@ -1627,3 +1627,13 @@ func (m *MysqlMiddleware) RevokeUserRefreshToken(userID string) (err error) {
 	}
 	return
 }
+
+func (m *MysqlMiddleware) CleanupExpiredRefreshTokens() (n int64, err error) {
+	res, err := m.Db.Exec("DELETE FROM refreshTokens WHERE expires < CURRENT_TIMESTAMP()")
+	if err != nil {
+		return
+	}
+
+	n, err = res.RowsAffected()
+	return
+}

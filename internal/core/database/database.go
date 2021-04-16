@@ -89,6 +89,7 @@ type Database interface {
 	GetUserByRefreshToken(token string) (string, time.Time, error)
 	SetUserRefreshToken(userID, token string, expires time.Time) error
 	RevokeUserRefreshToken(userID string) error
+	CleanupExpiredRefreshTokens() (int64, error)
 
 	//////////////////////////////////////////////////////
 	//// REPORTS
