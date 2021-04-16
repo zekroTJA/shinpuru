@@ -146,7 +146,7 @@ func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
@@ -406,7 +406,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
@@ -464,7 +464,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
@@ -487,7 +487,7 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
@@ -543,7 +543,7 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
@@ -594,7 +594,7 @@ func (c *GuildsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
@@ -613,7 +613,7 @@ func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) err
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
@@ -666,7 +666,7 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }
 
 func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {

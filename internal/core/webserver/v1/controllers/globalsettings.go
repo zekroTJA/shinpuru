@@ -222,5 +222,5 @@ func (c *GlobalSettingsController) postNoGuildInvites(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }

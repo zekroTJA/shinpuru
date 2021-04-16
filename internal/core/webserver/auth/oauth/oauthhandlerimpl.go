@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/auth"
+	"github.com/zekroTJA/shinpuru/internal/core/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -63,5 +64,5 @@ func (h *OAuthHandlerImpl) LogoutHandler(ctx *fiber.Ctx) error {
 
 	ctx.ClearCookie(static.RefreshTokenCookieName)
 
-	return ctx.JSON(struct{}{})
+	return ctx.JSON(models.Ok)
 }

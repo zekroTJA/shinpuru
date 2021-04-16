@@ -17,6 +17,12 @@ import (
 	"github.com/zekroTJA/shireikan"
 )
 
+var Ok = &Status{200}
+
+type Status struct {
+	Code int `json:"code"`
+}
+
 type AccessTokenResponse struct {
 	Token   string    `json:"token"`
 	Expires time.Time `json:"expires"`
