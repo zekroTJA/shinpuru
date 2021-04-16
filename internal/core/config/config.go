@@ -76,13 +76,14 @@ type TwitchApp struct {
 // WebServer holds general configurations for
 // the exposed web server.
 type WebServer struct {
-	Enabled         bool          `json:"enabled"`
-	Addr            string        `json:"addr"`
-	TLS             *WebServerTLS `json:"tls"`
-	APITokenKey     string        `json:"apitokenkey"`
-	PublicAddr      string        `json:"publicaddr"`
-	LandingPage     *LandingPage  `json:"landingpage"`
-	DebugPublicAddr string        `json:"debugpublicaddr,omitempty"`
+	Enabled         bool                `json:"enabled"`
+	Addr            string              `json:"addr"`
+	TLS             *WebServerTLS       `json:"tls"`
+	APITokenKey     string              `json:"apitokenkey"`
+	PublicAddr      string              `json:"publicaddr"`
+	LandingPage     *LandingPage        `json:"landingpage"`
+	DebugPublicAddr string              `json:"debugpublicaddr,omitempty"`
+	RateLimit       *WebServerRatelimit `json:"ratelimit"`
 }
 
 // WebServerTLS wraps preferences for the TLS
@@ -91,6 +92,14 @@ type WebServerTLS struct {
 	Enabled bool   `json:"enabled"`
 	Cert    string `json:"certfile"`
 	Key     string `json:"keyfile"`
+}
+
+// WebServerRatelimit wraps rate limit
+// configuration for the web server.
+type WebServerRatelimit struct {
+	Enabled         bool `json:"enabled"`
+	Max             int  `json:"max"`
+	DurationSeconds int  `json:"durationseconds"`
 }
 
 // LandingPage wraps the settings for the web
@@ -229,6 +238,11 @@ func GetDefaultConfig() *Config {
 			LandingPage: &LandingPage{
 				ShowLocalInvite:   true,
 				ShowPublicInvites: true,
+			},
+			RateLimit: &WebServerRatelimit{
+				Enabled:         true,
+				Max:             30,
+				DurationSeconds: 3,
 			},
 		},
 		Metrics: &Metrics{

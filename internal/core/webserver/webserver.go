@@ -3,10 +3,12 @@ package webserver
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
@@ -48,6 +50,16 @@ func New(container di.Container) (ws *WebServer, err error) {
 			AllowCredentials: true,
 		}))
 		ws.app.Use(logger.New())
+	}
+
+	if rl := ws.cfg.WebServer.RateLimit; rl != nil && rl.Enabled {
+		ws.app.Use(limiter.New(limiter.Config{
+			Max:        rl.Max,
+			Expiration: time.Duration(rl.DurationSeconds) * time.Second,
+			LimitReached: func(c *fiber.Ctx) error {
+				return fiber.ErrTooManyRequests
+			},
+		}))
 	}
 
 	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
