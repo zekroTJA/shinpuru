@@ -13,12 +13,14 @@ var (
 )
 
 type MiddlewareImpl struct {
-	ath AccessTokenHandler
+	ath   AccessTokenHandler
+	apith APITokenHandler
 }
 
 func NewMiddlewareImpl(container di.Container) *MiddlewareImpl {
 	return &MiddlewareImpl{
-		ath: container.Get(static.DiAuthAccessTokenHandler).(AccessTokenHandler),
+		ath:   container.Get(static.DiAuthAccessTokenHandler).(AccessTokenHandler),
+		apith: container.Get(static.DiAuthAPITokenHandler).(APITokenHandler),
 	}
 }
 
@@ -37,12 +39,17 @@ func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
 	switch strings.ToLower(split[0]) {
 
 	case "accesstoken":
-		if ident, err = m.ath.ValidateAccessToken(split[1]); err != nil {
+		if ident, err = m.ath.ValidateAccessToken(split[1]); err != nil || ident == "" {
 			return errInvalidAccessToken
 		}
 
+	case "bearer":
+		if ident, err = m.apith.ValidateAPIToken(split[1]); err != nil || ident == "" {
+			return fiber.ErrUnauthorized
+		}
+
 	default:
-		return errInvalidAccessToken
+		return fiber.ErrUnauthorized
 	}
 
 	ctx.Locals("uid", ident)

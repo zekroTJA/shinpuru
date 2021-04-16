@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -155,10 +156,9 @@ type DatabaseAPITokenHandler struct {
 }
 
 func NewDatabaseAPITokenHandler(container di.Container) (*DatabaseAPITokenHandler, error) {
-	secret, err := random.GetRandByteArray(32)
-	if err != nil {
-		return nil, err
-	}
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	secret := []byte(cfg.WebServer.APITokenKey)
+
 	return &DatabaseAPITokenHandler{
 		db:      container.Get(static.DiDatabase).(database.Database),
 		session: container.Get(static.DiDiscordSession).(*discordgo.Session),
