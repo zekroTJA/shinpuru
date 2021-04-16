@@ -227,7 +227,7 @@ export class APIService {
 
   public logout(): Observable<any> {
     return this.http
-      .post<any>(this.rcAPI('logout'), this.defopts())
+      .post<any>(this.rcAuth('logout'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

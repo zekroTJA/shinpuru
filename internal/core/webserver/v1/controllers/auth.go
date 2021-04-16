@@ -28,6 +28,7 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/oauthcallback", c.discordOAuth.HandlerCallback)
 	router.Post("/accesstoken", c.postAccessToken)
 	router.Get("/check", c.authMw.Handle, c.getCheck)
+	router.Post("/logout", c.authMw.Handle, c.getCheck)
 }
 
 func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
@@ -56,5 +57,18 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 }
 
 func (c *AuthController) getCheck(ctx *fiber.Ctx) error {
+	return ctx.JSON(models.Ok)
+}
+
+func (c *AuthController) postLogout(ctx *fiber.Ctx) error {
+	uid := ctx.Locals("uid").(string)
+
+	err := c.rth.RevokeToken(uid)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	ctx.ClearCookie(static.RefreshTokenCookieName)
+
 	return ctx.JSON(models.Ok)
 }
