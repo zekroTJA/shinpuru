@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/gofiber/fiber/v2"
 	"github.com/makeworld-the-better-one/go-isemoji"
 	"github.com/sarulabs/di/v2"
@@ -43,6 +45,10 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/permissions", c.getGuildPermissions)
 	router.Post("/:guildid/permissions", c.pmw.HandleWs(c.session, "sp.guild.config.perms"), c.postGuildPermissions)
 	router.Post("/:guildid/inviteblock", c.pmw.HandleWs(c.session, "sp.guild.mod.inviteblock"), c.postGuildToggleInviteblock)
+	router.Get("/:guildid/unbanrequests", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getGuildUnbanrequests)
+	router.Get("/:guildid/unbanrequests/count", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getGuildUnbanrequestsCount)
+	router.Get("/:guildid/unbanrequests/:id", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getGuildUnbanrequest)
+	router.Post("/:guildid/unbanrequests/:id", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.postGuildUnbanrequest)
 	router.Get("/:guildid/settings", c.getGuildSettings)
 	router.Post("/:guildid/settings", c.postGuildSettings)
 	router.Get("/:guildid/settings/karma", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.getGuildSettingsKarma)
@@ -661,6 +667,112 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(struct{}{})
+}
+
+func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	requests, err := c.db.GetGuildUnbanRequests(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	for _, r := range requests {
+		r.Hydrate()
+	}
+
+	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+}
+
+func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	stateFilter, err := wsutil.GetQueryInt(ctx, "state", -1, 0, 0)
+	if err != nil {
+		return err
+	}
+
+	requests, err := c.db.GetGuildUnbanRequests(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	count := len(requests)
+	if stateFilter > -1 {
+		count = 0
+		for _, r := range requests {
+			if int(r.Status) == stateFilter {
+				count++
+			}
+		}
+	}
+
+	return ctx.JSON(&models.Count{Count: count})
+}
+
+func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	request, err := c.db.GetUnbanRequest(id)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if request == nil || request.GuildID != guildID {
+		return fiber.ErrNotFound
+	}
+
+	return ctx.JSON(request.Hydrate())
+}
+
+func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
+	uid := ctx.Locals("uid").(string)
+
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	rUpdate := new(report.UnbanRequest)
+	if err := ctx.BodyParser(rUpdate); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	request, err := c.db.GetUnbanRequest(id)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if request == nil || request.GuildID != guildID {
+		return fiber.ErrNotFound
+	}
+
+	if rUpdate.ProcessedMessage == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "process reason message must be provided")
+	}
+
+	if request.ID, err = snowflake.ParseString(id); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+	request.ProcessedBy = uid
+	request.Status = rUpdate.Status
+	request.Processed = time.Now()
+	request.ProcessedMessage = rUpdate.ProcessedMessage
+
+	if err = c.db.UpdateUnbanRequest(request); err != nil {
+		return err
+	}
+
+	if request.Status == report.UnbanRequestStateAccepted {
+		if err = c.session.GuildBanDelete(request.GuildID, request.UserID); err != nil {
+			return err
+		}
+	}
+
+	return ctx.JSON(request.Hydrate())
 }
 
 // ---------------------------------------------------------------------------

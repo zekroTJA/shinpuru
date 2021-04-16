@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/wsutil"
+	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
@@ -35,6 +36,8 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	router.Get("/:memberid/permissions/allowed", c.getMemberPermissionsAllowed)
 	router.Get("/:memberid/reports", c.getReports)
 	router.Get("/:memberid/reports/count", c.getReportsCount)
+	router.Get("/:memberid/unbanrequests", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getMemberUnbanrequests)
+	router.Get("/:memberid/unbanrequests/count", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getMemberUnbanrequestsCount)
 }
 
 func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
@@ -220,6 +223,55 @@ func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 	count, err := c.db.GetReportsFilteredCount(guildID, memberID, -1)
 	if err != nil {
 		return err
+	}
+
+	return ctx.JSON(&models.Count{Count: count})
+}
+
+func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+	memberID := ctx.Params("memberid")
+
+	requests, err := c.db.GetGuildUserUnbanRequests(guildID, memberID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	for _, r := range requests {
+		r.Hydrate()
+	}
+
+	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+}
+
+func (c *GuildMembersController) getMemberUnbanrequestsCount(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+	memberID := ctx.Params("memberid")
+
+	stateFilter, err := wsutil.GetQueryInt(ctx, "state", -1, 0, 0)
+	if err != nil {
+		return err
+	}
+
+	requests, err := c.db.GetGuildUserUnbanRequests(guildID, memberID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+	if requests == nil {
+		requests = make([]*report.UnbanRequest, 0)
+	}
+
+	count := len(requests)
+	if stateFilter > -1 {
+		count = 0
+		for _, r := range requests {
+			if int(r.Status) == stateFilter {
+				count++
+			}
+		}
 	}
 
 	return ctx.JSON(&models.Count{Count: count})

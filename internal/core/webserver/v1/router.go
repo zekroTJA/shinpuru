@@ -29,6 +29,7 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.TokenController).Setup(r.container, router.Group("/token", authMw.Handle))
 	new(controllers.ReportsController).Setup(r.container, router.Group("/reports", authMw.Handle))
 	new(controllers.GuildsController).Setup(r.container, router.Group("/guilds", authMw.Handle))
+	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests", authMw.Handle))
 	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid", authMw.Handle))
 	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups", authMw.Handle))
 	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid", authMw.Handle))
