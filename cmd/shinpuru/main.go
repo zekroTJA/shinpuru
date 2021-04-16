@@ -291,7 +291,7 @@ func main() {
 }
 
 func setupDevMode() {
-	if util.Release == "TRUE" {
+	if util.IsRelease() {
 		util.Log.Fatal("development mode is not available in production builds")
 	}
 

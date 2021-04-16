@@ -2,6 +2,7 @@ package webserver
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,6 +39,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 
 	ws.app = fiber.New(fiber.Config{
 		ErrorHandler:          ws.errorHandler,
+		ServerHeader:          fmt.Sprintf("shinpuru v%s", util.AppVersion),
 		DisableStartupMessage: util.IsRelease(),
 		ProxyHeader:           "X-Forwarded-For",
 	})
