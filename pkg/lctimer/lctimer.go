@@ -1,5 +1,7 @@
 // Package lctimer provides a life cycle timer which
 // calls registered callback handlers on timer elapse.
+// This package is a huge buggy piece of crap, please
+// don't use it. :)
 package lctimer
 
 import (

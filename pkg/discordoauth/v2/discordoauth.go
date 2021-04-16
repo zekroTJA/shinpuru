@@ -1,6 +1,7 @@
 // package discordoauth provides fasthttp handlers
 // to authenticate with via the Discord OAuth2
-// endpoint.
+// endpoint. v2 swapped support for fasthttp-router
+// to support for fiber handlers.
 package v2
 
 import (

@@ -40,7 +40,7 @@
   *Package jdoodle provides an API wrapper for the jdoodle execute and credit-spent REST API.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](pkg/lctimer)  
-  *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse.*
+  *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse. This package is a huge buggy piece of crap, please don't use it. :)*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
   *Package mimefix provides functionalities to bypass this issue with fasthttp on windows hosts*: https://github.com/golang/go/issues/32350*
