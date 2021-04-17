@@ -97,9 +97,9 @@ type WebServerTLS struct {
 // WebServerRatelimit wraps rate limit
 // configuration for the web server.
 type WebServerRatelimit struct {
-	Enabled         bool `json:"enabled"`
-	Max             int  `json:"max"`
-	DurationSeconds int  `json:"durationseconds"`
+	Enabled      bool `json:"enabled"`
+	Burst        int  `json:"burst"`
+	LimitSeconds int  `json:"limitseconds"`
 }
 
 // LandingPage wraps the settings for the web
@@ -240,9 +240,9 @@ func GetDefaultConfig() *Config {
 				ShowPublicInvites: true,
 			},
 			RateLimit: &WebServerRatelimit{
-				Enabled:         true,
-				Max:             30,
-				DurationSeconds: 3,
+				Enabled:      true,
+				Burst:        30,
+				LimitSeconds: 3,
 			},
 		},
 		Metrics: &Metrics{

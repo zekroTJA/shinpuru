@@ -9,7 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
@@ -17,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/v1/controllers"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/limiter"
 )
 
 type WebServer struct {
@@ -56,9 +56,13 @@ func New(container di.Container) (ws *WebServer, err error) {
 
 	if rl := ws.cfg.WebServer.RateLimit; rl != nil && rl.Enabled {
 		ws.app.Use(limiter.New(limiter.Config{
-			Max:        rl.Max,
-			Expiration: time.Duration(rl.DurationSeconds) * time.Second,
-			LimitReached: func(c *fiber.Ctx) error {
+			Burst:           rl.Burst,
+			Duration:        time.Duration(rl.LimitSeconds) * time.Second,
+			CleanupInterval: 10 * time.Minute,
+			KeyGenerator: func(ctx *fiber.Ctx) string {
+				return ctx.IP()
+			},
+			OnLimitReached: func(ctx *fiber.Ctx) error {
 				return fiber.ErrTooManyRequests
 			},
 		}))
