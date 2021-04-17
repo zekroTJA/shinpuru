@@ -34,4 +34,8 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid", authMw.Handle))
 	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups", authMw.Handle))
 	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid", authMw.Handle))
+
+	// --- ETC ROUTES ---
+
+	router.Get("/stack", func(ctx *fiber.Ctx) error { return ctx.JSON(ctx.App().Stack()) })
 }

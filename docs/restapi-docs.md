@@ -1,6 +1,6 @@
 # REST API Docs
 
-When enabled, shinpuru exposes a RESTful HTTP(S) API which exposes all functionalities which are also available to the web frontend.
+When enabled, shinpuru exposes a RESTful HTTP API which exposes all functionalities which are also available to the web frontend.
 
 ## Authentication
 
@@ -13,8 +13,8 @@ All requests to the API needs to be authenticated and authorized. To authenticat
 To authenticate your requests, you need to add an `Authentication` header to your request with the token as `Bearer` token.
 
 ```
-> GET /api/me HTTP/1.1
-> Host: sp.zekro.de
+> GET /api/me HTTP/2.0
+> Host: shnp.de
 > Authorization: bearer eyJhbGciOiJIUzI1...
 > Accept: */*
 ```
@@ -25,7 +25,7 @@ The following are API models of objects returned from the API.
 
 ### List Response
 
-Requests which produce a list as response are wrapped in the following model:
+Requests which produce a list as response are wrapped in the following list model:
 
 | Field | Type | Description |
 |-------|------|-------------|
