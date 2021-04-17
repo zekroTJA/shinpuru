@@ -54,22 +54,24 @@ func New(container di.Container) (ws *WebServer, err error) {
 		ws.app.Use(logger.New())
 	}
 
-	if rl := ws.cfg.WebServer.RateLimit; rl != nil && rl.Enabled {
-		ws.app.Use(limiter.New(limiter.Config{
-			Burst:           rl.Burst,
-			Duration:        time.Duration(rl.LimitSeconds) * time.Second,
-			CleanupInterval: 10 * time.Minute,
-			KeyGenerator: func(ctx *fiber.Ctx) string {
-				return ctx.IP()
-			},
-			OnLimitReached: func(ctx *fiber.Ctx) error {
-				return fiber.ErrTooManyRequests
-			},
-		}))
-	}
+	rlc := ws.cfg.WebServer.RateLimit
+	rlh := limiter.New(limiter.Config{
+		Next: func(ctx *fiber.Ctx) bool {
+			return rlc == nil || !rlc.Enabled
+		},
+		Burst:           rlc.Burst,
+		Duration:        time.Duration(rlc.LimitSeconds) * time.Second,
+		CleanupInterval: 10 * time.Minute,
+		KeyGenerator: func(ctx *fiber.Ctx) string {
+			return ctx.IP()
+		},
+		OnLimitReached: func(ctx *fiber.Ctx) error {
+			return fiber.ErrTooManyRequests
+		},
+	})
 
 	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
-	ws.registerRouter(new(v1.Router), "/api/v1", "/api")
+	ws.registerRouter(new(v1.Router), []string{"/api/v1", "/api"}, rlh)
 
 	ws.app.Use(filesystem.New(filesystem.Config{
 		Root:         http.Dir("web/dist/web"),
@@ -95,10 +97,10 @@ func (ws *WebServer) ListenAndServeBlocking() error {
 	return ws.app.Listen(ws.cfg.WebServer.Addr)
 }
 
-func (ws *WebServer) registerRouter(router Router, route ...string) {
+func (ws *WebServer) registerRouter(router Router, routes []string, middlewares ...fiber.Handler) {
 	router.SetContainer(ws.container)
-	for _, r := range route {
-		router.Route(ws.app.Group(r))
+	for _, r := range routes {
+		router.Route(ws.app.Group(r, middlewares...))
 	}
 }
 

@@ -25,6 +25,7 @@ var defConfigInstance = Config{
 	OnLimitReached: func(ctx *fiber.Ctx) error {
 		return fiber.ErrTooManyRequests
 	},
+	Next: nil,
 }
 
 // Config provides configuration values
@@ -59,6 +60,11 @@ type Config struct {
 	//
 	// Default: func(ctx *fiber.Ctx) error { return fiber.ErrTooManyRequests }
 	OnLimitReached fiber.Handler
+	// Next specifies a function which is called
+	// before the middleware is executed. If the
+	// function is set und returns true, the
+	// middleware is skipped.
+	Next func(c *fiber.Ctx) bool
 }
 
 // New initializes new rate limiter middleware
@@ -74,6 +80,10 @@ func New(config ...Config) fiber.Handler {
 	burstS := strconv.Itoa(cfg.Burst)
 
 	return func(ctx *fiber.Ctx) (err error) {
+		if cfg.Next != nil && cfg.Next(ctx) {
+			return ctx.Next()
+		}
+
 		key := cfg.KeyGenerator(ctx)
 		rl := mgr.retrieve(key)
 		ok, res := rl.Reserve()
