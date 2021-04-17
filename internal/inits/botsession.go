@@ -7,15 +7,11 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 func InitDiscordBotSession(container di.Container) *discordgo.Session {
@@ -38,37 +34,27 @@ func InitDiscordBotSession(container di.Container) *discordgo.Session {
 	}
 
 	cfg := container.Get(static.DiConfig).(*config.Config)
-	db := container.Get(static.DiDatabase).(database.Database)
-	storage := container.Get(static.DiObjectStorage).(storage.Storage)
-	lct := container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
-	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
 
 	session.Token = "Bot " + cfg.Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(db, pmw)
-	listenerGhostPing := listeners.NewListenerGhostPing(db, gpim)
-	listenerJDoodle := listeners.NewListenerJdoodle(db, pmw)
-	listenerColors := listeners.NewColorListener(db, pmw, cfg.WebServer.PublicAddr)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
+	listenerGhostPing := listeners.NewListenerGhostPing(container)
+	listenerJDoodle := listeners.NewListenerJdoodle(container)
+	listenerColors := listeners.NewColorListener(container)
 
-	publicAddr := ""
-	if cfg.WebServer != nil {
-		publicAddr = cfg.WebServer.PublicAddr
-	}
-	listenerStarboard := listeners.NewListenerStarboard(db, storage, publicAddr)
+	listenerStarboard := listeners.NewListenerStarboard(container)
 
-	session.AddHandler(listeners.NewListenerReady(cfg, db, lct).Handler)
-	session.AddHandler(listeners.NewListenerGuildJoin(cfg).Handler)
-	session.AddHandler(listeners.NewListenerMemberAdd(db).Handler)
-	session.AddHandler(listeners.NewListenerMemberRemove(db).Handler)
-	session.AddHandler(listeners.NewListenerVote(db).Handler)
-	session.AddHandler(listeners.NewListenerChannelCreate(db).Handler)
-	session.AddHandler(listeners.NewListenerVoiceUpdate(db).Handler)
-	session.AddHandler(listeners.NewListenerKarma(db).Handler)
-	session.AddHandler(listeners.NewListenerAntiraid(db).HandlerMemberAdd)
-	session.AddHandler(listeners.NewListenerBotMention(cfg).Listener)
+	session.AddHandler(listeners.NewListenerReady(container).Handler)
+	session.AddHandler(listeners.NewListenerMemberAdd(container).Handler)
+	session.AddHandler(listeners.NewListenerMemberRemove(container).Handler)
+	session.AddHandler(listeners.NewListenerVote(container).Handler)
+	session.AddHandler(listeners.NewListenerChannelCreate(container).Handler)
+	session.AddHandler(listeners.NewListenerVoiceUpdate(container).Handler)
+	session.AddHandler(listeners.NewListenerKarma(container).Handler)
+	session.AddHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd)
+	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)

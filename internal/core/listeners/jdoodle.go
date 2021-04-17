@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/timedmap"
 	"golang.org/x/time/rate"
 
@@ -66,10 +67,10 @@ type jdoodleMessage struct {
 	embLang string
 }
 
-func NewListenerJdoodle(db database.Database, pmw *middleware.PermissionsMiddleware) *ListenerJdoodle {
+func NewListenerJdoodle(container di.Container) *ListenerJdoodle {
 	return &ListenerJdoodle{
-		db:     db,
-		pmw:    pmw,
+		db:     container.Get(static.DiDatabase).(database.Database),
+		pmw:    container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
 		limits: timedmap.New(limitTMCleanupInterval),
 		msgMap: timedmap.New(removeHandlerCleanupInterval),
 	}

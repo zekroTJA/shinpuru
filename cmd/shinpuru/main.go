@@ -102,7 +102,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiTwitchNotifyListener,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitTwitchNotifyListener(ctn), nil
+			return listeners.NewListenerTwitchNotify(ctn), nil
 		},
 		Close: func(obj interface{}) error {
 			listener := obj.(*listeners.ListenerTwitchNotify)

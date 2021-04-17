@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -17,8 +18,11 @@ type ListenerBotMention struct {
 	idLen int
 }
 
-func NewListenerBotMention(config *config.Config) *ListenerBotMention {
-	return &ListenerBotMention{config, 0}
+func NewListenerBotMention(container di.Container) *ListenerBotMention {
+	return &ListenerBotMention{
+		config: container.Get(static.DiConfig).(*config.Config),
+		idLen:  0,
+	}
 }
 
 func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.MessageCreate) {

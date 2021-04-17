@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -14,9 +15,9 @@ type ListenerMemberAdd struct {
 	db database.Database
 }
 
-func NewListenerMemberAdd(db database.Database) *ListenerMemberAdd {
+func NewListenerMemberAdd(container di.Container) *ListenerMemberAdd {
 	return &ListenerMemberAdd{
-		db: db,
+		db: container.Get(static.DiDatabase).(database.Database),
 	}
 }
 

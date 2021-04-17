@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -32,9 +33,9 @@ type ListenerAntiraid struct {
 	triggers    *timedmap.TimedMap
 }
 
-func NewListenerAntiraid(db database.Database) *ListenerAntiraid {
+func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 	return &ListenerAntiraid{
-		db:          db,
+		db:          container.Get(static.DiDatabase).(database.Database),
 		guildStates: make(map[string]*guildState),
 		triggers:    timedmap.New(arTriggerCleanupDuration),
 	}

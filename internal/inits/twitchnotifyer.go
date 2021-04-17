@@ -1,7 +1,6 @@
 package inits
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -10,14 +9,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
-
-func InitTwitchNotifyListener(container di.Container) *listeners.ListenerTwitchNotify {
-	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	cfg := container.Get(static.DiConfig).(*config.Config)
-	db := container.Get(static.DiDatabase).(database.Database)
-
-	return listeners.NewListenerTwitchNotify(session, cfg, db)
-}
 
 func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 

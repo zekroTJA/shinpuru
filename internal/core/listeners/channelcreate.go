@@ -2,16 +2,18 @@ package listeners
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type ListenerChannelCreate struct {
 	db database.Database
 }
 
-func NewListenerChannelCreate(db database.Database) *ListenerChannelCreate {
+func NewListenerChannelCreate(container di.Container) *ListenerChannelCreate {
 	return &ListenerChannelCreate{
-		db: db,
+		db: container.Get(static.DiDatabase).(database.Database),
 	}
 }
 

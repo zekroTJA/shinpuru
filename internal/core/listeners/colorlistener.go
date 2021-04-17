@@ -9,10 +9,13 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/colorname"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/timedmap"
 )
@@ -30,11 +33,22 @@ type ColorListener struct {
 	pmw        *middleware.PermissionsMiddleware
 	publicAddr string
 
-	emojiCahce *timedmap.TimedMap
+	emojiCache *timedmap.TimedMap
 }
 
-func NewColorListener(db database.Database, pmw *middleware.PermissionsMiddleware, publicAddr string) *ColorListener {
-	return &ColorListener{db, pmw, publicAddr, timedmap.New(1 * time.Minute)}
+func NewColorListener(container di.Container) *ColorListener {
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	var publicAddr string
+	if cfg.WebServer != nil {
+		publicAddr = cfg.WebServer.PublicAddr
+	}
+
+	return &ColorListener{
+		db:         container.Get(static.DiDatabase).(database.Database),
+		pmw:        container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
+		publicAddr: publicAddr,
+		emojiCache: timedmap.New(1 * time.Minute),
+	}
 }
 
 func (l *ColorListener) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
@@ -51,11 +65,11 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 	}
 
 	cacheKey := e.MessageID + e.Emoji.ID
-	if !l.emojiCahce.Contains(cacheKey) {
+	if !l.emojiCache.Contains(cacheKey) {
 		return
 	}
 
-	clr, ok := l.emojiCahce.GetValue(cacheKey).(*color.RGBA)
+	clr, ok := l.emojiCache.GetValue(cacheKey).(*color.RGBA)
 	if !ok {
 		return
 	}
@@ -123,7 +137,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		util.Log.Error("[ColorListener] could not send embed message:", err)
 	}
 
-	l.emojiCahce.Remove(cacheKey)
+	l.emojiCache.Remove(cacheKey)
 }
 
 func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, removeReactions bool) {
@@ -231,7 +245,7 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 
 	// Set messageID + emojiID with RGBA color object
 	// to emojiCache
-	l.emojiCahce.Set(m.ID+emoji.ID, clr, 24*time.Hour)
+	l.emojiCache.Set(m.ID+emoji.ID, clr, 24*time.Hour)
 }
 
 // appendIfUnique appends the given elem to the

@@ -9,6 +9,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
+	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
@@ -34,8 +36,18 @@ type ListenerStarboard struct {
 	st storage.Storage
 }
 
-func NewListenerStarboard(db database.Database, st storage.Storage, publicAddr string) *ListenerStarboard {
-	return &ListenerStarboard{publicAddr, db, st}
+func NewListenerStarboard(container di.Container) *ListenerStarboard {
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	var publicAddr string
+	if cfg.WebServer != nil {
+		publicAddr = cfg.WebServer.PublicAddr
+	}
+
+	return &ListenerStarboard{
+		db:         container.Get(static.DiDatabase).(database.Database),
+		st:         container.Get(static.DiObjectStorage).(storage.Storage),
+		publicAddr: publicAddr,
+	}
 }
 
 func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discordgo.MessageReactionAdd) {

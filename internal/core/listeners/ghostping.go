@@ -5,9 +5,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/timedmap"
@@ -25,10 +27,10 @@ type ListenerGhostPing struct {
 	gpim            *middleware.GhostPingIgnoreMiddleware
 }
 
-func NewListenerGhostPing(db database.Database, gpim *middleware.GhostPingIgnoreMiddleware) *ListenerGhostPing {
+func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
 	return &ListenerGhostPing{
-		db:       db,
-		gpim:     gpim,
+		db:       container.Get(static.DiDatabase).(database.Database),
+		gpim:     container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware),
 		msgCache: timedmap.New(gpTick),
 	}
 }

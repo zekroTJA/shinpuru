@@ -5,9 +5,11 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/middleware"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -22,10 +24,10 @@ type ListenerInviteBlock struct {
 	pmw *middleware.PermissionsMiddleware
 }
 
-func NewListenerInviteBlock(db database.Database, pmw *middleware.PermissionsMiddleware) *ListenerInviteBlock {
+func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
-		db:  db,
-		pmw: pmw,
+		db:  container.Get(static.DiDatabase).(database.Database),
+		pmw: container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
 	}
 }
 

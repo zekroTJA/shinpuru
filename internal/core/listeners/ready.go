@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
@@ -20,11 +21,11 @@ type ListenerReady struct {
 	lct    *lctimer.LifeCycleTimer
 }
 
-func NewListenerReady(config *config.Config, db database.Database, lct *lctimer.LifeCycleTimer) *ListenerReady {
+func NewListenerReady(container di.Container) *ListenerReady {
 	return &ListenerReady{
-		config: config,
-		db:     db,
-		lct:    lct,
+		config: container.Get(static.DiConfig).(*config.Config),
+		db:     container.Get(static.DiDatabase).(database.Database),
+		lct:    container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer),
 	}
 }
 

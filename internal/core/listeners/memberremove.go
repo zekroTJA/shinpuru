@@ -4,17 +4,19 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type ListenerMemberRemove struct {
 	db database.Database
 }
 
-func NewListenerMemberRemove(db database.Database) *ListenerMemberRemove {
+func NewListenerMemberRemove(container di.Container) *ListenerMemberRemove {
 	return &ListenerMemberRemove{
-		db: db,
+		db: container.Get(static.DiDatabase).(database.Database),
 	}
 }
 

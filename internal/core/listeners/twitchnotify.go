@@ -2,9 +2,11 @@ package listeners
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
@@ -15,11 +17,11 @@ type ListenerTwitchNotify struct {
 	notMsgIDs map[string][]*discordgo.Message
 }
 
-func NewListenerTwitchNotify(session *discordgo.Session, config *config.Config, db database.Database) *ListenerTwitchNotify {
+func NewListenerTwitchNotify(container di.Container) *ListenerTwitchNotify {
 	return &ListenerTwitchNotify{
-		config:    config,
-		db:        db,
-		session:   session,
+		config:    container.Get(static.DiConfig).(*config.Config),
+		db:        container.Get(static.DiDatabase).(database.Database),
+		session:   container.Get(static.DiDiscordSession).(*discordgo.Session),
 		notMsgIDs: make(map[string][]*discordgo.Message),
 	}
 }

@@ -2,8 +2,10 @@ package listeners
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
@@ -11,9 +13,9 @@ type ListenerVote struct {
 	db database.Database
 }
 
-func NewListenerVote(db database.Database) *ListenerVote {
+func NewListenerVote(container di.Container) *ListenerVote {
 	return &ListenerVote{
-		db: db,
+		db: container.Get(static.DiDatabase).(database.Database),
 	}
 }
 

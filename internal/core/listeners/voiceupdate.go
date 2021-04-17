@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -18,9 +19,9 @@ type ListenerVoiceUpdate struct {
 	db database.Database
 }
 
-func NewListenerVoiceUpdate(db database.Database) *ListenerVoiceUpdate {
+func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 	return &ListenerVoiceUpdate{
-		db: db,
+		db: container.Get(static.DiDatabase).(database.Database),
 	}
 }
 

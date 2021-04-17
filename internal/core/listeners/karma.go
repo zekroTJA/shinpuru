@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
 )
 
@@ -40,10 +42,10 @@ type ListenerKarma struct {
 	limiters    timedmap.Section
 }
 
-func NewListenerKarma(db database.Database) *ListenerKarma {
+func NewListenerKarma(container di.Container) *ListenerKarma {
 	cache := timedmap.New(5 * time.Minute)
 	return &ListenerKarma{
-		db:    db,
+		db:    container.Get(static.DiDatabase).(database.Database),
 		cache: cache,
 
 		// save the pointers to the sections on instance
