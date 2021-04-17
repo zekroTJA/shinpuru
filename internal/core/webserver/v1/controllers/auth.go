@@ -28,7 +28,7 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/oauthcallback", c.discordOAuth.HandlerCallback)
 	router.Post("/accesstoken", c.postAccessToken)
 	router.Get("/check", c.authMw.Handle, c.getCheck)
-	router.Post("/logout", c.authMw.Handle, c.getCheck)
+	router.Post("/logout", c.authMw.Handle, c.postLogout)
 }
 
 func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
