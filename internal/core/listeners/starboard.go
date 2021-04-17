@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/shared/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/karma"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
@@ -172,7 +173,9 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	if giveKarma {
-		l.addKarma(e.GuildID, msg.Author.ID, starboardConfig.KarmaGain)
+		if _, err = karma.Alter(l.db, e.GuildID, msg.Author, starboardConfig.KarmaGain); err != nil {
+			util.Log.Errorf("STARBOARD :: failed updating karma: %s", err.Error())
+		}
 	}
 }
 
@@ -275,31 +278,6 @@ func (l *ListenerStarboard) getEmbed(
 	}
 
 	return emb.Build()
-}
-
-func (l *ListenerStarboard) addKarma(guildID, authorID string, karmaGain int) {
-	enabled, err := l.db.GetKarmaState(guildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("failed getting karma state (gid %s): %s", guildID, err.Error())
-		return
-	}
-	if !enabled {
-		return
-	}
-
-	isBlacklisted, err := l.db.IsKarmaBlockListed(guildID, authorID)
-	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed checking karma blocklist %s: %s", authorID, err.Error())
-		return
-	}
-	if isBlacklisted {
-		return
-	}
-
-	if err = l.db.UpdateKarma(authorID, guildID, karmaGain); err != nil {
-		util.Log.Errorf("STARBOARD :: failed adding user karma: %s", err.Error())
-		return
-	}
 }
 
 func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err error) {
