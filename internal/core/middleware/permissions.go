@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
@@ -72,7 +71,6 @@ func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string
 		}
 
 		ok, _, err := pmw.CheckPermissions(s, guildID, uid, required)
-		util.Log.Infof("Check Permission: %s@%s [%s] - ok: %t, err: %s", uid, guildID, required, ok, err)
 		if err != nil {
 			return err
 		}
