@@ -15,25 +15,21 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shireikan"
 )
 
 type EtcController struct {
-	session    *discordgo.Session
-	cfg        *config.Config
-	cmdHandler shireikan.Handler
-	authMw     auth.Middleware
+	session *discordgo.Session
+	cfg     *config.Config
+	authMw  auth.Middleware
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
-	router.Get("/commands", c.getCommands)
 }
 
 func (c *EtcController) getMe(ctx *fiber.Ctx) error {
@@ -90,18 +86,4 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(res)
-}
-
-func (c *EtcController) getCommands(ctx *fiber.Ctx) error {
-	cmdInstances := c.cmdHandler.GetCommandInstances()
-	cmdInfos := make([]*models.CommandInfo, len(cmdInstances))
-
-	for i, c := range cmdInstances {
-		cmdInfo := models.GetCommandInfoFromCommand(c)
-		cmdInfos[i] = cmdInfo
-	}
-
-	list := &models.ListResponse{N: len(cmdInfos), Data: cmdInfos}
-
-	return ctx.JSON(list)
 }

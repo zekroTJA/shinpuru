@@ -13,19 +13,23 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
+	"github.com/zekroTJA/shireikan"
 )
 
 type UtilController struct {
-	session *discordgo.Session
-	cfg     *config.Config
+	session    *discordgo.Session
+	cfg        *config.Config
+	cmdHandler shireikan.Handler
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)
 	router.Get("/color/:hexcode", c.getColor)
+	router.Get("/commands", c.getCommands)
 }
 
 func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
@@ -101,4 +105,18 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 	ctx.Set("Cache-Control", "public, max-age=31536000, immutable")
 	ctx.Set("ETag", etag)
 	return ctx.Send(data)
+}
+
+func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
+	cmdInstances := c.cmdHandler.GetCommandInstances()
+	cmdInfos := make([]*models.CommandInfo, len(cmdInstances))
+
+	for i, c := range cmdInstances {
+		cmdInfo := models.GetCommandInfoFromCommand(c)
+		cmdInfos[i] = cmdInfo
+	}
+
+	list := &models.ListResponse{N: len(cmdInfos), Data: cmdInfos}
+
+	return ctx.JSON(list)
 }
