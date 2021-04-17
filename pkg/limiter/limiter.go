@@ -83,7 +83,7 @@ func New(config ...Config) fiber.Handler {
 		ctx.Set(xRateLimitReset, strconv.Itoa(int(res.Reset.Unix())))
 
 		if ok {
-			ctx.Next()
+			err = ctx.Next()
 		} else {
 			err = cfg.OnLimitReached(ctx)
 		}
