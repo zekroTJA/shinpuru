@@ -39,6 +39,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid", c.getGuild)
 	router.Get("/:guildid/scoreboard", c.getGuildScoreboard)
 	router.Get("/:guildid/starboard", c.getGuildStarboard)
+	router.Get("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildAntiraidJoinlog)
 	router.Delete("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.deleteGuildAntiraidJoinlog)
 	router.Get("/:guildid/reports", c.getReports)
 	router.Get("/:guildid/reports/count", c.getReportsCount)
@@ -137,6 +138,21 @@ func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(&models.ListResponse{N: i, Data: results[:i]})
+}
+
+func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	joinlog, err := c.db.GetAntiraidJoinList(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	if joinlog == nil {
+		joinlog = make([]*sharedmodels.JoinLogEntry, 0)
+	}
+
+	return ctx.JSON(&models.ListResponse{N: len(joinlog), Data: joinlog})
 }
 
 func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
