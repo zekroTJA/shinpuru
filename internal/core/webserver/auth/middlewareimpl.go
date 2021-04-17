@@ -53,7 +53,5 @@ func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
 	}
 
 	ctx.Locals("uid", ident)
-	ctx.Next()
-
-	return
+	return ctx.Next()
 }

@@ -72,7 +72,7 @@ func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string
 		}
 
 		ok, _, err := pmw.CheckPermissions(s, guildID, uid, required)
-		util.Log.Infof("Check Permission: %s@%s [%s req: %t] - ok: %t", uid, guildID, required, ok)
+		util.Log.Infof("Check Permission: %s@%s [%s] - ok: %t, err: %s", uid, guildID, required, ok, err)
 		if err != nil {
 			return err
 		}
