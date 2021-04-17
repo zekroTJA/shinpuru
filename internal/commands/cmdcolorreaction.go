@@ -60,10 +60,6 @@ func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
 		}
 
 		enabled = !enabled
-
-		if err = db.SetGuildColorReaction(ctx.GetGuild().ID, enabled); err != nil {
-			return
-		}
 	} else {
 		switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 
@@ -78,6 +74,10 @@ func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
 				"Invalid argument. Use `help color` to see how to use this command.").
 				Error()
 		}
+	}
+
+	if err = db.SetGuildColorReaction(ctx.GetGuild().ID, enabled); err != nil {
+		return
 	}
 
 	if enabled {
