@@ -1,3 +1,5 @@
+// Package limiter provides a fiber middleware
+// for a bucket based request rate limiter.
 package limiter
 
 import (
@@ -25,14 +27,47 @@ var defConfigInstance = Config{
 	},
 }
 
+// Config provides configuration values
+// for the rate limiter middleware.
 type Config struct {
-	Duration        time.Duration `json:"restoration"`
-	Burst           int           `json:"burst"`
+	// Duration until a new token is added
+	// to the bucket.
+	//
+	// Default: 1 * time.Second
+	Duration time.Duration `json:"restoration"`
+	// Burst is the amount of tokens which
+	// can be contained in a bucket (maximum
+	// ammount of requests which can be done
+	// simultaniously).
+	//
+	// Default: 5
+	Burst int `json:"burst"`
+	// CleanupInterval specifies the interval
+	// duration for the underlying timedmap
+	// holding all ratelimiter mappings.
+	//
+	// Default: 10 * time.Minute
 	CleanupInterval time.Duration `json:"cleanupinterval"`
-	KeyGenerator    func(*fiber.Ctx) string
-	OnLimitReached  fiber.Handler
+	// KeyGenerator is the function used to
+	// get a unique, user bound key from a
+	// request context.
+	//
+	// Default: func(ctx *fiber.Ctx) string { return ctx.IP() }
+	KeyGenerator func(*fiber.Ctx) string
+	// OnLimitReached is the handler function
+	// executed when the rate limit was hit.
+	//
+	// Default: func(ctx *fiber.Ctx) error { return fiber.ErrTooManyRequests }
+	OnLimitReached fiber.Handler
 }
 
+// New initializes new rate limiter middleware
+// instance and returns the middleware handler
+// which can be registered to a fiber router.
+//
+// You can pass a custom config variables via
+// the Config parameter. Values which are not
+// set are taken from the default config.
 func New(config ...Config) fiber.Handler {
 	cfg := defConfig(config)
 	mgr := newManager(cfg.CleanupInterval, cfg.Duration, cfg.Burst)

@@ -184,6 +184,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](pkg/lctimer)  
   *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse. This package is a huge buggy piece of crap, please don't use it. :)*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/limiter`**](pkg/limiter)  
+  *Package limiter provides a fiber middleware for a bucket based request rate limiter.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
   *Package mimefix provides functionalities to bypass this issue with fasthttp on windows hosts*: https://github.com/golang/go/issues/32350*
 

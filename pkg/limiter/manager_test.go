@@ -24,12 +24,4 @@ func TestRetieve(t *testing.T) {
 	if rl == rl2 {
 		t.Error("valid rl instance was reused")
 	}
-
-	m = newManager(500*time.Millisecond, 250*time.Millisecond, 1)
-	rl = m.retrieve("test1")
-	time.Sleep(1 * time.Second)
-	rl2 = m.retrieve("test2")
-	if rl != rl2 {
-		t.Error("rl instance was not reused")
-	}
 }
