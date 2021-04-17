@@ -27,6 +27,7 @@ func (r *Router) Route(router fiber.Router) {
 	// --- REQUIRES ACCESS TOKEN AUTH ---
 
 	new(controllers.TokenController).Setup(r.container, router.Group("/token", authMw.Handle))
+	new(controllers.GlobalSettingsController).Setup(r.container, router.Group("/settings", authMw.Handle))
 	new(controllers.ReportsController).Setup(r.container, router.Group("/reports", authMw.Handle))
 	new(controllers.GuildsController).Setup(r.container, router.Group("/guilds", authMw.Handle))
 	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests", authMw.Handle))
