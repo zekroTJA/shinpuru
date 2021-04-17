@@ -25,7 +25,7 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)
-	router.Get("/color/:hexcode", c.getLandingPageInfo)
+	router.Get("/color/:hexcode", c.getColor)
 }
 
 func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
