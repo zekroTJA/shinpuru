@@ -4,9 +4,17 @@ First of all, everyone of you is welcome to contribute to the project. Whether s
 
 Depending on the scale of the contribution, you might need some general understanding of the languages and frameworks used and of some simple development pattern which are applied. But also beginners are absolutely welcome.
 
-## Used Languages, Frameworks and Techniques
+## Used Languages/Frameworks and general Structure
 
-Let me give you a quick overview over all used languages and frameworks of the project, so you know what you are working with.
+Let me give you a quick overview over all modules and structures and used languages and frameworks of the project, so you know what you are working with.
+
+### Config
+
+shinpuru is configured using either a YAML or JSON config file which can be passed by `-c` command line parameter.
+
+Take a look at the [**example configuration file**](https://github.com/zekroTJA/shinpuru/blob/master/config/config.example.yaml) which holds rich documentation about each configuration key.
+
+For development, you can take the provided [`my.private.config.yml`](https://github.com/zekroTJA/shinpuru/blob/master/config/my.private.config.yaml) and enter your credentials. Then, rename it to `private.config.yaml`, so your secrets will not be commited to the repository by accident.
 
 ### Discord Communication
 
@@ -43,6 +51,98 @@ If you want to add a column to an existing table, take a look in the [`migration
 
 > The `MysqlMiddleware` is very "low level" and directly works with SQL statements instead of using an ORM or something like this. Don't be overwhelmed by the size of the middleware file. Its just because same functionalities are re-used over and over again, which is not very nice, but to be honest, the middleware is very old and I don't find the time to rewrite it and migrate the current database after that.
 
+### Storage
+
+shinpuru utilizes a simple object storage for storing images and backup files, described by the [`Storage`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/storage/storage.go) interface in [`internal/core/storage`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/storage). Currently, shinpuru implements two storage drivers: A firect [file storage](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/storage/file.go) driver and a [minio object storage](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/storage/minio.go) driver, which can also connect to other object storages like Amazon S3 or Google cloud storage.
+
 ### REST API
 
-The web interface communicates with the shinpuru backend over a RESTful HTTP API. Therefore, [**fiber**](https://gofiber.io/) is used as HTTP framework.
+The web interface communicates with the shinpuru backend over a RESTful HTTP API. Therefore, [**fiber**](https://gofiber.io/) is used as HTTP framework. Most of the code of the web server is in the [`internal/core/webserver`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/webserver) directory. The web server is split up in `Router`'s and `Controller`'s. Routers are for versioning the API *(e.g. `/api/v1`, `/api/v2`, ...)* and [`controllers`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/webserver/v1/controllers) split up the endpoints in different logical sections *(e.g. `/guilds`, `/backups`, `/guilds/:id/members`, ...)*. Also, there are [`models`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/webserver/v1/models), which define the object structure of request and response objects as well as some transformation functions, for example to transform a `discordgo.Guild` object to a `models.Guild` object.
+
+If you want to add API endpoints, just add the endpoints to one of the controllers *(don't forget to register the endpoint in the controller's `Setup` method!)*, or create a new entire controller, which then needs to be registered in the API `Route`. If you need service dependencies in your controller, just add it to the controllers struct and get it from the passed `di.Container` *(more explained below)* in the `Setup` method.
+
+Also, fiber works a lot with middlewares, which can be chained anywhere into the fiber route chain. In shinpurus implementation, there are three main types of middlewares.
+1. The high level middlewares like the rate limiter, CORS or file system middleware, which are set before all incomming requests.
+2. Controller specific middlewares which are defined in the router. Mainly, this is used for the authorizeation middleware, which checks for auth tokens in the requests. This middleware is required by some controllers and not required for others.
+3. Endpoint specific middlewares which are defined for specific endpoints only. Mainly, this is used for the permission middleware which checks for required user permissions to execute specific endpoints.
+
+Here you can see a simple overview over the routing structure of the shinpuru webserver.
+![](https://i.imgur.com/VFuU7rj.png)
+
+### Dependency Injection
+
+> If you are unfamiliar with the concepts of dependency injection, please read this [**blog post**](https://blog.zekro.de/dependency-injection) I have recently written about DI, also with examples in Go. 😉
+
+shinpuru widely uses DI *(dependency injection)* to share service instances using the package [**di**](https://github.com/sarulabs/di) from sarulabs. It's a really straight forward implementation of a DI container which does not take use of reflection, which makes it quite simple and fast. Also, the `di` cares about constructing service instances when they are needed and tearing them down when they are no more needed.
+
+The whole service specification happens in the main function of shinpuru in the [`cmd/shinpuru/main`](https://github.com/zekroTJA/shinpuru/blob/master/cmd/shinpuru/main.go) file. For example, the database service initialization looks like following:
+
+```go
+diBuilder.Add(di.Def{
+	Name: static.DiDatabase,
+	Build: func(ctn di.Container) (interface{}, error) {
+		return inits.InitDatabase(ctn), nil
+	},
+	Close: func(obj interface{}) error {
+		database := obj.(database.Database)
+		util.Log.Info("Shutting down database connection...")
+		database.Close()
+		return nil
+	},
+})
+```
+
+As you can see, all service identifiers are registered in the [`internal/util/static/di`](https://github.com/zekroTJA/shinpuru/blob/master/internal/util/static/di.go) file.
+
+After building the `diBuilder`, you will have a `di.Container` to work with where you can get any service registered. Because all services are registered in the `App` scope, once they are initialized, all requests are getting the same instance of the service. This makes service development very easy, because every service is getting passed the same service container and every service can grab the instance of any other registered service instance.
+
+When you want to use a service, just take it from the passed service conatiner by the specified identifier. Let's take a look at the [`starboard` listener](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/listeners/starboard.go) , for example:
+
+```go
+func NewListenerStarboard(container di.Container) *ListenerStarboard {
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	var publicAddr string
+	if cfg.WebServer != nil {
+		publicAddr = cfg.WebServer.PublicAddr
+	}
+
+	return &ListenerStarboard{
+		db:         container.Get(static.DiDatabase).(database.Database),
+		st:         container.Get(static.DiObjectStorage).(storage.Storage),
+		publicAddr: publicAddr,
+	}
+}
+```
+
+As you can see, the `NewListenerStarboard` function is getting passed the `di.Container` from somewhere above. Then, the config is taken from the container to resolve the public web server address, if specified. Also, the database as well as the storage service instance is retrieved.
+
+The only thing important to keep in mind is that you should always build your service dependency structure like a tree, and not like a circle. That means, when service `A` needs service `B` to be built, service `B` can not depend on service `A` on construction.
+
+![](https://i.imgur.com/8hTVWC3.png)
+
+### Web Frontend
+
+The shinpuru web frontend is a compiled [**Angular**](https://angular.io) SPA, which is directly hosted form the shinpuru web server. Stylesheets are written in [**SCSS**](https://sass-lang.com/documentation/syntax) because SCSS has huge advantages to default CSS like nesting, mixins and variables, which are widely used in stylesheets.
+
+
+## Preparing a Development Environment
+
+First of all, create a fork of this repository.  
+![](https://i.imgur.com/V0uP5lu.png)
+
+Then, clone the repository to your PC either using HTTPS, SSH or the Git CLI.  
+![](https://i.imgur.com/xWOovnk.png)
+
+Of course, you need to download and install the **Go compiler toolchain**. Please follow [**these**](https://golang.org/doc/install) instructions to do so.
+
+Also, you need some sort of a C compiler like `gcc`. If you are using linux, just [install C build tools](https://www.ubuntupit.com/how-to-install-and-use-gcc-compiler-on-linux-system/) using your package manager. When you are using windows, you can download and install [TDM-GCC](https://sourceforge.net/projects/tdm-gcc/).
+
+Also, to compile the web frontend, you need to install NodeJS and NPM. Please follow [**these**](https://nodejs.org/en/) instructions to do so.
+
+This repository also provides a [`Makefile`](https://github.com/zekroTJA/shinpuru/blob/master/Makefile) with a lot of useful recipies for development. Just enter `make help` to get a quick overview over all make recipes.
+
+> Read [this](https://www.cyberciti.biz/faq/howto-installing-gnu-c-compiler-development-environment-on-ubuntu/) to install GNU Make on Linux and [this](http://gnuwin32.sourceforge.net/packages/make.htm) to install it on Windows.
+
+## Any Questions?
+
+If you have any questions, please hit me on my [**Dev Discord**](https://discord.zekro.de) (`zekro#0001`) or on [**Twitter**](https://twitter.com/zekrotja). You can also simply send me an [e-mail](mailto:contact@zekro.de). 😉
