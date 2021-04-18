@@ -18,8 +18,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/auth/oauth"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
+	"github.com/zekroTJA/shinpuru/pkg/startuptime"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -29,6 +31,7 @@ var (
 	flagDocker         = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
 	flagDevMode        = flag.Bool("devmode", false, "start in development mode")
 	flagProfile        = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
+	flagQuiet          = flag.Bool("quiet", false, "Dont print startup message")
 )
 
 const (
@@ -56,6 +59,10 @@ const (
 func main() {
 	// Parse command line flags
 	flag.Parse()
+
+	if !*flagQuiet {
+		startupmsg.Output(os.Stdout)
+	}
 
 	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
@@ -282,6 +289,8 @@ func main() {
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
 	util.Log.Info("Started event loop. Stop with CTRL-C...")
+
+	util.Log.Infof("Initialization finished - took %s", startuptime.Took().String())
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
