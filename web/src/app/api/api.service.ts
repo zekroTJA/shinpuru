@@ -59,17 +59,11 @@ export class APIService {
       headers: {},
     };
 
-    // if (this.accessToken) {
-    //   defopts.headers[
-    //     'Authorization'
-    //   ] = `accessToken ${this.accessToken?.token}`;
-    // }
-
-    // if (obj) {
-    //   Object.keys(obj).forEach((k) => {
-    //     defopts[k] = obj[k];
-    //   });
-    // }
+    if (obj) {
+      Object.keys(obj).forEach((k) => {
+        defopts[k] = obj[k];
+      });
+    }
 
     return defopts;
   };
