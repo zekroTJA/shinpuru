@@ -214,8 +214,14 @@ export class APIService {
     return this.accessToken;
   }
 
-  public getRcGuildBackupDownload(guildID: string, backupID: string): string {
-    return `${this.rcGuildBackups(guildID)}/${backupID}/download`;
+  public getRcGuildBackupDownload(
+    guildID: string,
+    backupID: string,
+    otaToken: string
+  ): string {
+    return `${this.rcGuildBackups(
+      guildID
+    )}/${backupID}/download?ota_token=${otaToken}`;
   }
 
   public getAndSetAccessToken(): Observable<AccessTokenModel> {
@@ -508,6 +514,19 @@ export class APIService {
     return this.http
       .get<ListReponse<GuildBackup>>(
         this.rcGuildBackups(guildID),
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildBackupsDownload(
+    guildID: string,
+    backupID: string
+  ): Observable<AccessTokenModel> {
+    return this.http
+      .post(
+        `${this.rcGuildBackups(guildID)}/${backupID}/download`,
+        null,
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));

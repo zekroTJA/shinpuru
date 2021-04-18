@@ -202,8 +202,22 @@ export class GuildComponent {
     )}.`;
   }
 
-  public getBackupDownloadLink(backupID: string): string {
-    return this.api.getRcGuildBackupDownload(this.guild.id, backupID);
+  public downloadBackupFile(backupID: string) {
+    this.api
+      .postGuildBackupsDownload(this.guild.id, backupID)
+      .subscribe((res) => {
+        if (res?.token) {
+          const link = document.createElement('a');
+          link.download = `backup_archive_${this.guild.id}_${backupID}`;
+          link.href = this.api.getRcGuildBackupDownload(
+            this.guild.id,
+            backupID,
+            res.token
+          );
+          link.click();
+          document.removeChild(link);
+        }
+      });
   }
 
   public searchInput(e: any) {

@@ -124,6 +124,9 @@ func defConfig(configs []Config) (cfg Config) {
 	if pcfg.OnLimitReached != nil {
 		cfg.OnLimitReached = pcfg.OnLimitReached
 	}
+	if pcfg.Next != nil {
+		cfg.Next = pcfg.Next
+	}
 
 	return
 }

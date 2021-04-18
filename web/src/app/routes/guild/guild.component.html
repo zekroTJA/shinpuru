@@ -335,8 +335,7 @@
                     <span class="embedded">(ID: {{b.file_id}})</span>
                     <a *ngIf="guildSettingsContains('sp.guild.admin.backup')"
                         title="Download backup file" 
-                        [href]="getBackupDownloadLink(b.file_id)" 
-                        download="backup_archive_{{guild.id}}_{{b.file_id}}"
+                        (click)="downloadBackupFile(b.file_id)"
                     ><img src="assets/download.svg"/></a>
                 </span>
             </div>
