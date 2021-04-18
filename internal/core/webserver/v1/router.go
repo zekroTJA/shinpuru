@@ -24,19 +24,19 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.AuthController).Setup(r.container, router.Group("/auth"))
 	new(controllers.OTAController).Setup(r.container, router.Group("/ota"))
 
+	router.Get("/stack", func(ctx *fiber.Ctx) error { return ctx.JSON(ctx.App().Stack()) })
+
 	// --- REQUIRES ACCESS TOKEN AUTH ---
 
-	new(controllers.TokenController).Setup(r.container, router.Group("/token", authMw.Handle))
-	new(controllers.GlobalSettingsController).Setup(r.container, router.Group("/settings", authMw.Handle))
-	new(controllers.ReportsController).Setup(r.container, router.Group("/reports", authMw.Handle))
-	new(controllers.GuildsController).Setup(r.container, router.Group("/guilds", authMw.Handle))
-	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests", authMw.Handle))
-	new(controllers.UsersettingsController).Setup(r.container, router.Group("/usersettings", authMw.Handle))
-	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid", authMw.Handle))
-	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups", authMw.Handle))
-	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid", authMw.Handle))
+	router.Use(authMw.Handle)
 
-	// --- ETC ROUTES ---
-
-	router.Get("/stack", func(ctx *fiber.Ctx) error { return ctx.JSON(ctx.App().Stack()) })
+	new(controllers.TokenController).Setup(r.container, router.Group("/token"))
+	new(controllers.GlobalSettingsController).Setup(r.container, router.Group("/settings"))
+	new(controllers.ReportsController).Setup(r.container, router.Group("/reports"))
+	new(controllers.GuildsController).Setup(r.container, router.Group("/guilds"))
+	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups"))
+	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests"))
+	new(controllers.UsersettingsController).Setup(r.container, router.Group("/usersettings"))
+	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid"))
+	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid"))
 }

@@ -74,7 +74,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		return c.wrapDmError(ctx, err)
 	}
 
-	token, err := ota.GetKey(ctx.GetUser().ID)
+	token, expires, err := ota.GetKey(ctx.GetUser().ID)
 	if err != nil {
 		return
 	}
@@ -83,7 +83,8 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Description: "Click this [**this link**](" + link + ") and you will be automatically logged " +
-			"in to the shinpuru web interface.\n\nThis link is only valid for **one minute** from now!",
+			"in to the shinpuru web interface.\n\nThis link is only valid for **a short time** from now!\n\n" +
+			"Expires: `" + expires.Format(time.RFC1123) + "`",
 	}
 
 	msg, err := ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)

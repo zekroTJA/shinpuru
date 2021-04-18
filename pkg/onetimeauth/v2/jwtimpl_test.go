@@ -43,7 +43,7 @@ func TestGetKey(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = a.GetKey(testUserID)
+	_, _, err = a.GetKey(testUserID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -60,7 +60,7 @@ func TestValidateKey(t *testing.T) {
 		t.Error("invalid token passed falsely")
 	}
 
-	token, err := a.GetKey(testUserID)
+	token, _, err := a.GetKey(testUserID)
 	if err != nil {
 		t.Error(err)
 	}

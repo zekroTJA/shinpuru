@@ -60,13 +60,14 @@ func NewJwt(options *JwtOptions) (a *JwtOneTimeAuth, err error) {
 	return
 }
 
-func (a *JwtOneTimeAuth) GetKey(ident string) (token string, err error) {
+func (a *JwtOneTimeAuth) GetKey(ident string) (token string, expires time.Time, err error) {
 	now := time.Now()
+	expires = now.Add(a.options.Lifetime)
 
 	claims := otaClaims{}
 	claims.Issuer = a.options.Issuer
 	claims.Subject = ident
-	claims.ExpiresAt = now.Add(a.options.Lifetime).Unix()
+	claims.ExpiresAt = expires.Unix()
 	claims.NotBefore = now.Unix()
 	claims.IssuedAt = now.Unix()
 	if claims.Token, err = random.GetRandBase64Str(32); err != nil {

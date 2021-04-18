@@ -2,6 +2,8 @@
 // tokens which are only valid exactly once.
 package onetimeauth
 
+import "time"
+
 // OneTimeAuth provides functionalities to generate
 // and validate a one time authentication key based
 // on a passed ident.
@@ -9,7 +11,7 @@ type OneTimeAuth interface {
 
 	// GetKey generates and registers a new OTA key
 	// based on the passed ident.
-	GetKey(ident string) (token string, err error)
+	GetKey(ident string) (token string, expires time.Time, err error)
 
 	// ValidateKey tries to validate a given key. If
 	// the validation fails, an error is returned with
