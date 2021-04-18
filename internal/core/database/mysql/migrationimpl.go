@@ -8,8 +8,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
-const currentDbVersion = 2
-
 type migrationFunc func(*sql.Tx) error
 
 type migration struct {
