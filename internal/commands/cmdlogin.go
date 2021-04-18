@@ -10,7 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/timerstack"
 	"github.com/zekroTJA/shireikan"
 )
@@ -58,7 +58,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	}
 
 	cfg := ctx.GetObject(static.DiConfig).(*config.Config)
-	ota := ctx.GetObject(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
+	ota := ctx.GetObject(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 	db := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	enabled, err := db.GetUserOTAEnabled(ctx.GetUser().ID)

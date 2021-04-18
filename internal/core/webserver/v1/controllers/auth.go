@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	discordoauth "github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
+	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 )
 
 type AuthController struct {

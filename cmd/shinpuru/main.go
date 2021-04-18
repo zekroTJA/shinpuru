@@ -19,7 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -218,7 +218,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiOneTimeAuth,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return onetimeauth.New(&onetimeauth.Options{
+			return onetimeauth.NewJwt(&onetimeauth.JwtOptions{
 				Issuer: "shinpuru v." + util.AppVersion,
 			})
 		},

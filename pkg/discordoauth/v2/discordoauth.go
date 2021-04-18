@@ -2,7 +2,7 @@
 // to authenticate with via the Discord OAuth2
 // endpoint. v2 swapped support for fasthttp-router
 // to support for fiber handlers.
-package v2
+package discordoauth
 
 import (
 	"bytes"

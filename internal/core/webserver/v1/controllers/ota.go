@@ -11,14 +11,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/webserver/auth/oauth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/onetimeauth"
+	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 )
 
 type OTAController struct {
 	session      *discordgo.Session
 	cfg          *config.Config
 	db           database.Database
-	ota          *onetimeauth.OneTimeAuth
+	ota          onetimeauth.OneTimeAuth
 	oauthHandler oauth.OAuthHandler
 }
 
@@ -26,7 +26,7 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
-	c.ota = container.Get(static.DiOneTimeAuth).(*onetimeauth.OneTimeAuth)
+	c.ota = container.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 	c.oauthHandler = container.Get(static.DiOAuthHandler).(oauth.OAuthHandler)
 
 	router.Get("", c.getOta)
