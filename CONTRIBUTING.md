@@ -20,6 +20,10 @@ Take a look at the packages in the [pkg](https://github.com/zekroTJA/shinpuru/tr
 
 Also, a lot of shared functionalities which require shinpuru speicific dependencies are located in the [internal/util](https://github.com/zekroTJA/shinpuru/tree/master/internal/util) directory. There you can find some utilities whcih can be used to access the imagestore, karma system, mectrics or votes.
 
+For command handling, shinpuru uses [**shireikan**](https://github.com/zekroTJA/shireikan). Take a look there and in the examples. Just like that, commands are handled and defined in shinpuru. All command definitions can be found in the [`internal/commands`](https://github.com/zekroTJA/shinpuru/tree/master/internal/commands) directory. If you want to add a command, just implement shireikans [`Command`](https://github.com/zekroTJA/shireikan/blob/master/command.go) interface and take a look how the other commands are implemented to match the conventions applied in the other commands. After that, register the command in the [`cmdhandler`](https://github.com/zekroTJA/shinpuru/blob/master/internal/inits/cmdhandler.go) `InitCommandHandler()` function using the `cmdHandler.RegisterCommand(&commands.YourCmd{})` method.
+
+Discord event handlers and listeners can be found in the [`listeners`](https://github.com/zekroTJA/shinpuru/tree/master/internal/core/listeners) package. A listener is a struct which exposes one or more event handler methods. Listeners must be registered [`botsession`](https://github.com/zekroTJA/shinpuru/blob/master/internal/inits/cmdhandler.go) `InitDiscordBotSession()` function using the `session.AddHandler(listeners.NewYourListener(container).Handler)` method.
+
 ### Database
 
 First of all, you can find a [`Database`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/database/database.go) interface at `internal/core/database`. This is mainly used to interact with the database. There, you can also find the specific database drivers available, which are currently [`mysql`](https://github.com/zekroTJA/shinpuru/tree/master/internal/core/database/mysql), [`sqlite`](https://github.com/zekroTJA/shinpuru/tree/master/internal/core/database/sqlite) and [`redis`](https://github.com/zekroTJA/shinpuru/tree/master/internal/core/database/redis).
@@ -35,6 +39,10 @@ Redis is used as database cache. The [`RedisMiddleware`](https://github.com/zekr
 
 If you want to add functionalities to the database in your contributions, add the functions to the database interface as well as to the MySQL database driver and, if you need caching, the middleware functions to the redis caching middleware.
 
-If you want to add a column to an existing table, take a look in the [`migrations`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/database/mysql/migrations.go) implementation. There, you can add a migration function with the SQL statements which will be executed in order to migrate the database structure to the new state.
+If you want to add a column to an existing table, take a look in the [`migrations`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/database/mysql/migrations.go) implementation. There, you can add a migration function with the SQL statements which will be executed in order to migrate the database structure to the new state. If you add an entirely new table, you don't need to add a migration function. Just add the table definition in the `setup()` method in the [`mysql`](https://github.com/zekroTJA/shinpuru/blob/master/internal/core/database/mysql/mysql.go) driver.
 
 > The `MysqlMiddleware` is very "low level" and directly works with SQL statements instead of using an ORM or something like this. Don't be overwhelmed by the size of the middleware file. Its just because same functionalities are re-used over and over again, which is not very nice, but to be honest, the middleware is very old and I don't find the time to rewrite it and migrate the current database after that.
+
+### REST API
+
+The web interface communicates with the shinpuru backend over a RESTful HTTP API. Therefore, [**fiber**](https://gofiber.io/) is used as HTTP framework.
