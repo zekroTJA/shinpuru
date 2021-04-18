@@ -1331,7 +1331,7 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 	params := []interface{}{userID}
 
 	if guildID != "" {
-		query += " AND userID = ?"
+		query += " AND guildID = ?"
 		params = append(params, guildID)
 	}
 
