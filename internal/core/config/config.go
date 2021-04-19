@@ -11,13 +11,13 @@ import (
 // to the Discord API application and using the
 // OAuth2 workflow for web frontend authorization.
 type Discord struct {
-	Token                  string
-	GeneralPrefix          string
-	OwnerID                string
-	ClientID               string
-	ClientSecret           string
-	GuildBackupLoc         string
-	GlobalCommandRateLimit *GlobalCommandRatelimit
+	Token                  string                  `json:"token"`
+	GeneralPrefix          string                  `json:"generalprefix"`
+	OwnerID                string                  `json:"ownerid"`
+	ClientID               string                  `json:"clientid"`
+	ClientSecret           string                  `json:"clientsecret"`
+	GuildBackupLoc         string                  `json:"guildbackuploc"`
+	GlobalCommandRateLimit *GlobalCommandRatelimit `json:"globalcommandratelimit"`
 }
 
 type GlobalCommandRatelimit struct {
@@ -28,42 +28,42 @@ type GlobalCommandRatelimit struct {
 // DatabaseCreds holds credentials to connect to
 // a generic database.
 type DatabaseCreds struct {
-	Host     string
-	User     string
-	Password string
-	Database string
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Database string `json:"database"`
 }
 
 // DatabaseFile holds information to use a file
 // database like SQLite.
 type DatabaseFile struct {
-	DBFile string
+	DBFile string `json:"dbfile"`
 }
 
 // DatabaseRedis holds credentials and settings
 // to connect to a Redis database.
 type DatabaseRedis struct {
-	Enable   bool
-	Addr     string
-	Password string
-	Type     int
+	Enable   bool   `json:"enable"`
+	Addr     string `json:"addr"`
+	Password string `json:"password"`
+	Type     int    `json:"type"`
 }
 
 // DatabaseType holds the preference for which
 // database module to be used and the seperate
 // "slots" for database configurations.
 type DatabaseType struct {
-	Type   string
-	MySql  *DatabaseCreds
-	Sqlite *DatabaseFile
-	Redis  *DatabaseRedis
+	Type   string         `json:"type"`
+	MySql  *DatabaseCreds `json:"mysql"`
+	Sqlite *DatabaseFile  `json:"sqlite"`
+	Redis  *DatabaseRedis `json:"redis"`
 }
 
 // Loging holds configuration values for the
 // main logger.
 type Logging struct {
-	CommandLogging bool
-	LogLevel       int
+	CommandLogging bool `json:"commandlogging"`
+	LogLevel       int  `json:"loglevel"`
 }
 
 // TwitchApp holds credentials to connect to
@@ -155,15 +155,15 @@ type Metrics struct {
 // by users to identify the integrity of config
 // files over version updates.
 type Config struct {
-	Version     int `yaml:"configVersionPleaseDoNotChange"`
-	Discord     *Discord
-	Permissions *Permissions
-	Database    *DatabaseType
-	Logging     *Logging
-	TwitchApp   *TwitchApp
-	Storage     *StorageType
-	WebServer   *WebServer
-	Metrics     *Metrics
+	Version     int           `json:"configVersionPleaseDoNotChange"`
+	Discord     *Discord      `json:"discord"`
+	Permissions *Permissions  `json:"permissions"`
+	Database    *DatabaseType `json:"database"`
+	Logging     *Logging      `json:"logging"`
+	TwitchApp   *TwitchApp    `json:"twitchapp"`
+	Storage     *StorageType  `json:"storage"`
+	WebServer   *WebServer    `json:"webserver"`
+	Metrics     *Metrics      `json:"metricts"`
 }
 
 // Parser describes a general configuration parser

@@ -14,6 +14,7 @@ func InitConfig(configLocation string, container di.Container) *config.Config {
 	cfgParser := container.Get(static.DiConfigParser).(config.Parser)
 
 	cfgFile, err := os.Open(configLocation)
+	defer cfgFile.Close()
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)
 		if err != nil {

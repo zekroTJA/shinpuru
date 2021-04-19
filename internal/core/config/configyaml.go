@@ -3,7 +3,7 @@ package config
 import (
 	"io"
 
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 )
 
 // YAMLConfigParser implements the Parser interface
@@ -11,14 +11,20 @@ import (
 type YAMLConfigParser struct{}
 
 func (y *YAMLConfigParser) Decode(r io.Reader) (*Config, error) {
-	decoder := yaml.NewDecoder(r)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
 	c := new(Config)
-	err := decoder.Decode(c)
+	err = yaml.Unmarshal(data, c)
 	return c, err
 }
 
 func (y *YAMLConfigParser) Encode(w io.Writer, c *Config) error {
-	encoder := yaml.NewEncoder(w)
-	defer encoder.Close()
-	return encoder.Encode(c)
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(data)
+	return err
 }

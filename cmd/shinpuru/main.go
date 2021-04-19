@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime/pprof"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -27,11 +30,11 @@ import (
 )
 
 var (
-	flagConfigLocation = flag.String("c", "config.yml", "The location of the main config file")
-	flagDocker         = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
-	flagDevMode        = flag.Bool("devmode", false, "start in development mode")
-	flagProfile        = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
-	flagQuiet          = flag.Bool("quiet", false, "Dont print startup message")
+	flagConfig  = flag.String("c", "config.yml", "The location of the main config file")
+	flagDocker  = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
+	flagDevMode = flag.Bool("devmode", false, "start in development mode")
+	flagProfile = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
+	flagQuiet   = flag.Bool("quiet", false, "Dont print startup message")
 )
 
 const (
@@ -70,8 +73,17 @@ func main() {
 	// Setup config parser
 	diBuilder.Add(di.Def{
 		Name: static.DiConfigParser,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return new(config.YAMLConfigParser), nil
+		Build: func(ctn di.Container) (p interface{}, err error) {
+			ext := strings.ToLower(filepath.Ext(*flagConfig))
+			switch ext {
+			case ".yml", ".yaml":
+				p = new(config.YAMLConfigParser)
+			case ".json":
+				p = new(config.JSONConfigParser)
+			default:
+				err = errors.New("unsupported configuration file")
+			}
+			return
 		},
 	})
 
@@ -79,7 +91,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitConfig(*flagConfigLocation, ctn), nil
+			return inits.InitConfig(*flagConfig, ctn), nil
 		},
 	})
 
