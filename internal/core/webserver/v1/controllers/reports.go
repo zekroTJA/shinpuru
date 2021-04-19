@@ -27,7 +27,7 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
 	router.Get("/:id", c.getReport)
-	router.Get("/:id/revoke", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postRevoke)
+	router.Post("/:id/revoke", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postRevoke)
 }
 
 func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {

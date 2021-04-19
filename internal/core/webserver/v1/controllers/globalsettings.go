@@ -25,9 +25,9 @@ func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Ro
 
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
-	router.Get("/presence", c.getPresence)
+	router.Get("/presence", pmw.HandleWs(c.session, "sp.game"), c.getPresence)
 	router.Post("/presence", pmw.HandleWs(c.session, "sp.game"), c.postPresence)
-	router.Get("/noguildinvite", c.getNoGuildInvites)
+	router.Get("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.getNoGuildInvites)
 	router.Post("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.postPresence, c.postNoGuildInvites)
 }
 
