@@ -10,6 +10,7 @@ import (
 )
 
 func InitConfig(configLocation string, container di.Container) *config.Config {
+	defaultConfig := config.GetDefaultConfig()
 
 	cfgParser := container.Get(static.DiConfigParser).(config.Parser)
 
@@ -20,7 +21,7 @@ func InitConfig(configLocation string, container di.Container) *config.Config {
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed creating default config:", err)
 		}
-		err = cfgParser.Encode(cfgFile, config.GetDefaultConfig())
+		err = cfgParser.Encode(cfgFile, defaultConfig)
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
 		}
@@ -45,5 +46,6 @@ func InitConfig(configLocation string, container di.Container) *config.Config {
 
 	util.Log.Info("Config file loaded")
 
+	config.Defaults = defaultConfig
 	return config
 }

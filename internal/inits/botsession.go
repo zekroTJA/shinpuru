@@ -14,7 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitDiscordBotSession(container di.Container) *discordgo.Session {
+func InitDiscordBotSession(container di.Container) {
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -28,11 +28,7 @@ func InitDiscordBotSession(container di.Container) *discordgo.Session {
 		}
 	}
 
-	session, err := discordgo.New()
-	if err != nil {
-		util.Log.Fatal(err)
-	}
-
+	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	cfg := container.Get(static.DiConfig).(*config.Config)
 
 	session.Token = "Bot " + cfg.Discord.Token
@@ -84,6 +80,4 @@ func InitDiscordBotSession(container di.Container) *discordgo.Session {
 	if err != nil {
 		util.Log.Fatal("Failed connecting Discord bot session:", err)
 	}
-
-	return session
 }

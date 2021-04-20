@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/storage"
@@ -25,7 +26,6 @@ const (
 // GuildBackups provides functionalities to backup
 // and restore a guild to and from a JSON file.
 type GuildBackups struct {
-	ticker  *time.Ticker
 	session *discordgo.Session
 	db      database.Database
 	st      storage.Storage
@@ -51,32 +51,20 @@ func asyncWriteError(c chan error, err error) {
 // the passed discordgo Session, database provider,
 // and storage provider. Also, the ticker loop is
 // initialized.
-func New(s *discordgo.Session, db database.Database, st storage.Storage) *GuildBackups {
+func New(container di.Container) *GuildBackups {
 	bck := new(GuildBackups)
-	bck.db = db
-	bck.st = st
-	bck.session = s
-	bck.ticker = time.NewTicker(tickRate)
-	go bck.initTickerLoop()
+	bck.db = container.Get(static.DiDatabase).(database.Database)
+	bck.st = container.Get(static.DiObjectStorage).(storage.Storage)
+	bck.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	return bck
 }
 
-// initTickerLoop starts the ticker loop which
-// calls backupAllGuilds in a new goroutine
-// everytime the ticker elapsed.
-func (bck *GuildBackups) initTickerLoop() {
-	for {
-		<-bck.ticker.C
-		go bck.backupAllGuilds()
-	}
-}
-
-// backupAllGuilds iterates through all guilds
+// BackupAllGuilds iterates through all guilds
 // which habe guild backups enabled and initiates
 // the backup routines one after one.
 // Guild backups are not created in new goroutines
 // because of potential rate limit exceedance.
-func (bck *GuildBackups) backupAllGuilds() {
+func (bck *GuildBackups) BackupAllGuilds() {
 	guilds, err := bck.db.GetGuilds()
 
 	util.Log.Infof("Initializing backups for %d guilds %+v\n", len(guilds), guilds)

@@ -150,6 +150,14 @@ type Metrics struct {
 	Addr   string `json:"addr"`
 }
 
+// Schedules holds cron-like job schedule
+// specifications for continuously running
+// jobs.
+type Schedules struct {
+	GuildBackups        string `json:"guildbackups"`
+	RefreshTokenCleanup string `json:"refreshtokencleanup"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -164,6 +172,9 @@ type Config struct {
 	Storage     *StorageType  `json:"storage"`
 	WebServer   *WebServer    `json:"webserver"`
 	Metrics     *Metrics      `json:"metricts"`
+	Schedules   *Schedules    `json:"schedules"`
+
+	Defaults *Config `json:"-"`
 }
 
 // Parser describes a general configuration parser
@@ -248,6 +259,10 @@ func GetDefaultConfig() *Config {
 		Metrics: &Metrics{
 			Enable: false,
 			Addr:   ":9091",
+		},
+		Schedules: &Schedules{
+			GuildBackups:        "0 0 6 * * *",
+			RefreshTokenCleanup: "0 0 5 * * *",
 		},
 	}
 }

@@ -38,6 +38,7 @@ require (
 	github.com/prometheus/client_golang v1.10.0
 	github.com/prometheus/common v0.20.0 // indirect
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
+	github.com/robfig/cron/v3 v3.0.0 // indirect
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/sarulabs/di/v2 v2.4.2
 	github.com/smartystreets/assertions v1.2.0 // indirect

@@ -8,24 +8,24 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/shared"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
 type ListenerReady struct {
 	config *config.Config
 	db     database.Database
-	lct    *lctimer.LifeCycleTimer
+	lct    shared.LifeCycleTimer
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
 	return &ListenerReady{
 		config: container.Get(static.DiConfig).(*config.Config),
 		db:     container.Get(static.DiDatabase).(database.Database),
-		lct:    container.Get(static.DiLifecycleTimer).(*lctimer.LifeCycleTimer),
+		lct:    container.Get(static.DiLifecycleTimer).(shared.LifeCycleTimer),
 	}
 }
 
@@ -51,7 +51,8 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		util.Log.Error("Failed getting votes from DB: ", err)
 	} else {
 		vote.VotesRunning = votes
-		l.lct.OnTick(func(now time.Time) {
+		_, err = l.lct.Schedule("*/10 * * * * *", func() {
+			now := time.Now()
 			for _, v := range vote.VotesRunning {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
 					v.Close(s, vote.VoteStateExpired)
@@ -61,5 +62,8 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 				}
 			}
 		})
+		if err != nil {
+			util.Log.Errorf("LCT :: failed scheduling votes job: %s", err.Error())
+		}
 	}
 }

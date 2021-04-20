@@ -12,7 +12,7 @@ const (
 	DiTwitchNotifyListener      = "twitchnotifylistener"
 	DiOneTimeAuth               = "onetimeauthhandler"
 	DiConfigParser              = "configparser"
-	DiCommandHandler            = "commandhandler"
+	DiCommandHandler            = "skcommandhandler"
 	DiMetrics                   = "metrics"
 	DiWebserver                 = "webserver"
 	DiBackupHandler             = "backuphandler"

@@ -13,6 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 
+	"github.com/zekroTJA/shinpuru/internal/core/backup"
 	"github.com/zekroTJA/shinpuru/internal/core/config"
 	"github.com/zekroTJA/shinpuru/internal/core/database"
 	"github.com/zekroTJA/shinpuru/internal/core/listeners"
@@ -25,6 +26,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
+	"github.com/zekroTJA/shireikan"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -175,7 +177,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiDiscordSession,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitDiscordBotSession(ctn), nil
+			return discordgo.New()
 		},
 		Close: func(obj interface{}) error {
 			session := obj.(*discordgo.Session)
@@ -247,7 +249,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiBackupHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitBackupHandler(ctn), nil
+			return backup.New(ctn), nil
 		},
 	})
 
@@ -288,9 +290,20 @@ func main() {
 		setupDevMode()
 	}
 
-	// Get Discord Session to initialize Discord
-	// session and connection
-	ctn.Get(static.DiDiscordSession)
+	// Initialize discord session and event
+	// handlers
+	inits.InitDiscordBotSession(ctn)
+
+	// This is currently the really hacky workaround
+	// to bypass the di.Container when trying to get
+	// the Command handler instance inside a command
+	// context, because the handler can not resolve
+	// itself on build, so it is bypassed here using
+	// shireikans object map. Maybe I find a better
+	// solution for that at some time.
+	handler := ctn.Get(static.DiCommandHandler).(shireikan.Handler)
+	handler.SetObject(static.DiCommandHandler, handler)
+
 	// Get Web WebServer instance to start web
 	// server listener
 	ctn.Get(static.DiWebserver)

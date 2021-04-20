@@ -48,7 +48,7 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdHelp) Exec(ctx shireikan.Context) error {
-	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
+	cmdhandler, _ := ctx.GetObject(static.DiCommandHandler).(shireikan.Handler)
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	emb := &discordgo.MessageEmbed{
