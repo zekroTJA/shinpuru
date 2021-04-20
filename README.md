@@ -232,22 +232,35 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ### Back End
 
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
-- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake)
-- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype)
-- [dayvonjersen/vibrant](https://github.com/dayvonjersen/vibrant)
-- [go-redis/redis](https://github.com/go-redis/redis)
-- [go-sql-driver/mysql](https://github.com/Go-SQL-Driver/MySQL/)
-- [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
-- [minio/minio-go](https://github.com/minio/minio-go)
-- [op/go-logging](https://github.com/op/go-logging)
-- [valyala/fasthttp ](https://github.com/valyala/fasthttp)
-- [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart)
-- [zekroTJA/colorname](https://github.com/zekroTJA/colorname)
-- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit)
-- [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan)
-- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap)
-- [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2)
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.2)`
+- [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
+- [dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go) `(v3.2.0+incompatible)`
+- [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.0)`
+- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.2.0)`
+- [generaltso/vibrant](https://github.com/generaltso/vibrant) `(v0.0.0-20200703055536-90f922bee78c)`
+- [ghodss/yaml](https://github.com/ghodss/yaml) `(v1.0.0)`
+- [go-ping/ping](https://github.com/go-ping/ping) `(v0.0.0-20210402232549-1726e5ede5b6)`
+- [go-redis/redis](https://github.com/go-redis/redis) `(v6.15.9+incompatible)`
+- [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.6.0)`
+- [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.7.1)`
+- [makeworld-the-better-one/go-isemoji](https://github.com/makeworld-the-better-one/go-isemoji) `(v1.1.0)`
+- [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) `(v2.0.3+incompatible)`
+- [minio/minio-go](https://github.com/minio/minio-go) `(v6.0.14+incompatible)`
+- [op/go-logging](https://github.com/op/go-logging) `(v0.0.0-20160315200505-970db520ece7)`
+- [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.10.0)`
+- [qiangxue/fasthttp-routing](https://github.com/qiangxue/fasthttp-routing) `(v0.0.0-20160225050629-6ccdc2a18d87)`
+- [cron/v3](https://github.com/robfig/cron/v3) `(v3.0.0)`
+- [sahilm/fuzzy](https://github.com/sahilm/fuzzy) `(v0.1.0)`
+- [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
+- [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.23.0)`
+- [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart) `(v2.0.1+incompatible)`
+- [zekroTJA/colorname](https://github.com/zekroTJA/colorname) `(v1.0.0)`
+- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
+- [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.5.0)`
+- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.3.1)`
+- [x/image](https://golang.org/x/image) `(v0.0.0-20210220032944-ac19c3e999fb)`
+- [x/sys](https://golang.org/x/sys) `(v0.0.0-20210414055047-fe65e336abe0)`
+- [x/time](https://golang.org/x/time) `(v0.0.0-20210220033141-f8bda1e9f3ba)`
 
 ### Web Front End
 
