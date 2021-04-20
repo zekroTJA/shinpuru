@@ -120,10 +120,19 @@ The only thing important to keep in mind is that you should always build your se
 
 ![](https://i.imgur.com/8hTVWC3.png)
 
+### Job Scheduler
+
+shinpuru also has an internal `LifeCycleTimer` which works as job scheduler which is responsible for checking expired votes, cleaning up expired access tokens in the database and creating guild backups.
+
+The package [`robfig/cron`](https://github.com/robfig/cron) is used to schedule tasks. An instance of `cron.Cron` is wrapped into [`CronLifeCycleWrapper`](https://github.com/zekroTJA/shinpuru/blob/master/internal/shared/wrappers/cronlct.go) so it can be provided via dependency injection using the [`LifeCycleTimer`](https://github.com/zekroTJA/shinpuru/blob/master/internal/shared/interfaces.go) interface.
+
+This package is using a [crontab styled syntax](https://pkg.go.dev/github.com/robfig/cron/v3#hdr-Usage) to schedule jobs. Take a look in the [`InitLCTimer()`](https://github.com/zekroTJA/shinpuru/blob/master/internal/inits/ltctimer.go) initializer function to see an example on how the jobs are scheduled.
+
 ### Web Frontend
 
-The shinpuru web frontend is a compiled [**Angular**](https://angular.io) SPA, which is directly hosted form the shinpuru web server. Stylesheets are written in [**SCSS**](https://sass-lang.com/documentation/syntax) because SCSS has huge advantages to default CSS like nesting, mixins and variables, which are widely used in stylesheets.
+The shinpuru web frontend is a compiled [**Angular**](https://angular.io) SPA, which is directly hosted form the shinpuru web server. The source files are located at [`/web`](https://github.com/zekroTJA/shinpuru/blob/master/web) Stylesheets are written in [**SCSS**](https://sass-lang.com/documentation/syntax) because SCSS has huge advantages to default CSS like nesting, mixins and variables, which are widely used in stylesheets.
 
+The Angular web app is built like a typical Angular application with reusable components, routes, services and pipes. The communication with the REST API is handled by the [`APIService`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.service.ts). API models are specified in the [`api.models.ts`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.models.ts) file. Also, the API stores some objects like member information in a [`CacheBucket`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.cache.ts) for short-time caching them on the client side to reduce the load on the REST API. Also, an [interceptor](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/auth.interceptor.ts) is chained before the API service which adds the collected `accessToken` to each reqeust. If the `accessToken` is not existent, expired or invalid, the `accessToken` will be collected using the `refreshToken` set as cookie. The access token is then stored and the request is retried with the now existent access token.
 
 ## Preparing a Development Environment
 
