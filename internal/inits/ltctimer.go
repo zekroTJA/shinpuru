@@ -10,12 +10,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/shared/wrappers"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
 func InitLTCTimer(container di.Container) shared.LifeCycleTimer {
 	cfg := container.Get(static.DiConfig).(*config.Config)
 	db := container.Get(static.DiDatabase).(database.Database)
 	guildBackups := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
+	tnw := container.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 
 	lct := &wrappers.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
@@ -46,6 +48,16 @@ func InitLTCTimer(container di.Container) shared.LifeCycleTimer {
 		},
 		func() {
 			go guildBackups.BackupAllGuilds()
+		})
+
+	lctSchedule(lct, "twitch notify",
+		func() string {
+			return "@every 60s"
+		},
+		func() {
+			if err := tnw.Handle(); err != nil {
+				util.Log.Errorf("LCT :: failed executing twitch notify handler: %s", err.Error())
+			}
 		})
 
 	return lct

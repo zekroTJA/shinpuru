@@ -71,7 +71,14 @@ type NotifyWorker struct {
 
 // New initializes a new NotifyWorker instance and
 // starts the worker timer loop.
-func New(creds Credentials, wentOnlineHandler NotifyHandler, wentOfflineHandler NotifyHandler) (*NotifyWorker, error) {
+func New(
+	creds Credentials,
+	wentOnlineHandler NotifyHandler,
+	wentOfflineHandler NotifyHandler,
+	config ...Config,
+) (*NotifyWorker, error) {
+	conf := defaultConfig(config)
+
 	worker := &NotifyWorker{
 		creds:              &creds,
 		wentOfflineHandler: wentOfflineHandler,
@@ -86,14 +93,16 @@ func New(creds Credentials, wentOnlineHandler NotifyHandler, wentOfflineHandler 
 		return nil, err
 	}
 
-	worker.timer = time.NewTicker(clockDuration)
+	if conf.TimerDelay > 0 {
+		worker.timer = time.NewTicker(conf.TimerDelay)
 
-	go func() {
-		for {
-			<-worker.timer.C
-			worker.handler()
-		}
-	}()
+		go func() {
+			for {
+				<-worker.timer.C
+				worker.Handle()
+			}
+		}()
+	}
 
 	return worker, nil
 }
@@ -263,8 +272,8 @@ func (w *NotifyWorker) getGame(gameID string) (*Game, error) {
 	return game, nil
 }
 
-// handler is the callback function executed on ech timer tick.
-func (w *NotifyWorker) handler() error {
+// Handle is the callback function executed on ech timer tick.
+func (w *NotifyWorker) Handle() error {
 	if len(w.users) < 1 {
 		return nil
 	}

@@ -20,10 +20,17 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 		return nil
 	}
 
-	tnw, err := twitchnotify.New(twitchnotify.Credentials{
-		ClientID:     cfg.TwitchApp.ClientID,
-		ClientSecret: cfg.TwitchApp.ClientSecret,
-	}, listener.HandlerWentOnline, listener.HandlerWentOffline)
+	tnw, err := twitchnotify.New(
+		twitchnotify.Credentials{
+			ClientID:     cfg.TwitchApp.ClientID,
+			ClientSecret: cfg.TwitchApp.ClientSecret,
+		},
+		listener.HandlerWentOnline,
+		listener.HandlerWentOffline,
+		twitchnotify.Config{
+			TimerDelay: 0,
+		},
+	)
 
 	if err != nil {
 		util.Log.Fatalf("twitch app credentials are invalid: %s", err)
