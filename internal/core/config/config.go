@@ -261,7 +261,7 @@ func GetDefaultConfig() *Config {
 			Addr:   ":9091",
 		},
 		Schedules: &Schedules{
-			GuildBackups:        "0 0 6 * * *",
+			GuildBackups:        "0 0 6,18 * * *",
 			RefreshTokenCleanup: "0 0 5 * * *",
 		},
 	}
