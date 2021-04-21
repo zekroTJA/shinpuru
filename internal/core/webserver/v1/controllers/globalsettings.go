@@ -28,7 +28,7 @@ func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Ro
 	router.Get("/presence", pmw.HandleWs(c.session, "sp.game"), c.getPresence)
 	router.Post("/presence", pmw.HandleWs(c.session, "sp.game"), c.postPresence)
 	router.Get("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.getNoGuildInvites)
-	router.Post("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.postPresence, c.postNoGuildInvites)
+	router.Post("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.postNoGuildInvites)
 }
 
 func (c *GlobalSettingsController) getPresence(ctx *fiber.Ctx) error {
@@ -76,6 +76,8 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	var guildID, message, inviteCode string
 	var err error
 
+	empty := func() error { return ctx.JSON(&models.InviteSettingsResponse{}) }
+
 	if guildID, err = c.db.GetSetting(static.SettingWIInviteGuildID); err != nil {
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
@@ -83,11 +85,7 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	}
 
 	if guildID == "" {
-		return ctx.JSON(&models.InviteSettingsResponse{
-			Guild:     nil,
-			InviteURL: "",
-			Message:   "",
-		})
+		return empty()
 	}
 
 	if message, err = c.db.GetSetting(static.SettingWIInviteText); err != nil {
@@ -103,6 +101,13 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	}
 
 	guild, err := discordutil.GetGuild(c.session, guildID)
+	if apiErr, ok := err.(*discordgo.RESTError); ok && apiErr.Message.Code == discordgo.ErrCodeMissingAccess {
+		if err = c.db.SetSetting(static.SettingWIInviteGuildID, ""); err != nil {
+			return err
+		}
+		return empty()
+	}
+
 	if err != nil {
 		return err
 	}
