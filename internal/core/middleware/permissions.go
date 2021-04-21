@@ -66,7 +66,7 @@ func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string
 		uid, _ := ctx.Locals("uid").(string)
 		guildID := ctx.Params("guildid")
 
-		if uid == "" || guildID == "" {
+		if uid == "" {
 			return fiber.ErrForbidden
 		}
 
