@@ -227,6 +227,10 @@ export class MemberRouteComponent {
     );
   }
 
+  public canPerformAny(...perm: string[]) {
+    return !!perm.find((p) => this.canPerform(p));
+  }
+
   public muteUnmute() {
     const muted = this.member.chat_muted;
     const modal = muted ? this.modalUnmute : this.modalMute;
