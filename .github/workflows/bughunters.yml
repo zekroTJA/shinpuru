@@ -1,0 +1,35 @@
+name: Bughunters Generation
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+
+  bughunters:
+
+    name: Bughunters Generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: python3 -m pip install requests
+
+      - name: Generate Bughunters
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/bughunters.py
+
+      - name: Commit & Push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: update bughunters
+          branch: master
