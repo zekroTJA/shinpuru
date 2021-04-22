@@ -7,6 +7,10 @@ Because I was really unsatisfied and actually almost annoyed working with the ol
 
 By the way, I have also written a [**Contribution Sheet**](https://github.com/zekroTJA/shinpuru/blob/master/CONTRIBUTING.md), where the whole structure — including the new implementations — are documented and explained in detail.
 
+### The Package Structure
+
+The old `internal/` package structure was kind of messy and inconsistent. So, I've re-ordered nearly all of the internal packages. The `models/` package, which contains any object data models used across services, is now directly under `internal/`. Also, I've more clearely separated `services/`, which are stateful instances used across the application and `util/`, which mainly contain stateless utility functions.
+
 ### The Dependency Injection System
 
 The old DI system was based on simply passing service instances to service constructor functions. On the first hand, that required a specific initialization order in the `main()` function so that a service depending on another is not initialized before that service. Also, if I wanted to add a new dependency to a service, I needed to add it to the services constructor as well as wher the constructor was called, which was kind of unhandy.
