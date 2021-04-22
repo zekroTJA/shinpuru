@@ -152,6 +152,10 @@ This repository also provides a [`Makefile`](https://github.com/zekroTJA/shinpur
 
 > Read [this](https://www.cyberciti.biz/faq/howto-installing-gnu-c-compiler-development-environment-on-ubuntu/) to install GNU Make on Linux and [this](http://gnuwin32.sourceforge.net/packages/make.htm) to install it on Windows.
 
+## Where To Start?
+
+So, you want to contribute to shinpuru but you don't know what exactly you want to do? Just take a look into the [**Issue**](https://github.com/zekroTJA/shinpuru/issues) page, there you can find some open bug reports, feature requests or simply idea proposals which are currently open. Just grab one of them you are interested in. You can also leave a comment under the issue that you want to contribute to it. Of course, that is not mandatory in any way, so you don't need to supply a PR after that if you don't have the time or whatever else. 😉
+
 ## Any Questions?
 
 If you have any questions, please hit me on my [**Dev Discord**](https://discord.zekro.de) (`zekro#0001`) or on [**Twitter**](https://twitter.com/zekrotja). You can also simply send me an [e-mail](mailto:contact@zekro.de). 😉
