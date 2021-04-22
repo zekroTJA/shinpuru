@@ -6,12 +6,18 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// CronLifeCycleTimer implements LifeCycleTimer
+// wrapping a cron.Cron instance.
 type CronLifeCycleTimer struct {
 	C *cron.Cron
 }
 
-func (lct *CronLifeCycleTimer) Schedule(spec string, job func()) (id interface{}, err error) {
-	return lct.C.AddFunc(spec, job)
+func (lct *CronLifeCycleTimer) Schedule(spec interface{}, job func()) (id interface{}, err error) {
+	specStr, ok := spec.(string)
+	if !ok {
+		return nil, errors.New("invalid spec type: must be a string")
+	}
+	return lct.C.AddFunc(specStr, job)
 }
 
 func (lct *CronLifeCycleTimer) Unschedule(id interface{}) error {
