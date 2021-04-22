@@ -13,21 +13,26 @@ var (
 	errInvalidAccessToken = fiber.NewError(fiber.StatusUnauthorized, "invalid access token")
 )
 
-type MiddlewareImpl struct {
+// AccessTokenMiddleware implements Middleware
+// for Access and API tokens passed via an
+// Authorization header
+type AccessTokenMiddleware struct {
 	ath   AccessTokenHandler
 	apith APITokenHandler
 	ota   onetimeauth.OneTimeAuth
 }
 
-func NewMiddlewareImpl(container di.Container) *MiddlewareImpl {
-	return &MiddlewareImpl{
+// NewAccessTokenMiddleware initializes a new instance
+// of AccessTokenMiddleware.
+func NewAccessTokenMiddleware(container di.Container) *AccessTokenMiddleware {
+	return &AccessTokenMiddleware{
 		ath:   container.Get(static.DiAuthAccessTokenHandler).(AccessTokenHandler),
 		apith: container.Get(static.DiAuthAPITokenHandler).(APITokenHandler),
 		ota:   container.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth),
 	}
 }
 
-func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
+func (m *AccessTokenMiddleware) Handle(ctx *fiber.Ctx) (err error) {
 	ident, err := m.checkOta(ctx)
 	if err != nil {
 		return
@@ -65,7 +70,7 @@ func (m *MiddlewareImpl) Handle(ctx *fiber.Ctx) (err error) {
 	return next(ctx, ident)
 }
 
-func (m *MiddlewareImpl) checkOta(ctx *fiber.Ctx) (ident string, err error) {
+func (m *AccessTokenMiddleware) checkOta(ctx *fiber.Ctx) (ident string, err error) {
 	token := ctx.Query("ota_token")
 	if token == "" {
 		return

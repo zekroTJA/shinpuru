@@ -9,7 +9,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth/oauth"
+	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 )
@@ -19,7 +19,7 @@ type OTAController struct {
 	cfg          *config.Config
 	db           database.Database
 	ota          onetimeauth.OneTimeAuth
-	oauthHandler oauth.OAuthHandler
+	oauthHandler auth.RequestHandler
 }
 
 func (c *OTAController) Setup(container di.Container, router fiber.Router) {
@@ -27,7 +27,7 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.ota = container.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
-	c.oauthHandler = container.Get(static.DiOAuthHandler).(oauth.OAuthHandler)
+	c.oauthHandler = container.Get(static.DiOAuthHandler).(auth.RequestHandler)
 
 	router.Get("", c.getOta)
 }

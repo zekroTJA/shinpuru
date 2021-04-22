@@ -20,7 +20,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
-	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth/oauth"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -223,7 +222,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiOAuthHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return oauth.NewOAuthHandlerImpl(ctn), nil
+			return auth.NewRefreshTokenRequestHandler(ctn), nil
 		},
 	})
 
@@ -231,7 +230,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiAuthMiddleware,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return auth.NewMiddlewareImpl(ctn), nil
+			return auth.NewAccessTokenMiddleware(ctn), nil
 		},
 	})
 

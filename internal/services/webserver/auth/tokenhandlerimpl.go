@@ -16,11 +16,15 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
+// DatabaseRefreshTokenHandler implements RefreshTokenHandler
+// for a base64 encoded token stored in the database
 type DatabaseRefreshTokenHandler struct {
 	db      database.Database
 	session *discordgo.Session
 }
 
+// NewDatabaseRefreshTokenHandler returns a new instance
+// of DatabaseRefreshTokenHandler
 func NewDatabaseRefreshTokenHandler(container di.Container) *DatabaseRefreshTokenHandler {
 	return &DatabaseRefreshTokenHandler{
 		db:      container.Get(static.DiDatabase).(database.Database),
@@ -69,11 +73,15 @@ var (
 	jwtGenerationMethod = jwt.SigningMethodHS256
 )
 
+// JWTAccessTokenHandler implements AccessTokenHandler
+// for a JWT based access token
 type JWTAccessTokenHandler struct {
 	sessionExpiration time.Duration
 	sessionSecret     []byte
 }
 
+// NewJWTAccessTokenHandler returns a new instance
+// of JWTAccessTokenHandler
 func NewJWTAccessTokenHandler(container di.Container) (ath *JWTAccessTokenHandler, err error) {
 	secret, err := random.GetRandByteArray(32)
 	if err != nil {
@@ -121,14 +129,14 @@ func (ath *JWTAccessTokenHandler) ValidateAccessToken(token string) (ident strin
 	return
 }
 
-type APITokenClaims struct {
+type apiTokenClaims struct {
 	jwt.StandardClaims
 
 	Salt string `json:"sp_salt,omitempty"`
 }
 
-func APITokenClaimsFromMap(m jwt.MapClaims) APITokenClaims {
-	c := APITokenClaims{
+func apiTokenClaimsFromMap(m jwt.MapClaims) apiTokenClaims {
+	c := apiTokenClaims{
 		StandardClaims: standardClaimsFromMap(m),
 	}
 
@@ -149,12 +157,16 @@ func standardClaimsFromMap(m jwt.MapClaims) jwt.StandardClaims {
 	return c
 }
 
+// DatabaseAPITokenHandler implements APITokenHandler
+// for a JWT token stored in the database
 type DatabaseAPITokenHandler struct {
 	db      database.Database
 	session *discordgo.Session
 	secret  []byte
 }
 
+// NewDatabaseAPITokenHandler returns a new instance
+// of DatabaseAPITokenHandler
 func NewDatabaseAPITokenHandler(container di.Container) (*DatabaseAPITokenHandler, error) {
 	cfg := container.Get(static.DiConfig).(*config.Config)
 	secret := []byte(cfg.WebServer.APITokenKey)
@@ -175,7 +187,7 @@ func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, e
 		return
 	}
 
-	claims := APITokenClaims{}
+	claims := apiTokenClaims{}
 	claims.Issuer = fmt.Sprintf("shinpuru v.%s", util.AppVersion)
 	claims.Subject = ident
 	claims.ExpiresAt = expires.Unix()
@@ -219,7 +231,7 @@ func (apith *DatabaseAPITokenHandler) ValidateAPIToken(token string) (ident stri
 		return "", nil
 	}
 
-	claims := APITokenClaimsFromMap(claimsMap)
+	claims := apiTokenClaimsFromMap(claimsMap)
 
 	tokenEntry, err := apith.db.GetAPIToken(claims.Subject)
 	if database.IsErrDatabaseNotFound(err) {

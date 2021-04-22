@@ -1,4 +1,4 @@
-package oauth
+package auth
 
 import (
 	"time"
@@ -6,31 +6,33 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-type OAuthHandlerImpl struct {
+// RefreshTokenRequestHandler implements RequestHandler for
+// the refresh-access token authentication
+// system.
+type RefreshTokenRequestHandler struct {
 	session             *discordgo.Session
-	accessTokenHandler  auth.AccessTokenHandler
-	refreshTokenHandler auth.RefreshTokenHandler
+	accessTokenHandler  AccessTokenHandler
+	refreshTokenHandler RefreshTokenHandler
 }
 
-func NewOAuthHandlerImpl(container di.Container) *OAuthHandlerImpl {
-	return &OAuthHandlerImpl{
+func NewRefreshTokenRequestHandler(container di.Container) *RefreshTokenRequestHandler {
+	return &RefreshTokenRequestHandler{
 		session:             container.Get(static.DiDiscordSession).(*discordgo.Session),
-		accessTokenHandler:  container.Get(static.DiAuthAccessTokenHandler).(auth.AccessTokenHandler),
-		refreshTokenHandler: container.Get(static.DiAuthRefreshTokenHandler).(auth.RefreshTokenHandler),
+		accessTokenHandler:  container.Get(static.DiAuthAccessTokenHandler).(AccessTokenHandler),
+		refreshTokenHandler: container.Get(static.DiAuthRefreshTokenHandler).(RefreshTokenHandler),
 	}
 }
 
-func (h *OAuthHandlerImpl) LoginFailedHandler(ctx *fiber.Ctx, status int, msg string) error {
+func (h *RefreshTokenRequestHandler) LoginFailedHandler(ctx *fiber.Ctx, status int, msg string) error {
 	return fiber.ErrUnauthorized
 }
 
-func (h *OAuthHandlerImpl) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
+func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
 	user, _ := h.session.User(uid)
 	if user == nil {
 		return fiber.ErrUnauthorized
@@ -55,7 +57,7 @@ func (h *OAuthHandlerImpl) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error
 	return ctx.Redirect("/", fiber.StatusTemporaryRedirect)
 }
 
-func (h *OAuthHandlerImpl) LogoutHandler(ctx *fiber.Ctx) error {
+func (h *RefreshTokenRequestHandler) LogoutHandler(ctx *fiber.Ctx) error {
 	if uid, ok := ctx.Locals("uid").(string); ok && uid != "" {
 		if err := h.refreshTokenHandler.RevokeToken(uid); err != nil {
 			return err

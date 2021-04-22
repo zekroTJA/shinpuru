@@ -19,6 +19,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/limiter"
 )
 
+// WebServer provides a REST API and static
+// web server service.
 type WebServer struct {
 	app       *fiber.App
 	cfg       *config.Config
@@ -31,6 +33,7 @@ type errorModel struct {
 	Context string `json:"context,omitempty"`
 }
 
+// New returns a new instance of WebServer.
 func New(container di.Container) (ws *WebServer, err error) {
 	ws = new(WebServer)
 
@@ -84,6 +87,8 @@ func New(container di.Container) (ws *WebServer, err error) {
 	return
 }
 
+// ListenAndServeBlocking starts the HTTP listening
+// loop blocking the current go routine.
 func (ws *WebServer) ListenAndServeBlocking() error {
 	tls := ws.cfg.WebServer.TLS
 
@@ -112,5 +117,7 @@ func (ws *WebServer) errorHandler(ctx *fiber.Ctx, err error) error {
 			Code:  fErr.Code,
 		})
 	}
-	return fiber.DefaultErrorHandler(ctx, err)
+
+	return ws.errorHandler(ctx,
+		fiber.NewError(fiber.StatusInternalServerError, err.Error()))
 }
