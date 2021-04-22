@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
-	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/mute"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -209,7 +209,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if victimIsMuted {
-		emb, err := shared.RevokeMute(
+		emb, err := report.RevokeMute(
 			ctx.GetSession(),
 			db,
 			cfg.WebServer.PublicAddr,
@@ -249,7 +249,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	rep, err := shared.PushMute(
+	rep, err := report.PushMute(
 		ctx.GetSession(),
 		db,
 		cfg.WebServer.PublicAddr,
@@ -291,9 +291,9 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetGuild().ID, "",
-		stringutil.IndexOf("MUTE", report.ReportTypes))
+		stringutil.IndexOf("MUTE", models.ReportTypes))
 
-	muteReportsMap := make(map[string]*report.Report)
+	muteReportsMap := make(map[string]*models.Report)
 	for _, r := range muteReports {
 		muteReportsMap[r.VictimID] = r
 	}

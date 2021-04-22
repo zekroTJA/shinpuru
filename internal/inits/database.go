@@ -4,11 +4,11 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/database/mysql"
-	"github.com/zekroTJA/shinpuru/internal/core/database/redis"
-	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
+	"github.com/zekroTJA/shinpuru/internal/services/database/redis"
+	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )

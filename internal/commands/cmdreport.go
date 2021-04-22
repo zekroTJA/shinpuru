@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
-	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -36,8 +36,8 @@ func (c *CmdReport) GetDescription() string {
 }
 
 func (c *CmdReport) GetHelp() string {
-	repTypes := make([]string, len(report.ReportTypes))
-	for i, t := range report.ReportTypes {
+	repTypes := make([]string, len(models.ReportTypes))
+	for i, t := range models.ReportTypes {
 		repTypes[i] = fmt.Sprintf("`%d` - %s", i, t)
 	}
 	return "`report <userResolvable>` - list all reports of a user\n" +
@@ -109,9 +109,9 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	}
 
 	msgOffset := 1
-	repType, err := report.TypeFromString(ctx.GetArgs().Get(1).AsString())
+	repType, err := models.TypeFromString(ctx.GetArgs().Get(1).AsString())
 	if repType == 0 {
-		repType = report.TypesReserved
+		repType = models.TypesReserved
 	}
 
 	if victim.User.ID == ctx.GetUser().ID {
@@ -121,9 +121,9 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	}
 
 	if err == nil {
-		if repType < report.TypesReserved || repType > report.TypeMax {
+		if repType < models.TypesReserved || repType > models.TypeMax {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", report.TypesReserved, report.TypeMax)+
+				fmt.Sprintf("Report type must be between *(including)* %d and %d.\n", models.TypesReserved, models.TypeMax)+
 					"Use `help report` to get all types of report which can be used.").
 				DeleteAfter(8 * time.Second).Error()
 		}
@@ -154,7 +154,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       report.ReportColors[repType],
+			Color:       models.ReportColors[repType],
 			Title:       "Report Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -165,7 +165,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 				},
 				{
 					Name:  "Type",
-					Value: report.ReportTypes[repType],
+					Value: models.ReportTypes[repType],
 				},
 				{
 					Name:  "Description",
@@ -180,7 +180,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep, err := shared.PushReport(
+			rep, err := report.PushReport(
 				ctx.GetSession(),
 				db,
 				cfg.WebServer.PublicAddr,
@@ -256,7 +256,7 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 				DeleteAfter(8 * time.Second)
 		},
 		AcceptFunc: func(m *discordgo.Message) {
-			emb, err := shared.RevokeReport(
+			emb, err := report.RevokeReport(
 				rep,
 				ctx.GetUser().ID,
 				reason,

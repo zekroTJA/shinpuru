@@ -6,10 +6,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/listeners"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/listeners"
+	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -21,8 +21,8 @@ func InitDiscordBotSession(container di.Container) {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 	}
 
-	snowflakenodes.NodesReport = make([]*snowflake.Node, len(report.ReportTypes))
-	for i, t := range report.ReportTypes {
+	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
+	for i, t := range models.ReportTypes {
 		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
 			util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 		}

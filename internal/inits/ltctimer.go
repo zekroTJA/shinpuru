@@ -3,23 +3,22 @@ package inits
 import (
 	"github.com/robfig/cron/v3"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/core/backup"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/shared"
-	"github.com/zekroTJA/shinpuru/internal/shared/wrappers"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
-func InitLTCTimer(container di.Container) shared.LifeCycleTimer {
+func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	cfg := container.Get(static.DiConfig).(*config.Config)
 	db := container.Get(static.DiDatabase).(database.Database)
 	guildBackups := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
 	tnw := container.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 
-	lct := &wrappers.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
+	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
 	lctSchedule(lct, "refresh token cleanup",
 		func() string {
@@ -63,7 +62,7 @@ func InitLTCTimer(container di.Container) shared.LifeCycleTimer {
 	return lct
 }
 
-func lctSchedule(lct shared.LifeCycleTimer, name string, specGetter func() string, job func()) {
+func lctSchedule(lct lctimer.LifeCycleTimer, name string, specGetter func() string, job func()) {
 	spec := specGetter()
 	_, err := lct.Schedule(spec, job)
 	if err != nil {

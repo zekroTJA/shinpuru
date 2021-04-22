@@ -2,7 +2,7 @@ package karma
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 )
 
 func Alter(db database.Database, guildID string, object *discordgo.User, value int) (ok bool, err error) {

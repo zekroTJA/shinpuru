@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
-	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -85,7 +85,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 
 	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
 	var repType int
-	for i, v := range report.ReportTypes {
+	for i, v := range models.ReportTypes {
 		if v == "BAN" {
 			repType = i
 		}
@@ -112,7 +112,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       report.ReportColors[repType],
+			Color:       models.ReportColors[repType],
 			Title:       "Ban Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -127,7 +127,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 				},
 				{
 					Name:  "Type",
-					Value: report.ReportTypes[repType],
+					Value: models.ReportTypes[repType],
 				},
 				{
 					Name:  "Description",
@@ -142,7 +142,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep, err := shared.PushBan(
+			rep, err := report.PushBan(
 				ctx.GetSession(),
 				db,
 				cfg.WebServer.PublicAddr,

@@ -8,8 +8,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
@@ -109,8 +109,8 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	totalReportCount := 0
-	reportCounts := make([]string, len(report.ReportTypes))
-	for i, typ := range report.ReportTypes {
+	reportCounts := make([]string, len(models.ReportTypes))
+	for i, typ := range models.ReportTypes {
 		c, err := db.GetReportsFilteredCount(g.ID, "", i)
 		if err != nil {
 			return err
