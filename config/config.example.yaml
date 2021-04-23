@@ -137,13 +137,13 @@ webserver:
   ratelimit:
     # Whether or not to enable rate limiter
     enabled: true
-    # Max requests in the given duration.
+    # Burst defines max requests in the given duration.
     # This value should not be that low, because first
     # connections to the API via the web interface might
     # require a lot of requests to be processed.
-    max: 50
-    # The reset duration until a rate limit exceeds.
-    durationseconds: 3
+    burst: 50
+    # The reset duration until a request token is restored.
+    limitseconds: 3
 
 # Credentials of the twitch app to connect to the 
 # twitch API
