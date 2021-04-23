@@ -95,6 +95,7 @@ cleanup:
 PHONY += fe
 fe:
 	cd $(CURDIR)/web && \
+		$(NPM) ci && \
 		$(NG) build --prod=true
 
 PHONY += copyfe
