@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/backup"
-	"github.com/zekroTJA/shinpuru/internal/core/backup/backupmodels"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -74,7 +74,7 @@ func (c *CmdBackup) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdBackup) switchStatus(ctx shireikan.Context, enable bool) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	err := db.SetGuildBackup(ctx.GetGuild().ID, enable)
 	if err != nil {
@@ -93,7 +93,7 @@ func (c *CmdBackup) switchStatus(ctx shireikan.Context, enable bool) error {
 }
 
 func (c *CmdBackup) getBackupsList(ctx shireikan.Context) ([]*backupmodels.Entry, string, error) {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	backups, err := db.GetBackups(ctx.GetGuild().ID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
@@ -124,7 +124,7 @@ func (c *CmdBackup) getBackupsList(ctx shireikan.Context) ([]*backupmodels.Entry
 }
 
 func (c *CmdBackup) list(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	status, err := db.GetGuildBackup(ctx.GetGuild().ID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
@@ -258,7 +258,7 @@ func (c *CmdBackup) proceedRestore(ctx shireikan.Context, fileID string) {
 		}()
 	}
 
-	bck, _ := ctx.GetObject("backup").(*backup.GuildBackups)
+	bck, _ := ctx.GetObject(static.DiBackupHandler).(*backup.GuildBackups)
 
 	err := bck.RestoreBackup(ctx.GetGuild().ID, fileID, statusChan, errorsChan)
 	if err != nil {
@@ -291,7 +291,7 @@ func (c *CmdBackup) purgeBackupsAccept(ctx shireikan.Context) error {
 }
 
 func (c *CmdBackup) purgeBackups(ctx shireikan.Context) {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	backups, err := db.GetBackups(ctx.GetGuild().ID)
 	if err != nil {
@@ -315,7 +315,7 @@ func (c *CmdBackup) purgeBackups(ctx shireikan.Context) {
 			continue
 		}
 
-		st, _ := ctx.GetObject("storage").(storage.Storage)
+		st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 		if err = st.DeleteObject(static.StorageBucketBackups, backup.FileID); err != nil {
 			continue
 		}

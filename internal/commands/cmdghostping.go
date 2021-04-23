@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -81,7 +81,7 @@ func (c *CmdGhostping) info(ctx shireikan.Context) error {
 		},
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	gpMsg, err := db.GetGuildGhostpingMsg(ctx.GetGuild().ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
@@ -105,7 +105,7 @@ func (c *CmdGhostping) set(ctx shireikan.Context) error {
 		msgPattern = strings.Join(ctx.GetArgs()[1:], " ")
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	if err := db.SetGuildGhostpingMsg(ctx.GetGuild().ID, msgPattern); err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func (c *CmdGhostping) set(ctx shireikan.Context) error {
 }
 
 func (c *CmdGhostping) reset(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	if err := db.SetGuildGhostpingMsg(ctx.GetGuild().ID, ""); err != nil {
 		return err
 	}

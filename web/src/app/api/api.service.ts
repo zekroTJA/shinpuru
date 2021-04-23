@@ -1,8 +1,8 @@
 /** @format */
 
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map, share } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, share, tap } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   User,
@@ -30,6 +30,7 @@ import {
   UnbanRequest,
   UserSettingsOTA,
   GuildStarboardEntry,
+  AccessTokenModel,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -44,6 +45,8 @@ import { Router } from '@angular/router';
 export class APIService {
   private rootURL = '';
 
+  private accessToken: AccessTokenModel;
+
   private readonly cacheMembers = new CacheBucket<string, Member>(
     10 * 60 * 1000
   );
@@ -53,6 +56,7 @@ export class APIService {
   private readonly defopts = (obj?: object) => {
     const defopts = {
       withCredentials: true,
+      headers: {},
     };
 
     if (obj) {
@@ -66,6 +70,9 @@ export class APIService {
 
   private readonly rcAPI = (rc: string = '') =>
     `${this.rootURL}/api${rc ? '/' + rc : ''}`;
+
+  private readonly rcAuth = (rc: string = '') =>
+    `${this.rcAPI('auth')}${rc ? '/' + rc : ''}`;
 
   private readonly rcGuilds = (guildID: string = '') =>
     `${this.rcAPI('guilds')}${guildID ? '/' + guildID : ''}`;
@@ -169,6 +176,9 @@ export class APIService {
     `${this.rcAPI('unbanrequests')}${rc ? '/' + rc : ''}`;
 
   private readonly errorCatcher = (err) => {
+    if (err instanceof TypeError) {
+      return of({});
+    }
     console.error(err);
     if (err.status === 401) {
       let path = window.location.pathname;
@@ -179,11 +189,11 @@ export class APIService {
           redirect: path,
         },
       });
-    } else {
-      this.toasts.push(err.message, 'Request Error', 'error', 10000);
+      return of(null);
     }
-    throw err;
-    return of(null);
+
+    this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    return throwError(err);
   };
 
   constructor(
@@ -194,13 +204,30 @@ export class APIService {
     this.rootURL = environment.production ? '' : 'http://localhost:8080';
   }
 
-  public getRcGuildBackupDownload(guildID: string, backupID: string): string {
-    return `${this.rcGuildBackups(guildID)}/${backupID}/download`;
+  public getStoredAccessToken(): AccessTokenModel {
+    return this.accessToken;
+  }
+
+  public getRcGuildBackupDownload(
+    guildID: string,
+    backupID: string,
+    otaToken: string
+  ): string {
+    return `${this.rcGuildBackups(
+      guildID
+    )}/${backupID}/download?ota_token=${otaToken}`;
+  }
+
+  public getAndSetAccessToken(): Observable<AccessTokenModel> {
+    return this.http
+      .post<any>(this.rcAuth('accesstoken'), null, this.defopts())
+      .pipe(catchError(this.errorCatcher))
+      .pipe(tap((res) => (this.accessToken = res)));
   }
 
   public logout(): Observable<any> {
     return this.http
-      .post<any>(this.rcAPI('logout'), this.defopts())
+      .post<any>(this.rcAuth('logout'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
@@ -481,6 +508,19 @@ export class APIService {
     return this.http
       .get<ListReponse<GuildBackup>>(
         this.rcGuildBackups(guildID),
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildBackupsDownload(
+    guildID: string,
+    backupID: string
+  ): Observable<AccessTokenModel> {
+    return this.http
+      .post(
+        `${this.rcGuildBackups(guildID)}/${backupID}/download`,
+        null,
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));

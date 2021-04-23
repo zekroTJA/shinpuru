@@ -11,10 +11,14 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database/sqlite"
+	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
+	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
@@ -42,14 +46,44 @@ func main() {
 	// command manual.
 	util.Release = "TRUE"
 
+	diBuilder, _ := di.NewBuilder()
+
 	config := &config.Config{
 		Discord: &config.Discord{},
 	}
+	diBuilder.Set(static.DiConfig, config)
 
 	s, _ := discordgo.New()
-	database := new(sqlite.SqliteMiddleware)
+	diBuilder.Set(static.DiDiscordSession, s)
 
-	cmdHandler := inits.InitCommandHandler(s, config, database, nil, nil, nil, nil, nil, nil)
+	// Initialize database middleware and shutdown routine
+	diBuilder.Add(di.Def{
+		Name: static.DiDatabase,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return new(sqlite.SqliteMiddleware), nil
+		},
+		Close: func(obj interface{}) error {
+			database := obj.(database.Database)
+			util.Log.Info("Shutting down database connection...")
+			database.Close()
+			return nil
+		},
+	})
+
+	// Initialize command handler
+	diBuilder.Add(di.Def{
+		Name: static.DiCommandHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitCommandHandler(ctn), nil
+		},
+	})
+
+	diBuilder.Set(static.DiPermissionMiddleware, &middleware.PermissionsMiddleware{})
+	diBuilder.Set(static.DiGhostpingIgnoreMiddleware, &middleware.GhostPingIgnoreMiddleware{})
+
+	ctn := diBuilder.Build()
+
+	cmdHandler := ctn.Get(static.DiCommandHandler).(shireikan.Handler)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
 		util.Log.Fatal("Failed exporting command manual: ", err)
 	}

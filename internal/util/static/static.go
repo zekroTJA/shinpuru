@@ -1,6 +1,10 @@
 package static
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 const (
 	InvitePermission = 0x1 | // CREATE INSTANT INVITE
@@ -67,13 +71,17 @@ const (
 
 	PublicMainInvite   = "https://shnp.de/invite"
 	PublicCanaryInvite = "https://c.shnp.de/invite"
+
+	EndpointAuthCB = "/api/auth/oauthcallback"
+
+	AuthSessionExpiration  = 7 * 24 * time.Hour // 7 Days
+	ApiTokenExpiration     = 365 * 24 * time.Hour
+	RefreshTokenCookieName = "refreshToken"
 )
 
 var (
 	PermLvlBotOwner   = 1000
 	PermLvlGuildOwner = 10
-
-	RoutingBypassPrefixes = []string{"/api/", "/imagestore/", "/_/", "/invite", "/ota"}
 
 	DefaultAdminRules = []string{
 		"+sp.guild.*",

@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     const nlr = LocalStorageUtil.get<NextLoginRedirect>('NEXT_LOGIN_REDIRECT');
-    console.log('NLR:', nlr);
     if (nlr && nlr.deadline >= Date.now()) {
       LocalStorageUtil.remove('NEXT_LOGIN_REDIRECT');
       window.location.replace(nlr.destination);

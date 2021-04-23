@@ -9,7 +9,7 @@ import (
 	"sort"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -50,7 +50,7 @@ func (c *CmdLock) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdLock) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	target, err := c.getTargetChan(ctx)
 	if err != nil {

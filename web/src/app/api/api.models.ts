@@ -257,3 +257,8 @@ export interface GuildStarboardEntry {
   author_username: string;
   author_avatar_url: string;
 }
+
+export interface AccessTokenModel {
+  token: string;
+  expires: string;
+}

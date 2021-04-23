@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
-	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/mute"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -89,7 +89,7 @@ func (c *CmdMute) setup(ctx shireikan.Context) error {
 		desc = fmt.Sprintf("Follwoing, the role %s will be set as mute role.", muteRole.Mention())
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	acmsg := &acceptmsg.AcceptMessage{
 		Session: ctx.GetSession(),
@@ -176,7 +176,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if database.IsErrDatabaseNotFound(err) {
@@ -206,10 +206,10 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if victimIsMuted {
-		emb, err := shared.RevokeMute(
+		emb, err := report.RevokeMute(
 			ctx.GetSession(),
 			db,
 			cfg.WebServer.PublicAddr,
@@ -239,7 +239,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			st, _ := ctx.GetObject("storage").(storage.Storage)
+			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
@@ -249,7 +249,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	rep, err := shared.PushMute(
+	rep, err := report.PushMute(
 		ctx.GetSession(),
 		db,
 		cfg.WebServer.PublicAddr,
@@ -272,7 +272,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 }
 
 func (c *CmdMute) list(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	muteRoleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {
@@ -291,9 +291,9 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetGuild().ID, "",
-		stringutil.IndexOf("MUTE", report.ReportTypes))
+		stringutil.IndexOf("MUTE", models.ReportTypes))
 
-	muteReportsMap := make(map[string]*report.Report)
+	muteReportsMap := make(map[string]*models.Report)
 	for _, r := range muteReports {
 		muteReportsMap[r.VictimID] = r
 	}
@@ -318,7 +318,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 }
 
 func (c *CmdMute) displayMuteRole(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	roleID, err := db.GetGuildMuteRole(ctx.GetGuild().ID)
 	if err != nil {

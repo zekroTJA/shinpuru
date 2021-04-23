@@ -73,7 +73,7 @@ export class HeaderComponent implements OnInit {
   }
 
   public onLogin() {
-    window.location.assign('/_/loginwithdiscord');
+    window.location.assign('/api/auth/login');
   }
 
   public get routes(): string[][] {

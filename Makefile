@@ -81,7 +81,8 @@ lint:
 PHONY += run
 run:
 	$(GO) run -v \
-		$(CURDIR)/cmd/$(APPNAME)/*.go -c $(CONFIG)
+		$(CURDIR)/cmd/$(APPNAME)/*.go \
+			-c $(CONFIG) -quiet
 
 PHONY += rundev
 rundev:

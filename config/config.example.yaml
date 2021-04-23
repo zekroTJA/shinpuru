@@ -133,6 +133,17 @@ webserver:
   # Debug address which is set during debugging as
   # CORS origin domain.
   debugpublicaddr: "http://localhost:8081"
+  # Ratelimit configuration
+  ratelimit:
+    # Whether or not to enable rate limiter
+    enabled: true
+    # Max requests in the given duration.
+    # This value should not be that low, because first
+    # connections to the API via the web interface might
+    # require a lot of requests to be processed.
+    max: 50
+    # The reset duration until a rate limit exceeds.
+    durationseconds: 3
 
 # Credentials of the twitch app to connect to the 
 # twitch API
@@ -154,3 +165,15 @@ metrics:
   # to. This is defaultly ":9091" if not
   # specified
   addr: ":9091"
+
+# Time Schedule specifications.
+# Time schedules are specified using the crontab
+# syntax:
+#   second minute hour month dom dow
+# Read this to get more information:
+# https://pkg.go.dev/github.com/robfig/cron/v3#hdr-Usage
+schedules:
+  # Guild backup schedule
+  guildbackups:        '0 0 6,18 * * *'
+  # Refresh token cleanup schedule
+  refreshtokencleanup: '0 0 5 * * *'

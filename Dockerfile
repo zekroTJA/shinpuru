@@ -16,8 +16,6 @@ RUN go build -o ./bin/shinpuru -ldflags "\
 		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
         -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
         ./cmd/shinpuru/main.go
-# Build storagepatch tool
-RUN go build -o ./bin/storagepatch ./cmd/storagepatch/main.go
 # Build web assets
 WORKDIR /build/web
 RUN npm ci \
@@ -29,9 +27,6 @@ RUN npm ci \
 FROM alpine:3 AS final
 WORKDIR /app
 COPY --from=build /build/bin .
-
-RUN mv storagepatch /usr/bin/storagepatch \
-    && chmod +x /usr/bin/storagepatch
 
 RUN apk add ca-certificates
 

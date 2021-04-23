@@ -7,9 +7,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -89,13 +89,13 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	perms, _, err := pmw.GetPermissions(ctx.GetSession(), ctx.GetGuild().ID, member.User.ID)
 	if err != nil {
 		return err
 	}
 
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	guildReps, err := db.GetReportsFiltered(ctx.GetGuild().ID, member.User.ID, -1)
 	if err != nil {
@@ -122,7 +122,7 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,

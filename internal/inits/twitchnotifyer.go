@@ -1,24 +1,36 @@
 package inits
 
 import (
-	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/listeners"
+	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/listeners"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
-func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db database.Database) (*twitchnotify.NotifyWorker, *listeners.ListenerTwitchNotify) {
-	if config.TwitchApp == nil {
-		return nil, nil
+func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
+
+	listener := container.Get(static.DiTwitchNotifyListener).(*listeners.ListenerTwitchNotify)
+	cfg := container.Get(static.DiConfig).(*config.Config)
+	db := container.Get(static.DiDatabase).(database.Database)
+
+	if cfg.TwitchApp == nil {
+		return nil
 	}
 
-	listener := listeners.NewListenerTwitchNotify(session, config, db)
-	tnw, err := twitchnotify.New(twitchnotify.Credentials{
-		ClientID:     config.TwitchApp.ClientID,
-		ClientSecret: config.TwitchApp.ClientSecret,
-	}, listener.HandlerWentOnline, listener.HandlerWentOffline)
+	tnw, err := twitchnotify.New(
+		twitchnotify.Credentials{
+			ClientID:     cfg.TwitchApp.ClientID,
+			ClientSecret: cfg.TwitchApp.ClientSecret,
+		},
+		listener.HandlerWentOnline,
+		listener.HandlerWentOffline,
+		twitchnotify.Config{
+			TimerDelay: 0,
+		},
+	)
 
 	if err != nil {
 		util.Log.Fatalf("twitch app credentials are invalid: %s", err)
@@ -35,5 +47,5 @@ func InitTwitchNotifyer(session *discordgo.Session, config *config.Config, db da
 		util.Log.Error("failed getting Twitch notify entreis: ", err)
 	}
 
-	return tnw, listener
+	return tnw
 }

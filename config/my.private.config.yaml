@@ -1,0 +1,68 @@
+configVersionPleaseDoNotChange: 6
+
+discord:
+  token: "<your bot token>"
+  generalprefix: ";;"
+  ownerid: "<your user ID>"
+  clientid: "<your bot client id>"
+  clientsecret: "<your bot client secret>"
+  # globalcommandratelimit:
+  #   burst: 1
+  #   limitseconds: 10
+
+permissions:
+  defaultuserrules:
+  - +sp.etc.*
+  - +sp.chat.*
+  defaultadminrules:
+  - +sp.guild.*
+  - +sp.etc.*
+  - +sp.chat.*
+
+database:
+  type: mysql
+  # sqlite:
+  #   dbfile: shinpuru.sqlite3.db
+  mysql:
+    host: "<your db host>"
+    user: "shinpuruDev"
+    database: shinpuruDev
+    password: "<your db user password>"
+  redis:
+    enable: false
+    addr: "<your redis host>"
+
+storage:
+  type: file
+  file:
+    location: ./data
+  # minio:
+  #   endpoint: "<your minio endpoint>"
+  #   accesskey: "<your minio access key>"
+  #   accesssecret: "<your minio access secret>"
+  #   secure: true
+
+logging:
+  commandlogging: true
+  loglevel: 5
+
+twitchapp:
+  clientid: ""
+  clientsecret: ""
+
+webserver:
+  enabled: true
+  addr: :8080
+  apitokenkey: "12345678901234567890123456789012"
+  tls:
+    enabled: false
+  publicaddr: http://localhost:8080
+  debugpublicaddr: http://localhost:8081
+  ratelimit:
+    enabled: false
+    burst: 50
+    limitseconds: 3
+
+# metrics:
+#   enable: true
+#   addr: ":9091"

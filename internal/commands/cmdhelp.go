@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sahilm/fuzzy"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -48,8 +48,8 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdHelp) Exec(ctx shireikan.Context) error {
-	cmdhandler, _ := ctx.GetObject(shireikan.ObjectMapKeyHandler).(shireikan.Handler)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	cmdhandler, _ := ctx.GetObject(static.DiCommandHandler).(shireikan.Handler)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,

@@ -3,8 +3,8 @@ package commands
 import (
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
@@ -43,8 +43,8 @@ func (c *CmdPrefix) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdPrefix) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
-	cfg, _ := ctx.GetObject("config").(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 
 	if len(ctx.GetArgs()) == 0 {
 		prefix, err := db.GetGuildPrefix(ctx.GetGuild().ID)

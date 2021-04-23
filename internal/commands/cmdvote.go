@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -56,7 +56,7 @@ func (c *CmdVote) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdVote) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if len(ctx.GetArgs()) > 0 {
 		switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
@@ -180,7 +180,7 @@ func (c *CmdVote) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdVote) close(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	args := ctx.GetArgs()
 
@@ -252,7 +252,7 @@ func (c *CmdVote) close(ctx shireikan.Context) error {
 		}
 	}
 
-	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".close")
 	if ivote.CreatorID != ctx.GetUser().ID && !ok && !override {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,

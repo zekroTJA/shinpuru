@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
@@ -49,7 +49,7 @@ func (c *CmdColorReaction) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	var enabled bool
 
@@ -60,10 +60,6 @@ func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
 		}
 
 		enabled = !enabled
-
-		if err = db.SetGuildColorReaction(ctx.GetGuild().ID, enabled); err != nil {
-			return
-		}
 	} else {
 		switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
 
@@ -78,6 +74,10 @@ func (c *CmdColorReaction) Exec(ctx shireikan.Context) (err error) {
 				"Invalid argument. Use `help color` to see how to use this command.").
 				Error()
 		}
+	}
+
+	if err = db.SetGuildColorReaction(ctx.GetGuild().ID, enabled); err != nil {
+		return
 	}
 
 	if enabled {

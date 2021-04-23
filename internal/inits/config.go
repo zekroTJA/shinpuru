@@ -3,19 +3,25 @@ package inits
 import (
 	"os"
 
-	"github.com/zekroTJA/shinpuru/internal/core/config"
+	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
+func InitConfig(configLocation string, container di.Container) *config.Config {
+	defaultConfig := config.GetDefaultConfig()
+
+	cfgParser := container.Get(static.DiConfigParser).(config.Parser)
+
 	cfgFile, err := os.Open(configLocation)
+	defer cfgFile.Close()
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed creating default config:", err)
 		}
-		err = cfgParser.Encode(cfgFile, config.GetDefaultConfig())
+		err = cfgParser.Encode(cfgFile, defaultConfig)
 		if err != nil {
 			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
 		}
@@ -40,5 +46,6 @@ func InitConfig(configLocation string, cfgParser config.Parser) *config.Config {
 
 	util.Log.Info("Config file loaded")
 
+	config.Defaults = defaultConfig
 	return config
 }

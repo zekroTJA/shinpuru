@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
-	"github.com/zekroTJA/shinpuru/internal/shared"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/report"
@@ -85,7 +85,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 
 	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
 	var repType int
-	for i, v := range report.ReportTypes {
+	for i, v := range models.ReportTypes {
 		if v == "KICK" {
 			repType = i
 		}
@@ -97,7 +97,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 	if attachment != "" {
 		img, err := imgstore.DownloadFromURL(attachment)
 		if err == nil && img != nil {
-			st, _ := ctx.GetObject("storage").(storage.Storage)
+			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
 				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
 			if err != nil {
@@ -107,12 +107,12 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject("config").(*config.Config)
-	db, _ := ctx.GetObject("db").(database.Database)
+	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
-			Color:       report.ReportColors[repType],
+			Color:       models.ReportColors[repType],
 			Title:       "Kick Check",
 			Description: "Is everything okay so far?",
 			Fields: []*discordgo.MessageEmbedField{
@@ -127,7 +127,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 				},
 				{
 					Name:  "Type",
-					Value: report.ReportTypes[repType],
+					Value: models.ReportTypes[repType],
 				},
 				{
 					Name:  "Description",
@@ -142,7 +142,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep, err := shared.PushKick(
+			rep, err := report.PushKick(
 				ctx.GetSession(),
 				db,
 				cfg.WebServer.PublicAddr,

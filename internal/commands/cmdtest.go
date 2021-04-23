@@ -38,7 +38,7 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	// db, _ := ctx.GetObject("db").(database.Database)
+	// db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	time.Sleep(30 * time.Second)
 

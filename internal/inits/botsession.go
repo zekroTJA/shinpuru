@@ -5,59 +5,52 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
-	"github.com/zekroTJA/shinpuru/internal/core/config"
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/listeners"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
-	"github.com/zekroTJA/shinpuru/internal/core/storage"
+	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/listeners"
+	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/lctimer"
 )
 
-func InitDiscordBotSession(session *discordgo.Session, config *config.Config, database database.Database, storage storage.Storage,
-	lct *lctimer.LifeCycleTimer, pmw *middleware.PermissionsMiddleware, gpim *middleware.GhostPingIgnoreMiddleware) {
-
+func InitDiscordBotSession(container di.Container) {
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
 		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 	}
 
-	snowflakenodes.NodesReport = make([]*snowflake.Node, len(report.ReportTypes))
-	for i, t := range report.ReportTypes {
+	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
+	for i, t := range models.ReportTypes {
 		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
 			util.Log.Fatal("Failed setting up snowflake nodes: ", err)
 		}
 	}
 
-	session.Token = "Bot " + config.Discord.Token
+	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	cfg := container.Get(static.DiConfig).(*config.Config)
+
+	session.Token = "Bot " + cfg.Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 
-	listenerInviteBlock := listeners.NewListenerInviteBlock(database, pmw)
-	listenerGhostPing := listeners.NewListenerGhostPing(database, gpim)
-	listenerJDoodle := listeners.NewListenerJdoodle(database, pmw)
-	listenerColors := listeners.NewColorListener(database, pmw, config.WebServer.PublicAddr)
+	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
+	listenerGhostPing := listeners.NewListenerGhostPing(container)
+	listenerJDoodle := listeners.NewListenerJdoodle(container)
+	listenerColors := listeners.NewColorListener(container)
 
-	publicAddr := ""
-	if config.WebServer != nil {
-		publicAddr = config.WebServer.PublicAddr
-	}
-	listenerStarboard := listeners.NewListenerStarboard(database, storage, publicAddr)
+	listenerStarboard := listeners.NewListenerStarboard(container)
 
-	session.AddHandler(listeners.NewListenerReady(config, database, lct).Handler)
-	session.AddHandler(listeners.NewListenerGuildJoin(config).Handler)
-	session.AddHandler(listeners.NewListenerMemberAdd(database).Handler)
-	session.AddHandler(listeners.NewListenerMemberRemove(database).Handler)
-	session.AddHandler(listeners.NewListenerVote(database).Handler)
-	session.AddHandler(listeners.NewListenerChannelCreate(database).Handler)
-	session.AddHandler(listeners.NewListenerVoiceUpdate(database).Handler)
-	session.AddHandler(listeners.NewListenerKarma(database).Handler)
-	session.AddHandler(listeners.NewListenerAntiraid(database).HandlerMemberAdd)
-	session.AddHandler(listeners.NewListenerBotMention(config).Listener)
+	session.AddHandler(listeners.NewListenerReady(container).Handler)
+	session.AddHandler(listeners.NewListenerMemberAdd(container).Handler)
+	session.AddHandler(listeners.NewListenerMemberRemove(container).Handler)
+	session.AddHandler(listeners.NewListenerVote(container).Handler)
+	session.AddHandler(listeners.NewListenerChannelCreate(container).Handler)
+	session.AddHandler(listeners.NewListenerVoiceUpdate(container).Handler)
+	session.AddHandler(listeners.NewListenerKarma(container).Handler)
+	session.AddHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd)
+	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
@@ -79,7 +72,7 @@ func InitDiscordBotSession(session *discordgo.Session, config *config.Config, da
 		util.StatsMessagesAnalysed++
 	})
 
-	if config.Metrics != nil && config.Metrics.Enable {
+	if cfg.Metrics != nil && cfg.Metrics.Enable {
 		session.AddHandler(listeners.NewListenerMetrics().Listener)
 	}
 

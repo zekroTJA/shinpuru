@@ -7,8 +7,8 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 
-	"github.com/zekroTJA/shinpuru/internal/core/database"
-	"github.com/zekroTJA/shinpuru/internal/core/middleware"
+	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -71,7 +71,7 @@ func (c *CmdTag) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTag) Exec(ctx shireikan.Context) error {
-	db, _ := ctx.GetObject("db").(database.Database)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if len(ctx.GetArgs()) < 1 {
 		tags, err := db.GetGuildTags(ctx.GetGuild().ID)
@@ -172,7 +172,7 @@ func (c *CmdTag) editTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".edit")
 	if err != nil {
 		return err
@@ -206,7 +206,7 @@ func (c *CmdTag) deleteTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
@@ -294,7 +294,7 @@ func printNotPermitted(ctx shireikan.Context, t string) error {
 }
 
 func checkPermission(ctx shireikan.Context, dn string) (error, bool) {
-	pmw, _ := ctx.GetObject("pmw").(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, dn)
 	if err != nil {
 		return err, false

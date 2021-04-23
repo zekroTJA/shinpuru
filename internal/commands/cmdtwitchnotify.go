@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/core/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -49,8 +49,8 @@ func (c *CmdTwitchNotify) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
-	tnw, _ := ctx.GetObject("tnw").(*twitchnotify.NotifyWorker)
-	db, _ := ctx.GetObject("db").(database.Database)
+	tnw, _ := ctx.GetObject(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if tnw == nil {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
