@@ -58,9 +58,12 @@ func New(container di.Container) (ws *WebServer, err error) {
 	}
 
 	rlc := ws.cfg.WebServer.RateLimit
+	if rlc == nil {
+		rlc = ws.cfg.Defaults.WebServer.RateLimit
+	}
 	rlh := limiter.New(limiter.Config{
 		Next: func(ctx *fiber.Ctx) bool {
-			return rlc == nil || !rlc.Enabled
+			return !rlc.Enabled
 		},
 		Burst:           rlc.Burst,
 		Duration:        time.Duration(rlc.LimitSeconds) * time.Second,

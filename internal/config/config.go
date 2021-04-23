@@ -251,7 +251,7 @@ func GetDefaultConfig() *Config {
 				ShowPublicInvites: true,
 			},
 			RateLimit: &WebServerRatelimit{
-				Enabled:      true,
+				Enabled:      false,
 				Burst:        30,
 				LimitSeconds: 3,
 			},
