@@ -70,15 +70,16 @@ type jdoodleMessage struct {
 	embLang string
 }
 
-func NewListenerJdoodle(container di.Container) (l *ListenerJdoodle) {
+func NewListenerJdoodle(container di.Container) (l *ListenerJdoodle, err error) {
 	l = &ListenerJdoodle{}
 
 	l.db = container.Get(static.DiDatabase).(database.Database)
 	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
-	l.langs = l.execFact.Languages()
 	l.limits = timedmap.New(limitTMCleanupInterval)
 	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
+
+	l.langs, err = l.execFact.Languages()
 
 	return
 }
@@ -125,6 +126,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	wrapper, err := l.execFact.NewExecutor(e.GuildID)
 	if err != nil || wrapper == nil {
+		fmt.Println(err, wrapper)
 		return
 	}
 

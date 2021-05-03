@@ -19,7 +19,7 @@ type Response struct {
 
 type Factory interface {
 	Name() string
-	Languages() []string
+	Languages() ([]string, error)
 	NewExecutor(guildID string) (Executor, error)
 }
 

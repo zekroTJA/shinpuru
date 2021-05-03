@@ -37,8 +37,12 @@ func InitDiscordBotSession(container di.Container) {
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)
-	listenerJDoodle := listeners.NewListenerJdoodle(container)
 	listenerColors := listeners.NewColorListener(container)
+
+	listenerJDoodle, err := listeners.NewListenerJdoodle(container)
+	if err != nil {
+		util.Log.Fatal("Failed setting up code execution listener: ", err)
+	}
 
 	listenerStarboard := listeners.NewListenerStarboard(container)
 

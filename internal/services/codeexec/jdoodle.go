@@ -31,8 +31,8 @@ func (e *JdoodleFactory) Name() string {
 	return "jdoodle"
 }
 
-func (e *JdoodleFactory) Languages() []string {
-	return langs
+func (e *JdoodleFactory) Languages() ([]string, error) {
+	return langs, nil
 }
 
 func (e *JdoodleFactory) NewExecutor(guildID string) (exec Executor, err error) {
