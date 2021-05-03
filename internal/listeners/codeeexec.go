@@ -50,7 +50,7 @@ var (
 	}
 )
 
-type ListenerJdoodle struct {
+type ListenerCodeexec struct {
 	db       database.Database
 	execFact codeexec.Factory
 	pmw      *middleware.PermissionsMiddleware
@@ -60,7 +60,7 @@ type ListenerJdoodle struct {
 	msgMap *timedmap.TimedMap
 }
 
-type jdoodleMessage struct {
+type execMessage struct {
 	*discordgo.Message
 
 	wrapper codeexec.Executor
@@ -70,8 +70,8 @@ type jdoodleMessage struct {
 	embLang string
 }
 
-func NewListenerJdoodle(container di.Container) (l *ListenerJdoodle, err error) {
-	l = &ListenerJdoodle{}
+func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error) {
+	l = &ListenerCodeexec{}
 
 	l.db = container.Get(static.DiDatabase).(database.Database)
 	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
@@ -84,15 +84,15 @@ func NewListenerJdoodle(container di.Container) (l *ListenerJdoodle, err error) 
 	return
 }
 
-func (l *ListenerJdoodle) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
+func (l *ListenerCodeexec) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
 	l.handler(s, e.Message)
 }
 
-func (l *ListenerJdoodle) HandlerMessageUpdate(s *discordgo.Session, e *discordgo.MessageUpdate) {
+func (l *ListenerCodeexec) HandlerMessageUpdate(s *discordgo.Session, e *discordgo.MessageUpdate) {
 	l.handler(s, e.Message)
 }
 
-func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
+func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 	if e.Author == nil || e.Author.Bot || e.GuildID == "" {
 		return
 	}
@@ -126,7 +126,6 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	wrapper, err := l.execFact.NewExecutor(e.GuildID)
 	if err != nil || wrapper == nil {
-		fmt.Println(err, wrapper)
 		return
 	}
 
@@ -135,7 +134,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
-	jdMsg := &jdoodleMessage{
+	jdMsg := &execMessage{
 		Message: e,
 		wrapper: wrapper,
 		lang:    lang,
@@ -148,7 +147,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 	})
 }
 
-func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *discordgo.MessageReactionAdd) {
+func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *discordgo.MessageReactionAdd) {
 	if eReact.UserID == s.State.User.ID {
 		return
 	}
@@ -157,7 +156,7 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	jdMsg, ok := l.msgMap.GetValue(eReact.MessageID).(*jdoodleMessage)
+	jdMsg, ok := l.msgMap.GetValue(eReact.MessageID).(*execMessage)
 	if !ok || jdMsg == nil {
 		return
 	}
@@ -201,19 +200,24 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 			WithFooter(footer, "", "").
 			AddField("Code", fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script))
 
+		if l.execFact.Name() == "ranna" {
+			emb.WithDescription("*Code execution is provided by [ranna](https://github.com/ranna-go).*")
+		}
+
 		if result.StdOut != "" {
 			emb.AddField("StdOut", "```\n"+result.StdOut+"\n```")
 		}
-
 		if result.StdErr != "" {
 			emb.AddField("StdErr", "```\n"+result.StdErr+"\n```")
 		}
-
 		if result.CpuUsed != "" {
-			emb.AddField("CPU Time", result.CpuUsed, true)
+			emb.AddInlineField("CPU Time", result.CpuUsed)
 		}
 		if result.MemUsed != "" {
-			emb.AddField("Memory", result.MemUsed, true)
+			emb.AddInlineField("Memory", result.MemUsed)
+		}
+		if result.ExecTime != 0 {
+			emb.AddInlineField("Execution Time", result.ExecTime.Round(time.Millisecond).String())
 		}
 
 		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb.Build())
@@ -222,7 +226,7 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 	}
 }
 
-func (l *ListenerJdoodle) parseMessageContent(content string) (lang string, script string, ok bool) {
+func (l *ListenerCodeexec) parseMessageContent(content string) (lang string, script string, ok bool) {
 	spl := strings.Split(content, "```")
 	if len(spl) < 3 {
 		return
@@ -241,7 +245,7 @@ func (l *ListenerJdoodle) parseMessageContent(content string) (lang string, scri
 	return
 }
 
-func (l *ListenerJdoodle) checkLimit(userID string) bool {
+func (l *ListenerCodeexec) checkLimit(userID string) bool {
 	limiter, ok := l.limits.GetValue(userID).(*rate.Limiter)
 	if !ok || limiter == nil {
 		limiter = rate.NewLimiter(rate.Limit(limitRate), limitBurst)
@@ -251,7 +255,7 @@ func (l *ListenerJdoodle) checkLimit(userID string) bool {
 	return limiter.Allow()
 }
 
-func (l *ListenerJdoodle) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
+func (l *ListenerCodeexec) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
 	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec.exec")
 	return allowed, err
 }
