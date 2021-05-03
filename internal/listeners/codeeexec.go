@@ -34,12 +34,6 @@ const (
 var (
 	runReactionEmoji = "▶"
 
-	// langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
-	// 	"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
-	// 	"verilog", "cobol", "dart", "yabasic", "clojure", "nodejs", "scheme", "forth", "prolog", "octave", "coffeescript", "icon", "fsharp", "nasm",
-	// 	"gccasm", "intercal", "unlambda", "picolisp", "spidermonkey", "rhino", "bc", "clisp", "elixir", "factor", "falcon", "fantom", "pike", "smalltalk",
-	// 	"mozart", "lolcode", "racket", "kotlin"}
-
 	replaces = map[string]string{
 		"js":         "nodejs",
 		"javascript": "nodejs",

@@ -10,6 +10,7 @@ import (
 	"image"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -60,6 +61,7 @@ type NotifyWorker struct {
 	wentOnlineHandler  NotifyHandler
 	wentOfflineHandler NotifyHandler
 
+	mx        *sync.Mutex
 	timer     *time.Ticker
 	users     map[string]*User
 	wereLive  []*Stream
@@ -76,21 +78,22 @@ func New(
 	wentOnlineHandler NotifyHandler,
 	wentOfflineHandler NotifyHandler,
 	config ...Config,
-) (*NotifyWorker, error) {
+) (worker *NotifyWorker, err error) {
 	conf := defaultConfig(config)
 
-	worker := &NotifyWorker{
+	worker = &NotifyWorker{
 		creds:              &creds,
 		wentOfflineHandler: wentOfflineHandler,
 		wentOnlineHandler:  wentOnlineHandler,
 
+		mx:        &sync.Mutex{},
 		users:     make(map[string]*User),
 		wereLive:  make([]*Stream, 0),
 		gameCache: make(map[string]*Game),
 	}
 
-	if err := worker.getBearerToken(); err != nil {
-		return nil, err
+	if err = worker.getBearerToken(); err != nil {
+		return
 	}
 
 	if conf.TimerDelay > 0 {
@@ -104,7 +107,7 @@ func New(
 		}()
 	}
 
-	return worker, nil
+	return
 }
 
 // GetUser tries to fetch a user either by login or by ID, specified by
@@ -289,13 +292,14 @@ func (w *NotifyWorker) Handle() error {
 	for _, stream := range streams {
 		var wasOnline bool
 
-	streamIterator1:
+		w.mx.Lock()
 		for _, nd := range w.wereLive {
 			if nd.ID == stream.ID {
 				wasOnline = true
-				break streamIterator1
+				break
 			}
 		}
+		w.mx.Unlock()
 
 		if wasOnline {
 			continue
@@ -316,14 +320,15 @@ func (w *NotifyWorker) Handle() error {
 
 	// Execute wentOfflineHandler for each stream which was
 	// online in the request before and is now offline.
+	w.mx.Lock()
+	defer w.mx.Unlock()
 	for _, nd := range w.wereLive {
 		var stillOnline bool
 
-	streamIterator2:
 		for _, stream := range streams {
 			if stream.ID == nd.ID {
 				stillOnline = true
-				break streamIterator2
+				break
 			}
 		}
 

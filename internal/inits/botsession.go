@@ -2,6 +2,7 @@ package inits
 
 import (
 	"strings"
+	"sync/atomic"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -73,7 +74,7 @@ func InitDiscordBotSession(container di.Container) {
 	session.AddHandler(listenerStarboard.ListenerReactionRemove)
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
-		util.StatsMessagesAnalysed++
+		atomic.AddUint64(&util.StatsMessagesAnalysed, 1)
 	})
 
 	if cfg.Metrics != nil && cfg.Metrics.Enable {

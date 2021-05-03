@@ -147,11 +147,11 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 
 	matches := make([]string, 0)
 
-	m.Content = strings.ReplaceAll(m.Content, "\n", " ")
+	content := strings.ReplaceAll(m.Content, "\n", " ")
 
 	// Find color hex in message content using
 	// predefined regex.
-	for _, v := range strings.Split(m.Content, " ") {
+	for _, v := range strings.Split(content, " ") {
 		if rxColorHex.MatchString(v) {
 			matches = appendIfUnique(matches, v)
 		}

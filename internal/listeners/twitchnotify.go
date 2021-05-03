@@ -1,6 +1,8 @@
 package listeners
 
 import (
+	"sync"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -11,9 +13,11 @@ import (
 )
 
 type ListenerTwitchNotify struct {
-	config    *config.Config
-	db        database.Database
-	session   *discordgo.Session
+	config  *config.Config
+	db      database.Database
+	session *discordgo.Session
+
+	mx        *sync.RWMutex
 	notMsgIDs map[string][]*discordgo.Message
 }
 
@@ -22,6 +26,7 @@ func NewListenerTwitchNotify(container di.Container) *ListenerTwitchNotify {
 		config:    container.Get(static.DiConfig).(*config.Config),
 		db:        container.Get(static.DiDatabase).(database.Database),
 		session:   container.Get(static.DiDiscordSession).(*discordgo.Session),
+		mx:        &sync.RWMutex{},
 		notMsgIDs: make(map[string][]*discordgo.Message),
 	}
 }
@@ -31,6 +36,8 @@ func (l *ListenerTwitchNotify) TearDown() {
 		return
 	}
 
+	l.mx.RLock()
+	defer l.mx.RUnlock()
 	for _, msgs := range l.notMsgIDs {
 		for _, msg := range msgs {
 			l.session.ChannelMessageDelete(msg.ChannelID, msg.ID)
@@ -61,8 +68,10 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 		}
 		msgs = append(msgs, msg)
 	}
-	l.notMsgIDs[d.ID] = msgs
 
+	l.mx.Lock()
+	defer l.mx.Unlock()
+	l.notMsgIDs[d.ID] = msgs
 }
 
 func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.Stream, u *twitchnotify.User) {
@@ -70,6 +79,8 @@ func (l *ListenerTwitchNotify) HandlerWentOffline(d *twitchnotify.Stream, u *twi
 		return
 	}
 
+	l.mx.RLock()
+	defer l.mx.RUnlock()
 	if msgs, ok := l.notMsgIDs[d.ID]; ok {
 		for _, msg := range msgs {
 			l.session.ChannelMessageDelete(msg.ChannelID, msg.ID)

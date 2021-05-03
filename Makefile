@@ -72,7 +72,7 @@ $(BIN):
 
 PHONY += test
 test:
-	$(GO) test -v -cover ./...
+	$(GO) test -race -v -cover ./...
 
 PHONY += lint
 lint:
@@ -80,7 +80,7 @@ lint:
 
 PHONY += run
 run:
-	$(GO) run -v \
+	$(GO) run -race -v \
 		$(CURDIR)/cmd/$(APPNAME)/*.go \
 			-c $(CONFIG) -quiet
 

@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -15,7 +16,7 @@ import (
 type ListenerBotMention struct {
 	config *config.Config
 
-	idLen int
+	idLen int32
 }
 
 func NewListenerBotMention(container di.Container) *ListenerBotMention {
@@ -26,11 +27,11 @@ func NewListenerBotMention(container di.Container) *ListenerBotMention {
 }
 
 func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.MessageCreate) {
-	if l.idLen == 0 {
-		l.idLen = len(s.State.User.ID)
+	if atomic.LoadInt32(&l.idLen) == 0 {
+		atomic.StoreInt32(&l.idLen, int32(len(s.State.User.ID)))
 	}
 
-	cLen := len(e.Message.Content)
+	cLen := int32(len(e.Message.Content))
 	if cLen < 3+l.idLen ||
 		cLen > 5+l.idLen ||
 		e.Message.Content[0] != '<' ||
@@ -44,7 +45,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		cursor = 3
 	}
 
-	id := e.Message.Content[cursor : cursor+l.idLen]
+	id := e.Message.Content[cursor : int32(cursor)+l.idLen]
 	if id != s.State.User.ID {
 		return
 	}
