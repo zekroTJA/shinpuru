@@ -268,6 +268,14 @@ func main() {
 		},
 	})
 
+	// Initialize code execution factroy
+	diBuilder.Add(di.Def{
+		Name: static.DiCodeExecFactory,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitCodeExec(ctn), nil
+		},
+	})
+
 	// Build dependency injection container
 	ctn := diBuilder.Build()
 

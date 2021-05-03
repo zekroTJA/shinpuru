@@ -10,11 +10,12 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/jdoodle"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -50,8 +51,9 @@ var (
 )
 
 type ListenerJdoodle struct {
-	db  database.Database
-	pmw *middleware.PermissionsMiddleware
+	db       database.Database
+	execFact codeexec.Factory
+	pmw      *middleware.PermissionsMiddleware
 
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
@@ -60,7 +62,7 @@ type ListenerJdoodle struct {
 type jdoodleMessage struct {
 	*discordgo.Message
 
-	wrapper *jdoodle.Wrapper
+	wrapper codeexec.Executor
 	lang    string
 	script  string
 
@@ -69,10 +71,11 @@ type jdoodleMessage struct {
 
 func NewListenerJdoodle(container di.Container) *ListenerJdoodle {
 	return &ListenerJdoodle{
-		db:     container.Get(static.DiDatabase).(database.Database),
-		pmw:    container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
-		limits: timedmap.New(limitTMCleanupInterval),
-		msgMap: timedmap.New(removeHandlerCleanupInterval),
+		db:       container.Get(static.DiDatabase).(database.Database),
+		pmw:      container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
+		execFact: container.Get(static.DiCodeExecFactory).(codeexec.Factory),
+		limits:   timedmap.New(limitTMCleanupInterval),
+		msgMap:   timedmap.New(removeHandlerCleanupInterval),
 	}
 }
 
@@ -116,13 +119,8 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
-	jdCreds, err := l.db.GetGuildJdoodleKey(e.GuildID)
-	if err != nil || jdCreds == "" {
-		return
-	}
-
-	jdCredsSplit := strings.Split(jdCreds, "#")
-	if len(jdCredsSplit) < 2 {
+	wrapper, err := l.execFact.NewExecutor(e.GuildID)
+	if err != nil || wrapper == nil {
 		return
 	}
 
@@ -133,7 +131,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	jdMsg := &jdoodleMessage{
 		Message: e,
-		wrapper: jdoodle.NewWrapper(jdCredsSplit[0], jdCredsSplit[1]),
+		wrapper: wrapper,
 		lang:    lang,
 		script:  cont,
 		embLang: embLang,
@@ -171,7 +169,10 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	result, err := jdMsg.wrapper.ExecuteScript(jdMsg.lang, jdMsg.script)
+	result, err := jdMsg.wrapper.Exec(codeexec.Payload{
+		Language: jdMsg.lang,
+		Code:     jdMsg.script,
+	})
 
 	if err != nil {
 		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, &discordgo.MessageEmbed{
@@ -183,39 +184,33 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 	} else {
 		executor, _ := s.GuildMember(eReact.GuildID, eReact.UserID)
 
-		emb := &discordgo.MessageEmbed{
-			Color: static.ColorEmbedCyan,
-			Title: "Compilation Result",
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name:  "Code",
-					Value: fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script),
-				},
-				{
-					Name:  "Output",
-					Value: "```\n" + result.Output + "\n```",
-				},
-				{
-					Name:   "CPU Time",
-					Value:  result.CPUTime + " Seconds",
-					Inline: true,
-				},
-				{
-					Name:   "Memory",
-					Value:  result.Memory + " Byte",
-					Inline: true,
-				},
-			},
-			Footer: &discordgo.MessageEmbedFooter{
-				Text: strings.ToUpper(jdMsg.lang),
-			},
-		}
-
+		footer := strings.ToUpper(jdMsg.lang)
 		if executor != nil {
-			emb.Footer.Text += " | Executed by " + executor.User.String()
+			footer += " | Executed by " + executor.User.String()
 		}
 
-		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb)
+		emb := embedbuilder.New().
+			WithColor(static.ColorEmbedCyan).
+			WithTitle("Compilation Result").
+			WithFooter(footer, "", "").
+			AddField("Code", fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script))
+
+		if result.StdOut != "" {
+			emb.AddField("StdOut", "```\n"+result.StdOut+"\n```")
+		}
+
+		if result.StdErr != "" {
+			emb.AddField("StdErr", "```\n"+result.StdErr+"\n```")
+		}
+
+		if result.CpuUsed != "" {
+			emb.AddField("CPU Time", result.CpuUsed, true)
+		}
+		if result.MemUsed != "" {
+			emb.AddField("Memory", result.MemUsed, true)
+		}
+
+		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb.Build())
 
 		l.msgMap.Remove(jdMsg.ID)
 	}
