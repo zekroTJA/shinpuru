@@ -34,11 +34,11 @@ const (
 var (
 	runReactionEmoji = "▶"
 
-	langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
-		"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
-		"verilog", "cobol", "dart", "yabasic", "clojure", "nodejs", "scheme", "forth", "prolog", "octave", "coffeescript", "icon", "fsharp", "nasm",
-		"gccasm", "intercal", "unlambda", "picolisp", "spidermonkey", "rhino", "bc", "clisp", "elixir", "factor", "falcon", "fantom", "pike", "smalltalk",
-		"mozart", "lolcode", "racket", "kotlin"}
+	// langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
+	// 	"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
+	// 	"verilog", "cobol", "dart", "yabasic", "clojure", "nodejs", "scheme", "forth", "prolog", "octave", "coffeescript", "icon", "fsharp", "nasm",
+	// 	"gccasm", "intercal", "unlambda", "picolisp", "spidermonkey", "rhino", "bc", "clisp", "elixir", "factor", "falcon", "fantom", "pike", "smalltalk",
+	// 	"mozart", "lolcode", "racket", "kotlin"}
 
 	replaces = map[string]string{
 		"js":         "nodejs",
@@ -55,6 +55,7 @@ type ListenerJdoodle struct {
 	execFact codeexec.Factory
 	pmw      *middleware.PermissionsMiddleware
 
+	langs  []string
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
 }
@@ -69,14 +70,17 @@ type jdoodleMessage struct {
 	embLang string
 }
 
-func NewListenerJdoodle(container di.Container) *ListenerJdoodle {
-	return &ListenerJdoodle{
-		db:       container.Get(static.DiDatabase).(database.Database),
-		pmw:      container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
-		execFact: container.Get(static.DiCodeExecFactory).(codeexec.Factory),
-		limits:   timedmap.New(limitTMCleanupInterval),
-		msgMap:   timedmap.New(removeHandlerCleanupInterval),
-	}
+func NewListenerJdoodle(container di.Container) (l *ListenerJdoodle) {
+	l = &ListenerJdoodle{}
+
+	l.db = container.Get(static.DiDatabase).(database.Database)
+	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
+	l.langs = l.execFact.Languages()
+	l.limits = timedmap.New(limitTMCleanupInterval)
+	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
+
+	return
 }
 
 func (l *ListenerJdoodle) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
@@ -109,8 +113,8 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 	}
 
 	var isValidLang bool
-	for _, l := range langs {
-		if lang == l {
+	for _, lng := range l.langs {
+		if lang == lng {
 			isValidLang = true
 		}
 	}
