@@ -9,6 +9,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
@@ -36,8 +37,9 @@ const (
 
 type ListenerKarma struct {
 	db    database.Database
-	cache *timedmap.TimedMap
+	karma *karma.Service
 
+	cache       *timedmap.TimedMap
 	msgsApplied timedmap.Section
 	limiters    timedmap.Section
 }
@@ -46,6 +48,8 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 	cache := timedmap.New(5 * time.Minute)
 	return &ListenerKarma{
 		db:    container.Get(static.DiDatabase).(database.Database),
+		karma: container.Get(static.DiKarma).(*karma.Service),
+
 		cache: cache,
 
 		// save the pointers to the sections on instance
@@ -62,7 +66,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	}
 
 	// Get karma enabled state for this guild
-	if enabled, err := l.db.GetKarmaState(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+	if enabled, err := l.karma.GetState(e.GuildID); err != nil {
 		util.Log.Errorf("failed getting karma state (gid %s): %s", e.GuildID, err.Error())
 		return
 	} else if !enabled {
@@ -93,7 +97,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	}
 
 	// Check if the executing user is karma blocklisted
-	isBlacklisted, err := l.db.IsKarmaBlockListed(e.GuildID, e.UserID)
+	isBlacklisted, err := l.karma.IsBlockListed(e.GuildID, e.UserID)
 	if err != nil {
 		util.Log.Errorf("failed checking blocklist %s: %s", e.UserID, err.Error())
 		return
@@ -142,20 +146,9 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		return
 	}
 
-	// Check if the target user is karma blocklisted
-	isBlacklisted, err = l.db.IsKarmaBlockListed(e.GuildID, msg.Author.ID)
+	err = l.karma.Update(e.GuildID, msg.Author.ID, typ)
 	if err != nil {
-		util.Log.Errorf("failed checking blocklist %s: %s", e.UserID, err.Error())
-		return
-	}
-	if isBlacklisted {
-		return
-	}
-
-	// Update the karma in the database of the specified
-	// user on the specified guild
-	if err = l.db.UpdateKarma(msg.Author.ID, e.GuildID, typ); err != nil {
-		util.Log.Errorf("failed updating karma: %s", err.Error())
+		util.Log.Errorf("failed altering karma value (user %s): %s", e.UserID, err.Error())
 		return
 	}
 

@@ -23,4 +23,5 @@ const (
 	DiAuthAPITokenHandler       = "authapitokenhandler"
 	DiAuthMiddleware            = "authmiddleware"
 	DiCodeExecFactory           = "codeexecfactory"
+	DiKarma                     = "karmaservice"
 )

@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
@@ -273,6 +274,14 @@ func main() {
 		Name: static.DiCodeExecFactory,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return inits.InitCodeExec(ctn), nil
+		},
+	})
+
+	// Initialize karma service
+	diBuilder.Add(di.Def{
+		Name: static.DiKarma,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return karma.NewKarmaService(ctn), nil
 		},
 	})
 

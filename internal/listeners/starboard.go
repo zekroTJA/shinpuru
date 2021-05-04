@@ -13,10 +13,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/karma"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
@@ -32,8 +32,9 @@ var (
 type ListenerStarboard struct {
 	publicAddr string
 
-	db database.Database
-	st storage.Storage
+	db    database.Database
+	st    storage.Storage
+	karma *karma.Service
 }
 
 func NewListenerStarboard(container di.Container) *ListenerStarboard {
@@ -46,6 +47,7 @@ func NewListenerStarboard(container di.Container) *ListenerStarboard {
 	return &ListenerStarboard{
 		db:         container.Get(static.DiDatabase).(database.Database),
 		st:         container.Get(static.DiObjectStorage).(storage.Storage),
+		karma:      container.Get(static.DiKarma).(*karma.Service),
 		publicAddr: publicAddr,
 	}
 }
@@ -185,7 +187,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	if giveKarma {
-		if _, err = karma.Alter(l.db, e.GuildID, msg.Author, starboardConfig.KarmaGain); err != nil {
+		if _, err = l.karma.CheckAndUpdate(e.GuildID, msg.Author, starboardConfig.KarmaGain); err != nil {
 			util.Log.Errorf("STARBOARD :: failed updating karma: %s", err.Error())
 		}
 	}
