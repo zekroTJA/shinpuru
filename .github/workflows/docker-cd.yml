@@ -46,10 +46,11 @@ jobs:
         run: |
           echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
           echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    
+
       - name: Build & Push
         uses: docker/build-push-action@v2
         with:
+          context: ./
           push: true
           no-cache: true
           tags: |
