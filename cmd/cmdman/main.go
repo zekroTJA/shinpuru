@@ -12,6 +12,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
@@ -64,7 +65,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			database := obj.(database.Database)
-			util.Log.Info("Shutting down database connection...")
+			logrus.Info("Shutting down database connection...")
 			database.Close()
 			return nil
 		},
@@ -85,9 +86,9 @@ func main() {
 
 	cmdHandler := ctn.Get(static.DiCommandHandler).(shireikan.Handler)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
-		util.Log.Fatal("Failed exporting command manual: ", err)
+		logrus.WithError(err).Fatal("Failed exporting command manual")
 	}
-	util.Log.Info("Successfully exported command manual file to " + *flagExportFile)
+	logrus.Info("Successfully exported command manual file to " + *flagExportFile)
 }
 
 // exportCommandManual generates a markdown text file

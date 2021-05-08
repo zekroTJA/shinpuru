@@ -38,6 +38,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/sarulabs/di/v2 v2.4.2
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/valyala/fasthttp v1.23.0
@@ -49,7 +50,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
-	golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7
+	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

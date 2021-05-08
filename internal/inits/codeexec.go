@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -22,7 +22,7 @@ func InitCodeExec(container di.Container) codeexec.Factory {
 	case "ranna":
 		exec, err := codeexec.NewRannaFactory(container)
 		if err != nil {
-			util.Log.Fatal("failed setting up ranna factroy: ", err)
+			logrus.WithError(err).Fatal("failed setting up ranna factroy")
 		}
 		return exec
 

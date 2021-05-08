@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/util"
 )
 
@@ -32,7 +33,7 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 		return
 	}
 	for i := mig.Version + 1; i < len(migrationFuncs); i++ {
-		util.Log.Infof("Database: Applying migration version %d...", i)
+		logrus.WithField("version", i).Info("DATABASE :: applying migration")
 		if err = migrationFuncs[i](tx); err != nil {
 			return
 		}

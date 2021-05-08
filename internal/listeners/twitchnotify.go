@@ -5,9 +5,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -52,7 +52,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 
 	nots, err := l.db.GetAllTwitchNotifies(u.ID)
 	if err != nil {
-		util.Log.Error("Faield getting Twitch notify entries from database: ", err)
+		logrus.WithError(err).Fatal("Faield getting Twitch notify entries from database")
 		return
 	}
 
@@ -62,7 +62,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 		msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
 		if err != nil {
 			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
-				util.Log.Error("Failed removing Twitch notify entry from database: ", err)
+				logrus.WithError(err).Fatal("Failed removing Twitch notify entry from database")
 			}
 			return
 		}

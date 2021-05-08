@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
@@ -79,7 +79,7 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 	gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 	if err != nil {
 		if !database.IsErrDatabaseNotFound(err) {
-			util.Log.Errorf("failed getting ghost ping msg for guild %s: %s\n", deletedMsg.GuildID, err.Error())
+			logrus.WithError(err).WithField("gid", deletedMsg.GuildID).Error("failed getting ghost ping msg")
 		}
 		return
 	}

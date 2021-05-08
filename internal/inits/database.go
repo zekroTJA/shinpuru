@@ -4,12 +4,12 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/services/database/redis"
 	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -30,32 +30,32 @@ func InitDatabase(container di.Container) database.Database {
 	}
 
 	if m, ok := db.(database.Migration); ok {
-		util.Log.Info("Checking database for migrations and apply if needed...")
+		logrus.Info("Checking database for migrations and apply if needed...")
 		if err = m.Migrate(); err != nil {
-			util.Log.Fatal("Database migration failed:", err)
+			logrus.WithError(err).Fatal("Database migration failed")
 		}
 	} else {
-		util.Log.Warning("Skip database migration: middleware does not support migrations")
+		logrus.Warning("Skip database migration: middleware does not support migrations")
 	}
 
 	if cfg.Database.Redis != nil && cfg.Database.Redis.Enable {
 		db = redis.NewRedisMiddleware(cfg.Database.Redis, db)
-		util.Log.Info("Enabled redis as database cache")
+		logrus.Info("Enabled redis as database cache")
 	}
 
 	if err != nil {
-		util.Log.Fatal("Failed connecting to database:", err)
+		logrus.WithError(err).Fatal("Failed connecting to database")
 	}
-	util.Log.Info("Connected to database")
+	logrus.Info("Connected to database")
 
 	return db
 }
 
 func printSqliteWraning() {
-	util.Log.Warning("--------------------------[ ATTENTION ]--------------------------")
-	util.Log.Warning("You are currently using SQLite as database driver. Please ONLY   ")
-	util.Log.Warning("use SQLite during testing and debugging and NEVER use SQLite in a")
-	util.Log.Warning("real production environment! Here you can read about why:        ")
-	util.Log.Warning("https://github.com/zekroTJA/shinpuru/wiki/No-SQLite-in-production")
-	util.Log.Warning("-----------------------------------------------------------------")
+	logrus.Warning("\n\n--------------------------[ ATTENTION ]--------------------------" +
+		"You are currently using SQLite as database driver. Please ONLY   " +
+		"use SQLite during testing and debugging and NEVER use SQLite in a" +
+		"real production environment! Here you can read about why:        " +
+		"https://github.com/zekroTJA/shinpuru/wiki/No-SQLite-in-production" +
+		"-----------------------------------------------------------------\n\n")
 }

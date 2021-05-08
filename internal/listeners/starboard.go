@@ -10,12 +10,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -59,7 +59,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 
 	member, err := discordutil.GetMember(s, e.GuildID, e.UserID)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting user: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting user")
 		return
 	}
 
@@ -72,7 +72,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting guild config: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting guild config")
 		return
 	}
 	if starboardConfig.ChannelID == "" {
@@ -87,20 +87,20 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	if err != nil {
 		starboardConfig.ChannelID = ""
 		if err = l.db.SetStarboardConfig(starboardConfig); err != nil {
-			util.Log.Errorf("STARBOARD :: failed disabling starboard: %s", err.Error())
+			logrus.WithError(err).Fatal("STARBOARD :: failed disabling starboard")
 			return
 		}
 	}
 
 	msgChannel, err := discordutil.GetChannel(s, e.ChannelID)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting message channel: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting message channel")
 		return
 	}
 
 	msg, err := discordutil.GetMessage(s, e.ChannelID, e.MessageID)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting message: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting message")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 
 	starboardEntry, err := l.db.GetStarboardEntry(msg.ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("STARBOARD :: failed getting starboard entry: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting starboard entry")
 		return
 	}
 
@@ -139,7 +139,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 					}
 					newAttachment.URL, err = l.blurImage(attachment.URL)
 					if err != nil {
-						util.Log.Errorf("STARBOARD :: failed bluring image: %s", err.Error())
+						logrus.WithError(err).Fatal("STARBOARD :: failed bluring image")
 						continue
 					}
 					newAttachments[i] = newAttachment
@@ -151,7 +151,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 
 		sbMsg, err := s.ChannelMessageSendEmbed(starboardConfig.ChannelID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
-			util.Log.Errorf("STARBOARD :: failed sending starboard message: %s", err.Error())
+			logrus.WithError(err).Fatal("STARBOARD :: failed sending starboard message")
 			return
 		}
 
@@ -173,7 +173,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	} else {
 		_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
 		if err != nil {
-			util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
+			logrus.WithError(err).Fatal("STARBOARD :: failed updating starboard message")
 			return
 		}
 
@@ -182,13 +182,13 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 
 	err = l.db.SetStarboardEntry(starboardEntry)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed setting starboard entry: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed setting starboard entry")
 		return
 	}
 
 	if giveKarma {
 		if _, err = l.karma.CheckAndUpdate(e.GuildID, msg.Author, starboardConfig.KarmaGain); err != nil {
-			util.Log.Errorf("STARBOARD :: failed updating karma: %s", err.Error())
+			logrus.WithError(err).Fatal("STARBOARD :: failed updating karma")
 		}
 	}
 }
@@ -200,7 +200,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 
 	member, err := discordutil.GetMember(s, e.GuildID, e.UserID)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting user: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting user")
 		return
 	}
 
@@ -213,7 +213,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 		return
 	}
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting guild config: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting guild config")
 		return
 	}
 	if starboardConfig.ChannelID == "" {
@@ -226,13 +226,13 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 
 	msg, err := discordutil.GetMessage(s, e.ChannelID, e.MessageID)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed getting message: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting message")
 		return
 	}
 
 	starboardEntry, err := l.db.GetStarboardEntry(msg.ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("STARBOARD :: failed getting entry: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting entry")
 		return
 	}
 
@@ -243,12 +243,12 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 		if !ok {
 			starboardEntry.Deleted = true
 			if err = s.ChannelMessageDelete(starboardConfig.ChannelID, starboardEntry.StarboardID); err != nil {
-				util.Log.Errorf("STARBOARD :: failed removing starboard message: %s", err.Error())
+				logrus.WithError(err).Fatal("STARBOARD :: failed removing starboard message")
 			}
 		} else {
 			_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
 			if err != nil {
-				util.Log.Errorf("STARBOARD :: failed updating starboard message: %s", err.Error())
+				logrus.WithError(err).Fatal("STARBOARD :: failed updating starboard message")
 			}
 		}
 
@@ -257,7 +257,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 
 	err = l.db.SetStarboardEntry(starboardEntry)
 	if err != nil {
-		util.Log.Errorf("STARBOARD :: failed setting entry: %s", err.Error())
+		logrus.WithError(err).Fatal("STARBOARD :: failed setting entry")
 		return
 	}
 }

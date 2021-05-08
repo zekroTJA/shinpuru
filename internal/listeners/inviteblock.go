@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
@@ -53,7 +53,7 @@ func (l *ListenerInviteBlock) invokeCheck(s *discordgo.Session, msg *discordgo.M
 	if link != "" {
 		ok, matches, err := l.followLink(link)
 		if err != nil {
-			util.Log.Error("Failed following link: ", err)
+			logrus.WithError(err).Fatal("Failed following link")
 			return
 		}
 		if ok {
@@ -105,7 +105,7 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 			}
 		}
 	} else {
-		util.Log.Error(err)
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("failed getting guild invites")
 	}
 
 	return s.ChannelMessageDelete(e.ChannelID, e.ID)

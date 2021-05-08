@@ -82,12 +82,12 @@ PHONY += run
 run:
 	$(GO) run -race -v \
 		$(CURDIR)/cmd/$(APPNAME)/*.go \
-			-c $(CONFIG) -quiet
+			-c $(CONFIG) -quiet -forcecolor
 
 PHONY += rundev
 rundev:
-	$(GO) run -v \
-		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG)
+	$(GO) run -v -race \
+		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG) -quiet -forcecolor
 
 PHONY += cleanup
 cleanup:

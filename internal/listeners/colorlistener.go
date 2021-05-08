@@ -10,11 +10,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/colorname"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/timedmap"
@@ -134,7 +134,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		},
 	})
 	if err != nil {
-		util.Log.Error("[ColorListener] could not send embed message:", err)
+		logrus.WithError(err).Fatal("[ColorListener] could not send embed message")
 	}
 
 	l.emojiCache.Remove(cacheKey)
@@ -161,7 +161,7 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 	// and return when disabled
 	active, err := l.db.GetGuildColorReaction(m.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Error("[ColorListener] could not get setting from database:", err)
+		logrus.WithError(err).Fatal("[ColorListener] could not get setting from database")
 		return
 	}
 	if !active {
@@ -182,7 +182,7 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 
 	if removeReactions {
 		if err := s.MessageReactionsRemoveAll(m.ChannelID, m.ID); err != nil {
-			util.Log.Error("[ColorListener] could not remove previous color reactions:", err)
+			logrus.WithError(err).Fatal("[ColorListener] could not remove previous color reactions")
 		}
 	}
 
@@ -202,7 +202,7 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// Parse hex color code to color.RGBA object
 	clr, err := colors.FromHex(hexClr)
 	if err != nil {
-		util.Log.Error("[ColorListener] failed parsing color code:", err)
+		logrus.WithError(err).Fatal("[ColorListener] failed parsing color code")
 		return
 	}
 
@@ -210,7 +210,7 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// rendered as PNG into a buffer
 	buff, err := colors.CreateImage(clr, 24, 24)
 	if err != nil {
-		util.Log.Error("[ColorListener] failed generating image data:", err)
+		logrus.WithError(err).Fatal("[ColorListener] failed generating image data")
 		return
 	}
 
@@ -223,7 +223,7 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// Upload guild emote
 	emoji, err := s.GuildEmojiCreate(m.GuildID, hexClr, dataUri, nil)
 	if err != nil {
-		util.Log.Error("[ColorListener] failed uploading emoji:", err)
+		logrus.WithError(err).Fatal("[ColorListener] failed uploading emoji")
 		return
 	}
 
@@ -232,14 +232,14 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	// time to save the emoji.
 	defer time.AfterFunc(5*time.Second, func() {
 		if err = s.GuildEmojiDelete(m.GuildID, emoji.ID); err != nil {
-			util.Log.Error("[ColorListener] failed deleting emoji:", err)
+			logrus.WithError(err).Fatal("[ColorListener] failed deleting emoji")
 		}
 	})
 
 	// Add reaction of the uploaded emote to the message
 	err = s.MessageReactionAdd(m.ChannelID, m.ID, emoji.APIName())
 	if err != nil {
-		util.Log.Error("[ColorListener] failed creating message reaction:", err)
+		logrus.WithError(err).Fatal("[ColorListener] failed creating message reaction")
 		return
 	}
 

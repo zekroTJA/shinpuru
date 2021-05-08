@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -24,10 +24,10 @@ func InitStorage(container di.Container) storage.Storage {
 	}
 
 	if err = st.Connect(cfg); err != nil {
-		util.Log.Fatal("Failed connecting to storage device:", err)
+		logrus.WithError(err).Fatal("Failed connecting to storage device")
 	}
 
-	util.Log.Info("Connected to storage device")
+	logrus.Info("Connected to storage device")
 
 	return st
 }

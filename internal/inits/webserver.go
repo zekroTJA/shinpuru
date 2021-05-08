@@ -1,12 +1,10 @@
 package inits
 
 import (
-	"fmt"
-
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/mimefix"
 )
@@ -18,26 +16,29 @@ func InitWebServer(container di.Container) (ws *webserver.WebServer) {
 	if cfg.WebServer != nil && cfg.WebServer.Enabled {
 		curr, ok := mimefix.Check()
 		if !ok {
-			util.Log.Infof("Mime check of .js returned invalid mime value '%s', trying to fix this now...", curr)
+			logrus.Infof("Mime check of .js returned invalid mime value '%s', trying to fix this now ...", curr)
 			if err := mimefix.Fix(); err != nil {
-				util.Log.Errorf("Fixing .js mime value failed (maybe run as admin to fix this): %s", err.Error())
-				util.Log.Warning("Mime value of .js was not fixed. This may lead to erroneous behaviour of the web server")
+				logrus.WithError(err).Error("Fixing .js mime value failed (maybe run as admin to fix this)")
+				logrus.Warning("Mime value of .js was not fixed. This may lead to erroneous behaviour of the web server")
 			} else {
-				util.Log.Info("Successfully fixed .js mime value")
+				logrus.Info("Successfully fixed .js mime value")
 			}
 		}
 
 		ws, err := webserver.New(container)
 		if err != nil {
-			util.Log.Fatalf(fmt.Sprintf("Failed initializing web server: %s", err.Error()))
+			logrus.WithError(err).Fatal("Failed initializing web server")
 		}
 
 		go func() {
 			if err = ws.ListenAndServeBlocking(); err != nil {
-				util.Log.Fatalf("Failed starting up web server: %s", err.Error())
+				logrus.WithError(err).Fatal("Failed starting up web server")
 			}
 		}()
-		util.Log.Info(fmt.Sprintf("Web server running on address %s (%s)...", cfg.WebServer.Addr, cfg.WebServer.PublicAddr))
+		logrus.WithFields(logrus.Fields{
+			"bindAddr":   cfg.WebServer.Addr,
+			"publicAddr": cfg.WebServer.PublicAddr,
+		}).Info("Web server running")
 	}
 	return
 }

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
-	"github.com/zekroTJA/shinpuru/internal/util"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -163,7 +163,7 @@ func (m *SqliteMiddleware) setup() {
 	mErr.Append(err)
 
 	if mErr.Len() > 0 {
-		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
+		logrus.WithError(mErr).Fatal("Failed database setup")
 	}
 }
 

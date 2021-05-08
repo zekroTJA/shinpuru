@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
@@ -98,7 +99,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 
-	util.Log.Infof("%d commands registered", len(cmdHandler.GetCommandInstances()))
+	logrus.WithField("n", len(cmdHandler.GetCommandInstances())).Info("Commands registered")
 
 	cmdHandler.Setup(session)
 
