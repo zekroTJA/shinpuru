@@ -22,5 +22,5 @@ COMMIT=$(git rev-parse HEAD)
 
 populate "$FILE_LOCATION/AppVersion.txt" $VERSION
 populate "$FILE_LOCATION/AppCommit.txt" $COMMIT
-populate "$FILE_LOCATION/AppDate.txt" "$(TZ='UTC' date) UTC"
+populate "$FILE_LOCATION/AppDate.txt" $(date +%s)
 populate "$FILE_LOCATION/Release.txt" "true"
