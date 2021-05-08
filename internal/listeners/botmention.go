@@ -9,6 +9,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
@@ -54,7 +55,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 	emb := embedbuilder.New().
 		WithColor(static.ColorEmbedDefault).
 		WithThumbnail(s.State.User.AvatarURL("64x64"), "", 64, 64).
-		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", util.AppVersion, util.AppCommit[:6])).
+		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", embedded.AppVersion, embedded.AppCommit[:6])).
 		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", time.Now().Year()), "", "").
 		AddField("Help", fmt.Sprintf(
 			"Type `%shelp` in the chat to get a list of available commands.\n"+

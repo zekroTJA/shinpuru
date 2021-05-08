@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
 
 type migrationFunc func(*sql.Tx) error
@@ -61,7 +61,7 @@ func putMigrationVersion(tx *sql.Tx, i int) (err error) {
 	_, err = tx.Exec(
 		`INSERT INTO migrations (version, applied, releaseTag, releaseCommit)
 		VALUES (?, ?, ?, ?)`,
-		i, time.Now(), util.AppVersion, util.AppCommit)
+		i, time.Now(), embedded.AppVersion, embedded.AppCommit)
 	return
 }
 

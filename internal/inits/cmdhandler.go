@@ -11,7 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
@@ -95,7 +95,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterCommand(&commands.CmdLogin{})
 	cmdHandler.RegisterCommand(&commands.CmdStarboard{})
 
-	if util.Release != "TRUE" {
+	if !embedded.IsRelease() {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 

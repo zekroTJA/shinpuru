@@ -18,7 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
@@ -45,7 +45,7 @@ func main() {
 	// Setting Release flag to true manually to prevent
 	// registration of test command and exclude it in the
 	// command manual.
-	util.Release = "TRUE"
+	embedded.Release = "TRUE"
 
 	diBuilder, _ := di.NewBuilder()
 

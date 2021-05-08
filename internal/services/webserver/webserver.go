@@ -14,7 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	v1 "github.com/zekroTJA/shinpuru/internal/services/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/limiter"
 )
@@ -42,12 +42,12 @@ func New(container di.Container) (ws *WebServer, err error) {
 
 	ws.app = fiber.New(fiber.Config{
 		ErrorHandler:          ws.errorHandler,
-		ServerHeader:          fmt.Sprintf("shinpuru v%s", util.AppVersion),
-		DisableStartupMessage: util.IsRelease(),
+		ServerHeader:          fmt.Sprintf("shinpuru v%s", embedded.AppVersion),
+		DisableStartupMessage: embedded.IsRelease(),
 		ProxyHeader:           "X-Forwarded-For",
 	})
 
-	if !util.IsRelease() {
+	if !embedded.IsRelease() {
 		ws.app.Use(cors.New(cors.Config{
 			AllowOrigins:     ws.cfg.WebServer.DebugPublicAddr,
 			AllowHeaders:     "authorization, content-type, set-cookie, cookie, server",

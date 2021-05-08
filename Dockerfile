@@ -10,12 +10,7 @@ COPY . .
 # Get go packages
 RUN go mod tidy
 # Build shinpuru backend
-RUN go build -o ./bin/shinpuru -ldflags "\
-		-X github.com/zekroTJA/shinpuru/internal/util.AppVersion=$(sh ./scripts/semver.sh) \
-		-X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$(git rev-parse HEAD) \
-		-X github.com/zekroTJA/shinpuru/internal/util.AppDate=$(date +%s) \
-        -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
-        ./cmd/shinpuru/main.go
+RUN go build -o ./bin/shinpuru ./cmd/shinpuru/main.go
 # Build web assets
 WORKDIR /build/web
 RUN npm ci \

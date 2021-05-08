@@ -23,6 +23,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
@@ -242,7 +243,7 @@ func main() {
 		Name: static.DiOneTimeAuth,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return onetimeauth.NewJwt(&onetimeauth.JwtOptions{
-				Issuer: "shinpuru v." + util.AppVersion,
+				Issuer: "shinpuru v." + embedded.AppVersion,
 			})
 		},
 	})
@@ -345,7 +346,7 @@ func main() {
 }
 
 func setupDevMode() {
-	if util.IsRelease() {
+	if embedded.IsRelease() {
 		logrus.Fatal("development mode is not available in production builds")
 	}
 

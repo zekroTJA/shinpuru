@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -51,7 +51,7 @@ func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid str
 		Path:     "/",
 		Expires:  expires,
 		HTTPOnly: true,
-		Secure:   util.IsRelease(),
+		Secure:   embedded.IsRelease(),
 	})
 
 	return ctx.Redirect("/", fiber.StatusTemporaryRedirect)

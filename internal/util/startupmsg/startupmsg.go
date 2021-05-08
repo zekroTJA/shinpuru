@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
 
 //go:embed template.txt
@@ -26,9 +26,9 @@ func getInformation() information {
 		Appname: "shinpuru",
 		Copyright: fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)",
 			time.Now().Year()),
-		Version: util.AppVersion,
-		Commit:  util.AppCommit,
-		Release: util.IsRelease(),
+		Version: embedded.AppVersion,
+		Commit:  embedded.AppCommit,
+		Release: embedded.IsRelease(),
 	}
 }
 
