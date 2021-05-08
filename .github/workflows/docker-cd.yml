@@ -51,6 +51,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          no-cache: true
           tags: |
             zekro/shinpuru:${{ env.TAG }}
             ghcr.io/zekrotja/shinpuru:${{ env.TAG }}
