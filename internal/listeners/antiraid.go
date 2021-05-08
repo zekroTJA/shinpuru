@@ -6,9 +6,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
@@ -45,7 +45,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 	if v, ok := l.triggers.GetValue(e.GuildID).(time.Time); ok {
 		if time.Since(v) < arTriggerRecordLifetime {
 			if err := l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String()); err != nil {
-				util.Log.Errorf("failed adding user to joinlist (gid: %s, uid: %s): %s", e.GuildID, e.User.ID, err.Error())
+				logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
 			}
 		}
 		return
@@ -94,7 +94,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 
 	guild, err := discordutil.GetGuild(s, e.GuildID)
 	if err != nil {
-		util.Log.Errorf("failed getting guild (gid: %s): %s", e.GuildID, err.Error())
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild")
 		return
 	}
 
@@ -120,13 +120,13 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 
 	members, err := discordutil.GetMembers(s, e.GuildID)
 	if err != nil {
-		util.Log.Errorf("failed getting guild members (gid: %s): %s", e.GuildID, err.Error())
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild members")
 		return
 	}
 
 	l.triggers.Set(e.GuildID, time.Now(), arTriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
-			util.Log.Errorf("failed flushing joinlist (gid: %s): %s", e.GuildID, err.Error())
+			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
 		}
 	})
 
@@ -159,7 +159,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	state, err = l.db.GetAntiraidState(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("failed getting antiraid state (gid: %s): %s", gid, err.Error())
+		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid state")
 		return
 	}
 	if !state {
@@ -168,7 +168,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	limit, err = l.db.GetAntiraidRegeneration(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("failed getting antiraid regeneration (gid: %s): %s", gid, err.Error())
+		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid regeneration")
 		return
 	}
 	if limit < 1 {
@@ -177,7 +177,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	burst, err = l.db.GetAntiraidBurst(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("failed getting antiraid burst (gid: %s): %s", gid, err.Error())
+		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid burst")
 		return
 	}
 	if burst < 1 {

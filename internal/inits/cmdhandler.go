@@ -6,11 +6,12 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/commands"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
@@ -94,11 +95,11 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterCommand(&commands.CmdLogin{})
 	cmdHandler.RegisterCommand(&commands.CmdStarboard{})
 
-	if util.Release != "TRUE" {
+	if !embedded.IsRelease() {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})
 	}
 
-	util.Log.Infof("%d commands registered", len(cmdHandler.GetCommandInstances()))
+	logrus.WithField("n", len(cmdHandler.GetCommandInstances())).Info("Commands registered")
 
 	cmdHandler.Setup(session)
 

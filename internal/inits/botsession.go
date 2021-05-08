@@ -2,10 +2,12 @@ package inits
 
 import (
 	"strings"
+	"sync/atomic"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/models"
@@ -18,13 +20,13 @@ func InitDiscordBotSession(container di.Container) {
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
-		util.Log.Fatal("Failed setting up snowflake nodes: ", err)
+		logrus.WithError(err).Fatal("Failed setting up snowflake nodes")
 	}
 
 	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
 	for i, t := range models.ReportTypes {
 		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
-			util.Log.Fatal("Failed setting up snowflake nodes: ", err)
+			logrus.WithError(err).Fatal("Failed setting up snowflake nodes")
 		}
 	}
 
@@ -37,8 +39,12 @@ func InitDiscordBotSession(container di.Container) {
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)
-	listenerJDoodle := listeners.NewListenerJdoodle(container)
 	listenerColors := listeners.NewColorListener(container)
+
+	listenerJDoodle, err := listeners.NewListenerJdoodle(container)
+	if err != nil {
+		logrus.WithError(err).Fatal("Failed setting up code execution listener")
+	}
 
 	listenerStarboard := listeners.NewListenerStarboard(container)
 
@@ -69,7 +75,7 @@ func InitDiscordBotSession(container di.Container) {
 	session.AddHandler(listenerStarboard.ListenerReactionRemove)
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
-		util.StatsMessagesAnalysed++
+		atomic.AddUint64(&util.StatsMessagesAnalysed, 1)
 	})
 
 	if cfg.Metrics != nil && cfg.Metrics.Enable {
@@ -78,6 +84,6 @@ func InitDiscordBotSession(container di.Container) {
 
 	err = session.Open()
 	if err != nil {
-		util.Log.Fatal("Failed connecting Discord bot session:", err)
+		logrus.WithError(err).Fatal("Failed connecting Discord bot session")
 	}
 }

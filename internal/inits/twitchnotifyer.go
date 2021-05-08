@@ -2,10 +2,10 @@ package inits
 
 import (
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -33,7 +33,7 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 	)
 
 	if err != nil {
-		util.Log.Fatalf("twitch app credentials are invalid: %s", err)
+		logrus.WithError(err).Fatal("twitch app credentials are invalid")
 	}
 
 	notifies, err := db.GetAllTwitchNotifies("")
@@ -44,7 +44,7 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 			}
 		}
 	} else {
-		util.Log.Error("failed getting Twitch notify entreis: ", err)
+		logrus.WithError(err).Fatal("failed getting Twitch notify entreis")
 	}
 
 	return tnw

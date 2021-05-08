@@ -158,6 +158,21 @@ type Schedules struct {
 	RefreshTokenCleanup string `json:"refreshtokencleanup"`
 }
 
+// CodeExec wraps configurations for the
+// code execution API used.
+type CodeExec struct {
+	Type  string         `json:"type"`
+	Ranna *CodeExecRanna `json:"ranna"`
+}
+
+// CodeExecRanna holds configuration values
+// for ranna as code execution engine.
+type CodeExecRanna struct {
+	Token      string `json:"token"`
+	Endpoint   string `json:"endpoint"`
+	ApiVersion string `json:"apiversion"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -173,6 +188,7 @@ type Config struct {
 	WebServer   *WebServer    `json:"webserver"`
 	Metrics     *Metrics      `json:"metricts"`
 	Schedules   *Schedules    `json:"schedules"`
+	CodeExec    *CodeExec     `json:"codeexec"`
 
 	Defaults *Config `json:"-"`
 }
@@ -251,7 +267,7 @@ func GetDefaultConfig() *Config {
 				ShowPublicInvites: true,
 			},
 			RateLimit: &WebServerRatelimit{
-				Enabled:      true,
+				Enabled:      false,
 				Burst:        30,
 				LimitSeconds: 3,
 			},
@@ -263,6 +279,12 @@ func GetDefaultConfig() *Config {
 		Schedules: &Schedules{
 			GuildBackups:        "0 0 6,18 * * *",
 			RefreshTokenCleanup: "0 0 5 * * *",
+		},
+		CodeExec: &CodeExec{
+			Type: "jdoodle",
+			Ranna: &CodeExecRanna{
+				ApiVersion: "v1",
+			},
 		},
 	}
 }

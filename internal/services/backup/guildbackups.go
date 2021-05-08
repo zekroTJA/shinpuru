@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -67,17 +67,17 @@ func New(container di.Container) *GuildBackups {
 func (bck *GuildBackups) BackupAllGuilds() {
 	guilds, err := bck.db.GetGuilds()
 
-	util.Log.Infof("Initializing backups for %d guilds %+v\n", len(guilds), guilds)
+	logrus.WithField("nGuilds", len(guilds)).Infof("Initializing guild backups")
 
 	if err != nil {
-		util.Log.Error("failed getting backup guilds: ", err)
+		logrus.WithError(err).Fatal("failed getting backup guilds")
 		return
 	}
 
 	for _, g := range guilds {
 		err = bck.BackupGuild(g)
 		if err != nil {
-			util.Log.Errorf("failed creating backup for guild '%s': %s", g, err.Error())
+			logrus.WithError(err).WithField("gid", g).Error("Failed creating backup for guild")
 		}
 		time.Sleep(1 * time.Second)
 	}

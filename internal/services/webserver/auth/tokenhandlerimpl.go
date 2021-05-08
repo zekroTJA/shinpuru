@@ -11,7 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
@@ -99,7 +99,7 @@ func (ath *JWTAccessTokenHandler) GetAccessToken(ident string) (token string, ex
 	expires = now.Add(ath.sessionExpiration)
 
 	claims := jwt.StandardClaims{}
-	claims.Issuer = fmt.Sprintf("shinpuru v.%s", util.AppVersion)
+	claims.Issuer = fmt.Sprintf("shinpuru v.%s", embedded.AppVersion)
 	claims.Subject = ident
 	claims.ExpiresAt = expires.Unix()
 	claims.NotBefore = now.Unix()
@@ -188,7 +188,7 @@ func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, e
 	}
 
 	claims := apiTokenClaims{}
-	claims.Issuer = fmt.Sprintf("shinpuru v.%s", util.AppVersion)
+	claims.Issuer = fmt.Sprintf("shinpuru v.%s", embedded.AppVersion)
 	claims.Subject = ident
 	claims.ExpiresAt = expires.Unix()
 	claims.NotBefore = now.Unix()

@@ -3,10 +3,10 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 )
@@ -39,7 +39,7 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 
 	ident, err := c.rth.ValidateRefreshToken(refreshToken)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Error("WEBSERVER :: failed validating refresh token:", err)
+		logrus.WithError(err).Fatal("WEBSERVER :: failed validating refresh token")
 	}
 	if ident == "" {
 		return fiber.ErrUnauthorized

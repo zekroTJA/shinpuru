@@ -5,6 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -30,9 +31,12 @@ func NewListenerReady(container di.Container) *ListenerReady {
 }
 
 func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
-	util.Log.Infof("Logged in as %s#%s (%s) - Running on %d servers",
-		e.User.Username, e.User.Discriminator, e.User.ID, len(e.Guilds))
-	util.Log.Info("Invite Link: " + util.GetInviteLink(s))
+	logrus.WithFields(logrus.Fields{
+		"username": e.User.String(),
+		"id":       e.User.ID,
+		"nGuilds":  len(e.Guilds),
+	})
+	logrus.Infof("Invite link: %s", util.GetInviteLink(s))
 
 	s.UpdateGameStatus(0, static.StdMotd)
 
@@ -48,7 +52,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 
 	votes, err := l.db.GetVotes()
 	if err != nil {
-		util.Log.Error("Failed getting votes from DB: ", err)
+		logrus.WithError(err).Fatal("Failed getting votes from DB")
 	} else {
 		vote.VotesRunning = votes
 		_, err = l.lct.Schedule("*/10 * * * * *", func() {
@@ -57,13 +61,13 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
 					v.Close(s, vote.VoteStateExpired)
 					if err = l.db.DeleteVote(v.ID); err != nil {
-						util.Log.Errorf("Failed updating vote with ID %s: %s", v.ID, err.Error())
+						logrus.WithError(err).WithField("gid", v.GuildID).WithField("vid", v.ID).Error("Failed updating vote")
 					}
 				}
 			}
 		})
 		if err != nil {
-			util.Log.Errorf("LCT :: failed scheduling votes job: %s", err.Error())
+			logrus.WithError(err).Fatal("LCT :: failed scheduling votes job")
 		}
 	}
 }

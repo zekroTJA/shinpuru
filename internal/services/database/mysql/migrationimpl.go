@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/sirupsen/logrus"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
 
 type migrationFunc func(*sql.Tx) error
@@ -32,7 +33,7 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 		return
 	}
 	for i := mig.Version + 1; i < len(migrationFuncs); i++ {
-		util.Log.Infof("Database: Applying migration version %d...", i)
+		logrus.WithField("version", i).Info("DATABASE :: applying migration")
 		if err = migrationFuncs[i](tx); err != nil {
 			return
 		}
@@ -60,7 +61,7 @@ func putMigrationVersion(tx *sql.Tx, i int) (err error) {
 	_, err = tx.Exec(
 		`INSERT INTO migrations (version, applied, releaseTag, releaseCommit)
 		VALUES (?, ?, ?, ?)`,
-		i, time.Now(), util.AppVersion, util.AppCommit)
+		i, time.Now(), embedded.AppVersion, embedded.AppCommit)
 	return
 }
 

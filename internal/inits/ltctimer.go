@@ -3,11 +3,11 @@ package inits
 import (
 	"github.com/robfig/cron/v3"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -31,9 +31,9 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 		func() {
 			n, err := db.CleanupExpiredRefreshTokens()
 			if err != nil {
-				util.Log.Error("LCT :: failed cleaning up expired refresh tokens:", err)
+				logrus.WithError(err).Error("LCT :: failed cleaning up expired refresh tokens")
 			} else if n > 0 {
-				util.Log.Infof("LCT :: cleaned up %d expired refresh tokens", n)
+				logrus.WithField("n", n).Info("LCT :: cleaned up expired refresh tokens")
 			}
 		})
 
@@ -55,7 +55,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 		},
 		func() {
 			if err := tnw.Handle(); err != nil {
-				util.Log.Errorf("LCT :: failed executing twitch notify handler: %s", err.Error())
+				logrus.WithError(err).Error("LCT :: failed executing twitch notify handler")
 			}
 		})
 
@@ -66,7 +66,7 @@ func lctSchedule(lct lctimer.LifeCycleTimer, name string, specGetter func() stri
 	spec := specGetter()
 	_, err := lct.Schedule(spec, job)
 	if err != nil {
-		util.Log.Fatalf("LCT :: failed scheduling %s job: %s", name, err.Error())
+		logrus.WithError(err).WithField("name", name).Fatalf("LCT :: failed scheduling job")
 	}
-	util.Log.Infof("LCT :: scheduled %s job for '%s'", name, spec)
+	logrus.WithField("name", name).WithField("spec", spec).Info("LCT :: scheduled job")
 }

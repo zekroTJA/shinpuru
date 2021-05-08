@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
@@ -252,7 +252,7 @@ func (m *MysqlMiddleware) setup() {
 	mErr.Append(err)
 
 	if mErr.Len() > 0 {
-		util.Log.Fatalf("Failed database setup: %s", mErr.Error())
+		logrus.WithError(mErr).Fatal("Failed database setup")
 	}
 }
 
@@ -604,7 +604,7 @@ func (m *MysqlMiddleware) GetVotes() (map[string]*vote.Vote, error) {
 		var voteID, rawData string
 		err := rows.Scan(&voteID, &rawData)
 		if err != nil {
-			util.Log.Error("An error occured reading vote from database: ", err)
+			logrus.WithError(err).Fatal("An error occured reading vote from database")
 			continue
 		}
 		vote, err := vote.Unmarshal(rawData)

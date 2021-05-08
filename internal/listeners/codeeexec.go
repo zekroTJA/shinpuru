@@ -10,11 +10,12 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/jdoodle"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -33,12 +34,6 @@ const (
 var (
 	runReactionEmoji = "▶"
 
-	langs = []string{"java", "c", "cpp", "c99", "cpp14", "php", "perl", "python3", "ruby", "go", "scala", "bash", "sql", "pascal", "csharp",
-		"vbn", "haskell", "objc", "ell", "swift", "groovy", "fortran", "brainfuck", "lua", "tcl", "hack", "rust", "d", "ada", "r", "freebasic",
-		"verilog", "cobol", "dart", "yabasic", "clojure", "nodejs", "scheme", "forth", "prolog", "octave", "coffeescript", "icon", "fsharp", "nasm",
-		"gccasm", "intercal", "unlambda", "picolisp", "spidermonkey", "rhino", "bc", "clisp", "elixir", "factor", "falcon", "fantom", "pike", "smalltalk",
-		"mozart", "lolcode", "racket", "kotlin"}
-
 	replaces = map[string]string{
 		"js":         "nodejs",
 		"javascript": "nodejs",
@@ -49,42 +44,49 @@ var (
 	}
 )
 
-type ListenerJdoodle struct {
-	db  database.Database
-	pmw *middleware.PermissionsMiddleware
+type ListenerCodeexec struct {
+	db       database.Database
+	execFact codeexec.Factory
+	pmw      *middleware.PermissionsMiddleware
 
+	langs  []string
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
 }
 
-type jdoodleMessage struct {
+type execMessage struct {
 	*discordgo.Message
 
-	wrapper *jdoodle.Wrapper
+	wrapper codeexec.Executor
 	lang    string
 	script  string
 
 	embLang string
 }
 
-func NewListenerJdoodle(container di.Container) *ListenerJdoodle {
-	return &ListenerJdoodle{
-		db:     container.Get(static.DiDatabase).(database.Database),
-		pmw:    container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
-		limits: timedmap.New(limitTMCleanupInterval),
-		msgMap: timedmap.New(removeHandlerCleanupInterval),
-	}
+func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error) {
+	l = &ListenerCodeexec{}
+
+	l.db = container.Get(static.DiDatabase).(database.Database)
+	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
+	l.limits = timedmap.New(limitTMCleanupInterval)
+	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
+
+	l.langs, err = l.execFact.Languages()
+
+	return
 }
 
-func (l *ListenerJdoodle) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
+func (l *ListenerCodeexec) HandlerMessageCreate(s *discordgo.Session, e *discordgo.MessageCreate) {
 	l.handler(s, e.Message)
 }
 
-func (l *ListenerJdoodle) HandlerMessageUpdate(s *discordgo.Session, e *discordgo.MessageUpdate) {
+func (l *ListenerCodeexec) HandlerMessageUpdate(s *discordgo.Session, e *discordgo.MessageUpdate) {
 	l.handler(s, e.Message)
 }
 
-func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
+func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 	if e.Author == nil || e.Author.Bot || e.GuildID == "" {
 		return
 	}
@@ -106,8 +108,8 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 	}
 
 	var isValidLang bool
-	for _, l := range langs {
-		if lang == l {
+	for _, lng := range l.langs {
+		if lang == lng {
 			isValidLang = true
 		}
 	}
@@ -116,13 +118,8 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
-	jdCreds, err := l.db.GetGuildJdoodleKey(e.GuildID)
-	if err != nil || jdCreds == "" {
-		return
-	}
-
-	jdCredsSplit := strings.Split(jdCreds, "#")
-	if len(jdCredsSplit) < 2 {
+	wrapper, err := l.execFact.NewExecutor(e.GuildID)
+	if err != nil || wrapper == nil {
 		return
 	}
 
@@ -131,9 +128,9 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
-	jdMsg := &jdoodleMessage{
+	jdMsg := &execMessage{
 		Message: e,
-		wrapper: jdoodle.NewWrapper(jdCredsSplit[0], jdCredsSplit[1]),
+		wrapper: wrapper,
 		lang:    lang,
 		script:  cont,
 		embLang: embLang,
@@ -144,7 +141,7 @@ func (l *ListenerJdoodle) handler(s *discordgo.Session, e *discordgo.Message) {
 	})
 }
 
-func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *discordgo.MessageReactionAdd) {
+func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *discordgo.MessageReactionAdd) {
 	if eReact.UserID == s.State.User.ID {
 		return
 	}
@@ -153,7 +150,7 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	jdMsg, ok := l.msgMap.GetValue(eReact.MessageID).(*jdoodleMessage)
+	jdMsg, ok := l.msgMap.GetValue(eReact.MessageID).(*execMessage)
 	if !ok || jdMsg == nil {
 		return
 	}
@@ -171,7 +168,10 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 		return
 	}
 
-	result, err := jdMsg.wrapper.ExecuteScript(jdMsg.lang, jdMsg.script)
+	result, err := jdMsg.wrapper.Exec(codeexec.Payload{
+		Language: jdMsg.lang,
+		Code:     jdMsg.script,
+	})
 
 	if err != nil {
 		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, &discordgo.MessageEmbed{
@@ -183,45 +183,44 @@ func (l *ListenerJdoodle) HandlerReactionAdd(s *discordgo.Session, eReact *disco
 	} else {
 		executor, _ := s.GuildMember(eReact.GuildID, eReact.UserID)
 
-		emb := &discordgo.MessageEmbed{
-			Color: static.ColorEmbedCyan,
-			Title: "Compilation Result",
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name:  "Code",
-					Value: fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script),
-				},
-				{
-					Name:  "Output",
-					Value: "```\n" + result.Output + "\n```",
-				},
-				{
-					Name:   "CPU Time",
-					Value:  result.CPUTime + " Seconds",
-					Inline: true,
-				},
-				{
-					Name:   "Memory",
-					Value:  result.Memory + " Byte",
-					Inline: true,
-				},
-			},
-			Footer: &discordgo.MessageEmbedFooter{
-				Text: strings.ToUpper(jdMsg.lang),
-			},
-		}
-
+		footer := strings.ToUpper(jdMsg.lang)
 		if executor != nil {
-			emb.Footer.Text += " | Executed by " + executor.User.String()
+			footer += " | Executed by " + executor.User.String()
 		}
 
-		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb)
+		emb := embedbuilder.New().
+			WithColor(static.ColorEmbedCyan).
+			WithTitle("Compilation Result").
+			WithFooter(footer, "", "").
+			AddField("Code", fmt.Sprintf("```%s\n%s\n```", jdMsg.embLang, jdMsg.script))
+
+		if l.execFact.Name() == "ranna" {
+			emb.WithDescription("*Code execution is provided by [ranna](https://github.com/ranna-go).*")
+		}
+
+		if result.StdOut != "" {
+			emb.AddField("StdOut", "```\n"+result.StdOut+"\n```")
+		}
+		if result.StdErr != "" {
+			emb.AddField("StdErr", "```\n"+result.StdErr+"\n```")
+		}
+		if result.CpuUsed != "" {
+			emb.AddInlineField("CPU Time", result.CpuUsed)
+		}
+		if result.MemUsed != "" {
+			emb.AddInlineField("Memory", result.MemUsed)
+		}
+		if result.ExecTime != 0 {
+			emb.AddInlineField("Execution Time", result.ExecTime.Round(time.Millisecond).String())
+		}
+
+		s.ChannelMessageEditEmbed(resMsg.ChannelID, resMsg.ID, emb.Build())
 
 		l.msgMap.Remove(jdMsg.ID)
 	}
 }
 
-func (l *ListenerJdoodle) parseMessageContent(content string) (lang string, script string, ok bool) {
+func (l *ListenerCodeexec) parseMessageContent(content string) (lang string, script string, ok bool) {
 	spl := strings.Split(content, "```")
 	if len(spl) < 3 {
 		return
@@ -240,7 +239,7 @@ func (l *ListenerJdoodle) parseMessageContent(content string) (lang string, scri
 	return
 }
 
-func (l *ListenerJdoodle) checkLimit(userID string) bool {
+func (l *ListenerCodeexec) checkLimit(userID string) bool {
 	limiter, ok := l.limits.GetValue(userID).(*rate.Limiter)
 	if !ok || limiter == nil {
 		limiter = rate.NewLimiter(rate.Limit(limitRate), limitBurst)
@@ -250,7 +249,7 @@ func (l *ListenerJdoodle) checkLimit(userID string) bool {
 	return limiter.Allow()
 }
 
-func (l *ListenerJdoodle) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
+func (l *ListenerCodeexec) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
 	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec.exec")
 	return allowed, err
 }

@@ -2,12 +2,14 @@ package listeners
 
 import (
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
@@ -15,7 +17,7 @@ import (
 type ListenerBotMention struct {
 	config *config.Config
 
-	idLen int
+	idLen int32
 }
 
 func NewListenerBotMention(container di.Container) *ListenerBotMention {
@@ -26,11 +28,11 @@ func NewListenerBotMention(container di.Container) *ListenerBotMention {
 }
 
 func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.MessageCreate) {
-	if l.idLen == 0 {
-		l.idLen = len(s.State.User.ID)
+	if atomic.LoadInt32(&l.idLen) == 0 {
+		atomic.StoreInt32(&l.idLen, int32(len(s.State.User.ID)))
 	}
 
-	cLen := len(e.Message.Content)
+	cLen := int32(len(e.Message.Content))
 	if cLen < 3+l.idLen ||
 		cLen > 5+l.idLen ||
 		e.Message.Content[0] != '<' ||
@@ -44,7 +46,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		cursor = 3
 	}
 
-	id := e.Message.Content[cursor : cursor+l.idLen]
+	id := e.Message.Content[cursor : int32(cursor)+l.idLen]
 	if id != s.State.User.ID {
 		return
 	}
@@ -53,7 +55,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 	emb := embedbuilder.New().
 		WithColor(static.ColorEmbedDefault).
 		WithThumbnail(s.State.User.AvatarURL("64x64"), "", 64, 64).
-		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", util.AppVersion, util.AppCommit[:6])).
+		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", embedded.AppVersion, embedded.AppCommit[:6])).
 		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", time.Now().Year()), "", "").
 		AddField("Help", fmt.Sprintf(
 			"Type `%shelp` in the chat to get a list of available commands.\n"+

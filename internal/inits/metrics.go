@@ -2,9 +2,9 @@ package inits
 
 import (
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/metrics"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -20,13 +20,13 @@ func InitMetrics(container di.Container) (ms *metrics.MetricsServer) {
 
 		ms, err = metrics.NewMetricsServer(cfg.Metrics.Addr)
 		if err != nil {
-			util.Log.Fatalf("failed initializing metrics server: %s", err.Error())
+			logrus.WithError(err).Fatal("failed initializing metrics server")
 		}
 
 		go func() {
-			util.Log.Infof("Metrics server listening on %s...", cfg.Metrics.Addr)
+			logrus.WithField("addr", cfg.Metrics.Addr).Info("Metrics server started")
 			if err := ms.ListenAndServeBlocking(); err != nil {
-				util.Log.Fatalf("failed setting up metrics server: %s", err.Error())
+				logrus.WithError(err).Fatal("failed setting up metrics server")
 			}
 		}()
 	}

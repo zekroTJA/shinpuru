@@ -3,7 +3,7 @@ package util
 import "time"
 
 var (
-	StatsStartupTime      = time.Now()
-	StatsCommandsExecuted = 0
-	StatsMessagesAnalysed = 0
+	StatsStartupTime             = time.Now()
+	StatsCommandsExecuted uint64 = 0
+	StatsMessagesAnalysed uint64 = 0
 )

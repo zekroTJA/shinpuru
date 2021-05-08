@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -19,32 +19,32 @@ func InitConfig(configLocation string, container di.Container) *config.Config {
 	if os.IsNotExist(err) {
 		cfgFile, err = os.Create(configLocation)
 		if err != nil {
-			util.Log.Fatal("Config file was not found and failed creating default config:", err)
+			logrus.WithError(err).Fatal("Config file was not found and failed creating default config")
 		}
 		err = cfgParser.Encode(cfgFile, defaultConfig)
 		if err != nil {
-			util.Log.Fatal("Config file was not found and failed writing to new config file:", err)
+			logrus.WithError(err).Fatal("Config file was not found and failed writing to new config file")
 		}
-		util.Log.Fatal("Config file was not found. Created default config file. Please open it and enter your configuration.")
+		logrus.Fatal("Config file was not found. Created default config file. Please open it and enter your configuration.")
 	} else if err != nil {
-		util.Log.Fatal("Failed opening config file:", err)
+		logrus.WithError(err).Fatal("Failed opening config file")
 	}
 
 	config, err := cfgParser.Decode(cfgFile)
 	if err != nil {
-		util.Log.Fatal("Failed decoding config file:", err)
+		logrus.WithError(err).Fatal("Failed decoding config file")
 	}
 
 	if config.Version < static.ConfigVersion {
-		util.Log.Fatalf("Config file structure is outdated and must be re-created. Just rename your config and start the bot to recreate the latest valid version of the config.")
+		logrus.Fatal("Config file structure is outdated and must be re-created. Just rename your config and start the bot to recreate the latest valid version of the config.")
 	}
 
 	if config.Discord.OwnerID == "" {
-		util.Log.Warning("ATTENTION: Bot onwer ID is not set in config!",
+		logrus.Warn("ATTENTION: Bot onwer ID is not set in config!",
 			"You will not be identified as the owner of this bot so you will not have access to the owner-only commands!")
 	}
 
-	util.Log.Info("Config file loaded")
+	logrus.Info("Config file loaded")
 
 	config.Defaults = defaultConfig
 	return config

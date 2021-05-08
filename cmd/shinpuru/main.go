@@ -12,6 +12,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
@@ -19,8 +20,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
@@ -31,11 +34,12 @@ import (
 )
 
 var (
-	flagConfig  = flag.String("c", "config.yml", "The location of the main config file")
-	flagDocker  = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
-	flagDevMode = flag.Bool("devmode", false, "start in development mode")
-	flagProfile = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
-	flagQuiet   = flag.Bool("quiet", false, "Dont print startup message")
+	flagConfig     = flag.String("c", "config.yml", "The location of the main config file")
+	flagDocker     = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
+	flagDevMode    = flag.Bool("devmode", false, "start in development mode")
+	flagForceColor = flag.Bool("forcecolor", false, "force log color")
+	flagProfile    = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
+	flagQuiet      = flag.Bool("quiet", false, "Dont print startup message")
 )
 
 const (
@@ -112,7 +116,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			database := obj.(database.Database)
-			util.Log.Info("Shutting down database connection...")
+			logrus.Info("Shutting down database connection...")
 			database.Close()
 			return nil
 		},
@@ -126,7 +130,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			listener := obj.(*listeners.ListenerTwitchNotify)
-			util.Log.Info("Shutting down twitch notify listener...")
+			logrus.Info("Shutting down twitch notify listener...")
 			listener.TearDown()
 			return nil
 		},
@@ -180,7 +184,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			session := obj.(*discordgo.Session)
-			util.Log.Info("Shutting down bot session...")
+			logrus.Info("Shutting down bot session...")
 			session.Close()
 			return nil
 		},
@@ -239,7 +243,7 @@ func main() {
 		Name: static.DiOneTimeAuth,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return onetimeauth.NewJwt(&onetimeauth.JwtOptions{
-				Issuer: "shinpuru v." + util.AppVersion,
+				Issuer: "shinpuru v." + embedded.AppVersion,
 			})
 		},
 	})
@@ -268,18 +272,36 @@ func main() {
 		},
 	})
 
+	// Initialize code execution factroy
+	diBuilder.Add(di.Def{
+		Name: static.DiCodeExecFactory,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitCodeExec(ctn), nil
+		},
+	})
+
+	// Initialize karma service
+	diBuilder.Add(di.Def{
+		Name: static.DiKarma,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return karma.NewKarmaService(ctn), nil
+		},
+	})
+
 	// Build dependency injection container
 	ctn := diBuilder.Build()
 
 	// Setting log level from config
 	cfg := ctn.Get(static.DiConfig).(*config.Config)
-	util.SetLogLevel(cfg.Logging.LogLevel)
+	logrus.SetLevel(logrus.Level(cfg.Logging.LogLevel))
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006/01/02 15:04:05 MST",
+	})
 
 	// Initial log output
-	util.Log.Infof("シンプル (shinpuru) v.%s (commit %s)", util.AppVersion, util.AppCommit)
-	util.Log.Info("© zekro Development (Ringo Hoffmann)")
-	util.Log.Info("Covered by MIT Licence")
-	util.Log.Info("Starting up...")
+	logrus.Info("Starting up...")
 
 	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
 		setupProfiler(profLoc)
@@ -312,9 +334,9 @@ func main() {
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
-	util.Log.Info("Started event loop. Stop with CTRL-C...")
+	logrus.Info("Started event loop. Stop with CTRL-C...")
 
-	util.Log.Infof("Initialization finished - took %s", startuptime.Took().String())
+	logrus.WithField("took", startuptime.Took().String()).Info("Initialization finished")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -324,8 +346,8 @@ func main() {
 }
 
 func setupDevMode() {
-	if util.IsRelease() {
-		util.Log.Fatal("development mode is not available in production builds")
+	if embedded.IsRelease() {
+		logrus.Fatal("development mode is not available in production builds")
 	}
 
 	util.DevModeEnabled = true
@@ -337,12 +359,12 @@ func setupDevMode() {
 		Cd:     "web",
 		Port:   8081,
 	})
-	util.Log.Info("Starting Angular dev server...")
+	logrus.Info("Starting Angular dev server...")
 	if err := angServ.Start(); err != nil {
-		util.Log.Fatalf("Failed starting Angular dev server: %s", err.Error())
+		logrus.WithError(err).Fatal("Failed starting Angular dev server")
 	}
 	defer func() {
-		util.Log.Info("Shutting down Angular dev server...")
+		logrus.Info("Shutting down Angular dev server...")
 		angServ.Stop()
 	}()
 }
@@ -350,9 +372,9 @@ func setupDevMode() {
 func setupProfiler(profLoc string) {
 	f, err := os.Create(profLoc)
 	if err != nil {
-		util.Log.Fatal(err)
+		logrus.WithError(err).Fatal("failed starting profiler")
 	}
 	pprof.StartCPUProfile(f)
-	util.Log.Warningf("CPU profiling is active (loc: %s)", profLoc)
+	logrus.WithField("location", profLoc).Warning("CPU profiling is active")
 	defer pprof.StopCPUProfile()
 }

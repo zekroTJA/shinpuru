@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -60,6 +61,14 @@ func (c *CmdExec) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdExec) Exec(ctx shireikan.Context) error {
+	execFact := ctx.GetObject(static.DiCodeExecFactory).(codeexec.Factory)
+	if execFact.Name() == "ranna" {
+		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+			"Code execution is supplied by [ranna](https://github.com/ranna-go) in this instance, so "+
+				"nothing is required to be set up. :wink:",
+			"", 0).DeleteAfter(10 * time.Second).Error()
+	}
+
 	errHelpMsg := func(ctx shireikan.Context) error {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid command arguments. Please use `help exec` to see how to use this command.").

@@ -5,8 +5,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
@@ -24,14 +24,14 @@ func NewListenerMemberAdd(container di.Container) *ListenerMemberAdd {
 func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
 	autoRoleID, err := l.db.GetGuildAutoRole(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		util.Log.Errorf("Failed getting autorole for guild '%s' from database: %s", e.GuildID, err.Error())
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild autorole from database")
 	}
 	if autoRoleID != "" {
 		err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, autoRoleID)
 		if err != nil && strings.Contains(err.Error(), `{"code": 10011, "message": "Unknown Role"}`) {
 			l.db.SetGuildAutoRole(e.GuildID, "")
 		} else if err != nil {
-			util.Log.Errorf("Failed setting autorole for member '%s': %s", e.User.ID, err.Error())
+			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed setting autorole for member")
 		}
 	}
 

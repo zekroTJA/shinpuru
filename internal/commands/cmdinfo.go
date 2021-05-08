@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 
@@ -64,7 +65,7 @@ func (c *CmdInfo) Exec(ctx shireikan.Context) error {
 			{
 				Name: "Version",
 				Value: fmt.Sprintf("This instance is running on version **%s** (commit hash `%s`)",
-					util.AppVersion, util.AppCommit),
+					embedded.AppVersion, embedded.AppCommit),
 			},
 			{
 				Name:  "Licence",

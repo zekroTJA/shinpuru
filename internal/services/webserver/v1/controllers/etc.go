@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
@@ -53,7 +54,7 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 }
 
 func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
-	buildTS, _ := strconv.Atoi(util.AppDate)
+	buildTS, _ := strconv.Atoi(embedded.AppDate)
 	buildDate := time.Unix(int64(buildTS), 0)
 
 	var memStats runtime.MemStats
@@ -62,8 +63,8 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 	uptime := int64(time.Since(util.StatsStartupTime).Seconds())
 
 	res := &models.SystemInfo{
-		Version:    util.AppVersion,
-		CommitHash: util.AppCommit,
+		Version:    embedded.AppVersion,
+		CommitHash: embedded.AppCommit,
 		BuildDate:  buildDate,
 		GoVersion:  runtime.Version(),
 

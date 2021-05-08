@@ -72,7 +72,7 @@ $(BIN):
 
 PHONY += test
 test:
-	$(GO) test -v -cover ./...
+	$(GO) test -race -v -cover ./...
 
 PHONY += lint
 lint:
@@ -80,14 +80,14 @@ lint:
 
 PHONY += run
 run:
-	$(GO) run -v \
+	$(GO) run -race -v \
 		$(CURDIR)/cmd/$(APPNAME)/*.go \
-			-c $(CONFIG) -quiet
+			-c $(CONFIG) -quiet -forcecolor
 
 PHONY += rundev
 rundev:
-	$(GO) run -v \
-		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG)
+	$(GO) run -v -race \
+		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG) -quiet -forcecolor
 
 PHONY += cleanup
 cleanup:
@@ -95,6 +95,7 @@ cleanup:
 PHONY += fe
 fe:
 	cd $(CURDIR)/web && \
+		$(NPM) ci && \
 		$(NG) build --prod=true
 
 PHONY += copyfe

@@ -7,9 +7,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
@@ -353,12 +353,12 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 
 		ng.BackupsEnabled, err = db.GetGuildBackup(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			util.Log.Errorf("failed getting backup status of guild %s: %s", g.ID, err.Error())
+			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting backup status")
 		}
 
 		backupEntries, err := db.GetBackups(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			util.Log.Errorf("failed getting backup entries of guild %s: %s", g.ID, err.Error())
+			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting backup entries")
 		} else {
 			for _, e := range backupEntries {
 				if e.Timestamp.After(ng.LatestBackupEntry) {
@@ -369,7 +369,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 
 		status, err := db.GetGuildInviteBlock(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			util.Log.Errorf("failed getting inviteblock status of guild %s: %s", g.ID, err.Error())
+			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting inviteblock status")
 		} else {
 			ng.InviteBlockEnabled = status != ""
 		}
