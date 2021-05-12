@@ -6,6 +6,7 @@ LDPAKAGE     = internal/util
 CONFIG       = $(CURDIR)/config/private.config.yml
 BINPATH      = $(CURDIR)/bin
 PRETTIER_CFG = "$(CURDIR)/.prettierrc.yml"
+TMPBIN       = "$(BINPATH)/tmp/$(APPNAME)"
 ###############################################
 
 ### EXECUTABLES ###############################
@@ -79,16 +80,16 @@ PHONY += lint
 lint:
 	$(GOLINT) ./... | $(GREP) -v vendor || true
 
+$(TMPBIN):
+	$(GO) build -race -v -o $@ $(CURDIR)/cmd/$(APPNAME)/*.go 
+
 PHONY += run
-run:
-	$(GO) run -race -v \
-		$(CURDIR)/cmd/$(APPNAME)/*.go \
-			-c $(CONFIG) -quiet -forcecolor
+run: $(TMPBIN)
+	$(TMPBIN) -c $(CONFIG) -quiet -forcecolor
 
 PHONY += rundev
-rundev:
-	$(GO) run -v -race \
-		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG) -quiet -forcecolor
+rundev: $(TMPBIN)
+	$(TMPBIN) -devmode -c $(CONFIG) -quiet -forcecolor
 
 PHONY += cleanup
 cleanup:
