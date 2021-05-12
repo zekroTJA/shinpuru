@@ -814,6 +814,10 @@ func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	if err := rule.Validate(); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
 	rule.GuildID = guildID
 	rule.ID = snowflakenodes.NodeKarmaRules.Generate()
 
@@ -830,6 +834,10 @@ func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err err
 
 	rule := new(sharedmodels.KarmaRule)
 	if err := ctx.BodyParser(rule); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := rule.Validate(); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
