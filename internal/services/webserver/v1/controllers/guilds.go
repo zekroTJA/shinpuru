@@ -883,7 +883,7 @@ func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusOK)
+	return ctx.JSON(models.Ok)
 }
 
 // ---------------------------------------------------------------------------
