@@ -21,6 +21,9 @@ var (
 	// NodeUnbanRequests is the snowflake node
 	// for unban requests.
 	NodeUnbanRequests *snowflake.Node
+	// NodeUnbanRequests is the snowflake node
+	// for karma rules.
+	NodeKarmaRules *snowflake.Node
 
 	// nodeMap maps snowflake node IDs with
 	// their identifier strings.
@@ -32,10 +35,11 @@ var (
 func Setup() (err error) {
 	nodeMap = make(map[int]string)
 
-	NodeBackup, err = RegisterNode(100, "backups")
-	NodeTags, err = RegisterNode(120, "tags")
-	NodeImages, err = RegisterNode(130, "images")
-	NodeUnbanRequests, err = RegisterNode(140, "unbanrequests")
+	NodeBackup, _ = RegisterNode(100, "backups")
+	NodeTags, _ = RegisterNode(120, "tags")
+	NodeImages, _ = RegisterNode(130, "images")
+	NodeUnbanRequests, _ = RegisterNode(140, "unbanrequests")
+	NodeKarmaRules, _ = RegisterNode(150, "karmarules")
 
 	return
 }

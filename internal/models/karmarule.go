@@ -23,5 +23,6 @@ type KarmaRule struct {
 	GuildID  string           `json:"guildid"`
 	Trigger  KarmaTriggerType `json:"trigger"`
 	Value    int              `json:"value"`
+	Action   KarmaAction      `json:"action"`
 	Argument string           `json:"argument"`
 }
