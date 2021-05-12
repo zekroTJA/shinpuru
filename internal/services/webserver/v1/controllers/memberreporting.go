@@ -37,6 +37,8 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 	router.Post("/reports", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postReport)
 	router.Post("/kick", pmw.HandleWs(c.session, "sp.guild.mod.kick"), c.postKick)
 	router.Post("/ban", pmw.HandleWs(c.session, "sp.guild.mod.ban"), c.postBan)
+	router.Post("/mute", pmw.HandleWs(c.session, "sp.guild.mod.mute"), c.postMute)
+	router.Post("/unmute", pmw.HandleWs(c.session, "sp.guild.mod.mute"), c.postUnmute)
 }
 
 func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
