@@ -11,3 +11,4 @@ deploy/
 data/
 .vscode/.ropeproject
 cmd/test/*
+.DS_Store

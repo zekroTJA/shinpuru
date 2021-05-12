@@ -1,0 +1,37 @@
+version: '3'
+
+volumes:
+  minio:
+  mysql-cfg:
+  mysql-lib:
+
+services:
+  minio:
+    image: 'minio/minio:latest'
+    ports:
+      - '9000:9000'
+    volumes:
+      - 'minio:/data'
+    environment:
+      MINIO_ACCESS_KEY: 'dev-access-key'
+      MINIO_SECRET_KEY: 'dev-secret-key'
+      MINIO_REGION_NAME: 'us-east-1'
+    command: server /data # --certs-dir /etc/cert
+    restart: 'unless-stopped'
+
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
+    restart: 'unless-stopped'
+
+  mysql:
+    image: 'mariadb:latest'
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'dev'
+    volumes:
+      - 'mysql-cfg:/etc/mysql'
+      - 'mysql-lib:/var/lib/mysql'
+    restart: 'unless-stopped'
