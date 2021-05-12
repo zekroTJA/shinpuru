@@ -6,7 +6,7 @@ LDPAKAGE     = internal/util
 CONFIG       = $(CURDIR)/config/private.config.yml
 BINPATH      = $(CURDIR)/bin
 PRETTIER_CFG = "$(CURDIR)/.prettierrc.yml"
-TMPBIN       = "$(BINPATH)/tmp/$(APPNAME)"
+TMPBIN       = "./bin/tmp/$(APPNAME)"
 ###############################################
 
 ### EXECUTABLES ###############################

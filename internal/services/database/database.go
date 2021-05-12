@@ -173,6 +173,10 @@ type Database interface {
 	AddKarmaBlockList(guildID, userID string) error
 	RemoveKarmaBlockList(guildID, userID string) error
 
+	GetKarmaRules(guildID string) ([]*models.KarmaRule, error)
+	AddKarmaRule(rule *models.KarmaRule) error
+	RemoveKarmaRule(id snowflake.ID) error
+
 	//////////////////////////////////////////////////////
 	//// CHAN LOCK
 
