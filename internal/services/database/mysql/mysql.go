@@ -1589,7 +1589,7 @@ func (m *MysqlMiddleware) CleanupExpiredRefreshTokens() (n int64, err error) {
 }
 
 func (m *MysqlMiddleware) GetKarmaRules(guildID string) (res []*models.KarmaRule, err error) {
-	rows, err := m.Db.Query("SELECT id, trigger, value, action, argument "+
+	rows, err := m.Db.Query("SELECT id, `trigger`, value, action, argument "+
 		"FROM karmaRules WHERE guildID = ?", guildID)
 	err = wrapNotFoundError(err)
 	if err != nil {
@@ -1619,13 +1619,13 @@ func (m *MysqlMiddleware) AddOrUpdateKarmaRule(rule *models.KarmaRule) (err erro
 
 	if exists {
 		_, err = m.Db.Exec("UPDATE karmaRules "+
-			"SET trigger = ?, value = ?, action = ?, argument = ? "+
+			"SET `trigger` = ?, value = ?, action = ?, argument = ? "+
 			"WHERE guildID = ? AND id = ?",
 			rule.Trigger, rule.Value, rule.Action, rule.Argument,
 			rule.GuildID, rule.ID)
 	} else {
 		_, err = m.Db.Exec("INSERT INTO karmaRules "+
-			"(id, guildID, trigger, value, action, argument) "+
+			"(id, guildID, `trigger`, value, action, argument) "+
 			"VALUES (?, ?, ?, ?, ?, ?)",
 			rule.ID, rule.GuildID, rule.Trigger, rule.Value, rule.Action, rule.Argument)
 	}

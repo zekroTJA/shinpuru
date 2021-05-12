@@ -9,7 +9,7 @@ import (
 type KarmaAction string
 
 const (
-	KarmaActionToogleRole  KarmaAction = "TOGGLE_ROLE"
+	KarmaActionToggleRole  KarmaAction = "TOGGLE_ROLE"
 	KarmaActionKick        KarmaAction = "KICK"
 	KarmaActionBan         KarmaAction = "BAN"
 	KarmaActionSendMessage KarmaAction = "SEND_MESSAGE"
@@ -17,7 +17,7 @@ const (
 
 func (a KarmaAction) Validate() bool {
 	switch a {
-	case KarmaActionToogleRole, KarmaActionKick, KarmaActionBan, KarmaActionSendMessage:
+	case KarmaActionToggleRole, KarmaActionKick, KarmaActionBan, KarmaActionSendMessage:
 		return true
 	default:
 		return false

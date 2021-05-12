@@ -821,6 +821,14 @@ func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 	rule.GuildID = guildID
 	rule.ID = snowflakenodes.NodeKarmaRules.Generate()
 
+	if rule.Action == sharedmodels.KarmaActionToggleRole {
+		role, err := fetch.FetchRole(c.session, guildID, rule.Argument)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		rule.Argument = role.ID
+	}
+
 	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
 		return err
 	}
@@ -845,6 +853,14 @@ func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err err
 	rule.ID, err = snowflake.ParseString(id)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if rule.Action == sharedmodels.KarmaActionToggleRole {
+		role, err := fetch.FetchRole(c.session, guildID, rule.Argument)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		rule.Argument = role.ID
 	}
 
 	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
