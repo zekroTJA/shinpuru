@@ -35,3 +35,14 @@ services:
       - 'mysql-cfg:/etc/mysql'
       - 'mysql-lib:/var/lib/mysql'
     restart: 'unless-stopped'
+
+  phpmyadmin:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    ports:
+      - '18080:80'
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    restart: 'unless-stopped'
+    depends_on:
+      - 'mysql'
