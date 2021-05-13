@@ -1,10 +1,16 @@
 package karma
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
+	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
 
 // Service provides functionalities to check karma state,
@@ -50,6 +56,74 @@ func (k *Service) IsBlockListed(guildID, userID string) (isBlocklisted bool, err
 // specified user.
 func (k *Service) Update(guildID, userID string, value int) (err error) {
 	err = k.db.UpdateKarma(userID, guildID, value)
+
+	rules, err := k.db.GetKarmaRules(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	if len(rules) > 0 {
+		var valAfter int
+		valAfter, err = k.db.GetKarma(userID, guildID)
+		if err != nil {
+			return
+		}
+		valBefore := valAfter - value
+
+		for _, rule := range rules {
+			if value > 0 {
+				switch rule.Action {
+				case models.KarmaActionToggleRole:
+					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
+						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
+							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+						}
+					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore < rule.Value && valAfter >= rule.Value {
+						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
+							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+						}
+					}
+				case models.KarmaActionSendMessage:
+					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
+						k.trySendKarmaMessage(userID, guildID, true, rule.Value, rule.Argument)
+					}
+				case models.KarmaActionKick:
+					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
+						k.tryKick(userID, guildID, true, rule.Value)
+					}
+				case models.KarmaActionBan:
+					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
+						k.tryBan(userID, guildID, true, rule.Value)
+					}
+				}
+			} else if value < 0 {
+				switch rule.Action {
+				case models.KarmaActionToggleRole:
+					if rule.Trigger == models.KarmaTriggerAbove && valBefore > rule.Value && valAfter <= rule.Value {
+						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
+							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+						}
+					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
+						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
+							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+						}
+					}
+				case models.KarmaActionSendMessage:
+					if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
+						k.trySendKarmaMessage(userID, guildID, false, rule.Value, rule.Argument)
+					}
+				case models.KarmaActionKick:
+					if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
+						k.tryKick(userID, guildID, false, rule.Value)
+					}
+				case models.KarmaActionBan:
+					if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
+						k.tryBan(userID, guildID, false, rule.Value)
+					}
+				}
+			}
+		}
+	}
+
 	return
 }
 
@@ -70,7 +144,71 @@ func (k *Service) CheckAndUpdate(guildID string, object *discordgo.User, value i
 		return
 	}
 
-	err = k.db.UpdateKarma(object.ID, guildID, value)
+	err = k.Update(object.ID, guildID, value)
 	ok = err == nil
 	return
+}
+
+func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value int, content string) {
+	ch, err := k.s.UserChannelCreate(userID)
+	if err != nil {
+		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed opening dm channel")
+		return
+	}
+
+	guild, err := discordutil.GetGuild(k.s, guildID)
+	if err != nil {
+		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed getting guild details")
+		return
+	}
+
+	pre := "dropped below"
+	if added {
+		pre = "rised above"
+	}
+
+	emb := embedbuilder.New().
+		WithDescription(fmt.Sprintf("Your karma %s %d points on guild %s.\n\n%s",
+			pre, value, guild.Name, content))
+
+	if added {
+		emb.WithColor(static.ColorEmbedGreen)
+	} else {
+		emb.WithColor(static.ColorEmbedOrange)
+	}
+
+	_, err = k.s.ChannelMessageSendEmbed(ch.ID, emb.Build())
+	if err != nil {
+		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed sending dm")
+	}
+}
+
+func (k *Service) tryKick(userID, guildID string, added bool, value int) {
+	k.trySendKarmaMessage(userID, guildID, added, value,
+		"Because of that, you have been automatically kicked from the guild.")
+
+	pre := "dropped below"
+	if added {
+		pre = "rised above"
+	}
+	reason := fmt.Sprintf("Karma %s %d points", pre, value)
+
+	if err := k.s.GuildMemberDeleteWithReason(guildID, userID, reason); err != nil {
+		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed kicking member")
+	}
+}
+
+func (k *Service) tryBan(userID, guildID string, added bool, value int) {
+	k.trySendKarmaMessage(userID, guildID, added, value,
+		"Because of that, you have been automatically banned from the guild.")
+
+	pre := "dropped below"
+	if added {
+		pre = "rised above"
+	}
+	reason := fmt.Sprintf("Karma %s %d points", pre, value)
+
+	if err := k.s.GuildBanCreateWithReason(guildID, userID, reason, 7); err != nil {
+		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed banning member")
+	}
 }

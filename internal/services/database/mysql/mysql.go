@@ -1613,7 +1613,6 @@ func (m *MysqlMiddleware) GetKarmaRules(guildID string) (res []*models.KarmaRule
 func (m *MysqlMiddleware) CheckKarmaRule(guildID, checksum string) (ok bool, err error) {
 	err = m.Db.QueryRow("SELECT 1 FROM karmaRules WHERE guildID = ? AND checksum = ?",
 		guildID, checksum).Scan(&ok)
-	fmt.Println(guildID, checksum, ok)
 	if err != nil && err != sql.ErrNoRows {
 		return
 	}
