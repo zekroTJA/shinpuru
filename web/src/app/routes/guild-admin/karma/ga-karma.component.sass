@@ -13,3 +13,31 @@ td > button
 .small
     opacity: 0.9
     font-size: 0.9em
+
+.karma-rule-input
+    max-width: 80px
+    text-align: center
+
+.karma-rule
+    display: flex
+    align-items: center
+    padding: 3px 5px
+    border-radius: 5px
+    background-color: rgba(black, 0.2)
+    margin-bottom: 10px
+    cursor: pointer
+
+    &:hover .btn-rule-remove
+        opacity: 1
+
+    .btn-rule-remove
+        opacity: 0
+        background-color: #f44336
+        width: 25px
+        height: 25px
+        padding: 0px
+        background-image: url('/assets/delete.svg')
+        background-size: 75%
+        background-position: center
+        background-repeat: no-repeat
+        transition: all 0.2s ease

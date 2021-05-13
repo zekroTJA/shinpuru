@@ -170,6 +170,18 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaRules` (" +
+		"`id` varchar(25) NOT NULL," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`trigger` int(8) NOT NULL DEFAULT '0'," +
+		"`value` int(32) NOT NULL DEFAULT '0'," +
+		"`action` varchar(30) NOT NULL DEFAULT ''," +
+		"`argument` text NOT NULL DEFAULT ''," +
+		"`checksum` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`id`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -280,9 +292,7 @@ func (m *MysqlMiddleware) getGuildSetting(guildID, key string) (string, error) {
 	err := m.Db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM guilds WHERE guildID = ?", key),
 		guildID).Scan(&value)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return value, err
 }
 
@@ -312,9 +322,7 @@ func (m *MysqlMiddleware) getUserSetting(userID, key string) (string, error) {
 	err := m.Db.QueryRow(
 		fmt.Sprintf("SELECT %s FROM users WHERE userID = ?", key),
 		userID).Scan(&value)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return value, err
 }
 
@@ -473,9 +481,7 @@ func (m *MysqlMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 func (m *MysqlMiddleware) GetSetting(setting string) (string, error) {
 	var value string
 	err := m.Db.QueryRow("SELECT value FROM settings WHERE setting = ?", setting).Scan(&value)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return value, err
 }
 
@@ -656,9 +662,7 @@ func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitch
 	}
 	err := m.Db.QueryRow("SELECT channelID FROM twitchnotify WHERE twitchUserID = ? AND guildID = ?",
 		twitchUserID, guildID).Scan(&t.ChannelID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return t, err
 }
 
@@ -939,9 +943,7 @@ func (m *MysqlMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, e
 		"SELECT userID, salt, created, expires, lastAccess, hits "+
 			"FROM apitokens WHERE userID = ?", userID).
 		Scan(&t.UserID, &t.Salt, &t.Created, &t.Expires, &t.LastAccess, &t.Hits)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -956,18 +958,14 @@ func (m *MysqlMiddleware) DeleteAPIToken(userID string) error {
 func (m *MysqlMiddleware) GetKarma(userID, guildID string) (i int, err error) {
 	err = m.Db.QueryRow("SELECT value FROM karma WHERE userID = ? AND guildID = ?",
 		userID, guildID).Scan(&i)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
 func (m *MysqlMiddleware) GetKarmaSum(userID string) (i int, err error) {
 	err = m.Db.QueryRow("SELECT COALESCE(SUM(value), 0) FROM karma WHERE userID = ?",
 		userID).Scan(&i)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1053,9 +1051,7 @@ func (m *MysqlMiddleware) SetKarmaState(guildID string, state bool) (err error) 
 func (m *MysqlMiddleware) GetKarmaState(guildID string) (state bool, err error) {
 	err = m.Db.QueryRow("SELECT state FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&state)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1073,9 +1069,7 @@ func (m *MysqlMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) (
 func (m *MysqlMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
 	err = m.Db.QueryRow("SELECT emotesInc, emotesDec FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&emotesInc, &emotesDec)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1093,18 +1087,14 @@ func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error)
 func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
 	err = m.Db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&tokens)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
 
 func (m *MysqlMiddleware) GetKarmaBlockList(guildID string) (list []string, err error) {
 	row, err := m.Db.Query("SELECT userID FROM karmaBlocklist WHERE guildID = ?", guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1154,18 +1144,14 @@ func (m *MysqlMiddleware) SetLockChan(chanID, guildID, executorID, permissions s
 func (m *MysqlMiddleware) GetLockChan(chanID string) (guildID, executorID, permissions string, err error) {
 	err = m.Db.QueryRow("SELECT guildID, executorID, permissions FROM chanlock WHERE chanID = ?", chanID).
 		Scan(&guildID, &executorID, &permissions)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
 func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err error) {
 	chanIDs = make([]string, 0)
 	rows, err := m.Db.Query("SELECT chanID FROM chanlock WHERE guildID = ?", guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1184,9 +1170,7 @@ func (m *MysqlMiddleware) GetLockChannels(guildID string) (chanIDs []string, err
 func (m *MysqlMiddleware) DeleteLockChan(chanID string) error {
 	_, err := m.Db.Exec("DELETE FROM chanlock WHERE chanID = ?",
 		chanID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return err
 }
 
@@ -1203,9 +1187,7 @@ func (m *MysqlMiddleware) SetAntiraidState(guildID string, state bool) (err erro
 func (m *MysqlMiddleware) GetAntiraidState(guildID string) (state bool, err error) {
 	err = m.Db.QueryRow("SELECT state FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&state)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1223,9 +1205,7 @@ func (m *MysqlMiddleware) SetAntiraidRegeneration(guildID string, limit int) (er
 func (m *MysqlMiddleware) GetAntiraidRegeneration(guildID string) (limit int, err error) {
 	err = m.Db.QueryRow("SELECT `limit` FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&limit)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1243,9 +1223,7 @@ func (m *MysqlMiddleware) SetAntiraidBurst(guildID string, burst int) (err error
 func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error) {
 	err = m.Db.QueryRow("SELECT burst FROM antiraidSettings WHERE guildID = ?",
 		guildID).Scan(&burst)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1260,9 +1238,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 	var count int
 	err = m.Db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
 		Scan(&count)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1289,9 +1265,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 
 func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
 	_, err = m.Db.Exec("DELETE FROM antiraidJoinlog WHERE guildID = ?", guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1301,9 +1275,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*models.Unb
 		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
 		WHERE guildID = ?`, guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1335,9 +1307,7 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 	}
 
 	rows, err := m.Db.Query(query, params...)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1368,9 +1338,7 @@ func (m *MysqlMiddleware) GetUnbanRequest(id string) (r *models.UnbanRequest, er
 		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
 		&r.ProcessedBy, &r.Status, &r.Processed, &r.ProcessedMessage,
 	)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1392,9 +1360,7 @@ func (m *MysqlMiddleware) UpdateUnbanRequest(r *models.UnbanRequest) (err error)
 		WHERE id = ?`,
 		r.ProcessedBy, r.Status, r.Processed, r.ProcessedMessage,
 		r.ID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1414,9 +1380,7 @@ func (m *MysqlMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 
 func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
 	row, err := m.Db.Query("SELECT channelID FROM voicelogBlocklist WHERE guildID = ?", guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1459,9 +1423,7 @@ func (m *MysqlMiddleware) SetGuildVoiceLogIngore(guildID, channelID string) (err
 func (m *MysqlMiddleware) RemoveGuildVoiceLogIgnore(guildID, channelID string) (err error) {
 	_, err = m.Db.Exec("DELETE FROM voicelogBlocklist WHERE guildID = ? AND channelID = ?",
 		guildID, channelID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1492,9 +1454,7 @@ func (m *MysqlMiddleware) GetStarboardConfig(guildID string) (config *models.Sta
 
 	err = m.Db.QueryRow("SELECT channelID, threshold, emojiID, karmaGain FROM starboardConfig WHERE guildID = ?", guildID).
 		Scan(&config.ChannelID, &config.Threshold, &config.EmojiID, &config.KarmaGain)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 
 	return
 }
@@ -1542,9 +1502,7 @@ func (m *MysqlMiddleware) GetStarboardEntries(
 		"FROM starboardEntries "+
 		"WHERE guildID = ? %s LIMIT %d OFFSET %d", sort, limit, offset)
 	row, err := m.Db.Query(query, guildID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1575,9 +1533,7 @@ func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.Starboa
 			"WHERE messageID = ?",
 		messageID).
 		Scan(&e.MessageID, &e.StarboardID, &e.GuildID, &e.ChannelID, &e.AuthorID, &e.Content, &mediaURLencoded, &e.Score, &e.Deleted)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	if err != nil {
 		return
 	}
@@ -1589,9 +1545,7 @@ func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e *models.Starboa
 func (m *MysqlMiddleware) GetUserByRefreshToken(token string) (userID string, expires time.Time, err error) {
 	err = m.Db.QueryRow("SELECT userID, expires FROM refreshTokens WHERE token = ?", token).Scan(
 		&userID, &expires)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1621,9 +1575,7 @@ func (m *MysqlMiddleware) SetUserRefreshToken(userID, token string, expires time
 
 func (m *MysqlMiddleware) RevokeUserRefreshToken(userID string) (err error) {
 	_, err = m.Db.Exec("DELETE FROM refreshTokens WHERE userID = ?", userID)
-	if err == sql.ErrNoRows {
-		err = database.ErrDatabaseNotFound
-	}
+	err = wrapNotFoundError(err)
 	return
 }
 
@@ -1635,4 +1587,76 @@ func (m *MysqlMiddleware) CleanupExpiredRefreshTokens() (n int64, err error) {
 
 	n, err = res.RowsAffected()
 	return
+}
+
+func (m *MysqlMiddleware) GetKarmaRules(guildID string) (res []*models.KarmaRule, err error) {
+	rows, err := m.Db.Query("SELECT id, `trigger`, value, action, argument, checksum "+
+		"FROM karmaRules WHERE guildID = ?", guildID)
+	err = wrapNotFoundError(err)
+	if err != nil {
+		return
+	}
+
+	res = make([]*models.KarmaRule, 0)
+	for rows.Next() {
+		r := new(models.KarmaRule)
+		r.GuildID = guildID
+		if err = rows.Scan(&r.ID, &r.Trigger, &r.Value, &r.Action, &r.Argument, &r.Checksum); err != nil {
+			return
+		}
+		res = append(res, r)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) CheckKarmaRule(guildID, checksum string) (ok bool, err error) {
+	err = m.Db.QueryRow("SELECT 1 FROM karmaRules WHERE guildID = ? AND checksum = ?",
+		guildID, checksum).Scan(&ok)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	err = nil
+
+	return
+}
+
+func (m *MysqlMiddleware) AddOrUpdateKarmaRule(rule *models.KarmaRule) (err error) {
+	var exists bool
+	err = m.Db.QueryRow("SELECT 1 FROM karmaRules WHERE id = ?",
+		rule.ID).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	if exists {
+		_, err = m.Db.Exec("UPDATE karmaRules "+
+			"SET `trigger` = ?, value = ?, action = ?, argument = ?, checksum = ? "+
+			"WHERE guildID = ? AND id = ?",
+			rule.Trigger, rule.Value, rule.Action, rule.Argument, rule.Checksum,
+			rule.GuildID, rule.ID)
+	} else {
+		_, err = m.Db.Exec("INSERT INTO karmaRules "+
+			"(id, guildID, `trigger`, value, action, argument, checksum) "+
+			"VALUES (?, ?, ?, ?, ?, ?, ?)",
+			rule.ID, rule.GuildID, rule.Trigger, rule.Value, rule.Action, rule.Argument, rule.Checksum)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) RemoveKarmaRule(guildID string, id snowflake.ID) (err error) {
+	_, err = m.Db.Exec("DELETE FROM karmaRules WHERE guildID = ? AND id = ?", guildID, id)
+	err = wrapNotFoundError(err)
+	return
+}
+
+/////////// HELPER ///////////////
+
+func wrapNotFoundError(err error) error {
+	if err == sql.ErrNoRows {
+		err = database.ErrDatabaseNotFound
+	}
+	return err
 }

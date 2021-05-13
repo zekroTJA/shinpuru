@@ -31,6 +31,7 @@ import {
   UserSettingsOTA,
   GuildStarboardEntry,
   AccessTokenModel,
+  KarmaRule,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -120,6 +121,11 @@ export class APIService {
     guildID: string,
     rc: string = ''
   ) => `${this.rcGuildSettingsKarma(guildID)}/blocklist${rc ? '/' + rc : ''}`;
+
+  private readonly rcGuildSettingsKarmaRules = (
+    guildID: string,
+    rc: string = ''
+  ) => `${this.rcGuildSettingsKarma(guildID)}/rules${rc ? '/' + rc : ''}`;
 
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
@@ -665,6 +671,39 @@ export class APIService {
     return this.http
       .delete(
         this.rcGuildSettingsKarmaBlocklist(guildID, userID),
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsKarmaRules(
+    guildID: string
+  ): Observable<ListReponse<KarmaRule>> {
+    return this.http
+      .get(this.rcGuildSettingsKarmaRules(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public createGuildSettingsKarmaRules(rule: KarmaRule): Observable<KarmaRule> {
+    return this.http
+      .post(this.rcGuildSettingsKarmaRules(rule.guildid), rule, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public updateGuildSettingsKarmaRules(rule: KarmaRule): Observable<KarmaRule> {
+    return this.http
+      .post(
+        this.rcGuildSettingsKarmaRules(rule.guildid, rule.id),
+        rule,
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteGuildSettingsKarmaRules(rule: KarmaRule): Observable<KarmaRule> {
+    return this.http
+      .delete(
+        this.rcGuildSettingsKarmaRules(rule.guildid, rule.id),
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
