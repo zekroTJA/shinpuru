@@ -24,6 +24,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
 | [ENOT1KK](https://github.com/ENOT1KK) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
 | [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
+| [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234) |  | `1` |
 
 
 ---
