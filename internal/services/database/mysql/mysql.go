@@ -177,6 +177,7 @@ func (m *MysqlMiddleware) setup() {
 		"`value` int(32) NOT NULL DEFAULT '0'," +
 		"`action` varchar(30) NOT NULL DEFAULT ''," +
 		"`argument` text NOT NULL DEFAULT ''," +
+		"`checksum` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -1589,7 +1590,7 @@ func (m *MysqlMiddleware) CleanupExpiredRefreshTokens() (n int64, err error) {
 }
 
 func (m *MysqlMiddleware) GetKarmaRules(guildID string) (res []*models.KarmaRule, err error) {
-	rows, err := m.Db.Query("SELECT id, `trigger`, value, action, argument "+
+	rows, err := m.Db.Query("SELECT id, `trigger`, value, action, argument, checksum "+
 		"FROM karmaRules WHERE guildID = ?", guildID)
 	err = wrapNotFoundError(err)
 	if err != nil {
@@ -1600,11 +1601,24 @@ func (m *MysqlMiddleware) GetKarmaRules(guildID string) (res []*models.KarmaRule
 	for rows.Next() {
 		r := new(models.KarmaRule)
 		r.GuildID = guildID
-		if err = rows.Scan(&r.ID, &r.Trigger, &r.Value, &r.Action, &r.Argument); err != nil {
+		if err = rows.Scan(&r.ID, &r.Trigger, &r.Value, &r.Action, &r.Argument, &r.Checksum); err != nil {
 			return
 		}
 		res = append(res, r)
 	}
+
+	return
+}
+
+func (m *MysqlMiddleware) CheckKarmaRule(guildID, checksum string) (ok bool, err error) {
+	err = m.Db.QueryRow("SELECT 1 FROM karmaRules WHERE guildID = ? AND checksum = ?",
+		guildID, checksum).Scan(&ok)
+	fmt.Println(guildID, checksum, ok)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	err = nil
 
 	return
 }
@@ -1619,15 +1633,15 @@ func (m *MysqlMiddleware) AddOrUpdateKarmaRule(rule *models.KarmaRule) (err erro
 
 	if exists {
 		_, err = m.Db.Exec("UPDATE karmaRules "+
-			"SET `trigger` = ?, value = ?, action = ?, argument = ? "+
+			"SET `trigger` = ?, value = ?, action = ?, argument = ?, checksum = ? "+
 			"WHERE guildID = ? AND id = ?",
-			rule.Trigger, rule.Value, rule.Action, rule.Argument,
+			rule.Trigger, rule.Value, rule.Action, rule.Argument, rule.Checksum,
 			rule.GuildID, rule.ID)
 	} else {
 		_, err = m.Db.Exec("INSERT INTO karmaRules "+
-			"(id, guildID, `trigger`, value, action, argument) "+
-			"VALUES (?, ?, ?, ?, ?, ?)",
-			rule.ID, rule.GuildID, rule.Trigger, rule.Value, rule.Action, rule.Argument)
+			"(id, guildID, `trigger`, value, action, argument, checksum) "+
+			"VALUES (?, ?, ?, ?, ?, ?, ?)",
+			rule.ID, rule.GuildID, rule.Trigger, rule.Value, rule.Action, rule.Argument, rule.Checksum)
 	}
 
 	return

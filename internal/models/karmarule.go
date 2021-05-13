@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekroTJA/shinpuru/pkg/checksum"
 )
 
 type KarmaAction string
@@ -44,6 +45,7 @@ type KarmaRule struct {
 	Value    int              `json:"value"`
 	Action   KarmaAction      `json:"action"`
 	Argument string           `json:"argument"`
+	Checksum string           `json:"-"`
 }
 
 func (r *KarmaRule) Validate() error {
@@ -53,5 +55,13 @@ func (r *KarmaRule) Validate() error {
 	if !r.Action.Validate() {
 		return errors.New("invalid value for action")
 	}
+
 	return nil
+}
+
+func (r *KarmaRule) CalculateChecksum() string {
+	cop := *r
+	cop.ID = 0
+	r.Checksum = checksum.Must(checksum.SumMd5(&cop))
+	return r.Checksum
 }

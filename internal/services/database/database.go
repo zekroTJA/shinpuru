@@ -174,6 +174,7 @@ type Database interface {
 	RemoveKarmaBlockList(guildID, userID string) error
 
 	GetKarmaRules(guildID string) ([]*models.KarmaRule, error)
+	CheckKarmaRule(guildID, checksum string) (ok bool, err error)
 	AddOrUpdateKarmaRule(rule *models.KarmaRule) error
 	RemoveKarmaRule(guildID string, id snowflake.ID) error
 

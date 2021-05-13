@@ -829,6 +829,15 @@ func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 		rule.Argument = role.ID
 	}
 
+	sum := rule.CalculateChecksum()
+	ok, err := c.db.CheckKarmaRule(guildID, sum)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return fiber.NewError(fiber.StatusBadRequest, "same rule already exists")
+	}
+
 	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
 		return err
 	}
@@ -861,6 +870,15 @@ func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err err
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
 		}
 		rule.Argument = role.ID
+	}
+
+	sum := rule.CalculateChecksum()
+	ok, err := c.db.CheckKarmaRule(guildID, sum)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return fiber.NewError(fiber.StatusBadRequest, "same rule already exists")
 	}
 
 	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
