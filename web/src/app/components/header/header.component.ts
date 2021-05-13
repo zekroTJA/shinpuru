@@ -83,7 +83,8 @@ export class HeaderComponent implements OnInit {
   }
 
   public popupClose(e: any) {
-    if (e.target.className !== 'logout-btn') {
+    const target = e.target as HTMLElement;
+    if (target.id !== 'user-info' && target.parentElement?.id !== 'user-info') {
       this.popupVisible = false;
     }
   }

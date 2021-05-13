@@ -6,20 +6,20 @@
   </a>
 
   <div class="routes">
-    <span *ngFor="let r of routes">
-      /
+    <span *ngFor="let r of routes; index as i">
+      <img *ngIf="i > 0" height="10" width="10" src="/assets/arrow.svg" class="mr-1" />
       <a [routerLink]="r[1]">{{ r[0] }}</a>
     </span>
   </div>
 
-  <div *ngIf="selfUser?.id; else tmpLogin" id="user-info" class="d-flex">
+  <div *ngIf="selfUser?.id; else tmpLogin" id="user-info" class="d-flex" (click)="popupVisible = true">
     <app-popup
       *ngIf="popupVisible"
-      class="logout-popup"
+      class="dropdown-popup"
       [elements]="popupElements"
       (closing)="popupClose($event)"
     ></app-popup>
-    <a class="logout-btn" (click)="popupVisible = true">&#9660;</a>
+    <a class="dropdown-btn">&#9660;</a>
     <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
     <img class="avatar" [src]="selfUser.avatar_url | discordAsset:'':32" />
   </div>

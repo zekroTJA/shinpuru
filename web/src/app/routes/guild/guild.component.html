@@ -45,21 +45,21 @@
     <div *ngIf="guild" class="guild-container">
 
         <!-- HEADING -->
-        <div id="heading-container">
+        <div id="heading-container" class="mt-4">
             <img [src]="guild.icon_url | discordAsset:'/assets/dc-logo.svg':64:(!!guild.icon)"/>
             <h3>{{ guild.name }}</h3>
             <p class="embedded">{{ guild.id }}</p>
         </div>
 
         <!-- LOGGED IN MEMBER INFO -->
-        <a id="user-info" class="mb-4" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
+        <a id="user-info" class="mt-5" routerLink="/guilds/{{guild.id}}/{{guild.self_member.user.id}}">
             <img [src]="guild.self_member.avatar_url | discordAsset:'':80"/>
             <div class="info-container">
                 <div class="d-flex">
                     <h4 class="mr-3">{{ guild.self_member.nick || guild.self_member.user.username }}</h4>
                     <p class="embedded">{{ guild.self_member.user.id }}</p>
                 </div>
-                <div class="d-flex mt-2 overflow-wrap">
+                <div class="d-flex mt-3 overflow-wrap">
                     <div *ngFor="let r of userRoles">
                         <app-rolebadge [role]="r"></app-rolebadge>
                     </div>
@@ -68,7 +68,7 @@
         </a>
 
         <!-- GUILD MEMBERS -->
-        <div class="d-flex">
+        <div class="d-flex mt-5">
             <app-spoiler [(ngModel)]="guildToggle">
                 <h4 class="mx-3">GUILD MEMBERS</h4>
                 <p class="cbadge">{{ guildToggle ? (membersDisplayed?.length + ' / ' + guild.member_count) : guild.member_count }}</p>
@@ -95,7 +95,7 @@
         </div>
 
         <!-- SECURITY-->
-        <div class="d-flex mt-4 mb-2">
+        <div class="d-flex mt-4">
             <app-spoiler [(ngModel)]="securityToggle">
                 <h4 class="mx-3">SECURITY</h4>
                 <img 
