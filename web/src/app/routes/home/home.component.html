@@ -8,7 +8,7 @@
   But before, you need to enable this feature <a class="link" href="/usersettings#ota">here</a>.
 </app-protip>
 
-<div>
+<div class="mt-4">
   <app-spinner id="spinner-load-guilds" [started]="true"></app-spinner>
   <div class="guilds-list-container">
     <a
@@ -21,7 +21,7 @@
       </div>
       <div class="info-container">
         <h1 [title]="g.name">{{ g.name }}</h1>
-        <p>{{ g.member_count }} members</p>
+        <span>{{ g.member_count }} members</span>
       </div>
     </a>
   </div>

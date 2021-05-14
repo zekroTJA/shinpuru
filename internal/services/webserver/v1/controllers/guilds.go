@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
+	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -56,6 +57,10 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/settings/karma/blocklist", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.getGuildSettingsKarmaBlocklist)
 	router.Put("/:guildid/settings/karma/blocklist/:memberid", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.putGuildSettingsKarmaBlocklist)
 	router.Delete("/:guildid/settings/karma/blocklist/:memberid", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.deleteGuildSettingsKarmaBlocklist)
+	router.Get("/:guildid/settings/karma/rules", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.getGuildSettingsKarmaRules)
+	router.Post("/:guildid/settings/karma/rules", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.createGuildSettingsKrameRule)
+	router.Post("/:guildid/settings/karma/rules/:id", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.updateGuildSettingsKrameRule)
+	router.Delete("/:guildid/settings/karma/rules/:id", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.deleteGuildSettingsKrameRule)
 	router.Get("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildSettingsAntiraid)
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
 }
@@ -788,6 +793,115 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(request.Hydrate())
+}
+
+func (c *GuildsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	rules, err := c.db.GetKarmaRules(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(models.ListResponse{N: len(rules), Data: rules})
+}
+
+func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	rule := new(sharedmodels.KarmaRule)
+	if err := ctx.BodyParser(rule); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := rule.Validate(); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	rule.GuildID = guildID
+	rule.ID = snowflakenodes.NodeKarmaRules.Generate()
+
+	if rule.Action == sharedmodels.KarmaActionToggleRole {
+		role, err := fetch.FetchRole(c.session, guildID, rule.Argument)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		rule.Argument = role.ID
+	}
+
+	sum := rule.CalculateChecksum()
+	ok, err := c.db.CheckKarmaRule(guildID, sum)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return fiber.NewError(fiber.StatusBadRequest, "same rule already exists")
+	}
+
+	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
+		return err
+	}
+
+	return ctx.JSON(rule)
+}
+
+func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	rule := new(sharedmodels.KarmaRule)
+	if err := ctx.BodyParser(rule); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := rule.Validate(); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	rule.GuildID = guildID
+	rule.ID, err = snowflake.ParseString(id)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if rule.Action == sharedmodels.KarmaActionToggleRole {
+		role, err := fetch.FetchRole(c.session, guildID, rule.Argument)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		rule.Argument = role.ID
+	}
+
+	sum := rule.CalculateChecksum()
+	ok, err := c.db.CheckKarmaRule(guildID, sum)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return fiber.NewError(fiber.StatusBadRequest, "same rule already exists")
+	}
+
+	if err := c.db.AddOrUpdateKarmaRule(rule); err != nil {
+		return err
+	}
+
+	return ctx.JSON(rule)
+}
+
+func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	sfId, err := snowflake.ParseString(id)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := c.db.RemoveKarmaRule(guildID, sfId); err != nil {
+		return err
+	}
+
+	return ctx.JSON(models.Ok)
 }
 
 // ---------------------------------------------------------------------------

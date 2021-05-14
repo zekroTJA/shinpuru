@@ -1,11 +1,10 @@
 @import 'sass/vars'
 @import 'sass/mixins'
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat:200,300&display=swap')
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap')
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap')
-
-
+@import url('https://fonts.googleapis.com/css2?family=Cantarell:wght@700&display=swap')
+    
 html, body
     background-color: $c-bg-general !important
     margin: 0
@@ -25,8 +24,8 @@ html, body
 
 
 h1, h2, h3, h4, h5, h6
-    font-family: 'Montserrat', sans-serif
-    font-weight: 200
+    font-family: 'Cantarell', sans-serif
+    font-weight: 700
     margin: 0 !important
 
 
@@ -111,11 +110,11 @@ select
 
 
 .embedded
-    padding: 2px 5px
+    padding: 2px 8px
     background-color: #2e0e0e66
     width: fit-content
     height: fit-content
-    border-radius: 5px
+    border-radius: 100px
     margin: 0
     font-family: 'Roboto Mono', monospace
     font-size: .7em
@@ -142,11 +141,11 @@ select
 
 
 .allowed
-    background-color: transparentize($c-green, .4)
+    background-color: $c-green
 
 
 .disallowed
-    background-color: transparentize($c-red, .4)
+    background-color: $c-red
 
 
 .link
@@ -189,3 +188,6 @@ select
 
 .breakall
     word-break: break-all
+
+.round
+    border-radius: 100%

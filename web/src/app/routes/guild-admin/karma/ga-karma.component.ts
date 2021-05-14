@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { KarmaSettings, Member } from 'src/app/api/api.models';
+import { KarmaRule, KarmaSettings, Member } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
 
@@ -14,6 +14,12 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 export class GuildAdminKarmaComponent implements OnInit {
   public karmaSettings: KarmaSettings;
   public blocklist: Member[] = null;
+  public rules: KarmaRule[] = null;
+  public newRule = {
+    trigger: 0,
+    action: 'TOGGLE_ROLE',
+    value: 0,
+  } as KarmaRule;
   private guildID: string;
 
   constructor(
@@ -30,6 +36,7 @@ export class GuildAdminKarmaComponent implements OnInit {
         .getGuildSettingsKarma(this.guildID)
         .toPromise();
 
+      await this.fetchRules();
       await this.fetchBlocklist();
     });
   }
@@ -40,14 +47,18 @@ export class GuildAdminKarmaComponent implements OnInit {
     ).data;
   }
 
+  private async fetchRules() {
+    this.rules = (
+      await this.api.getGuildSettingsKarmaRules(this.guildID).toPromise()
+    ).data;
+  }
+
   public async onSave() {
     try {
-      this.karmaSettings.emotes_increase = this.karmaSettings.emotes_increase.filter(
-        (e) => !!e
-      );
-      this.karmaSettings.emotes_decrease = this.karmaSettings.emotes_decrease.filter(
-        (e) => !!e
-      );
+      this.karmaSettings.emotes_increase =
+        this.karmaSettings.emotes_increase.filter((e) => !!e);
+      this.karmaSettings.emotes_decrease =
+        this.karmaSettings.emotes_decrease.filter((e) => !!e);
       await this.api
         .postGuildSettingsKarma(this.guildID, this.karmaSettings)
         .toPromise();
@@ -102,5 +113,58 @@ export class GuildAdminKarmaComponent implements OnInit {
         'green'
       );
     } catch {}
+  }
+
+  public onRuleTriggerChange(v: string) {
+    this.newRule.trigger = parseInt(v);
+  }
+
+  public async applyRule() {
+    if (
+      this.newRule.action !== 'KICK' &&
+      this.newRule.action !== 'BAN' &&
+      !this.newRule.argument
+    )
+      return;
+    this.newRule.guildid = this.guildID;
+    const res = await this.api
+      .createGuildSettingsKarmaRules(this.newRule)
+      .toPromise();
+    this.rules.push(res);
+    this.newRule = {
+      trigger: 0,
+      action: 'TOGGLE_ROLE',
+      value: 0,
+    } as KarmaRule;
+  }
+
+  public ruleTrigger(v: number): string {
+    switch (v) {
+      case 0:
+        return 'drops below';
+      case 1:
+        return 'rises above';
+    }
+  }
+
+  public ruleAction(v: string): string {
+    switch (v) {
+      case 'TOGGLE_ROLE':
+        return 'toggle role';
+      case 'KICK':
+        return 'kick member';
+      case 'BAN':
+        return 'ban member';
+      case 'SEND_MESSAGE':
+        return 'send message';
+    }
+  }
+
+  public async removeRule(r: KarmaRule) {
+    await this.api.deleteGuildSettingsKarmaRules(r).toPromise();
+    const i = this.rules.indexOf(r);
+    if (i >= 0) {
+      this.rules.splice(i, 1);
+    }
   }
 }

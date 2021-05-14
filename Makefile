@@ -6,15 +6,17 @@ LDPAKAGE     = internal/util
 CONFIG       = $(CURDIR)/config/private.config.yml
 BINPATH      = $(CURDIR)/bin
 PRETTIER_CFG = "$(CURDIR)/.prettierrc.yml"
+TMPBIN       = "./bin/tmp/$(APPNAME)"
 ###############################################
 
 ### EXECUTABLES ###############################
-GO     	 = go
-GOLINT 	 = golint
-GREP   	 = grep
-NPM    	 = npm
-PRETTIER = prettier
-NG       = ng
+GO     	      = go
+GOLINT 	      = golint
+GREP   	      = grep
+NPM    	      = npm
+PRETTIER      = prettier
+NG       	  = ng
+DOCKERCOMPOSE = docker-compose
 ###############################################
 
 # ---------------------------------------------
@@ -78,16 +80,16 @@ PHONY += lint
 lint:
 	$(GOLINT) ./... | $(GREP) -v vendor || true
 
+$(TMPBIN):
+	$(GO) build -race -v -o $@ $(CURDIR)/cmd/$(APPNAME)/*.go 
+
 PHONY += run
-run:
-	$(GO) run -race -v \
-		$(CURDIR)/cmd/$(APPNAME)/*.go \
-			-c $(CONFIG) -quiet -forcecolor
+run: $(TMPBIN)
+	$(TMPBIN) -c $(CONFIG) -quiet -forcecolor
 
 PHONY += rundev
-rundev:
-	$(GO) run -v -race \
-		$(CURDIR)/cmd/$(APPNAME)/*.go -devmode -c $(CONFIG) -quiet -forcecolor
+rundev: $(TMPBIN)
+	$(TMPBIN) -devmode -c $(CONFIG) -quiet -forcecolor
 
 PHONY += cleanup
 cleanup:
@@ -118,12 +120,18 @@ prettify:
 	    	$(CURDIR)/web/src/**/*.vue \
 	    	$(CURDIR)/web/src/**/**/*.vue
 
+PHONY += devstack
+devstack:
+	$(DOCKERCOMPOSE) -f docker-compose.dev.yml \
+		up -d
+
 PHONY += help
 help:
 	@echo "Available targets:"
 	@echo "  #        - creates binary in ./bin"
 	@echo "  cleanup  - tidy up temporary stuff created by build or scripts"
 	@echo "  deps     - ensure dependencies are installed"
+	@echo "  devstack - spins up the dev docker-compose stack"
 	@echo "  fe       - build font end files"
 	@echo "  lint     - run linters (golint)"
 	@echo "  run      - debug run app (go run) with test config"

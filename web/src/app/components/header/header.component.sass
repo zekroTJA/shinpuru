@@ -1,10 +1,11 @@
 @import '../../../sass/vars'
 @import '../../../sass/mixins'
     
-.logout-popup
+.dropdown-popup
     position: absolute
     z-index: 10
-    transform: translateY(30px)
+    transform: translate(-3px, 35px)
+    width: 100%
 
 .popup-entry
     display: flex
@@ -12,6 +13,8 @@
     p
         margin-left: 10px
         margin-right: 0 !important
+        text-transform: uppercase
+        font-size: 0.9em
 
     img
         width: 15px
@@ -21,8 +24,8 @@
 #header
     height: 50px
     display: flex
+    align-items: center
     background-color: $c-nqblack
-    padding: 10px 10px
 
     *
         +my-auto
@@ -39,15 +42,22 @@
         font-size: 25px
 
     #user-info
+        position: relative
         margin-right: 0
         margin-left: auto
+        background-color: rgba(black, 0.25)
+        padding: 5px
+        border-radius: 100px
+        cursor: pointer
 
-        .logout-btn
+        .avatar
+            height: 25px
+            width: 25px
+
+        .dropdown-btn
             font-size: 12px
-            margin-right: 10px
+            margin: 0 15px 0 10px
             border-radius: 3px
-            background-color: rgba(0, 0, 0, .4)
-            padding: 5px 10px
             cursor: pointer
             +my-auto
 
@@ -60,14 +70,20 @@
         margin-left: 20px
 
         a
-            padding: 3px 6px
+            padding: 5px 10px
             background-color: rgba(0, 0, 0, .3)
             margin-right: 5px
-            border-radius: 5px
+            border-radius: 100px
+            opacity: 0.8
+            transition: all 0.2s ease
+            font-size: 0.8em
+            &:hover
+                opacity: 1
 
 
 .btn-login
     padding: 4px 14px
+    display: flex
 
 
 @media only screen and (max-width: 900px)

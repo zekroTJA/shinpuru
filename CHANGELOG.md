@@ -1,37 +1,40 @@
-1.12.0
+1.13.0
 
 ## Major Changes
 
-### ranna implementaiton [#232]
+### Web Inertace Redesign
 
-shinpuru now supports code executing using [**ranna**](https://github.com/ranna-go). You can add the folowing to your shinpuru config to connect to a ranna service instance.
-```yaml
-codeexec:
-  type: "ranna"
-  ranna:
-    # The ranna instance endpoint.
-    endpoint: "https://private.ranna.zekro.de"
-    # The ranna instance API version.
-    apiversion: "v1"
-    # Here you can pass a token if the ranna instance requires one.
-    # This is the exact value set as 'Authentication' header. If
-    # you do not specify a token type ('bearer ...', for example),
-    # the token is automatically prefixed with 'basic '.
-    token: ""
-```
+Because the design of the web interface of shinpuru is kind of inconsistent and also kind of unappealing, I decided to re-design it step by step. The first results of this re-design offensive you can see in this release.
 
-![](https://i.imgur.com/r2l5gaa.png)
+First of all, I changed the heading front to [`Cantarell`](https://fonts.google.com/specimen/Cantarell). It's clean and simple though it has some character to it which perfectly matches the general design of shinpuru. Also, it let's the headings stand out more and better highlights the important parts of the UI.
 
-If you do not specify any code executor, Jdoodle is still used. Also, if using Jdoodle, required credentials are still required to be set on a per-guild-basis using the [`exec`](https://github.com/zekroTJA/shinpuru/wiki/Commands#exec) command. When using ranna as code execution engine, this command is disabled and code execution is enabled always enabled.
+<img width="49%" src="https://i.imgur.com/zYhahPT.png"/><img width="49%" src="https://i.imgur.com/OeEWrAu.png"/>
 
-## Minor Changes
+The old design always gave me the feel of a rough, cluttered experience. So, as you can see, everything got a bit more round, smooth and spacy.
 
-- [logrus](https://github.com/sirupsen/logrus) is now used as logger to provide a more rich log output and make logging easier in general.
+<img width="49%" src="https://i.imgur.com/sB3Skt6.png"/><img width="49%" src="https://i.imgur.com/DvIpHt7.png"/>
 
-## Bug Fixes
+<img width="49%" src="https://i.imgur.com/JCl9RSg.png"/><img width="49%" src="https://i.imgur.com/Q6Uqj9O.png"/>
 
-- shinpuru will no more crash when not providing rate limit configuration. [#230]
-- Invite links from the same guild as where the message was sent from are no more blocked by the guild invite block system.
+As well, I adobted the new design CI of Discord with the new color tones and the optimized logo.
+
+![](https://i.imgur.com/yveJbqZ.png)
+
+### Karma Rules [#231]
+
+You can now specify karma rules which will be automatically applied depending on the karma levels of the members.
+
+To set them up, navigate to the guild admin panel of your guild, then go to `Karma` and scroll down to `Rules`.
+
+> Please be careful using this feature, especially with the kick and ban rules, because it did not pass through the full test period yet!
+
+![](https://i.imgur.com/knRJ0n5.png)
+
+<!-- ## Minor Changes -->
+
+
+<!-- ## Bug Fixes -->
+
 
 # Docker
 
@@ -40,11 +43,13 @@ If you do not specify any code executor, Jdoodle is still used. Also, if using J
 Pull the docker image of this release:
 
 From DockerHub:
+
 ```
-$ docker pull zekro/shinpuru:1.12.0
+$ docker pull zekro/shinpuru:1.13.0
 ```
 
 From GHCR:
+
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.12.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.13.0
 ```

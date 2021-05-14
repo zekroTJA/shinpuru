@@ -262,3 +262,12 @@ export interface AccessTokenModel {
   token: string;
   expires: string;
 }
+
+export interface KarmaRule {
+  id: string;
+  guildid: string;
+  trigger: number;
+  value: number;
+  action: string;
+  argument: string;
+}

@@ -1,4 +1,4 @@
-<div>
+<div class="mt-4">
 
     <!-- --------------------- MODAL --------------------------- -->
 
@@ -124,8 +124,8 @@
             <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
         </div>
 
-        <div *ngIf="!member?.user.bot">
-            <h4 class="mb-3">Karma</h4>
+        <div *ngIf="!member?.user.bot" class="mt-5">
+            <h3 class="mb-4">Karma</h3>
 
             <div class="d-flex">
                 <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="mr-3 karma-tile">
@@ -137,7 +137,7 @@
             </div>
         </div>
 
-        <h4 class="mt-4 mb-3">General User Information</h4>
+        <h3 class="mt-5 mb-4">General User Information</h3>
 
         <table class="general-user-info mt-2">
             <tbody>
@@ -176,10 +176,10 @@
         <div *ngIf="
             member.user.id !== guild.self_member.user.id && 
             canPerformAny('sp.guild.mod.report', 'sp.guild.mod.kick', 'sp.guild.mod.ban', 'sp.guild.mod.mute')
-        " class="mt-4 mb-2">
-            <h4>Moderation</h4>
+        " class="mt-5 mb-2">
+            <h3>Moderation</h3>
             <app-spinner id="spinner-load-modbuttons" *ngIf="!perm" [started]="true"></app-spinner>
-            <div class="mod-buttons">
+            <div class="mod-buttons mt-4">
                 <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
                     REPORT
                 </button>
@@ -195,8 +195,8 @@
             </div>
         </div>
 
-        <div class="d-flex mt-4 mb-2">
-            <h4>Reports</h4>
+        <div class="d-flex mt-5 mb-4">
+            <h3>Reports</h3>
             <p *ngIf="reports?.length" class="reports-count">{{ reports.length }}</p>
         </div>
         <app-spinner *ngIf="!reports" id="spinner-load-reports" [started]="true"></app-spinner>

@@ -11,7 +11,7 @@
 
 <div class="group-tile-container">
   <div *ngFor="let kv of groupMap | keyValue" class="group-tile">
-    <h5>{{ kv.key }}</h5>
+    <h5 class="capitalize">{{ kv.key | lowercase }}</h5>
     <div>
       <a
         *ngFor="let c of kv.value | commandSort"
@@ -23,7 +23,7 @@
 </div>
 
 <div *ngFor="let kv of groupMap | keyValue" class="mt-4">
-  <h3 class="group-header">{{ kv.key }}</h3>
+  <h3 class="group-header capitalize">{{ kv.key | lowercase }}</h3>
   <div
     *ngFor="let c of kv.value | commandSort"
     class="command-tile"

@@ -6,4 +6,4 @@ bracketSpacing: true
 arrowParens:    always
 
 # requirePragma:  true
-insertPragma:   true
+insertPragma:   false

@@ -14,8 +14,8 @@
 
 =hover-btn($scale: 1.03, $shadowlen: 7px)
     cursor: pointer
-    +transition25(all)
+    transition: all 0.2s ease
 
     &:hover
         transform: scale($scale)
-        box-shadow: 0px $shadowlen 0px 0px rgba(0,0,0,0.3)
+        box-shadow: 0px $shadowlen $shadowlen ($shadowlen/3) rgba(0,0,0,0.3)
