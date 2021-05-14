@@ -47,7 +47,7 @@
         <!-- HEADING -->
         <div id="heading-container" class="mt-4">
             <img [src]="guild.icon_url | discordAsset:'/assets/dc-logo.svg':64:(!!guild.icon)"/>
-            <h3>{{ guild.name }}</h3>
+            <h3 [title]="guild.name">{{ guild.name }}</h3>
             <p class="embedded">{{ guild.id }}</p>
         </div>
 
@@ -70,7 +70,7 @@
         <!-- GUILD MEMBERS -->
         <div class="d-flex mt-5">
             <app-spoiler [(ngModel)]="guildToggle">
-                <h4 class="mx-3">GUILD MEMBERS</h4>
+                <h4 class="mx-3">Members</h4>
                 <p class="cbadge">{{ guildToggle ? (membersDisplayed?.length + ' / ' + guild.member_count) : guild.member_count }}</p>
             </app-spoiler>
         </div>
@@ -97,7 +97,7 @@
         <!-- SECURITY-->
         <div class="d-flex mt-4">
             <app-spoiler [(ngModel)]="securityToggle">
-                <h4 class="mx-3">SECURITY</h4>
+                <h4 class="mx-3">Security</h4>
                 <img 
                     title="Some security features are not enabled on this guild." 
                     *ngIf="!guild.backups_enabled || !guild.invite_block_enabled" 
@@ -105,9 +105,9 @@
                 />
             </app-spoiler>
         </div>
-        <div *ngIf="securityToggle" class="security-container">
+        <div *ngIf="securityToggle" class="security-container mt-4">
             <div class="mb-4 security-embed" [class.disabled]="!guild.backups_enabled">
-                <h5>BACKUPS</h5>
+                <h5>Backups</h5>
                 <div class="status">
                     <img *ngIf="guild.backups_enabled" src="assets/shield.svg"/>
                     <img *ngIf="!guild.backups_enabled" src="assets/warning.svg"/>
@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div class="mb-4 security-embed" [class.disabled]="!guild.invite_block_enabled">
-                <h5>INVITE BLOCKING</h5>
+                <h5>Invite Blocking</h5>
                 <div class="status">
                     <img *ngIf="guild.invite_block_enabled" src="assets/shield.svg"/>
                     <img *ngIf="!guild.invite_block_enabled" src="assets/warning.svg"/>
@@ -139,7 +139,7 @@
         <!-- MOD LOG -->
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
-                <h4 class="mx-3">MOD LOG</h4>
+                <h4 class="mx-3">Mod Log</h4>
                 <p class="cbadge">{{ modlogToggle ? (reports?.length + ' / ' + reportsTotalCount) : reportsTotalCount }}</p>
                 <div class="spoiler-buttons">
                     <button *ngIf="modlogToggle && guildSettingsContains('sp.guild.mod.unbanrequests')" (click)="onUnbanRequests($event)" [class.bg-purple]="unbanReqeustsCount > 0">
@@ -149,7 +149,7 @@
                 </div>
             </app-spoiler>
         </div>
-        <div *ngIf="modlogToggle">
+        <div *ngIf="modlogToggle" class="my-4">
             <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
             <app-report 
                 *ngFor="let rep of reports" 
@@ -172,9 +172,9 @@
 
         <!-- GUILD SETTINGS -->
         <div *ngIf="guildSettingsAllowed && guildSettingsAllowed.length" class="d-flex mt-4 mb-2">
-            <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">GUILD SETTINGS</h4></app-spoiler>
+            <app-spoiler [(ngModel)]="guildSettingsToggle"><h4 class="ml-3">Settings</h4></app-spoiler>
         </div>
-        <div *ngIf="guildSettingsToggle">
+        <div *ngIf="guildSettingsToggle" class="my-4">
             <div *ngIf="guildSettingsContainsAny(['sp.guild.config.karma', 'sp.guild.config.antiraid'])" class="settingsTile advanced">
                 <h5>Advanced</h5>
                 <button *ngIf="guildSettingsContains('sp.guild.config.antiraid')" class="advanced-button" ngbTooltip="Antiraid Settings" (click)="navigateSetting('antiraid')"><img src="/assets/antiraid.svg"/></button>
@@ -267,9 +267,9 @@
 
         <!-- PERMISSION SETTINGS -->
         <div *ngIf="guildSettingsContains('sp.guild.config.perms')" class="d-flex mt-4 mb-2">
-            <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">PERMISSIONS</h4></app-spoiler>
+            <app-spoiler [(ngModel)]="permissionsToggle"><h4 class="ml-3">Permissions</h4></app-spoiler>
         </div>
-        <div *ngIf="permissionsToggle">
+        <div *ngIf="permissionsToggle" class="my-4">
             <i>
                 <a href="https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md" target="_blank" class="link">Here</a> you can find the documentation about how the 
                 permission system works.
@@ -305,7 +305,7 @@
                 <p class="embedded perms-role mb-2" [style.background-color]="p.role?.color ? toHexClr(p.role?.color) : null">@{{ p.role?.name || p.id }}</p>
                 <ul>
                     <li *ngFor="let perm of p.perms">
-                        <div class="d-flex">
+                        <div class="d-flex mb-2">
                             <p class="embedded" [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'">{{ perm }}</p>
                             <a class="remove-btn" (click)="removePermission(p, perm)"></a>
                         </div>
@@ -317,11 +317,11 @@
         <!-- BACKUPS -->
         <div class="d-flex mt-4 mb-2">
             <app-spoiler [(ngModel)]="backupsToggle">
-                <h4 class="mx-3">BACKUPS</h4>
+                <h4 class="mx-3">Backups</h4>
                 <p class="cbadge">{{ backups?.length || '0' }}</p>
             </app-spoiler>
         </div>
-        <div *ngIf="backupsToggle">
+        <div *ngIf="backupsToggle" class="my-4">
             <i *ngIf="!backups || !backups.length">No backups are available for this guild.</i>
             <p *ngIf="backups && backups.length > 0">
                 If you want to restore a backup, please use the 
