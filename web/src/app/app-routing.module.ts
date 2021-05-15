@@ -16,6 +16,7 @@ import { GuildAdminAntiraidComponent } from './routes/guild-admin/antiraid/ga-an
 import { GuildUnbanRequestComponent } from './routes/guild-unbanrequests/guild-unbanrequests.component';
 import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
 import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
+import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-general.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
     component: ScoreboardComponent,
   },
   {
+    path: 'guilds/:guildid/guildadmin/general',
+    component: GuildAdminGeneralComponent,
+  },
+  {
     path: 'guilds/:guildid/guildadmin/antiraid',
     component: GuildAdminAntiraidComponent,
   },
@@ -49,7 +54,7 @@ const routes: Routes = [
   },
   {
     path: 'guilds/:guildid/guildadmin',
-    redirectTo: 'guilds/:guildid/guildadmin/antiraid',
+    redirectTo: 'guilds/:guildid/guildadmin/general',
     pathMatch: 'full',
   },
   {
