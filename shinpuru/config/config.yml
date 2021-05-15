@@ -1,0 +1,77 @@
+codeexec:
+  ranna:
+    apiversion: v1
+    endpoint: ""
+    token: ""
+  type: jdoodle
+configVersionPleaseDoNotChange: 6
+database:
+  mysql:
+    database: ""
+    host: ""
+    password: ""
+    user: ""
+  redis:
+    addr: localhost:6379
+    enable: false
+    password: ""
+    type: 0
+  sqlite:
+    dbfile: shinpuru.sqlite3.db
+  type: sqlite
+discord:
+  clientid: ""
+  clientsecret: ""
+  generalprefix: sp!
+  globalcommandratelimit:
+    burst: 5
+    limitseconds: 3
+  guildbackuploc: ""
+  ownerid: ""
+  token: ""
+logging:
+  commandlogging: true
+  loglevel: 4
+metricts:
+  addr: :9091
+  enable: false
+permissions:
+  defaultadminrules:
+  - +sp.guild.*
+  - +sp.etc.*
+  - +sp.chat.*
+  defaultuserrules:
+  - +sp.etc.*
+  - +sp.chat.*
+schedules:
+  guildbackups: 0 0 6,18 * * *
+  refreshtokencleanup: 0 0 5 * * *
+storage:
+  file:
+    location: ./data
+  minio:
+    accesskey: ""
+    accesssecret: ""
+    endpoint: ""
+    location: us-east-1
+    secure: true
+  type: file
+twitchapp:
+  clientid: ""
+  clientsecret: ""
+webserver:
+  addr: :8080
+  apitokenkey: YVRMHM91oYLGOngE2bXjv7YhF/U4v+Ra
+  enabled: true
+  landingpage:
+    showlocalinvite: true
+    showpublicinvites: true
+  publicaddr: https://example.com:8080
+  ratelimit:
+    burst: 30
+    enabled: false
+    limitseconds: 3
+  tls:
+    certfile: ""
+    enabled: false
+    keyfile: ""
