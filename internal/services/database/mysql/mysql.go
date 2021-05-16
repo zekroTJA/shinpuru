@@ -56,6 +56,7 @@ func (m *MysqlMiddleware) setup() {
 		"`joinMsg` text NOT NULL DEFAULT ''," +
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
 		"`colorReaction` text NOT NULL DEFAULT ''," +
+		"`guildlog` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -260,6 +261,17 @@ func (m *MysqlMiddleware) setup() {
 		"`token` text NOT NULL DEFAULT ''," +
 		"`expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`userID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guildlog` (" +
+		"`id` varchar(25) NOT NULL DEFAULT ''," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`module` varchar(30) NOT NULL DEFAULT ''," +
+		"`message` text NOT NULL DEFAULT ''," +
+		"`severity` int(8) NOT NULL DEFAULT '0'," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
@@ -1648,6 +1660,64 @@ func (m *MysqlMiddleware) AddOrUpdateKarmaRule(rule *models.KarmaRule) (err erro
 
 func (m *MysqlMiddleware) RemoveKarmaRule(guildID string, id snowflake.ID) (err error) {
 	_, err = m.Db.Exec("DELETE FROM karmaRules WHERE guildID = ? AND id = ?", guildID, id)
+	err = wrapNotFoundError(err)
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildLogEnable(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "guildlog")
+	return val != "", err
+}
+
+func (m *MysqlMiddleware) SetGuildLogEnable(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "guildlog", val)
+}
+
+func (m *MysqlMiddleware) GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity) (res []*models.GuildLogEntry, err error) {
+	rows, err := m.Db.Query(
+		"SELECT id, module, message, severity, `timestamp` "+
+			"FROM guildlog "+
+			"WHERE guildID = ? "+
+			"LIMIT ?, ?", guildID, offset, limit)
+	err = wrapNotFoundError(err)
+	if err != nil {
+		return
+	}
+
+	res = make([]*models.GuildLogEntry, 0)
+	for rows.Next() {
+		r := new(models.GuildLogEntry)
+		r.GuildID = guildID
+		if err = rows.Scan(&r.ID, &r.Module, &r.Message, &r.Severity, &r.Timestamp); err != nil {
+			return
+		}
+		res = append(res, r)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) AddGuildLogEntry(e *models.GuildLogEntry) (err error) {
+	_, err = m.Db.Exec(
+		"INSERT INTO guildlog (id, guildID, module, message, severity, `timestamp`) "+
+			"VALUES (?, ?, ?, ?, ?, ?)",
+		e.ID, e.GuildID, e.Module, e.Message, e.Severity, e.Timestamp)
+	return
+}
+
+func (m *MysqlMiddleware) DeleteLogEntry(guildID string, id snowflake.ID) (err error) {
+	_, err = m.Db.Exec("DELETE FROM guildlog WHERE guildID = ? ADN id = ?",
+		guildID, id)
+	err = wrapNotFoundError(err)
+	return
+}
+
+func (m *MysqlMiddleware) DeleteLogEntries(guildID string) (err error) {
+	_, err = m.Db.Exec("DELETE FROM guildlog WHERE guildID = ?", guildID)
 	err = wrapNotFoundError(err)
 	return
 }
