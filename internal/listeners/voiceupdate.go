@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
@@ -17,11 +18,13 @@ var voiceStateCashe = map[string]*discordgo.VoiceState{}
 
 type ListenerVoiceUpdate struct {
 	db database.Database
+	gl guildlog.Logger
 }
 
 func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 	return &ListenerVoiceUpdate{
 		db: container.Get(static.DiDatabase).(database.Database),
+		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("voicelog"),
 	}
 }
 
@@ -60,6 +63,7 @@ func (l *ListenerVoiceUpdate) isBlocked(guildID, chanID string) (ok bool) {
 	ok, err := l.db.IsGuildVoiceLogIgnored(guildID, chanID)
 	if err != nil {
 		logrus.WithError(err).Fatal("VOICELOG :: failed getting blocked state")
+		l.gl.Errorf(guildID, "Failed getting blocked state: %s", err.Error())
 	}
 	return
 }

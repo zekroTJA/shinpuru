@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -15,6 +16,7 @@ import (
 type ListenerTwitchNotify struct {
 	config  *config.Config
 	db      database.Database
+	gl      guildlog.Logger
 	session *discordgo.Session
 
 	mx        *sync.RWMutex
@@ -25,6 +27,7 @@ func NewListenerTwitchNotify(container di.Container) *ListenerTwitchNotify {
 	return &ListenerTwitchNotify{
 		config:    container.Get(static.DiConfig).(*config.Config),
 		db:        container.Get(static.DiDatabase).(database.Database),
+		gl:        container.Get(static.DiGuildLog).(guildlog.Logger).Section("twitchnotify"),
 		session:   container.Get(static.DiDiscordSession).(*discordgo.Session),
 		mx:        &sync.RWMutex{},
 		notMsgIDs: make(map[string][]*discordgo.Message),
@@ -63,6 +66,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 		if err != nil {
 			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
 				logrus.WithError(err).Fatal("Failed removing Twitch notify entry from database")
+				l.gl.Errorf(not.GuildID, "Failed removing twitch notify entry from database (%s): %s", u.ID, err.Error())
 			}
 			return
 		}

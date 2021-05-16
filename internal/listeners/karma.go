@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
@@ -37,6 +38,7 @@ const (
 
 type ListenerKarma struct {
 	db    database.Database
+	gl    guildlog.Logger
 	karma *karma.Service
 
 	cache       *timedmap.TimedMap
@@ -48,6 +50,7 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 	cache := timedmap.New(5 * time.Minute)
 	return &ListenerKarma{
 		db:    container.Get(static.DiDatabase).(database.Database),
+		gl:    container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma"),
 		karma: container.Get(static.DiKarma).(*karma.Service),
 
 		cache: cache,
@@ -68,6 +71,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	// Get karma enabled state for this guild
 	if enabled, err := l.karma.GetState(e.GuildID); err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting karma state")
+		l.gl.Errorf(e.GuildID, "Failed getting karma state: %s", err.Error())
 		return
 	} else if !enabled {
 		return
@@ -77,6 +81,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	reactionsAddKarma, reactionsRemoveKarma, err := l.db.GetKarmaEmotes(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting karma emotes")
+		l.gl.Errorf(e.GuildID, "Failed getting karma emotes: %s", err.Error())
 		return
 	}
 	if reactionsAddKarma == "" || reactionsRemoveKarma == "" {
@@ -100,6 +105,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	isBlacklisted, err := l.karma.IsBlockListed(e.GuildID, e.UserID)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed checking blocklist")
+		l.gl.Errorf(e.GuildID, "Failed getting blocklist: %s", err.Error())
 		return
 	}
 	if isBlacklisted {
@@ -110,6 +116,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	user, err := s.User(e.UserID)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.UserID).Error("Failed getting user")
+		l.gl.Errorf(e.GuildID, "Failed getting user (%s): %s", e.UserID, err.Error())
 		return
 	}
 
@@ -135,6 +142,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	if err != nil {
 		if msg, err = s.ChannelMessage(e.ChannelID, e.MessageID); err != nil {
 			logrus.WithError(err).WithField("gid", e.GuildID).WithField("msg", e.MessageID).Error("Failed getting message")
+			l.gl.Errorf(e.GuildID, "Failed getting message (%s): %s", e.MessageID, err.Error())
 			return
 		}
 	}
@@ -149,6 +157,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	err = l.karma.Update(e.GuildID, msg.Author.ID, typ)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.UserID).Error("Failed altering karma value")
+		l.gl.Errorf(e.GuildID, "Failed altering karma value (%s): %s", e.UserID, err.Error())
 		return
 	}
 
@@ -182,6 +191,7 @@ func (l *ListenerKarma) rateLimiterTake(userID, guildID string) bool {
 	rateLimiterTokens, err := l.db.GetKarmaTokens(guildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", guildID).Error("Failed getting karma tokens")
+		l.gl.Errorf(guildID, "Failed getting karma tokens: %s", err.Error())
 		return false
 	}
 	if rateLimiterTokens < 1 {

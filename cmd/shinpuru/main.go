@@ -20,6 +20,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -285,6 +286,14 @@ func main() {
 		Name: static.DiKarma,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return karma.NewKarmaService(ctn), nil
+		},
+	})
+
+	// Initialize guild logger
+	diBuilder.Add(di.Def{
+		Name: static.DiGuildLog,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return guildlog.New(ctn), nil
 		},
 	})
 

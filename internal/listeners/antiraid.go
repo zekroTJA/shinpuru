@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
@@ -28,6 +29,7 @@ type guildState struct {
 
 type ListenerAntiraid struct {
 	db database.Database
+	gl guildlog.Logger
 
 	guildStates map[string]*guildState
 	triggers    *timedmap.TimedMap
@@ -38,6 +40,7 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		db:          container.Get(static.DiDatabase).(database.Database),
 		guildStates: make(map[string]*guildState),
 		triggers:    timedmap.New(arTriggerCleanupDuration),
+		gl:          container.Get(static.DiGuildLog).(guildlog.Logger).Section("antiraid"),
 	}
 }
 
@@ -46,6 +49,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		if time.Since(v) < arTriggerRecordLifetime {
 			if err := l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String()); err != nil {
 				logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
+				l.gl.Errorf(e.GuildID, "Failed adding user to joinlist (%s): %s", e.User.ID, err.Error())
 			}
 		}
 		return
@@ -121,12 +125,14 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 	members, err := discordutil.GetMembers(s, e.GuildID)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild members")
+		l.gl.Errorf(e.GuildID, "Failed getting guild members: %s", err.Error())
 		return
 	}
 
 	l.triggers.Set(e.GuildID, time.Now(), arTriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
+			l.gl.Errorf(e.GuildID, "Failed flusing joinlist: %s", err.Error())
 		}
 	})
 
@@ -160,6 +166,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 	state, err = l.db.GetAntiraidState(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid state")
+		l.gl.Errorf(gid, "Failed getting antiraid state: %s", err.Error())
 		return
 	}
 	if !state {
@@ -169,6 +176,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 	limit, err = l.db.GetAntiraidRegeneration(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid regeneration")
+		l.gl.Errorf(gid, "Failed getting antiraid regeneration: %s", err.Error())
 		return
 	}
 	if limit < 1 {
@@ -178,6 +186,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 	burst, err = l.db.GetAntiraidBurst(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid burst")
+		l.gl.Errorf(gid, "Failed getting antiraid burst: %s", err.Error())
 		return
 	}
 	if burst < 1 {

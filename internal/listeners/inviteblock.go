@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
@@ -22,12 +23,14 @@ var (
 
 type ListenerInviteBlock struct {
 	db  database.Database
+	gl  guildlog.Logger
 	pmw *middleware.PermissionsMiddleware
 }
 
 func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
 		db:  container.Get(static.DiDatabase).(database.Database),
+		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("inviteblock"),
 		pmw: container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
 	}
 }
@@ -105,7 +108,8 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 			}
 		}
 	} else {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("failed getting guild invites")
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("INVITEBLOCK :: failed getting guild invites")
+		l.gl.Errorf(e.GuildID, "Failed getting guild invites: %s", err.Error())
 	}
 
 	return s.ChannelMessageDelete(e.ChannelID, e.ID)

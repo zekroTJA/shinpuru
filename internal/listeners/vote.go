@@ -5,17 +5,20 @@ import (
 	"github.com/sarulabs/di/v2"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 )
 
 type ListenerVote struct {
 	db database.Database
+	gl guildlog.Logger
 }
 
 func NewListenerVote(container di.Container) *ListenerVote {
 	return &ListenerVote{
 		db: container.Get(static.DiDatabase).(database.Database),
+		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("votes"),
 	}
 }
 
@@ -40,9 +43,13 @@ func (l *ListenerVote) Handler(s *discordgo.Session, e *discordgo.MessageReactio
 		if tick > -1 {
 			go func() {
 				v.Tick(s, e.UserID, tick)
-				l.db.AddUpdateVote(v)
+				if err = l.db.AddUpdateVote(v); err != nil {
+					l.gl.Errorf(e.GuildID, "Failed updating vote in database: %s", err.Error())
+				}
 			}()
 		}
-		s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.Name, e.UserID)
+		if err = s.MessageReactionRemove(e.ChannelID, e.MessageID, e.Emoji.Name, e.UserID); err != nil {
+			l.gl.Errorf(e.GuildID, "Failed removing reaction: %s", err.Error())
+		}
 	}
 }

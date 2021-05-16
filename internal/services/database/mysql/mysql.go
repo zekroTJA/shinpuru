@@ -56,7 +56,7 @@ func (m *MysqlMiddleware) setup() {
 		"`joinMsg` text NOT NULL DEFAULT ''," +
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
 		"`colorReaction` text NOT NULL DEFAULT ''," +
-		"`guildlog` text NOT NULL DEFAULT ''," +
+		"`guildlog` text NOT NULL DEFAULT '1'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -1681,8 +1681,10 @@ func (m *MysqlMiddleware) GetGuildLogEntries(guildID string, offset, limit int, 
 	rows, err := m.Db.Query(
 		"SELECT id, module, message, severity, `timestamp` "+
 			"FROM guildlog "+
-			"WHERE guildID = ? "+
-			"LIMIT ?, ?", guildID, offset, limit)
+			"WHERE guildID = ? AND (? < 0 OR severity = ?)"+
+			"LIMIT ?, ?",
+		guildID, severity, severity,
+		offset, limit)
 	err = wrapNotFoundError(err)
 	if err != nil {
 		return
