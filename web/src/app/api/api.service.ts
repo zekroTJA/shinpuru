@@ -32,6 +32,8 @@ import {
   GuildStarboardEntry,
   AccessTokenModel,
   KarmaRule,
+  GuildLogEntry,
+  State,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -126,6 +128,9 @@ export class APIService {
     guildID: string,
     rc: string = ''
   ) => `${this.rcGuildSettingsKarma(guildID)}/rules${rc ? '/' + rc : ''}`;
+
+  private readonly rcGuildSettingsLogs = (guildID: string, rc: string = '') =>
+    `${this.rcGuildSettings(guildID)}/logs${rc ? '/' + rc : ''}`;
 
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
@@ -826,6 +831,52 @@ export class APIService {
   ): Observable<UserSettingsOTA> {
     return this.http
       .post(this.rcUserSettings('ota'), ota, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsLogs(
+    guildID: string,
+    limit = 50,
+    offset = 0,
+    severity = -1
+  ): Observable<ListReponse<GuildLogEntry>> {
+    const opts = this.defopts({
+      params: new HttpParams()
+        .set('severity', severity.toString())
+        .set('offset', offset.toString())
+        .set('limit', limit.toString()),
+    });
+
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteGuildSettingsLogs(
+    guildID: string,
+    id?: string
+  ): Observable<any> {
+    return this.http
+      .delete(this.rcGuildSettingsLogs(guildID, id), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsLogsState(guildID: string): Observable<State> {
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID, 'state'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsLogsState(
+    guildID: string,
+    enabled: boolean
+  ): Observable<State> {
+    return this.http
+      .post(
+        this.rcGuildSettingsLogs(guildID, 'state'),
+        { enabled },
+        this.defopts()
+      )
       .pipe(catchError(this.errorCatcher));
   }
 }

@@ -63,6 +63,11 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Delete("/:guildid/settings/karma/rules/:id", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.deleteGuildSettingsKrameRule)
 	router.Get("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildSettingsAntiraid)
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
+	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
+	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
+	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
+	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
+	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
 }
 
 func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
@@ -899,6 +904,85 @@ func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 
 	if err := c.db.RemoveKarmaRule(guildID, sfId); err != nil {
 		return err
+	}
+
+	return ctx.JSON(models.Ok)
+}
+
+func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 50, 1, 1000)
+	if err != nil {
+		return err
+	}
+	offset, err := wsutil.GetQueryInt(ctx, "offset", 0, 0, 0)
+	if err != nil {
+		return err
+	}
+	severity, err := wsutil.GetQueryInt(ctx, "severity",
+		int(sharedmodels.GLAll), int(sharedmodels.GLAll), int(sharedmodels.GLFatal))
+	if err != nil {
+		return err
+	}
+
+	res, err := c.db.GetGuildLogEntries(guildID, offset, limit, sharedmodels.GuildLogSeverity(severity))
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(res)
+}
+
+func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	enabled, err := c.db.GetGuildLogEnable(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(&models.State{
+		State: enabled,
+	})
+}
+
+func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	state := new(models.State)
+	if err := ctx.BodyParser(state); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	err := c.db.SetGuildLogEnable(guildID, state.State)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(state)
+}
+
+func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	if id != "" {
+		var ids snowflake.ID
+		ids, err = snowflake.ParseString(id)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		err = c.db.DeleteLogEntry(guildID, ids)
+	} else {
+		err = c.db.DeleteLogEntries(guildID)
+	}
+
+	if database.IsErrDatabaseNotFound(err) {
+		return fiber.ErrNotFound
+	}
+	if err != nil {
+		return
 	}
 
 	return ctx.JSON(models.Ok)

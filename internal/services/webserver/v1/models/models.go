@@ -22,6 +22,10 @@ type Status struct {
 	Code int `json:"code"`
 }
 
+type State struct {
+	State bool `json:"state"`
+}
+
 type AccessTokenResponse struct {
 	Token   string    `json:"token"`
 	Expires time.Time `json:"expires"`

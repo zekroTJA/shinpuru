@@ -15,8 +15,6 @@ const (
 	GLWarn
 	GLError
 	GLFatal
-
-	glSevMax
 )
 
 type GuildLogEntry struct {

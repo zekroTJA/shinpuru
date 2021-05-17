@@ -271,3 +271,16 @@ export interface KarmaRule {
   action: string;
   argument: string;
 }
+
+export interface State {
+  state: boolean;
+}
+
+export interface GuildLogEntry {
+  id: string;
+  guildid: string;
+  module: string;
+  message: string;
+  severity: number;
+  timestamp: string;
+}
