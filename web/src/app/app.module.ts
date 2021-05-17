@@ -49,6 +49,7 @@ import { StarboardComponent } from './components/starboard/starboard.component';
 import { CapTextPipe } from './pipes/cap-text.pipe';
 import AuthInterceptor from './api/auth.interceptor';
 import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-general.component';
+import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-gene
     GuildAdminAntiraidComponent,
     GuildAdminNavbarComponent,
     GuildAdminGeneralComponent,
+    GuildAdminLogsComponent,
     GuildUnbanRequestComponent,
     UnbanrequestComponent,
     UnbanrequestStatePipe,

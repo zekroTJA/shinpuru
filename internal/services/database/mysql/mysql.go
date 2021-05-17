@@ -56,7 +56,7 @@ func (m *MysqlMiddleware) setup() {
 		"`joinMsg` text NOT NULL DEFAULT ''," +
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
 		"`colorReaction` text NOT NULL DEFAULT ''," +
-		"`guildlog` text NOT NULL DEFAULT '1'," +
+		"`guildlogDisable` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -1664,17 +1664,17 @@ func (m *MysqlMiddleware) RemoveKarmaRule(guildID string, id snowflake.ID) (err 
 	return
 }
 
-func (m *MysqlMiddleware) GetGuildLogEnable(guildID string) (bool, error) {
-	val, err := m.getGuildSetting(guildID, "guildlog")
+func (m *MysqlMiddleware) GetGuildLogDisable(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "guildlogDisable")
 	return val != "", err
 }
 
-func (m *MysqlMiddleware) SetGuildLogEnable(guildID string, enabled bool) error {
+func (m *MysqlMiddleware) SetGuildLogDisable(guildID string, enabled bool) error {
 	var val string
 	if enabled {
 		val = "1"
 	}
-	return m.setGuildSetting(guildID, "guildlog", val)
+	return m.setGuildSetting(guildID, "guildlogDisable", val)
 }
 
 func (m *MysqlMiddleware) GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity) (res []*models.GuildLogEntry, err error) {

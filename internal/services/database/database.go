@@ -79,8 +79,8 @@ type Database interface {
 	GetGuildMuteRole(guildID string) (string, error)
 	SetGuildMuteRole(guildID, roleID string) error
 
-	GetGuildLogEnable(guildID string) (bool, error)
-	SetGuildLogEnable(guildID string, enabled bool) error
+	GetGuildLogDisable(guildID string) (bool, error)
+	SetGuildLogDisable(guildID string, enabled bool) error
 
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS

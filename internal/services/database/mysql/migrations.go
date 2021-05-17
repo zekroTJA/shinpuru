@@ -35,5 +35,5 @@ func migration_2(m *sql.Tx) (err error) {
 // - add property `guildlog` to `guilds`
 func migration_3(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
-		"guilds", "`guildlog` text NOT NULL DEFAULT '1'")
+		"guilds", "`guildlogDisable` text NOT NULL DEFAULT '0'")
 }

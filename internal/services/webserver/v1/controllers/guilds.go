@@ -66,7 +66,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
 	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
 	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
-	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
+	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
 	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
 }
 
@@ -931,19 +931,19 @@ func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(res)
+	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
 }
 
 func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
-	enabled, err := c.db.GetGuildLogEnable(guildID)
+	disabled, err := c.db.GetGuildLogDisable(guildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
 	return ctx.JSON(&models.State{
-		State: enabled,
+		State: !disabled,
 	})
 }
 
@@ -955,7 +955,7 @@ func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	err := c.db.SetGuildLogEnable(guildID, state.State)
+	err := c.db.SetGuildLogDisable(guildID, !state.State)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}

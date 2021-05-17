@@ -17,6 +17,7 @@ import { GuildUnbanRequestComponent } from './routes/guild-unbanrequests/guild-u
 import { MemberReportsComponent } from './routes/member-reports/member-reports.component';
 import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
 import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-general.component';
+import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 
 const routes: Routes = [
   {
@@ -51,6 +52,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/guildadmin/karma',
     component: GuildAdminKarmaComponent,
+  },
+  {
+    path: 'guilds/:guildid/guildadmin/logs',
+    component: GuildAdminLogsComponent,
   },
   {
     path: 'guilds/:guildid/guildadmin',

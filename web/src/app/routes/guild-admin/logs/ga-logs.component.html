@@ -1,0 +1,27 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+    <app-spinner *ngIf="!state" [started]="true"></app-spinner>
+    <div *ngIf="state">
+        <app-slider [(ngModel)]="state.state" (switch)="onEnabledChanged()">Enable Guild Logging</app-slider>
+    </div>
+
+    <app-spinner *ngIf="!entries" [started]="true"></app-spinner>
+    <div *ngIf="entries" class="mt-4">
+        <table>
+            <tbody>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Severity</th>
+                    <th>Module</th>
+                    <th>Message</th>
+                </tr>
+                <tr *ngFor="let e of entries">
+                    <td>{{ dateFormat(e.timestamp) }}</td>
+                    <td class="severity-field" [style.background-color]="severity(e.severity).color">{{ severity(e.severity).name }}</td>
+                    <td>{{ e.module }}</td>
+                    <td>{{ e.message }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

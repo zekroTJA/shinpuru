@@ -48,8 +48,8 @@ func (l *loggerImpl) log(severity models.GuildLogSeverity, guildID, message stri
 		module = "global"
 	}
 
-	ok, err := l.db.GetGuildLogEnable(guildID)
-	if !ok || err != nil {
+	ok, err := l.db.GetGuildLogDisable(guildID)
+	if ok || err != nil && !database.IsErrDatabaseNotFound(err) {
 		return
 	}
 

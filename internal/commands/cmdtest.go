@@ -1,8 +1,10 @@
 package commands
 
 import (
-	"time"
+	"strings"
 
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -38,9 +40,9 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	// db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	gl := ctx.GetObject(static.DiGuildLog).(guildlog.Logger)
 
-	time.Sleep(30 * time.Second)
+	gl.Errorf(ctx.GetGuild().ID, strings.Join(ctx.GetArgs(), " "))
 
 	return nil
 }
