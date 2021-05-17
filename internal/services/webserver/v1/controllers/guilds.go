@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -942,6 +943,7 @@ func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	fmt.Println(disabled)
 	return ctx.JSON(&models.State{
 		State: !disabled,
 	})

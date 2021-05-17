@@ -415,7 +415,7 @@ func (m *MysqlMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 
 func (m *MysqlMiddleware) GetGuildColorReaction(guildID string) (enabled bool, err error) {
 	val, err := m.getGuildSetting(guildID, "colorReaction")
-	return val != "", err
+	return val == "1", err
 }
 
 func (m *MysqlMiddleware) SetGuildColorReaction(guildID string, enabled bool) error {
@@ -479,7 +479,7 @@ func (m *MysqlMiddleware) SetGuildJdoodleKey(guildID, key string) error {
 
 func (m *MysqlMiddleware) GetGuildBackup(guildID string) (bool, error) {
 	val, err := m.getGuildSetting(guildID, "backup")
-	return val != "", err
+	return val == "1", err
 }
 
 func (m *MysqlMiddleware) SetGuildBackup(guildID string, enabled bool) error {
@@ -1666,7 +1666,7 @@ func (m *MysqlMiddleware) RemoveKarmaRule(guildID string, id snowflake.ID) (err 
 
 func (m *MysqlMiddleware) GetGuildLogDisable(guildID string) (bool, error) {
 	val, err := m.getGuildSetting(guildID, "guildlogDisable")
-	return val != "", err
+	return val == "1", err
 }
 
 func (m *MysqlMiddleware) SetGuildLogDisable(guildID string, enabled bool) error {
@@ -1712,7 +1712,7 @@ func (m *MysqlMiddleware) AddGuildLogEntry(e *models.GuildLogEntry) (err error) 
 }
 
 func (m *MysqlMiddleware) DeleteLogEntry(guildID string, id snowflake.ID) (err error) {
-	_, err = m.Db.Exec("DELETE FROM guildlog WHERE guildID = ? ADN id = ?",
+	_, err = m.Db.Exec("DELETE FROM guildlog WHERE guildID = ? AND id = ?",
 		guildID, id)
 	err = wrapNotFoundError(err)
 	return

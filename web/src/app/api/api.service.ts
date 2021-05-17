@@ -869,12 +869,12 @@ export class APIService {
 
   public postGuildSettingsLogsState(
     guildID: string,
-    enabled: boolean
+    state: boolean
   ): Observable<State> {
     return this.http
       .post(
         this.rcGuildSettingsLogs(guildID, 'state'),
-        { enabled },
+        { state },
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));

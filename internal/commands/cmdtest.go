@@ -42,7 +42,25 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
 	gl := ctx.GetObject(static.DiGuildLog).(guildlog.Logger)
 
-	gl.Errorf(ctx.GetGuild().ID, strings.Join(ctx.GetArgs(), " "))
+	severity, err := ctx.GetArgs().Get(0).AsInt()
+	if err != nil {
+		return err
+	}
 
-	return nil
+	var f func(string, string, ...interface{}) error
+
+	switch severity {
+	case 0:
+		f = gl.Debugf
+	case 1:
+		f = gl.Infof
+	case 2:
+		f = gl.Warnf
+	case 3:
+		f = gl.Errorf
+	case 4:
+		f = gl.Fatalf
+	}
+
+	return f(ctx.GetGuild().ID, strings.Join(ctx.GetArgs()[1:], " "))
 }

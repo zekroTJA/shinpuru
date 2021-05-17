@@ -1,16 +1,12 @@
 /** @format */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  AntiraidSettings,
-  GuildLogEntry,
-  JoinlogEntry,
-  State,
-} from 'src/app/api/api.models';
+import { GuildLogEntry, State } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import dateFormat from 'dateformat';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface Severity {
   name: string;
@@ -25,14 +21,22 @@ interface Severity {
 export class GuildAdminLogsComponent implements OnInit {
   public state: State;
   public entries: GuildLogEntry[];
+  public entriesSelected: GuildLogEntry[] = [];
   private guildID: string;
 
   public dateFormat = dateFormat;
 
+  public readonly limit = 100;
+  public offset = 0;
+  public severity = -1;
+
+  @ViewChild('modalDeleteAll') private modalDeleteAll: TemplateRef<any>;
+
   constructor(
     private route: ActivatedRoute,
     private api: APIService,
-    private toasts: ToastService
+    private toasts: ToastService,
+    private modals: NgbModal
   ) {}
 
   ngOnInit() {
@@ -47,7 +51,7 @@ export class GuildAdminLogsComponent implements OnInit {
     });
   }
 
-  severity(v: number): Severity {
+  getSeverity(v: number): Severity {
     switch (v) {
       case -1:
         return { name: 'all', color: '' };
@@ -64,18 +68,57 @@ export class GuildAdminLogsComponent implements OnInit {
     }
   }
 
-  async onEnabledChanged() {
-    await this.api
-      .postGuildSettingsLogsState(this.guildID, this.state.state)
-      .toPromise();
+  async onEnabledChanged(v: boolean) {
+    console.log(v);
+    await this.api.postGuildSettingsLogsState(this.guildID, v).toPromise();
   }
 
-  private async fetchEntries(limit = 50, offset = 0, severity = -1) {
+  async pageDial(v: number) {
+    let offset = this.offset + v * this.limit;
+    if (offset < 0) offset = 0;
+    this.offset = offset;
+    this.fetchEntries();
+  }
+
+  async onSeverityChange(v: string) {
+    this.severity = parseInt(v);
+    this.fetchEntries();
+  }
+
+  selectUnselectEntry(v: GuildLogEntry) {
+    const i = this.entriesSelected.indexOf(v);
+    if (i >= 0) this.entriesSelected.splice(i, 1);
+    else this.entriesSelected.push(v);
+  }
+
+  async deleteEntries() {
+    if (this.entriesSelected.length > 0) {
+      this.entriesSelected.forEach((e) => {
+        this.api.deleteGuildSettingsLogs(this.guildID, e.id).toPromise();
+        const i = this.entries.indexOf(e);
+        if (i >= 0) this.entries.splice(i, 1);
+      });
+    } else {
+      const res = await this.modals.open(this.modalDeleteAll, {
+        windowClass: 'dark-modal',
+      }).result;
+      if (res) {
+        await this.api.deleteGuildSettingsLogs(this.guildID).toPromise();
+        this.entries = [];
+      }
+    }
+  }
+
+  private async fetchEntries() {
     this.entries = (
       await this.api
-        .getGuildSettingsLogs(this.guildID, limit, offset, severity)
+        .getGuildSettingsLogs(
+          this.guildID,
+          this.limit,
+          this.offset,
+          this.severity
+        )
         .toPromise()
     ).data;
-    console.log(this.entries);
   }
 }
