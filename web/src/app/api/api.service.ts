@@ -206,7 +206,8 @@ export class APIService {
       return of(null);
     }
 
-    this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    const msg = err?.error?.error ?? err.message;
+    this.toasts.push(msg, 'Request Error', 'error', 10000);
     return throwError(err);
   };
 
