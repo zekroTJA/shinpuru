@@ -37,3 +37,18 @@ The second layer is another deeper cache layer which sits between the database a
 The third layer is the central MariaDB database of shinpuru where all persistent data is stored permanently.
 
 If you are interested in details where which data is stored in which way, take a look at the [database implementation of shinpuru](https://github.com/zekroTJA/shinpuru/tree/master/internal/services/database).
+
+## How can I remove my data?
+
+If you want to delete all guild data, this includes all reports and associated image data; all backups and associated backup files; all karma scores, settings, rules and blocklist; all starboard entries and configuration; all guild settings and permission specifications; tags; antiraid settings and joinlog and all unban requests; you can do it in the guild settings in the web interface at `/guilds/:guildid/guildadmin/data`.
+
+To do so, you need the `sp.guild.admin.flushdata` permission.
+
+![](https://i.imgur.com/vI2J0k9.png)
+
+Otherwise, if you want to have specific user data removed, please contact me via mail to [privacy[at]zekro.de](mailto:privacy@zekro.de). Please send by any type of authentication that the account ID you privide is actually yours. That can be a screen-shot or I will contact you via Discord directly, if you want. Also, please describe as detailed as possible which data you want to have removed.
+
+## Any questions?
+
+If you have any questions or privacy concerns, feel free to contact me. 😊  
+https://zekro.de/contact
