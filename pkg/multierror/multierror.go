@@ -80,3 +80,13 @@ func (m *MultiError) Len() int {
 func (m *MultiError) Concat() error {
 	return m
 }
+
+// Nillify returns nil if the MultiError does
+// not contain any error objects, otherwise
+// the MultiError instance is returned.
+func (m *MultiError) Nillify() error {
+	if m.Len() > 0 {
+		return m
+	}
+	return nil
+}
