@@ -1,7 +1,6 @@
 package timeutil
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -22,7 +21,6 @@ func TestToUnix(t *testing.T) {
 	timeObj, _ := time.Parse(time.UnixDate, "Sun Jan 10 15:30:04 UTC 2021")
 
 	unixRec := ToUnix(timeObj)
-	fmt.Println(unixRec)
 
 	if unixRec != unixStamp {
 		t.Error("recovered stamp unequals actual stamp")

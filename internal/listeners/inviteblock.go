@@ -1,7 +1,6 @@
 package listeners
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -85,8 +84,6 @@ func (l *ListenerInviteBlock) followLink(link string) (bool, [][]string, error) 
 }
 
 func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Message, matches [][]string) error {
-	fmt.Println(matches)
-
 	enabled, err := l.db.GetGuildInviteBlock(e.GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return nil
