@@ -65,6 +65,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildSettingsAntiraid)
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
 	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
+	router.Get("/:guildid/settings/logs/count", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsCount)
 	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
 	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
 	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
@@ -933,6 +934,23 @@ func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
+}
+
+func (c *GuildsController) getGuildSettingsLogsCount(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	severity, err := wsutil.GetQueryInt(ctx, "severity",
+		int(sharedmodels.GLAll), int(sharedmodels.GLAll), int(sharedmodels.GLFatal))
+	if err != nil {
+		return err
+	}
+
+	res, err := c.db.GetGuildLogEntriesCount(guildID, sharedmodels.GuildLogSeverity(severity))
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(&models.Count{Count: res})
 }
 
 func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {

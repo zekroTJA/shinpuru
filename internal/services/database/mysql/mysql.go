@@ -1703,6 +1703,13 @@ func (m *MysqlMiddleware) GetGuildLogEntries(guildID string, offset, limit int, 
 	return
 }
 
+func (m *MysqlMiddleware) GetGuildLogEntriesCount(guildID string, severity models.GuildLogSeverity) (n int, err error) {
+	err = m.Db.QueryRow(
+		"SELECT COUNT(id) FROM guildlog WHERE guildID = ? AND (? < 0 OR severity = ?)",
+		guildID, severity).Scan(&n)
+	return
+}
+
 func (m *MysqlMiddleware) AddGuildLogEntry(e *models.GuildLogEntry) (err error) {
 	_, err = m.Db.Exec(
 		"INSERT INTO guildlog (id, guildID, module, message, severity, `timestamp`) "+
