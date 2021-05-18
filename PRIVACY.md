@@ -28,6 +28,12 @@ User IDs and message IDs are also stored temporarily for limiting and ensuring f
 
 ## How and where is this data stored?
 
-Data is stored in in 3 primary levels in the shinpuru stack.
+Data is stored in in 3 primary "levels" in the shinpuru stack.
 
-The first level are chaches inside the applications memory. Data in this level is only stored for a short time period and not persistent.
+The first level are caches inside the applications memory. Data in this level is only stored for a short time period and not persistent. This layer is mostly used for caching, rate limiting and scheduling tasks.
+
+The second layer is another deeper cache layer which sits between the database and the application and mirrors parts of the database to reduce access times of highly frequently requested data from the database and also reducing the load on the database as well. This data is only stored during the runtime of the redis instance, so it is semi-persistent. Also, this cache is used for multiple instances of shinpuru when sharding is used.
+
+The third layer is the central MariaDB database of shinpuru where all persistent data is stored permanently.
+
+If you are interested in details where which data is stored in which way, take a look at the [database implementation of shinpuru](https://github.com/zekroTJA/shinpuru/tree/master/internal/services/database).
