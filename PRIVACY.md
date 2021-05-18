@@ -2,7 +2,7 @@
 
 This document explains which data is collected and stored by shinpuru, why it is collected and what you can do to delete your data from shinpuru.
 
-## Wich data is collected by shinpuru?
+## Which data is collected by shinpuru?
 
 The following data is stored persistently which can be directly linked to your guild and/or user account.
 
