@@ -21,6 +21,7 @@ interface Severity {
 export class GuildAdminLogsComponent implements OnInit {
   public state: State;
   public entries: GuildLogEntry[];
+  public entriesCount: number;
   public entriesSelected: GuildLogEntry[] = [];
   private guildID: string;
 
@@ -76,6 +77,7 @@ export class GuildAdminLogsComponent implements OnInit {
   async pageDial(v: number) {
     let offset = this.offset + v * this.limit;
     if (offset < 0) offset = 0;
+    if (offset >= this.entriesCount) return;
     this.offset = offset;
     this.fetchEntries();
   }
@@ -109,6 +111,12 @@ export class GuildAdminLogsComponent implements OnInit {
     }
   }
 
+  get pageEnd(): number {
+    const n = (this.offset + 1) * this.limit;
+    if (n > this.entriesCount) return this.entriesCount;
+    return n;
+  }
+
   private async fetchEntries() {
     this.entries = (
       await this.api
@@ -120,5 +128,11 @@ export class GuildAdminLogsComponent implements OnInit {
         )
         .toPromise()
     ).data;
+
+    this.entriesCount = (
+      await this.api
+        .getGuildSettingsLogsCount(this.guildID, this.severity)
+        .toPromise()
+    ).count;
   }
 }

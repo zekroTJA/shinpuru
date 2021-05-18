@@ -852,6 +852,19 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
+  public getGuildSettingsLogsCount(
+    guildID: string,
+    severity = -1
+  ): Observable<Count> {
+    const opts = this.defopts({
+      params: new HttpParams().set('severity', severity.toString()),
+    });
+
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID, 'count'), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
   public deleteGuildSettingsLogs(
     guildID: string,
     id?: string

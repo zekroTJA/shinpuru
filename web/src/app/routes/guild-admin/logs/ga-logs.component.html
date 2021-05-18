@@ -11,7 +11,7 @@
         <div class="d-flex">
             <div class="page-dialer mr-3">
                 <button (click)="pageDial(-1)"></button>
-                <span>{{ offset + 1 }} ... {{ offset + limit }}</span>
+                <span>{{ offset + 1 }} ... {{ pageEnd }} ({{ entriesCount }})</span>
                 <button (click)="pageDial(1)"></button>
             </div>
             <select [selected]="severity" (change)="onSeverityChange($event.target.value)">
@@ -52,7 +52,7 @@
     </div>
     <div class="modal-body">
         <p>
-            Do you really want to delete <strong>ALL</strong> log entries for this guild?<br />
+            Do you really want to delete <strong>ALL {{ entriesCount }}</strong> log entries for this guild?<br />
             This action can not be undone!
         </p>
     </div>
