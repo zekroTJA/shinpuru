@@ -14,8 +14,11 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -24,9 +27,11 @@ import (
 )
 
 type GuildsController struct {
+	db      database.Database
+	st      storage.Storage
+	kvc     kvcache.Provider
 	session *discordgo.Session
 	cfg     *config.Config
-	db      database.Database
 	pmw     *middleware.PermissionsMiddleware
 }
 
@@ -35,6 +40,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
+	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -69,6 +76,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
 	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
 	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
+	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
 }
 
 func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
@@ -986,6 +994,47 @@ func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err erro
 	if err != nil {
 		return
 	}
+
+	return ctx.JSON(models.Ok)
+}
+
+func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	timeoutKey := "GUILDFLUSH:" + guildID
+	if reset, ok := c.kvc.Get(timeoutKey).(bool); reset && ok {
+		return fiber.NewError(fiber.StatusTooManyRequests, "this action can only be performed every 24 hours")
+	}
+
+	guild, err := discordutil.GetGuild(c.session, guildID)
+	if err != nil {
+		return
+	}
+
+	payload := struct {
+		Validation string `json:"validation"`
+		LeaveAfter bool   `json:"leave_after"`
+	}{}
+
+	if err = ctx.BodyParser(&payload); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if payload.Validation != guild.Name {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid validation")
+	}
+
+	if err = util.FlushAllGuildData(c.db, c.st, guildID); err != nil {
+		return
+	}
+
+	if payload.LeaveAfter {
+		if err = c.session.GuildLeave(guildID); err != nil {
+			return
+		}
+	}
+
+	c.kvc.Set(timeoutKey, true, 24*time.Hour)
 
 	return ctx.JSON(models.Ok)
 }

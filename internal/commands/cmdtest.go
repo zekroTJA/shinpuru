@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"fmt"
+
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 )
@@ -64,8 +63,11 @@ func (c *CmdTest) Exec(ctx shireikan.Context) error {
 
 	// return f(ctx.GetGuild().ID, strings.Join(ctx.GetArgs()[1:], " "))
 
-	db := ctx.GetObject(static.DiDatabase).(database.Database)
-	st := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
+	// db := ctx.GetObject(static.DiDatabase).(database.Database)
+	// st := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 
-	return util.FlushAllGuildData(db, st, ctx.GetGuild().ID)
+	// return util.FlushAllGuildData(db, st, ctx.GetGuild().ID)
+
+	fmt.Println(static.AdditionalPermissions)
+	return nil
 }
