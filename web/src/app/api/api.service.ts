@@ -135,6 +135,9 @@ export class APIService {
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
 
+  private readonly rcGuildSettingsFlushData = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/flushguilddata`;
+
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
 
@@ -875,6 +878,20 @@ export class APIService {
       .post(
         this.rcGuildSettingsLogs(guildID, 'state'),
         { state },
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsFlushGuildData(
+    guildID: string,
+    validation: string,
+    leave_after: boolean
+  ): Observable<State> {
+    return this.http
+      .post(
+        this.rcGuildSettingsFlushData(guildID),
+        { validation, leave_after },
         this.defopts()
       )
       .pipe(catchError(this.errorCatcher));
