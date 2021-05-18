@@ -31,7 +31,9 @@ func FlushAllGuildData(db database.Database, st storage.Storage, guildID string)
 		mErr.Append(st.DeleteObject(static.StorageBucketBackups, b.FileID))
 	}
 	for _, r := range reports {
-		mErr.Append(st.DeleteObject(static.StorageBucketImages, r.AttachmehtURL))
+		if r.AttachmehtURL != "" {
+			mErr.Append(st.DeleteObject(static.StorageBucketImages, r.AttachmehtURL))
+		}
 	}
 
 	return mErr.Nillify()
