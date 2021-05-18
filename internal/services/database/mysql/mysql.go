@@ -29,6 +29,17 @@ type MysqlMiddleware struct {
 	Db *sql.DB
 }
 
+var guildTables = []string{
+	"guilds", "permissions",
+	"twitchnotify", "tags", "karma",
+	"karmaSettings", "karmaBlocklist",
+	"karmaRules", "chanlock", "antiraidSettings",
+	"antiraidJoinlog", "unbanRequests",
+	"voicelogBlocklist", "starboardConfig",
+	"starboardEntries", "guildlog", "reports",
+	"backups",
+}
+
 func (m *MysqlMiddleware) setup() {
 	mErr := multierror.New(nil)
 
@@ -1729,6 +1740,31 @@ func (m *MysqlMiddleware) DeleteLogEntries(guildID string) (err error) {
 	_, err = m.Db.Exec("DELETE FROM guildlog WHERE guildID = ?", guildID)
 	err = wrapNotFoundError(err)
 	return
+}
+
+func (m *MysqlMiddleware) FlushGuildData(guildID string) (err error) {
+	tx, err := m.Db.Begin()
+	if err != nil {
+		return
+	}
+
+	deleteFrom := func(table string) error {
+		_, err = tx.Exec(
+			fmt.Sprintf("DELETE FROM `%s` WHERE guildID = ?", table),
+			guildID)
+		return err
+	}
+
+	mErr := multierror.New()
+	for _, table := range guildTables {
+		mErr.Append(deleteFrom(table))
+	}
+
+	if mErr.Len() > 0 {
+		return mErr
+	}
+
+	return tx.Commit()
 }
 
 /////////// HELPER ///////////////

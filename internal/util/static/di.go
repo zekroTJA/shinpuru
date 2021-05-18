@@ -25,4 +25,5 @@ const (
 	DiCodeExecFactory           = "codeexecfactory"
 	DiKarma                     = "karmaservice"
 	DiGuildLog                  = "guildlog"
+	DiKVCache                   = "kvcache"
 )

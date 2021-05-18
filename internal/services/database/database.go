@@ -223,6 +223,11 @@ type Database interface {
 	AddGuildLogEntry(entry *models.GuildLogEntry) error
 	DeleteLogEntry(guildID string, id snowflake.ID) error
 	DeleteLogEntries(guildID string) error
+
+	//////////////////////////////////////////////////////
+	//// FUNCTIONALITIES
+
+	FlushGuildData(guildID string) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err
