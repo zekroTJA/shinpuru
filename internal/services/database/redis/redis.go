@@ -30,6 +30,7 @@ const (
 	keyGuildMuteRole        = "GUILD:MUTEROLE"
 	keyGuildColorReaction   = "GUILD:COLORREACTION"
 	keyGuildStarboardConfig = "GUILD:STARBOARDCONFIG"
+	keyGuildLogEnable       = "GUILD:GUILDLOG"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -873,4 +874,35 @@ func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 	}
 	err = m.client.Set(key, configB, 0).Err()
 	return
+}
+
+func (r *RedisMiddleware) GetGuildLogDisable(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildLogEnable, guildID)
+
+	var val bool
+	err := r.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = r.Database.GetGuildLogDisable(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = r.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildLogDisable(guildID string, enabled bool) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildLogEnable, guildID)
+
+	if err := r.client.Set(key, enabled, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildLogDisable(guildID, enabled)
 }

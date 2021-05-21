@@ -7,17 +7,20 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 )
 
 type ListenerMemberAdd struct {
 	db database.Database
+	gl guildlog.Logger
 }
 
 func NewListenerMemberAdd(container di.Container) *ListenerMemberAdd {
 	return &ListenerMemberAdd{
 		db: container.Get(static.DiDatabase).(database.Database),
+		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("memberadd"),
 	}
 }
 
@@ -25,6 +28,7 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 	autoRoleID, err := l.db.GetGuildAutoRole(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild autorole from database")
+		l.gl.Errorf(e.GuildID, "Failed getting guild autorole from database: %s", err.Error())
 	}
 	if autoRoleID != "" {
 		err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, autoRoleID)
@@ -32,6 +36,7 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 			l.db.SetGuildAutoRole(e.GuildID, "")
 		} else if err != nil {
 			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed setting autorole for member")
+			l.gl.Errorf(e.GuildID, "Failed getting autorole for member (%s): %s", e.User.ID, err.Error())
 		}
 	}
 

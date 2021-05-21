@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
@@ -18,6 +19,7 @@ import (
 type Service struct {
 	s  *discordgo.Session
 	db database.Database
+	gl guildlog.Logger
 }
 
 // NewKarmaService initializes a new Service
@@ -27,6 +29,7 @@ func NewKarmaService(container di.Container) (k *Service) {
 
 	k.s = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	k.db = container.Get(static.DiDatabase).(database.Database)
+	k.gl = container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma")
 
 	return
 }
@@ -76,10 +79,12 @@ func (k *Service) Update(guildID, userID string, value int) (err error) {
 					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
 						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
 							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+							k.gl.Errorf(guildID, "Failed adding role to user (%s): %s", userID, err.Error())
 						}
 					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore < rule.Value && valAfter >= rule.Value {
 						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
 							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+							k.gl.Errorf(guildID, "Failed removing role to user (%s): %s", userID, err.Error())
 						}
 					}
 				case models.KarmaActionSendMessage:
@@ -101,10 +106,12 @@ func (k *Service) Update(guildID, userID string, value int) (err error) {
 					if rule.Trigger == models.KarmaTriggerAbove && valBefore > rule.Value && valAfter <= rule.Value {
 						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
 							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+							k.gl.Errorf(guildID, "Failed removing role to user (%s): %s", userID, err.Error())
 						}
 					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
 						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
 							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+							k.gl.Errorf(guildID, "Failed adding role to user (%s): %s", userID, err.Error())
 						}
 					}
 				case models.KarmaActionSendMessage:
@@ -159,6 +166,7 @@ func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value 
 	guild, err := discordutil.GetGuild(k.s, guildID)
 	if err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed getting guild details")
+		k.gl.Errorf(guildID, "Failed getting guild details: %s", err.Error())
 		return
 	}
 
@@ -180,6 +188,7 @@ func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value 
 	_, err = k.s.ChannelMessageSendEmbed(ch.ID, emb.Build())
 	if err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed sending dm")
+		k.gl.Errorf(guildID, "Failed sending DM to user (%s): %s", userID, err.Error())
 	}
 }
 
@@ -195,6 +204,7 @@ func (k *Service) tryKick(userID, guildID string, added bool, value int) {
 
 	if err := k.s.GuildMemberDeleteWithReason(guildID, userID, reason); err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed kicking member")
+		k.gl.Errorf(guildID, "Failed kicking user (%s): %s", userID, err.Error())
 	}
 }
 
@@ -210,5 +220,6 @@ func (k *Service) tryBan(userID, guildID string, added bool, value int) {
 
 	if err := k.s.GuildBanCreateWithReason(guildID, userID, reason, 7); err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed banning member")
+		k.gl.Errorf(guildID, "Failed banning user (%s): %s", userID, err.Error())
 	}
 }

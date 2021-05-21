@@ -9,6 +9,7 @@ import (
 	"runtime/pprof"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
@@ -20,7 +21,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
+	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -285,6 +288,22 @@ func main() {
 		Name: static.DiKarma,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return karma.NewKarmaService(ctn), nil
+		},
+	})
+
+	// Initialize guild logger
+	diBuilder.Add(di.Def{
+		Name: static.DiGuildLog,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return guildlog.New(ctn), nil
+		},
+	})
+
+	// Initialize KV cache
+	diBuilder.Add(di.Def{
+		Name: static.DiKVCache,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return kvcache.NewTimedmapCache(10 * time.Minute), nil
 		},
 	})
 

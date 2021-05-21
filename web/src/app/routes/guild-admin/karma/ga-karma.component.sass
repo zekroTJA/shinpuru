@@ -25,6 +25,8 @@ td > button
     border-radius: 5px
     background-color: rgba(black, 0.2)
     margin-bottom: 10px
+    white-space: nowrap
+    overflow: hidden
     cursor: pointer
 
     &:hover .btn-rule-remove
@@ -41,3 +43,8 @@ td > button
         background-position: center
         background-repeat: no-repeat
         transition: all 0.2s ease
+
+
+.message-content
+    overflow: hidden
+    text-overflow: ellipsis

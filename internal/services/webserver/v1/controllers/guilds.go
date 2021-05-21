@@ -13,8 +13,11 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -23,9 +26,11 @@ import (
 )
 
 type GuildsController struct {
+	db      database.Database
+	st      storage.Storage
+	kvc     kvcache.Provider
 	session *discordgo.Session
 	cfg     *config.Config
-	db      database.Database
 	pmw     *middleware.PermissionsMiddleware
 }
 
@@ -34,6 +39,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
+	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -63,6 +70,13 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Delete("/:guildid/settings/karma/rules/:id", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.deleteGuildSettingsKrameRule)
 	router.Get("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildSettingsAntiraid)
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
+	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
+	router.Get("/:guildid/settings/logs/count", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsCount)
+	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
+	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
+	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
+	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
+	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
 }
 
 func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
@@ -900,6 +914,143 @@ func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 	if err := c.db.RemoveKarmaRule(guildID, sfId); err != nil {
 		return err
 	}
+
+	return ctx.JSON(models.Ok)
+}
+
+func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 50, 1, 1000)
+	if err != nil {
+		return err
+	}
+	offset, err := wsutil.GetQueryInt(ctx, "offset", 0, 0, 0)
+	if err != nil {
+		return err
+	}
+	severity, err := wsutil.GetQueryInt(ctx, "severity",
+		int(sharedmodels.GLAll), int(sharedmodels.GLAll), int(sharedmodels.GLFatal))
+	if err != nil {
+		return err
+	}
+
+	res, err := c.db.GetGuildLogEntries(guildID, offset, limit, sharedmodels.GuildLogSeverity(severity))
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
+}
+
+func (c *GuildsController) getGuildSettingsLogsCount(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	severity, err := wsutil.GetQueryInt(ctx, "severity",
+		int(sharedmodels.GLAll), int(sharedmodels.GLAll), int(sharedmodels.GLFatal))
+	if err != nil {
+		return err
+	}
+
+	res, err := c.db.GetGuildLogEntriesCount(guildID, sharedmodels.GuildLogSeverity(severity))
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(&models.Count{Count: res})
+}
+
+func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	disabled, err := c.db.GetGuildLogDisable(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(&models.State{
+		State: !disabled,
+	})
+}
+
+func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	state := new(models.State)
+	if err := ctx.BodyParser(state); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	err := c.db.SetGuildLogDisable(guildID, !state.State)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(state)
+}
+
+func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+	id := ctx.Params("id")
+
+	if id != "" {
+		var ids snowflake.ID
+		ids, err = snowflake.ParseString(id)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		err = c.db.DeleteLogEntry(guildID, ids)
+	} else {
+		err = c.db.DeleteLogEntries(guildID)
+	}
+
+	if database.IsErrDatabaseNotFound(err) {
+		return fiber.ErrNotFound
+	}
+	if err != nil {
+		return
+	}
+
+	return ctx.JSON(models.Ok)
+}
+
+func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	timeoutKey := "GUILDFLUSH:" + guildID
+	if reset, ok := c.kvc.Get(timeoutKey).(bool); reset && ok {
+		return fiber.NewError(fiber.StatusTooManyRequests, "this action can only be performed every 24 hours")
+	}
+
+	guild, err := discordutil.GetGuild(c.session, guildID)
+	if err != nil {
+		return
+	}
+
+	payload := struct {
+		Validation string `json:"validation"`
+		LeaveAfter bool   `json:"leave_after"`
+	}{}
+
+	if err = ctx.BodyParser(&payload); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if payload.Validation != guild.Name {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid validation")
+	}
+
+	if err = util.FlushAllGuildData(c.db, c.st, guildID); err != nil {
+		return
+	}
+
+	if payload.LeaveAfter {
+		if err = c.session.GuildLeave(guildID); err != nil {
+			return
+		}
+	}
+
+	c.kvc.Set(timeoutKey, true, 24*time.Hour)
 
 	return ctx.JSON(models.Ok)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -62,6 +63,10 @@ func (m *PermissionsMiddleware) Handle(
 }
 
 func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string) fiber.Handler {
+	if !stringutil.ContainsAny(required, static.AdditionalPermissions) {
+		static.AdditionalPermissions = append(static.AdditionalPermissions, required)
+	}
+
 	return func(ctx *fiber.Ctx) error {
 		uid, _ := ctx.Locals("uid").(string)
 		guildID := ctx.Params("guildid")

@@ -60,10 +60,10 @@
         </div>
         <div class="mt-4">
             <div *ngFor="let r of rules" class="karma-rule">
-                When a users karma <span class="embedded">{{ ruleTrigger(r.trigger) }}</span>&nbsp;<span class="embedded">{{ r.value }}</span> points then&nbsp;
+                When a users karma <span class="embedded">{{ ruleTrigger(r.trigger) }}</span>&nbsp;<span class="embedded">{{ r.value }}</span>&nbsp;points then&nbsp;
                 <span class="embedded">{{ ruleAction(r.action) }}</span>
                 <span *ngIf="r.action === 'TOGGLE_ROLE'">with id <span class="embedded">{{ r.argument }}</span></span>
-                <span *ngIf="r.action === 'SEND_MESSAGE'">with content <span class="embedded">{{ r.argument }}</span></span>
+                <span *ngIf="r.action === 'SEND_MESSAGE'" class="message-content">with content <span class="embedded">{{ r.argument }}</span></span>
                 .
                 <button class="btn-rule-remove ml-2" (click)="removeRule(r)"></button>
             </div>

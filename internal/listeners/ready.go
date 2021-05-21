@@ -9,6 +9,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
@@ -19,6 +20,7 @@ import (
 type ListenerReady struct {
 	config *config.Config
 	db     database.Database
+	gl     guildlog.Logger
 	lct    lctimer.LifeCycleTimer
 }
 
@@ -26,6 +28,7 @@ func NewListenerReady(container di.Container) *ListenerReady {
 	return &ListenerReady{
 		config: container.Get(static.DiConfig).(*config.Config),
 		db:     container.Get(static.DiDatabase).(database.Database),
+		gl:     container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
 		lct:    container.Get(static.DiLifecycleTimer).(lctimer.LifeCycleTimer),
 	}
 }
@@ -62,6 +65,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 					v.Close(s, vote.VoteStateExpired)
 					if err = l.db.DeleteVote(v.ID); err != nil {
 						logrus.WithError(err).WithField("gid", v.GuildID).WithField("vid", v.ID).Error("Failed updating vote")
+						l.gl.Errorf(v.GuildID, "Failed updating vote (%s): %s", v.ID, err.Error())
 					}
 				}
 			}

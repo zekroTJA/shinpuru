@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
@@ -22,6 +23,7 @@ const (
 
 type ListenerGhostPing struct {
 	db              database.Database
+	gl              guildlog.Logger
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 	gpim            *middleware.GhostPingIgnoreMiddleware
@@ -30,6 +32,7 @@ type ListenerGhostPing struct {
 func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
 	return &ListenerGhostPing{
 		db:       container.Get(static.DiDatabase).(database.Database),
+		gl:       container.Get(static.DiGuildLog).(guildlog.Logger).Section("ghostping"),
 		gpim:     container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware),
 		msgCache: timedmap.New(gpTick),
 	}
@@ -79,7 +82,8 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 	gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 	if err != nil {
 		if !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", deletedMsg.GuildID).Error("failed getting ghost ping msg")
+			logrus.WithError(err).WithField("gid", deletedMsg.GuildID).Error("GHOSTPING :: failed getting ghost ping msg")
+			l.gl.Errorf(deletedMsg.GuildID, "Failed getting ghost ping message: %s", err.Error())
 		}
 		return
 	}
@@ -104,7 +108,10 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 	gpMsg = strings.Replace(gpMsg, "{pinged}", uPinged.String(), -1)
 	gpMsg = strings.Replace(gpMsg, "{msg}", deletedMsg.Content, -1)
 
-	s.ChannelMessageSend(deletedMsg.ChannelID, gpMsg)
+	_, err = s.ChannelMessageSend(deletedMsg.ChannelID, gpMsg)
+	if err != nil {
+		l.gl.Errorf(deletedMsg.GuildID, "Failed sending ghost ping message: %s", err.Error())
+	}
 
 	l.msgCache.Remove(e.ID)
 }

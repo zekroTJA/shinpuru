@@ -17,6 +17,11 @@ interface Route {
 export class GuildAdminNavbarComponent implements OnInit {
   public routes: Route[] = [
     {
+      route: 'general',
+      icon: 'settings-ol.svg',
+      displayname: 'General',
+    },
+    {
       route: 'antiraid',
       icon: 'antiraid.svg',
       displayname: 'Antiraid',
@@ -25,6 +30,16 @@ export class GuildAdminNavbarComponent implements OnInit {
       route: 'karma',
       icon: 'karma.svg',
       displayname: 'Karma',
+    },
+    {
+      route: 'logs',
+      icon: 'logs.svg',
+      displayname: 'Logs',
+    },
+    {
+      route: 'data',
+      icon: 'data.svg',
+      displayname: 'Data',
     },
   ];
 

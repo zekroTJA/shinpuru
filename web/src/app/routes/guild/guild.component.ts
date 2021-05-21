@@ -1,8 +1,7 @@
 /** @format */
 
-import { Component, Input, ViewChild, TemplateRef } from '@angular/core';
+import { Component, ViewChild, TemplateRef } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Guild,
@@ -10,7 +9,6 @@ import {
   Member,
   Report,
   GuildSettings,
-  Channel,
   GuildBackup,
   GuildScoreboardEntry,
   ReportRequest,
@@ -56,7 +54,6 @@ export class GuildComponent {
   public reportsTotalCount: number;
   public allowed: string[];
   public settings: GuildSettings;
-  public updatedSettings: GuildSettings = {} as GuildSettings;
   public backups: GuildBackup[];
   public scoreboard: GuildScoreboardEntry[];
   public starboard: GuildStarboardEntry[];
@@ -243,35 +240,6 @@ export class GuildComponent {
 
   public guildSettingsContainsAny(str: string[]): boolean {
     return !!str.find((s) => this.guildSettingsContains(s));
-  }
-
-  public saveGuildSettings() {
-    this.api
-      .postGuildSettings(this.guild.id, this.updatedSettings)
-      .subscribe((res) => {
-        if (res.code === 200) {
-          this.toasts.push(
-            'Guild settings updated.',
-            'Guild Settings Update',
-            'success',
-            6000,
-            true
-          );
-        }
-      });
-  }
-
-  public getSelectedValue(e: any): string {
-    const t = e.target;
-    const val = t.options[t.selectedIndex].value;
-    if (val.match(/\d+:\s.+/g)) {
-      return val.split(' ').slice(1).join(' ');
-    }
-    return val;
-  }
-
-  public channelsByType(a: Channel[], type: number): Channel[] {
-    return a.filter((c) => c.type === type);
   }
 
   public fetchGuildPermissions() {
@@ -530,5 +498,9 @@ export class GuildComponent {
     this.starboardSortOrder = sortOrders[i];
     this.loadStarboard();
     LocalStorageUtil.set('STARBOARD_SORTORDER', this.starboardSortOrder);
+  }
+
+  public onGuildSettingsClick() {
+    this.router.navigate(['guilds', this.guild.id, 'guildadmin']);
   }
 }

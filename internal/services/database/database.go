@@ -79,6 +79,9 @@ type Database interface {
 	GetGuildMuteRole(guildID string) (string, error)
 	SetGuildMuteRole(guildID, roleID string) error
 
+	GetGuildLogDisable(guildID string) (bool, error)
+	SetGuildLogDisable(guildID string, enabled bool) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 
@@ -211,6 +214,20 @@ type Database interface {
 	RemoveStarboardEntry(msgID string) error
 	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]*models.StarboardEntry, error)
 	GetStarboardEntry(messageID string) (*models.StarboardEntry, error)
+
+	//////////////////////////////////////////////////////
+	//// GUILDLOG
+
+	GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity) ([]*models.GuildLogEntry, error)
+	GetGuildLogEntriesCount(guildID string, severity models.GuildLogSeverity) (int, error)
+	AddGuildLogEntry(entry *models.GuildLogEntry) error
+	DeleteLogEntry(guildID string, id snowflake.ID) error
+	DeleteLogEntries(guildID string) error
+
+	//////////////////////////////////////////////////////
+	//// FUNCTIONALITIES
+
+	FlushGuildData(guildID string) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err

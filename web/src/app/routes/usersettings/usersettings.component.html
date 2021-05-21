@@ -1,10 +1,10 @@
 <div>
-    <h1 class="mt-3">USER SETTINGS</h1>
+    <h1 class="mt-3">User Settings</h1>
 
     <div class="settings-container">
         <div class="mb-4">
             <a id="apitoken"></a>
-            <h2>API TOKEN</h2>
+            <h2>API Token</h2>
             <p class="mt-3">
                 <a href="https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs" target="_blank">
                 <strong>Here</strong>
@@ -20,7 +20,7 @@
         <div *ngIf="token">
             <div *ngIf="token.token" class="mb-4">
                 <div class="warning mb-3">
-                    <h3>WARNING</h3>
+                    <h3>Warning</h3>
                     <p>
                         The token is only shown after re-initialization once. As soon as you reload
                         this page, the token will not be shown again!
@@ -67,7 +67,7 @@
     
     <div class="settings-container">
         <a id="ota"></a>
-        <h2>ONE TIME AUTH</h2>
+        <h2>One Time Auth</h2>
         <app-spinner *ngIf="!ota" [started]="true"></app-spinner>
         <div *ngIf="ota" class="mt-3">
             <p>

@@ -32,6 +32,8 @@ import {
   GuildStarboardEntry,
   AccessTokenModel,
   KarmaRule,
+  GuildLogEntry,
+  State,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -127,8 +129,14 @@ export class APIService {
     rc: string = ''
   ) => `${this.rcGuildSettingsKarma(guildID)}/rules${rc ? '/' + rc : ''}`;
 
+  private readonly rcGuildSettingsLogs = (guildID: string, rc: string = '') =>
+    `${this.rcGuildSettings(guildID)}/logs${rc ? '/' + rc : ''}`;
+
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
+
+  private readonly rcGuildSettingsFlushData = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/flushguilddata`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -198,7 +206,8 @@ export class APIService {
       return of(null);
     }
 
-    this.toasts.push(err.message, 'Request Error', 'error', 10000);
+    const msg = err?.error?.error ?? err.message;
+    this.toasts.push(msg, 'Request Error', 'error', 10000);
     return throwError(err);
   };
 
@@ -826,6 +835,79 @@ export class APIService {
   ): Observable<UserSettingsOTA> {
     return this.http
       .post(this.rcUserSettings('ota'), ota, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsLogs(
+    guildID: string,
+    limit = 50,
+    offset = 0,
+    severity = -1
+  ): Observable<ListReponse<GuildLogEntry>> {
+    const opts = this.defopts({
+      params: new HttpParams()
+        .set('severity', severity.toString())
+        .set('offset', offset.toString())
+        .set('limit', limit.toString()),
+    });
+
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsLogsCount(
+    guildID: string,
+    severity = -1
+  ): Observable<Count> {
+    const opts = this.defopts({
+      params: new HttpParams().set('severity', severity.toString()),
+    });
+
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID, 'count'), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public deleteGuildSettingsLogs(
+    guildID: string,
+    id?: string
+  ): Observable<any> {
+    return this.http
+      .delete(this.rcGuildSettingsLogs(guildID, id), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsLogsState(guildID: string): Observable<State> {
+    return this.http
+      .get(this.rcGuildSettingsLogs(guildID, 'state'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsLogsState(
+    guildID: string,
+    state: boolean
+  ): Observable<State> {
+    return this.http
+      .post(
+        this.rcGuildSettingsLogs(guildID, 'state'),
+        { state },
+        this.defopts()
+      )
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsFlushGuildData(
+    guildID: string,
+    validation: string,
+    leave_after: boolean
+  ): Observable<State> {
+    return this.http
+      .post(
+        this.rcGuildSettingsFlushData(guildID),
+        { validation, leave_after },
+        this.defopts()
+      )
       .pipe(catchError(this.errorCatcher));
   }
 }

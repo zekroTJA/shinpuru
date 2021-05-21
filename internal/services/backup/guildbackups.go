@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -28,6 +29,7 @@ const (
 type GuildBackups struct {
 	session *discordgo.Session
 	db      database.Database
+	gl      guildlog.Logger
 	st      storage.Storage
 }
 
@@ -54,6 +56,7 @@ func asyncWriteError(c chan error, err error) {
 func New(container di.Container) *GuildBackups {
 	bck := new(GuildBackups)
 	bck.db = container.Get(static.DiDatabase).(database.Database)
+	bck.gl = container.Get(static.DiGuildLog).(guildlog.Logger).Section("backup")
 	bck.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	bck.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	return bck
@@ -78,6 +81,7 @@ func (bck *GuildBackups) BackupAllGuilds() {
 		err = bck.BackupGuild(g)
 		if err != nil {
 			logrus.WithError(err).WithField("gid", g).Error("Failed creating backup for guild")
+			bck.gl.Errorf(g, "Failed creating guild backup: %s", err.Error())
 		}
 		time.Sleep(1 * time.Second)
 	}
