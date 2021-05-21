@@ -1,8 +1,9 @@
 package commands
 
 import (
-	"fmt"
+	"strings"
 
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 )
@@ -39,35 +40,37 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	// gl := ctx.GetObject(static.DiGuildLog).(guildlog.Logger)
+	gl := ctx.GetObject(static.DiGuildLog).(guildlog.Logger)
 
-	// severity, err := ctx.GetArgs().Get(0).AsInt()
-	// if err != nil {
-	// 	return err
-	// }
+	severity, err := ctx.GetArgs().Get(0).AsInt()
+	if err != nil {
+		return err
+	}
 
-	// var f func(string, string, ...interface{}) error
+	var f func(string, string, ...interface{}) error
 
-	// switch severity {
-	// case 0:
-	// 	f = gl.Debugf
-	// case 1:
-	// 	f = gl.Infof
-	// case 2:
-	// 	f = gl.Warnf
-	// case 3:
-	// 	f = gl.Errorf
-	// case 4:
-	// 	f = gl.Fatalf
-	// }
+	switch severity {
+	case 0:
+		f = gl.Debugf
+	case 1:
+		f = gl.Infof
+	case 2:
+		f = gl.Warnf
+	case 3:
+		f = gl.Errorf
+	case 4:
+		f = gl.Fatalf
+	}
 
-	// return f(ctx.GetGuild().ID, strings.Join(ctx.GetArgs()[1:], " "))
+	gl = gl.Section(ctx.GetArgs().Get(1).AsString())
+
+	return f(ctx.GetGuild().ID, strings.Join(ctx.GetArgs()[2:], " "))
 
 	// db := ctx.GetObject(static.DiDatabase).(database.Database)
 	// st := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
 
 	// return util.FlushAllGuildData(db, st, ctx.GetGuild().ID)
 
-	fmt.Println(static.AdditionalPermissions)
+	// fmt.Println(static.AdditionalPermissions)
 	return nil
 }
