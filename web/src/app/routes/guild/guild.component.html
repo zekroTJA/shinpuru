@@ -249,7 +249,11 @@
 
         <!-- SCOREBOARD -->
         <div class="scoreboard-container">
-            <app-karma-scoreboard [scoreboard]="scoreboard" [guildID]="this.guild?.id"></app-karma-scoreboard>
+            <app-karma-scoreboard 
+            [scoreboard]="scoreboard" 
+            [guildID]="this.guild?.id"
+            [self]="guild.self_member"
+            ></app-karma-scoreboard>
         </div>
 
         <!-- STARBOARD -->
