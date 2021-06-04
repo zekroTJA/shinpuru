@@ -111,7 +111,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 
 	guildID := ctx.Params("guildid")
 
-	memb, _ := c.session.GuildMember(guildID, uid)
+	memb, _ := discordutil.GetMember(c.session, guildID, uid)
 	if memb == nil {
 		return fiber.ErrNotFound
 	}
@@ -121,7 +121,10 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	gRes := models.GuildFromGuild(guild, memb, c.db, c.cfg.Discord.OwnerID)
+	gRes, err := models.GuildFromGuild(guild, memb, c.db, c.cfg.Discord.OwnerID)
+	if err != nil {
+		return err
+	}
 
 	return ctx.JSON(gRes)
 }
