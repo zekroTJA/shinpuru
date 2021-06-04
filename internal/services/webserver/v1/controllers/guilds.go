@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -581,6 +582,7 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	fmt.Printf("%+v\n", settings)
 	if err = c.db.SetKarmaPenalty(guildID, settings.Penalty); err != nil {
 		return err
 	}

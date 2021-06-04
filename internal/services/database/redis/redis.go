@@ -689,7 +689,7 @@ func (m *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
 }
 
 func (m *RedisMiddleware) GetKarmaPenalty(guildID string) (bool, error) {
-	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
+	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
 
 	var val bool
 	err := m.client.Get(key).Scan(&val)

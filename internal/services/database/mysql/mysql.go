@@ -1120,7 +1120,7 @@ func (m *MysqlMiddleware) SetKarmaPenalty(guildID string, state bool) (err error
 	_, err = m.Db.Exec(
 		"INSERT INTO karmaSettings (guildID, penalty) "+
 			"VALUES (?, ?) "+
-			"ON DUPLICATE KEY UPDATE tokens = ?",
+			"ON DUPLICATE KEY UPDATE penalty = ?",
 		guildID, state, state)
 
 	return
