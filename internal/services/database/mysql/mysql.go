@@ -653,14 +653,9 @@ func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 		return err
 	}
 
-	res, err := m.Db.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if ar == 0 {
-		_, err = m.Db.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
-	}
+	_, err = m.Db.Exec(
+		"INSERT INTO votes (id, data) VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE data = ?", vote.ID, rawData, rawData)
 
 	return err
 }
