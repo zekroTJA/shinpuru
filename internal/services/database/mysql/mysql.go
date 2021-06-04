@@ -170,6 +170,7 @@ func (m *MysqlMiddleware) setup() {
 		"`emotesInc` text NOT NULL DEFAULT ''," +
 		"`emotesDec` text NOT NULL DEFAULT ''," +
 		"`tokens` bigint(20) NOT NULL DEFAULT '1'," +
+		"`penalty` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -652,14 +653,9 @@ func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 		return err
 	}
 
-	res, err := m.Db.Exec("UPDATE votes SET data = ? WHERE id = ?", rawData, vote.ID)
-	ar, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if ar == 0 {
-		_, err = m.Db.Exec("INSERT INTO votes (id, data) VALUES (?, ?)", vote.ID, rawData)
-	}
+	_, err = m.Db.Exec(
+		"INSERT INTO votes (id, data) VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE data = ?", vote.ID, rawData, rawData)
 
 	return err
 }
@@ -1110,6 +1106,24 @@ func (m *MysqlMiddleware) SetKarmaTokens(guildID string, tokens int) (err error)
 func (m *MysqlMiddleware) GetKarmaTokens(guildID string) (tokens int, err error) {
 	err = m.Db.QueryRow("SELECT tokens FROM karmaSettings WHERE guildID = ?",
 		guildID).Scan(&tokens)
+	err = wrapNotFoundError(err)
+
+	return
+}
+
+func (m *MysqlMiddleware) SetKarmaPenalty(guildID string, state bool) (err error) {
+	_, err = m.Db.Exec(
+		"INSERT INTO karmaSettings (guildID, penalty) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE penalty = ?",
+		guildID, state, state)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetKarmaPenalty(guildID string) (state bool, err error) {
+	err = m.Db.QueryRow("SELECT penalty FROM karmaSettings WHERE guildID = ?",
+		guildID).Scan(&state)
 	err = wrapNotFoundError(err)
 
 	return

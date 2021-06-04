@@ -1,7 +1,7 @@
 /** @format */
 
-import { Component, OnInit, Input } from '@angular/core';
-import { GuildScoreboardEntry } from 'src/app/api/api.models';
+import { Component, Input } from '@angular/core';
+import { GuildScoreboardEntry, Member } from 'src/app/api/api.models';
 
 @Component({
   selector: 'app-karma-scoreboard',
@@ -11,4 +11,11 @@ import { GuildScoreboardEntry } from 'src/app/api/api.models';
 export class KarmaScoreboardComponent {
   @Input() public guildID: string;
   @Input() public scoreboard: GuildScoreboardEntry[];
+  @Input() public self: Member;
+
+  get selfInScoreboard(): boolean {
+    return !!this.scoreboard.find(
+      (e) => e.member.user.id === this.self.user.id
+    );
+  }
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -110,7 +111,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 
 	guildID := ctx.Params("guildid")
 
-	memb, _ := c.session.GuildMember(guildID, uid)
+	memb, _ := discordutil.GetMember(c.session, guildID, uid)
 	if memb == nil {
 		return fiber.ErrNotFound
 	}
@@ -120,7 +121,10 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	gRes := models.GuildFromGuild(guild, memb, c.db, c.cfg.Discord.OwnerID)
+	gRes, err := models.GuildFromGuild(guild, memb, c.db, c.cfg.Discord.OwnerID)
+	if err != nil {
+		return err
+	}
 
 	return ctx.JSON(gRes)
 }
@@ -546,6 +550,10 @@ func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
 	settings.EmotesIncrease = strings.Split(emotesInc, "")
 	settings.EmotesDecrease = strings.Split(emotesDec, "")
 
+	if settings.Penalty, err = c.db.GetKarmaPenalty(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	return ctx.JSON(settings)
 }
 
@@ -574,6 +582,11 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 	}
 
 	if err = c.db.SetKarmaTokens(guildID, settings.Tokens); err != nil {
+		return err
+	}
+
+	fmt.Printf("%+v\n", settings)
+	if err = c.db.SetKarmaPenalty(guildID, settings.Penalty); err != nil {
 		return err
 	}
 

@@ -36,6 +36,7 @@ const (
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
 	keyKarmaEmotesDec   = "KARMA:EMOTES:DEC"
 	keyKarmaTokens      = "KARMA:TOKENS"
+	keyKarmaPenalty     = "KARMA:PENALTY"
 	keyKarmaBlockListed = "KARMA:BLOCKLISTED"
 
 	keyAntiraidState = "ANTIRAID:STATE"
@@ -672,6 +673,37 @@ func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	}
 	if err != nil {
 		return 0, err
+	}
+
+	return val, nil
+}
+
+func (m *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
+	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
+
+	if err := m.client.Set(key, state, 0).Err(); err != nil {
+		return err
+	}
+
+	return m.Database.SetKarmaPenalty(guildID, state)
+}
+
+func (m *RedisMiddleware) GetKarmaPenalty(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
+
+	var val bool
+	err := m.client.Get(key).Scan(&val)
+	if err == redis.Nil {
+		val, err = m.Database.GetKarmaPenalty(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = m.client.Set(key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
 	}
 
 	return val, nil

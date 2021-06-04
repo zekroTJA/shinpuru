@@ -199,6 +199,7 @@ export interface KarmaSettings {
   emotes_increase: string[];
   emotes_decrease: string[];
   tokens: number;
+  penalty: boolean;
 }
 
 export interface AntiraidSettings {

@@ -152,9 +152,13 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	}
 
 	res := &models.InviteSettingsResponse{
-		Guild:     models.GuildFromGuild(guild, nil, nil, ""),
 		Message:   message,
 		InviteURL: fmt.Sprintf("https://discord.gg/%s", inviteCode),
+	}
+
+	res.Guild, err = models.GuildFromGuild(guild, nil, nil, "")
+	if err != nil {
+		return err
 	}
 
 	return ctx.JSON(res)

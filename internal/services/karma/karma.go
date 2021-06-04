@@ -57,7 +57,7 @@ func (k *Service) IsBlockListed(guildID, userID string) (isBlocklisted bool, err
 
 // Update adds or removes karma of the given value of the
 // specified user.
-func (k *Service) Update(guildID, userID string, value int) (err error) {
+func (k *Service) Update(guildID, userID, executorID string, value int) (err error) {
 	err = k.db.UpdateKarma(userID, guildID, value)
 
 	rules, err := k.db.GetKarmaRules(guildID)
@@ -131,12 +131,34 @@ func (k *Service) Update(guildID, userID string, value int) (err error) {
 		}
 	}
 
+	if value < 0 {
+		err = k.ApplyPenalty(guildID, executorID)
+	}
+
+	return
+}
+
+func (k *Service) ApplyPenalty(guildID, userID string) (err error) {
+	if userID == "" {
+		return
+	}
+
+	enabled, err := k.db.GetKarmaPenalty(guildID)
+	if database.IsErrDatabaseNotFound(err) {
+		err = nil
+	}
+	if err != nil || !enabled {
+		return
+	}
+	fmt.Println(enabled, guildID, userID)
+
+	err = k.Update(guildID, userID, "", -1)
 	return
 }
 
 // CheckAndUpdate is shorthand for GetState, IsBlockListed
 // and Update in one single pipe.
-func (k *Service) CheckAndUpdate(guildID string, object *discordgo.User, value int) (ok bool, err error) {
+func (k *Service) CheckAndUpdate(guildID, executorID string, object *discordgo.User, value int) (ok bool, err error) {
 	if object.Bot {
 		return
 	}
@@ -151,7 +173,7 @@ func (k *Service) CheckAndUpdate(guildID string, object *discordgo.User, value i
 		return
 	}
 
-	err = k.Update(object.ID, guildID, value)
+	err = k.Update(guildID, object.ID, executorID, value)
 	ok = err == nil
 	return
 }

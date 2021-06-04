@@ -9,6 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -267,6 +268,7 @@ type KarmaSettings struct {
 	EmotesIncrease []string `json:"emotes_increase"`
 	EmotesDecrease []string `json:"emotes_decrease"`
 	Tokens         int      `json:"tokens"`
+	Penalty        bool     `json:"penalty"`
 }
 
 // AntiraidSettings wraps settings properties for
@@ -309,9 +311,9 @@ func (req *ReasonRequest) Validate(acceptEmptyReason bool) (bool, error) {
 
 // GuildFromGuild returns a Guild model from the passed
 // discordgo.Guild g, discordgo.Member m and cmdHandler.
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Database, botOwnerID string) *Guild {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Database, botOwnerID string) (ng *Guild, err error) {
 	if g == nil {
-		return nil
+		return
 	}
 
 	selfmm := MemberFromMember(m)
@@ -327,7 +329,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		}
 	}
 
-	ng := &Guild{
+	ng = &Guild{
 		AfkChannelID:             g.AfkChannelID,
 		Banner:                   g.Banner,
 		Channels:                 g.Channels,
@@ -353,16 +355,25 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 	}
 
 	if db != nil {
-		var err error
+		selfmm.Karma, err = db.GetKarma(m.User.ID, g.ID)
+		if !database.IsErrDatabaseNotFound(err) && err != nil {
+			return
+		}
+
+		selfmm.KarmaTotal, err = db.GetKarmaSum(m.User.ID)
+		if !database.IsErrDatabaseNotFound(err) && err != nil {
+			return
+		}
 
 		ng.BackupsEnabled, err = db.GetGuildBackup(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting backup status")
+			return
 		}
 
-		backupEntries, err := db.GetBackups(g.ID)
+		var backupEntries []*backupmodels.Entry
+		backupEntries, err = db.GetBackups(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting backup entries")
+			return
 		} else {
 			for _, e := range backupEntries {
 				if e.Timestamp.After(ng.LatestBackupEntry) {
@@ -379,7 +390,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		}
 	}
 
-	return ng
+	return
 }
 
 // GuildReducedFromGuild returns a GuildReduced from the passed
