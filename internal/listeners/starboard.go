@@ -200,7 +200,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	if giveKarma {
-		if _, err = l.karma.CheckAndUpdate(e.GuildID, msg.Author, starboardConfig.KarmaGain); err != nil {
+		if _, err = l.karma.CheckAndUpdate(e.GuildID, "", msg.Author, starboardConfig.KarmaGain); err != nil {
 			logrus.WithError(err).Fatal("STARBOARD :: failed updating karma")
 			l.gl.Errorf(e.GuildID, "Failed updating karma (%s): %s", msg.Author.ID, err.Error())
 		}

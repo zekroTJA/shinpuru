@@ -154,7 +154,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		return
 	}
 
-	err = l.karma.Update(e.GuildID, msg.Author.ID, typ)
+	err = l.karma.Update(e.GuildID, msg.Author.ID, e.UserID, typ)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.UserID).Error("Failed altering karma value")
 		l.gl.Errorf(e.GuildID, "Failed altering karma value (%s): %s", e.UserID, err.Error())
