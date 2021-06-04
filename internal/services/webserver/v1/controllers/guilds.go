@@ -546,6 +546,10 @@ func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
 	settings.EmotesIncrease = strings.Split(emotesInc, "")
 	settings.EmotesDecrease = strings.Split(emotesDec, "")
 
+	if settings.Penalty, err = c.db.GetKarmaPenalty(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	return ctx.JSON(settings)
 }
 
@@ -574,6 +578,10 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 	}
 
 	if err = c.db.SetKarmaTokens(guildID, settings.Tokens); err != nil {
+		return err
+	}
+
+	if err = c.db.SetKarmaPenalty(guildID, settings.Penalty); err != nil {
 		return err
 	}
 

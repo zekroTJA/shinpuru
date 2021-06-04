@@ -267,6 +267,7 @@ type KarmaSettings struct {
 	EmotesIncrease []string `json:"emotes_increase"`
 	EmotesDecrease []string `json:"emotes_decrease"`
 	Tokens         int      `json:"tokens"`
+	Penalty        bool     `json:"penalty"`
 }
 
 // AntiraidSettings wraps settings properties for

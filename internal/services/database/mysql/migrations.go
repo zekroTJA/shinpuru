@@ -9,6 +9,7 @@ var migrationFuncs = []migrationFunc{
 	migration_1,
 	migration_2,
 	migration_3,
+	migration_4,
 }
 
 // VERSION 0:
@@ -36,4 +37,11 @@ func migration_2(m *sql.Tx) (err error) {
 func migration_3(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
 		"guilds", "`guildlogDisable` text NOT NULL DEFAULT '0'")
+}
+
+// VERSION 4:
+// - add property `penalty` to `karmaSettings`
+func migration_4(m *sql.Tx) (err error) {
+	return createTableColumnIfNotExists(m,
+		"karmaSettings", "`penalty` int(1) NOT NULL DEFAULT '0'")
 }
