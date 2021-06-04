@@ -56,3 +56,16 @@ jobs:
           tags: |
             zekro/shinpuru:${{ env.TAG }}
             ghcr.io/zekrotja/shinpuru:${{ env.TAG }}
+
+      - name: Docker Remote Deploy
+        if: ${{ env.TAG == 'canary' }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: zekro.de
+          port: 2201
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/mgr/docker/core
+            docker-compose pull shinpuru-canary
+            docker-compose up -d shinpuru-canary
