@@ -155,6 +155,11 @@ func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *disc
 		return
 	}
 
+	if eReact.UserID != jdMsg.Author.ID {
+		s.MessageReactionRemove(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name, eReact.UserID)
+		return
+	}
+
 	allowed, err := l.checkPermission(s, eReact.GuildID, eReact.UserID)
 	if !allowed || !l.checkLimit(eReact.UserID) {
 		s.MessageReactionRemove(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name, eReact.UserID)
