@@ -57,7 +57,7 @@ func (mw *GlobalRateLimitMiddleware) getLimiter(ctx shireikan.Context) (rl *rate
 
 	var ok bool
 	if rl, ok = mw.limiters.GetValue(key).(*ratelimit.Limiter); ok {
-		mw.limiters.SetExpire(key, mw.limiterDuration)
+		mw.limiters.SetExpires(key, mw.limiterDuration)
 		return
 	}
 
