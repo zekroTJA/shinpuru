@@ -10,9 +10,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -66,6 +66,7 @@ func (c *CmdReport) IsExecutableInDMChannels() bool {
 func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if len(ctx.GetArgs()) < 1 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
@@ -180,10 +181,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep, err := report.PushReport(
-				ctx.GetSession(),
-				db,
-				cfg.WebServer.PublicAddr,
+			rep, err := repSvc.PushReport(
 				ctx.GetGuild().ID,
 				ctx.GetUser().ID,
 				victim.User.ID,
@@ -208,6 +206,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 func (c *CmdReport) revoke(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if len(ctx.GetArgs()) < 3 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
@@ -256,7 +255,7 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 				DeleteAfter(8 * time.Second)
 		},
 		AcceptFunc: func(m *discordgo.Message) {
-			emb, err := report.RevokeReport(
+			emb, err := repSvc.RevokeReport(
 				rep,
 				ctx.GetUser().ID,
 				reason,

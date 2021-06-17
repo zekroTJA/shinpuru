@@ -8,8 +8,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -17,12 +17,14 @@ type ReportsController struct {
 	session *discordgo.Session
 	cfg     *config.Config
 	db      database.Database
+	repSvc  *report.ReportService
 }
 
 func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
+	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
 
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
@@ -75,7 +77,7 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	_, err = report.RevokeReport(
+	_, err = c.repSvc.RevokeReport(
 		rep,
 		uid,
 		reason.Reason,

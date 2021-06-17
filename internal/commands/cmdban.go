@@ -9,16 +9,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
-	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
-	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -72,17 +70,6 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	authorMemb, err := ctx.GetSession().GuildMember(ctx.GetGuild().ID, ctx.GetUser().ID)
-	if err != nil {
-		return err
-	}
-
-	if roleutil.PositionDiff(victim, authorMemb, ctx.GetGuild()) >= 0 {
-		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-			"You can only ban members with lower permissions than yours.").
-			DeleteAfter(8 * time.Second).Error()
-	}
-
 	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
 	var repType int
 	for i, v := range models.ReportTypes {
@@ -108,7 +95,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 	}
 
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
-	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed: &discordgo.MessageEmbed{
@@ -142,10 +129,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) {
-			rep, err := report.PushBan(
-				ctx.GetSession(),
-				db,
-				cfg.WebServer.PublicAddr,
+			rep, err := repSvc.PushBan(
 				ctx.GetGuild().ID,
 				ctx.GetUser().ID,
 				victim.User.ID,

@@ -24,6 +24,7 @@ const (
 	DiAuthMiddleware            = "authmiddleware"
 	DiCodeExecFactory           = "codeexecfactory"
 	DiKarma                     = "karmaservice"
+	DiReport                    = "reportservice"
 	DiGuildLog                  = "guildlog"
 	DiKVCache                   = "kvcache"
 )
