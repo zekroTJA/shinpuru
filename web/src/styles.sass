@@ -180,15 +180,17 @@ select
     width: calc(100% - 240px)
     position: absolute
     top: 60px
-    left: $guild-settings-nav-width
-    padding-top: 50px
-    padding-left: 40px
-    padding-right: 40px
+    left: $guild-settings-nav-width + 20px
+    padding: 50px 40px 100px 40px
     display: flex
-    
+
     > div
         max-width: 1000px
         margin: 0 auto
+
+    @media screen and (max-width: 750px)
+        left: 0px
+        width: 100%
 
 .nowrap
     white-space: nowrap
