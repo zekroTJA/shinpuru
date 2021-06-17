@@ -178,12 +178,17 @@ select
 
 .guild-settings-container
     width: calc(100% - 240px)
-    max-width: 1000px
     position: absolute
-    top: 50px
+    top: 60px
     left: $guild-settings-nav-width
-    padding-top: 30px
+    padding-top: 50px
     padding-left: 40px
+    padding-right: 40px
+    display: flex
+    
+    > div
+        max-width: 1000px
+        margin: 0 auto
 
 .nowrap
     white-space: nowrap
@@ -193,3 +198,6 @@ select
 
 .round
     border-radius: 100%
+
+.shade
+    box-shadow: 0px 5px 15px 0px rgba(black, 0.25)

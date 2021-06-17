@@ -1,6 +1,11 @@
-<div class="navbar">
-    <div *ngFor="let r of routes" class="item" [class.active]="currentPath === r.route" (click)="navigate(r)">
-        <img src="/assets/{{ r.icon }}" />
-        <span>{{ r.displayname }}</span>
-    </div>
+<div class="navbar shade">
+  <div
+    *ngFor="let r of routes"
+    class="item"
+    [class.active]="currentPath === r.route"
+    (click)="navigate(r)"
+  >
+    <img src="/assets/{{ r.icon }}" />
+    <span class="content">{{ r.displayname }}</span>
+  </div>
 </div>
