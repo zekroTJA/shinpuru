@@ -77,6 +77,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 	})
 
 	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
+	new(controllers.InviteController).Setup(ws.container, ws.app.Group("/invite"))
 	ws.registerRouter(new(v1.Router), []string{"/api/v1", "/api"}, rlh)
 
 	ws.app.Use(filesystem.New(filesystem.Config{
