@@ -32,7 +32,7 @@
           <option [value]="4">{{ getSeverity(4).name }}</option>
         </select>
         <button class="btn-delete-entries ml-auto" (click)="deleteEntries()">
-          <img src="/assets/delete.svg" height="20" class="mr-2" />
+          <img src="/assets/delete.svg" height="20" />
           <span>{{
             entriesSelected.length === 0
               ? 'Delete ALL entries'
