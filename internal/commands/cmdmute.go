@@ -9,10 +9,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/mute"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -207,12 +207,10 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 	}
 
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if victimIsMuted {
-		emb, err := report.RevokeMute(
-			ctx.GetSession(),
-			db,
-			cfg.WebServer.PublicAddr,
+		emb, err := repSvc.RevokeMute(
 			ctx.GetGuild().ID,
 			ctx.GetUser().ID,
 			victim.User.ID,
@@ -249,10 +247,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	rep, err := report.PushMute(
-		ctx.GetSession(),
-		db,
-		cfg.WebServer.PublicAddr,
+	rep, err := repSvc.PushMute(
 		ctx.GetGuild().ID,
 		ctx.GetUser().ID,
 		victim.User.ID,

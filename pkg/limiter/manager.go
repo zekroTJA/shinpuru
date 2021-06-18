@@ -29,7 +29,7 @@ func newManager(cleanupInterval, duration time.Duration, burst int) *manager {
 func (m *manager) retrieve(key string) *ratelimit.Limiter {
 	rl, ok := m.tm.GetValue(key).(*ratelimit.Limiter)
 	if ok {
-		m.tm.SetExpire(key, m.lifetime)
+		m.tm.SetExpires(key, m.lifetime)
 	} else {
 		rl = m.pool.Get().(*ratelimit.Limiter)
 		rl.Reset()

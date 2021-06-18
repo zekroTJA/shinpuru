@@ -24,6 +24,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -288,6 +289,14 @@ func main() {
 		Name: static.DiKarma,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return karma.NewKarmaService(ctn), nil
+		},
+	})
+
+	// Initialize report service
+	diBuilder.Add(di.Def{
+		Name: static.DiReport,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return report.New(ctn), nil
 		},
 	})
 

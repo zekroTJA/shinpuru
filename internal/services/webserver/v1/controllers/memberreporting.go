@@ -9,11 +9,11 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
@@ -24,6 +24,7 @@ type MemberReportingController struct {
 	cfg     *config.Config
 	db      database.Database
 	st      storage.Storage
+	repSvc  *report.ReportService
 }
 
 func (c *MemberReportingController) Setup(container di.Container, router fiber.Router) {
@@ -31,6 +32,7 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
+	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
 
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
@@ -73,10 +75,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		repReq.Attachment = img.ID.String()
 	}
 
-	rep, err := report.PushReport(
-		c.session,
-		c.db,
-		c.cfg.WebServer.PublicAddr,
+	rep, err := c.repSvc.PushReport(
 		guildID,
 		uid,
 		memberID,
@@ -142,10 +141,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := report.PushKick(
-		c.session,
-		c.db,
-		c.cfg.WebServer.PublicAddr,
+	rep, err := c.repSvc.PushKick(
 		guildID,
 		uid,
 		memberID,
@@ -218,10 +214,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := report.PushBan(
-		c.session,
-		c.db,
-		c.cfg.WebServer.PublicAddr,
+	rep, err := c.repSvc.PushBan(
 		guildID,
 		uid,
 		memberID,
@@ -293,10 +286,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := report.PushMute(
-		c.session,
-		c.db,
-		c.cfg.WebServer.PublicAddr,
+	rep, err := c.repSvc.PushMute(
 		guildID,
 		uid,
 		memberID,
@@ -352,10 +342,7 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute members with higher or same permissions than/as yours")
 	}
 
-	_, err = report.RevokeMute(
-		c.session,
-		c.db,
-		c.cfg.WebServer.PublicAddr,
+	_, err = c.repSvc.RevokeMute(
 		guildID,
 		uid,
 		memberID,

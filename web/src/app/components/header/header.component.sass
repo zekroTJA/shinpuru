@@ -1,11 +1,20 @@
 @import '../../../sass/vars'
 @import '../../../sass/mixins'
     
+
+.part-container
+    display: flex
+    padding: 10px
+    border-radius: 150px
+    background-color: $c-nqblack
+
+
 .dropdown-popup
     position: absolute
     z-index: 10
-    transform: translate(-3px, 35px)
+    transform: translate(-9px, 42px)
     width: 100%
+
 
 .popup-entry
     display: flex
@@ -13,7 +22,7 @@
     p
         margin-left: 10px
         margin-right: 0 !important
-        text-transform: uppercase
+        text-transform: capitalize
         font-size: 0.9em
 
     img
@@ -21,14 +30,20 @@
         height: 15px
         +my-auto
 
+
 #header
-    height: 50px
+    top: 0
+    left: 0
+    right: 0
+    padding: 14px 20px 0 20px
     display: flex
     align-items: center
-    background-color: $c-nqblack
+    z-index: 10
+    position: fixed
+    pointer-events: none
 
-    *
-        +my-auto
+    > *
+        pointer-events: all
 
     h1
         font-size: 26px
@@ -45,8 +60,6 @@
         position: relative
         margin-right: 0
         margin-left: auto
-        background-color: rgba(black, 0.25)
-        padding: 5px
         border-radius: 100px
         cursor: pointer
 
@@ -67,6 +80,7 @@
 
     .routes
         display: flex
+        align-items: center
         margin-left: 20px
 
         a
@@ -84,6 +98,7 @@
 .btn-login
     padding: 4px 14px
     display: flex
+    align-items: center
 
 
 @media only screen and (max-width: 900px)

@@ -68,3 +68,14 @@ table
     background-color: $c-red
     display: flex
     align-items: center
+
+    > img
+        margin-right: 10px
+
+    @media screen and (max-width: 490px)
+        > img
+            margin-right: 0
+        > span
+            display: none
+
+    

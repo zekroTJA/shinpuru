@@ -1,16 +1,44 @@
-1.15.0
+1.16.0
 
-## Minor Changes
+## Major Changes
 
-- If you are not present on the karma scoreboard in the web interface, your current karma score for that guild is now displayed above the scoreboard. [#240]  
-![](https://i.imgur.com/tA4dpC0.png)
+### SQLite Deprecation
 
-- In the karma preferences, you can now enable a Karma penalty. When enabled and when a user decreases the karma of another user by giving them a downvote, the executor of the downvote pays with 1 Karma point from their own karma account. So you give someone -1 Karma and you will also get -1 Karma. This is introduced to reduce karma trolling and uncontrolled downvoting of members.    
-![](https://i.imgur.com/Ert3Tdd.png)
+The SQLite Database driver, which is neither continuously maintained, nor tested, nor recommendet to be used in a production scenario, is now marked as **deprecated** and will be removed in the upcoming version!
+
+For development environments, please use the provided [`docker-compose.dev.yml`](docker-compose.dev.yml) to easily set up a development environment for shinpuru.
+
+### Web Frontend
+
+This release contains further design changes of the web frontend.
+
+First of all, I've finally changed the background color scheme. Originally, shinpurus web frontend should have followed the original Discord desogn language. Thats why still most colors are derived from them. Though, my view has changed a bit on the blue-gray background colors. To be honest, I really started hating them so much so that I've changed them to a more 'classical' dark-gray.
+
+Also, as you might have noticed, the header is now split up into two "floating" parts. In my opinion, the central part of the header was just a useless waste of space, so now, it's a bit more condensed and fits better into the general design.
+
+![](https://i.imgur.com/78XgnyZ.png)
+
+Also the guild settings page got a massive redesign. First of all, the navigation bar is now also a floating navigation menu. The page content is now centered to be consistent with other content orientations.
+
+![](https://i.imgur.com/HpLJ1mH.gif)
+
+Also, I've done a lot to make the guild settings more responsive to mobile devices. It's not perfect though, but better than before. ^^
+
+![](https://i.imgur.com/hOckQ0J.gif)
+
+<!-- ## Minor Changes -->
 
 ## Bug Fixes
 
-- Votes should now be saved properly in the database. [#242]
+- Code execution can now only be triggered by the author of the code message. [#244]
+
+- The route `/invite` now redirects to the bot's invite link again. [#245]
+
+## Backstage
+
+- All report utilities are now summarized in a report module which is registered in the DI container. This makes further modifications and implementations with the report system more easy.
+
+- shinpuru now uses a new version of [`timedmap`](https://github.com/zekroTJA/timedmap) which should bring some performance improvements.
 
 # Docker
 
@@ -21,11 +49,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.15.0
+$ docker pull zekro/shinpuru:1.16.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.15.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.16.0
 ```

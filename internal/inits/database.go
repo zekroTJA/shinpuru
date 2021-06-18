@@ -52,10 +52,6 @@ func InitDatabase(container di.Container) database.Database {
 }
 
 func printSqliteWraning() {
-	logrus.Warning("\n\n--------------------------[ ATTENTION ]--------------------------" +
-		"You are currently using SQLite as database driver. Please ONLY   " +
-		"use SQLite during testing and debugging and NEVER use SQLite in a" +
-		"real production environment! Here you can read about why:        " +
-		"https://github.com/zekroTJA/shinpuru/wiki/No-SQLite-in-production" +
-		"-----------------------------------------------------------------\n\n")
+	logrus.Warning("You are currently using the SQLite Database Driver, which is marked " +
+		"as DEPRECATED and will be removed in the upcoming version!")
 }
