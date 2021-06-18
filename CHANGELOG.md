@@ -1,4 +1,8 @@
-1.15.0
+1.16.0
+
+## Major Changes
+
+
 
 ## Minor Changes
 
@@ -21,11 +25,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.15.0
+$ docker pull zekro/shinpuru:1.16.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.15.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.16.0
 ```
