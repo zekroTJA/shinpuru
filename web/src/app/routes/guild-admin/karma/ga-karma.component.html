@@ -71,7 +71,7 @@
     <app-spinner *ngIf="!rules" [started]="true"></app-spinner>
     <div *ngIf="rules" class="mt-5">
       <h3 class="mb-2">Rules</h3>
-      <div class="d-flex mt-3">
+      <div class="mt-3 rule-container">
         <span class="mr-2">When a users karma</span>
         <select
           class="mr-2"
@@ -113,7 +113,7 @@
       <div>
         <button class="mt-3" (click)="applyRule()">Apply Rule</button>
       </div>
-      <div class="mt-4">
+      <div class="mt-4 rule-container">
         <div *ngFor="let r of rules" class="karma-rule">
           When a users karma
           <span class="embedded">{{ ruleTrigger(r.trigger) }}</span
