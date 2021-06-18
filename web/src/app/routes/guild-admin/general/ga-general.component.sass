@@ -1,11 +1,15 @@
 @import '../../../../sass/vars'
 @import '../../../../sass/mixins'
     
-.settingsTile
+.settings-tile
     background-color: $c-nqblack
+    width: 100%
     padding: 10px
     border-radius: 5px
     margin-bottom: 10px
+
+    > div
+        display: flex
 
     h5
         margin-bottom: 10px !important
@@ -14,6 +18,15 @@
        padding: 5px 15px
        margin-left: auto
        margin-right: 0px
+
+    @media screen and (max-width: 750px)
+        > div
+            flex-direction: column
+            > * 
+                margin-top: 20px
+            input, button, select
+                width: 100%
+                margin-left: 0 !important
 
 
 .message-inpt
