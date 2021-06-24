@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/pquerna/ffjson/ffjson"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -36,6 +37,8 @@ func InitDiscordBotSession(container di.Container) {
 	session.Token = "Bot " + cfg.Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
+	session.MarshalFunc = ffjson.Marshal
+	session.UnmarshalFunc = ffjson.Unmarshal
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)
