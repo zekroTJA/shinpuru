@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -15,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/discordgo"
 )
 
 const (

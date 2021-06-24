@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/discordgo"
 )
 
 var (

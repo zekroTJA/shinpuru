@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -13,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/timerstack"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/discordgo"
 )
 
 type CmdLogin struct {

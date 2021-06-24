@@ -3,7 +3,7 @@ package backupmodels
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/discordgo"
 )
 
 // Entry wraps the database entry of a backup.

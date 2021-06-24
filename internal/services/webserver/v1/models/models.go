@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
@@ -15,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/discordgo"
 )
 
 var Ok = &Status{200}

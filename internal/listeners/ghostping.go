@@ -12,8 +12,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/discordgo"
 )
 
 const (

@@ -18,7 +18,7 @@ For development, you can take the provided [`my.private.config.yml`](https://git
 
 ### Discord Communication
 
-The backend of shinpuru is completely written in [**Go**](https://go.dev/) *(golang)*. To communicate with Discord, the API wrapper [**discordgo**](https://github.com/bwmarrin/discordgo) is used. discordgo provides very low level bindings to the Discord API with very little utilities around, therefore a lot of utility packages were created. These can be found in the `pkg/` directory. These are the main utility packages used in shinpuru:
+The backend of shinpuru is completely written in [**Go**](https://go.dev/) *(golang)*. To communicate with Discord, the API wrapper [**discordgo**](https://github.com/zekrotja/discordgo) is used. discordgo provides very low level bindings to the Discord API with very little utilities around, therefore a lot of utility packages were created. These can be found in the `pkg/` directory. These are the main utility packages used in shinpuru:
 - [acceptmsg](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg) creates an embed message with a ✔ and ❌ reaction added. Then, you can execute code depending on which reaction was clicked on.
 - [discordutil](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordutil) provides general utility functions like getting message links, retrieving objects first from the discordgo cache and, when not available there, from the Discord API or checking if a user has admin privileges.
 - [embedbuilder](https://github.com/zekroTJA/shinpuru/tree/master/pkg/embedbuilder) helps building embeds using the builder pattern.

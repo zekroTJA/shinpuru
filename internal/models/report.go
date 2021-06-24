@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekrotja/discordgo"
 )
 
 type Type int

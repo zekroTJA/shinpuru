@@ -18,8 +18,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekrotja/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 )

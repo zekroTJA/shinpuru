@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -9,6 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/discordgo"
 )
 
 type UsersettingsController struct {

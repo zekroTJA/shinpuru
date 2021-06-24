@@ -3,9 +3,9 @@ package listeners
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"

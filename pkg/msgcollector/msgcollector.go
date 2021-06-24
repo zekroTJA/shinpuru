@@ -7,7 +7,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/discordgo"
 )
 
 // Options for MessageCollector

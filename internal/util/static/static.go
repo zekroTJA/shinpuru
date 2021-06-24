@@ -3,7 +3,7 @@ package static
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/discordgo"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 		discordgo.IntentsGuildMembers |
 		discordgo.IntentsGuildMessageReactions |
 		discordgo.IntentsGuildMessages |
-		discordgo.IntentsGuildPresences |
+		// discordgo.IntentsGuildPresences |
 		discordgo.IntentsGuildVoiceStates |
 		discordgo.IntentsGuilds |
 		discordgo.IntentsGuildVoiceStates

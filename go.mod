@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
-	github.com/bwmarrin/discordgo v0.23.2
+	github.com/bwmarrin/discordgo v0.23.2 // indirect
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -46,11 +46,12 @@ require (
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
 	github.com/zekroTJA/ratelimit v1.0.0
-	github.com/zekroTJA/shireikan v0.6.0
+	github.com/zekroTJA/shireikan v0.6.1-0.20210624150728-dfe5b2788f93
 	github.com/zekroTJA/timedmap v1.4.0
+	github.com/zekrotja/discordgo v0.22.1-0.20210624145917-cf9706419a72 // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
-	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

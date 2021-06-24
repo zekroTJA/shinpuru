@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -14,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/discordgo"
 )
 
 type UtilController struct {

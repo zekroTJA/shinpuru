@@ -6,8 +6,8 @@ package acceptmsg
 import (
 	"errors"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/discordgo"
 )
 
 const (

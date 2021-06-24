@@ -1,4 +1,4 @@
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.2)`
+- [bwmarrin/discordgo](https://github.com/zekrotja/discordgo) `(v0.23.2)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go) `(v3.2.0+incompatible)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.0)`

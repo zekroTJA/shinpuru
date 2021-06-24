@@ -3,8 +3,8 @@ package util
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/discordgo"
 )
 
 // EmbedMessage extends a discordgo.MessageEmbedMessage

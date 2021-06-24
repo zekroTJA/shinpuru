@@ -3,9 +3,9 @@ package listeners
 import (
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/zekroTJA/shinpuru/internal/services/metrics"
+	"github.com/zekrotja/discordgo"
 )
 
 type ListenerMetrics struct {

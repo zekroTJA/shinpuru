@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -15,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/discordgo"
 )
 
 type CmdGuild struct {

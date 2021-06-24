@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/discordgo"
 
 	"github.com/bwmarrin/snowflake"
 )

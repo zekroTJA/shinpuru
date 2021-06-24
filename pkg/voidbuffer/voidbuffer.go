@@ -21,7 +21,7 @@ type VoidBuffer struct {
 func New(size int) *VoidBuffer {
 	return &VoidBuffer{
 		m:    &sync.RWMutex{},
-		buf:  make([]interface{}, size),
+		buf:  make([]interface{}, size, size),
 		last: -1,
 		size: size,
 	}

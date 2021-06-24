@@ -12,8 +12,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/wcharczuk/go-chart"
+	"github.com/zekrotja/discordgo"
 )
 
 // VoteState defines the lifecycle state of a Vote.

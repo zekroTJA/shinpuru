@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
@@ -14,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/discordgo"
 )
 
 const (
