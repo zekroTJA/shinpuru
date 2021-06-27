@@ -3,6 +3,7 @@ package listeners
 import (
 	"sync"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -10,7 +11,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
-	"github.com/zekrotja/discordgo"
 )
 
 type ListenerTwitchNotify struct {

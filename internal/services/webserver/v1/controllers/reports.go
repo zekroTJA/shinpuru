@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -10,7 +11,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekrotja/discordgo"
 )
 
 type ReportsController struct {

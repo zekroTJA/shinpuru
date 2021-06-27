@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
-	"github.com/zekrotja/discordgo"
 )
 
 // UserIdent is the type of identificator for getting

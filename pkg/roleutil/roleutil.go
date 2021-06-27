@@ -6,7 +6,7 @@ package roleutil
 import (
 	"sort"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 // SortRoles sorts a given array of discordgo.Role

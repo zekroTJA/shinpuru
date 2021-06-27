@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
@@ -13,7 +14,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
 	"github.com/zekroTJA/timedmap"
-	"github.com/zekrotja/discordgo"
 )
 
 const (

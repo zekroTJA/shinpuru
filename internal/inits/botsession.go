@@ -4,6 +4,7 @@ import (
 	"strings"
 	"sync/atomic"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/pquerna/ffjson/ffjson"
 	"github.com/sarulabs/di/v2"
@@ -14,7 +15,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekrotja/discordgo"
 )
 
 func InitDiscordBotSession(container di.Container) {

@@ -5,13 +5,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
-	"github.com/zekrotja/discordgo"
 )
 
 type ListenerBotMention struct {

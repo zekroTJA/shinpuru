@@ -3,7 +3,7 @@ package roleutil
 import (
 	"testing"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 func TestSortRoles(t *testing.T) {

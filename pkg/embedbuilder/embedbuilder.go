@@ -2,7 +2,7 @@
 // to create discordgo message embeds.
 package embedbuilder
 
-import "github.com/zekrotja/discordgo"
+import "github.com/bwmarrin/discordgo"
 
 // EmbedBuilder provides a builder pattern to
 // create a discordgo message embed.

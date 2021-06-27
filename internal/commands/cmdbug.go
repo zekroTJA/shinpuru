@@ -1,9 +1,9 @@
 package commands
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
-	"github.com/zekrotja/discordgo"
 )
 
 type CmdBug struct {

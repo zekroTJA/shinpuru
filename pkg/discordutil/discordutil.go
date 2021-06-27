@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 // GetMessageLink assembles and returns a message link by

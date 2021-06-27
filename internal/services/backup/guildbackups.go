@@ -16,7 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 const (

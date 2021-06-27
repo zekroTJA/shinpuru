@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -12,7 +13,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shireikan"
-	"github.com/zekrotja/discordgo"
 )
 
 type CmdPerms struct {

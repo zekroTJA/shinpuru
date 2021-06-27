@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 const (

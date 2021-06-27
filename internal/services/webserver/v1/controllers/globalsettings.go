@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
@@ -11,7 +12,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekrotja/discordgo"
 )
 
 type GlobalSettingsController struct {

@@ -32,7 +32,7 @@ Here you can choose between the stable or canary version of shinpuru:
 
 # Intro
 
-シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/zekrotja/discordgo) as API and gateway wrapper and [shireikan](https://github.com/zekroTJA/shireikan) as command parser. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability.
+シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [shireikan](https://github.com/zekroTJA/shireikan) as command parser. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability.
 
 This bot is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Drop by to see shinpuru in action! 😉
 
@@ -232,7 +232,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ### Back End
 
-- [bwmarrin/discordgo](https://github.com/zekrotja/discordgo) `(v0.23.2)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.2)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go) `(v3.2.0+incompatible)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.0)`

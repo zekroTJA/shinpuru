@@ -5,11 +5,11 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/bytecount"
 	"github.com/zekroTJA/shireikan"
-	"github.com/zekrotja/discordgo"
 )
 
 type CmdStats struct {

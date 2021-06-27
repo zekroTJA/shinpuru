@@ -3,7 +3,7 @@ package mute
 import (
 	"errors"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 // SetupChannels tries to set the permission for

@@ -3,8 +3,8 @@ package util
 import (
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekrotja/discordgo"
 )
 
 // GetInviteLink returns the invite link for the bot's

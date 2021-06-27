@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 var (

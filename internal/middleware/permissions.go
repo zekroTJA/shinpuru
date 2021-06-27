@@ -3,6 +3,7 @@ package middleware
 import (
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -12,7 +13,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
-	"github.com/zekrotja/discordgo"
 )
 
 // PermissionsMiddleware is a command handler middleware

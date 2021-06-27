@@ -7,6 +7,7 @@ import (
 	"image"
 	"image/jpeg"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
@@ -21,7 +22,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/thumbnail"
-	"github.com/zekrotja/discordgo"
 )
 
 const maxSize = 500.0

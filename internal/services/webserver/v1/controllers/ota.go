@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -11,7 +12,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
-	"github.com/zekrotja/discordgo"
 )
 
 type OTAController struct {

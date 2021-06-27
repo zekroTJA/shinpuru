@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -13,7 +14,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/random"
-	"github.com/zekrotja/discordgo"
 )
 
 // DatabaseRefreshTokenHandler implements RefreshTokenHandler

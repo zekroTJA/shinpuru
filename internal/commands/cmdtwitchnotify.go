@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"

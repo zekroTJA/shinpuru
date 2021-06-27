@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gofiber/fiber/v2"
 	"github.com/makeworld-the-better-one/go-isemoji"
@@ -23,7 +24,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
-	"github.com/zekrotja/discordgo"
 )
 
 type GuildsController struct {

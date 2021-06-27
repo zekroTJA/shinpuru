@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -12,7 +13,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
-	"github.com/zekrotja/discordgo"
 )
 
 type CmdVoicelog struct {

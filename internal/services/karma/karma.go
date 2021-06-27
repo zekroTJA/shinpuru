@@ -3,6 +3,7 @@ package karma
 import (
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
@@ -11,7 +12,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
-	"github.com/zekrotja/discordgo"
 )
 
 // Service provides functionalities to check karma state,

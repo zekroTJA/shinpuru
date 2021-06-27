@@ -3,7 +3,7 @@ package static
 import (
 	"time"
 
-	"github.com/zekrotja/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 const (

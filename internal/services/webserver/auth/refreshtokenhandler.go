@@ -3,12 +3,12 @@ package auth
 import (
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekrotja/discordgo"
 )
 
 // RefreshTokenRequestHandler implements RequestHandler for

@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -16,7 +17,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
-	"github.com/zekrotja/discordgo"
 )
 
 type MemberReportingController struct {
