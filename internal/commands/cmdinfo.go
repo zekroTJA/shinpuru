@@ -9,6 +9,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 
 	_ "embed"
 )
@@ -48,13 +49,19 @@ func (c *CmdInfo) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdInfo) Exec(ctx shireikan.Context) error {
-	invLink := util.GetInviteLink(ctx.GetSession())
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	self, err := st.SelfUser()
+	if err != nil {
+		return err
+	}
+
+	invLink := util.GetInviteLink(self.ID)
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "Info",
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: ctx.GetSession().State.User.AvatarURL(""),
+			URL: self.AvatarURL(""),
 		},
 		Description: infoMsg,
 		Fields: []*discordgo.MessageEmbedField{
@@ -94,6 +101,6 @@ func (c *CmdInfo) Exec(ctx shireikan.Context) error {
 			Text: fmt.Sprintf("© 2018-%s zekro Development (Ringo Hoffmann)", time.Now().Format("2006")),
 		},
 	}
-	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

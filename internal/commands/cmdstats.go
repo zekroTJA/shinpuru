@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/bytecount"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdStats struct {
@@ -51,8 +52,14 @@ func (c *CmdStats) Exec(ctx shireikan.Context) error {
 	uptimeMinutes := int(uptime % (3600 * 24) % 3600 / 60)
 	uptimeSeconds := uptime % (3600 * 24) % 3600 % 60
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	guilds, err := st.Guilds()
+	if err != nil {
+		return err
+	}
+
 	var guildUsers int
-	for _, g := range ctx.GetSession().State.Guilds {
+	for _, g := range guilds {
 		guildUsers += g.MemberCount
 	}
 
@@ -80,7 +87,7 @@ func (c *CmdStats) Exec(ctx shireikan.Context) error {
 			{
 				Name: "Guilds & Members",
 				Value: fmt.Sprintf("Serving **%d** guilds with **%d** members in total.",
-					len(ctx.GetSession().State.Guilds), guildUsers),
+					len(guilds), guildUsers),
 			},
 			{
 				Name: "Runtime Stats",
@@ -89,6 +96,6 @@ func (c *CmdStats) Exec(ctx shireikan.Context) error {
 			},
 		},
 	}
-	_, err := ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
 	return err
 }

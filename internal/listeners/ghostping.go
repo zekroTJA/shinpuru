@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/timedmap"
@@ -27,6 +28,7 @@ type ListenerGhostPing struct {
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 	gpim            *middleware.GhostPingIgnoreMiddleware
+	st              *dgrs.State
 }
 
 func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
@@ -34,6 +36,7 @@ func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
 		db:       container.Get(static.DiDatabase).(database.Database),
 		gl:       container.Get(static.DiGuildLog).(guildlog.Logger).Section("ghostping"),
 		gpim:     container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware),
+		st:       container.Get(static.DiState).(*dgrs.State),
 		msgCache: timedmap.New(gpTick),
 	}
 }
@@ -75,7 +78,12 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 		return
 	}
 
-	if deletedMsg.Author == nil || deletedMsg.Author.ID == s.State.User.ID {
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
+	if deletedMsg.Author == nil || deletedMsg.Author.ID == self.ID {
 		return
 	}
 

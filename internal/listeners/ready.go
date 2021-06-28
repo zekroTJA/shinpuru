@@ -39,7 +39,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		"id":       e.User.ID,
 		"nGuilds":  len(e.Guilds),
 	})
-	logrus.Infof("Invite link: %s", util.GetInviteLink(s))
+	logrus.Infof("Invite link: %s", util.GetInviteLink(e.User.ID))
 
 	s.UpdateGameStatus(0, static.StdMotd)
 

@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/dgrs"
 )
 
 const (
@@ -33,6 +34,7 @@ type ColorListener struct {
 	db         database.Database
 	gl         guildlog.Logger
 	pmw        *middleware.PermissionsMiddleware
+	st         *dgrs.State
 	publicAddr string
 
 	emojiCache *timedmap.TimedMap
@@ -49,6 +51,7 @@ func NewColorListener(container di.Container) *ColorListener {
 		db:         container.Get(static.DiDatabase).(database.Database),
 		gl:         container.Get(static.DiGuildLog).(guildlog.Logger).Section("colorlistener"),
 		pmw:        container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
+		st:         container.Get(static.DiState).(*dgrs.State),
 		publicAddr: publicAddr,
 		emojiCache: timedmap.New(1 * time.Minute),
 	}
@@ -63,7 +66,12 @@ func (l *ColorListener) HandlerMessageEdit(s *discordgo.Session, e *discordgo.Me
 }
 
 func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
-	if e.MessageReaction.UserID == s.State.User.ID {
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
+	if e.MessageReaction.UserID == self.ID {
 		return
 	}
 

@@ -10,9 +10,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdVoicelog struct {
@@ -122,8 +122,9 @@ func (c *CmdVoicelog) Exec(ctx shireikan.Context) error {
 		}
 		vcs := make([]string, len(vcIDs))
 		i := 0
+		st := ctx.GetObject(static.DiState).(*dgrs.State)
 		for _, id := range vcIDs {
-			if c, err := discordutil.GetChannel(ctx.GetSession(), id); err == nil && c != nil {
+			if c, err := st.Channel(id); err == nil && c != nil {
 				vcs[i] = fmt.Sprintf("%s `%s`", c.Name, c.ID)
 				i++
 			}

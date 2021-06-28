@@ -17,6 +17,7 @@ require (
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-redis/redis/v8 v8.10.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.12.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -46,6 +47,9 @@ require (
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.6.0
 	github.com/zekroTJA/timedmap v1.4.0
+	github.com/zekrotja/dgrs v0.1.1 // indirect
+	go.opentelemetry.io/otel/internal/metric v0.21.0 // indirect
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22

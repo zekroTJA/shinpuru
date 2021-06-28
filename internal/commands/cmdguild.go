@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdGuild struct {
@@ -66,8 +67,11 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	gChans, err := st.Channels(g.ID, true)
+
 	nTextChans, nVoiceChans, nCategoryChans := 0, 0, 0
-	for _, c := range g.Channels {
+	for _, c := range gChans {
 		switch c.Type {
 		case discordgo.ChannelTypeGuildCategory:
 			nCategoryChans++

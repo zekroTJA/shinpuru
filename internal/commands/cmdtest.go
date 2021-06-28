@@ -72,5 +72,5 @@ func (c *CmdTest) Exec(ctx shireikan.Context) error {
 	// return util.FlushAllGuildData(db, st, ctx.GetGuild().ID)
 
 	// fmt.Println(static.AdditionalPermissions)
-	return nil
+	// return nil
 }

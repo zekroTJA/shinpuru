@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type GuildMembersController struct {
@@ -21,6 +22,7 @@ type GuildMembersController struct {
 	db         database.Database
 	pmw        *middleware.PermissionsMiddleware
 	cmdHandler shireikan.Handler
+	st         *dgrs.State
 }
 
 func (c *GuildMembersController) Setup(container di.Container, router fiber.Router) {
@@ -29,6 +31,7 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/members", c.getMembers)
 	router.Get("/:memberid", c.getMember)
@@ -86,7 +89,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 		return fiber.ErrNotFound
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.st.Guild(guildID)
 	if err != nil {
 		return err
 	}

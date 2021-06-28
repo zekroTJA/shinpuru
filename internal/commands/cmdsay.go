@@ -9,8 +9,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -91,6 +93,12 @@ func (c *CmdSay) Exec(ctx shireikan.Context) (err error) {
 		return err
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	self, err := st.SelfUser()
+	if err != nil {
+		return
+	}
+
 	var editMsg *discordgo.Message
 
 	if *fedit != "" {
@@ -101,7 +109,7 @@ func (c *CmdSay) Exec(ctx shireikan.Context) (err error) {
 				fmt.Sprintf("The message to be edited could not be found:\n```\n%s\n```", err.Error())).
 				DeleteAfter(10 * time.Second).Error()
 		}
-		if editMsg.Author.ID != ctx.GetSession().State.User.ID {
+		if editMsg.Author.ID != self.ID {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"You can only edit messages which were created by shinpuru.").
 				DeleteAfter(8 * time.Second).Error()

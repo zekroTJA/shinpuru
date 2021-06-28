@@ -7,6 +7,7 @@ import (
 
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/dgrs"
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/middleware"
@@ -48,6 +49,7 @@ type ListenerCodeexec struct {
 	db       database.Database
 	execFact codeexec.Factory
 	pmw      *middleware.PermissionsMiddleware
+	st       *dgrs.State
 
 	langs  []string
 	limits *timedmap.TimedMap
@@ -70,6 +72,7 @@ func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error)
 	l.db = container.Get(static.DiDatabase).(database.Database)
 	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
+	l.st = container.Get(static.DiState).(*dgrs.State)
 	l.limits = timedmap.New(limitTMCleanupInterval)
 	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
 
@@ -136,13 +139,23 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 		embLang: embLang,
 	}
 
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
 	l.msgMap.Set(e.ID, jdMsg, removeHandlerTimeout, func(v interface{}) {
-		s.MessageReactionRemove(e.ChannelID, e.ID, runReactionEmoji, s.State.User.ID)
+		s.MessageReactionRemove(e.ChannelID, e.ID, runReactionEmoji, self.ID)
 	})
 }
 
 func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *discordgo.MessageReactionAdd) {
-	if eReact.UserID == s.State.User.ID {
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
+	if eReact.UserID == self.ID {
 		return
 	}
 

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 
@@ -112,6 +113,19 @@ func main() {
 		},
 	})
 
+	// Initialize redis client
+	diBuilder.Add(di.Def{
+		Name: static.DiRedis,
+		Build: func(ctn di.Container) (interface{}, error) {
+			config := ctn.Get(static.DiConfig).(*config.Config)
+			return redis.NewClient(&redis.Options{
+				Addr:     config.Database.Redis.Addr,
+				Password: config.Database.Redis.Password,
+				DB:       config.Database.Redis.Type,
+			}), nil
+		},
+	})
+
 	// Initialize database middleware and shutdown routine
 	diBuilder.Add(di.Def{
 		Name: static.DiDatabase,
@@ -168,7 +182,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiPermissionMiddleware,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitPermissionMiddleware(ctn), nil
+			return middleware.NewPermissionMiddleware(ctn), nil
 		},
 	})
 
@@ -313,6 +327,13 @@ func main() {
 		Name: static.DiKVCache,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return kvcache.NewTimedmapCache(10 * time.Minute), nil
+		},
+	})
+
+	diBuilder.Add(di.Def{
+		Name: static.DiState,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitState(ctn)
 		},
 	})
 

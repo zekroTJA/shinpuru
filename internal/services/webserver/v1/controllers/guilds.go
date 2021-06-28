@@ -24,6 +24,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
+	"github.com/zekrotja/dgrs"
 )
 
 type GuildsController struct {
@@ -33,6 +34,7 @@ type GuildsController struct {
 	session *discordgo.Session
 	cfg     *config.Config
 	pmw     *middleware.PermissionsMiddleware
+	state   *dgrs.State
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -42,6 +44,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
+	c.state = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -83,27 +86,26 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
-	guilds := make([]*models.GuildReduced, len(c.session.State.Guilds))
+	guilds, err := c.state.Guilds()
+	if err != nil {
+		return err
+	}
+
+	guildRs := make([]*models.GuildReduced, len(guilds))
 	i := 0
-	for _, g := range c.session.State.Guilds {
-		if g.MemberCount < 10000 {
-			for _, m := range g.Members {
-				if m.User.ID == uid {
-					guilds[i] = models.GuildReducedFromGuild(g)
-					i++
-					break
-				}
-			}
-		} else {
-			if gm, _ := c.session.GuildMember(g.ID, uid); gm != nil {
-				guilds[i] = models.GuildReducedFromGuild(g)
-				i++
-			}
+	for _, g := range guilds {
+		m, err := c.state.Member(g.ID, uid)
+		if err != nil {
+			return nil
+		}
+		if m != nil {
+			guildRs[i] = models.GuildReducedFromGuild(g)
+			i++
 		}
 	}
-	guilds = guilds[:i]
+	guildRs = guildRs[:i]
 
-	return ctx.JSON(&models.ListResponse{N: len(guilds), Data: guilds})
+	return ctx.JSON(&models.ListResponse{N: len(guildRs), Data: guildRs})
 }
 
 func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
@@ -111,12 +113,12 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 
 	guildID := ctx.Params("guildid")
 
-	memb, _ := discordutil.GetMember(c.session, guildID, uid)
+	memb, _ := c.state.Member(guildID, uid)
 	if memb == nil {
 		return fiber.ErrNotFound
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -148,7 +150,7 @@ func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 
 	var i int
 	for _, e := range karmaList {
-		member, err := discordutil.GetMember(c.session, guildID, e.UserID)
+		member, err := c.state.Member(guildID, e.UserID)
 		if err != nil {
 			continue
 		}
@@ -222,7 +224,7 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 			continue
 		}
 
-		member, err := discordutil.GetMember(c.session, guildID, e.AuthorID)
+		member, err := c.state.Member(guildID, e.AuthorID)
 		if err != nil {
 			continue
 		}
@@ -605,7 +607,7 @@ func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 	var m *discordgo.Member
 	var i int
 	for _, id := range idList {
-		if m, err = discordutil.GetMember(c.session, guildID, id); err != nil {
+		if m, err = c.state.Member(guildID, id); err != nil {
 			continue
 		}
 		memberList[i] = models.MemberFromMember(m)
@@ -1035,7 +1037,7 @@ func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusTooManyRequests, "this action can only be performed every 24 hours")
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return
 	}

@@ -12,9 +12,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
+	"github.com/zekrotja/dgrs"
 )
 
 var (
@@ -25,6 +25,7 @@ type ReportService struct {
 	s   *discordgo.Session
 	db  database.Database
 	cfg *config.Config
+	st  *dgrs.State
 }
 
 func New(container di.Container) *ReportService {
@@ -32,6 +33,7 @@ func New(container di.Container) *ReportService {
 		s:   container.Get(static.DiDiscordSession).(*discordgo.Session),
 		db:  container.Get(static.DiDatabase).(database.Database),
 		cfg: container.Get(static.DiConfig).(*config.Config),
+		st:  container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
@@ -76,17 +78,17 @@ func (r *ReportService) PushReport(guildID, executorID, victimID, reason, attach
 func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
 	const typ = 0
 
-	guild, err := discordutil.GetGuild(r.s, guildID)
+	guild, err := r.st.Guild(guildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := discordutil.GetMember(r.s, guildID, victimID)
+	victim, err := r.st.Member(guildID, victimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := discordutil.GetMember(r.s, guildID, executorID)
+	executor, err := r.st.Member(guildID, executorID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,17 +116,17 @@ func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachme
 func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
 	const typ = 1
 
-	guild, err := discordutil.GetGuild(r.s, guildID)
+	guild, err := r.st.Guild(guildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := discordutil.GetMember(r.s, guildID, victimID)
+	victim, err := r.st.Member(guildID, victimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := discordutil.GetMember(r.s, guildID, executorID)
+	executor, err := r.st.Member(guildID, executorID)
 	if err != nil {
 		return nil, err
 	}

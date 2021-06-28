@@ -65,70 +65,70 @@ func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration t
 	})
 }
 
-// GetGuild first tries to retrieve a guild object by passed
-// ID from the discordgo state cache. If there is no value
-// available, the guild will be fetched via API.
-func GetGuild(s *discordgo.Session, guildID string) (g *discordgo.Guild, err error) {
-	if g, err = s.State.Guild(guildID); err != nil {
-		g, err = s.Guild(guildID)
-	}
-	return
-}
-
-// GetMember first tries to retrieve a member object by passed
-// ID from the discordgo state cache. If there is no value
-// available, the member will be fetched via API.
-func GetMember(s *discordgo.Session, guildID, userID string) (m *discordgo.Member, err error) {
-	if m, err = s.State.Member(guildID, userID); err != nil {
-		m, err = s.GuildMember(guildID, userID)
-	}
-	return
-}
-
-// GetChannel first tries to retrieve a channel object by passed
-// ID from the discordgo state cache. If there is no value
-// available, the channel will be fetched via API.
-func GetChannel(s *discordgo.Session, channelID string) (c *discordgo.Channel, err error) {
-	if c, err = s.State.Channel(channelID); err != nil {
-		c, err = s.Channel(channelID)
-	}
-	return
-}
-
-// GetMessage first tries to retrieve a message object by passed
-// ID from the discordgo state cache. If there is no value
-// available, the message will be fetched via API.
-func GetMessage(s *discordgo.Session, channelID, messageID string) (c *discordgo.Message, err error) {
-	if c, err = s.State.Message(channelID, messageID); err != nil {
-		c, err = s.ChannelMessage(channelID, messageID)
-	}
-	return
-}
-
-// GetMembers fetches all members of the guild by utilizing
-// paged requests until all members are requested.
-func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, error) {
-	lastID := ""
-	members := make([]*discordgo.Member, 0)
-
-	for {
-		membs, err := s.GuildMembers(guildID, lastID, 1000)
-		if err != nil {
-			return nil, err
-		}
-
-		members = append(members, membs...)
-
-		if len(membs) < 1000 {
-			return members, nil
-		}
-
-		lastID = membs[999].User.ID
-	}
-}
-
 // IsCanNotOpenDmToUserError returns true if an returned error
 // is caused because a DM channel to a user could not be opened.
 func IsCanNotOpenDmToUserError(err error) bool {
 	return err != nil && strings.Contains(err.Error(), `"Cannot send messages to this user"`)
 }
+
+// // GetGuild first tries to retrieve a guild object by passed
+// // ID from the discordgo state cache. If there is no value
+// // available, the guild will be fetched via API.
+// func GetGuild(s *discordgo.Session, guildID string) (g *discordgo.Guild, err error) {
+// 	if g, err = s.State.Guild(guildID); err != nil {
+// 		g, err = s.Guild(guildID)
+// 	}
+// 	return
+// }
+
+// // GetMember first tries to retrieve a member object by passed
+// // ID from the discordgo state cache. If there is no value
+// // available, the member will be fetched via API.
+// func GetMember(s *discordgo.Session, guildID, userID string) (m *discordgo.Member, err error) {
+// 	if m, err = s.State.Member(guildID, userID); err != nil {
+// 		m, err = s.GuildMember(guildID, userID)
+// 	}
+// 	return
+// }
+
+// // GetChannel first tries to retrieve a channel object by passed
+// // ID from the discordgo state cache. If there is no value
+// // available, the channel will be fetched via API.
+// func GetChannel(s *discordgo.Session, channelID string) (c *discordgo.Channel, err error) {
+// 	if c, err = s.State.Channel(channelID); err != nil {
+// 		c, err = s.Channel(channelID)
+// 	}
+// 	return
+// }
+
+// // GetMessage first tries to retrieve a message object by passed
+// // ID from the discordgo state cache. If there is no value
+// // available, the message will be fetched via API.
+// func GetMessage(s *discordgo.Session, channelID, messageID string) (c *discordgo.Message, err error) {
+// 	if c, err = s.State.Message(channelID, messageID); err != nil {
+// 		c, err = s.ChannelMessage(channelID, messageID)
+// 	}
+// 	return
+// }
+
+// // GetMembers fetches all members of the guild by utilizing
+// // paged requests until all members are requested.
+// func GetMembers(s *discordgo.Session, guildID string) ([]*discordgo.Member, error) {
+// 	lastID := ""
+// 	members := make([]*discordgo.Member, 0)
+
+// 	for {
+// 		membs, err := s.GuildMembers(guildID, lastID, 1000)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		members = append(members, membs...)
+
+// 		if len(membs) < 1000 {
+// 			return members, nil
+// 		}
+
+// 		lastID = membs[999].User.ID
+// 	}
+// }

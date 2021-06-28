@@ -15,8 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
+	"github.com/zekrotja/dgrs"
 )
 
 type MemberReportingController struct {
@@ -25,6 +25,7 @@ type MemberReportingController struct {
 	db      database.Database
 	st      storage.Storage
 	repSvc  *report.ReportService
+	state   *dgrs.State
 }
 
 func (c *MemberReportingController) Setup(container di.Container, router fiber.Router) {
@@ -33,6 +34,7 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
+	c.state = container.Get(static.DiState).(*dgrs.State)
 
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
@@ -105,7 +107,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not kick yourself")
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -175,7 +177,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not ban yourself")
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -250,7 +252,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -323,7 +325,7 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.state.Guild(guildID)
 	if err != nil {
 		return err
 	}

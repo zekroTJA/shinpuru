@@ -27,4 +27,6 @@ const (
 	DiReport                    = "reportservice"
 	DiGuildLog                  = "guildlog"
 	DiKVCache                   = "kvcache"
+	DiRedis                     = "redisclient"
+	DiState                     = "dgstate"
 )

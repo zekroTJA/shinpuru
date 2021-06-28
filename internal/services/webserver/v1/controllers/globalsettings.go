@@ -11,17 +11,19 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekrotja/dgrs"
 )
 
 type GlobalSettingsController struct {
 	session *discordgo.Session
 	db      database.Database
+	st      *dgrs.State
 }
 
 func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.db = container.Get(static.DiDatabase).(database.Database)
+	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 
@@ -100,7 +102,7 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 		}
 	}
 
-	guild, err := discordutil.GetGuild(c.session, guildID)
+	guild, err := c.st.Guild(guildID)
 	if apiErr, ok := err.(*discordgo.RESTError); ok && apiErr.Message.Code == discordgo.ErrCodeMissingAccess {
 		if err = c.db.SetSetting(static.SettingWIInviteGuildID, ""); err != nil {
 			return err
@@ -118,8 +120,12 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	}
 
 	if inviteCode != "" {
+		self, err := c.st.SelfUser()
+		if err != nil {
+			return err
+		}
 		for _, inv := range invites {
-			if inv.Inviter != nil && inv.Inviter.ID == c.session.State.User.ID && !inv.Revoked {
+			if inv.Inviter != nil && inv.Inviter.ID == self.ID && !inv.Revoked {
 				inviteCode = inv.Code
 				break
 			}
@@ -174,7 +180,7 @@ func (c *GlobalSettingsController) postNoGuildInvites(ctx *fiber.Ctx) error {
 
 	if req.GuildID != "" {
 
-		guild, err := discordutil.GetGuild(c.session, req.GuildID)
+		guild, err := c.st.Guild(req.GuildID)
 		if err != nil {
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
 		}

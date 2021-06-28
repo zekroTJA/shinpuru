@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/dgrs"
 )
 
 const (
@@ -40,6 +41,7 @@ type ListenerKarma struct {
 	db    database.Database
 	gl    guildlog.Logger
 	karma *karma.Service
+	st    *dgrs.State
 
 	cache       *timedmap.TimedMap
 	msgsApplied timedmap.Section
@@ -52,6 +54,7 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 		db:    container.Get(static.DiDatabase).(database.Database),
 		gl:    container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma"),
 		karma: container.Get(static.DiKarma).(*karma.Service),
+		st:    container.Get(static.DiState).(*dgrs.State),
 
 		cache: cache,
 
@@ -63,8 +66,13 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 }
 
 func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
 	// Return when reaction was added by the bot itself
-	if e.UserID == s.State.User.ID {
+	if e.UserID == self.ID {
 		return
 	}
 
@@ -138,7 +146,7 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 
 	// Get the hydradet message object where the reaction
 	// was added to
-	msg, err := s.State.Message(e.ChannelID, e.MessageID)
+	msg, err := l.st.Message(e.ChannelID, e.MessageID)
 	if err != nil {
 		if msg, err = s.ChannelMessage(e.ChannelID, e.MessageID); err != nil {
 			logrus.WithError(err).WithField("gid", e.GuildID).WithField("msg", e.MessageID).Error("Failed getting message")

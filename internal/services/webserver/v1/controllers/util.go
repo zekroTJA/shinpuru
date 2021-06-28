@@ -14,18 +14,21 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type UtilController struct {
 	session    *discordgo.Session
 	cfg        *config.Config
 	cmdHandler shireikan.Handler
+	st         *dgrs.State
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)
 	router.Get("/color/:hexcode", c.getColor)
@@ -49,7 +52,11 @@ func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 	}
 
 	if localInvite {
-		res.LocalInvite = util.GetInviteLink(c.session)
+		self, err := c.st.SelfUser()
+		if err != nil {
+			return err
+		}
+		res.LocalInvite = util.GetInviteLink(self.ID)
 	}
 
 	return ctx.JSON(res)
