@@ -96,7 +96,10 @@ func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 	for _, g := range guilds {
 		m, err := c.state.Member(g.ID, uid)
 		if err != nil {
-			return nil
+			if derr, ok := err.(*discordgo.RESTError); ok && derr.Message.Code == discordgo.ErrCodeUnknownMember {
+				continue
+			}
+			return err
 		}
 		if m != nil {
 			guildRs[i] = models.GuildReducedFromGuild(g)
