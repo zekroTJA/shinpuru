@@ -133,8 +133,12 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	}
 
 	if inviteCode == "" {
+		chans, err := c.st.Channels(guild.ID)
+		if err != nil {
+			return err
+		}
 		var channel *discordgo.Channel
-		for _, c := range guild.Channels {
+		for _, c := range chans {
 			if c.Type == discordgo.ChannelTypeGuildText {
 				channel = c
 				break
@@ -204,7 +208,11 @@ func (c *GlobalSettingsController) postNoGuildInvites(ctx *fiber.Ctx) error {
 			}
 		} else {
 			var channel *discordgo.Channel
-			for _, c := range guild.Channels {
+			chans, err := c.st.Channels(guild.ID, true)
+			if err != nil {
+				return err
+			}
+			for _, c := range chans {
 				if c.Type == discordgo.ChannelTypeGuildText {
 					channel = c
 					break

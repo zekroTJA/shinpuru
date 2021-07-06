@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -74,8 +75,15 @@ func (c *CmdQuote) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+
+	chans, err := st.Channels(ctx.GetGuild().ID, true)
+	if err != nil {
+		return err
+	}
+
 	var textChans []*discordgo.Channel
-	for _, ch := range ctx.GetGuild().Channels {
+	for _, ch := range chans {
 		if ch.Type == discordgo.ChannelTypeGuildText {
 			textChans = append(textChans, ch)
 		}
@@ -85,13 +93,13 @@ func (c *CmdQuote) Exec(ctx shireikan.Context) error {
 	results := make(chan *discordgo.Message, loopLen)
 	timeout := make(chan bool, 1)
 	timeOuted := false
-	quoteMsg, _ := ctx.GetSession().ChannelMessage(ctx.GetChannel().ID, ctx.GetArgs().Get(0).AsString())
+	quoteMsg, _ := st.Message(ctx.GetChannel().ID, ctx.GetArgs().Get(0).AsString())
 	if quoteMsg == nil {
 		msgSearchEmb.Description = ":hourglass_flowing_sand:  Searching for message in other channels..."
 		ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msgSearch.ID, msgSearchEmb)
 		for _, ch := range textChans {
 			go func(c *discordgo.Channel) {
-				quoteMsg, _ := ctx.GetSession().ChannelMessage(c.ID, ctx.GetArgs().Get(0).AsString())
+				quoteMsg, _ := st.Message(c.ID, ctx.GetArgs().Get(0).AsString())
 				results <- quoteMsg
 			}(ch)
 		}
@@ -144,7 +152,7 @@ func (c *CmdQuote) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	quoteMsgChannel, err := ctx.GetSession().Channel(quoteMsg.ChannelID)
+	quoteMsgChannel, err := st.Channel(quoteMsg.ChannelID)
 	if err != nil {
 		return err
 	}

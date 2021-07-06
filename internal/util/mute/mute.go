@@ -25,7 +25,12 @@ func SetupChannels(s *discordgo.Session, guildID, roleID string) error {
 		return errors.New("role does not exist on guild")
 	}
 
-	for _, c := range guild.Channels {
+	chans, err := s.GuildChannels(guildID)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range chans {
 		if c.Type != discordgo.ChannelTypeGuildText {
 			continue
 		}

@@ -114,7 +114,12 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		VerificationLevel:           int(g.VerificationLevel),
 	}
 
-	for _, c := range g.Channels {
+	chans, err := bck.state.Channels(g.ID, true)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range chans {
 		backup.Channels = append(backup.Channels, &backupmodels.Channel{
 			Bitrate:   c.Bitrate,
 			ID:        c.ID,
@@ -438,7 +443,12 @@ func (bck *GuildBackups) HardFlush(guildID string) error {
 		bck.session.GuildRoleDelete(guildID, r.ID)
 	}
 
-	for _, c := range g.Channels {
+	chans, err := bck.state.Channels(g.ID, true)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range chans {
 		bck.session.ChannelDelete(c.ID)
 	}
 

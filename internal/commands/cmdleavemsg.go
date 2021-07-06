@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdLeaveMsg struct {
@@ -66,7 +67,8 @@ func (c *CmdLeaveMsg) Exec(ctx shireikan.Context) error {
 		} else if chanID == "" {
 			resTxt = "*Leave channel not set.*"
 		} else {
-			ch, err := ctx.GetSession().Channel(chanID)
+			st := ctx.GetObject(static.DiState).(*dgrs.State)
+			ch, err := st.Channel(chanID)
 			if ch == nil || err != nil || ch.GuildID != ctx.GetGuild().ID {
 				resTxt = "*Leave channel not set.*"
 			} else {
