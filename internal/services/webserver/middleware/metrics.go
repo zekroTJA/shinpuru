@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,10 +9,6 @@ import (
 )
 
 func NewMetrics() fiber.Handler {
-	// Needing this mutex because otherwise it would result
-	// in a hash collission for some reason.
-	var mtx sync.Mutex
-
 	return func(c *fiber.Ctx) error {
 		start := time.Now()
 
@@ -29,16 +24,14 @@ func NewMetrics() fiber.Handler {
 
 		elapsed := float64(time.Since(start).Nanoseconds()) / 1000000000
 		istatus := strconv.Itoa(status)
-
-		mtx.Lock()
-		defer mtx.Unlock()
+		method := string(c.Context().Method())
 
 		metrics.RestapiRequests.
-			WithLabelValues(c.Method(), istatus).
+			WithLabelValues(method, istatus).
 			Inc()
 
 		metrics.RestapiRequestTimes.
-			WithLabelValues(c.Method(), istatus).
+			WithLabelValues(method, istatus).
 			Observe(elapsed)
 
 		return err
