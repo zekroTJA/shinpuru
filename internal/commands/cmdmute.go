@@ -18,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -293,7 +294,12 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 		muteReportsMap[r.VictimID] = r
 	}
 
-	for _, m := range ctx.GetGuild().Members {
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	membs, err := st.Members(ctx.GetGuild().ID)
+	if err != nil {
+		return err
+	}
+	for _, m := range membs {
 		if stringutil.IndexOf(muteRoleID, m.Roles) > -1 {
 			if r, ok := muteReportsMap[m.User.ID]; ok {
 				emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
