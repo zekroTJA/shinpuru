@@ -5,29 +5,71 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
-	DiscordEventTriggers = prometheus.NewCounterVec(prometheus.CounterOpts{
+	DiscordEventTriggers = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "discord_eventtriggers_total",
 		Help: "Total number of Discord events triggered.",
 	}, []string{"event"})
 
-	DiscordCommandsProcessed = prometheus.NewCounterVec(prometheus.CounterOpts{
+	DiscordCommandsProcessed = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "discord_commands_processed_total",
 		Help: "Total number of chat commands processed.",
 	}, []string{"command"})
 
-	DiscordGatewayPing = prometheus.NewGauge(prometheus.GaugeOpts{
+	DiscordGatewayPing = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "discord_gatewayping",
 		Help: "The ping time in milliseconds to the discord API gateay.",
 	})
 
-	RestapiRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
+	RestapiRequests = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "restapi_requests_total",
 		Help: "Total number of HTTP requests processed.",
-	}, []string{"endpoint", "method"})
+	}, []string{"method", "status"})
+
+	RestapiRequestTimes = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "restapi_requests_duration_seconds",
+		Help: "Duration of all HTTP requests by method and status.",
+		Buckets: []float64{
+			0.000000001, // 1ns
+			0.000000002,
+			0.000000005,
+			0.00000001, // 10ns
+			0.00000002,
+			0.00000005,
+			0.0000001, // 100ns
+			0.0000002,
+			0.0000005,
+			0.000001, // 1µs
+			0.000002,
+			0.000005,
+			0.00001, // 10µs
+			0.00002,
+			0.00005,
+			0.0001, // 100µs
+			0.0002,
+			0.0005,
+			0.001, // 1ms
+			0.002,
+			0.005,
+			0.01, // 10ms
+			0.02,
+			0.05,
+			0.1, // 100 ms
+			0.2,
+			0.5,
+			1.0, // 1s
+			2.0,
+			5.0,
+			10.0, // 10s
+			15.0,
+			20.0,
+			30.0,
+		},
+	}, []string{"method", "status"})
 )
 
 // MetricsServer wraps a simple HTTP server serving
@@ -40,12 +82,6 @@ type MetricsServer struct {
 // instance with the given addr and registers all
 // instruments.
 func NewMetricsServer(addr string) (ms *MetricsServer, err error) {
-	prometheus.MustRegister(
-		DiscordEventTriggers,
-		DiscordGatewayPing,
-		DiscordCommandsProcessed,
-		RestapiRequests)
-
 	_, err = startPingWatcher(30 * time.Second)
 	if err != nil {
 		return
