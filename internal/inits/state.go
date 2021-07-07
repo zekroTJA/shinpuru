@@ -12,7 +12,6 @@ func InitState(container di.Container) (s *dgrs.State, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	rd := container.Get(static.DiRedis).(redis.Cmdable)
 
-	println("INIT STATE")
 	return dgrs.New(dgrs.Options{
 		RedisClient:    rd,
 		DiscordSession: session,

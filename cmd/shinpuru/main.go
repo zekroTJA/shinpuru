@@ -380,6 +380,9 @@ func main() {
 	// Get Backup Handler to ensure backup
 	// timer is running.
 	ctn.Get(static.DiBackupHandler)
+	// Get Metrics Server to start metrics
+	// endpoint.
+	ctn.Get(static.DiMetrics)
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
