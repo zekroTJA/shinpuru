@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -70,7 +69,6 @@ func (rw *redisWatcher) collect() {
 			continue
 		}
 
-		fmt.Println(kv[0], kv[1])
 		key := kv[0]
 		val, err := strconv.ParseFloat(kv[1], 64)
 		if err != nil {
