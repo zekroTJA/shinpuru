@@ -211,18 +211,21 @@ func (c *CmdBackup) restore(ctx shireikan.Context) error {
 				"By pressing :white_check_mark:, the structure of this guild will be **reset** to the selected backup:\n\n"+
 				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
 		},
-		DeclineFunc: func(m *discordgo.Message) {
-			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
+		DeclineFunc: func(m *discordgo.Message) (err error) {
+			err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
 				DeleteAfter(6 * time.Second).Error()
 			return
 		},
-		AcceptFunc: func(m *discordgo.Message) {
+		AcceptFunc: func(m *discordgo.Message) (err error) {
 			c.proceedRestore(ctx, backup.FileID)
+			return
 		},
 	}
 
-	_, err = accMsg.Send(ctx.GetChannel().ID)
-	return err
+	if _, err = accMsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
+	return accMsg.Error()
 }
 
 func (c *CmdBackup) proceedRestore(ctx shireikan.Context, fileID string) {
@@ -268,7 +271,7 @@ func (c *CmdBackup) proceedRestore(ctx shireikan.Context, fileID string) {
 }
 
 func (c *CmdBackup) purgeBackupsAccept(ctx shireikan.Context) error {
-	_, err := acceptmsg.New().
+	am, err := acceptmsg.New().
 		WithSession(ctx.GetSession()).
 		WithEmbed(&discordgo.MessageEmbed{
 			Color: static.ColorEmbedOrange,
@@ -277,17 +280,22 @@ func (c *CmdBackup) purgeBackupsAccept(ctx shireikan.Context) error {
 		}).
 		LockOnUser(ctx.GetUser().ID).
 		DeleteAfterAnswer().
-		DoOnDecline(func(_ *discordgo.Message) {
-			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
+		DoOnDecline(func(_ *discordgo.Message) (err error) {
+			err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
 				DeleteAfter(6 * time.Second).Error()
 			return
 		}).
-		DoOnAccept(func(_ *discordgo.Message) {
+		DoOnAccept(func(_ *discordgo.Message) (err error) {
 			c.purgeBackups(ctx)
+			return
 		}).
 		Send(ctx.GetChannel().ID)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	return am.Error()
 }
 
 func (c *CmdBackup) purgeBackups(ctx shireikan.Context) {

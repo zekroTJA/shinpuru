@@ -65,20 +65,22 @@ func (c *CmdVoicelog) Exec(ctx shireikan.Context) error {
 			},
 			UserID:         ctx.GetUser().ID,
 			DeleteMsgAfter: true,
-			AcceptFunc: func(msg *discordgo.Message) {
-				err := db.SetGuildVoiceLog(ctx.GetGuild().ID, ctx.GetChannel().ID)
+			AcceptFunc: func(msg *discordgo.Message) (err error) {
+				err = db.SetGuildVoiceLog(ctx.GetGuild().ID, ctx.GetChannel().ID)
 				if err != nil {
-					util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-						"Failed setting voicelog channel: ```\n"+err.Error()+"\n```")
-				} else {
-					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-						"Set this channel as voicelog channel.", "", static.ColorEmbedUpdated).
-						DeleteAfter(8 * time.Second)
+					return
 				}
+				err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+					"Set this channel as voicelog channel.", "", static.ColorEmbedUpdated).
+					DeleteAfter(8 * time.Second).Error()
+				return
+
 			},
 		}
-		_, err := acceptMsg.Send(ctx.GetChannel().ID)
-		return err
+		if _, err := acceptMsg.Send(ctx.GetChannel().ID); err != nil {
+			return err
+		}
+		return acceptMsg.Error()
 
 	case "reset":
 		err := db.SetGuildVoiceLog(ctx.GetGuild().ID, "")

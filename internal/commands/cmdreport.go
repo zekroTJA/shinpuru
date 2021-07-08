@@ -180,7 +180,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		Session:        ctx.GetSession(),
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
-		AcceptFunc: func(msg *discordgo.Message) {
+		AcceptFunc: func(msg *discordgo.Message) (err error) {
 			rep, err := repSvc.PushReport(
 				ctx.GetGuild().ID,
 				ctx.GetUser().ID,
@@ -190,11 +190,11 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 				repType)
 
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					"Failed creating report: ```\n"+err.Error()+"\n```")
-			} else {
-				ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+				return
 			}
+
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+			return
 		},
 	}
 
@@ -249,12 +249,12 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 		Session:        ctx.GetSession(),
 		DeleteMsgAfter: true,
 		UserID:         ctx.GetUser().ID,
-		DeclineFunc: func(m *discordgo.Message) {
-			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+		DeclineFunc: func(m *discordgo.Message) (err error) {
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Canceled.").
-				DeleteAfter(8 * time.Second)
+				DeleteAfter(8 * time.Second).Error()
 		},
-		AcceptFunc: func(m *discordgo.Message) {
+		AcceptFunc: func(m *discordgo.Message) (err error) {
 			emb, err := repSvc.RevokeReport(
 				rep,
 				ctx.GetUser().ID,
@@ -264,14 +264,17 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 				ctx.GetSession())
 
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					fmt.Sprintf("An error occured while revoking the report: ```\n%s\n```", err.Error()))
+				return
 			}
 
-			ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
+			return
 		},
 	}
 
-	_, err = aceptMsg.Send(ctx.GetChannel().ID)
-	return err
+	if _, err = aceptMsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
+
+	return aceptMsg.Error()
 }
