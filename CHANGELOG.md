@@ -1,44 +1,26 @@
-1.16.0
+1.17.0
 
 ## Major Changes
 
-### SQLite Deprecation
+### New State Management
 
-The SQLite Database driver, which is neither continuously maintained, nor tested, nor recommendet to be used in a production scenario, is now marked as **deprecated** and will be removed in the upcoming version!
+Even though this change is not primarily visible to users, I want to highlight it here because it is a huge step for shinpuru's development.
 
-For development environments, please use the provided [`docker-compose.dev.yml`](docker-compose.dev.yml) to easily set up a development environment for shinpuru.
+A Discord bot requires a so called `state` which caches retrieved objects from the Discord API to improve the user experience and to avoid running into rate limitations on the Discord API. Before, shinpuru relied on the internal state manager of discordgo. This was swapped out with a custom state mamnager called [`dgrs`](https://github.com/zekroTJA/dgrs) which stores state objects in Redis. [Here](https://github.com/zekroTJA/dgrs#dgrs-----) you can read more about the advantages of this implementation.
 
-### Web Frontend
+Also, this implementation allows to run shinpuru without the privileged presence intent. This strongly reduces incomming event traffic. Also, this might make it more easy to get shinpuru verified some time. :)
 
-This release contains further design changes of the web frontend.
+Because this implementation needs a lot more testing and might be still unstable, there is a new command for bot admins named [`maintenance`](https://github.com/zekroTJA/shinpuru/wiki/Commands#maintenance) which groups a collection of sub commands to flush the state cache, reconnect the Discord session or kill the bot instance to perform a hard-restart.
 
-First of all, I've finally changed the background color scheme. Originally, shinpurus web frontend should have followed the original Discord desogn language. Thats why still most colors are derived from them. Though, my view has changed a bit on the blue-gray background colors. To be honest, I really started hating them so much so that I've changed them to a more 'classical' dark-gray.
+## Minor Changes
 
-Also, as you might have noticed, the header is now split up into two "floating" parts. In my opinion, the central part of the header was just a useless waste of space, so now, it's a bit more condensed and fits better into the general design.
+- Added metrics for REST API and Redis connection.
 
-![](https://i.imgur.com/78XgnyZ.png)
+## Bugfixes
 
-Also the guild settings page got a massive redesign. First of all, the navigation bar is now also a floating navigation menu. The page content is now centered to be consistent with other content orientations.
-
-![](https://i.imgur.com/HpLJ1mH.gif)
-
-Also, I've done a lot to make the guild settings more responsive to mobile devices. It's not perfect though, but better than before. ^^
-
-![](https://i.imgur.com/hOckQ0J.gif)
-
-<!-- ## Minor Changes -->
-
-## Bug Fixes
-
-- Code execution can now only be triggered by the author of the code message. [#244]
-
-- The route `/invite` now redirects to the bot's invite link again. [#245]
-
-## Backstage
-
-- All report utilities are now summarized in a report module which is registered in the DI container. This makes further modifications and implementations with the report system more easy.
-
-- shinpuru now uses a new version of [`timedmap`](https://github.com/zekroTJA/timedmap) which should bring some performance improvements.
+- Fixed issue that clear command removed one message less than expected. [#248]
+- Fixed login oage to fit into new style.
+- Fixed metrics endpoint server.
 
 # Docker
 
@@ -49,11 +31,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.16.0
+$ docker pull zekro/shinpuru:1.17.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.16.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.17.0
 ```
