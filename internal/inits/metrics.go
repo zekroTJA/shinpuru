@@ -1,6 +1,7 @@
 package inits
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -18,7 +19,8 @@ func InitMetrics(container di.Container) (ms *metrics.MetricsServer) {
 			cfg.Metrics.Addr = ":9091"
 		}
 
-		ms, err = metrics.NewMetricsServer(cfg.Metrics.Addr)
+		redis := container.Get(static.DiRedis).(redis.Cmdable)
+		ms, err = metrics.NewMetricsServer(cfg.Metrics.Addr, redis)
 		if err != nil {
 			logrus.WithError(err).Fatal("failed initializing metrics server")
 		}
