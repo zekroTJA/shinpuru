@@ -36,6 +36,7 @@ func InitDiscordBotSession(container di.Container) {
 	session.Token = "Bot " + cfg.Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
+	session.StateEnabled = false
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)

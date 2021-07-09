@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -22,6 +23,7 @@ type ListenerReady struct {
 	db     database.Database
 	gl     guildlog.Logger
 	lct    lctimer.LifeCycleTimer
+	st     *dgrs.State
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
@@ -30,6 +32,7 @@ func NewListenerReady(container di.Container) *ListenerReady {
 		db:     container.Get(static.DiDatabase).(database.Database),
 		gl:     container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
 		lct:    container.Get(static.DiLifecycleTimer).(lctimer.LifeCycleTimer),
+		st:     container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
@@ -39,7 +42,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		"id":       e.User.ID,
 		"nGuilds":  len(e.Guilds),
 	})
-	logrus.Infof("Invite link: %s", util.GetInviteLink(s))
+	logrus.Infof("Invite link: %s", util.GetInviteLink(e.User.ID))
 
 	s.UpdateGameStatus(0, static.StdMotd)
 
@@ -73,5 +76,18 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		if err != nil {
 			logrus.WithError(err).Fatal("LCT :: failed scheduling votes job")
 		}
+	}
+
+	guilds, err := l.st.Guilds()
+	if err != nil {
+		logrus.WithError(err).Error("READY :: failed getting guilds")
+	} else {
+		logrus.WithField("n", len(guilds)).Info("READY :: caching members of guilds ...")
+		for _, g := range guilds {
+			if _, err := l.st.Members(g.ID, true); err != nil {
+				logrus.WithError(err).WithField("gid", g.ID).Error("READY :: failed fetchting members")
+			}
+		}
+		logrus.Info("READY :: caching members finished")
 	}
 }

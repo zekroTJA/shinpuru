@@ -186,7 +186,7 @@ type Config struct {
 	TwitchApp   *TwitchApp    `json:"twitchapp"`
 	Storage     *StorageType  `json:"storage"`
 	WebServer   *WebServer    `json:"webserver"`
-	Metrics     *Metrics      `json:"metricts"`
+	Metrics     *Metrics      `json:"metrics"`
 	Schedules   *Schedules    `json:"schedules"`
 	CodeExec    *CodeExec     `json:"codeexec"`
 

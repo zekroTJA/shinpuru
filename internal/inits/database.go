@@ -3,6 +3,7 @@ package inits
 import (
 	"strings"
 
+	goredis "github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
@@ -39,7 +40,8 @@ func InitDatabase(container di.Container) database.Database {
 	}
 
 	if cfg.Database.Redis != nil && cfg.Database.Redis.Enable {
-		db = redis.NewRedisMiddleware(cfg.Database.Redis, db)
+		rd := container.Get(static.DiRedis).(*goredis.Client)
+		db = redis.NewRedisMiddleware(db, rd)
 		logrus.Info("Enabled redis as database cache")
 	}
 

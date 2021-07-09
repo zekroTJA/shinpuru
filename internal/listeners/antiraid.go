@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
 	"github.com/zekroTJA/timedmap"
+	"github.com/zekrotja/dgrs"
 )
 
 const (
@@ -30,6 +31,7 @@ type guildState struct {
 type ListenerAntiraid struct {
 	db database.Database
 	gl guildlog.Logger
+	st *dgrs.State
 
 	guildStates map[string]*guildState
 	triggers    *timedmap.TimedMap
@@ -41,6 +43,7 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		guildStates: make(map[string]*guildState),
 		triggers:    timedmap.New(arTriggerCleanupDuration),
 		gl:          container.Get(static.DiGuildLog).(guildlog.Logger).Section("antiraid"),
+		st:          container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
@@ -96,7 +99,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		VerificationLevel: &verificationLvl,
 	})
 
-	guild, err := discordutil.GetGuild(s, e.GuildID)
+	guild, err := l.st.Guild(e.GuildID)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild")
 		return
@@ -122,7 +125,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		Color:       static.ColorEmbedOrange,
 	}
 
-	members, err := discordutil.GetMembers(s, e.GuildID)
+	members, err := l.st.Members(e.GuildID)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild members")
 		l.gl.Errorf(e.GuildID, "Failed getting guild members: %s", err.Error())

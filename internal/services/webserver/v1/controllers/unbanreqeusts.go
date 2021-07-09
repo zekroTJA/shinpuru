@@ -10,19 +10,21 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekrotja/dgrs"
 )
 
 type UnbanrequestsController struct {
 	session *discordgo.Session
 	db      database.Database
 	pmw     *middleware.PermissionsMiddleware
+	st      *dgrs.State
 }
 
 func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("", c.getUnbanrequests)
 	router.Post("", c.postUnbanrequests)
@@ -128,7 +130,7 @@ func (c *UnbanrequestsController) getUserBannedGuilds(userID string) ([]*models.
 		if _, ok := guilds[r.GuildID]; ok {
 			continue
 		}
-		guild, err := discordutil.GetGuild(c.session, r.GuildID)
+		guild, err := c.st.Guild(r.GuildID)
 		if err != nil {
 			return nil, err
 		}

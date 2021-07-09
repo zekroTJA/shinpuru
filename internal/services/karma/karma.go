@@ -10,8 +10,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+	"github.com/zekrotja/dgrs"
 )
 
 // Service provides functionalities to check karma state,
@@ -20,6 +20,7 @@ type Service struct {
 	s  *discordgo.Session
 	db database.Database
 	gl guildlog.Logger
+	st *dgrs.State
 }
 
 // NewKarmaService initializes a new Service
@@ -30,6 +31,7 @@ func NewKarmaService(container di.Container) (k *Service) {
 	k.s = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	k.db = container.Get(static.DiDatabase).(database.Database)
 	k.gl = container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma")
+	k.st = container.Get(static.DiState).(*dgrs.State)
 
 	return
 }
@@ -185,7 +187,7 @@ func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value 
 		return
 	}
 
-	guild, err := discordutil.GetGuild(k.s, guildID)
+	guild, err := k.st.Guild(guildID)
 	if err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed getting guild details")
 		k.gl.Errorf(guildID, "Failed getting guild details: %s", err.Error())

@@ -3,6 +3,7 @@ package listeners
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -13,21 +14,29 @@ import (
 type ListenerVote struct {
 	db database.Database
 	gl guildlog.Logger
+	st *dgrs.State
 }
 
 func NewListenerVote(container di.Container) *ListenerVote {
 	return &ListenerVote{
 		db: container.Get(static.DiDatabase).(database.Database),
 		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("votes"),
+		st: container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
 func (l *ListenerVote) Handler(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
-	user, err := s.User(e.UserID)
+	user, err := l.st.User(e.UserID)
 	if err != nil {
 		return
 	}
-	if user == nil || user.Bot || user.ID == s.State.User.ID {
+
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
+	if user == nil || user.Bot || user.ID == self.ID {
 		return
 	}
 	for _, v := range vote.VotesRunning {

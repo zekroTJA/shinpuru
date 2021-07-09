@@ -15,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdGuild struct {
@@ -66,8 +67,11 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	gChans, err := st.Channels(g.ID, true)
+
 	nTextChans, nVoiceChans, nCategoryChans := 0, 0, 0
-	for _, c := range g.Channels {
+	for _, c := range gChans {
 		switch c.Type {
 		case discordgo.ChannelTypeGuildCategory:
 			nCategoryChans++
@@ -152,7 +156,7 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 		AddField("Created", createdTime.Format(time.RFC1123)).
 		AddField("Guild Prefix", prefix).
 		AddField("Owner", fmt.Sprintf("<@%s>", g.OwnerID)).
-		AddField(fmt.Sprintf("Channels (%d)", len(g.Channels)), chans).
+		AddField(fmt.Sprintf("Channels (%d)", len(gChans)), chans).
 		AddField("Server Region", g.Region).
 		AddField("Member Count", fmt.Sprintf("State: %d / Approx.: %d", g.MemberCount, g.ApproximateMemberCount)).
 		AddField(fmt.Sprintf("Reports (%d)", totalReportCount), strings.Join(reportCounts, "\n")).

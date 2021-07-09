@@ -5,6 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -13,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 // PermissionsMiddleware is a command handler middleware
@@ -23,12 +25,17 @@ import (
 type PermissionsMiddleware struct {
 	db  database.Database
 	cfg *config.Config
+	st  *dgrs.State
 }
 
 // NewPermissionMiddleware returns a new PermissionsMiddleware
 // instance with the passed database and config instances.
-func NewPermissionMiddleware(db database.Database, cfg *config.Config) *PermissionsMiddleware {
-	return &PermissionsMiddleware{db, cfg}
+func NewPermissionMiddleware(container di.Container) *PermissionsMiddleware {
+	return &PermissionsMiddleware{
+		db:  container.Get(static.DiDatabase).(database.Database),
+		cfg: container.Get(static.DiConfig).(*config.Config),
+		st:  container.Get(static.DiState).(*dgrs.State),
+	}
 }
 
 func (m *PermissionsMiddleware) Handle(
@@ -112,7 +119,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 	}
 
 	if guildID != "" {
-		guild, err := discordutil.GetGuild(s, guildID)
+		guild, err := m.st.Guild(guildID)
 		if err != nil {
 			return permissions.PermissionArray{}, false, nil
 		}

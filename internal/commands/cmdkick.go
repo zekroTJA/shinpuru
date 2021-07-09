@@ -128,7 +128,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		Session:        ctx.GetSession(),
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
-		AcceptFunc: func(msg *discordgo.Message) {
+		AcceptFunc: func(msg *discordgo.Message) (err error) {
 			rep, err := repSvc.PushKick(
 				ctx.GetGuild().ID,
 				ctx.GetUser().ID,
@@ -137,15 +137,17 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 				attachment)
 
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					"Failed kicking member: ```\n"+err.Error()+"\n```")
-			} else {
-				ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+				return
 			}
+
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+			return
 		},
 	}
 
-	_, err = acceptMsg.Send(ctx.GetChannel().ID)
+	if _, err = acceptMsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
 
-	return err
+	return acceptMsg.Error()
 }

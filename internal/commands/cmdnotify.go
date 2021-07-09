@@ -133,33 +133,33 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 						"Do you want to overwrite this setting? This will also **delete** the role <@&%s>.",
 						notifyRoleID, notifyRoleID),
 				},
-				AcceptFunc: func(m *discordgo.Message) {
+				AcceptFunc: func(m *discordgo.Message) (err error) {
 					role, err := c.setup(ctx)
 					if err != nil {
-						util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-							"Failed setup: "+err.Error()).
-							DeleteAfter(8 * time.Second)
 						return
 					}
 					err = ctx.GetSession().GuildRoleDelete(ctx.GetGuild().ID, notifyRoleID)
 					if err != nil {
-						util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-							"Failed deleting old notify role: "+err.Error()).
-							DeleteAfter(8 * time.Second)
 						return
 					}
-					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+					err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 						fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID), "", 0).
-						DeleteAfter(8 * time.Second)
+						DeleteAfter(8 * time.Second).Error()
+					return
 				},
-				DeclineFunc: func(m *discordgo.Message) {
-					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+				DeclineFunc: func(m *discordgo.Message) (err error) {
+					err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 						"Canceled.", "", 0).
-						DeleteAfter(8 * time.Second)
+						DeleteAfter(8 * time.Second).Error()
+					return
 				},
 			}
-			_, err := am.Send(ctx.GetChannel().ID)
-			return err
+
+			if _, err := am.Send(ctx.GetChannel().ID); err != nil {
+				return err
+			}
+
+			return am.Error()
 		}
 
 		role, err := c.setup(ctx)

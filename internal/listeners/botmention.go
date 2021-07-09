@@ -12,10 +12,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+	"github.com/zekrotja/dgrs"
 )
 
 type ListenerBotMention struct {
 	config *config.Config
+	st     *dgrs.State
 
 	idLen int32
 }
@@ -23,13 +25,19 @@ type ListenerBotMention struct {
 func NewListenerBotMention(container di.Container) *ListenerBotMention {
 	return &ListenerBotMention{
 		config: container.Get(static.DiConfig).(*config.Config),
+		st:     container.Get(static.DiState).(*dgrs.State),
 		idLen:  0,
 	}
 }
 
 func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.MessageCreate) {
+	self, err := l.st.SelfUser()
+	if err != nil {
+		return
+	}
+
 	if atomic.LoadInt32(&l.idLen) == 0 {
-		atomic.StoreInt32(&l.idLen, int32(len(s.State.User.ID)))
+		atomic.StoreInt32(&l.idLen, int32(len(self.ID)))
 	}
 
 	cLen := int32(len(e.Message.Content))
@@ -37,7 +45,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		cLen > 5+l.idLen ||
 		e.Message.Content[0] != '<' ||
 		e.Message.Content[1] != '@' ||
-		e.Author.ID == s.State.User.ID {
+		e.Author.ID == self.ID {
 		return
 	}
 
@@ -47,14 +55,14 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 	}
 
 	id := e.Message.Content[cursor : int32(cursor)+l.idLen]
-	if id != s.State.User.ID {
+	if id != self.ID {
 		return
 	}
 
 	prefix := l.config.Discord.GeneralPrefix
 	emb := embedbuilder.New().
 		WithColor(static.ColorEmbedDefault).
-		WithThumbnail(s.State.User.AvatarURL("64x64"), "", 64, 64).
+		WithThumbnail(self.AvatarURL("64x64"), "", 64, 64).
 		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", embedded.AppVersion, embedded.AppCommit[:6])).
 		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", time.Now().Year()), "", "").
 		AddField("Help", fmt.Sprintf(

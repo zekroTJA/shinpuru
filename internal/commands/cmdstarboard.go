@@ -73,16 +73,20 @@ func (c *CmdStarboard) Exec(ctx shireikan.Context) (err error) {
 	case "channel", "chan", "ch":
 		chanResolvable := ctx.GetArgs().Get(1).AsString()
 		if chanResolvable == "" {
-			_, err = acceptmsg.New().
+			am, err := acceptmsg.New().
 				WithSession(ctx.GetSession()).
 				WithContent("Do you want to set this channel as starboard channel?").
 				DeleteAfterAnswer().
-				DoOnAccept(func(m *discordgo.Message) {
+				DoOnAccept(func(m *discordgo.Message) (err error) {
 					starboardConfig.ChannelID = ctx.GetChannel().ID
-					c.setConfig(ctx, db, starboardConfig, true)
+					err = c.setConfig(ctx, db, starboardConfig, true)
+					return
 				}).
 				Send(ctx.GetChannel().ID)
-			return
+			if err != nil {
+				return err
+			}
+			return am.Error()
 		}
 		ch, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetGuild().ID, chanResolvable, func(c *discordgo.Channel) bool {
 			return c.Type == discordgo.ChannelTypeGuildText || c.Type == discordgo.ChannelTypeGuildNews

@@ -94,6 +94,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterCommand(&commands.CmdGuild{})
 	cmdHandler.RegisterCommand(&commands.CmdLogin{})
 	cmdHandler.RegisterCommand(&commands.CmdStarboard{})
+	cmdHandler.RegisterCommand(&commands.CmdMaintenance{})
 
 	if !embedded.IsRelease() {
 		cmdHandler.RegisterCommand(&commands.CmdTest{})

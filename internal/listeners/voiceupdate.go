@@ -7,11 +7,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 var voiceStateCashe = map[string]*discordgo.VoiceState{}
@@ -19,17 +19,19 @@ var voiceStateCashe = map[string]*discordgo.VoiceState{}
 type ListenerVoiceUpdate struct {
 	db database.Database
 	gl guildlog.Logger
+	st *dgrs.State
 }
 
 func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 	return &ListenerVoiceUpdate{
 		db: container.Get(static.DiDatabase).(database.Database),
 		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("voicelog"),
+		st: container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
 func (l *ListenerVoiceUpdate) sendVLCMessage(s *discordgo.Session, channelID, userID, content string, color int) {
-	user, err := s.User(userID)
+	user, err := l.st.User(userID)
 	if err != nil {
 		return
 	}
@@ -82,14 +84,14 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		return
 	}
 
-	_, err = discordutil.GetChannel(s, voiceLogChan)
+	_, err = l.st.Channel(voiceLogChan)
 	if err != nil {
 		l.db.SetGuildVoiceLog(e.GuildID, "")
 		return
 	}
 
 	if vsOld == nil || (vsOld != nil && vsOld.ChannelID == "") {
-		newChan, err := discordutil.GetChannel(s, e.ChannelID)
+		newChan, err := l.st.Channel(e.ChannelID)
 		if err != nil {
 			return
 		}
@@ -101,12 +103,12 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		l.sendJoinMsg(s, voiceLogChan, e.UserID, newChan)
 
 	} else if vsOld != nil && vsNew.ChannelID != "" && vsOld.ChannelID != vsNew.ChannelID {
-		newChan, err := discordutil.GetChannel(s, e.ChannelID)
+		newChan, err := l.st.Channel(e.ChannelID)
 		if err != nil {
 			return
 		}
 
-		oldChan, err := discordutil.GetChannel(s, vsOld.ChannelID)
+		oldChan, err := l.st.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
 		}
@@ -124,7 +126,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		}
 
 	} else if vsOld != nil && vsNew.ChannelID == "" {
-		oldChan, err := discordutil.GetChannel(s, vsOld.ChannelID)
+		oldChan, err := l.st.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
 		}

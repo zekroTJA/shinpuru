@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -117,7 +118,13 @@ func (c *CmdExec) setup(ctx shireikan.Context) error {
 	var state int
 	var clientId, clientSecret string
 	removeHandler = ctx.GetSession().AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
-		if e.ChannelID != dmChan.ID || e.Author.ID == s.State.User.ID {
+		st := ctx.GetObject(static.DiState).(*dgrs.State)
+		self, err := st.SelfUser()
+		if err != nil {
+			return
+		}
+
+		if e.ChannelID != dmChan.ID || e.Author.ID == self.ID {
 			return
 		}
 

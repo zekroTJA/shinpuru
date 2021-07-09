@@ -45,11 +45,11 @@ func (c *CmdClear) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdClear) Exec(ctx shireikan.Context) error {
-	var msgsStructs []*discordgo.Message
+	var msglist []*discordgo.Message
 	var err error
 
 	if len(ctx.GetArgs()) == 0 {
-		msgsStructs, err = ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, 1, "", "", "")
+		msglist, err = ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, 2, "", "", "")
 	} else {
 		var memb *discordgo.Member
 		n, err := ctx.GetArgs().Get(0).AsInt()
@@ -57,11 +57,14 @@ func (c *CmdClear) Exec(ctx shireikan.Context) error {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Sorry, but the member can not be found on this guild. :cry:").
 				DeleteAfter(8 * time.Second).Error()
-		} else if n < 0 || n > 100 {
+		} else if n < 0 || n > 99 {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Number of messages is invald and must be between *(including)* 0 and 100.").
 				DeleteAfter(8 * time.Second).Error()
 		}
+
+		// Account for command message itself
+		n++
 
 		if len(ctx.GetArgs()) >= 2 {
 			memb, err = fetch.FetchMember(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetArgs().Get(1).AsString())
@@ -71,19 +74,19 @@ func (c *CmdClear) Exec(ctx shireikan.Context) error {
 					DeleteAfter(8 * time.Second).Error()
 			}
 		}
-		msgsStructsUnsorted, err := ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, n, "", "", "")
+		msglistUnfiltered, err := ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, n, "", "", "")
 		if err != nil {
 			return err
 		}
 
 		if memb != nil {
-			for _, m := range msgsStructsUnsorted {
+			for _, m := range msglistUnfiltered {
 				if m.Author.ID == memb.User.ID {
-					msgsStructs = append(msgsStructs, m)
+					msglist = append(msglist, m)
 				}
 			}
 		} else {
-			msgsStructs = msgsStructsUnsorted
+			msglist = msglistUnfiltered
 		}
 	}
 
@@ -91,8 +94,8 @@ func (c *CmdClear) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	msgs := make([]string, len(msgsStructs))
-	for i, m := range msgsStructs {
+	msgs := make([]string, len(msglist))
+	for i, m := range msglist {
 		msgs[i] = m.ID
 	}
 
@@ -102,11 +105,11 @@ func (c *CmdClear) Exec(ctx shireikan.Context) error {
 	}
 
 	multipleMsgs := ""
-	if len(msgs) > 1 {
+	if len(msgs) > 2 {
 		multipleMsgs = "s"
 	}
 
 	return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-		fmt.Sprintf("Deleted %d message%s.", len(msgs), multipleMsgs), "", static.ColorEmbedUpdated).
+		fmt.Sprintf("Deleted %d message%s.", len(msgs)-1, multipleMsgs), "", static.ColorEmbedUpdated).
 		DeleteAfter(6 * time.Second).Error()
 }

@@ -7,9 +7,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 type CmdKarma struct {
@@ -78,9 +78,11 @@ func (c *CmdKarma) Exec(ctx shireikan.Context) error {
 		karmaListStr = "*No entries for this guild.*"
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+
 	var i int
 	for _, v := range karmaList {
-		m, err := discordutil.GetMember(ctx.GetSession(), v.GuildID, v.UserID)
+		m, err := st.Member(v.GuildID, v.UserID)
 		if err != nil {
 			continue
 		}

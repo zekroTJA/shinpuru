@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
+	mw "github.com/zekroTJA/shinpuru/internal/services/webserver/middleware"
 	v1 "github.com/zekroTJA/shinpuru/internal/services/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -56,6 +57,8 @@ func New(container di.Container) (ws *WebServer, err error) {
 		}))
 		ws.app.Use(logger.New())
 	}
+
+	ws.app.Use(mw.NewMetrics())
 
 	rlc := ws.cfg.WebServer.RateLimit
 	if rlc == nil {

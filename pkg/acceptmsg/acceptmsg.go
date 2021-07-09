@@ -5,6 +5,7 @@ package acceptmsg
 
 import (
 	"errors"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -15,7 +16,11 @@ const (
 	acceptMessageEmoteDecline = "❌"
 )
 
-type ActionHandler func(*discordgo.Message)
+var (
+	ErrTimeout = errors.New("timed out")
+)
+
+type ActionHandler func(*discordgo.Message) error
 
 // AcceptMessage extends discordgo.Message to build
 // and send an AcceptMessage.
@@ -27,6 +32,8 @@ type AcceptMessage struct {
 	DeleteMsgAfter bool
 	AcceptFunc     ActionHandler
 	DeclineFunc    ActionHandler
+	cErr           chan error
+	timeout        time.Duration
 
 	eventUnsub func()
 }
@@ -88,6 +95,18 @@ func (am *AcceptMessage) DoOnDecline(onDecline ActionHandler) *AcceptMessage {
 	return am
 }
 
+func (am *AcceptMessage) WithTimeout(t time.Duration) *AcceptMessage {
+	am.timeout = t
+	return am
+}
+
+// Error blocks until either one of the action functions was
+// called or until the accept message timed out. Then, it
+// returns an error or nil.
+func (am *AcceptMessage) Error() error {
+	return <-am.cErr
+}
+
 // Send pushes the accept message into the specified
 // channel and sets up listener handlers for reactions.
 func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
@@ -97,6 +116,24 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 	if am.Embed == nil {
 		return nil, errors.New("embed not defined")
 	}
+
+	if am.timeout <= 0 {
+		am.timeout = 1 * time.Minute
+	}
+
+	if am.AcceptFunc == nil {
+		am.AcceptFunc = func(m *discordgo.Message) error {
+			return nil
+		}
+	}
+
+	if am.DeclineFunc == nil {
+		am.DeclineFunc = func(m *discordgo.Message) error {
+			return nil
+		}
+	}
+
+	am.cErr = make(chan error, 1)
 
 	msg, err := am.Session.ChannelMessageSendEmbed(chanID, am.Embed)
 	if err != nil {
@@ -108,6 +145,16 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	go func() {
+		time.Sleep(am.timeout)
+		am.cErr <- ErrTimeout
+
+		if am.eventUnsub != nil {
+			am.eventUnsub()
+		}
+	}()
+
 	am.eventUnsub = am.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
 		if e.MessageID != msg.ID {
 			return
@@ -126,13 +173,9 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 		}
 		switch e.Emoji.Name {
 		case acceptMessageEmoteAccept:
-			if am.AcceptFunc != nil {
-				am.AcceptFunc(msg)
-			}
+			am.cErr <- am.AcceptFunc(msg)
 		case acceptMessageEmoteDecline:
-			if am.DeclineFunc != nil {
-				am.DeclineFunc(msg)
-			}
+			am.cErr <- am.DeclineFunc(msg)
 		}
 		am.eventUnsub()
 		if am.DeleteMsgAfter {
@@ -141,5 +184,6 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 			am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
 		}
 	})
+
 	return am, nil
 }

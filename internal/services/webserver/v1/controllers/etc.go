@@ -16,18 +16,21 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekrotja/dgrs"
 )
 
 type EtcController struct {
 	session *discordgo.Session
 	cfg     *config.Config
 	authMw  auth.Middleware
+	st      *dgrs.State
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(*config.Config)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
+	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
@@ -62,6 +65,16 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 
 	uptime := int64(time.Since(util.StatsStartupTime).Seconds())
 
+	self, err := c.st.SelfUser()
+	if err != nil {
+		return err
+	}
+
+	guilds, err := c.st.Guilds()
+	if err != nil {
+		return err
+	}
+
 	res := &models.SystemInfo{
 		Version:    embedded.AppVersion,
 		CommitHash: embedded.AppCommit,
@@ -80,10 +93,10 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 		HeapUse:     memStats.HeapInuse,
 		HeapUseStr:  fmt.Sprintf("%d", memStats.HeapInuse),
 
-		BotUserID: c.session.State.User.ID,
-		BotInvite: util.GetInviteLink(c.session),
+		BotUserID: self.ID,
+		BotInvite: util.GetInviteLink(self.ID),
 
-		Guilds: len(c.session.State.Guilds),
+		Guilds: len(guilds),
 	}
 
 	return ctx.JSON(res)

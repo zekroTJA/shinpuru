@@ -59,20 +59,23 @@ func (c *CmdModlog) Exec(ctx shireikan.Context) error {
 			},
 			UserID:         ctx.GetUser().ID,
 			DeleteMsgAfter: true,
-			AcceptFunc: func(msg *discordgo.Message) {
-				err := db.SetGuildModLog(ctx.GetGuild().ID, ctx.GetChannel().ID)
+			AcceptFunc: func(msg *discordgo.Message) (err error) {
+				err = db.SetGuildModLog(ctx.GetGuild().ID, ctx.GetChannel().ID)
 				if err != nil {
-					util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-						"Failed setting modlog channel: ```\n"+err.Error()+"\n```")
-				} else {
-					util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-						"Set this channel as modlog channel.", "", static.ColorEmbedUpdated).
-						DeleteAfter(6 * time.Second)
+					return
 				}
+
+				return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+					"Set this channel as modlog channel.", "", static.ColorEmbedUpdated).
+					DeleteAfter(6 * time.Second).Error()
 			},
 		}
-		_, err := acceptMsg.Send(ctx.GetChannel().ID)
-		return err
+
+		if _, err := acceptMsg.Send(ctx.GetChannel().ID); err != nil {
+			return err
+		}
+
+		return acceptMsg.Error()
 	}
 
 	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "reset" {

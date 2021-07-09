@@ -18,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -101,7 +102,7 @@ func (c *CmdMute) setup(ctx shireikan.Context) error {
 		},
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
-		AcceptFunc: func(msg *discordgo.Message) {
+		AcceptFunc: func(msg *discordgo.Message) (err error) {
 			if muteRole == nil {
 				for _, r := range ctx.GetGuild().Roles {
 					if r.Name == static.MutedRoleName {
@@ -113,53 +114,47 @@ func (c *CmdMute) setup(ctx shireikan.Context) error {
 			if muteRole == nil {
 				muteRole, err = ctx.GetSession().GuildRoleCreate(ctx.GetGuild().ID)
 				if err != nil {
-					util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-						"Failed creating mute role: ```\n"+err.Error()+"\n```").
-						DeleteAfter(15 * time.Second).Error()
 					return
 				}
 
 				muteRole, err = ctx.GetSession().GuildRoleEdit(ctx.GetGuild().ID, muteRole.ID,
 					static.MutedRoleName, 0, false, 0, false)
 				if err != nil {
-					util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-						"Failed editing mute role: ```\n"+err.Error()+"\n```").
-						DeleteAfter(15 * time.Second).Error()
 					return
 				}
 			}
 
-			err := db.SetGuildMuteRole(ctx.GetGuild().ID, muteRole.ID)
+			err = db.SetGuildMuteRole(ctx.GetGuild().ID, muteRole.ID)
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					"Failed setting mute role in database: ```\n"+err.Error()+"\n```").
-					DeleteAfter(15 * time.Second).Error()
 				return
 			}
 
 			err = mute.SetupChannels(ctx.GetSession(), ctx.GetGuild().ID, muteRole.ID)
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					"Failed updating channels: ```\n"+err.Error()+"\n```").
-					DeleteAfter(15 * time.Second).Error()
 				return
 			}
 
-			util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+			err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 				"Set up mute role and edited channel permissions.\nMaybe you need to increase the "+
 					"position of the role to override other roles permission settings.",
 				"", static.ColorEmbedUpdated).
 				DeleteAfter(15 * time.Second).Error()
+
+			return
 		},
-		DeclineFunc: func(msg *discordgo.Message) {
-			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+		DeclineFunc: func(msg *discordgo.Message) (err error) {
+			err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 				"Setup canceled.").
 				DeleteAfter(8 * time.Second).Error()
+			return
 		},
 	}
 
-	_, err = acmsg.Send(ctx.GetChannel().ID)
-	return err
+	if _, err = acmsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
+
+	return acmsg.Error()
 }
 
 func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
@@ -293,7 +288,12 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 		muteReportsMap[r.VictimID] = r
 	}
 
-	for _, m := range ctx.GetGuild().Members {
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	membs, err := st.Members(ctx.GetGuild().ID)
+	if err != nil {
+		return err
+	}
+	for _, m := range membs {
 		if stringutil.IndexOf(muteRoleID, m.Roles) > -1 {
 			if r, ok := muteReportsMap[m.User.ID]; ok {
 				emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{

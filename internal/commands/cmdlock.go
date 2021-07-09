@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 const allowMask = discordgo.PermissionAll - discordgo.PermissionSendMessages
@@ -132,6 +133,12 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 		return err
 	}
 
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	self, err := st.SelfUser()
+	if err != nil {
+		return err
+	}
+
 	hasSetEveryone := false
 	for _, po := range target.PermissionOverwrites {
 		if po.Type == discordgo.PermissionOverwriteTypeRole {
@@ -142,7 +149,7 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 				}
 			}
 		}
-		if po.Type == discordgo.PermissionOverwriteTypeMember && ctx.GetUser().ID != po.ID && ctx.GetSession().State.User.ID != po.ID {
+		if po.Type == discordgo.PermissionOverwriteTypeMember && ctx.GetUser().ID != po.ID && self.ID != po.ID {
 			if err = ctx.GetSession().ChannelPermissionSet(
 				target.ID, po.ID, discordgo.PermissionOverwriteTypeMember, po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 				return err
@@ -154,7 +161,7 @@ func (c *CmdLock) lock(target *discordgo.Channel, ctx shireikan.Context, db data
 	}
 
 	if err = ctx.GetSession().ChannelPermissionSet(
-		target.ID, ctx.GetSession().State.User.ID, discordgo.PermissionOverwriteTypeMember, discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
+		target.ID, self.ID, discordgo.PermissionOverwriteTypeMember, discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
 		return err
 	}
 

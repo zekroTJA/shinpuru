@@ -14,7 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -31,6 +31,7 @@ type GuildBackups struct {
 	db      database.Database
 	gl      guildlog.Logger
 	st      storage.Storage
+	state   *dgrs.State
 }
 
 // asyncWriteStatus writes the passed status to the
@@ -59,6 +60,7 @@ func New(container di.Container) *GuildBackups {
 	bck.gl = container.Get(static.DiGuildLog).(guildlog.Logger).Section("backup")
 	bck.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	bck.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
+	bck.state = container.Get(static.DiState).(*dgrs.State)
 	return bck
 }
 
@@ -96,7 +98,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := discordutil.GetGuild(bck.session, guildID)
+	g, err := bck.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,12 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		VerificationLevel:           int(g.VerificationLevel),
 	}
 
-	for _, c := range g.Channels {
+	chans, err := bck.state.Channels(g.ID, true)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range chans {
 		backup.Channels = append(backup.Channels, &backupmodels.Channel{
 			Bitrate:   c.Bitrate,
 			ID:        c.ID,
@@ -141,7 +148,11 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		})
 	}
 
-	for _, m := range g.Members {
+	members, err := bck.state.Members(g.ID, true)
+	if err != nil {
+		return err
+	}
+	for _, m := range members {
 		backup.Members = append(backup.Members, &backupmodels.Member{
 			Deaf:  m.Deaf,
 			ID:    m.User.ID,
@@ -423,7 +434,7 @@ func (bck *GuildBackups) HardFlush(guildID string) error {
 		return errors.New("session is nil")
 	}
 
-	g, err := discordutil.GetGuild(bck.session, guildID)
+	g, err := bck.state.Guild(guildID)
 	if err != nil {
 		return err
 	}
@@ -432,7 +443,12 @@ func (bck *GuildBackups) HardFlush(guildID string) error {
 		bck.session.GuildRoleDelete(guildID, r.ID)
 	}
 
-	for _, c := range g.Channels {
+	chans, err := bck.state.Channels(g.ID, true)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range chans {
 		bck.session.ChannelDelete(c.ID)
 	}
 

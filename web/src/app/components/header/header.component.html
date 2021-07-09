@@ -1,7 +1,7 @@
 <!-- @format -->
 
 <div id="header" class="container-fluid">
-  <div class="part-container shade">
+  <div *ngIf="selfUser?.id" class="part-container shade">
     <a class="d-flex" routerLink="/guilds">
       <img id="sp-logo" height="30" src="/assets/shinpuru-logo.png" />
     </a>

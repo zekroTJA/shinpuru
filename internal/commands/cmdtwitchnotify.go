@@ -128,12 +128,12 @@ func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
 				URL: tUser.AviURL,
 			},
 		},
-		AcceptFunc: func(m *discordgo.Message) {
+		AcceptFunc: func(m *discordgo.Message) (err error) {
 			err = tnw.AddUser(tUser)
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+				err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Maximum count of registered Twitch accounts has been reached.").
-					DeleteAfter(8 * time.Second)
+					DeleteAfter(8 * time.Second).Error()
 				return
 			}
 
@@ -143,22 +143,24 @@ func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
 				TwitchUserID: tUser.ID,
 			})
 			if err != nil {
-				util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-					"Unexpected error while saving to database: ```\n"+err.Error()+"\n```").
-					DeleteAfter(20 * time.Second)
 				return
 			}
 
-			util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
+			err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 				fmt.Sprintf("You will now get notifications in this channel when **%s** goes online on Twitch.", tUser.DisplayName), "", static.ColorEmbedUpdated).
-				DeleteAfter(8 * time.Second)
+				DeleteAfter(8 * time.Second).Error()
+			return
 		},
-		DeclineFunc: func(m *discordgo.Message) {
-			util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
-				DeleteAfter(8 * time.Second)
+		DeclineFunc: func(m *discordgo.Message) (err error) {
+			err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID, "Canceled.").
+				DeleteAfter(8 * time.Second).Error()
+			return
 		},
 	}
-	accMsg.Send(ctx.GetChannel().ID)
 
-	return nil
+	if _, err := accMsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
+
+	return accMsg.Error()
 }
