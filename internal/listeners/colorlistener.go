@@ -91,7 +91,7 @@ func (l *ColorListener) HandlerMessageReaction(s *discordgo.Session, e *discordg
 		return
 	}
 
-	user, err := s.User(e.UserID)
+	user, err := l.st.User(e.UserID)
 	if err != nil {
 		return
 	}

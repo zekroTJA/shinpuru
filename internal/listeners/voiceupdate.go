@@ -31,7 +31,7 @@ func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 }
 
 func (l *ListenerVoiceUpdate) sendVLCMessage(s *discordgo.Session, channelID, userID, content string, color int) {
-	user, err := s.User(userID)
+	user, err := l.st.User(userID)
 	if err != nil {
 		return
 	}
