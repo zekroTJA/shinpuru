@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shireikan"
 )
@@ -50,14 +52,12 @@ func (c *CmdMvall) Exec(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	var currVC string
-	for _, vs := range ctx.GetGuild().VoiceStates {
-		if vs.UserID == ctx.GetUser().ID {
-			currVC = vs.ChannelID
-		}
+	st := ctx.GetObject(static.DiState).(*dgrs.State)
+	vs, err := st.VoiceState(ctx.GetGuild().ID, ctx.GetUser().ID)
+	if err != nil {
+		return err
 	}
-
-	if currVC == "" {
+	if vs == nil {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"You need to be in a voice channel to use this command.").
 			DeleteAfter(8 * time.Second).Error()
@@ -79,8 +79,12 @@ func (c *CmdMvall) Exec(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	for _, vs := range ctx.GetGuild().VoiceStates {
-		if vs.ChannelID == currVC {
+	vss, err := st.VoiceStates(ctx.GetGuild().ID)
+	if err != nil {
+		return err
+	}
+	for _, vs := range vss {
+		if vs.ChannelID == vs.ChannelID {
 			err := ctx.GetSession().GuildMemberMove(ctx.GetGuild().ID, vs.UserID, &toVC.ID)
 			if err != nil {
 				return err
