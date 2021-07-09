@@ -19,7 +19,7 @@ Because this implementation needs a lot more testing and might be still unstable
 ## Bugfixes
 
 - Fixed issue that clear command removed one message less than expected. [#248]
-- Fixed login oage to fit into new style.
+- Fixed login page to fit into new style.
 - Fixed metrics endpoint server.
 
 # Docker
