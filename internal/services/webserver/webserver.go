@@ -9,7 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	mw "github.com/zekroTJA/shinpuru/internal/services/webserver/middleware"
@@ -44,7 +43,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 	ws.app = fiber.New(fiber.Config{
 		ErrorHandler:          ws.errorHandler,
 		ServerHeader:          fmt.Sprintf("shinpuru v%s", embedded.AppVersion),
-		DisableStartupMessage: embedded.IsRelease(),
+		DisableStartupMessage: true,
 		ProxyHeader:           "X-Forwarded-For",
 	})
 
@@ -55,10 +54,9 @@ func New(container di.Container) (ws *WebServer, err error) {
 			AllowMethods:     "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS",
 			AllowCredentials: true,
 		}))
-		ws.app.Use(logger.New())
 	}
 
-	ws.app.Use(mw.NewMetrics())
+	ws.app.Use(mw.NewMetrics(), mw.Logger())
 
 	rlc := ws.cfg.WebServer.RateLimit
 	if rlc == nil {
