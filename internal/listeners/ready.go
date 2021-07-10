@@ -78,16 +78,24 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		}
 	}
 
-	guilds, err := l.st.Guilds()
-	if err != nil {
-		logrus.WithError(err).Error("READY :: failed getting guilds")
-	} else {
-		logrus.WithField("n", len(guilds)).Info("READY :: caching members of guilds ...")
-		for _, g := range guilds {
-			if _, err := l.st.Members(g.ID, true); err != nil {
-				logrus.WithError(err).WithField("gid", g.ID).Error("READY :: failed fetchting members")
+	time.Sleep(1 * time.Second)
+
+	logrus.WithField("n", len(e.Guilds)).Info("READY :: caching members of guilds ...")
+	for _, g := range e.Guilds {
+		gs, _ := l.st.Guild(g.ID)
+		if gs != nil && gs.MemberCount > 0 {
+			membs, _ := l.st.Members(g.ID)
+			if len(membs) >= gs.MemberCount {
+				logrus.WithField("gid", g.ID).Debug("READY :: skip fetching members because state is hydrated")
+				continue
 			}
 		}
-		logrus.Info("READY :: caching members finished")
+
+		if _, err := l.st.Members(g.ID, true); err != nil {
+			logrus.WithError(err).WithField("gid", g.ID).Error("READY :: failed fetchting members")
+		} else {
+			logrus.WithField("gid", g.ID).Debug("READY :: fetched members")
+		}
 	}
+	logrus.Info("READY :: caching members finished")
 }
