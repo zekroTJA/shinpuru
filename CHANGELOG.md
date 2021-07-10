@@ -1,10 +1,13 @@
 1.17.1
 
+## Minor Changes
+
+- Refine request logging *(only in debug log channel)*.
+
 ## Bugfixes
 
-- Fixed issue that clear command removed one message less than expected. [#248]
-- Fixed login page to fit into new style.
-- Fixed metrics endpoint server.
+- Fix critical bug where occasionally, none or only a fraction of guilds were detected for member fetching on ready. [#252]
+- Fix command logging which was not existent even when enabled by config. [#253]
 
 # Docker
 
