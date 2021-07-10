@@ -51,6 +51,7 @@ func main() {
 
 	config := &config.Config{
 		Discord: &config.Discord{},
+		Logging: &config.Logging{},
 	}
 	diBuilder.Set(static.DiConfig, config)
 

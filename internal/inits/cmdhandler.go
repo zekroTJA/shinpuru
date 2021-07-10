@@ -55,6 +55,10 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterMiddleware(gpim)
 	cmdHandler.RegisterMiddleware(&middleware.CommandStatsMiddleware{})
 
+	if cfg.Logging.CommandLogging {
+		cmdHandler.RegisterMiddleware(&middleware.LoggerMiddlewrae{})
+	}
+
 	cmdHandler.RegisterCommand(&commands.CmdHelp{})
 	cmdHandler.RegisterCommand(&commands.CmdPrefix{})
 	cmdHandler.RegisterCommand(&commands.CmdPerms{})
