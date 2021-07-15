@@ -1,27 +1,32 @@
 # ------------------------------------------------------------
-# --- STAGE 1: Build Backend, Tools and Web Assets
-FROM golang:1.16-alpine AS build
+# --- STAGE 1: Build Backend and Go Tools
+FROM golang:1.16-alpine AS build-be
 WORKDIR /build
 
-# Get required packages
-RUN apk add git nodejs npm build-base
 # Copy source files
 COPY . .
 # Get go packages
-RUN go mod tidy
+RUN go mod download
 # Build shinpuru backend
 RUN go build -o ./bin/shinpuru ./cmd/shinpuru/main.go
-# Build web assets
-WORKDIR /build/web
-RUN npm ci \
-    && npx ng build --prod=true \
-        --output-path ../bin/web/dist/web
 
 # ------------------------------------------------------------
-# --- STAGE 2: Final runtime environment
+# --- STAGE 2: Build Web App Package
+FROM node:16-alpine AS build-fe
+WORKDIR /build
+
+COPY web .
+
+RUN npm ci
+RUN npx ng build --prod=true \
+        --output-path dist
+
+# ------------------------------------------------------------
+# --- STAGE 3: Final runtime environment
 FROM alpine:3 AS final
 WORKDIR /app
-COPY --from=build /build/bin .
+COPY --from=build-be /build/bin .
+COPY --from=build-fe /build/dist web/dist/web
 
 RUN apk add ca-certificates
 
@@ -30,6 +35,5 @@ RUN mkdir -p /etc/config &&\
 
 EXPOSE 8080
 
-CMD ./shinpuru \
-        -c /etc/config/config.yml \
-        -docker
+ENTRYPOINT ["/app/shinpuru", "-docker"]
+CMD ["-c", "/etc/config/config.yml"]
