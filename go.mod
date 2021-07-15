@@ -47,9 +47,9 @@ require (
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.6.0
 	github.com/zekroTJA/timedmap v1.4.0
-	github.com/zekrotja/dgrs v0.1.2 // indirect
+	github.com/zekrotja/dgrs v0.2.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.21.0 // indirect
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c

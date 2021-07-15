@@ -827,6 +827,8 @@ github.com/zekrotja/dgrs v0.1.1 h1:/vK6/j7F8kp7QlHnRAUZJJifl8MtYOGGUBAHyqeA2dQ=
 github.com/zekrotja/dgrs v0.1.1/go.mod h1:XA6bdSwkuKT48siG+NzT/9jLQEPrxQkzl1SnWJTQ2HI=
 github.com/zekrotja/dgrs v0.1.2 h1:nVC1bmrgTdzv+bFS6ykrxlW6UiYIf3QrVi2F4LdmjGw=
 github.com/zekrotja/dgrs v0.1.2/go.mod h1:XA6bdSwkuKT48siG+NzT/9jLQEPrxQkzl1SnWJTQ2HI=
+github.com/zekrotja/dgrs v0.2.0 h1:2ycAp3yGjoieBRG+Shpuas7VntaxuV9q31yrwZQrYsk=
+github.com/zekrotja/dgrs v0.2.0/go.mod h1:XA6bdSwkuKT48siG+NzT/9jLQEPrxQkzl1SnWJTQ2HI=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
@@ -879,6 +881,8 @@ golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a h1:kr2P4QFmQr29mSLA43kwrO
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e h1:gsTQYXdTw2Gq7RBsWvlQ91b+aEQ6bXFUngBGuR8sPpI=
 golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
+golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 h1:/UOmuWzQfxxo9UtlXMwuQU8CMgg1eZXqTRwkSQJWKOI=
+golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190510132918-efd6b22b2522/go.mod h1:ZjyILWgesfNpC6sMxTJOJm9Kp84zZh5NQWvqDGG3Qr8=
