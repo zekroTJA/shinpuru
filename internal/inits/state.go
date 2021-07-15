@@ -1,6 +1,8 @@
 package inits
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
@@ -16,5 +18,8 @@ func InitState(container di.Container) (s *dgrs.State, err error) {
 		RedisClient:    rd,
 		DiscordSession: session,
 		FetchAndStore:  true,
+		Lifetimes: dgrs.Lifetimes{
+			Message: 14 * 24 * time.Hour, // 14 Days
+		},
 	})
 }
