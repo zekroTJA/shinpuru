@@ -15,3 +15,13 @@ func FromUnix(t int) time.Time {
 func ToUnix(t time.Time) int {
 	return int(t.UnixNano() / 1_000_000)
 }
+
+// NowAddPtr adds t to now and returns the resulting
+// time as *time.Time. If d is <= 0, nil is returned.
+func NowAddPtr(d time.Duration) *time.Time {
+	if d <= 0 {
+		return nil
+	}
+	t := time.Now().Add(d)
+	return &t
+}

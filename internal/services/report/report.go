@@ -42,29 +42,21 @@ func New(container di.Container) *ReportService {
 // using the passed db databse rpovider and an embed is created with the attachment
 // url assembled with publicAddr as image endpoint root. This embed is then sent to
 // the specified mod log channel for this guild, if existent.
-func (r *ReportService) PushReport(guildID, executorID, victimID, reason, attachmentID string, typ models.Type) (*models.Report, error) {
-	repID := snowflakenodes.NodesReport[typ].Generate()
+func (r *ReportService) PushReport(rep *models.Report) (*models.Report, error) {
+	repID := snowflakenodes.NodesReport[rep.Type].Generate()
 
-	rep := &models.Report{
-		ID:            repID,
-		Type:          typ,
-		GuildID:       guildID,
-		ExecutorID:    executorID,
-		VictimID:      victimID,
-		Msg:           reason,
-		AttachmehtURL: attachmentID,
-	}
+	rep.ID = repID
 
 	err := r.db.AddReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(guildID); err == nil {
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
 		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
 	}
 
-	dmChan, err := r.s.UserChannelCreate(victimID)
+	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
 	if err == nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
 	}
@@ -75,20 +67,21 @@ func (r *ReportService) PushReport(guildID, executorID, victimID, reason, attach
 // PushKick is shorthand for PushReport as member kick action and also
 // kicks the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
+func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
 	const typ = 0
+	rep.ID = typ
 
-	guild, err := r.st.Guild(guildID)
+	guild, err := r.st.Guild(rep.GuildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := r.st.Member(guildID, victimID)
+	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := r.st.Member(guildID, executorID)
+	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,12 +90,12 @@ func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachme
 		return nil, errRoleDiff
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	rep, err = r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = r.s.GuildMemberDeleteWithReason(guildID, victimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, reason)); err != nil {
+	if err = r.s.GuildMemberDeleteWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg)); err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
 	}
@@ -113,20 +106,21 @@ func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachme
 // PushBan is shorthand for PushReport as member ban action and also
 // bans the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
+func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 	const typ = 1
+	rep.Type = typ
 
-	guild, err := r.st.Guild(guildID)
+	guild, err := r.st.Guild(rep.GuildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := r.st.Member(guildID, victimID)
+	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := r.st.Member(guildID, executorID)
+	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
 		return nil, err
 	}
@@ -135,12 +129,12 @@ func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachmen
 		return nil, errRoleDiff
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	rep, err = r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = r.s.GuildBanCreateWithReason(guildID, victimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, reason), 7); err != nil {
+	if err = r.s.GuildBanCreateWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg), 7); err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
 	}
@@ -150,19 +144,20 @@ func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachmen
 
 // PushMute is shorthand for PushReport as member mute action and also
 // adds the mute role to the specified victim.
-func (r *ReportService) PushMute(guildID, executorID, victimID, reason, attachment, muteRoleID string) (*models.Report, error) {
+func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models.Report, error) {
 	const typ = 2
+	rep.Type = typ
 
-	if reason == "" {
-		reason = "no reason specified"
+	if rep.Msg == "" {
+		rep.Msg = "no reason specified"
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	rep, err := r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.s.GuildMemberRoleAdd(guildID, victimID, muteRoleID)
+	err = r.s.GuildMemberRoleAdd(rep.GuildID, rep.VictimID, muteRoleID)
 	if err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err

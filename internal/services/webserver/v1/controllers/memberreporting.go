@@ -8,6 +8,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -77,13 +78,14 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		repReq.Attachment = img.ID.String()
 	}
 
-	rep, err := c.repSvc.PushReport(
-		guildID,
-		uid,
-		memberID,
-		repReq.Reason,
-		repReq.Attachment,
-		repReq.Type)
+	rep, err := c.repSvc.PushReport(&sharedmodels.Report{
+		GuildID:       guildID,
+		ExecutorID:    uid,
+		VictimID:      memberID,
+		Msg:           repReq.Reason,
+		AttachmehtURL: repReq.Attachment,
+		Type:          repReq.Type,
+	})
 
 	if err != nil {
 		return err
@@ -143,12 +145,13 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := c.repSvc.PushKick(
-		guildID,
-		uid,
-		memberID,
-		req.Reason,
-		req.Attachment)
+	rep, err := c.repSvc.PushKick(&sharedmodels.Report{
+		GuildID:       guildID,
+		ExecutorID:    uid,
+		VictimID:      memberID,
+		Msg:           req.Reason,
+		AttachmehtURL: req.Attachment,
+	})
 
 	if err != nil {
 		return err
@@ -216,12 +219,13 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := c.repSvc.PushBan(
-		guildID,
-		uid,
-		memberID,
-		req.Reason,
-		req.Attachment)
+	rep, err := c.repSvc.PushBan(&sharedmodels.Report{
+		GuildID:       guildID,
+		ExecutorID:    uid,
+		VictimID:      memberID,
+		Msg:           req.Reason,
+		AttachmehtURL: req.Attachment,
+	})
 
 	if err != nil {
 		return err
@@ -288,13 +292,13 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
-	rep, err := c.repSvc.PushMute(
-		guildID,
-		uid,
-		memberID,
-		req.Reason,
-		req.Attachment,
-		muteRoleID)
+	rep, err := c.repSvc.PushMute(&sharedmodels.Report{
+		GuildID:       guildID,
+		ExecutorID:    uid,
+		VictimID:      memberID,
+		Msg:           req.Reason,
+		AttachmehtURL: req.Attachment,
+	}, muteRoleID)
 
 	if err != nil {
 		return err

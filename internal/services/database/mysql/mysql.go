@@ -95,6 +95,7 @@ func (m *MysqlMiddleware) setup() {
 		"`victimID` text NOT NULL DEFAULT ''," +
 		"`msg` text NOT NULL DEFAULT ''," +
 		"`attachment` text NOT NULL DEFAULT ''," +
+		"`timeout` timestamp NULL DEFAULT NULL," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
@@ -522,8 +523,10 @@ func (m *MysqlMiddleware) SetSetting(setting, value string) error {
 }
 
 func (m *MysqlMiddleware) AddReport(rep *models.Report) error {
-	_, err := m.Db.Exec("INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL)
+	_, err := m.Db.Exec(`
+		INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment, timeout) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL, rep.Timeout)
 	return err
 }
 
@@ -535,8 +538,10 @@ func (m *MysqlMiddleware) DeleteReport(id snowflake.ID) error {
 func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*models.Report, error) {
 	rep := new(models.Report)
 
-	row := m.Db.QueryRow("SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE id = ?", id)
-	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
+	row := m.Db.QueryRow(`
+		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout 
+		FROM reports WHERE id = ?`, id)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
 	}
@@ -549,18 +554,20 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 		limit = 1000
 	}
 
-	rows, err := m.Db.Query(
-		"SELECT id, type, guildID, executorID, victimID, msg, attachment "+
-			"FROM reports WHERE guildID = ? "+
-			"ORDER BY id DESC "+
-			"LIMIT ?, ?", guildID, offset, limit)
+	rows, err := m.Db.Query(`
+		SELECT id, type, guildID, executorID, victimID, msg, attachment 
+		FROM reports WHERE guildID = ? 
+		ORDER BY id DESC 
+		LIMIT ?, ?
+	`, guildID, offset, limit)
 	var results []*models.Report
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		rep := new(models.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
+			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -571,7 +578,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 
 func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*models.Report, error) {
 	args := []interface{}{}
-	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment FROM reports WHERE true`
+	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout FROM reports WHERE true`
 	if guildID != "" {
 		query += " AND guildID = ?"
 		args = append(args, guildID)
@@ -592,7 +599,8 @@ func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType i
 	}
 	for rows.Next() {
 		rep := new(models.Report)
-		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
+			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}

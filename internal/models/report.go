@@ -63,6 +63,7 @@ type Report struct {
 	VictimID      string       `json:"victim_id"`
 	Msg           string       `json:"message"`
 	AttachmehtURL string       `json:"attachment_url"`
+	Timeout       *time.Time   `json:"timeout"`
 }
 
 // GetTimestamp returns the time stamp when the
@@ -104,6 +105,13 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 		Image: &discordgo.MessageEmbedImage{
 			URL: imgstore.GetLink(r.AttachmehtURL, publicAddr),
 		},
+	}
+
+	if r.Timeout != nil {
+		emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
+			Name:  "Expires",
+			Value: r.Timeout.Format("2006-01-02T15:04:05.000Z"),
+		})
 	}
 
 	if r.Type == TypeBan {
