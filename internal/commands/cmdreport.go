@@ -16,7 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
-	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekroTJA/shireikan"
 
 	"github.com/bwmarrin/discordgo"
@@ -134,11 +133,6 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 
 	repMsgS := ctx.GetArgs()[msgOffset:]
 
-	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
-	if err == nil && timeout > 0 {
-		repMsgS = repMsgS[:len(repMsgS)-1]
-	}
-
 	if len(repMsgS) < 1 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a valid report description.").
@@ -169,7 +163,6 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		Msg:           repMsg,
 		AttachmehtURL: attachment,
 		Type:          repType,
-		Timeout:       timeutil.NowAddPtr(timeout),
 	}
 
 	emb := rep.AsEmbed(cfg.WebServer.PublicAddr)

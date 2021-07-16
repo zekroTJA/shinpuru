@@ -225,6 +225,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		VictimID:      memberID,
 		Msg:           req.Reason,
 		AttachmehtURL: req.Attachment,
+		Timeout:       req.Timeout,
 	})
 
 	if err != nil {
@@ -298,6 +299,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		VictimID:      memberID,
 		Msg:           req.Reason,
 		AttachmehtURL: req.Attachment,
+		Timeout:       req.Timeout,
 	}, muteRoleID)
 
 	if err != nil {
