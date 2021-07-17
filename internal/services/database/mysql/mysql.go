@@ -555,7 +555,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	}
 
 	rows, err := m.Db.Query(`
-		SELECT id, type, guildID, executorID, victimID, msg, attachment 
+		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout 
 		FROM reports WHERE guildID = ? 
 		ORDER BY id DESC 
 		LIMIT ?, ?
