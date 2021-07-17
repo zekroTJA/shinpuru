@@ -578,7 +578,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	return results, nil
 }
 
-func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType int) ([]*models.Report, error) {
+func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]*models.Report, error) {
 	args := []interface{}{}
 	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout FROM reports WHERE true`
 	if guildID != "" {
@@ -593,6 +593,8 @@ func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType i
 		query += " AND type = ?"
 		args = append(args, repType)
 	}
+	query += ` ORDER BY id DESC LIMIT ? OFFSET ?`
+	args = append(args, limit, offset)
 
 	rows, err := m.Db.Query(query, args...)
 	var results []*models.Report

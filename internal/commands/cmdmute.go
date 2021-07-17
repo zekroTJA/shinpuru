@@ -294,7 +294,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetGuild().ID, "",
-		stringutil.IndexOf("MUTE", models.ReportTypes))
+		int(models.TypeMute), 0, 1000)
 
 	muteReportsMap := make(map[string]*models.Report)
 	for _, r := range muteReports {

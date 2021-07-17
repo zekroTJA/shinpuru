@@ -93,7 +93,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
 				cfg.WebServer.PublicAddr, ctx.GetGuild().ID, victim.User.ID),
 		}
-		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1)
+		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1, 0, 1000)
 		if err != nil {
 			return err
 		}

@@ -65,7 +65,7 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	rep, err := c.db.GetReportsFiltered(req.GuildID, uid, 1)
+	rep, err := c.db.GetReportsFiltered(req.GuildID, uid, 1, 0, 10000)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -117,7 +117,7 @@ func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 // --- HELPERS ------------
 
 func (c *UnbanrequestsController) getUserBannedGuilds(userID string) ([]*models.GuildReduced, error) {
-	reps, err := c.db.GetReportsFiltered("", userID, 1)
+	reps, err := c.db.GetReportsFiltered("", userID, 1, 0, 100000)
 	if err != nil {
 		if database.IsErrDatabaseNotFound(err) {
 			return []*models.GuildReduced{}, nil

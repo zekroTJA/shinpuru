@@ -161,7 +161,7 @@ func (db *dummyDB) GetReport(id snowflake.ID) (_ *models.Report, _ error) {
 func (db *dummyDB) GetReportsGuild(guildID string, offset, limit int) (_ []*models.Report, _ error) {
 	return
 }
-func (db *dummyDB) GetReportsFiltered(guildID, memberID string, repType int) (_ []*models.Report, _ error) {
+func (db *dummyDB) GetReportsFiltered(guildID, memberID string, repType, offset, limit int) (_ []*models.Report, _ error) {
 	return
 }
 func (db *dummyDB) GetReportsGuildCount(guildID string) (_ int, _ error) {

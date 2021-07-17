@@ -97,7 +97,7 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
-	guildReps, err := db.GetReportsFiltered(ctx.GetGuild().ID, member.User.ID, -1)
+	guildReps, err := db.GetReportsFiltered(ctx.GetGuild().ID, member.User.ID, -1, 0, 1000)
 	if err != nil {
 		return err
 	}

@@ -182,6 +182,10 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 		return
 	}
 
+	if err = r.ExpireLastReport(guildID, victimID, int(models.TypeMute)); err != nil {
+		return
+	}
+
 	repType := stringutil.IndexOf("MUTE", models.ReportTypes)
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
@@ -258,6 +262,17 @@ func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
 	}
 
 	return repRevEmb, nil
+}
+
+func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err error) {
+	reps, err := r.db.GetReportsFiltered(guildID, victimID, typ, 0, 1)
+	if err != nil {
+		return
+	}
+	if len(reps) > 0 && reps[0].Timeout != nil {
+		err = r.db.ExpireReport(reps[0].ID.String())
+	}
+	return
 }
 
 func checkTimeout(t *time.Time) (err error) {
