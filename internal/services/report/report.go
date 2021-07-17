@@ -110,6 +110,10 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 	const typ = 1
 	rep.Type = typ
 
+	if err := checkTimeout(rep.Timeout); err != nil {
+		return nil, err
+	}
+
 	guild, err := r.st.Guild(rep.GuildID)
 	if err != nil {
 		return nil, err
@@ -147,6 +151,10 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models.Report, error) {
 	const typ = 2
 	rep.Type = typ
+
+	if err := checkTimeout(rep.Timeout); err != nil {
+		return nil, err
+	}
 
 	if rep.Msg == "" {
 		rep.Msg = "no reason specified"
@@ -250,4 +258,11 @@ func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
 	}
 
 	return repRevEmb, nil
+}
+
+func checkTimeout(t *time.Time) (err error) {
+	if t != nil && t.Before(time.Now()) {
+		err = errors.New("timeout must be in the future")
+	}
+	return
 }
