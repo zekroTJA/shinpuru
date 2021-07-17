@@ -103,6 +103,7 @@ type Database interface {
 	GetReportsFiltered(guildID, memberID string, repType int) ([]*models.Report, error)
 	GetReportsGuildCount(guildID string) (int, error)
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
+	ExpireReport(id string) (err error)
 
 	//////////////////////////////////////////////////////
 	//// UNBAN REQUESTS

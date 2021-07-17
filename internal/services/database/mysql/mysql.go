@@ -29,6 +29,8 @@ type MysqlMiddleware struct {
 	Db *sql.DB
 }
 
+var _ database.Database = (*MysqlMiddleware)(nil)
+
 var guildTables = []string{
 	"guilds", "permissions",
 	"twitchnotify", "tags", "karma",
@@ -629,6 +631,13 @@ func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repT
 	}
 
 	err = m.Db.QueryRow(query).Scan(&count)
+	return
+}
+
+func (m *MysqlMiddleware) ExpireReport(id string) (err error) {
+	_, err = m.Db.Exec(`
+		UPDATE reports SET timeout = NULL
+		WHERE id = ?`, id)
 	return
 }
 

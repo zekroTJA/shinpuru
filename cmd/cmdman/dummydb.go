@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
@@ -13,6 +14,8 @@ import (
 )
 
 type dummyDB struct{}
+
+var _ database.Database = (*dummyDB)(nil)
 
 func (db *dummyDB) Connect(credentials ...interface{}) (_ error) {
 	return
@@ -378,5 +381,8 @@ func (db *dummyDB) DeleteLogEntries(guildID string) (_ error) {
 	return
 }
 func (db *dummyDB) FlushGuildData(guildID string) (_ error) {
+	return
+}
+func (db *dummyDB) ExpireReport(id string) (_ error) {
 	return
 }
