@@ -13,7 +13,7 @@ func TestFromUnix(t *testing.T) {
 	assert.Nil(t, err)
 
 	timeRec := FromUnix(unixStamp)
-	assert.Equal(t, timeRec, timeObj)
+	assert.Zero(t, timeRec.Sub(timeObj))
 }
 
 func TestToUnix(t *testing.T) {
