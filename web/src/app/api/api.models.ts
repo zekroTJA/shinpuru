@@ -90,6 +90,7 @@ export interface Report {
   message: string;
   attachment_url: string;
   created?: string;
+  timeout: string;
 }
 
 export interface GuildSettings {
