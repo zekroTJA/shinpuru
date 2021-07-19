@@ -1,20 +1,9 @@
 ---
 name: Bug Report
 about: Report a bug, typo or an unexpected behavior.
-title: "[BUG] "
 labels: 'bug'
 assignees: zekroTJA
 ---
-
-## Type of Bug
-<!-- 
-Chose one of the below categories.
--->
-
-- [ ] Typo
-- [ ] Minor
-- [ ] Major
-- [ ] Crash
 
 ## Description
 <!-- 

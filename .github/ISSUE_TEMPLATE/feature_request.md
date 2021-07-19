@@ -1,19 +1,10 @@
 ---
 name: Feature Request
 about: Suggest an idea or enhancement for this project.
-title: "[FEATURE] "
 labels: 'enhancement'
 assignees: zekroTJA
 
 ---
-
-## Type of Feature Request
-<!-- 
-Chose one of the below categories.
--->
-
-- [ ] New feature
-- [ ] Enhancement
 
 ## Description
 <!-- 
