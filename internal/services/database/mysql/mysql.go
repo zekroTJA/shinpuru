@@ -636,10 +636,46 @@ func (m *MysqlMiddleware) GetReportsFilteredCount(guildID, memberID string, repT
 	return
 }
 
-func (m *MysqlMiddleware) ExpireReport(id string) (err error) {
-	_, err = m.Db.Exec(`
-		UPDATE reports SET timeout = NULL
-		WHERE id = ?`, id)
+func (m *MysqlMiddleware) GetExpiredReports() (results []*models.Report, err error) {
+	rows, err := m.Db.Query(`
+		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout
+		FROM reports
+		WHERE timeout <= CURRENT_TIMESTAMP`)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+		}
+		return
+	}
+
+	results = make([]*models.Report, 0)
+	for rows.Next() {
+		rep := new(models.Report)
+		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
+			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, rep)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) ExpireReports(ids ...string) (err error) {
+	tx, err := m.Db.Begin()
+	if err != nil {
+		return
+	}
+	for _, id := range ids {
+		_, err = m.Db.Exec(`
+			UPDATE reports SET timeout = NULL
+			WHERE id = ?`, id)
+		if err != nil {
+			return
+		}
+	}
+	err = tx.Commit()
 	return
 }
 

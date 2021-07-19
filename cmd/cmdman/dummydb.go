@@ -383,6 +383,9 @@ func (db *dummyDB) DeleteLogEntries(guildID string) (_ error) {
 func (db *dummyDB) FlushGuildData(guildID string) (_ error) {
 	return
 }
-func (db *dummyDB) ExpireReport(id string) (_ error) {
+func (db *dummyDB) ExpireReports(id ...string) (_ error) {
+	return
+}
+func (db *dummyDB) GetExpiredReports() (_ []*models.Report, _ error) {
 	return
 }

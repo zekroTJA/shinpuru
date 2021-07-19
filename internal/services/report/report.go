@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
@@ -270,7 +271,43 @@ func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err
 		return
 	}
 	if len(reps) > 0 && reps[0].Timeout != nil {
-		err = r.db.ExpireReport(reps[0].ID.String())
+		err = r.db.ExpireReports(reps[0].ID.String())
+	}
+	return
+}
+
+func (r *ReportService) ExpireExpiredReports() error {
+	mErr := multierror.New()
+
+	reps, err := r.db.GetExpiredReports()
+	mErr.Append(err)
+
+	expIDs := make([]string, 0, len(reps))
+	for _, rep := range reps {
+		err = r.revokeReportOnExpiration(rep)
+		mErr.Append(err)
+		if err == nil {
+			expIDs = append(expIDs, rep.ID.String())
+		}
+	}
+
+	mErr.Append(
+		r.db.ExpireReports(expIDs...))
+
+	return mErr
+}
+
+func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error) {
+	switch rep.Type {
+	case models.TypeBan:
+		err = r.s.GuildBanDelete(rep.GuildID, rep.VictimID)
+	case models.TypeMute:
+		var rid string
+		rid, err = r.db.GetGuildMuteRole(rep.GuildID)
+		if err != nil {
+			return
+		}
+		_, err = r.RevokeMute(rep.GuildID, rep.ExecutorID, rep.VictimID, "Automatic Timeout", rid)
 	}
 	return
 }
