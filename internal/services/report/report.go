@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -27,6 +28,11 @@ type ReportService struct {
 	db  database.Database
 	cfg *config.Config
 	st  *dgrs.State
+}
+
+type ReportError struct {
+	error
+	*models.Report
 }
 
 func New(container di.Container) *ReportService {
@@ -281,13 +287,22 @@ func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
 
 	reps, err := r.db.GetExpiredReports()
 	mErr.Append(err)
+	logrus.WithField("n", len(reps)).Debug("REPORTS :: start expiring cleanup ...")
 
 	expIDs := make([]string, 0, len(reps))
 	for _, rep := range reps {
+		logrus.WithFields(logrus.Fields{
+			"id":  rep.ID,
+			"typ": rep.Type,
+		}).Debug("REPORTS :: expiring report")
 		err = r.revokeReportOnExpiration(rep)
-		mErr.Append(err)
 		if err == nil {
 			expIDs = append(expIDs, rep.ID.String())
+		} else {
+			mErr.Append(&ReportError{
+				error:  err,
+				Report: rep,
+			})
 		}
 	}
 
