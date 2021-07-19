@@ -276,8 +276,8 @@ func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err
 	return
 }
 
-func (r *ReportService) ExpireExpiredReports() error {
-	mErr := multierror.New()
+func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
+	mErr = multierror.New()
 
 	reps, err := r.db.GetExpiredReports()
 	mErr.Append(err)
@@ -294,7 +294,7 @@ func (r *ReportService) ExpireExpiredReports() error {
 	mErr.Append(
 		r.db.ExpireReports(expIDs...))
 
-	return mErr
+	return
 }
 
 func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error) {
