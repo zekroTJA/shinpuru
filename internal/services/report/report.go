@@ -7,11 +7,13 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
@@ -28,6 +30,11 @@ type ReportService struct {
 	st  *dgrs.State
 }
 
+type ReportError struct {
+	error
+	*models.Report
+}
+
 func New(container di.Container) *ReportService {
 	return &ReportService{
 		s:   container.Get(static.DiDiscordSession).(*discordgo.Session),
@@ -42,29 +49,21 @@ func New(container di.Container) *ReportService {
 // using the passed db databse rpovider and an embed is created with the attachment
 // url assembled with publicAddr as image endpoint root. This embed is then sent to
 // the specified mod log channel for this guild, if existent.
-func (r *ReportService) PushReport(guildID, executorID, victimID, reason, attachmentID string, typ models.Type) (*models.Report, error) {
-	repID := snowflakenodes.NodesReport[typ].Generate()
+func (r *ReportService) PushReport(rep *models.Report) (*models.Report, error) {
+	repID := snowflakenodes.NodesReport[rep.Type].Generate()
 
-	rep := &models.Report{
-		ID:            repID,
-		Type:          typ,
-		GuildID:       guildID,
-		ExecutorID:    executorID,
-		VictimID:      victimID,
-		Msg:           reason,
-		AttachmehtURL: attachmentID,
-	}
+	rep.ID = repID
 
 	err := r.db.AddReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(guildID); err == nil {
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
 		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
 	}
 
-	dmChan, err := r.s.UserChannelCreate(victimID)
+	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
 	if err == nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
 	}
@@ -75,20 +74,21 @@ func (r *ReportService) PushReport(guildID, executorID, victimID, reason, attach
 // PushKick is shorthand for PushReport as member kick action and also
 // kicks the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
+func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
 	const typ = 0
+	rep.ID = typ
 
-	guild, err := r.st.Guild(guildID)
+	guild, err := r.st.Guild(rep.GuildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := r.st.Member(guildID, victimID)
+	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := r.st.Member(guildID, executorID)
+	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,12 +97,12 @@ func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachme
 		return nil, errRoleDiff
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	rep, err = r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = r.s.GuildMemberDeleteWithReason(guildID, victimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, reason)); err != nil {
+	if err = r.s.GuildMemberDeleteWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg)); err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
 	}
@@ -113,20 +113,25 @@ func (r *ReportService) PushKick(guildID, executorID, victimID, reason, attachme
 // PushBan is shorthand for PushReport as member ban action and also
 // bans the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachment string) (*models.Report, error) {
+func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 	const typ = 1
+	rep.Type = typ
 
-	guild, err := r.st.Guild(guildID)
+	if err := checkTimeout(rep.Timeout); err != nil {
+		return nil, err
+	}
+
+	guild, err := r.st.Guild(rep.GuildID)
 	if err != nil {
 		return nil, err
 	}
 
-	victim, err := r.st.Member(guildID, victimID)
+	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if err != nil {
 		return nil, err
 	}
 
-	executor, err := r.st.Member(guildID, executorID)
+	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
 		return nil, err
 	}
@@ -135,12 +140,12 @@ func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachmen
 		return nil, errRoleDiff
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	rep, err = r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = r.s.GuildBanCreateWithReason(guildID, victimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, reason), 7); err != nil {
+	if err = r.s.GuildBanCreateWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg), 7); err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
 	}
@@ -150,19 +155,24 @@ func (r *ReportService) PushBan(guildID, executorID, victimID, reason, attachmen
 
 // PushMute is shorthand for PushReport as member mute action and also
 // adds the mute role to the specified victim.
-func (r *ReportService) PushMute(guildID, executorID, victimID, reason, attachment, muteRoleID string) (*models.Report, error) {
+func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models.Report, error) {
 	const typ = 2
+	rep.Type = typ
 
-	if reason == "" {
-		reason = "no reason specified"
+	if err := checkTimeout(rep.Timeout); err != nil {
+		return nil, err
 	}
 
-	rep, err := r.PushReport(guildID, executorID, victimID, reason, attachment, typ)
+	if rep.Msg == "" {
+		rep.Msg = "no reason specified"
+	}
+
+	rep, err := r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.s.GuildMemberRoleAdd(guildID, victimID, muteRoleID)
+	err = r.s.GuildMemberRoleAdd(rep.GuildID, rep.VictimID, muteRoleID)
 	if err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
@@ -176,6 +186,10 @@ func (r *ReportService) PushMute(guildID, executorID, victimID, reason, attachme
 func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRoleID string) (emb *discordgo.MessageEmbed, err error) {
 	err = r.s.GuildMemberRoleRemove(guildID, victimID, muteRoleID)
 	if err != nil {
+		return
+	}
+
+	if err = r.ExpireLastReport(guildID, victimID, int(models.TypeMute)); err != nil {
 		return
 	}
 
@@ -255,4 +269,67 @@ func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
 	}
 
 	return repRevEmb, nil
+}
+
+func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err error) {
+	reps, err := r.db.GetReportsFiltered(guildID, victimID, typ, 0, 1)
+	if err != nil {
+		return
+	}
+	if len(reps) > 0 && reps[0].Timeout != nil {
+		err = r.db.ExpireReports(reps[0].ID.String())
+	}
+	return
+}
+
+func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
+	mErr = multierror.New()
+
+	reps, err := r.db.GetExpiredReports()
+	mErr.Append(err)
+	logrus.WithField("n", len(reps)).Debug("REPORTS :: start expiring cleanup ...")
+
+	expIDs := make([]string, 0, len(reps))
+	for _, rep := range reps {
+		logrus.WithFields(logrus.Fields{
+			"id":  rep.ID,
+			"typ": rep.Type,
+		}).Debug("REPORTS :: expiring report")
+		err = r.revokeReportOnExpiration(rep)
+		if err == nil {
+			expIDs = append(expIDs, rep.ID.String())
+		} else {
+			mErr.Append(&ReportError{
+				error:  err,
+				Report: rep,
+			})
+		}
+	}
+
+	mErr.Append(
+		r.db.ExpireReports(expIDs...))
+
+	return
+}
+
+func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error) {
+	switch rep.Type {
+	case models.TypeBan:
+		err = r.s.GuildBanDelete(rep.GuildID, rep.VictimID)
+	case models.TypeMute:
+		var rid string
+		rid, err = r.db.GetGuildMuteRole(rep.GuildID)
+		if err != nil {
+			return
+		}
+		_, err = r.RevokeMute(rep.GuildID, rep.ExecutorID, rep.VictimID, "Automatic Timeout", rid)
+	}
+	return
+}
+
+func checkTimeout(t *time.Time) (err error) {
+	if t != nil && t.Before(time.Now()) {
+		err = errors.New("timeout must be in the future")
+	}
+	return
 }

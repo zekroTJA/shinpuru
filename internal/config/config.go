@@ -156,6 +156,7 @@ type Metrics struct {
 type Schedules struct {
 	GuildBackups        string `json:"guildbackups"`
 	RefreshTokenCleanup string `json:"refreshtokencleanup"`
+	ReportsExpiration   string `json:"reportsexpiration"`
 }
 
 // CodeExec wraps configurations for the
@@ -279,6 +280,7 @@ func GetDefaultConfig() *Config {
 		Schedules: &Schedules{
 			GuildBackups:        "0 0 6,18 * * *",
 			RefreshTokenCleanup: "0 0 5 * * *",
+			ReportsExpiration:   "@every 5m",
 		},
 		CodeExec: &CodeExec{
 			Type: "jdoodle",

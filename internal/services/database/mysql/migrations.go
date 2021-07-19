@@ -10,6 +10,7 @@ var migrationFuncs = []migrationFunc{
 	migration_2,
 	migration_3,
 	migration_4,
+	migration_5,
 }
 
 // VERSION 0:
@@ -44,4 +45,11 @@ func migration_3(m *sql.Tx) (err error) {
 func migration_4(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
 		"karmaSettings", "`penalty` int(1) NOT NULL DEFAULT '0'")
+}
+
+// VERSION 5:
+// - add property `timeout` to `reports`
+func migration_5(m *sql.Tx) (err error) {
+	return createTableColumnIfNotExists(m,
+		"reports", "`timeout` timestamp NULL DEFAULT NULL")
 }

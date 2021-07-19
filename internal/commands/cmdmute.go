@@ -225,7 +225,20 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		return err
 	}
 
-	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
+	repMsgS := ctx.GetArgs()[1:]
+
+	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
+	if err == nil && timeout > 0 {
+		repMsgS = repMsgS[:len(repMsgS)-1]
+	}
+
+	if len(repMsgS) < 1 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"Please enter a valid report description.").
+			DeleteAfter(8 * time.Second).Error()
+	}
+
+	repMsg := strings.Join(repMsgS, " ")
 
 	var attachment string
 	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
@@ -242,13 +255,13 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	rep, err := repSvc.PushMute(
-		ctx.GetGuild().ID,
-		ctx.GetUser().ID,
-		victim.User.ID,
-		strings.Join(ctx.GetArgs()[1:], " "),
-		attachment,
-		muteRoleID)
+	rep, err := repSvc.PushMute(&models.Report{
+		GuildID:       ctx.GetGuild().ID,
+		ExecutorID:    ctx.GetUser().ID,
+		VictimID:      victim.User.ID,
+		Msg:           strings.Join(ctx.GetArgs()[1:], " "),
+		AttachmehtURL: attachment,
+	}, muteRoleID)
 
 	if err != nil {
 		err = util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
@@ -281,7 +294,7 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetGuild().ID, "",
-		stringutil.IndexOf("MUTE", models.ReportTypes))
+		int(models.TypeMute), 0, 1000)
 
 	muteReportsMap := make(map[string]*models.Report)
 	for _, r := range muteReports {

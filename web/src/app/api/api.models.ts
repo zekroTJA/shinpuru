@@ -112,6 +112,7 @@ export interface PermissionsUpdate {
 export interface ReasonRequest {
   reason: string;
   attachment: string;
+  timeout?: string;
 }
 
 export interface ReportRequest extends ReasonRequest {

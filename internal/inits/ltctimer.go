@@ -7,7 +7,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
+	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -15,8 +17,10 @@ import (
 func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	cfg := container.Get(static.DiConfig).(*config.Config)
 	db := container.Get(static.DiDatabase).(database.Database)
-	guildBackups := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
+	gb := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
 	tnw := container.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
+	rep := container.Get(static.DiReport).(*report.ReportService)
+	gl := container.Get(static.DiGuildLog).(guildlog.Logger)
 
 	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
@@ -46,7 +50,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			return spec
 		},
 		func() {
-			go guildBackups.BackupAllGuilds()
+			go gb.BackupAllGuilds()
 		})
 
 	lctSchedule(lct, "twitch notify",
@@ -57,6 +61,27 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			if err := tnw.Handle(); err != nil {
 				logrus.WithError(err).Error("LCT :: failed executing twitch notify handler")
 			}
+		})
+
+	lctSchedule(lct, "report expiration",
+		func() string {
+			spec := cfg.Defaults.Schedules.ReportsExpiration
+			if cfg.Schedules != nil && cfg.Schedules.ReportsExpiration != "" {
+				spec = cfg.Schedules.ReportsExpiration
+			}
+			return spec
+		},
+		func() {
+			rep.ExpireExpiredReports().ForEach(func(err error, _ int) {
+				lentry := logrus.WithError(err)
+				if repErr, ok := err.(*report.ReportError); ok {
+					lentry = lentry.
+						WithField("repID", repErr.ID).
+						WithField("gid", repErr.GuildID)
+					gl.Section("lct").Errorf(repErr.ID.String(), "Failed expiring report: %s", err.Error())
+				}
+				lentry.Error("LCT :: failed expiring report")
+			})
 		})
 
 	return lct

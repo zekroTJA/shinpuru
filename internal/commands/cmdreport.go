@@ -93,7 +93,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
 				cfg.WebServer.PublicAddr, ctx.GetGuild().ID, victim.User.ID),
 		}
-		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1)
+		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1, 0, 1000)
 		if err != nil {
 			return err
 		}
@@ -131,12 +131,15 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		msgOffset++
 	}
 
-	if len(ctx.GetArgs()[msgOffset:]) < 1 {
+	repMsgS := ctx.GetArgs()[msgOffset:]
+
+	if len(repMsgS) < 1 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a valid report description.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-	repMsg := strings.Join(ctx.GetArgs()[msgOffset:], " ")
+
+	repMsg := strings.Join(repMsgS, " ")
 
 	var attachment string
 	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
@@ -153,41 +156,26 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		}
 	}
 
+	rep := &models.Report{
+		GuildID:       ctx.GetGuild().ID,
+		ExecutorID:    ctx.GetUser().ID,
+		VictimID:      victim.User.ID,
+		Msg:           repMsg,
+		AttachmehtURL: attachment,
+		Type:          repType,
+	}
+
+	emb := rep.AsEmbed(cfg.WebServer.PublicAddr)
+	emb.Title = "Report Check"
+	emb.Description = "Is everything okay so far?"
+
 	acceptMsg := acceptmsg.AcceptMessage{
-		Embed: &discordgo.MessageEmbed{
-			Color:       models.ReportColors[repType],
-			Title:       "Report Check",
-			Description: "Is everything okay so far?",
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name: "Victim",
-					Value: fmt.Sprintf("<@%s> (%s#%s)",
-						victim.User.ID, victim.User.Username, victim.User.Discriminator),
-				},
-				{
-					Name:  "Type",
-					Value: models.ReportTypes[repType],
-				},
-				{
-					Name:  "Description",
-					Value: repMsg,
-				},
-			},
-			Image: &discordgo.MessageEmbedImage{
-				URL: imgstore.GetLink(attachment, cfg.WebServer.PublicAddr),
-			},
-		},
+		Embed:          emb,
 		Session:        ctx.GetSession(),
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) (err error) {
-			rep, err := repSvc.PushReport(
-				ctx.GetGuild().ID,
-				ctx.GetUser().ID,
-				victim.User.ID,
-				repMsg,
-				attachment,
-				repType)
+			rep, err := repSvc.PushReport(rep)
 
 			if err != nil {
 				return

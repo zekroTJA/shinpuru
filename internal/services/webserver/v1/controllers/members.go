@@ -193,11 +193,21 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
 
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 100, 1, 100)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	offset, err := wsutil.GetQueryInt(ctx, "offset", 0, 0, -1)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
 	if memb, _ := c.session.GuildMember(guildID, uid); memb == nil {
 		return fiber.ErrNotFound
 	}
 
-	reps, err := c.db.GetReportsFiltered(guildID, memberID, -1)
+	reps, err := c.db.GetReportsFiltered(guildID, memberID, -1, offset, limit)
 	if err != nil {
 		return err
 	}

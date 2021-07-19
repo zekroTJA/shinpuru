@@ -358,7 +358,7 @@ export class APIService {
     guildID: string,
     memberID: string = null,
     offset: number = 0,
-    limit: number = 0
+    limit: number = 100
   ): Observable<Report[]> {
     const uri = memberID
       ? this.rcGuildMemberReports(guildID, memberID)

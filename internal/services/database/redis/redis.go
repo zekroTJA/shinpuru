@@ -68,6 +68,8 @@ type RedisMiddleware struct {
 	client *redis.Client
 }
 
+var _ database.Database = (*RedisMiddleware)(nil)
+
 func NewRedisMiddleware(db database.Database, rd *redis.Client) *RedisMiddleware {
 	return &RedisMiddleware{
 		Database: db,

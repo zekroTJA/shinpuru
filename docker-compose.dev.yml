@@ -34,6 +34,7 @@ services:
     volumes:
       - 'mysql-cfg:/etc/mysql'
       - 'mysql-lib:/var/lib/mysql'
+      - '/etc/localtime:/etc/localtime:ro'
     restart: 'unless-stopped'
 
   phpmyadmin:
