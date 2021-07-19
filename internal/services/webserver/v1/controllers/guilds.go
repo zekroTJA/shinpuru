@@ -24,6 +24,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -91,22 +92,16 @@ func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	guildRs := make([]*models.GuildReduced, len(guilds))
+	userGuilds, err := c.state.UserGuilds(uid)
+	if err != nil {
+		return
+	}
+
+	guildRs := make([]*models.GuildReduced, len(userGuilds))
 	i := 0
-	for _, g := range guilds {
-		membs, err := c.state.Members(g.ID)
-		if err != nil {
-			return err
-		}
-		var m *discordgo.Member
-		for _, _m := range membs {
-			if _m.User.ID == uid {
-				m = _m
-				break
-			}
-		}
-		if m != nil {
-			guildRs[i] = models.GuildReducedFromGuild(g)
+	for _, guild := range guilds {
+		if stringutil.ContainsAny(guild.ID, userGuilds) {
+			guildRs[i] = models.GuildReducedFromGuild(guild)
 			i++
 		}
 	}
