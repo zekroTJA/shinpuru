@@ -31,7 +31,7 @@ func (c *CmdBan) GetDescription() string {
 }
 
 func (c *CmdBan) GetHelp() string {
-	return "`ban <UserResolvable> <Reason>`"
+	return "`ban <UserResolvable> <Reason> (<timeout duration>)`"
 }
 
 func (c *CmdBan) GetGroup() string {

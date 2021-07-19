@@ -37,7 +37,7 @@ func (c *CmdMute) GetDescription() string {
 
 func (c *CmdMute) GetHelp() string {
 	return "`mute setup (<roleResolvable>)` - creates (or uses given) mute role and sets this role in every channel as muted\n" +
-		"`mute <userResolvable>` - mute/unmute a user\n" +
+		"`mute <userResolvable> (<timeout duration>)` - mute/unmute a user\n" +
 		"`mute list` - display muted users on this guild\n" +
 		"`mute` - display currently set mute role"
 }
