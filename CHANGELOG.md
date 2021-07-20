@@ -12,14 +12,25 @@ Here you can read on how to use timeouts in the mute and ban command.
 - [`mute`](https://github.com/zekroTJA/shinpuru/wiki/Commands#mute)
 - [`ban`](https://github.com/zekroTJA/shinpuru/wiki/Commands#ban)
 
+The expiration of reports is defaultly checked every 5 minutes, but you can specify an other schedule in the config.
+```yml
+schedules:
+  reportsexpiration: "@every 5m"
+```
+
 ### SQLite3 Deprecation
 
 The SQLite3 driver was marked as deprecated in patch [1.16.0](https://github.com/zekroTJA/shinpuru/releases/tag/1.16.0) and has now fully been removed. If you need information why this step was taken and how to switch to MariaDB for development, please read [this document](https://github.com/zekroTJA/shinpuru/wiki/SQLIte-Deprecation). 
 
 ## Minor Changes
 
+- Add loading indicator in the web interface.  
+  ![](https://i.imgur.com/HK8fXUJ.gif)
+
 - [dgrs](https://github.com/zekroTJA/dgrs) was now updated to v0.3.0 which allows dehydration of removed objects and caching of User→GuildIDs relationships.
+
 - Hence, the load time of the guild list in the web interface should be significantly faster. [#257]
+
 - Messages are now only cached for 14 Days in state.
 
 # Docker
