@@ -90,6 +90,7 @@ export interface Report {
   message: string;
   attachment_url: string;
   created?: string;
+  timeout: string;
 }
 
 export interface GuildSettings {
@@ -112,6 +113,7 @@ export interface PermissionsUpdate {
 export interface ReasonRequest {
   reason: string;
   attachment: string;
+  timeout?: string;
 }
 
 export interface ReportRequest extends ReasonRequest {

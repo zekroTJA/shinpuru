@@ -43,6 +43,7 @@ export class MemberRouteComponent {
   public repModalType = 3;
   public repModalReason = '';
   public repModalAttachment = '';
+  private repModalTimeout = '';
 
   public canRevoke = false;
 
@@ -107,7 +108,7 @@ export class MemberRouteComponent {
     return this.permissionsAllowed.includes(perm);
   }
 
-  public report() {
+  public async report() {
     this.openModal(this.modalReport)
       .then((res) => {
         if (res && this.checkReason()) {
@@ -171,6 +172,7 @@ export class MemberRouteComponent {
             .postBan(this.guild.id, this.member.user.id, {
               attachment: this.repModalAttachment,
               reason: this.repModalReason,
+              timeout: this.formattedRepTimeout,
             })
             .subscribe((resRep) => {
               if (resRep) {
@@ -244,6 +246,7 @@ export class MemberRouteComponent {
             .call(this.api, this.guild.id, this.member.user.id, {
               attachment: this.repModalAttachment,
               reason: this.repModalReason,
+              timeout: this.formattedRepTimeout,
             })
             .subscribe((resRep) => {
               if (resRep) {
@@ -285,5 +288,10 @@ export class MemberRouteComponent {
     this.api.getReports(guildID, memberID).subscribe((reports) => {
       this.reports = reports || [];
     });
+  }
+
+  private get formattedRepTimeout(): string | null {
+    if (!this.repModalTimeout) return null;
+    return `${this.repModalTimeout}:00.00Z`;
   }
 }

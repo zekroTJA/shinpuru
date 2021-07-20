@@ -1,6 +1,7 @@
 /** @format */
 
 import { Component, OnInit } from '@angular/core';
+import { LoadingBarService } from './components/header/loadingbar.service';
 import { ToastService } from './components/toast/toast.service';
 import LocalStorageUtil from './utils/localstorage';
 import { NextLoginRedirect } from './utils/objects';

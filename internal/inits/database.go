@@ -10,7 +10,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/services/database/redis"
-	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -25,9 +24,8 @@ func InitDatabase(container di.Container) database.Database {
 		db = new(mysql.MysqlMiddleware)
 		err = db.Connect(cfg.Database.MySql)
 	case "sqlite", "sqlite3":
-		db = new(sqlite.SqliteMiddleware)
-		err = db.Connect(cfg.Database.Sqlite)
-		printSqliteWraning()
+		logrus.Fatal("The SQLite driver is deprecated since v.1.18.0. " +
+			"Read this for more information: https://s.zekro.de/sqld")
 	}
 
 	if m, ok := db.(database.Migration); ok {
@@ -51,9 +49,4 @@ func InitDatabase(container di.Container) database.Database {
 	logrus.Info("Connected to database")
 
 	return db
-}
-
-func printSqliteWraning() {
-	logrus.Warning("You are currently using the SQLite Database Driver, which is marked " +
-		"as DEPRECATED and will be removed in the upcoming version!")
 }

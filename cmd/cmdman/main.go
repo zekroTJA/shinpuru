@@ -17,7 +17,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/services/database/sqlite"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -62,7 +61,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiDatabase,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return new(sqlite.SqliteMiddleware), nil
+			return &dummyDB{}, nil
 		},
 		Close: func(obj interface{}) error {
 			database := obj.(database.Database)

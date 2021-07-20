@@ -51,6 +51,7 @@ import AuthInterceptor from './api/auth.interceptor';
 import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-general.component';
 import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.component';
+import LoadingInterceptor from './api/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,11 @@ import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.compo
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true,
     },
   ],

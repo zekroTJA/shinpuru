@@ -2,7 +2,6 @@ package commands
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
 	"time"
 
@@ -13,10 +12,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
-	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -32,7 +31,7 @@ func (c *CmdBan) GetDescription() string {
 }
 
 func (c *CmdBan) GetHelp() string {
-	return "`ban <UserResolvable> <Reason>`"
+	return "`ban <UserResolvable> <Reason> (<timeout duration>)`"
 }
 
 func (c *CmdBan) GetGroup() string {
@@ -70,14 +69,20 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	repMsg := strings.Join(ctx.GetArgs()[1:], " ")
-	var repType int
-	for i, v := range models.ReportTypes {
-		if v == "BAN" {
-			repType = i
-		}
+	repMsgS := ctx.GetArgs()[1:]
+
+	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
+	if err == nil && timeout > 0 {
+		repMsgS = repMsgS[:len(repMsgS)-1]
 	}
-	repID := snowflakenodes.NodesReport[repType].Generate()
+
+	if len(repMsgS) < 1 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"Please enter a valid report description.").
+			DeleteAfter(8 * time.Second).Error()
+	}
+
+	repMsg := strings.Join(repMsgS, " ")
 
 	var attachment string
 	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
@@ -97,44 +102,26 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
 	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
+	rep := &models.Report{
+		GuildID:       ctx.GetGuild().ID,
+		ExecutorID:    ctx.GetUser().ID,
+		VictimID:      victim.User.ID,
+		Msg:           repMsg,
+		AttachmehtURL: attachment,
+		Timeout:       timeutil.NowAddPtr(timeout),
+	}
+
+	emb := rep.AsEmbed(cfg.WebServer.PublicAddr)
+	emb.Title = "Report Check"
+	emb.Description = "Is everything okay so far?"
+
 	acceptMsg := acceptmsg.AcceptMessage{
-		Embed: &discordgo.MessageEmbed{
-			Color:       models.ReportColors[repType],
-			Title:       "Ban Check",
-			Description: "Is everything okay so far?",
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name: "Victim",
-					Value: fmt.Sprintf("<@%s> (%s#%s)",
-						victim.User.ID, victim.User.Username, victim.User.Discriminator),
-				},
-				{
-					Name:  "ID",
-					Value: repID.String(),
-				},
-				{
-					Name:  "Type",
-					Value: models.ReportTypes[repType],
-				},
-				{
-					Name:  "Description",
-					Value: repMsg,
-				},
-			},
-			Image: &discordgo.MessageEmbedImage{
-				URL: imgstore.GetLink(attachment, cfg.WebServer.PublicAddr),
-			},
-		},
+		Embed:          emb,
 		Session:        ctx.GetSession(),
 		UserID:         ctx.GetUser().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(msg *discordgo.Message) (err error) {
-			rep, err := repSvc.PushBan(
-				ctx.GetGuild().ID,
-				ctx.GetUser().ID,
-				victim.User.ID,
-				repMsg,
-				attachment)
+			rep, err := repSvc.PushBan(rep)
 
 			if err != nil {
 				return

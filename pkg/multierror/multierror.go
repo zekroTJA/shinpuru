@@ -52,6 +52,19 @@ func (m *MultiError) Error() string {
 	return m.formatFunc(m.errors)
 }
 
+// Errors returns the internal list of errors.
+func (m *MultiError) Errors() []error {
+	return m.errors
+}
+
+// ForEach iterates over the list of errors and
+// executes f for each error in the list.
+func (m *MultiError) ForEach(f func(err error, i int)) {
+	for i, err := range m.errors {
+		f(err, i)
+	}
+}
+
 // Append adds an error object to the
 // MultiError cotainer if the error
 // is != nil
