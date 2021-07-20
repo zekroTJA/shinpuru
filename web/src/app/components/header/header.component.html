@@ -2,6 +2,8 @@
 
 <div id="header" class="container-fluid">
   <div *ngIf="selfUser?.id" class="part-container shade">
+    <div class="load-indicator" [class.loading]="loadingBar.isLoading"></div>
+
     <a class="d-flex" routerLink="/guilds">
       <img id="sp-logo" height="30" src="/assets/shinpuru-logo.png" />
     </a>

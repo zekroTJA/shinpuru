@@ -5,6 +5,7 @@ import { APIService } from '../../api/api.service';
 import { User } from '../../api/api.models';
 import { PopupElement } from '../popup/popup.component';
 import { Router } from '@angular/router';
+import { LoadingBarService } from './loadingbar.service';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +36,11 @@ export class HeaderComponent implements OnInit {
   public popupVisible = false;
   public popupElements = [];
 
-  constructor(private api: APIService, private router: Router) {
+  constructor(
+    private api: APIService,
+    private router: Router,
+    public loadingBar: LoadingBarService
+  ) {
     this.api.getSelfUser().subscribe((user) => {
       this.selfUser = user;
       if (user.bot_owner) {
