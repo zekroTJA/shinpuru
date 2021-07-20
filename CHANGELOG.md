@@ -1,5 +1,7 @@
 1.18.0
 
+![](https://i.imgur.com/5S1nlOp.png)
+
 ## Major Changes
 
 ### Ban/Mute Timeout [#246]
