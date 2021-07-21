@@ -64,6 +64,7 @@ type Report struct {
 	Msg           string       `json:"message"`
 	AttachmehtURL string       `json:"attachment_url"`
 	Timeout       *time.Time   `json:"timeout"`
+	Anonymous     bool         `json:"-"`
 }
 
 // GetTimestamp returns the time stamp when the
