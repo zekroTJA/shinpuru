@@ -1,18 +1,23 @@
 @import '../../../sass/vars'
 @import '../../../sass/mixins'
     
+
+$guild-tile-width: 250px
+
+
 .guilds-list-container
     display: flex
     flex-wrap: wrap
+    margin: 0 auto
+    max-width: 3 * ($guild-tile-width + 20px)
+
 
 .guild-container
-    $width: 250px
-
     background-color: $c-nqblack
     width: fit-content
-    min-width: $width
+    min-width: $guild-tile-width
     // height: $width + 60px
-    margin: 0 20px 20px 0
+    margin: 0 10px 20px 10px
     border-radius: 10px
     overflow: hidden
     cursor: pointer
@@ -26,19 +31,19 @@
                 transform: scale(1.05)
 
     .guild-tn
-        width: $width
-        height: $width
+        width: $guild-tile-width
+        height: $guild-tile-width
         overflow: hidden
         border-radius: 10px
 
         img
-            width: $width
-            height: $width
+            width: $guild-tile-width
+            height: $guild-tile-width
             +transition25
 
     .info-container
         padding: 15px 15px
-        max-width: $width
+        max-width: $guild-tile-width
 
         > *
             text-overflow: ellipsis
