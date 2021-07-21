@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-commands',
   templateUrl: './commands.component.html',
-  styleUrls: ['./commands.component.sass'],
+  styleUrls: ['./commands.component.scss'],
 })
 export class CommandsComponent implements OnInit {
   public commands: CommandInfo[];

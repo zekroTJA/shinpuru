@@ -6,7 +6,7 @@ import { SpinnerService } from './spinner.service';
 @Component({
   selector: 'app-spinner',
   templateUrl: './spinner.component.html',
-  styleUrls: ['./spinner.component.sass'],
+  styleUrls: ['./spinner.component.scss'],
 })
 export class SpinnerComponent implements OnInit {
   @Input() public id: string;

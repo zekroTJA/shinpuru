@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-member-reports',
   templateUrl: './member-reports.component.html',
-  styleUrls: ['./member-reports.component.sass'],
+  styleUrls: ['./member-reports.component.scss'],
 })
 export class MemberReportsComponent implements OnInit {
   public dateFormat = dateFormat;

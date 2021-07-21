@@ -23,17 +23,12 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
-              "src/styles.sass",
+              "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css"
             ],
-            "scripts": [
-              "node_modules/marked/lib/marked.js"
-            ]
+            "scripts": ["node_modules/marked/lib/marked.js"]
           },
           "configurations": {
             "production": {
@@ -90,7 +85,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.sass",
+              "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css"
             ],
             "scripts": [],

@@ -5,7 +5,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-karma-tile',
   templateUrl: './karma-tile.component.html',
-  styleUrls: ['./karma-tile.component.sass'],
+  styleUrls: ['./karma-tile.component.scss'],
 })
 export class KarmaTileComponent implements OnInit {
   @Input() public value: number;

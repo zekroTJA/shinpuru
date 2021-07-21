@@ -1,0 +1,33 @@
+@import '../../../sass/mixins';
+
+.scoreboard-entry {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.15);
+  margin-bottom: 10px;
+  border-radius: 5px;
+  padding: 5px;
+  @include hover-btn(1.01, 5px);
+
+  > .index {
+    width: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  > img {
+    border-radius: 100%;
+    margin-right: 10px;
+  }
+
+  > .value {
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

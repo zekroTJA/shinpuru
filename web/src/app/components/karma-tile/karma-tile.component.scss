@@ -1,0 +1,53 @@
+@import '../../../sass/vars';
+
+.karma-tile {
+  background-color: rgba(white, 0.15);
+  width: fit-content;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+
+  .title {
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 0px 4px;
+    color: $c-font-general;
+  }
+
+  .value {
+    font-weight: 500;
+    margin: 5px 10px 5px 10px;
+    color: $c-font-general;
+  }
+}
+
+.small {
+  padding: 5px;
+  min-width: 40px;
+  background-color: transparent !important;
+  border: solid 1px;
+
+  .value {
+    margin: 0;
+    font-size: 1em;
+    color: inherit;
+  }
+}
+
+.bad {
+  background-color: $c-red;
+  border-color: $c-red;
+  color: $c-red;
+}
+
+.good {
+  background-color: $c-green;
+  border-color: $c-green;
+  color: $c-green;
+}
+
+.supreme {
+  background-color: $c-cyan;
+  border-color: $c-cyan;
+  color: $c-cyan;
+}

@@ -34,7 +34,7 @@ interface AnonymousReport extends ReportRequest {
 @Component({
   selector: 'app-guild',
   templateUrl: './guild.component.html',
-  styleUrls: ['./guild.component.sass'],
+  styleUrls: ['./guild.component.scss'],
 })
 export class GuildComponent {
   @ViewChild('modalRevoke')

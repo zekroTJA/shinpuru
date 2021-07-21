@@ -16,7 +16,7 @@ const typeColors = ['#fb8c00', '#d81b60', '#8BC34A'];
 @Component({
   selector: 'app-unbanrequest',
   templateUrl: './unbanrequest.component.html',
-  styleUrls: ['./unbanrequest.component.sass'],
+  styleUrls: ['./unbanrequest.component.scss'],
 })
 export class UnbanrequestComponent implements OnInit {
   @Input() public request: UnbanRequest;

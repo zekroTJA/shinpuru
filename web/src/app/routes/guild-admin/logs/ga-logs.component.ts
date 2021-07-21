@@ -16,7 +16,7 @@ interface Severity {
 @Component({
   selector: 'app-ga-logs',
   templateUrl: './ga-logs.component.html',
-  styleUrls: ['./ga-logs.component.sass'],
+  styleUrls: ['./ga-logs.component.scss'],
 })
 export class GuildAdminLogsComponent implements OnInit {
   public state: State;

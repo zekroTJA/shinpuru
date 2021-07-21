@@ -12,7 +12,7 @@ interface Route {
 @Component({
   selector: 'app-guild-admin-navbar',
   templateUrl: './guild-admin-navbar.component.html',
-  styleUrls: ['./guild-admin-navbar.component.sass'],
+  styleUrls: ['./guild-admin-navbar.component.scss'],
 })
 export class GuildAdminNavbarComponent implements OnInit {
   public routes: Route[] = [

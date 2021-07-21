@@ -11,7 +11,7 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 @Component({
   selector: 'app-usersettings',
   templateUrl: './usersettings.component.html',
-  styleUrls: ['./usersettings.component.sass'],
+  styleUrls: ['./usersettings.component.scss'],
 })
 export class UserSettingsComponent {
   public dateFormat = dateFormat;

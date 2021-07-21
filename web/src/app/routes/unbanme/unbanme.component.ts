@@ -13,7 +13,7 @@ interface ExtendedUnbanRequest extends UnbanRequest {
 @Component({
   selector: 'app-unbanme',
   templateUrl: './unbanme.component.html',
-  styleUrls: ['./unbanme.component.sass'],
+  styleUrls: ['./unbanme.component.scss'],
 })
 export class UnbanmeComponent implements OnInit {
   @ViewChild('modalRequest') private modalRequest: TemplateRef<any>;

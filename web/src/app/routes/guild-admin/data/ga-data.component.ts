@@ -15,7 +15,7 @@ interface Severity {
 @Component({
   selector: 'app-ga-data',
   templateUrl: './ga-data.component.html',
-  styleUrls: ['./ga-data.component.sass'],
+  styleUrls: ['./ga-data.component.scss'],
 })
 export class GuildAdminDataComponent implements OnInit {
   validator: string;

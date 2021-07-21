@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-guild-unbanrequests',
   templateUrl: './guild-unbanrequests.component.html',
-  styleUrls: ['./guild-unbanrequests.component.sass'],
+  styleUrls: ['./guild-unbanrequests.component.scss'],
 })
 export class GuildUnbanRequestComponent implements OnInit {
   @ViewChild('modalProcess') private modalProcess: TemplateRef<any>;

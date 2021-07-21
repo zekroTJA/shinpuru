@@ -10,7 +10,7 @@ const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.sass'],
+  styleUrls: ['./report.component.scss'],
 })
 export class ReportComponent implements OnInit {
   @Input() public report: Report;

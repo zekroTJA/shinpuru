@@ -6,7 +6,7 @@ import { GuildStarboardEntry } from 'src/app/api/api.models';
 @Component({
   selector: 'app-starboard',
   templateUrl: './starboard.component.html',
-  styleUrls: ['./starboard.component.sass'],
+  styleUrls: ['./starboard.component.scss'],
 })
 export class StarboardComponent {
   @Input() public sortOrder: string;

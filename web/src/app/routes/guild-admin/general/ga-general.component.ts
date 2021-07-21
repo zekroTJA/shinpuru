@@ -16,7 +16,7 @@ import dateFormat from 'dateformat';
 @Component({
   selector: 'app-ga-general',
   templateUrl: './ga-general.component.html',
-  styleUrls: ['./ga-general.component.sass'],
+  styleUrls: ['./ga-general.component.scss'],
 })
 export class GuildAdminGeneralComponent implements OnInit {
   public antiraidSettings: AntiraidSettings;

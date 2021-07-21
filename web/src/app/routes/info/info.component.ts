@@ -8,7 +8,7 @@ import dateFormat from 'dateformat';
 @Component({
   selector: 'app-sysinfo',
   templateUrl: './info.component.html',
-  styleUrls: ['./info.component.sass'],
+  styleUrls: ['./info.component.scss'],
 })
 export class InfoComponent implements OnDestroy {
   public sysinfo: SystemInfo;

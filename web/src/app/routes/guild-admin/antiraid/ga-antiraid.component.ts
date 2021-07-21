@@ -10,7 +10,7 @@ import dateFormat from 'dateformat';
 @Component({
   selector: 'app-ga-antiraid',
   templateUrl: './ga-antiraid.component.html',
-  styleUrls: ['./ga-antiraid.component.sass'],
+  styleUrls: ['./ga-antiraid.component.scss'],
 })
 export class GuildAdminAntiraidComponent implements OnInit {
   public antiraidSettings: AntiraidSettings;

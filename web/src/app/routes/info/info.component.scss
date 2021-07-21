@@ -1,0 +1,25 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+table,
+tbody,
+tr,
+th {
+  border: solid 1px #6c757d;
+}
+
+th,
+td {
+  padding: 5px 10px;
+}
+
+a {
+  color: cyan !important;
+  text-decoration: underline !important;
+}
+
+.heading {
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+}

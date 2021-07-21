@@ -1,0 +1,27 @@
+@mixin transition25($prop: all) {
+  transition: $prop 0.25s ease-in-out;
+}
+
+@mixin my-auto {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+@mixin mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+@mixin round {
+  border-radius: 50%;
+}
+
+@mixin hover-btn($scale: 1.03, $shadowlen: 7px) {
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale($scale);
+    box-shadow: 0px $shadowlen $shadowlen ($shadowlen/3) rgba(0, 0, 0, 0.3);
+  }
+}

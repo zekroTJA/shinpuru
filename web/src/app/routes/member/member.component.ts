@@ -19,7 +19,7 @@ import { rolePosDiff } from 'src/app/utils/utils';
 @Component({
   selector: 'app-member-route',
   templateUrl: './member.component.html',
-  styleUrls: ['./member.component.sass'],
+  styleUrls: ['./member.component.scss'],
 })
 export class MemberRouteComponent {
   public member: Member;

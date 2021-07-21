@@ -7,7 +7,7 @@ import { toHexClr } from 'src/app/utils/utils';
 @Component({
   selector: 'app-rolebadge',
   templateUrl: './rolebadge.component.html',
-  styleUrls: ['./rolebadge.component.sass'],
+  styleUrls: ['./rolebadge.component.scss'],
 })
 export class RoleBadgeComponent {
   @Input() public role: Role;
