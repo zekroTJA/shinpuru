@@ -1,39 +1,27 @@
-1.18.0
-
-![](https://i.imgur.com/5S1nlOp.png)
-
-## Major Changes
-
-### Ban/Mute Timeout [#246]
-
-You can now specify a timeout duration or date to mute and ban reports. After this time, the victim is automatically unbanned or unmuted, but the report will not be removed.
-
-![](https://i.imgur.com/bs8meYt.png)
-
-Here you can read on how to use timeouts in the mute and ban command.
-- [`mute`](https://github.com/zekroTJA/shinpuru/wiki/Commands#mute)
-- [`ban`](https://github.com/zekroTJA/shinpuru/wiki/Commands#ban)
-
-The expiration of reports is defaultly checked every 5 minutes, but you can specify an other schedule in the config.
-```yml
-schedules:
-  reportsexpiration: "@every 5m"
-```
-
-### SQLite3 Deprecation
-
-The SQLite3 driver was marked as deprecated in patch [1.16.0](https://github.com/zekroTJA/shinpuru/releases/tag/1.16.0) and has now fully been removed. If you need information why this step was taken and how to switch to MariaDB for development, please read [this document](https://github.com/zekroTJA/shinpuru/wiki/SQLIte-Deprecation). 
+1.18.1
 
 ## Minor Changes
 
-- Add loading indicator in the web interface.  
-  ![](https://i.imgur.com/HK8fXUJ.gif)
+- Updated the visual representation of the guild dropdown.  
+  ![](https://i.imgur.com/zg6Sf2l.png)
 
-- [dgrs](https://github.com/zekroTJA/dgrs) was now updated to v0.3.0 which allows dehydration of removed objects and caching of User→GuildIDs relationships.
+## Bug Fixes
 
-- Hence, the load time of the guild list in the web interface should be significantly faster. [#257]
+- Fixed guild settings button alignment.  
+  ![](https://i.imgur.com/6rL1lKD.png)
 
-- Messages are now only cached for 14 Days in state.
+- Fixed guild tiles alignment in home view.  
+  ![](https://i.imgur.com/1nDlAr7.png)
+
+- Fixed displaying animated guild icons.  
+  ![](https://i.imgur.com/IbIhS7p.gif)
+
+- The menu dropdown now properly closes when clicking on the user tile.  
+  ![](https://i.imgur.com/0uYa7Qd.gif)
+
+- Anonymous report creation will no more result in a `404 Member not found` error.
+
+- Report timeouts can now also be defined when creating anonymous reports.
 
 # Docker
 
@@ -44,11 +32,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.18.0
+$ docker pull zekro/shinpuru:1.18.1
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.18.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.18.1
 ```
