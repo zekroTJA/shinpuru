@@ -26,7 +26,7 @@
     *ngIf="selfUser?.id; else tmpLogin"
     id="user-info"
     class="part-container shade"
-    (click)="popupVisible = true"
+    (click)="popupVisible = !popupVisible"
   >
     <app-popup
       *ngIf="popupVisible"
