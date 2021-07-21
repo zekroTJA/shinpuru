@@ -50,6 +50,9 @@
         class="w-100"
         placeholder="media URL (optional)"
       />
+
+      <h5 class="mt-3 mb-2">TIMEOUT</h5>
+      <input #repTimeout type="datetime-local" />
     </div>
     <div class="modal-footer">
       <button
@@ -58,7 +61,8 @@
             victim: repVictim.value,
             type: repType.value,
             reason: repReason.value,
-            attachment: repAttachment.value
+            attachment: repAttachment.value,
+            timeout: repTimeout.value ? repTimeout.value + ':00.00Z' : undefined
           })
         "
         class="bg-red"
