@@ -1,7 +1,6 @@
 ---
 name: Documentation Issue
 about: Report an issue with the documentation of shinpuru or documentation of commands.
-title: "[DOCS] "
 labels: 'documentation'
 assignees: zekroTJA
 ---
