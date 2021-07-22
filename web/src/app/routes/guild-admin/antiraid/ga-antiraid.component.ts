@@ -5,7 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { AntiraidSettings, JoinlogEntry } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 
 @Component({
   selector: 'app-ga-antiraid',
@@ -17,7 +18,8 @@ export class GuildAdminAntiraidComponent implements OnInit {
   public joinlog: JoinlogEntry[] = [];
   private guildID: string;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   constructor(
     private route: ActivatedRoute,

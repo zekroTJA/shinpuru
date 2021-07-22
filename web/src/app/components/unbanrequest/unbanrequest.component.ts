@@ -8,7 +8,8 @@ import {
   UnbanRequestState,
 } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 
 // const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 const typeColors = ['#fb8c00', '#d81b60', '#8BC34A'];
@@ -28,7 +29,8 @@ export class UnbanrequestComponent implements OnInit {
 
   public processedBy: Member;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
   public UnbanRequestState = UnbanRequestState;
 
   constructor(private api: APIService) {}

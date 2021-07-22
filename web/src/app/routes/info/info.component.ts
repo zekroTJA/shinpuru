@@ -3,7 +3,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { SystemInfo } from 'src/app/api/api.models';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 
 @Component({
   selector: 'app-sysinfo',
@@ -16,7 +17,8 @@ export class InfoComponent implements OnDestroy {
 
   private refreshTimer: any;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   constructor(private api: APIService) {
     this.refresh();

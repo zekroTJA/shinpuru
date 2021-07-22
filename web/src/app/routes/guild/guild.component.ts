@@ -17,7 +17,8 @@ import {
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import LocalStorageUtil from 'src/app/utils/localstorage';
 
@@ -80,7 +81,8 @@ export class GuildComponent {
   public reportDisplayMoreLoading = false;
 
   public toHexClr = toHexClr;
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   constructor(
     public modal: NgbModal,
@@ -194,7 +196,7 @@ export class GuildComponent {
       return 'No backups are available for this guild.';
     }
 
-    return `Last backup was created at ${dateFormat(
+    return `Last backup was created at ${this.dateFormat(
       this.guild.latest_backup_entry
     )}.`;
   }

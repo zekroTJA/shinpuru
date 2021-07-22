@@ -2,7 +2,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { Report } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { ActivatedRoute } from '@angular/router';
@@ -13,7 +14,8 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./member-reports.component.scss'],
 })
 export class MemberReportsComponent implements OnInit {
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   public reports: Report[];
 

@@ -62,10 +62,10 @@
 
     <p class="footer">
       Case-ID: {{ report.id }}&nbsp;&nbsp;|&nbsp;&nbsp; Created
-      {{ dateFormat(report.created, 'yyyy.mm.dd - HH:MM:ss Z') }}&nbsp;&nbsp;|
+      {{ dateFormat(report.created) }}&nbsp;&nbsp;|
       <span *ngIf="report.timeout"
         >&nbsp;&nbsp; Times out at
-        {{ dateFormat(report.timeout, 'yyyy.mm.dd - HH:MM:ss Z') }}
+        {{ dateFormat(report.timeout) }}
         &nbsp;&nbsp;|
       </span>
       <span *ngIf="allowRevoke"

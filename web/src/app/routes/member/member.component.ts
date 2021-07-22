@@ -11,7 +11,8 @@ import {
   Report,
   ReportRequest,
 } from 'src/app/api/api.models';
-import dateFormat from 'dateformat';
+import { format, formatDistance } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { rolePosDiff } from 'src/app/utils/utils';
@@ -31,7 +32,14 @@ export class MemberRouteComponent {
 
   public roleDiff: number;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
+
+  public sinceFormat = (d: string | Date) =>
+    formatDistance(new Date(d), new Date(), {
+      addSuffix: true,
+      includeSeconds: true,
+    });
 
   @ViewChild('modalReport') private modalReport: TemplateRef<any>;
   @ViewChild('modalKick') private modalKick: TemplateRef<any>;

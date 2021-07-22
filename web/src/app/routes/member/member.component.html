@@ -210,15 +210,19 @@
         <tr>
           <th>Joined Guild</th>
           <td>
-            {{ dateFormat(member.joined_at, 'ddd, mmm dS, yyyy - HH:MM:ss Z') }}
+            {{ dateFormat(member.joined_at, 'E, do MMMM yyyy - hh:mm:ss z') }}
+            <br />
+            <span class="secondary">({{ sinceFormat(member.joined_at) }})</span>
           </td>
         </tr>
         <tr>
           <th>Created Account</th>
           <td>
-            {{
-              dateFormat(member.created_at, 'ddd, mmm dS, yyyy - HH:MM:ss Z')
-            }}
+            {{ dateFormat(member.created_at, 'E, do MMMM yyyy - hh:mm:ss z') }}
+            <br />
+            <span class="secondary"
+              >({{ sinceFormat(member.created_at) }})</span
+            >
           </td>
         </tr>
         <br />

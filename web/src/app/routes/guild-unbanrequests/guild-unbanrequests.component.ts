@@ -2,7 +2,8 @@
 
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { UnbanRequest, UnbanRequestState } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +17,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class GuildUnbanRequestComponent implements OnInit {
   @ViewChild('modalProcess') private modalProcess: TemplateRef<any>;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   public unbanRequests: UnbanRequest[];
   public isAccept = false;
