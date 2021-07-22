@@ -94,11 +94,9 @@ export class GuildComponent {
     const guildID = this.route.snapshot.paramMap.get('id');
     this.api.getGuild(guildID).subscribe((guild) => {
       this.guild = guild;
-
       if (this.members) {
         this.guild.members = this.members;
       }
-
       this.api
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
         .subscribe((allowed) => {
@@ -107,7 +105,6 @@ export class GuildComponent {
             a.startsWith('sp.guild.')
           );
           this.canRevoke = allowed.includes('sp.guild.mod.report');
-
           if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
             this.api
               .getGuildUnbanrequestCount(guildID, UnbanRequestState.PENDING)
@@ -117,33 +114,26 @@ export class GuildComponent {
           }
         });
     });
-
     this.loadMembers(guildID, () => {
       this.membersDisplayed = this.members.slice(0, this.MAX_SHOWN_USERS);
     });
-
     this.api.getGuildSettings(guildID).subscribe((settings) => {
       this.settings = settings;
     });
-
     this.api
       .getReports(guildID, null, 0, this.MAX_SHOWN_MODLOG)
       .subscribe((reports) => {
         this.reports = reports;
       });
-
     this.api.getReportsCount(guildID).subscribe((count) => {
       this.reportsTotalCount = count;
     });
-
     this.api.getGuildBackups(guildID).subscribe((backups) => {
       this.backups = backups.data;
     });
-
     this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
       this.scoreboard = scoreboard.data;
     });
-
     this.starboardSortOrder = LocalStorageUtil.get(
       'STARBOARD_SORTORDER',
       'latest'

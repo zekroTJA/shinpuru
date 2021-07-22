@@ -1,9 +1,8 @@
 /** @format */
 
-import { Component, ViewChildren, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import {
   Member,
   Guild,
@@ -62,6 +61,7 @@ export class MemberRouteComponent {
     private route: ActivatedRoute,
     private router: Router
   ) {
+    // return;
     const guildID = this.route.snapshot.paramMap.get('guildid');
     const memberID = this.route.snapshot.paramMap.get('memberid');
 

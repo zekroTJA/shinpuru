@@ -52,6 +52,7 @@ import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-gene
 import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.component';
 import LoadingInterceptor from './api/loading.interceptor';
+import { SkeletonTileComponent } from './components/skeleton-tile/skeleton-tile.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import LoadingInterceptor from './api/loading.interceptor';
     StarboardComponent,
     StarboardEntryComponent,
     CapTextPipe,
+    SkeletonTileComponent,
   ],
   imports: [
     NgbModule,

@@ -73,31 +73,38 @@
     </div>
   </ng-template>
 
-  <app-spinner
-    *ngIf="!guild"
-    id="spinner-load-guild"
-    [started]="true"
-  ></app-spinner>
-
-  <div *ngIf="guild" class="guild-container">
+  <div class="guild-container">
     <!-- HEADING -->
     <div id="heading-container" class="mt-4">
-      <img
-        [src]="
-          guild.icon_url | discordAsset: '/assets/dc-logo.svg':64:!!guild.icon
-        "
-      />
-      <h3 [title]="guild.name">{{ guild.name }}</h3>
-      <p class="embedded">{{ guild.id }}</p>
-      <button
-        *ngIf="guildSettingsAllowed.length > 0"
-        class="btn-guild-settings"
-        (click)="onGuildSettingsClick()"
-      ></button>
+      <app-skeleton-tile
+        *ngIf="!guild"
+        height="50px"
+        class="w-100 mr-0 pb-4"
+      ></app-skeleton-tile>
+      <ng-template [ngIf]="guild">
+        <img
+          [src]="
+            guild.icon_url | discordAsset: '/assets/dc-logo.svg':64:!!guild.icon
+          "
+        />
+        <h3 [title]="guild.name">{{ guild.name }}</h3>
+        <p class="embedded">{{ guild.id }}</p>
+        <button
+          *ngIf="guildSettingsAllowed.length > 0"
+          class="btn-guild-settings"
+          (click)="onGuildSettingsClick()"
+        ></button>
+      </ng-template>
     </div>
 
     <!-- LOGGED IN MEMBER INFO -->
+    <app-skeleton-tile
+      *ngIf="!guild"
+      height="120px"
+      delay="0.05s"
+    ></app-skeleton-tile>
     <a
+      *ngIf="guild"
       id="user-info"
       class="mt-5"
       routerLink="/guilds/{{ guild.id }}/{{ guild.self_member.user.id }}"
@@ -118,292 +125,312 @@
       </div>
     </a>
 
-    <!-- GUILD MEMBERS -->
-    <div class="dropdown-container mt-5">
-      <app-spoiler [(ngModel)]="guildToggle">
-        <div class="d-flex">
-          <h4 class="mx-3">Members</h4>
-          <p class="cbadge">
-            {{
-              guildToggle
-                ? membersDisplayed?.length + ' / ' + guild.member_count
-                : guild.member_count
-            }}
-          </p>
-        </div>
-      </app-spoiler>
-      <div *ngIf="guildToggle">
-        <input
-          type="text"
-          class="my-2"
-          placeholder="search member"
-          (input)="searchInput($event)"
-        />
-        <div id="users-container" class="d-flex overflow-wrap mt-3">
-          <app-member
-            *ngFor="let m of membersDisplayed"
-            [member]="m"
-            [roles]="guild.roles"
-            routerLink="/guilds/{{ guild.id }}/{{ m.user.id }}"
-          ></app-member>
-        </div>
-        <i *ngIf="members.length == 0 && isSearchInput">No results.</i>
-        <div class="d-flex">
-          <app-spinner-button
-            *ngIf="
-              guild.member_count > MAX_SHOWN_USERS &&
-              membersDisplayed.length < guild.member_count &&
-              !isSearchInput
-            "
-            (click)="displayMoreMembers()"
-            class="display-more-btn"
-            [(ngModel)]="memberDisplayMoreLoading"
-          >
-            DISPLAY MORE...
-          </app-spinner-button>
-        </div>
-      </div>
-    </div>
+    <ng-template [ngIf]="!guild">
+      <div class="mt-5"></div>
+      <app-skeleton-tile
+        *ngFor="let i of [0, 1, 2, 3, 4]"
+        height="70px"
+        delay="{{ i * 0.05 + 0.05 }}s"
+        margin="20px 0 20px 0"
+      ></app-skeleton-tile>
+    </ng-template>
 
-    <!-- SECURITY-->
-    <div class="dropdown-container mt-3">
-      <app-spoiler [(ngModel)]="securityToggle">
-        <div class="d-flex">
-          <h4 class="mx-3">Security</h4>
-          <img
-            title="Some security features are not enabled on this guild."
-            *ngIf="!guild.backups_enabled || !guild.invite_block_enabled"
-            height="25"
-            width="25"
-            src="assets/warning.svg"
+    <ng-template [ngIf]="guild">
+      <!-- GUILD MEMBERS -->
+      <div class="dropdown-container mt-5">
+        <app-spoiler [(ngModel)]="guildToggle">
+          <div class="d-flex">
+            <h4 class="mx-3">Members</h4>
+            <p class="cbadge">
+              {{
+                guildToggle
+                  ? membersDisplayed?.length + ' / ' + guild.member_count
+                  : guild.member_count
+              }}
+            </p>
+          </div>
+        </app-spoiler>
+        <div *ngIf="guildToggle">
+          <input
+            type="text"
+            class="my-2"
+            placeholder="search member"
+            (input)="searchInput($event)"
           />
-        </div>
-      </app-spoiler>
-      <div *ngIf="securityToggle" class="security-container mt-4">
-        <div
-          class="mb-4 security-embed"
-          [class.disabled]="!guild.backups_enabled"
-        >
-          <h5>Backups</h5>
-          <div class="status">
-            <img *ngIf="guild.backups_enabled" src="assets/shield.svg" />
-            <img *ngIf="!guild.backups_enabled" src="assets/warning.svg" />
-            <strong>{{
-              guild.backups_enabled ? 'enabled' : 'disabled'
-            }}</strong>
+          <div id="users-container" class="d-flex overflow-wrap mt-3">
+            <app-member
+              *ngFor="let m of membersDisplayed"
+              [member]="m"
+              [roles]="guild.roles"
+              routerLink="/guilds/{{ guild.id }}/{{ m.user.id }}"
+            ></app-member>
           </div>
-          <div>
-            <span> {{ lastBackupText }} </span>
-          </div>
-          <div>
-            <button
-              *ngIf="guildSettingsContains('sp.guild.admin.backup')"
-              (click)="toggleGuildBackup()"
-            >
-              {{ guild.backups_enabled ? 'Disable' : 'Enable' }}
-            </button>
-          </div>
-        </div>
-        <div
-          class="mb-4 security-embed"
-          [class.disabled]="!guild.invite_block_enabled"
-        >
-          <h5>Invite Blocking</h5>
-          <div class="status">
-            <img *ngIf="guild.invite_block_enabled" src="assets/shield.svg" />
-            <img *ngIf="!guild.invite_block_enabled" src="assets/warning.svg" />
-            <strong>{{
-              guild.invite_block_enabled ? 'enabled' : 'disabled'
-            }}</strong>
-          </div>
-          <div>
-            <span>Prevents members of sending guild invite links.</span>
-          </div>
-          <div>
-            <button
-              *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')"
-              (click)="toggleInviteBlocing()"
-            >
-              {{ guild.invite_block_enabled ? 'Disable' : 'Enable' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOD LOG -->
-    <div class="dropdown-container mt-3">
-      <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
-        <div class="d-flex">
-          <h4 class="mx-3">Mod Log</h4>
-          <p class="cbadge">
-            {{
-              modlogToggle
-                ? reports?.length + ' / ' + reportsTotalCount
-                : reportsTotalCount
-            }}
-          </p>
-          <div class="spoiler-buttons">
-            <button
+          <i *ngIf="members.length == 0 && isSearchInput">No results.</i>
+          <div class="d-flex">
+            <app-spinner-button
               *ngIf="
-                modlogToggle &&
-                guildSettingsContains('sp.guild.mod.unbanrequests')
+                guild.member_count > MAX_SHOWN_USERS &&
+                membersDisplayed.length < guild.member_count &&
+                !isSearchInput
               "
-              (click)="onUnbanRequests($event)"
-              [class.bg-purple]="unbanReqeustsCount > 0"
+              (click)="displayMoreMembers()"
+              class="display-more-btn"
+              [(ngModel)]="memberDisplayMoreLoading"
             >
-              Unban Requests ({{ unbanReqeustsCount }} open)
-            </button>
-            <button *ngIf="modlogToggle" (click)="onAnonymousReport($event)">
-              Create Anonymous Report
-            </button>
+              DISPLAY MORE...
+            </app-spinner-button>
           </div>
         </div>
-      </app-spoiler>
-      <div *ngIf="modlogToggle" class="my-4">
-        <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
-        <app-report
-          *ngFor="let rep of reports"
-          [report]="rep"
-          [allowRevoke]="canRevoke"
-          (revoke)="revokeReport(rep)"
-        ></app-report>
-        <div class="d-flex">
-          <app-spinner-button
-            *ngIf="
-              reportsTotalCount > MAX_SHOWN_MODLOG &&
-              reports.length < reportsTotalCount
-            "
-            (click)="displayMoreReports()"
-            class="display-more-btn"
-            [(ngModel)]="reportDisplayMoreLoading"
-          >
-            DISPLAY MORE...
-          </app-spinner-button>
-        </div>
       </div>
-    </div>
 
-    <!-- PERMISSION SETTINGS -->
-    <div
-      *ngIf="guildSettingsContains('sp.guild.config.perms')"
-      class="dropdown-container mt-3"
-    >
-      <app-spoiler [(ngModel)]="permissionsToggle">
-        <div class="d-flex">
-          <h4 class="ml-3">Permissions</h4>
-        </div>
-      </app-spoiler>
-      <div *ngIf="permissionsToggle" class="my-4">
-        <i>
-          <a
-            href="https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md"
-            target="_blank"
-            class="link"
-            >Here</a
+      <!-- SECURITY-->
+      <div class="dropdown-container mt-3">
+        <app-spoiler [(ngModel)]="securityToggle">
+          <div class="d-flex">
+            <h4 class="mx-3">Security</h4>
+            <img
+              title="Some security features are not enabled on this guild."
+              *ngIf="!guild.backups_enabled || !guild.invite_block_enabled"
+              height="25"
+              width="25"
+              src="assets/warning.svg"
+            />
+          </div>
+        </app-spoiler>
+        <div *ngIf="securityToggle" class="security-container mt-4">
+          <div
+            class="mb-4 security-embed"
+            [class.disabled]="!guild.backups_enabled"
           >
-          you can find the documentation about how the permission system works.
-        </i>
-        <div class="mb-3 mt-2 add-permission d-flex">
-          <div>
-            <h6>Add Permission Rule</h6>
-            <div class="d-flex my-2">
-              <select [(ngModel)]="addPermissionAllow" class="mr-2">
-                <option [ngValue]="true">allow (+)</option>
-                <option [ngValue]="false">deny (-)</option>
-              </select>
-              <p class="mb-0 mr-2">sp.</p>
-              <!-- <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/> -->
-              <app-autocomplete-input
-                [(value)]="addPermissionPerm"
-                [selection]="allowed"
-                [filterFunc]="permSelectionFilter"
-                [formatterFunc]="permSelectionFormatter"
-              ></app-autocomplete-input>
+            <h5>Backups</h5>
+            <div class="status">
+              <img *ngIf="guild.backups_enabled" src="assets/shield.svg" />
+              <img *ngIf="!guild.backups_enabled" src="assets/warning.svg" />
+              <strong>{{
+                guild.backups_enabled ? 'enabled' : 'disabled'
+              }}</strong>
             </div>
-            <app-tags
-              [available]="guild.roles"
-              [formatter]="roleNameFormatter"
-              [filter]="permissionsInputFilter"
-              placeholder="role name"
-              [(ngModel)]="addPermissionRoles"
-            ></app-tags>
+            <div>
+              <span> {{ lastBackupText }} </span>
+            </div>
+            <div>
+              <button
+                *ngIf="guildSettingsContains('sp.guild.admin.backup')"
+                (click)="toggleGuildBackup()"
+              >
+                {{ guild.backups_enabled ? 'Disable' : 'Enable' }}
+              </button>
+            </div>
           </div>
-          <button class="ml-auto mb-auto" (click)="addPermissionRule()">
-            ADD RULE
-          </button>
-        </div>
-        <div
-          *ngFor="let p of objectAsArray(settings?.perms)"
-          class="permission-view"
-        >
-          <p
-            class="embedded perms-role mb-2"
-            [style.background-color]="
-              p.role?.color ? toHexClr(p.role?.color) : null
-            "
+          <div
+            class="mb-4 security-embed"
+            [class.disabled]="!guild.invite_block_enabled"
           >
-            @{{ p.role?.name || p.id }}
-          </p>
-          <ul>
-            <li *ngFor="let perm of p.perms">
-              <div class="d-flex mb-2">
-                <p
-                  class="embedded"
-                  [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'"
-                >
-                  {{ perm }}
-                </p>
-                <a class="remove-btn" (click)="removePermission(p, perm)"></a>
-              </div>
-            </li>
-          </ul>
+            <h5>Invite Blocking</h5>
+            <div class="status">
+              <img *ngIf="guild.invite_block_enabled" src="assets/shield.svg" />
+              <img
+                *ngIf="!guild.invite_block_enabled"
+                src="assets/warning.svg"
+              />
+              <strong>{{
+                guild.invite_block_enabled ? 'enabled' : 'disabled'
+              }}</strong>
+            </div>
+            <div>
+              <span>Prevents members of sending guild invite links.</span>
+            </div>
+            <div>
+              <button
+                *ngIf="guildSettingsContains('sp.guild.mod.inviteblock')"
+                (click)="toggleInviteBlocing()"
+              >
+                {{ guild.invite_block_enabled ? 'Disable' : 'Enable' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- BACKUPS -->
-    <div class="dropdown-container mt-3">
-      <app-spoiler [(ngModel)]="backupsToggle">
-        <div class="d-flex">
-          <h4 class="mx-3">Backups</h4>
-          <p class="cbadge">{{ backups?.length || '0' }}</p>
-        </div>
-      </app-spoiler>
-      <div *ngIf="backupsToggle" class="my-4">
-        <i *ngIf="!backups || !backups.length"
-          >No backups are available for this guild.</i
-        >
-        <p *ngIf="backups && backups.length > 0">
-          If you want to restore a backup, please use the
-          <a
-            class="link"
-            href="https://github.com/zekroTJA/shinpuru/wiki/Commands#backup"
-            target="_blank"
-          >
-            backup restore command</a
-          >
-          with the desired backup index number.
-        </p>
-        <div class="backups-container">
-          <span *ngFor="let b of backups; index as i" class="backups-entry">
-            <strong class="number">{{ i }}</strong>
-            <span>{{ dateFormat(b.timestamp) }}</span>
-            <span class="embedded">(ID: {{ b.file_id }})</span>
-            <a
-              *ngIf="guildSettingsContains('sp.guild.admin.backup')"
-              title="Download backup file"
-              (click)="downloadBackupFile(b.file_id)"
-              ><img src="assets/download.svg"
-            /></a>
-          </span>
+      <!-- MOD LOG -->
+      <div class="dropdown-container mt-3">
+        <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
+          <div class="d-flex">
+            <h4 class="mx-3">Mod Log</h4>
+            <p class="cbadge">
+              {{
+                modlogToggle
+                  ? reports?.length + ' / ' + reportsTotalCount
+                  : reportsTotalCount
+              }}
+            </p>
+            <div class="spoiler-buttons">
+              <button
+                *ngIf="
+                  modlogToggle &&
+                  guildSettingsContains('sp.guild.mod.unbanrequests')
+                "
+                (click)="onUnbanRequests($event)"
+                [class.bg-purple]="unbanReqeustsCount > 0"
+              >
+                Unban Requests ({{ unbanReqeustsCount }} open)
+              </button>
+              <button *ngIf="modlogToggle" (click)="onAnonymousReport($event)">
+                Create Anonymous Report
+              </button>
+            </div>
+          </div>
+        </app-spoiler>
+        <div *ngIf="modlogToggle" class="my-4">
+          <i *ngIf="!reports || !reports.length">Mod log is empty.</i>
+          <app-report
+            *ngFor="let rep of reports"
+            [report]="rep"
+            [allowRevoke]="canRevoke"
+            (revoke)="revokeReport(rep)"
+          ></app-report>
+          <div class="d-flex">
+            <app-spinner-button
+              *ngIf="
+                reportsTotalCount > MAX_SHOWN_MODLOG &&
+                reports.length < reportsTotalCount
+              "
+              (click)="displayMoreReports()"
+              class="display-more-btn"
+              [(ngModel)]="reportDisplayMoreLoading"
+            >
+              DISPLAY MORE...
+            </app-spinner-button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- PERMISSION SETTINGS -->
+      <div
+        *ngIf="guildSettingsContains('sp.guild.config.perms')"
+        class="dropdown-container mt-3"
+      >
+        <app-spoiler [(ngModel)]="permissionsToggle">
+          <div class="d-flex">
+            <h4 class="ml-3">Permissions</h4>
+          </div>
+        </app-spoiler>
+        <div *ngIf="permissionsToggle" class="my-4">
+          <i>
+            <a
+              href="https://github.com/zekroTJA/shinpuru/blob/master/docs/permissions-guide.md"
+              target="_blank"
+              class="link"
+              >Here</a
+            >
+            you can find the documentation about how the permission system
+            works.
+          </i>
+          <div class="mb-3 mt-2 add-permission d-flex">
+            <div>
+              <h6>Add Permission Rule</h6>
+              <div class="d-flex my-2">
+                <select [(ngModel)]="addPermissionAllow" class="mr-2">
+                  <option [ngValue]="true">allow (+)</option>
+                  <option [ngValue]="false">deny (-)</option>
+                </select>
+                <p class="mb-0 mr-2">sp.</p>
+                <!-- <input type="text" placeholder="chat.vote.*" class="mr-2" [(ngModel)]="addPermissionPerm"/> -->
+                <app-autocomplete-input
+                  [(value)]="addPermissionPerm"
+                  [selection]="allowed"
+                  [filterFunc]="permSelectionFilter"
+                  [formatterFunc]="permSelectionFormatter"
+                ></app-autocomplete-input>
+              </div>
+              <app-tags
+                [available]="guild.roles"
+                [formatter]="roleNameFormatter"
+                [filter]="permissionsInputFilter"
+                placeholder="role name"
+                [(ngModel)]="addPermissionRoles"
+              ></app-tags>
+            </div>
+            <button class="ml-auto mb-auto" (click)="addPermissionRule()">
+              ADD RULE
+            </button>
+          </div>
+          <div
+            *ngFor="let p of objectAsArray(settings?.perms)"
+            class="permission-view"
+          >
+            <p
+              class="embedded perms-role mb-2"
+              [style.background-color]="
+                p.role?.color ? toHexClr(p.role?.color) : null
+              "
+            >
+              @{{ p.role?.name || p.id }}
+            </p>
+            <ul>
+              <li *ngFor="let perm of p.perms">
+                <div class="d-flex mb-2">
+                  <p
+                    class="embedded"
+                    [ngClass]="perm.startsWith('+') ? 'allowed' : 'disallowed'"
+                  >
+                    {{ perm }}
+                  </p>
+                  <a class="remove-btn" (click)="removePermission(p, perm)"></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACKUPS -->
+      <div class="dropdown-container mt-3">
+        <app-spoiler [(ngModel)]="backupsToggle">
+          <div class="d-flex">
+            <h4 class="mx-3">Backups</h4>
+            <p class="cbadge">{{ backups?.length || '0' }}</p>
+          </div>
+        </app-spoiler>
+        <div *ngIf="backupsToggle" class="my-4">
+          <i *ngIf="!backups || !backups.length"
+            >No backups are available for this guild.</i
+          >
+          <p *ngIf="backups && backups.length > 0">
+            If you want to restore a backup, please use the
+            <a
+              class="link"
+              href="https://github.com/zekroTJA/shinpuru/wiki/Commands#backup"
+              target="_blank"
+            >
+              backup restore command</a
+            >
+            with the desired backup index number.
+          </p>
+          <div class="backups-container">
+            <span *ngFor="let b of backups; index as i" class="backups-entry">
+              <strong class="number">{{ i }}</strong>
+              <span>{{ dateFormat(b.timestamp) }}</span>
+              <span class="embedded">(ID: {{ b.file_id }})</span>
+              <a
+                *ngIf="guildSettingsContains('sp.guild.admin.backup')"
+                title="Download backup file"
+                (click)="downloadBackupFile(b.file_id)"
+                ><img src="assets/download.svg"
+              /></a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
     <!-- SCOREBOARD -->
     <div class="scoreboard-container">
+      <ng-template [ngIf]="!scoreboard">
+        <app-skeleton-tile></app-skeleton-tile>
+      </ng-template>
       <app-karma-scoreboard
+        *ngIf="scoreboard"
         [scoreboard]="scoreboard"
         [guildID]="this.guild?.id"
         [self]="guild.self_member"
@@ -412,7 +439,11 @@
 
     <!-- STARBOARD -->
     <div class="starboard-container">
+      <ng-template [ngIf]="!starboard">
+        <app-skeleton-tile></app-skeleton-tile>
+      </ng-template>
       <app-starboard
+        *ngIf="starboard"
         [starboard]="starboard"
         [guildID]="this.guild?.id"
         [sortOrder]="starboardSortOrder"

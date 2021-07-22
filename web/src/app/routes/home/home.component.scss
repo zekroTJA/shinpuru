@@ -12,8 +12,7 @@ $guild-tile-width: 250px;
 
 .guild-container {
   background-color: $c-nqblack;
-  width: fit-content;
-  min-width: $guild-tile-width;
+  width: $guild-tile-width;
   /* height: $width + 60px */
   margin: 0 10px 20px 10px;
   border-radius: 10px;
