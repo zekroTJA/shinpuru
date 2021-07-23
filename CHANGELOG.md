@@ -1,11 +1,16 @@
-1.18.1
+1.19.0
 
 ## Minor Changes
 
 - Updated the visual representation of the guild dropdown.  
   ![](https://i.imgur.com/zg6Sf2l.png)
 
+- Use skeleton tiles as loading indicators instead of spinners.  
+  ![](https://user-images.githubusercontent.com/16734205/126753381-224a6a62-33ec-4dd0-814e-ab71c0699fa3.gif)
+
 ## Bug Fixes
+
+- Role position diffs are now properly checked on each ban/kick/mute/unmute report execution.
 
 - Fixed guild settings button alignment.  
   ![](https://i.imgur.com/6rL1lKD.png)
@@ -32,11 +37,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.18.1
+$ docker pull zekro/shinpuru:1.19.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.18.1
+$ docker pull ghcr.io/zekrotja/shinpuru:1.19.0
 ```
