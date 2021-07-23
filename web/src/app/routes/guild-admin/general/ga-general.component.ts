@@ -39,6 +39,7 @@ export class GuildAdminGeneralComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // return;
     this.route.params.subscribe(async (params) => {
       this.guildID = params.guildid;
 

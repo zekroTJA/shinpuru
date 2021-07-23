@@ -1,6 +1,39 @@
 <app-guild-admin-navbar></app-guild-admin-navbar>
 <div class="guild-settings-container">
-  <app-spinner *ngIf="!antiraidSettings" [started]="true"></app-spinner>
+  <div *ngIf="!antiraidSettings">
+    <app-skeleton-tile height="44px" margin="0 0 20px 0"></app-skeleton-tile>
+    <app-skeleton-tile
+      height="153px"
+      margin="0 0 20px 0"
+      delay="0.05s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="110px"
+      margin="0 0 20px 0"
+      delay="0.1s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="110px"
+      margin="0 0 40px 0"
+      delay="0.15s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="44px"
+      width="75px"
+      delay="0.2s"
+      margin="0 0 40px 0"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="33px"
+      delay="0.25s"
+      margin="0 0 10px 0"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="33px"
+      delay="0.25s"
+      margin="0 0 10px 0"
+    ></app-skeleton-tile>
+  </div>
   <div *ngIf="antiraidSettings">
     <app-slider [(ngModel)]="antiraidSettings.state"
       >Antiraid-System enabled</app-slider
