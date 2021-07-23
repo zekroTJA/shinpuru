@@ -2,17 +2,7 @@
 <div class="guild-settings-container">
   <div>
     <div *ngIf="!state">
-      <app-skeleton-tile height="44px" margin="0 0 20px 0"></app-skeleton-tile>
-      <app-skeleton-tile
-        height="33px"
-        delay="0.05s"
-        margin="0 0 10px 0"
-      ></app-skeleton-tile>
-      <app-skeleton-tile
-        height="300px"
-        delay="0.1s"
-        margin="0 0 10px 0"
-      ></app-skeleton-tile>
+      <app-skeleton-tile height="44px" margin="0 0 40px 0"></app-skeleton-tile>
     </div>
     <div *ngIf="state">
       <app-slider [(ngModel)]="state.state" (switch)="onEnabledChanged($event)"
@@ -24,7 +14,18 @@
       </p>
     </div>
 
-    <app-spinner *ngIf="!entries" [started]="true"></app-spinner>
+    <div *ngIf="!entries">
+      <app-skeleton-tile
+        height="44px"
+        margin="40px 0 20px 0"
+        delay="0.05s"
+      ></app-skeleton-tile>
+      <app-skeleton-tile
+        height="33px"
+        delay="0.1s"
+        margin="0 0 10px 0"
+      ></app-skeleton-tile>
+    </div>
     <div *ngIf="entries" class="mt-4">
       <div class="d-flex">
         <div class="page-dialer mr-3">

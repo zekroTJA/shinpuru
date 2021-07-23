@@ -4,7 +4,7 @@
     <div *ngIf="!karmaSettings">
       <app-skeleton-tile height="44px" margin="0 0 20px 0"></app-skeleton-tile>
       <app-skeleton-tile
-        height="153px"
+        height="110px"
         margin="0 0 20px 0"
         delay="0.05s"
       ></app-skeleton-tile>
@@ -29,11 +29,7 @@
         delay="0.25s"
         margin="0 0 10px 0"
       ></app-skeleton-tile>
-      <app-skeleton-tile
-        height="33px"
-        delay="0.25s"
-        margin="0 0 10px 0"
-      ></app-skeleton-tile>
+      <app-skeleton-tile height="33px" delay="0.25s"></app-skeleton-tile>
     </div>
     <div *ngIf="karmaSettings">
       <app-slider [(ngModel)]="karmaSettings.state"
@@ -101,7 +97,24 @@
       </div>
     </div>
 
-    <app-spinner *ngIf="!rules" [started]="true"></app-spinner>
+    <div *ngIf="!rules">
+      <app-skeleton-tile
+        height="44px"
+        margin="40px 0 20px 0"
+      ></app-skeleton-tile>
+      <app-skeleton-tile
+        height="110px"
+        margin="0 0 20px 0"
+        delay="0.05s"
+      ></app-skeleton-tile>
+      <app-skeleton-tile
+        height="44px"
+        width="75px"
+        delay="0.2s"
+        margin="0 0 20px 0"
+      ></app-skeleton-tile>
+      <app-skeleton-tile height="44px" margin="0 0 40px 0"></app-skeleton-tile>
+    </div>
     <div *ngIf="rules" class="mt-5">
       <h3 class="mb-2">Rules</h3>
       <div class="mt-3 rule-container">
@@ -165,7 +178,14 @@
       </div>
     </div>
 
-    <app-spinner *ngIf="!blocklist" [started]="true"></app-spinner>
+    <div *ngIf="!blocklist">
+      <app-skeleton-tile
+        height="44px"
+        margin="40px 0 20px 0"
+      ></app-skeleton-tile>
+      <app-skeleton-tile height="44px" margin="0 0 20px 0"></app-skeleton-tile>
+      <app-skeleton-tile height="44px"></app-skeleton-tile>
+    </div>
     <div *ngIf="blocklist" class="mt-5">
       <h3 class="mb-2">Blocklist</h3>
       <i class="small"
