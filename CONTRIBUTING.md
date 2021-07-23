@@ -2,13 +2,13 @@
 
 First of all, everyone of you is welcome to contribute to the project. Whether small changes like typo fixes, simple bug fixes or large feature implementations, every contribution is a step further to make this project way nicer. 😄
 
-Depending on the scale of the contribution, you might need some general understanding of the languages and frameworks used and of some simple development pattern which are applied. But also beginners are absolutely welcome.
+Depending on the scale of the contribution, you might need some general understanding of the languages and frameworks used and of some simple development patterns which are applied. But also beginners are absolutely welcome.
 
-## Used Languages/Frameworks and general Structure
+## Used Stack and general Structure
 
-Let me give you a quick overview over all modules and structures and used languages and frameworks of the project, so you know what you are working with.
+Let me give you a quick overview over all modules, structures and used languages/frameworks of the project, so you know what you are working with.
 
-### Config
+### Configuration
 
 shinpuru is configured using either a YAML or JSON config file which can be passed by `-c` command line parameter.
 
@@ -18,7 +18,7 @@ For development, you can take the provided [`my.private.config.yml`](https://git
 
 ### Discord Communication
 
-The backend of shinpuru is completely written in [**Go**](https://go.dev/) *(golang)*. To communicate with Discord, the API wrapper [**discordgo**](https://github.com/bwmarrin/discordgo) is used. discordgo provides very low level bindings to the Discord API with very little utilities around, therefore a lot of utility packages were created. These can be found in the `pkg/` directory. These are the main utility packages used in shinpuru:
+The backend of shinpuru is completely written in [**Go**](https://go.dev/) *(golang)*. To communicate with Discord, the API wrapper [**discordgo**](https://github.com/bwmarrin/discordgo) is used. DiscordGo provides very low level bindings to the Discord API with very little utilities around, therefore a lot of utility packages were created. These can be found in the `pkg/` directory. These are the main utility packages used in shinpuru:
 - [acceptmsg](https://github.com/zekroTJA/shinpuru/tree/master/pkg/acceptmsg) creates an embed message with a ✔ and ❌ reaction added. Then, you can execute code depending on which reaction was clicked on.
 - [discordutil](https://github.com/zekroTJA/shinpuru/tree/master/pkg/discordutil) provides general utility functions like getting message links, retrieving objects first from the discordgo cache and, when not available there, from the Discord API or checking if a user has admin privileges.
 - [embedbuilder](https://github.com/zekroTJA/shinpuru/tree/master/pkg/embedbuilder) helps building embeds using the builder pattern.
@@ -29,6 +29,8 @@ Take a look at the packages in the [pkg](https://github.com/zekroTJA/shinpuru/tr
 Also, a lot of shared functionalities which require shinpuru specific dependencies are located in the [internal/util](https://github.com/zekroTJA/shinpuru/tree/master/internal/util) directory. There you can find some utilities which can be used to access the imagestore, karma system, metrics or votes.
 
 For command handling, shinpuru uses [**shireikan**](https://github.com/zekroTJA/shireikan). Take a look there and in the examples. Just like that, commands are handled and defined in shinpuru. All command definitions can be found in the [`internal/commands`](https://github.com/zekroTJA/shinpuru/tree/master/internal/commands) directory. If you want to add a command, just implement shireikans [`Command`](https://github.com/zekroTJA/shireikan/blob/master/command.go) interface and take a look how the other commands are implemented to match the conventions applied in the other commands. After that, register the command in the [`cmdhandler`](https://github.com/zekroTJA/shinpuru/blob/master/internal/inits/cmdhandler.go) `InitCommandHandler()` function using the `cmdHandler.RegisterCommand(&commands.YourCmd{})` method.
+
+Since version [1.17.0](https://github.com/zekroTJA/shinpuru/releases/tag/1.17.0), shinpuru switched to [dgrs](https://github.com/zekroTJA/dgrs) for state management. Because a Discord Bot needs to fetch a lot of information from the Discord API (like Users, Guilds, Channels, and so on), it would be kind of stupid to do this every time the data is needed. So, every Discord Bot uses a state manager which caches these information after fetching it from the API once. DiscordGo uses a simple internal map structure for that, but because I wanted to have more control over the state management and also, because I wanted to take some load from the Garbage Collector, I've implemented this Redis-based state manager. [Here](https://pkg.go.dev/github.com/zekrotja/dgrs) you can find the documentation and more information of it, because it is widely used across shinpuru's code, of course.
 
 Discord event handlers and listeners can be found in the [`listeners`](https://github.com/zekroTJA/shinpuru/tree/master/internal/listeners) package. A listener is a struct which exposes one or more event handler methods. Listeners must be registered [`botsession`](https://github.com/zekroTJA/shinpuru/blob/master/internal/inits/cmdhandler.go) `InitDiscordBotSession()` function using the `session.AddHandler(listeners.NewYourListener(container).Handler)` method.
 
