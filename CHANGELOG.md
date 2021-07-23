@@ -1,5 +1,7 @@
 1.19.0
 
+![](https://i.imgur.com/Dy0Xbr7.png)
+
 ## Minor Changes
 
 - Updated the visual representation of the guild dropdown.  
