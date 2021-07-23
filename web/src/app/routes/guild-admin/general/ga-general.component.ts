@@ -62,7 +62,7 @@ export class GuildAdminGeneralComponent implements OnInit {
   }
 
   public channelsByType(a: Channel[], type: number): Channel[] {
-    return a.filter((c) => c.type === type);
+    return a?.filter((c) => c.type === type) ?? [];
   }
 
   public getSelectedValue(e: any): string {
