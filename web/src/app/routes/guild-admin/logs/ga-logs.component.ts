@@ -5,7 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { GuildLogEntry, State } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface Severity {
@@ -16,7 +17,7 @@ interface Severity {
 @Component({
   selector: 'app-ga-logs',
   templateUrl: './ga-logs.component.html',
-  styleUrls: ['./ga-logs.component.sass'],
+  styleUrls: ['./ga-logs.component.scss'],
 })
 export class GuildAdminLogsComponent implements OnInit {
   public state: State;
@@ -25,7 +26,8 @@ export class GuildAdminLogsComponent implements OnInit {
   public entriesSelected: GuildLogEntry[] = [];
   private guildID: string;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   public readonly limit = 100;
   public offset = 0;

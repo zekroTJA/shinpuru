@@ -352,7 +352,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		VerificationLevel:        g.VerificationLevel,
 
 		SelfMember: selfmm,
-		IconURL:    getIconURL(g.ID, g.Icon),
+		IconURL:    g.IconURL(),
 	}
 
 	if db != nil {
@@ -401,7 +401,7 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 		ID:          g.ID,
 		Name:        g.Name,
 		Icon:        g.Icon,
-		IconURL:     getIconURL(g.ID, g.Icon),
+		IconURL:     g.IconURL(),
 		Region:      g.Region,
 		OwnerID:     g.OwnerID,
 		JoinedAt:    g.JoinedAt,
@@ -447,14 +447,4 @@ func GetCommandInfoFromCommand(cmd shireikan.Command) *CommandInfo {
 		IsExecutableInDM:   cmd.IsExecutableInDMChannels(),
 		SubPermissionRules: cmd.GetSubPermissionRules(),
 	}
-}
-
-// getIconURL returns the CDN URL of a Discord icon
-// resource with the passed guildID and iconHash.
-func getIconURL(guildID, iconHash string) string {
-	if iconHash == "" {
-		return ""
-	}
-
-	return fmt.Sprintf("https://cdn.discordapp.com/icons/%s/%s.png", guildID, iconHash)
 }

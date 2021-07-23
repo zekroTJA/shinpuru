@@ -1,9 +1,8 @@
 /** @format */
 
-import { Component, ViewChildren, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SpinnerService } from 'src/app/components/spinner/spinner.service';
 import {
   Member,
   Guild,
@@ -11,7 +10,8 @@ import {
   Report,
   ReportRequest,
 } from 'src/app/api/api.models';
-import dateFormat from 'dateformat';
+import { format, formatDistance } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { rolePosDiff } from 'src/app/utils/utils';
@@ -19,7 +19,7 @@ import { rolePosDiff } from 'src/app/utils/utils';
 @Component({
   selector: 'app-member-route',
   templateUrl: './member.component.html',
-  styleUrls: ['./member.component.sass'],
+  styleUrls: ['./member.component.scss'],
 })
 export class MemberRouteComponent {
   public member: Member;
@@ -31,7 +31,14 @@ export class MemberRouteComponent {
 
   public roleDiff: number;
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
+
+  public sinceFormat = (d: string | Date) =>
+    formatDistance(new Date(d), new Date(), {
+      addSuffix: true,
+      includeSeconds: true,
+    });
 
   @ViewChild('modalReport') private modalReport: TemplateRef<any>;
   @ViewChild('modalKick') private modalKick: TemplateRef<any>;
@@ -54,6 +61,7 @@ export class MemberRouteComponent {
     private route: ActivatedRoute,
     private router: Router
   ) {
+    // return;
     const guildID = this.route.snapshot.paramMap.get('guildid');
     const memberID = this.route.snapshot.paramMap.get('memberid');
 

@@ -8,7 +8,7 @@ import { GuildScoreboardEntry } from 'src/app/api/api.models';
 @Component({
   selector: 'app-scoreboard-route',
   templateUrl: './scoreboard.component.html',
-  styleUrls: ['./scoreboard.component.sass'],
+  styleUrls: ['./scoreboard.component.scss'],
 })
 export class ScoreboardComponent implements OnInit {
   public scoreboard: GuildScoreboardEntry[];

@@ -163,12 +163,10 @@
 
   <!-- ------------------------------------------------------- -->
 
-  <app-spinner
-    *ngIf="!member && !guild"
-    id="spinner-load-member"
-    [started]="true"
-  ></app-spinner>
-  <div *ngIf="member && guild">
+  <ng-template [ngIf]="!member">
+    <app-skeleton-tile height="50px" margin="0 0 40px 0"></app-skeleton-tile>
+  </ng-template>
+  <ng-template [ngIf]="member">
     <div id="heading-container">
       <img [src]="member.avatar_url | discordAsset: '':64" />
       <div>
@@ -183,143 +181,174 @@
     <div *ngIf="memberRoles.length > 0" class="d-flex overflow-wrap mb-2">
       <app-rolebadge *ngFor="let r of memberRoles" [role]="r"></app-rolebadge>
     </div>
+  </ng-template>
 
-    <div *ngIf="!member?.user.bot" class="mt-5">
-      <h3 class="mb-4">Karma</h3>
+  <div *ngIf="!member || !guild" class="d-flex">
+    <app-skeleton-tile
+      width="65px"
+      height="73px"
+      margin="0 10px 0 0"
+      delay="0.05s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      width="65px"
+      height="73px"
+      margin="0 10px 0 0"
+      delay="0.1s"
+    ></app-skeleton-tile>
+  </div>
+  <div *ngIf="member && guild && !member?.user.bot" class="mt-5">
+    <h3 class="mb-4">Karma</h3>
 
-      <div class="d-flex">
-        <a
-          routerLink="/guilds/{{ guild.id }}/scoreboard"
-          class="mr-3 karma-tile"
-        >
-          <app-karma-tile title="Guild" [value]="member.karma"></app-karma-tile>
-        </a>
-        <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="karma-tile">
-          <app-karma-tile
-            title="Total"
-            [value]="member.karma_total"
-          ></app-karma-tile>
-        </a>
-      </div>
+    <div class="d-flex">
+      <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="mr-3 karma-tile">
+        <app-karma-tile title="Guild" [value]="member.karma"></app-karma-tile>
+      </a>
+      <a routerLink="/guilds/{{ guild.id }}/scoreboard" class="karma-tile">
+        <app-karma-tile
+          title="Total"
+          [value]="member.karma_total"
+        ></app-karma-tile>
+      </a>
     </div>
+  </div>
 
-    <h3 class="mt-5 mb-4">General User Information</h3>
+  <h3 class="mt-5 mb-4">General User Information</h3>
 
-    <table class="general-user-info mt-2">
-      <tbody>
-        <tr>
-          <th>Joined Guild</th>
-          <td>
-            {{ dateFormat(member.joined_at, 'ddd, mmm dS, yyyy - HH:MM:ss Z') }}
-          </td>
-        </tr>
-        <tr>
-          <th>Created Account</th>
-          <td>
-            {{
-              dateFormat(member.created_at, 'ddd, mmm dS, yyyy - HH:MM:ss Z')
-            }}
-          </td>
-        </tr>
-        <br />
-        <tr>
-          <th>Permissions</th>
-          <td>
-            <app-spinner
-              id="spinner-load-permissions"
-              *ngIf="!perm; else permsview"
-              [started]="true"
-              [small]="true"
-            ></app-spinner>
-            <ng-template #permsview>
-              <div class="d-flex overflow-wrap">
-                <p
-                  *ngFor="let p of getPerms(true)"
-                  class="permissions embedded allowed"
-                >
-                  {{ p }}
-                </p>
-              </div>
-              <div class="d-flex overflow-wrap">
-                <p
-                  *ngFor="let p of getPerms(false)"
-                  class="permissions embedded disallowed"
-                >
-                  {{ p }}
-                </p>
-              </div>
-            </ng-template>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <table class="general-user-info mt-2">
+    <tbody>
+      <tr>
+        <th>Joined Guild</th>
+        <td *ngIf="member">
+          {{ dateFormat(member.joined_at, 'E, do MMMM yyyy - hh:mm:ss z') }}
+          <br />
+          <span class="secondary">({{ sinceFormat(member.joined_at) }})</span>
+        </td>
+        <ng-template [ngIf]="!member">
+          <app-skeleton-tile
+            width="300px"
+            height="40px"
+            delay="0.15s"
+          ></app-skeleton-tile>
+        </ng-template>
+      </tr>
+      <tr>
+        <th>Created Account</th>
+        <td *ngIf="member">
+          {{ dateFormat(member.created_at, 'E, do MMMM yyyy - hh:mm:ss z') }}
+          <br />
+          <span class="secondary">({{ sinceFormat(member.created_at) }})</span>
+        </td>
+        <ng-template [ngIf]="!member">
+          <app-skeleton-tile
+            width="300px"
+            height="40px"
+            delay="0.2s"
+          ></app-skeleton-tile>
+        </ng-template>
+      </tr>
+      <br />
+      <tr>
+        <th>Permissions</th>
+        <td>
+          <app-skeleton-tile
+            *ngIf="!perm; else permsview"
+            width="300px"
+            height="20px"
+            delay="0.25s"
+          ></app-skeleton-tile>
+          <ng-template #permsview>
+            <div class="d-flex overflow-wrap">
+              <p
+                *ngFor="let p of getPerms(true)"
+                class="permissions embedded allowed"
+              >
+                {{ p }}
+              </p>
+            </div>
+            <div class="d-flex overflow-wrap">
+              <p
+                *ngFor="let p of getPerms(false)"
+                class="permissions embedded disallowed"
+              >
+                {{ p }}
+              </p>
+            </div>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <div
-      *ngIf="
-        member.user.id !== guild.self_member.user.id &&
-        canPerformAny(
-          'sp.guild.mod.report',
-          'sp.guild.mod.kick',
-          'sp.guild.mod.ban',
-          'sp.guild.mod.mute'
-        )
-      "
-      class="mt-5 mb-2"
-    >
-      <h3>Moderation</h3>
-      <app-spinner
-        id="spinner-load-modbuttons"
-        *ngIf="!perm"
-        [started]="true"
-      ></app-spinner>
-      <div class="mod-buttons mt-4">
-        <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
-          REPORT
-        </button>
-        <button
-          *ngIf="canPerform('sp.guild.mod.kick')"
-          class="bg-orange"
-          (click)="kick()"
-        >
-          KICK
-        </button>
-        <button
-          *ngIf="canPerform('sp.guild.mod.ban')"
-          class="bg-red"
-          (click)="ban()"
-        >
-          BAN
-        </button>
-        <button
-          *ngIf="canPerform('sp.guild.mod.mute')"
-          class="bg-purple"
-          (click)="muteUnmute()"
-        >
-          {{ member.chat_muted ? 'CHAT UNMUTE' : 'CHAT MUTE' }}
-        </button>
-      </div>
+  <div
+    *ngIf="
+      member?.user.id !== guild?.self_member.user.id &&
+      canPerformAny(
+        'sp.guild.mod.report',
+        'sp.guild.mod.kick',
+        'sp.guild.mod.ban',
+        'sp.guild.mod.mute'
+      )
+    "
+    class="mt-5 mb-2"
+  >
+    <h3>Moderation</h3>
+    <div *ngIf="!perm || !member" class="d-flex mt-4">
+      <app-skeleton-tile
+        *ngFor="let i of [0, 1, 2, 3, 4]"
+        width="100px"
+        height="35px"
+        delay="{{ i * 0.05 }}s"
+      ></app-skeleton-tile>
     </div>
-
-    <div class="d-flex mt-5 mb-4">
-      <h3>Reports</h3>
-      <p *ngIf="reports?.length" class="reports-count">{{ reports.length }}</p>
-    </div>
-    <app-spinner
-      *ngIf="!reports"
-      id="spinner-load-reports"
-      [started]="true"
-    ></app-spinner>
-    <div>
-      <i *ngIf="reports?.length === 0"
-        >{{ member.user.username }} has a white vest! 👌</i
+    <div *ngIf="perm && member" class="mod-buttons mt-4">
+      <button *ngIf="hasPermission('sp.guild.mod.report')" (click)="report()">
+        REPORT
+      </button>
+      <button
+        *ngIf="canPerform('sp.guild.mod.kick')"
+        class="bg-orange"
+        (click)="kick()"
       >
-      <app-report
-        *ngFor="let rep of reports"
-        [report]="rep"
-        [victim]="member"
-        [allowRevoke]="canRevoke"
-        (revoke)="revokeReport(rep)"
-      ></app-report>
+        KICK
+      </button>
+      <button
+        *ngIf="canPerform('sp.guild.mod.ban')"
+        class="bg-red"
+        (click)="ban()"
+      >
+        BAN
+      </button>
+      <button
+        *ngIf="canPerform('sp.guild.mod.mute')"
+        class="bg-purple"
+        (click)="muteUnmute()"
+      >
+        {{ member.chat_muted ? 'CHAT UNMUTE' : 'CHAT MUTE' }}
+      </button>
     </div>
+  </div>
+
+  <div class="d-flex mt-5 mb-4">
+    <h3>Reports</h3>
+    <p *ngIf="reports?.length" class="reports-count">{{ reports.length }}</p>
+  </div>
+  <app-skeleton-tile
+    *ngIf="!reports"
+    width="100%"
+    height="200px"
+    delay="0.3s"
+  ></app-skeleton-tile>
+  <div>
+    <i *ngIf="reports?.length === 0"
+      >{{ member.user.username }} has a white vest! 👌</i
+    >
+    <app-report
+      *ngFor="let rep of reports"
+      [report]="rep"
+      [victim]="member"
+      [allowRevoke]="canRevoke"
+      (revoke)="revokeReport(rep)"
+    ></app-report>
   </div>
 </div>

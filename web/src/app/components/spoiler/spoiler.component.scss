@@ -1,0 +1,8 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+.arrow-btn {
+  width: 30px;
+  cursor: pointer;
+  @include transition25;
+}

@@ -13,7 +13,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 @Component({
   selector: 'app-spinner-button',
   templateUrl: './spinner-button.component.html',
-  styleUrls: ['./spinner-button.component.sass'],
+  styleUrls: ['./spinner-button.component.scss'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR],
 })
 export class SpinnerButtonComponent implements ControlValueAccessor {

@@ -1,0 +1,18 @@
+@keyframes wave {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.skeleton-tile {
+  background-color: white;
+  opacity: 0;
+  border-radius: 10px;
+  animation: wave 1.5s ease infinite;
+}

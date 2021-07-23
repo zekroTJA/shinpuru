@@ -13,7 +13,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 @Component({
   selector: 'app-tags',
   templateUrl: './tagsinput.component.html',
-  styleUrls: ['./tagsinput.component.sass'],
+  styleUrls: ['./tagsinput.component.scss'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR],
 })
 export class TagsInputComponent implements ControlValueAccessor {

@@ -9,7 +9,7 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 @Component({
   selector: 'app-ga-karma',
   templateUrl: './ga-karma.component.html',
-  styleUrls: ['./ga-karma.component.sass'],
+  styleUrls: ['./ga-karma.component.scss'],
 })
 export class GuildAdminKarmaComponent implements OnInit {
   public karmaSettings: KarmaSettings;

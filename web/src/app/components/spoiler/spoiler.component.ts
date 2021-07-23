@@ -13,7 +13,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 @Component({
   selector: 'app-spoiler',
   templateUrl: './spoiler.component.html',
-  styleUrls: ['./spoiler.component.sass'],
+  styleUrls: ['./spoiler.component.scss'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR],
 })
 export class SpoilerComponent implements ControlValueAccessor {

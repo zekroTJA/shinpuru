@@ -17,7 +17,8 @@ import {
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { toHexClr, topRole } from '../../utils/utils';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import LocalStorageUtil from 'src/app/utils/localstorage';
 
@@ -34,7 +35,7 @@ interface AnonymousReport extends ReportRequest {
 @Component({
   selector: 'app-guild',
   templateUrl: './guild.component.html',
-  styleUrls: ['./guild.component.sass'],
+  styleUrls: ['./guild.component.scss'],
 })
 export class GuildComponent {
   @ViewChild('modalRevoke')
@@ -80,7 +81,8 @@ export class GuildComponent {
   public reportDisplayMoreLoading = false;
 
   public toHexClr = toHexClr;
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   constructor(
     public modal: NgbModal,
@@ -92,11 +94,9 @@ export class GuildComponent {
     const guildID = this.route.snapshot.paramMap.get('id');
     this.api.getGuild(guildID).subscribe((guild) => {
       this.guild = guild;
-
       if (this.members) {
         this.guild.members = this.members;
       }
-
       this.api
         .getPermissionsAllowed(guildID, guild.self_member.user.id)
         .subscribe((allowed) => {
@@ -105,7 +105,6 @@ export class GuildComponent {
             a.startsWith('sp.guild.')
           );
           this.canRevoke = allowed.includes('sp.guild.mod.report');
-
           if (this.guildSettingsContains('sp.guild.mod.unbanrequests')) {
             this.api
               .getGuildUnbanrequestCount(guildID, UnbanRequestState.PENDING)
@@ -115,33 +114,26 @@ export class GuildComponent {
           }
         });
     });
-
     this.loadMembers(guildID, () => {
       this.membersDisplayed = this.members.slice(0, this.MAX_SHOWN_USERS);
     });
-
     this.api.getGuildSettings(guildID).subscribe((settings) => {
       this.settings = settings;
     });
-
     this.api
       .getReports(guildID, null, 0, this.MAX_SHOWN_MODLOG)
       .subscribe((reports) => {
         this.reports = reports;
       });
-
     this.api.getReportsCount(guildID).subscribe((count) => {
       this.reportsTotalCount = count;
     });
-
     this.api.getGuildBackups(guildID).subscribe((backups) => {
       this.backups = backups.data;
     });
-
     this.api.getGuildScoreboard(guildID, 20).subscribe((scoreboard) => {
       this.scoreboard = scoreboard.data;
     });
-
     this.starboardSortOrder = LocalStorageUtil.get(
       'STARBOARD_SORTORDER',
       'latest'
@@ -194,7 +186,7 @@ export class GuildComponent {
       return 'No backups are available for this guild.';
     }
 
-    return `Last backup was created at ${dateFormat(
+    return `Last backup was created at ${this.dateFormat(
       this.guild.latest_backup_entry
     )}.`;
   }

@@ -11,17 +11,19 @@ import {
 } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 
 @Component({
   selector: 'app-ga-general',
   templateUrl: './ga-general.component.html',
-  styleUrls: ['./ga-general.component.sass'],
+  styleUrls: ['./ga-general.component.scss'],
 })
 export class GuildAdminGeneralComponent implements OnInit {
   public antiraidSettings: AntiraidSettings;
   public joinlog: JoinlogEntry[] = [];
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
   public settings: GuildSettings;
   public updatedSettings = {} as GuildSettings;
 
@@ -37,6 +39,7 @@ export class GuildAdminGeneralComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // return;
     this.route.params.subscribe(async (params) => {
       this.guildID = params.guildid;
 
@@ -60,7 +63,7 @@ export class GuildAdminGeneralComponent implements OnInit {
   }
 
   public channelsByType(a: Channel[], type: number): Channel[] {
-    return a.filter((c) => c.type === type);
+    return a?.filter((c) => c.type === type) ?? [];
   }
 
   public getSelectedValue(e: any): string {

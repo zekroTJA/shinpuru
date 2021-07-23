@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	errRoleDiff = errors.New("You can only ban or kick members with lower permissions than yours.")
+	ErrRoleDiff = errors.New("You can only ban or kick members with lower permissions than yours.")
 )
 
 type ReportService struct {
@@ -94,7 +94,7 @@ func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
 	}
 
 	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return nil, errRoleDiff
+		return nil, ErrRoleDiff
 	}
 
 	rep, err = r.PushReport(rep)
@@ -126,9 +126,12 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 		return nil, err
 	}
 
-	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
-	if err != nil {
-		return nil, err
+	var victim *discordgo.Member
+	if !rep.Anonymous {
+		victim, err = r.st.Member(rep.GuildID, rep.VictimID)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
@@ -136,8 +139,10 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 		return nil, err
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return nil, errRoleDiff
+	if !rep.Anonymous {
+		if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+			return nil, ErrRoleDiff
+		}
 	}
 
 	rep, err = r.PushReport(rep)
@@ -163,11 +168,30 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 		return nil, err
 	}
 
+	guild, err := r.st.Guild(rep.GuildID)
+	if err != nil {
+		return nil, err
+	}
+
+	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
+	if err != nil {
+		return nil, err
+	}
+
+	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
+	if err != nil {
+		return nil, err
+	}
+
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		return nil, ErrRoleDiff
+	}
+
 	if rep.Msg == "" {
 		rep.Msg = "no reason specified"
 	}
 
-	rep, err := r.PushReport(rep)
+	rep, err = r.PushReport(rep)
 	if err != nil {
 		return nil, err
 	}
@@ -184,6 +208,25 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 // RevokeMute removes the mute role of the specified victim and sends
 // an unmute embed to the users DMs and to the mod log channel.
 func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRoleID string) (emb *discordgo.MessageEmbed, err error) {
+	guild, err := r.st.Guild(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	victim, err := r.st.Member(guildID, victimID)
+	if err != nil {
+		return nil, err
+	}
+
+	executor, err := r.st.Member(guildID, executorID)
+	if err != nil {
+		return nil, err
+	}
+
+	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		return nil, ErrRoleDiff
+	}
+
 	err = r.s.GuildMemberRoleRemove(guildID, victimID, muteRoleID)
 	if err != nil {
 		return

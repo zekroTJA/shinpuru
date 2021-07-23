@@ -5,7 +5,7 @@ import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
-  styleUrls: ['./toast.component.sass'],
+  styleUrls: ['./toast.component.scss'],
 })
 export class ToastComponent implements OnInit {
   @Input() public heading: string;

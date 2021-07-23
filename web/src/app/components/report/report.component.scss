@@ -1,0 +1,71 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+$border-rad: 5px;
+
+p {
+  margin: 0px;
+}
+
+h4 {
+  margin-bottom: 10px !important;
+}
+
+a {
+  color: $c-blurple !important;
+  text-decoration: underline !important;
+}
+
+.report-container {
+  background-color: $c-nqblack;
+  border-radius: $border-rad;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.inner-container {
+  padding: 10px;
+}
+
+.avi {
+  width: 2em;
+  height: 2em;
+  margin-right: 10px;
+  @include round;
+  @include my-auto;
+}
+
+.small {
+  color: $c-font-gray;
+  font-size: 11px;
+}
+
+.col50 {
+  width: 40%;
+}
+
+.footer {
+  padding-top: 5px;
+  border-top: solid 1px darkgrey;
+  width: fit-content;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+input.url {
+  color: $c-blurple;
+  font-weight: bold;
+  text-decoration: underline;
+  width: 100%;
+  border: none !important;
+}
+
+.type-heading {
+  width: 100%;
+  text-align: center;
+  padding: 3px;
+  margin-bottom: 10px;
+  color: $c-nqblack;
+  font-weight: bold;
+  border-radius: $border-rad $border-rad 0 0;
+}

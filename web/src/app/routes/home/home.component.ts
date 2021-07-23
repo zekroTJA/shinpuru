@@ -10,23 +10,19 @@ import { NextLoginRedirect } from 'src/app/utils/objects';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.sass'],
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
-  public guilds: Guild[] = [];
+  public guilds: Guild[] = null;
   public inviteSettings: InviteSettingsResponse;
 
-  constructor(private api: APIService, private spinner: SpinnerService) {
+  constructor(private api: APIService) {
     this.api.getGuilds().subscribe((guilds) => {
       this.guilds = guilds;
-
       if (this.guilds?.length < 1) {
         this.api.getInviteSettings().subscribe((inviteSettings) => {
           this.inviteSettings = inviteSettings;
-          this.spinner.stop('spinner-load-guilds');
         });
-      } else {
-        this.spinner.stop('spinner-load-guilds');
       }
     });
   }

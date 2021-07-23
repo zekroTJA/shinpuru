@@ -6,7 +6,7 @@ import LocalStorageUtil from 'src/app/utils/localstorage';
 @Component({
   selector: 'app-protip',
   templateUrl: './protip.component.html',
-  styleUrls: ['./protip.component.sass'],
+  styleUrls: ['./protip.component.scss'],
 })
 export class ProtipComponent implements OnInit {
   @Input() public uid: string | number;

@@ -7,7 +7,7 @@ import { toHexClr } from 'src/app/utils/utils';
 @Component({
   selector: 'app-member',
   templateUrl: './member.component.html',
-  styleUrls: ['./member.component.sass'],
+  styleUrls: ['./member.component.scss'],
 })
 export class MemberComponent {
   @Input() public member: Member;

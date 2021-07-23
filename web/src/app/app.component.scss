@@ -1,0 +1,21 @@
+#toasts-container {
+  display: block;
+  position: fixed;
+  width: 50vw;
+  max-width: 300px;
+  z-index: 5;
+  top: 15px + 50px;
+  right: 15px;
+}
+
+#router-outlet {
+  margin-top: 50px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+
+  .content {
+    max-width: 950px;
+    width: 100%;
+  }
+}

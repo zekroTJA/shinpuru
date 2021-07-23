@@ -2,7 +2,8 @@
 
 import { Component } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import dateFormat from 'dateformat';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { APIToken, UserSettingsOTA } from 'src/app/api/api.models';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -11,10 +12,11 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 @Component({
   selector: 'app-usersettings',
   templateUrl: './usersettings.component.html',
-  styleUrls: ['./usersettings.component.sass'],
+  styleUrls: ['./usersettings.component.scss'],
 })
 export class UserSettingsComponent {
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   public token: APIToken;
   public notGenerated = false;

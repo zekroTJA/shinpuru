@@ -1,0 +1,75 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+$guild-tile-width: 250px;
+
+.guilds-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 3 * ($guild-tile-width + 20px);
+}
+
+.guild-container {
+  background-color: $c-nqblack;
+  width: $guild-tile-width;
+  /* height: $width + 60px */
+  margin: 0 10px 20px 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  overflow: hidden;
+
+  @include hover-btn;
+
+  &:hover {
+    .guild-tn {
+      img {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  .guild-tn {
+    width: $guild-tile-width;
+    height: $guild-tile-width;
+    overflow: hidden;
+    border-radius: 10px;
+
+    img {
+      width: $guild-tile-width;
+      height: $guild-tile-width;
+      @include transition25;
+    }
+  }
+
+  .info-container {
+    padding: 15px 15px;
+    max-width: $guild-tile-width;
+
+    > * {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    > h1 {
+      font-size: 18px;
+      padding-bottom: 5px;
+    }
+    > span {
+      font-size: 14px;
+      color: $c-font-gray;
+    }
+  }
+}
+
+.no-guilds {
+  text-align: center;
+  margin-top: 10vh;
+
+  .guild-inv-container {
+    width: 300px;
+    background-color: $c-nqblack;
+    border-radius: 5px;
+  }
+}

@@ -16,7 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -109,25 +108,6 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not kick yourself")
 	}
 
-	guild, err := c.state.Guild(guildID)
-	if err != nil {
-		return err
-	}
-
-	executor, err := c.session.GuildMember(guildID, uid)
-	if err != nil {
-		return err
-	}
-
-	victim, err := c.session.GuildMember(guildID, memberID)
-	if err != nil {
-		return err
-	}
-
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "you can not kick members with higher or same permissions than/as yours")
-	}
-
 	if ok, err := req.Validate(false); !ok {
 		return err
 	}
@@ -152,6 +132,10 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		Msg:           req.Reason,
 		AttachmehtURL: req.Attachment,
 	})
+
+	if err == report.ErrRoleDiff {
+		return fiber.NewError(fiber.StatusBadRequest, "you can not kick members with higher or same permissions than/as yours")
+	}
 
 	if err != nil {
 		return err
@@ -180,28 +164,6 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not ban yourself")
 	}
 
-	guild, err := c.state.Guild(guildID)
-	if err != nil {
-		return err
-	}
-
-	executor, err := c.session.GuildMember(guildID, uid)
-	if err != nil {
-		return err
-	}
-
-	var victim *discordgo.Member
-	if !anonymous {
-		victim, err = c.session.GuildMember(guildID, memberID)
-		if err != nil {
-			return err
-		}
-	}
-
-	if !anonymous && roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "you can not ban members with higher or same permissions than/as yours")
-	}
-
 	if ok, err := req.Validate(false); !ok {
 		return err
 	}
@@ -226,7 +188,12 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		Msg:           req.Reason,
 		AttachmehtURL: req.Attachment,
 		Timeout:       req.Timeout,
+		Anonymous:     anonymous,
 	})
+
+	if err == report.ErrRoleDiff {
+		return fiber.NewError(fiber.StatusBadRequest, "you can not ban members with higher or same permissions than/as yours")
+	}
 
 	if err != nil {
 		return err
@@ -257,25 +224,6 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
 
-	guild, err := c.state.Guild(guildID)
-	if err != nil {
-		return err
-	}
-
-	executor, err := c.session.GuildMember(guildID, uid)
-	if err != nil {
-		return err
-	}
-
-	victim, err := c.session.GuildMember(guildID, memberID)
-	if err != nil {
-		return err
-	}
-
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "you can not mute members with higher or same permissions than/as yours")
-	}
-
 	if ok, err := req.Validate(true); !ok {
 		return err
 	}
@@ -301,6 +249,10 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		AttachmehtURL: req.Attachment,
 		Timeout:       req.Timeout,
 	}, muteRoleID)
+
+	if err == report.ErrRoleDiff {
+		return fiber.NewError(fiber.StatusBadRequest, "you can not mute members with higher or same permissions than/as yours")
+	}
 
 	if err != nil {
 		return err
@@ -331,31 +283,16 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
 
-	guild, err := c.state.Guild(guildID)
-	if err != nil {
-		return err
-	}
-
-	executor, err := c.session.GuildMember(guildID, uid)
-	if err != nil {
-		return err
-	}
-
-	victim, err := c.session.GuildMember(guildID, memberID)
-	if err != nil {
-		return err
-	}
-
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "you can not mute members with higher or same permissions than/as yours")
-	}
-
 	_, err = c.repSvc.RevokeMute(
 		guildID,
 		uid,
 		memberID,
 		req.Reason,
 		muteRoleID)
+
+	if err == report.ErrRoleDiff {
+		return fiber.NewError(fiber.StatusBadRequest, "you can not unmute members with higher or same permissions than/as yours")
+	}
 
 	if err != nil {
 		return err

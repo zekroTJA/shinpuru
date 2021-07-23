@@ -13,12 +13,13 @@ import { ToastService } from 'src/app/components/toast/toast.service';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.sass'],
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent {
   public presence: Presence;
   public inviteSettings: InviteSettingsResponse;
-  public inviteSettingsFields: InviteSettingsRequest = {} as InviteSettingsRequest;
+  public inviteSettingsFields: InviteSettingsRequest =
+    {} as InviteSettingsRequest;
   public guilds: Guild[];
 
   constructor(private api: APIService, private toasts: ToastService) {

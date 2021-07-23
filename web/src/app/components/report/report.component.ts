@@ -1,16 +1,17 @@
 /** @format */
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from 'src/app/utils/consts';
 import { Report, Member } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
-import dateFormat from 'dateformat';
 
 const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.sass'],
+  styleUrls: ['./report.component.scss'],
 })
 export class ReportComponent implements OnInit {
   @Input() public report: Report;
@@ -20,7 +21,8 @@ export class ReportComponent implements OnInit {
 
   @Output() public revoke = new EventEmitter<any>();
 
-  public dateFormat = dateFormat;
+  public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
+    format(new Date(d), f);
 
   constructor(private api: APIService) {}
 
