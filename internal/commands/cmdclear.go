@@ -147,7 +147,7 @@ func (c *CmdClear) removeSelected(ctx shireikan.Context) (err error) {
 					return
 				}
 				return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-					fmt.Sprintf("Deleted %d message%s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
+					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
 					DeleteAfter(6 * time.Second).Error()
 			}).
 			Send(ctx.GetChannel().ID)
@@ -172,7 +172,7 @@ func (c *CmdClear) removeSelected(ctx shireikan.Context) (err error) {
 					return
 				}
 				return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-					fmt.Sprintf("Deleted %d message%s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
+					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
 					DeleteAfter(6 * time.Second).Error()
 			}).
 			Send(ctx.GetChannel().ID)
