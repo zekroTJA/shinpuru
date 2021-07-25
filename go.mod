@@ -27,6 +27,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/makeworld-the-better-one/go-isemoji v1.1.0
 	github.com/minio/minio-go v6.0.14+incompatible
+	github.com/narqo/go-badge v0.0.0-20190124110329-d9415e4e1e9f
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
@@ -40,9 +41,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/stretchr/testify v1.7.0
 	github.com/valyala/fasthttp v1.26.0
-	github.com/vektra/mockery/v2 v2.8.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
 	github.com/zekroTJA/ratelimit v1.0.0
