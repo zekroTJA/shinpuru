@@ -15,6 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekroTJA/shireikan/state"
+	"github.com/zekrotja/dgrs"
 )
 
 func InitCommandHandler(container di.Container) shireikan.Handler {
@@ -25,6 +27,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	db := container.Get(static.DiDatabase).(database.Database)
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
+	st := container.Get(static.DiState).(*dgrs.State)
 
 	cmdHandler := shireikan.New(&shireikan.Config{
 		GeneralPrefix:         config.Discord.GeneralPrefix,
@@ -44,6 +47,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 		},
 
 		ObjectContainer: container,
+		State:           state.NewDgrs(st),
 	})
 
 	if c := cfg.Discord.GlobalCommandRateLimit; c != nil && c.Burst > 0 && c.LimitSeconds > 0 {
