@@ -120,7 +120,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
-	guild, err := c.state.Guild(guildID)
+	guild, err := c.state.Guild(guildID, true)
 	if err != nil {
 		return err
 	}
