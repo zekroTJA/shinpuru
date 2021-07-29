@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
 type ListenerMemberAdd struct {
@@ -25,18 +26,32 @@ func NewListenerMemberAdd(container di.Container) *ListenerMemberAdd {
 }
 
 func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
-	autoRoleID, err := l.db.GetGuildAutoRole(e.GuildID)
+	autoRoleIDs, err := l.db.GetGuildAutoRole(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild autorole from database")
 		l.gl.Errorf(e.GuildID, "Failed getting guild autorole from database: %s", err.Error())
 	}
-	if autoRoleID != "" {
-		err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, autoRoleID)
-		if err != nil && strings.Contains(err.Error(), `{"code": 10011, "message": "Unknown Role"}`) {
-			l.db.SetGuildAutoRole(e.GuildID, "")
+	invalidAutoRoleIDs := make([]string, 0)
+	for _, rid := range autoRoleIDs {
+		err = s.GuildMemberRoleAdd(e.GuildID, e.User.ID, rid)
+		if apiErr, ok := err.(*discordgo.RESTError); ok && apiErr.Message.Code == discordgo.ErrCodeUnknownRole {
+			invalidAutoRoleIDs = append(invalidAutoRoleIDs, rid)
 		} else if err != nil {
 			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed setting autorole for member")
 			l.gl.Errorf(e.GuildID, "Failed getting autorole for member (%s): %s", e.User.ID, err.Error())
+		}
+	}
+	if len(invalidAutoRoleIDs) > 0 {
+		newAutoRoleIDs := make([]string, 0, len(autoRoleIDs)-len(invalidAutoRoleIDs))
+		for _, rid := range autoRoleIDs {
+			if !stringutil.ContainsAny(rid, invalidAutoRoleIDs) {
+				newAutoRoleIDs = append(newAutoRoleIDs, rid)
+			}
+		}
+		err = l.db.SetGuildAutoRole(e.GuildID, newAutoRoleIDs)
+		if err != nil {
+			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed updating auto role settings")
+			l.gl.Errorf(e.GuildID, "Failed updating auto role settings: %s", e.User.ID, err.Error())
 		}
 	}
 

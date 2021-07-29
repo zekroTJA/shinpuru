@@ -49,25 +49,29 @@ func (c *CmdAutorole) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
 	if len(ctx.GetArgs()) < 1 {
-		currAutoRoleID, err := db.GetGuildAutoRole(ctx.GetGuild().ID)
+		currAutoRoleIDs, err := db.GetGuildAutoRole(ctx.GetGuild().ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
 		}
-		if currAutoRoleID == "" {
+		if len(currAutoRoleIDs) == 0 {
 			return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-				"There is no autorole set on this guild currently.", "", 0).Error()
+				"There are no autoroles set on this guild currently.", "", 0).Error()
 		}
-		_, err = fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, currAutoRoleID)
-		if err != nil {
-			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-				"**ATTENTION:** The set auto role is no more existent on the guild!").Error()
+		roleNames := make([]string, 0, len(currAutoRoleIDs))
+		for _, rid := range currAutoRoleIDs {
+			r, err := fetch.FetchRole(ctx.GetSession(), ctx.GetGuild().ID, rid)
+			if err != nil {
+				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+					"**ATTENTION:** One of the set auto role is no more existent on the guild!").Error()
+			}
+			roleNames = append(roleNames, r.Name)
 		}
 		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
-			fmt.Sprintf("Currently, <@&%s> is set as auto role.", currAutoRoleID), "", 0).Error()
+			fmt.Sprintf("Currently, following roles are set as autorole: %s", strings.Join(roleNames, ", ")), "", 0).Error()
 	}
 
 	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "reset" {
-		err := db.SetGuildAutoRole(ctx.GetGuild().ID, "")
+		err := db.SetGuildAutoRole(ctx.GetGuild().ID, []string{})
 		if err != nil {
 			return err
 		}
@@ -81,7 +85,7 @@ func (c *CmdAutorole) Exec(ctx shireikan.Context) error {
 			"Sorry, but the entered role could not be fetched :(").
 			DeleteAfter(5 * time.Second).Error()
 	}
-	err = db.SetGuildAutoRole(ctx.GetGuild().ID, newAutoRole.ID)
+	err = db.SetGuildAutoRole(ctx.GetGuild().ID, []string{newAutoRole.ID})
 	if err != nil {
 		return err
 	}

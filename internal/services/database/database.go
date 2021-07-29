@@ -35,8 +35,8 @@ type Database interface {
 	GetGuildPrefix(guildID string) (string, error)
 	SetGuildPrefix(guildID, newPrefix string) error
 
-	GetGuildAutoRole(guildID string) (string, error)
-	SetGuildAutoRole(guildID, autoRoleID string) error
+	GetGuildAutoRole(guildID string) ([]string, error)
+	SetGuildAutoRole(guildID string, autoRoleIDs []string) error
 
 	GetGuildModLog(guildID string) (string, error)
 	SetGuildModLog(guildID, chanID string) error

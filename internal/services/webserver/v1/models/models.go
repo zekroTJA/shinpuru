@@ -127,7 +127,7 @@ type Report struct {
 type GuildSettings struct {
 	Prefix              string                                 `json:"prefix"`
 	Perms               map[string]permissions.PermissionArray `json:"perms"`
-	AutoRole            string                                 `json:"autorole"`
+	AutoRoles           []string                               `json:"autoroles"`
 	ModLogChannel       string                                 `json:"modlogchannel"`
 	VoiceLogChannel     string                                 `json:"voicelogchannel"`
 	JoinMessageChannel  string                                 `json:"joinmessagechannel"`

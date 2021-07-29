@@ -116,7 +116,6 @@ func (c *CmdClear) Exec(ctx shireikan.Context) error {
 }
 
 func (c *CmdClear) removeSelected(ctx shireikan.Context) (err error) {
-	// st := ctx.GetObject(static.DiState).(*dgrs.State)
 	msgs, err := ctx.GetSession().ChannelMessages(ctx.GetChannel().ID, 100, ctx.GetMessage().ID, "", "")
 	if err != nil {
 		return

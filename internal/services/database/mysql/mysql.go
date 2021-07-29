@@ -383,13 +383,13 @@ func (m *MysqlMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 	return m.setGuildSetting(guildID, "prefix", newPrefix)
 }
 
-func (m *MysqlMiddleware) GetGuildAutoRole(guildID string) (string, error) {
+func (m *MysqlMiddleware) GetGuildAutoRole(guildID string) ([]string, error) {
 	val, err := m.getGuildSetting(guildID, "autorole")
-	return val, err
+	return strings.Split(val, ";"), err
 }
 
-func (m *MysqlMiddleware) SetGuildAutoRole(guildID, autoRoleID string) error {
-	return m.setGuildSetting(guildID, "autorole", autoRoleID)
+func (m *MysqlMiddleware) SetGuildAutoRole(guildID string, autoRoleIDs []string) error {
+	return m.setGuildSetting(guildID, "autorole", strings.Join(autoRoleIDs, ";"))
 }
 
 func (m *MysqlMiddleware) GetGuildModLog(guildID string) (string, error) {

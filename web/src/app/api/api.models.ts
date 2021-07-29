@@ -96,7 +96,7 @@ export interface Report {
 export interface GuildSettings {
   prefix: string;
   perms: Map<string, string[]>;
-  autorole: string;
+  autoroles: string[];
   modlogchannel: string;
   voicelogchannel: string;
   joinmessagechannel: string;
