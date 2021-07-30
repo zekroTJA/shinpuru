@@ -117,6 +117,11 @@ func (c *CmdAutorole) list(ctx shireikan.Context, db database.Database, st *dgrs
 func (c *CmdAutorole) set(ctx shireikan.Context, db database.Database, st *dgrs.State) (err error) {
 	autoRoleIDs := make([]string, 0, len(ctx.GetArgs()))
 
+	if stringutil.ContainsAny("@everyone", ctx.GetArgs()) {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"`@everyone` can not be set as autorole.", "").DeleteAfter(10 * time.Second).Error()
+	}
+
 	for _, arg := range ctx.GetArgs() {
 		if len(arg) == 0 {
 			continue

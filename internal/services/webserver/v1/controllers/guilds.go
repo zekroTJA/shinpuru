@@ -357,6 +357,11 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 			return fiber.ErrUnauthorized
 		}
 
+		if stringutil.ContainsAny("@everyone", gs.AutoRoles) {
+			return fiber.NewError(fiber.StatusBadRequest,
+				"@everyone can not be set as autorole")
+		}
+
 		guildRoles, err := c.state.Roles(guildID, true)
 		if err != nil {
 			return err
