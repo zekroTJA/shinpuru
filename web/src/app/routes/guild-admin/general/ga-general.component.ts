@@ -53,8 +53,12 @@ export class GuildAdminGeneralComponent implements OnInit {
         a.startsWith('sp.guild.')
       );
       this.settings = await this.api.getGuildSettings(this.guildID).toPromise();
-      this.autoRoles = this.settings.autoroles.map((rid) =>
-        this.guild.roles.find((r) => r.id === rid)
+      this.autoRoles = this.settings.autoroles.map(
+        (rid) =>
+          this.guild.roles.find((r) => r.id === rid) ??
+          ({
+            id: rid,
+          } as Role)
       );
     });
   }
@@ -106,6 +110,10 @@ export class GuildAdminGeneralComponent implements OnInit {
   }
 
   roleNameFormatter(r: Role): string {
-    return r.name;
+    return r.name ?? `<deleted Role> ${r.id}`;
+  }
+
+  roleInvalidFilter(r: Role): boolean {
+    return !r.name;
   }
 }

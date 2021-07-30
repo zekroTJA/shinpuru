@@ -46,10 +46,31 @@ func IndexOf(str string, arr []string) int {
 	return -1
 }
 
-// ContainsAny returns true if str is
+// ContainsAny returns true if str is contained
 // in arr.
 func ContainsAny(str string, arr []string) bool {
 	return IndexOf(str, arr) > -1
+}
+
+// NotContained returns an array of items which
+// contains all items of must not present in arr.
+func NotContained(must, arr []string) (notContained []string) {
+	if len(must) == 0 {
+		return []string{}
+	}
+
+	if len(arr) == 0 {
+		return must
+	}
+
+	notContained = make([]string, 0, len(must))
+	for _, m := range must {
+		if !ContainsAny(m, arr) {
+			notContained = append(notContained, m)
+		}
+	}
+
+	return
 }
 
 // HasPrefixAny returns true if the given str has

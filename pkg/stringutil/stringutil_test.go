@@ -1,6 +1,10 @@
 package stringutil
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestIsInteger(t *testing.T) {
 	if !IsInteger("123123") {
@@ -80,6 +84,30 @@ func TestContainsAny(t *testing.T) {
 	if ContainsAny("", arr) {
 		t.Error("not contained value was detected as contained")
 	}
+}
+
+func TestNotContained(t *testing.T) {
+	var arr, must, nc []string
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	must = nil
+	nc = NotContained(must, arr)
+	assert.ElementsMatch(t, nc, []string{})
+
+	arr = nil
+	must = []string{"0", "1", "2"}
+	nc = NotContained(must, arr)
+	assert.ElementsMatch(t, nc, must)
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	must = []string{"0", "1", "2"}
+	nc = NotContained(must, arr)
+	assert.ElementsMatch(t, nc, []string{})
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	must = []string{"0", "1", "2", "6", "7"}
+	nc = NotContained(must, arr)
+	assert.ElementsMatch(t, nc, []string{"6", "7"})
 }
 
 func TestHasPrefixAny(t *testing.T) {

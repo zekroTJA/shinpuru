@@ -357,6 +357,20 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 			return fiber.ErrUnauthorized
 		}
 
+		guildRoles, err := c.state.Roles(guildID, true)
+		if err != nil {
+			return err
+		}
+		guildRoleIDs := make([]string, len(guildRoles))
+		for i, role := range guildRoles {
+			guildRoleIDs[i] = role.ID
+		}
+
+		if nc := stringutil.NotContained(gs.AutoRoles, guildRoleIDs); len(nc) > 0 {
+			return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf(
+				"Following RoleIDs are not existent on this guild: [%s]", strings.Join(nc, ", ")))
+		}
+
 		if err = c.db.SetGuildAutoRole(guildID, gs.AutoRoles); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		}

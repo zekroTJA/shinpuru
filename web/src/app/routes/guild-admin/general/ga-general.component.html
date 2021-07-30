@@ -44,6 +44,7 @@
           [available]="guild.roles"
           [formatter]="roleNameFormatter"
           [filter]="roleInputFilter"
+          [invalidFilter]="roleInvalidFilter"
           placeholder="role name"
           [(ngModel)]="autoRoles"
         ></app-tags>
