@@ -385,6 +385,9 @@ func (m *MysqlMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 
 func (m *MysqlMiddleware) GetGuildAutoRole(guildID string) ([]string, error) {
 	val, err := m.getGuildSetting(guildID, "autorole")
+	if val == "" {
+		return []string{}, err
+	}
 	return strings.Split(val, ";"), err
 }
 

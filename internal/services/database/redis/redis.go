@@ -136,6 +136,10 @@ func (r *RedisMiddleware) GetGuildAutoRole(guildID string) ([]string, error) {
 		return nil, err
 	}
 
+	if valC == "" {
+		return []string{}, nil
+	}
+
 	return val, nil
 }
 
