@@ -106,7 +106,10 @@ export class GuildAdminGeneralComponent implements OnInit {
       return true;
     }
 
-    return v.name.toLowerCase().includes(inpt.toLowerCase());
+    return (
+      v.name !== '@everyone' &&
+      v.name.toLowerCase().includes(inpt.toLowerCase())
+    );
   }
 
   roleNameFormatter(r: Role): string {
