@@ -17,10 +17,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/dgrs"
 )
 
 var (
@@ -61,7 +63,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiDatabase,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &dummyDB{}, nil
+			return (*mysql.MysqlMiddleware)(nil), nil
 		},
 		Close: func(obj interface{}) error {
 			database := obj.(database.Database)
@@ -76,6 +78,13 @@ func main() {
 		Name: static.DiCommandHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return inits.InitCommandHandler(ctn), nil
+		},
+	})
+
+	diBuilder.Add(di.Def{
+		Name: static.DiState,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return (*dgrs.State)(nil), nil
 		},
 	})
 

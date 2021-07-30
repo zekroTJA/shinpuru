@@ -38,24 +38,17 @@
       *ngIf="guildSettingsContains('sp.guild.config.autorole')"
       class="settings-tile"
     >
-      <h5>Autorole</h5>
+      <h5>Autoroles</h5>
       <div>
-        <select
-          [(ngModel)]="settings.autorole"
-          (input)="updatedSettings.autorole = getSelectedValue($event)"
-        >
-          <option *ngFor="let r of guild.roles" [ngValue]="r.id">
-            {{ r.name }}
-          </option>
-        </select>
-        <button
-          (click)="
-            settings.autorole = '__RESET__';
-            updatedSettings.autorole = '__RESET__'
-          "
-        >
-          RESET
-        </button>
+        <app-tags
+          [available]="guild.roles"
+          [formatter]="roleNameFormatter"
+          [filter]="roleInputFilter"
+          [invalidFilter]="roleInvalidFilter"
+          placeholder="role name"
+          [(ngModel)]="autoRoles"
+        ></app-tags>
+        <button (click)="autoRoles = []">RESET</button>
       </div>
     </div>
     <div

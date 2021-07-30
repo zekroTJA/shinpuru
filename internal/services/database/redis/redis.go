@@ -118,34 +118,39 @@ func (r *RedisMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
 	return r.Database.SetGuildPrefix(guildID, newPrefix)
 }
 
-func (r *RedisMiddleware) GetGuildAutoRole(guildID string) (string, error) {
+func (r *RedisMiddleware) GetGuildAutoRole(guildID string) ([]string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildAutoRole, guildID)
 
-	val, err := r.client.Get(context.Background(), key).Result()
+	valC, err := r.client.Get(context.Background(), key).Result()
+	val := strings.Split(valC, ";")
 	if err == redis.Nil {
 		val, err = r.Database.GetGuildAutoRole(guildID)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
-		err = r.client.Set(context.Background(), key, val, 0).Err()
+		err = r.client.Set(context.Background(), key, strings.Join(val, ";"), 0).Err()
 		return val, err
 	}
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+
+	if valC == "" {
+		return []string{}, nil
 	}
 
 	return val, nil
 }
 
-func (r *RedisMiddleware) SetGuildAutoRole(guildID, autoRoleID string) error {
+func (r *RedisMiddleware) SetGuildAutoRole(guildID string, autoRoleIDs []string) error {
 	var key = fmt.Sprintf("%s:%s", keyGuildAutoRole, guildID)
 
-	if err := r.client.Set(context.Background(), key, autoRoleID, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, strings.Join(autoRoleIDs, ";"), 0).Err(); err != nil {
 		return err
 	}
 
-	return r.Database.SetGuildAutoRole(guildID, autoRoleID)
+	return r.Database.SetGuildAutoRole(guildID, autoRoleIDs)
 }
 
 func (r *RedisMiddleware) GetGuildModLog(guildID string) (string, error) {

@@ -8,6 +8,7 @@ import {
   Guild,
   GuildSettings,
   JoinlogEntry,
+  Role,
 } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
@@ -26,6 +27,7 @@ export class GuildAdminGeneralComponent implements OnInit {
     format(new Date(d), f);
   public settings: GuildSettings;
   public updatedSettings = {} as GuildSettings;
+  public autoRoles: Role[] = [];
 
   private guildID: string;
   private guild: Guild;
@@ -51,6 +53,13 @@ export class GuildAdminGeneralComponent implements OnInit {
         a.startsWith('sp.guild.')
       );
       this.settings = await this.api.getGuildSettings(this.guildID).toPromise();
+      this.autoRoles = this.settings.autoroles.map(
+        (rid) =>
+          this.guild.roles.find((r) => r.id === rid) ??
+          ({
+            id: rid,
+          } as Role)
+      );
     });
   }
 
@@ -76,6 +85,7 @@ export class GuildAdminGeneralComponent implements OnInit {
   }
 
   public saveGuildSettings() {
+    this.updatedSettings.autoroles = this.autoRoles.map((r) => r.id);
     this.api
       .postGuildSettings(this.guild.id, this.updatedSettings)
       .subscribe((res) => {
@@ -89,5 +99,24 @@ export class GuildAdminGeneralComponent implements OnInit {
           );
         }
       });
+  }
+
+  roleInputFilter(v: Role, inpt: string): boolean {
+    if (v.id === inpt) {
+      return true;
+    }
+
+    return (
+      v.name !== '@everyone' &&
+      v.name.toLowerCase().includes(inpt.toLowerCase())
+    );
+  }
+
+  roleNameFormatter(r: Role): string {
+    return r.name ?? `<deleted Role> ${r.id}`;
+  }
+
+  roleInvalidFilter(r: Role): boolean {
+    return !r.name;
   }
 }

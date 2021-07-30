@@ -187,7 +187,7 @@ func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value 
 		return
 	}
 
-	guild, err := k.st.Guild(guildID)
+	guild, err := k.st.Guild(guildID, true)
 	if err != nil {
 		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed getting guild details")
 		k.gl.Errorf(guildID, "Failed getting guild details: %s", err.Error())

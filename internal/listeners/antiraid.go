@@ -99,7 +99,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		VerificationLevel: &verificationLvl,
 	})
 
-	guild, err := l.st.Guild(e.GuildID)
+	guild, err := l.st.Guild(e.GuildID, true)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild")
 		return

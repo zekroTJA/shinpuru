@@ -31,6 +31,7 @@ export class TagsInputComponent implements ControlValueAccessor {
   ) => {
     return this.formatter(v).toLowerCase().includes(inpt.toLowerCase());
   };
+  @Input() public invalidFilter: (v: any) => boolean = (v: any) => false;
 
   private onTouchedCallback: () => void = () => {};
   private onChangeCallback: (_: any) => void = () => {};
@@ -49,6 +50,7 @@ export class TagsInputComponent implements ControlValueAccessor {
   }
 
   public onAdd(e: any) {
+    if (this.invalidFilter(e)) return;
     this.value.push(e);
     this.suggested = [];
     this.inputTxt = '';
