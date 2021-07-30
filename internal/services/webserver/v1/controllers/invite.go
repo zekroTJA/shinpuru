@@ -38,19 +38,19 @@ func (c *InviteController) getInvite(ctx *fiber.Ctx) error {
 }
 
 func (c *InviteController) getInviteSvg(ctx *fiber.Ctx) error {
+	title := ctx.Query("title", "invite")
+	color := ctx.Query("color", badge.ColorGreen.String())
+
 	nGuilds, err := c.getNGuilds()
 	if err != nil {
 		return err
 	}
-	var plural string
-	if nGuilds > 1 {
-		plural = "s"
-	}
+
 	ctx.Response().Header.SetContentType("image/svg+xml")
 	err = badge.Render(
-		"invite",
-		fmt.Sprintf("%d guild%s", nGuilds, plural),
-		badge.ColorGreen, ctx)
+		title,
+		fmt.Sprintf("%d %s", nGuilds, util.Pluralize(nGuilds, "guild")),
+		badge.Color(color), ctx)
 	if err != nil {
 		return err
 	}
