@@ -78,7 +78,7 @@ func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
 	const typ = 0
 	rep.ID = typ
 
-	guild, err := r.st.Guild(rep.GuildID)
+	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 		return nil, err
 	}
 
-	guild, err := r.st.Guild(rep.GuildID)
+	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 		return nil, err
 	}
 
-	guild, err := r.st.Guild(rep.GuildID)
+	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +208,7 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 // RevokeMute removes the mute role of the specified victim and sends
 // an unmute embed to the users DMs and to the mod log channel.
 func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRoleID string) (emb *discordgo.MessageEmbed, err error) {
-	guild, err := r.st.Guild(guildID)
+	guild, err := r.st.Guild(guildID, true)
 	if err != nil {
 		return nil, err
 	}

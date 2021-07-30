@@ -89,7 +89,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 		return fiber.ErrNotFound
 	}
 
-	guild, err := c.st.Guild(guildID)
+	guild, err := c.st.Guild(guildID, true)
 	if err != nil {
 		return err
 	}

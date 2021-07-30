@@ -119,7 +119,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 	}
 
 	if guildID != "" {
-		guild, err := m.st.Guild(guildID)
+		guild, err := m.st.Guild(guildID, true)
 		if err != nil {
 			return permissions.PermissionArray{}, false, nil
 		}

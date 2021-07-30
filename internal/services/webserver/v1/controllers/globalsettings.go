@@ -102,7 +102,7 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 		}
 	}
 
-	guild, err := c.st.Guild(guildID)
+	guild, err := c.st.Guild(guildID, true)
 	if apiErr, ok := err.(*discordgo.RESTError); ok && apiErr.Message.Code == discordgo.ErrCodeMissingAccess {
 		if err = c.db.SetSetting(static.SettingWIInviteGuildID, ""); err != nil {
 			return err
@@ -184,7 +184,7 @@ func (c *GlobalSettingsController) postNoGuildInvites(ctx *fiber.Ctx) error {
 
 	if req.GuildID != "" {
 
-		guild, err := c.st.Guild(req.GuildID)
+		guild, err := c.st.Guild(req.GuildID, true)
 		if err != nil {
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
 		}
