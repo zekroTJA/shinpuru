@@ -86,6 +86,35 @@ func TestContainsAny(t *testing.T) {
 	}
 }
 
+func TestContained(t *testing.T) {
+	var arr, subset, ct []string
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	subset = nil
+	ct = Contained(subset, arr)
+	assert.ElementsMatch(t, ct, []string{})
+
+	arr = nil
+	subset = []string{"0", "1"}
+	ct = Contained(subset, arr)
+	assert.ElementsMatch(t, ct, []string{})
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	subset = []string{"0", "1", "2"}
+	ct = Contained(subset, arr)
+	assert.ElementsMatch(t, ct, []string{"0", "1", "2"})
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	subset = []string{"0", "1", "2", "6", "7", "8"}
+	ct = Contained(subset, arr)
+	assert.ElementsMatch(t, ct, []string{"0", "1", "2"})
+
+	arr = []string{"0", "1", "2", "3", "4", "5"}
+	subset = []string{"6", "7", "8"}
+	ct = Contained(subset, arr)
+	assert.ElementsMatch(t, ct, []string{})
+}
+
 func TestNotContained(t *testing.T) {
 	var arr, must, nc []string
 

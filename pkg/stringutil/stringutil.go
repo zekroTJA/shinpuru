@@ -52,6 +52,24 @@ func ContainsAny(str string, arr []string) bool {
 	return IndexOf(str, arr) > -1
 }
 
+// Contained returns an array of items which
+// contains all items of subset which are also
+// present in arr.
+func Contained(subset, arr []string) (contained []string) {
+	if len(subset) == 0 || len(arr) == 0 {
+		return []string{}
+	}
+
+	contained = make([]string, 0, len(arr))
+	for _, s := range subset {
+		if ContainsAny(s, arr) {
+			contained = append(contained, s)
+		}
+	}
+
+	return
+}
+
 // NotContained returns an array of items which
 // contains all items of must not present in arr.
 func NotContained(must, arr []string) (notContained []string) {

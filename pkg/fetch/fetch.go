@@ -6,7 +6,6 @@
 package fetch
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 
@@ -14,10 +13,6 @@ import (
 )
 
 var (
-	// ErrNotFound is returned when an object could
-	// not be found
-	ErrNotFound = errors.New("not found")
-
 	roleCheckFuncs = []func(*discordgo.Role, string) bool{
 		// 1. ID exact match
 		func(r *discordgo.Role, resolvable string) bool {
@@ -116,7 +111,7 @@ var (
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchRole(s *discordgo.Session, guildID, resolvable string, condition ...func(*discordgo.Role) bool) (*discordgo.Role, error) {
+func FetchRole(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Role) bool) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildID)
 	if err != nil {
 		return nil, err
@@ -147,7 +142,7 @@ func FetchRole(s *discordgo.Session, guildID, resolvable string, condition ...fu
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchMember(s *discordgo.Session, guildID, resolvable string, condition ...func(*discordgo.Member) bool) (*discordgo.Member, error) {
+func FetchMember(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Member) bool) (*discordgo.Member, error) {
 	rx := regexp.MustCompile("<@|!|>")
 	resolvable = rx.ReplaceAllString(resolvable, "")
 	var lastUserID string
@@ -188,7 +183,7 @@ func FetchMember(s *discordgo.Session, guildID, resolvable string, condition ...
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchChannel(s *discordgo.Session, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
+func FetchChannel(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
 	channels, err := s.GuildChannels(guildID)
 	if err != nil {
 		return nil, err
