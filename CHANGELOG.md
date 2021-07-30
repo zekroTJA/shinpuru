@@ -1,34 +1,38 @@
-1.19.0
+1.20.0
 
-![](https://i.imgur.com/Dy0Xbr7.png)
+## Changes
 
-## Minor Changes
+### Using Reactions to control `clear` command [#249]
 
-- Updated the visual representation of the guild dropdown.  
-  ![](https://i.imgur.com/zg6Sf2l.png)
+You can now either select single messages to be deleted by adding the ❌ reaction to the messages or you can delete all messages after (and including) the message marked with the 🔻 reaction. The delete action is then performed on entering the [`clear selected`](https://github.com/zekroTJA/shinpuru/wiki/Commands#clear) command.
 
-- Use skeleton tiles as loading indicators instead of spinners.  
-  ![](https://user-images.githubusercontent.com/16734205/126753381-224a6a62-33ec-4dd0-814e-ab71c0699fa3.gif)
+https://user-images.githubusercontent.com/16734205/126893039-d23dbe44-8bdd-4ab0-b03e-793168fbf620.mov
 
-## Bug Fixes
+https://user-images.githubusercontent.com/16734205/126893059-7e54c886-9c95-4d13-ab2d-3b458614d723.mov
 
-- Role position diffs are now properly checked on each ban/kick/mute/unmute report execution.
+### Setting multiple autoroles [#147]
 
-- Fixed guild settings button alignment.  
-  ![](https://i.imgur.com/6rL1lKD.png)
+You can now set multiple autoroles in the web interface as well as via the [`autorole`](https://github.com/zekroTJA/shinpuru/wiki/Commands#autorole) command.
 
-- Fixed guild tiles alignment in home view.  
-  ![](https://i.imgur.com/1nDlAr7.png)
+![](https://i.imgur.com/JDO30Uf.gif)
 
-- Fixed displaying animated guild icons.  
-  ![](https://i.imgur.com/IbIhS7p.gif)
+https://user-images.githubusercontent.com/16734205/127679480-fec63b3b-11e4-4ba7-a5f8-4e62c657e612.mov
 
-- The menu dropdown now properly closes when clicking on the user tile.  
-  ![](https://i.imgur.com/0uYa7Qd.gif)
+### Invite Badge
 
-- Anonymous report creation will no more result in a `404 Member not found` error.
+As you might know, when the web interface is enabled, you can use `<address>/invite` as redirect link to the invite link of the bot instance (see https://shnp.de/invite, for example). Additional to that, an endpoint was added which generates a badge with the current guild count of the instance.
 
-- Report timeouts can now also be defined when creating anonymous reports.
+Examples:
+
+- ![](https://shnp.de/invite/badge.svg) `https://shnp.de/invite/badge.svg`
+- ![](https://c.shnp.de/invite/badge.svg?title=invite%20(canary)&color=orange) `https://c.shnp.de/invite/badge.svg?title=invite%20(canary)&color=orange`
+
+## Bugfixes
+
+- shireikan now also uses dgrs state when passed.
+- Hydrated guild states are now obtained where required.
+- The tagxinput component has now proper item alignment.
+- Setting `@everyone` as autorole is no more possible.
 
 # Docker
 
@@ -39,11 +43,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.19.0
+$ docker pull zekro/shinpuru:1.20.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.19.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.20.0
 ```
