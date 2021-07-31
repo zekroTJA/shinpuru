@@ -123,6 +123,152 @@
                 }
             }
         },
+        "/settings/noguildinvite": {
+            "get": {
+                "description": "Returns the settings status for the suggested guild invite when the logged in user is not on any guild with shinpuru.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get No Guild Invites Status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteSettingsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Returned when no channel could be found to create invite for.",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set the status for the suggested guild invite when the logged in user is not on any guild with shinpuru.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Set No Guild Invites Status",
+                "parameters": [
+                    {
+                        "description": "Invite Settings Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InviteSettingsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APITokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Returned when no channel could be found to create invite for.",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/presence": {
+            "get": {
+                "description": "Returns the bot's displayed presence status.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get Presence",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presence.Presence"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set the bot's displayed presence status.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Set Presence",
+                "parameters": [
+                    {
+                        "description": "Presence Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presence.Presence"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APITokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Is returned when no token was generated before.",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/sysinfo": {
             "get": {
                 "description": "Returns general global system information.",
@@ -303,6 +449,207 @@
         }
     },
     "definitions": {
+        "discordgo.Channel": {
+            "type": "object",
+            "properties": {
+                "application_id": {
+                    "description": "ApplicationID of the DM creator Zeroed if guild channel or not a bot user",
+                    "type": "string"
+                },
+                "bitrate": {
+                    "description": "The bitrate of the channel, if it is a voice channel.",
+                    "type": "integer"
+                },
+                "guild_id": {
+                    "description": "The ID of the guild to which the channel belongs, if it is in a guild.\nElse, this ID is empty (e.g. DM channels).",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "Icon of the group DM channel.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The ID of the channel.",
+                    "type": "string"
+                },
+                "last_message_id": {
+                    "description": "The ID of the last message sent in the channel. This is not\nguaranteed to be an ID of a valid message.",
+                    "type": "string"
+                },
+                "last_pin_timestamp": {
+                    "description": "The timestamp of the last pinned message in the channel.\nEmpty if the channel has no pinned messages.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the channel.",
+                    "type": "string"
+                },
+                "nsfw": {
+                    "description": "Whether the channel is marked as NSFW.",
+                    "type": "boolean"
+                },
+                "owner_id": {
+                    "description": "ID of the DM creator Zeroed if guild channel",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "The ID of the parent channel, if the channel is under a category",
+                    "type": "string"
+                },
+                "permission_overwrites": {
+                    "description": "A list of permission overwrites present for the channel.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.PermissionOverwrite"
+                    }
+                },
+                "position": {
+                    "description": "The position of the channel, used for sorting in client.",
+                    "type": "integer"
+                },
+                "rate_limit_per_user": {
+                    "description": "Amount of seconds a user has to wait before sending another message (0-21600)\nbots, as well as users with the permission manage_messages or manage_channel, are unaffected",
+                    "type": "integer"
+                },
+                "recipients": {
+                    "description": "The recipients of the channel. This is only populated in DM channels.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.User"
+                    }
+                },
+                "topic": {
+                    "description": "The topic of the channel.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "The type of the channel.",
+                    "type": "integer"
+                },
+                "user_limit": {
+                    "description": "The user limit of the voice channel.",
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.PermissionOverwrite": {
+            "type": "object",
+            "properties": {
+                "allow": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "deny": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.Role": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "description": "The hex color of this role.",
+                    "type": "integer"
+                },
+                "hoist": {
+                    "description": "Whether this role is hoisted (shows up separately in member list).",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "The ID of the role.",
+                    "type": "string"
+                },
+                "managed": {
+                    "description": "Whether this role is managed by an integration, and\nthus cannot be manually added to, or taken from, members.",
+                    "type": "boolean"
+                },
+                "mentionable": {
+                    "description": "Whether this role is mentionable.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "The name of the role.",
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "The permissions of the role on the guild (doesn't include channel overrides).\nThis is a combination of bit masks; the presence of a certain permission can\nbe checked by performing a bitwise AND between this int and the permission.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "position": {
+                    "description": "The position of this role in the guild's role hierarchy.",
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "The hash of the user's avatar. Use Session.UserAvatar\nto retrieve the avatar itself.",
+                    "type": "string"
+                },
+                "bot": {
+                    "description": "Whether the user is a bot.",
+                    "type": "boolean"
+                },
+                "discriminator": {
+                    "description": "The discriminator of the user (4 numbers after name).",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "The email of the user. This is only present when\nthe application possesses the email scope for the user.",
+                    "type": "string"
+                },
+                "flags": {
+                    "description": "The flags on a user's account.\nOnly available when the request is authorized via a Bearer token.",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "The ID of the user.",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "The user's chosen language option.",
+                    "type": "string"
+                },
+                "mfa_enabled": {
+                    "description": "Whether the user has multi-factor authentication enabled.",
+                    "type": "boolean"
+                },
+                "premium_type": {
+                    "description": "The type of Nitro subscription on a user's account.\nOnly available when the request is authorized via a Bearer token.",
+                    "type": "integer"
+                },
+                "public_flags": {
+                    "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
+                    "type": "integer"
+                },
+                "system": {
+                    "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
+                    "type": "boolean"
+                },
+                "token": {
+                    "description": "The token of the user. This is only present for\nthe user represented by the current session.",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "The user's username.",
+                    "type": "string"
+                },
+                "verified": {
+                    "description": "Whether the user's email is verified.",
+                    "type": "boolean"
+                }
+            }
+        },
         "models.APITokenResponse": {
             "type": "object",
             "properties": {
@@ -380,6 +727,117 @@
                 }
             }
         },
+        "models.Guild": {
+            "type": "object",
+            "properties": {
+                "afk_channel_id": {
+                    "type": "string"
+                },
+                "backups_enabled": {
+                    "type": "boolean"
+                },
+                "banner": {
+                    "type": "string"
+                },
+                "channels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.Channel"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "icon_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invite_block_enabled": {
+                    "type": "boolean"
+                },
+                "joined_at": {
+                    "type": "string"
+                },
+                "large": {
+                    "type": "boolean"
+                },
+                "latest_backup_entry": {
+                    "type": "string"
+                },
+                "member_count": {
+                    "type": "integer"
+                },
+                "mfa_level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "premium_subscription_count": {
+                    "type": "integer"
+                },
+                "premium_tier": {
+                    "type": "integer"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.Role"
+                    }
+                },
+                "self_member": {
+                    "$ref": "#/definitions/models.Member"
+                },
+                "splash": {
+                    "type": "string"
+                },
+                "unavailable": {
+                    "type": "boolean"
+                },
+                "verification_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.InviteSettingsRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "invite_code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.InviteSettingsResponse": {
+            "type": "object",
+            "properties": {
+                "guild": {
+                    "$ref": "#/definitions/models.Guild"
+                },
+                "invite_url": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.LandingPageResponse": {
             "type": "object",
             "properties": {
@@ -391,6 +849,68 @@
                 },
                 "publicmaininvite": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Member": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "chat_muted": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deaf": {
+                    "description": "Whether the member is deafened at a guild level.",
+                    "type": "boolean"
+                },
+                "dominance": {
+                    "type": "integer"
+                },
+                "guild_id": {
+                    "description": "The guild ID on which the member exists.",
+                    "type": "string"
+                },
+                "joined_at": {
+                    "description": "The time at which the member joined the guild, in ISO8601.",
+                    "type": "string"
+                },
+                "karma": {
+                    "type": "integer"
+                },
+                "karma_total": {
+                    "type": "integer"
+                },
+                "mute": {
+                    "description": "Whether the member is muted at a guild level.",
+                    "type": "boolean"
+                },
+                "nick": {
+                    "description": "The nickname of the member, if they have one.",
+                    "type": "string"
+                },
+                "pending": {
+                    "description": "Is true while the member hasn't accepted the membership screen.",
+                    "type": "boolean"
+                },
+                "premium_since": {
+                    "description": "When the user used their Nitro boost on the server",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "A list of IDs of the roles which are possessed by the member.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "description": "The underlying user on which the member is based.",
+                    "$ref": "#/definitions/discordgo.User"
                 }
             }
         },
@@ -525,6 +1045,17 @@
                 "verified": {
                     "description": "Whether the user's email is verified.",
                     "type": "boolean"
+                }
+            }
+        },
+        "presence.Presence": {
+            "type": "object",
+            "properties": {
+                "game": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
