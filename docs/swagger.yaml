@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  models.APITokenResponse:
+    properties:
+      created:
+        type: string
+      expires:
+        type: string
+      hits:
+        type: integer
+      last_access:
+        type: string
+      token:
+        type: string
+    type: object
   models.AccessTokenResponse:
     properties:
       expires:
@@ -259,6 +272,61 @@ paths:
           schema:
             $ref: '#/definitions/models.SystemInfo'
       summary: System Information
+  /token:
+    delete:
+      consumes:
+      - application/json
+      description: Invalidates the currently generated API token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: API Token Deletion
+    get:
+      consumes:
+      - application/json
+      description: Returns general metadata information about a generated API token.
+        The response does **not** contain the actual token!
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APITokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Is returned when no token was generated before.
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: API Token Info
+    post:
+      consumes:
+      - application/json
+      description: (Re-)Generates and returns general metadata information about an
+        API token **including** the actual API token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APITokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: API Token Generation
   /util/color/:hexcode:
     get:
       consumes:

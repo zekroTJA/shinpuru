@@ -108,6 +108,57 @@ Returns general global system information.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.SystemInfo](#modelssysteminfo) |
 
+### /token
+
+#### GET
+##### Summary
+
+API Token Info
+
+##### Description
+
+Returns general metadata information about a generated API token. The response does **not** contain the actual token!
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Is returned when no token was generated before. | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+API Token Generation
+
+##### Description
+
+(Re-)Generates and returns general metadata information about an API token **including** the actual API token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
+#### DELETE
+##### Summary
+
+API Token Deletion
+
+##### Description
+
+Invalidates the currently generated API token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
 ### /util/color/:hexcode
 
 #### GET
@@ -167,6 +218,16 @@ Returns general information for the landing page like the local invite parameter
 | 200 | OK | [models.LandingPageResponse](#modelslandingpageresponse) |
 
 ### Models
+
+#### models.APITokenResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| created | string |  | No |
+| expires | string |  | No |
+| hits | integer |  | No |
+| last_access | string |  | No |
+| token | string |  | No |
 
 #### models.AccessTokenResponse
 

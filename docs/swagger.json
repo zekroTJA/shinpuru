@@ -143,6 +143,86 @@
                 }
             }
         },
+        "/token": {
+            "get": {
+                "description": "Returns general metadata information about a generated API token. The response does **not** contain the actual token!",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "API Token Info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APITokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Is returned when no token was generated before.",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "(Re-)Generates and returns general metadata information about an API token **including** the actual API token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "API Token Generation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APITokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Invalidates the currently generated API token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "API Token Deletion",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/util/color/:hexcode": {
             "get": {
                 "description": "Produces a square image of the given color and size.",
@@ -223,6 +303,26 @@
         }
     },
     "definitions": {
+        "models.APITokenResponse": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "expires": {
+                    "type": "string"
+                },
+                "hits": {
+                    "type": "integer"
+                },
+                "last_access": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AccessTokenResponse": {
             "type": "object",
             "properties": {
