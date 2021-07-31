@@ -1,5 +1,35 @@
 basePath: /api/v1
 definitions:
+  models.CommandInfo:
+    properties:
+      description:
+        type: string
+      domain_name:
+        type: string
+      group:
+        type: string
+      help:
+        type: string
+      invokes:
+        items:
+          type: string
+        type: array
+      is_executable_in_dm:
+        type: boolean
+      sub_permission_rules:
+        items:
+          $ref: '#/definitions/shireikan.SubPermission'
+        type: array
+    type: object
+  models.LandingPageResponse:
+    properties:
+      localinvite:
+        type: string
+      publiccaranyinvite:
+        type: string
+      publicmaininvite:
+        type: string
+    type: object
   models.SystemInfo:
     properties:
       arch:
@@ -102,6 +132,15 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
+  shireikan.SubPermission:
+    properties:
+      description:
+        type: string
+      explicit:
+        type: boolean
+      term:
+        type: string
+    type: object
 info:
   contact: {}
   description: The shinpuru main REST API.
@@ -134,4 +173,54 @@ paths:
           schema:
             $ref: '#/definitions/models.SystemInfo'
       summary: System Information
+  /util/color/:hexcode:
+    get:
+      consumes:
+      - application/json
+      description: Produces a square image of the given color and size.
+      parameters:
+      - description: Hex Code of the Color to produce
+        in: path
+        name: hexcode
+        required: true
+        type: string
+      - description: 'The dimension of the square image (default: 24)'
+        in: query
+        name: size
+        type: integer
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: data
+      summary: Color Generator
+  /util/commands:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of registered commands and their description.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            $ref: '#/definitions/models.CommandInfo'
+      summary: Command List
+  /util/landingpageinfo:
+    get:
+      consumes:
+      - application/json
+      description: Returns general information for the landing page like the local
+        invite parameters.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LandingPageResponse'
+      summary: Landing Page Info
 swagger: "2.0"

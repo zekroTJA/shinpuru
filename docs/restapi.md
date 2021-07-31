@@ -37,7 +37,85 @@ Returns general global system information.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.SystemInfo](#modelssysteminfo) |
 
+### /util/color/:hexcode
+
+#### GET
+##### Summary
+
+Color Generator
+
+##### Description
+
+Produces a square image of the given color and size.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| hexcode | path | Hex Code of the Color to produce | Yes | string |
+| size | query | The dimension of the square image (default: 24) | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | data |
+
+### /util/commands
+
+#### GET
+##### Summary
+
+Command List
+
+##### Description
+
+Returns a list of registered commands and their description.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [models.CommandInfo](#modelscommandinfo) |
+
+### /util/landingpageinfo
+
+#### GET
+##### Summary
+
+Landing Page Info
+
+##### Description
+
+Returns general information for the landing page like the local invite parameters.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.LandingPageResponse](#modelslandingpageresponse) |
+
 ### Models
+
+#### models.CommandInfo
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| description | string |  | No |
+| domain_name | string |  | No |
+| group | string |  | No |
+| help | string |  | No |
+| invokes | [ string ] |  | No |
+| is_executable_in_dm | boolean |  | No |
+| sub_permission_rules | [ [shireikan.SubPermission](#shireikansubpermission) ] |  | No |
+
+#### models.LandingPageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| localinvite | string |  | No |
+| publiccaranyinvite | string |  | No |
+| publicmaininvite | string |  | No |
 
 #### models.SystemInfo
 
@@ -82,3 +160,11 @@ Returns general global system information.
 | token | string | The token of the user. This is only present for the user represented by the current session. | No |
 | username | string | The user's username. | No |
 | verified | boolean | Whether the user's email is verified. | No |
+
+#### shireikan.SubPermission
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| description | string |  | No |
+| explicit | boolean |  | No |
+| term | string |  | No |

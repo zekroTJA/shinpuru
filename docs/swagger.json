@@ -47,9 +47,130 @@
                     }
                 }
             }
+        },
+        "/util/color/:hexcode": {
+            "get": {
+                "description": "Produces a square image of the given color and size.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "image/png"
+                ],
+                "summary": "Color Generator",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hex Code of the Color to produce",
+                        "name": "hexcode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The dimension of the square image (default: 24)",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "data"
+                        }
+                    }
+                }
+            }
+        },
+        "/util/commands": {
+            "get": {
+                "description": "Returns a list of registered commands and their description.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Command List",
+                "responses": {
+                    "200": {
+                        "description": "Wrapped in models.ListResponse",
+                        "schema": {
+                            "$ref": "#/definitions/models.CommandInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/util/landingpageinfo": {
+            "get": {
+                "description": "Returns general information for the landing page like the local invite parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Landing Page Info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LandingPageResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.CommandInfo": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "domain_name": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "help": {
+                    "type": "string"
+                },
+                "invokes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_executable_in_dm": {
+                    "type": "boolean"
+                },
+                "sub_permission_rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shireikan.SubPermission"
+                    }
+                }
+            }
+        },
+        "models.LandingPageResponse": {
+            "type": "object",
+            "properties": {
+                "localinvite": {
+                    "type": "string"
+                },
+                "publiccaranyinvite": {
+                    "type": "string"
+                },
+                "publicmaininvite": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SystemInfo": {
             "type": "object",
             "properties": {
@@ -173,6 +294,20 @@
                 "verified": {
                     "description": "Whether the user's email is verified.",
                     "type": "boolean"
+                }
+            }
+        },
+        "shireikan.SubPermission": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "explicit": {
+                    "type": "boolean"
+                },
+                "term": {
+                    "type": "string"
                 }
             }
         }
