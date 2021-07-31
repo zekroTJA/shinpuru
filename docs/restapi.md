@@ -3,6 +3,59 @@ The shinpuru main REST API.
 
 ## Version: 1.0
 
+### /auth/accesstoken
+
+#### POST
+##### Summary
+
+Access Token Exchange
+
+##### Description
+
+Exchanges the cookie-passed refresh token with a generated access token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
+### /auth/check
+
+#### GET
+##### Summary
+
+Authorization Check
+
+##### Description
+
+Returns OK if the request is authorized.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
+### /auth/logout
+
+#### POST
+##### Summary
+
+Logout
+
+##### Description
+
+Reovkes the currently used access token and clears the refresh token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+
 ### /me
 
 #### GET
@@ -76,7 +129,7 @@ Returns a list of registered commands and their description.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [models.CommandInfo](#modelscommandinfo) |
+| 200 | Wrapped in models.ListResponse | [ [models.CommandInfo](#modelscommandinfo) ] |
 
 ### /util/landingpageinfo
 
@@ -97,6 +150,13 @@ Returns general information for the landing page like the local invite parameter
 
 ### Models
 
+#### models.AccessTokenResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| expires | string |  | No |
+| token | string |  | No |
+
 #### models.CommandInfo
 
 | Name | Type | Description | Required |
@@ -109,6 +169,14 @@ Returns general information for the landing page like the local invite parameter
 | is_executable_in_dm | boolean |  | No |
 | sub_permission_rules | [ [shireikan.SubPermission](#shireikansubpermission) ] |  | No |
 
+#### models.Error
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| code | integer |  | No |
+| context | string |  | No |
+| error | string |  | No |
+
 #### models.LandingPageResponse
 
 | Name | Type | Description | Required |
@@ -116,6 +184,12 @@ Returns general information for the landing page like the local invite parameter
 | localinvite | string |  | No |
 | publiccaranyinvite | string |  | No |
 | publicmaininvite | string |  | No |
+
+#### models.Status
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| code | integer |  | No |
 
 #### models.SystemInfo
 

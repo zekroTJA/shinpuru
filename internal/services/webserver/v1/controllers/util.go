@@ -132,7 +132,7 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 // @Description Returns a list of registered commands and their description.
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.CommandInfo "Wrapped in models.ListResponse"
+// @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"
 // @Router /util/commands [get]
 func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
 	cmdInstances := c.cmdHandler.GetCommandInstances()

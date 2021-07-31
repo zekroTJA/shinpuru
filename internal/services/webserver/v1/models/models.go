@@ -32,6 +32,12 @@ type AccessTokenResponse struct {
 	Expires time.Time `json:"expires"`
 }
 
+type Error struct {
+	Error   string `json:"error"`
+	Code    int    `json:"code"`
+	Context string `json:"context,omitempty"`
+}
+
 // ListResponse wraps a list response object
 // with the list as Data and N as len(Data).
 type ListResponse struct {

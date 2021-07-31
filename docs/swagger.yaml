@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  models.AccessTokenResponse:
+    properties:
+      expires:
+        type: string
+      token:
+        type: string
+    type: object
   models.CommandInfo:
     properties:
       description:
@@ -21,6 +28,15 @@ definitions:
           $ref: '#/definitions/shireikan.SubPermission'
         type: array
     type: object
+  models.Error:
+    properties:
+      code:
+        type: integer
+      context:
+        type: string
+      error:
+        type: string
+    type: object
   models.LandingPageResponse:
     properties:
       localinvite:
@@ -29,6 +45,11 @@ definitions:
         type: string
       publicmaininvite:
         type: string
+    type: object
+  models.Status:
+    properties:
+      code:
+        type: integer
     type: object
   models.SystemInfo:
     properties:
@@ -147,6 +168,55 @@ info:
   title: shinpuru main API
   version: "1.0"
 paths:
+  /auth/accesstoken:
+    post:
+      consumes:
+      - application/json
+      description: Exchanges the cookie-passed refresh token with a generated access
+        token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccessTokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Access Token Exchange
+  /auth/check:
+    get:
+      consumes:
+      - application/json
+      description: Returns OK if the request is authorized.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Authorization Check
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Reovkes the currently used access token and clears the refresh
+        token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+      summary: Logout
   /me:
     get:
       consumes:
@@ -207,7 +277,9 @@ paths:
         "200":
           description: Wrapped in models.ListResponse
           schema:
-            $ref: '#/definitions/models.CommandInfo'
+            items:
+              $ref: '#/definitions/models.CommandInfo'
+            type: array
       summary: Command List
   /util/landingpageinfo:
     get:

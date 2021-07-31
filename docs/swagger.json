@@ -8,6 +8,78 @@
     },
     "basePath": "/api/v1",
     "paths": {
+        "/auth/accesstoken": {
+            "post": {
+                "description": "Exchanges the cookie-passed refresh token with a generated access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Access Token Exchange",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccessTokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/check": {
+            "get": {
+                "description": "Returns OK if the request is authorized.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Authorization Check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "description": "Reovkes the currently used access token and clears the refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "description": "Returns the user object of the currently authenticated user.",
@@ -97,7 +169,10 @@
                     "200": {
                         "description": "Wrapped in models.ListResponse",
                         "schema": {
-                            "$ref": "#/definitions/models.CommandInfo"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CommandInfo"
+                            }
                         }
                     }
                 }
@@ -125,6 +200,17 @@
         }
     },
     "definitions": {
+        "models.AccessTokenResponse": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CommandInfo": {
             "type": "object",
             "properties": {
@@ -157,6 +243,20 @@
                 }
             }
         },
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "context": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
         "models.LandingPageResponse": {
             "type": "object",
             "properties": {
@@ -168,6 +268,14 @@
                 },
                 "publicmaininvite": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Status": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
                 }
             }
         },
