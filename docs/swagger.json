@@ -100,6 +100,29 @@
                 }
             }
         },
+        "/ota": {
+            "get": {
+                "description": "Logs in the current browser session by using the passed pre-obtained OTA token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "OTA Login",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/sysinfo": {
             "get": {
                 "description": "Returns general global system information.",

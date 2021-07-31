@@ -73,6 +73,24 @@ Returns the user object of the currently authenticated user.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.User](#modelsuser) |
 
+### /ota
+
+#### GET
+##### Summary
+
+OTA Login
+
+##### Description
+
+Logs in the current browser session by using the passed pre-obtained OTA token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 |  |  |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
 ### /sysinfo
 
 #### GET

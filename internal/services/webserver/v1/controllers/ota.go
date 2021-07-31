@@ -32,6 +32,13 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 	router.Get("", c.getOta)
 }
 
+// @Summary OTA Login
+// @Description Logs in the current browser session by using the passed pre-obtained OTA token.
+// @Accept json
+// @Produce json
+// @Success 200
+// @Failure 401 {object} models.Error
+// @Router /ota [get]
 func (c *OTAController) getOta(ctx *fiber.Ctx) error {
 	token := ctx.Query("token")
 
