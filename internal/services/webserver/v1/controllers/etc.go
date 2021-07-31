@@ -36,6 +36,12 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/sysinfo", c.getSysinfo)
 }
 
+// @Summary Me
+// @Description Returns the user object of the currently authenticated user.
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /me [get]
 func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -56,6 +62,12 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 	return ctx.JSON(res)
 }
 
+// @Summary System Information
+// @Description Returns general global system information.
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SystemInfo
+// @Router /sysinfo [get]
 func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 	buildTS, _ := strconv.Atoi(embedded.AppDate)
 	buildDate := time.Unix(int64(buildTS), 0)

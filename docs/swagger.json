@@ -1,0 +1,180 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "The shinpuru main REST API.",
+        "title": "shinpuru main API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/me": {
+            "get": {
+                "description": "Returns the user object of the currently authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Me",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/sysinfo": {
+            "get": {
+                "description": "Returns general global system information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "System Information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SystemInfo"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.SystemInfo": {
+            "type": "object",
+            "properties": {
+                "arch": {
+                    "type": "string"
+                },
+                "bot_invite": {
+                    "type": "string"
+                },
+                "bot_user_id": {
+                    "type": "string"
+                },
+                "build_date": {
+                    "type": "string"
+                },
+                "commit_hash": {
+                    "type": "string"
+                },
+                "cpus": {
+                    "type": "integer"
+                },
+                "go_routines": {
+                    "type": "integer"
+                },
+                "go_version": {
+                    "type": "string"
+                },
+                "guilds": {
+                    "type": "integer"
+                },
+                "heap_use": {
+                    "type": "integer"
+                },
+                "heap_use_str": {
+                    "type": "string"
+                },
+                "os": {
+                    "type": "string"
+                },
+                "stack_use": {
+                    "type": "integer"
+                },
+                "stack_use_str": {
+                    "type": "string"
+                },
+                "uptime": {
+                    "type": "integer"
+                },
+                "uptime_str": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "The hash of the user's avatar. Use Session.UserAvatar\nto retrieve the avatar itself.",
+                    "type": "string"
+                },
+                "avatar_url": {
+                    "type": "string"
+                },
+                "bot": {
+                    "description": "Whether the user is a bot.",
+                    "type": "boolean"
+                },
+                "bot_owner": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "discriminator": {
+                    "description": "The discriminator of the user (4 numbers after name).",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "The email of the user. This is only present when\nthe application possesses the email scope for the user.",
+                    "type": "string"
+                },
+                "flags": {
+                    "description": "The flags on a user's account.\nOnly available when the request is authorized via a Bearer token.",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "The ID of the user.",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "The user's chosen language option.",
+                    "type": "string"
+                },
+                "mfa_enabled": {
+                    "description": "Whether the user has multi-factor authentication enabled.",
+                    "type": "boolean"
+                },
+                "premium_type": {
+                    "description": "The type of Nitro subscription on a user's account.\nOnly available when the request is authorized via a Bearer token.",
+                    "type": "integer"
+                },
+                "public_flags": {
+                    "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
+                    "type": "integer"
+                },
+                "system": {
+                    "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
+                    "type": "boolean"
+                },
+                "token": {
+                    "description": "The token of the user. This is only present for\nthe user represented by the current session.",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "The user's username.",
+                    "type": "string"
+                },
+                "verified": {
+                    "description": "Whether the user's email is verified.",
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

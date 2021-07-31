@@ -1,0 +1,137 @@
+basePath: /api/v1
+definitions:
+  models.SystemInfo:
+    properties:
+      arch:
+        type: string
+      bot_invite:
+        type: string
+      bot_user_id:
+        type: string
+      build_date:
+        type: string
+      commit_hash:
+        type: string
+      cpus:
+        type: integer
+      go_routines:
+        type: integer
+      go_version:
+        type: string
+      guilds:
+        type: integer
+      heap_use:
+        type: integer
+      heap_use_str:
+        type: string
+      os:
+        type: string
+      stack_use:
+        type: integer
+      stack_use_str:
+        type: string
+      uptime:
+        type: integer
+      uptime_str:
+        type: string
+      version:
+        type: string
+    type: object
+  models.User:
+    properties:
+      avatar:
+        description: |-
+          The hash of the user's avatar. Use Session.UserAvatar
+          to retrieve the avatar itself.
+        type: string
+      avatar_url:
+        type: string
+      bot:
+        description: Whether the user is a bot.
+        type: boolean
+      bot_owner:
+        type: boolean
+      created_at:
+        type: string
+      discriminator:
+        description: The discriminator of the user (4 numbers after name).
+        type: string
+      email:
+        description: |-
+          The email of the user. This is only present when
+          the application possesses the email scope for the user.
+        type: string
+      flags:
+        description: |-
+          The flags on a user's account.
+          Only available when the request is authorized via a Bearer token.
+        type: integer
+      id:
+        description: The ID of the user.
+        type: string
+      locale:
+        description: The user's chosen language option.
+        type: string
+      mfa_enabled:
+        description: Whether the user has multi-factor authentication enabled.
+        type: boolean
+      premium_type:
+        description: |-
+          The type of Nitro subscription on a user's account.
+          Only available when the request is authorized via a Bearer token.
+        type: integer
+      public_flags:
+        description: |-
+          The public flags on a user's account.
+          This is a combination of bit masks; the presence of a certain flag can
+          be checked by performing a bitwise AND between this int and the flag.
+        type: integer
+      system:
+        description: Whether the user is an Official Discord System user (part of
+          the urgent message system).
+        type: boolean
+      token:
+        description: |-
+          The token of the user. This is only present for
+          the user represented by the current session.
+        type: string
+      username:
+        description: The user's username.
+        type: string
+      verified:
+        description: Whether the user's email is verified.
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: The shinpuru main REST API.
+  title: shinpuru main API
+  version: "1.0"
+paths:
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: Returns the user object of the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Me
+  /sysinfo:
+    get:
+      consumes:
+      - application/json
+      description: Returns general global system information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SystemInfo'
+      summary: System Information
+swagger: "2.0"

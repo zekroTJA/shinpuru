@@ -16,6 +16,10 @@ func (r *Router) SetContainer(container di.Container) {
 	r.container = container
 }
 
+// @title shinpuru main API
+// @version 1.0
+// @description The shinpuru main REST API.
+// @BasePath /api/v1
 func (r *Router) Route(router fiber.Router) {
 	authMw := r.container.Get(static.DiAuthMiddleware).(auth.Middleware)
 
