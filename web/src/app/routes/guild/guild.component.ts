@@ -357,7 +357,7 @@ export class GuildComponent {
           `${
             this.guild.invite_block_enabled ? 'Enabled' : 'Disabled'
           } invite blocking for guild ${this.guild.name}.`,
-          'Guild Backups Updated',
+          'Invite Blocking Updated',
           'cyan',
           6000,
           true
