@@ -11,7 +11,7 @@ type OneTimeAuth interface {
 
 	// GetKey generates and registers a new OTA key
 	// based on the passed ident.
-	GetKey(ident string) (token string, expires time.Time, err error)
+	GetKey(ident string, scopes ...string) (token string, expires time.Time, err error)
 
 	// ValidateKey tries to validate a given key. If
 	// the validation fails, an error is returned with
@@ -19,5 +19,5 @@ type OneTimeAuth interface {
 	//
 	// If the token is valid, the recovered ident and
 	// a nil error is returned.
-	ValidateKey(key string) (ident string, err error)
+	ValidateKey(key string, scopes ...string) (ident string, err error)
 }
