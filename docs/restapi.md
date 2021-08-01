@@ -99,6 +99,118 @@ Returns a single guild object by it's ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/:id/:memberid/ban
+
+#### POST
+##### Summary
+
+Create A Member Ban Report
+
+##### Description
+
+Creates a member ban report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Report](#modelsreport) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/kick
+
+#### POST
+##### Summary
+
+Create A Member Kick Report
+
+##### Description
+
+Creates a member kick report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Report](#modelsreport) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/mute
+
+#### POST
+##### Summary
+
+Unmute A Member
+
+##### Description
+
+Unmute a muted member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The unmute payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/reports
+
+#### POST
+##### Summary
+
+Create A Member Report
+
+##### Description
+
+Creates a member report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [models.ReportRequest](#modelsreportrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Report](#modelsreport) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/:id/antiraid/joinlog
 
 #### GET
@@ -1715,6 +1827,15 @@ Returns general information for the landing page like the local invite parameter
 | type | integer |  | No |
 | type_name | string |  | No |
 | victim_id | string |  | No |
+
+#### models.ReportRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| attachment | string |  | No |
+| reason | string |  | No |
+| timeout | string |  | No |
+| type | integer |  | No |
 
 #### models.StarboardEntryResponse
 

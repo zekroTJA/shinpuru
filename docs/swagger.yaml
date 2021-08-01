@@ -544,6 +544,17 @@ definitions:
       victim_id:
         type: string
     type: object
+  models.ReportRequest:
+    properties:
+      attachment:
+        type: string
+      reason:
+        type: string
+      timeout:
+        type: string
+      type:
+        type: integer
+    type: object
   models.StarboardEntryResponse:
     properties:
       author_avatar_url:
@@ -829,6 +840,174 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Get Guild
+  /guilds/:id/:memberid/ban:
+    post:
+      consumes:
+      - application/json
+      description: Creates a member ban report.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the victim member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      - description: The report payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReasonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create A Member Ban Report
+  /guilds/:id/:memberid/kick:
+    post:
+      consumes:
+      - application/json
+      description: Creates a member kick report.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the victim member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      - description: The report payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReasonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create A Member Kick Report
+  /guilds/:id/:memberid/mute:
+    post:
+      consumes:
+      - application/json
+      description: Unmute a muted member.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the victim member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      - description: The unmute payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReasonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Unmute A Member
+  /guilds/:id/:memberid/reports:
+    post:
+      consumes:
+      - application/json
+      description: Creates a member report.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the victim member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      - description: The report payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create A Member Report
   /guilds/:id/antiraid/joinlog:
     delete:
       consumes:
