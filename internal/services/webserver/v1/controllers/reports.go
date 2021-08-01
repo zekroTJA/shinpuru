@@ -32,6 +32,16 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/:id/revoke", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postRevoke)
 }
 
+// @Summary Get Report
+// @Description Returns a single report object by its ID.
+// @Accept json
+// @Produce json
+// @Param id path string true "The report ID."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /reports/:id [get]
 func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 	_id := ctx.Params("id")
 
@@ -51,6 +61,17 @@ func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
 }
 
+// @Summary Revoke Report
+// @Description Revokes a given report by ID.
+// @Accept json
+// @Produce json
+// @Param id path string true "The report ID."
+// @Param payload body models.ReasonRequest true "The revoke reason payload."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /reports/:id/revoke [post]
 func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -69,10 +90,7 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	var reason struct {
-		Reason string `json:"reason"`
-	}
-
+	var reason models.ReasonRequest
 	if err := ctx.BodyParser(&reason); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
