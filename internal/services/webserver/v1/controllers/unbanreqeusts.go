@@ -33,6 +33,7 @@ func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Rou
 
 // @Summary Get Unban Requests
 // @Description Returns a list of unban requests created by the authenticated user.
+// @Tags Unban Requests
 // @Accept json
 // @Produce json
 // @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListResponse"
@@ -59,6 +60,7 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 
 // @Summary Create Unban Requests
 // @Description Create an unban reuqest.
+// @Tags Unban Requests
 // @Accept json
 // @Produce json
 // @Param payload body sharedmodels.UnbanRequest true "The unban request payload."
@@ -123,6 +125,7 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 
 // @Summary Get Banned Guilds
 // @Description Returns a list of guilds where the currently authenticated user is banned.
+// @Tags Unban Requests
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.GuildReduced "Wrapped in models.ListResponse"

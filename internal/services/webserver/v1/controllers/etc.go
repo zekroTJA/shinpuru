@@ -38,6 +38,7 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary Me
 // @Description Returns the user object of the currently authenticated user.
+// @Tags Etc
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.User
@@ -64,6 +65,7 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 
 // @Summary System Information
 // @Description Returns general global system information.
+// @Tags Etc
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.SystemInfo

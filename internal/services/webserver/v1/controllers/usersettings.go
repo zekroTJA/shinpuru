@@ -30,6 +30,7 @@ func (c *UsersettingsController) Setup(container di.Container, router fiber.Rout
 
 // @Summary Get OTA Usersettings State
 // @Description Returns the current state of the OTA user setting.
+// @Tags User Settings
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.UsersettingsOTA
@@ -49,6 +50,7 @@ func (c *UsersettingsController) getOTA(ctx *fiber.Ctx) error {
 
 // @Summary Update OTA Usersettings State
 // @Description Update the OTA user settings state.
+// @Tags User Settings
 // @Accept json
 // @Produce json
 // @Param payload body models.UsersettingsOTA true "The OTA settings payload."

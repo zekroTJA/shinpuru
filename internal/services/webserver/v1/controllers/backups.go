@@ -40,6 +40,7 @@ func (c *GuildBackupsController) Setup(container di.Container, router fiber.Rout
 
 // @Summary Get Guild Backups
 // @Description Returns a list of guild backups.
+// @Tags Guild Backups
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -62,6 +63,7 @@ func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 
 // @Summary Obtain Backup Download OTA Key
 // @Description Returns an OTA key which is used to download a backup entry.
+// @Tags Guild Backups
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -89,6 +91,7 @@ func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 
 // @Summary Download Backup File
 // @Description Download a single gziped backup file.
+// @Tags Guild Backups
 // @Accept json
 // @Produce application/gzip
 // @Param id path string true "The ID of the guild."
@@ -152,6 +155,7 @@ func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 
 // @Summary Toggle Guild Backup Enable
 // @Description Toggle guild backup enable state.
+// @Tags Guild Backups
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."

@@ -33,6 +33,7 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary Access Token Exchange
 // @Description Exchanges the cookie-passed refresh token with a generated access token.
+// @Tags Authorization
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.AccessTokenResponse
@@ -65,6 +66,7 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 
 // @Summary Authorization Check
 // @Description Returns OK if the request is authorized.
+// @Tags Authorization
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Status
@@ -76,6 +78,7 @@ func (c *AuthController) getCheck(ctx *fiber.Ctx) error {
 
 // @Summary Logout
 // @Description Reovkes the currently used access token and clears the refresh token.
+// @Tags Authorization
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Status

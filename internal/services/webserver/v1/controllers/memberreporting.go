@@ -47,6 +47,7 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 
 // @Summary Create A Member Report
 // @Description Creates a member report.
+// @Tags Member Reporting
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -107,6 +108,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 
 // @Summary Create A Member Kick Report
 // @Description Creates a member kick report.
+// @Tags Member Reporting
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -170,6 +172,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 
 // @Summary Create A Member Ban Report
 // @Description Creates a member ban report.
+// @Tags Member Reporting
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -240,6 +243,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 
 // @Summary Create A Member Mute Report
 // @Description Creates a member mute report.
+// @Tags Member Reporting
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -311,6 +315,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 
 // @Summary Unmute A Member
 // @Description Unmute a muted member.
+// @Tags Member Reporting
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."

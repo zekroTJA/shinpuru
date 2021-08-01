@@ -37,6 +37,7 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary Landing Page Info
 // @Description Returns general information for the landing page like the local invite parameters.
+// @Tags Utilities
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.LandingPageResponse
@@ -72,6 +73,7 @@ func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 // @Description Produces a square image of the given color and size.
 // @Param hexcode path string true "Hex Code of the Color to produce"
 // @Param size query int false "The dimension of the square image" default(24)
+// @Tags Utilities
 // @Accept json
 // @Produce image/png
 // @Success 200 {data} png image data
@@ -130,6 +132,7 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 
 // @Summary Command List
 // @Description Returns a list of registered commands and their description.
+// @Tags Utilities
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"

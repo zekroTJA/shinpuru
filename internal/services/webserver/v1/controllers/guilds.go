@@ -86,6 +86,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary List Guilds
 // @Description Returns a list of guilds the authenticated user has in common with shinpuru.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.GuildReduced "Wrapped in models.ListResponse"
@@ -119,6 +120,7 @@ func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 
 // @Summary Get Guild
 // @Description Returns a single guild object by it's ID.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -151,6 +153,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Scoreboard
 // @Description Returns a list of scoreboard entries for the given guild.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -194,6 +197,7 @@ func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 
 // @Summary Get Antiraid Joinlog
 // @Description Returns a list of joined members during an antiraid trigger.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -218,6 +222,7 @@ func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 
 // @Summary Reset Antiraid Joinlog
 // @Description Deletes all entries of the antiraid joinlog.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -237,6 +242,7 @@ func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Starboard
 // @Description Returns a list of starboard entries for the given guild.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -302,6 +308,7 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Modlog
 // @Description Returns a list of guild modlog entries for the given guild.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -350,6 +357,7 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Modlog Count
 // @Description Returns the total count of entries in the guild mod log.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -376,6 +384,7 @@ func (c *GuildsController) getReportsCount(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Settings
 // @Description Returns the specified general guild settings.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -422,6 +431,7 @@ func (c *GuildsController) getGuildSettings(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Settings
 // @Description Returns the specified general guild settings.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -561,6 +571,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Permission Settings
 // @Description Returns the specified guild permission settings.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -589,6 +600,7 @@ func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
 
 // @Summary Apply Guild Permission Rule
 // @Description Apply a new guild permission rule for a specified role.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -639,6 +651,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 
 // @Summary Toggle Guild Inviteblock Enable
 // @Description Toggle enabled state of the guild invite block system.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -670,6 +683,7 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Karma Settings
 // @Description Returns the specified guild karma settings.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -708,6 +722,7 @@ func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
 
 // @Summary Update Guild Karma Settings
 // @Description Update the guild karma settings specification.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -755,6 +770,7 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Karma Blocklist
 // @Description Returns the specified guild karma blocklist entries.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -788,6 +804,7 @@ func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 
 // @Summary Add Guild Karma Blocklist Entry
 // @Description Add a guild karma blocklist entry.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -826,6 +843,7 @@ func (c *GuildsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 
 // @Summary Remove Guild Karma Blocklist Entry
 // @Description Remove a guild karma blocklist entry.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -856,6 +874,7 @@ func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) err
 
 // @Summary Get Guild Antiraid Settings
 // @Description Returns the specified guild antiraid settings.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -886,6 +905,7 @@ func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 
 // @Summary Update Guild Antiraid Settings
 // @Description Update the guild antiraid settings specification.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -929,6 +949,7 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Unbanrequests
 // @Description Returns the list of the guild unban requests.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -956,6 +977,7 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Unbanrequests Count
 // @Description Returns the total or filtered count of guild unban requests.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -996,6 +1018,7 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 
 // @Summary Get Single Guild Unbanrequest
 // @Description Returns a single guild unban request by ID.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1021,6 +1044,7 @@ func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 
 // @Summary Process Guild Unbanrequest
 // @Description Process a guild unban request.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1075,6 +1099,7 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Settings Karma Rules
 // @Description Returns a list of specified guild karma rules.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1095,6 +1120,7 @@ func (c *GuildsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) error {
 
 // @Summary Create Guild Settings Karma
 // @Description Create a guild karma rule.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1145,6 +1171,7 @@ func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 
 // @Summary Update Guild Settings Karma
 // @Description Update a karma rule by ID.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1200,6 +1227,7 @@ func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err err
 
 // @Summary Remove Guild Settings Karma
 // @Description Remove a guild karma rule by ID.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1227,6 +1255,7 @@ func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Log
 // @Description Returns a list of entries of the guild log.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1265,6 +1294,7 @@ func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Log Count
 // @Description Returns the total or filtered count of guild log entries.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1293,6 +1323,7 @@ func (c *GuildsController) getGuildSettingsLogsCount(ctx *fiber.Ctx) error {
 
 // @Summary Get Guild Settings Log State
 // @Description Returns the enabled state of the guild log setting.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1315,6 +1346,7 @@ func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
 
 // @Summary Update Guild Settings Log State
 // @Description Update the enabled state of the log state guild setting.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1342,6 +1374,7 @@ func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
 
 // @Summary Delete Guild Log Entries
 // @Description Delete a single or all guild log entries.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -1379,6 +1412,7 @@ func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err erro
 
 // @Summary Flush Guild Data
 // @Description Flushes all guild data from the database.
+// @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."

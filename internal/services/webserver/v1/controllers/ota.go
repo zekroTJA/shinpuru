@@ -35,6 +35,7 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary OTA Login
 // @Description Logs in the current browser session by using the passed pre-obtained OTA token.
+// @Tags OTA
 // @Accept json
 // @Produce json
 // @Success 200

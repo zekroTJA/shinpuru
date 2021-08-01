@@ -34,6 +34,7 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary Get Report
 // @Description Returns a single report object by its ID.
+// @Tags Reports
 // @Accept json
 // @Produce json
 // @Param id path string true "The report ID."
@@ -63,6 +64,7 @@ func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 
 // @Summary Revoke Report
 // @Description Revokes a given report by ID.
+// @Tags Reports
 // @Accept json
 // @Produce json
 // @Param id path string true "The report ID."

@@ -45,6 +45,7 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 
 // @Summary Get Guild Member List
 // @Description Returns a list of guild members.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -92,6 +93,7 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 
 // @Summary Get Guild Member
 // @Description Returns a single guild member by ID.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -159,6 +161,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 
 // @Summary Get Guild Member Permissions
 // @Description Returns the permission array of the given user.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -189,6 +192,7 @@ func (c *GuildMembersController) getMemberPermissions(ctx *fiber.Ctx) (err error
 
 // @Summary Get Guild Member Allowed Permissions
 // @Description Returns all detailed permission DNS which the member is alloed to perform.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -232,6 +236,7 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 
 // @Summary Get Guild Member Reports
 // @Description Returns a list of reports of the given member.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -281,6 +286,7 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 
 // @Summary Get Guild Member Reports Count
 // @Description Returns the total count of reports of the given user.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -309,6 +315,7 @@ func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 
 // @Summary Get Guild Member Unban Requests
 // @Description Returns the list of unban requests of the given member
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
@@ -338,6 +345,7 @@ func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err err
 
 // @Summary Get Guild Member Unban Requests Count
 // @Description Returns the total or filtered count of unban requests of the given member.
+// @Tags Members
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."

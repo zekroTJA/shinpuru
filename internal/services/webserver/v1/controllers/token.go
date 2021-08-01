@@ -27,6 +27,7 @@ func (c *TokenController) Setup(container di.Container, router fiber.Router) {
 
 // @Summary API Token Info
 // @Description Returns general metadata information about a generated API token. The response does **not** contain the actual token!
+// @Tags Tokens
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.APITokenResponse
@@ -55,6 +56,7 @@ func (c *TokenController) getToken(ctx *fiber.Ctx) error {
 
 // @Summary API Token Generation
 // @Description (Re-)Generates and returns general metadata information about an API token **including** the actual API token.
+// @Tags Tokens
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.APITokenResponse
@@ -77,6 +79,7 @@ func (c *TokenController) postToken(ctx *fiber.Ctx) error {
 
 // @Summary API Token Deletion
 // @Description Invalidates the currently generated API token.
+// @Tags Tokens
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Status

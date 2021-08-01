@@ -17,6 +17,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Authorization"
+                ],
                 "summary": "Access Token Exchange",
                 "responses": {
                     "200": {
@@ -42,6 +45,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Authorization"
                 ],
                 "summary": "Authorization Check",
                 "responses": {
@@ -69,6 +75,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Authorization"
+                ],
                 "summary": "Logout",
                 "responses": {
                     "200": {
@@ -88,6 +97,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "List Guilds",
                 "responses": {
@@ -117,6 +129,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Get Guild",
                 "parameters": [
@@ -158,6 +173,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Members"
                 ],
                 "summary": "Get Guild Member",
                 "parameters": [
@@ -206,6 +224,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Member Reporting"
                 ],
                 "summary": "Create A Member Ban Report",
                 "parameters": [
@@ -270,6 +291,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Member Reporting"
+                ],
                 "summary": "Create A Member Kick Report",
                 "parameters": [
                     {
@@ -332,6 +356,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Member Reporting"
                 ],
                 "summary": "Unmute A Member",
                 "parameters": [
@@ -396,6 +423,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Members"
+                ],
                 "summary": "Get Guild Member Permissions",
                 "parameters": [
                     {
@@ -443,6 +473,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Members"
                 ],
                 "summary": "Get Guild Member Allowed Permissions",
                 "parameters": [
@@ -494,6 +527,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Members"
                 ],
                 "summary": "Get Guild Member Reports",
                 "parameters": [
@@ -565,6 +601,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Member Reporting"
+                ],
                 "summary": "Create A Member Report",
                 "parameters": [
                     {
@@ -628,6 +667,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Members"
+                ],
                 "summary": "Get Guild Member Reports Count",
                 "parameters": [
                     {
@@ -675,6 +717,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Members"
                 ],
                 "summary": "Get Guild Member Unban Requests",
                 "parameters": [
@@ -727,6 +772,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Members"
+                ],
                 "summary": "Get Guild Member Unban Requests Count",
                 "parameters": [
                     {
@@ -775,6 +823,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Antiraid Joinlog",
                 "parameters": [
                     {
@@ -817,6 +868,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Reset Antiraid Joinlog",
                 "parameters": [
                     {
@@ -857,6 +911,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guild Backups"
                 ],
                 "summary": "Get Guild Backups",
                 "parameters": [
@@ -901,6 +958,9 @@
                 ],
                 "produces": [
                     "application/gzip"
+                ],
+                "tags": [
+                    "Guild Backups"
                 ],
                 "summary": "Download Backup File",
                 "parameters": [
@@ -961,6 +1021,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guild Backups"
+                ],
                 "summary": "Obtain Backup Download OTA Key",
                 "parameters": [
                     {
@@ -1008,6 +1071,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guild Backups"
                 ],
                 "summary": "Toggle Guild Backup Enable",
                 "parameters": [
@@ -1058,6 +1124,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Toggle Guild Inviteblock Enable",
                 "parameters": [
@@ -1114,6 +1183,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Members"
                 ],
                 "summary": "Get Guild Member List",
                 "parameters": [
@@ -1180,6 +1252,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Permission Settings",
                 "parameters": [
                     {
@@ -1218,6 +1293,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Apply Guild Permission Rule",
                 "parameters": [
@@ -1274,6 +1352,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Get Guild Modlog",
                 "parameters": [
@@ -1333,6 +1414,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Modlog Count",
                 "parameters": [
                     {
@@ -1373,6 +1457,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Get Guild Scoreboard",
                 "parameters": [
@@ -1427,6 +1514,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Settings",
                 "parameters": [
                     {
@@ -1465,6 +1555,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Get Guild Settings",
                 "parameters": [
@@ -1522,6 +1615,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Antiraid Settings",
                 "parameters": [
                     {
@@ -1560,6 +1656,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Update Guild Antiraid Settings",
                 "parameters": [
@@ -1617,6 +1716,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Flush Guild Data",
                 "parameters": [
                     {
@@ -1673,6 +1775,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Karma Settings",
                 "parameters": [
                     {
@@ -1711,6 +1816,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Update Guild Karma Settings",
                 "parameters": [
@@ -1768,6 +1876,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Karma Blocklist",
                 "parameters": [
                     {
@@ -1811,6 +1922,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Add Guild Karma Blocklist Entry",
                 "parameters": [
@@ -1863,6 +1977,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Remove Guild Karma Blocklist Entry",
                 "parameters": [
@@ -1918,6 +2035,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Settings Karma Rules",
                 "parameters": [
                     {
@@ -1959,6 +2079,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Create Guild Settings Karma",
                 "parameters": [
@@ -2015,6 +2138,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Update Guild Settings Karma",
                 "parameters": [
@@ -2077,6 +2203,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Remove Guild Settings Karma",
                 "parameters": [
                     {
@@ -2131,6 +2260,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Log Count",
                 "parameters": [
                     {
@@ -2178,6 +2310,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Settings Log State",
                 "parameters": [
                     {
@@ -2216,6 +2351,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Update Guild Settings Log State",
                 "parameters": [
@@ -2273,6 +2411,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Delete Guild Log Entries",
                 "parameters": [
                     {
@@ -2326,6 +2467,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Starboard",
                 "parameters": [
                     {
@@ -2370,6 +2514,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Unbanrequests",
                 "parameters": [
                     {
@@ -2413,6 +2560,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Get Single Guild Unbanrequest",
                 "parameters": [
@@ -2459,6 +2609,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guilds"
                 ],
                 "summary": "Process Guild Unbanrequest",
                 "parameters": [
@@ -2508,6 +2661,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Guilds"
+                ],
                 "summary": "Get Guild Unbanrequests Count",
                 "parameters": [
                     {
@@ -2555,6 +2711,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Etc"
+                ],
                 "summary": "Me",
                 "responses": {
                     "200": {
@@ -2574,6 +2733,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "OTA"
                 ],
                 "summary": "OTA Login",
                 "responses": {
@@ -2597,6 +2759,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Reports"
                 ],
                 "summary": "Get Report",
                 "parameters": [
@@ -2644,6 +2809,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Reports"
                 ],
                 "summary": "Revoke Report",
                 "parameters": [
@@ -2701,6 +2869,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Global Settings"
+                ],
                 "summary": "Get No Guild Invites Status",
                 "responses": {
                     "200": {
@@ -2730,6 +2901,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Global Settings"
                 ],
                 "summary": "Set No Guild Invites Status",
                 "parameters": [
@@ -2780,6 +2954,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Global Settings"
+                ],
                 "summary": "Get Presence",
                 "responses": {
                     "200": {
@@ -2803,6 +2980,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Global Settings"
                 ],
                 "summary": "Set Presence",
                 "parameters": [
@@ -2847,6 +3027,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Etc"
+                ],
                 "summary": "System Information",
                 "responses": {
                     "200": {
@@ -2866,6 +3049,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Tokens"
                 ],
                 "summary": "API Token Info",
                 "responses": {
@@ -2897,6 +3083,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Tokens"
+                ],
                 "summary": "API Token Generation",
                 "responses": {
                     "200": {
@@ -2920,6 +3109,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Tokens"
                 ],
                 "summary": "API Token Deletion",
                 "responses": {
@@ -2946,6 +3138,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Unban Requests"
                 ],
                 "summary": "Get Unban Requests",
                 "responses": {
@@ -2979,6 +3174,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Unban Requests"
                 ],
                 "summary": "Create Unban Requests",
                 "parameters": [
@@ -3029,6 +3227,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Unban Requests"
+                ],
                 "summary": "Get Banned Guilds",
                 "responses": {
                     "200": {
@@ -3064,6 +3265,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "User Settings"
+                ],
                 "summary": "Get OTA Usersettings State",
                 "responses": {
                     "200": {
@@ -3093,6 +3297,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "User Settings"
                 ],
                 "summary": "Update OTA Usersettings State",
                 "parameters": [
@@ -3143,6 +3350,9 @@
                 "produces": [
                     "image/png"
                 ],
+                "tags": [
+                    "Utilities"
+                ],
                 "summary": "Color Generator",
                 "parameters": [
                     {
@@ -3179,6 +3389,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Utilities"
+                ],
                 "summary": "Command List",
                 "responses": {
                     "200": {
@@ -3201,6 +3414,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Utilities"
                 ],
                 "summary": "Landing Page Info",
                 "responses": {
@@ -4256,5 +4472,59 @@
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "General root API functionalities.",
+            "name": "Etc"
+        },
+        {
+            "description": "General utility functionalities.",
+            "name": "Utilities"
+        },
+        {
+            "description": "Authorization endpoints.",
+            "name": "Authorization"
+        },
+        {
+            "description": "One Time Auth token endpoints.",
+            "name": "OTA"
+        },
+        {
+            "description": "API token endpoints.",
+            "name": "Tokens"
+        },
+        {
+            "description": "Global bot settings endpoints.",
+            "name": "Global Settings"
+        },
+        {
+            "description": "General reports endpoints.",
+            "name": "Reports"
+        },
+        {
+            "description": "Guild specific endpoints.",
+            "name": "Guilds"
+        },
+        {
+            "description": "Guild backup endpoints.",
+            "name": "Guild Backups"
+        },
+        {
+            "description": "Unban requests endpoints.",
+            "name": "Unban Requests"
+        },
+        {
+            "description": "User specific settings endpoints.",
+            "name": "User Settings"
+        },
+        {
+            "description": "Member reporting endpoints.",
+            "name": "Member Reporting"
+        },
+        {
+            "description": "Members specific endpoints.",
+            "name": "Members"
+        }
+    ]
 }

@@ -35,6 +35,7 @@ func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Ro
 
 // @Summary Get Presence
 // @Description Returns the bot's displayed presence status.
+// @Tags Global Settings
 // @Accept json
 // @Produce json
 // @Success 200 {object} presence.Presence
@@ -62,6 +63,7 @@ func (c *GlobalSettingsController) getPresence(ctx *fiber.Ctx) error {
 
 // @Summary Set Presence
 // @Description Set the bot's displayed presence status.
+// @Tags Global Settings
 // @Accept json
 // @Produce json
 // @Param payload body presence.Presence true "Presence Payload"
@@ -92,6 +94,7 @@ func (c *GlobalSettingsController) postPresence(ctx *fiber.Ctx) error {
 
 // @Summary Get No Guild Invites Status
 // @Description Returns the settings status for the suggested guild invite when the logged in user is not on any guild with shinpuru.
+// @Tags Global Settings
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.InviteSettingsResponse
@@ -200,6 +203,7 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 
 // @Summary Set No Guild Invites Status
 // @Description Set the status for the suggested guild invite when the logged in user is not on any guild with shinpuru.
+// @Tags Global Settings
 // @Accept json
 // @Produce json
 // @Param payload body models.InviteSettingsRequest true "Invite Settings Payload"
