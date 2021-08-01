@@ -38,6 +38,15 @@ func (c *GuildBackupsController) Setup(container di.Container, router fiber.Rout
 	router.Get("/:backupid/download", c.getDownloadBackup)
 }
 
+// @Summary Get Guild Backups
+// @Description Returns a list of guild backups.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {array} backupmodels.Entry "Wrapped in models.ListResponse"
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/backups [get]
 func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -51,6 +60,16 @@ func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 	return ctx.JSON(&models.ListResponse{N: len(backupEntries), Data: backupEntries})
 }
 
+// @Summary Obtain Backup Download OTA Key
+// @Description Returns an OTA key which is used to download a backup entry.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param backupid path string true "The ID of the backup."
+// @Success 200 {object} models.AccessTokenResponse
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/backups/:backupid/download [post]
 func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	backupID := ctx.Params("backupid")
@@ -68,6 +87,18 @@ func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 	})
 }
 
+// @Summary Download Backup File
+// @Description Download a single gziped backup file.
+// @Accept json
+// @Produce application/gzip
+// @Param id path string true "The ID of the guild."
+// @Param backupid path string true "The ID of the backup."
+// @Param ota_token query string true "The previously obtained OTA token to authorize the download."
+// @Success 200 {data} gziped bakcup file
+// @Failure 401 {object} models.Error
+// @Failure 403 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/backups/:backupid/download [get]
 func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	backupID := ctx.Params("backupid")
@@ -119,13 +150,20 @@ func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 	return ctx.SendStream(buff)
 }
 
+// @Summary Toggle Guild Backup Enable
+// @Description Toggle guild backup enable state.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.EnableStatus true "Enable state payload."
+// @Success 200 {object} models.Status
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/backups/toggle [post]
 func (c *GuildBackupsController) postToggleBackups(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
-	var data struct {
-		Enabled bool `json:"enabled"`
-	}
-
+	var data models.EnableStatus
 	if err := ctx.BodyParser(&data); err != nil {
 		return err
 	}

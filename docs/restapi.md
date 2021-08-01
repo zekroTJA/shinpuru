@@ -147,6 +147,109 @@ Deletes all entries of the antiraid joinlog.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/:id/backups
+
+#### GET
+##### Summary
+
+Get Guild Backups
+
+##### Description
+
+Returns a list of guild backups.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [backupmodels.Entry](#backupmodelsentry) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/backups/:backupid/download
+
+#### GET
+##### Summary
+
+Download Backup File
+
+##### Description
+
+Download a single gziped backup file.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+| ota_token | query | The previously obtained OTA token to authorize the download. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | data |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 403 | Forbidden | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Obtain Backup Download OTA Key
+
+##### Description
+
+Returns an OTA key which is used to download a backup entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/backups/toggle
+
+#### POST
+##### Summary
+
+Toggle Guild Backup Enable
+
+##### Description
+
+Toggle guild backup enable state.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | Enable state payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/:id/inviteblock
 
 #### POST
@@ -1128,6 +1231,111 @@ Invalidates the currently generated API token.
 | 200 | OK | [models.Status](#modelsstatus) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
+### /unbanrequests
+
+#### GET
+##### Summary
+
+Get Unban Requests
+
+##### Description
+
+Returns a list of unban requests created by the authenticated user.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Create Unban Requests
+
+##### Description
+
+Create an unban reuqest.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| payload | body | The unban request payload. | Yes | [models.UnbanRequest](#modelsunbanrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /unbanrequests/bannedguilds
+
+#### GET
+##### Summary
+
+Get Banned Guilds
+
+##### Description
+
+Returns a list of guilds where the currently authenticated user is banned.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.GuildReduced](#modelsguildreduced) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /usersettings/ota
+
+#### GET
+##### Summary
+
+Get OTA Usersettings State
+
+##### Description
+
+Returns the current state of the OTA user setting.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Update OTA Usersettings State
+
+##### Description
+
+Update the OTA user settings state.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| payload | body | The OTA settings payload. | Yes | [models.UsersettingsOTA](#modelsusersettingsota) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /util/color/:hexcode
 
 #### GET
@@ -1187,6 +1395,14 @@ Returns general information for the landing page like the local invite parameter
 | 200 | OK | [models.LandingPageResponse](#modelslandingpageresponse) |
 
 ### Models
+
+#### backupmodels.Entry
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| file_id | string |  | No |
+| guild_id | string |  | No |
+| timestamp | string |  | No |
 
 #### discordgo.Channel
 
@@ -1586,6 +1802,12 @@ Returns general information for the landing page like the local invite parameter
 | token | string | The token of the user. This is only present for the user represented by the current session. | No |
 | username | string | The user's username. | No |
 | verified | boolean | Whether the user's email is verified. | No |
+
+#### models.UsersettingsOTA
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| enabled | boolean |  | No |
 
 #### presence.Presence
 

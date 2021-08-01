@@ -28,6 +28,14 @@ func (c *UsersettingsController) Setup(container di.Container, router fiber.Rout
 	router.Post("/ota", c.postOTA)
 }
 
+// @Summary Get OTA Usersettings State
+// @Description Returns the current state of the OTA user setting.
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UsersettingsOTA
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /usersettings/ota [get]
 func (c *UsersettingsController) getOTA(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -39,6 +47,16 @@ func (c *UsersettingsController) getOTA(ctx *fiber.Ctx) error {
 	return ctx.JSON(&models.UsersettingsOTA{Enabled: enabled})
 }
 
+// @Summary Update OTA Usersettings State
+// @Description Update the OTA user settings state.
+// @Accept json
+// @Produce json
+// @Param payload body models.UsersettingsOTA true "The OTA settings payload."
+// @Success 200 {object} models.UsersettingsOTA
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /usersettings/ota [post]
 func (c *UsersettingsController) postOTA(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 

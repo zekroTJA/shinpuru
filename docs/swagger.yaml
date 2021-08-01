@@ -1,5 +1,14 @@
 basePath: /api/v1
 definitions:
+  backupmodels.Entry:
+    properties:
+      file_id:
+        type: string
+      guild_id:
+        type: string
+      timestamp:
+        type: string
+    type: object
   discordgo.Channel:
     properties:
       application_id:
@@ -697,6 +706,11 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
+  models.UsersettingsOTA:
+    properties:
+      enabled:
+        type: boolean
+    type: object
   presence.Presence:
     properties:
       game:
@@ -870,6 +884,140 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Get Antiraid Joinlog
+  /guilds/:id/backups:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of guild backups.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/backupmodels.Entry'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Backups
+  /guilds/:id/backups/:backupid/download:
+    get:
+      consumes:
+      - application/json
+      description: Download a single gziped backup file.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the backup.
+        in: path
+        name: backupid
+        required: true
+        type: string
+      - description: The previously obtained OTA token to authorize the download.
+        in: query
+        name: ota_token
+        required: true
+        type: string
+      produces:
+      - application/gzip
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: data
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Download Backup File
+    post:
+      consumes:
+      - application/json
+      description: Returns an OTA key which is used to download a backup entry.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the backup.
+        in: path
+        name: backupid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccessTokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Obtain Backup Download OTA Key
+  /guilds/:id/backups/toggle:
+    post:
+      consumes:
+      - application/json
+      description: Toggle guild backup enable state.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Enable state payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.EnableStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Toggle Guild Backup Enable
   /guilds/:id/inviteblock:
     post:
       consumes:
@@ -2084,6 +2232,136 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: API Token Generation
+  /unbanrequests:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of unban requests created by the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.UnbanRequest'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Unban Requests
+    post:
+      consumes:
+      - application/json
+      description: Create an unban reuqest.
+      parameters:
+      - description: The unban request payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UnbanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UnbanRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create Unban Requests
+  /unbanrequests/bannedguilds:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of guilds where the currently authenticated user
+        is banned.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.GuildReduced'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Banned Guilds
+  /usersettings/ota:
+    get:
+      consumes:
+      - application/json
+      description: Returns the current state of the OTA user setting.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsOTA'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get OTA Usersettings State
+    post:
+      consumes:
+      - application/json
+      description: Update the OTA user settings state.
+      parameters:
+      - description: The OTA settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsersettingsOTA'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsOTA'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update OTA Usersettings State
   /util/color/:hexcode:
     get:
       consumes:
