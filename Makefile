@@ -128,12 +128,14 @@ devstack:
 		up -d
 
 PHONY += devstack
+APIDOCS_OUTDIR = "$(CURDIR)/docs/restapi/v1"
 apidocs:
 	$(SWAGGO) init \
 		-g $(CURDIR)/internal/services/webserver/v1/router.go \
+		-o $(APIDOCS_OUTDIR) \
 		--parseDependency --parseDepth 2
-	rm $(CURDIR)/docs/docs.go
-	$(SWAGGER2MD) -i $(CURDIR)/docs/swagger.json -o $(CURDIR)/docs/restapi.md
+	rm $(APIDOCS_OUTDIR)/docs.go
+	$(SWAGGER2MD) -i $(APIDOCS_OUTDIR)/swagger.json -o $(APIDOCS_OUTDIR)/restapi.md
 
 PHONY += help
 help:
