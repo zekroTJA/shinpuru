@@ -43,6 +43,18 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	router.Get("/:memberid/unbanrequests/count", c.pmw.HandleWs(c.session, "sp.guild.mod.unbanrequests"), c.getMemberUnbanrequestsCount)
 }
 
+// @Summary Get Guild Member List
+// @Description Returns a list of guild members.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param after query string false "Request members after the given member ID."
+// @Param limit query int false "The amount of results returned." default(100) minimum(1) maximum(1000)
+// @Success 200 {array} models.Member "Wraped in models.ListResponse"
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/members [get]
 func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -57,11 +69,12 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 	limit := 0
 
 	after = ctx.Query("after")
-	limit, err = wsutil.GetQueryInt(ctx, "limit", 100, 0, 2000)
+	limit, err = wsutil.GetQueryInt(ctx, "limit", 100, 1, 1000)
 	if err != nil {
 		return err
 	}
 
+	// TODO: use state here
 	members, err := c.session.GuildMembers(guildID, after, limit)
 	if err != nil {
 		return err
@@ -77,6 +90,16 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(&models.ListResponse{N: len(fhmembers), Data: fhmembers})
 }
 
+// @Summary Get Guild Member
+// @Description Returns a single guild member by ID.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Success 200 {object} models.Member
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid [get]
 func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -134,6 +157,16 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(mm)
 }
 
+// @Summary Get Guild Member Permissions
+// @Description Returns the permission array of the given user.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Success 200 {object} models.PermissionsResponse
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/permissions [get]
 func (c *GuildMembersController) getMemberPermissions(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -154,6 +187,16 @@ func (c *GuildMembersController) getMemberPermissions(ctx *fiber.Ctx) (err error
 	})
 }
 
+// @Summary Get Guild Member Allowed Permissions
+// @Description Returns all detailed permission DNS which the member is alloed to perform.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Success 200 {array} string "Wrapped in models.ListResponse"
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/permissions/allowed [get]
 func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -187,6 +230,19 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 	return ctx.JSON(&models.ListResponse{N: i, Data: allowed[:i]})
 }
 
+// @Summary Get Guild Member Reports
+// @Description Returns a list of reports of the given member.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Param limit query int false "The amount of results returned." default(100) minimum(1) maxmimum(100)
+// @Param offset query int false "The amount of results to be skipped." default(0)
+// @Success 200 {array} models.Report "Wrapped in models.ListResponse"
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/reports [get]
 func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -223,6 +279,16 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(&models.ListResponse{N: len(resReps), Data: resReps})
 }
 
+// @Summary Get Guild Member Reports Count
+// @Description Returns the total count of reports of the given user.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Success 200 {object} models.Count
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/reports/count [get]
 func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -241,6 +307,16 @@ func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(&models.Count{Count: count})
 }
 
+// @Summary Get Guild Member Unban Requests
+// @Description Returns the list of unban requests of the given member
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListResponse"
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/unbanrequests [get]
 func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -260,6 +336,17 @@ func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err err
 	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
 }
 
+// @Summary Get Guild Member Unban Requests Count
+// @Description Returns the total or filtered count of unban requests of the given member.
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the member."
+// @Param state query sharedmodels.UnbanRequestState false "Filter unban requests by state." default(-1)
+// @Success 200 {object} models.Count
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/:id/:memberid/unbanrequests/count [get]
 func (c *GuildMembersController) getMemberUnbanrequestsCount(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")

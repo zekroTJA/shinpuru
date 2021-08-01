@@ -503,6 +503,13 @@ definitions:
         type: string
       type: array
     type: object
+  models.PermissionsResponse:
+    properties:
+      permissions:
+        items:
+          type: string
+        type: array
+    type: object
   models.PermissionsUpdate:
     properties:
       perm:
@@ -840,6 +847,38 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Get Guild
+  /guilds/:id/:memberid:
+    get:
+      consumes:
+      - application/json
+      description: Returns a single guild member by ID.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Member'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member
   /guilds/:id/:memberid/ban:
     post:
       consumes:
@@ -966,7 +1005,122 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Unmute A Member
+  /guilds/:id/:memberid/permissions:
+    get:
+      consumes:
+      - application/json
+      description: Returns the permission array of the given user.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PermissionsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Permissions
+  /guilds/:id/:memberid/permissions/allowed:
+    get:
+      consumes:
+      - application/json
+      description: Returns all detailed permission DNS which the member is alloed
+        to perform.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              type: string
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Allowed Permissions
   /guilds/:id/:memberid/reports:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of reports of the given member.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      - default: 100
+        description: The amount of results returned.
+        in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: The amount of results to be skipped.
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.Report'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Reports
     post:
       consumes:
       - application/json
@@ -1008,6 +1162,105 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Create A Member Report
+  /guilds/:id/:memberid/reports/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the total count of reports of the given user.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Count'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Reports Count
+  /guilds/:id/:memberid/unbanrequests:
+    get:
+      consumes:
+      - application/json
+      description: Returns the list of unban requests of the given member
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.UnbanRequest'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Unban Requests
+  /guilds/:id/:memberid/unbanrequests/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the total or filtered count of unban requests of the given
+        member.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the member.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Count'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member Unban Requests Count
   /guilds/:id/antiraid/joinlog:
     delete:
       consumes:
@@ -1234,6 +1487,50 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Toggle Guild Inviteblock Enable
+  /guilds/:id/members:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of guild members.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request members after the given member ID.
+        in: query
+        name: after
+        type: string
+      - default: 100
+        description: The amount of results returned.
+        in: query
+        maximum: 1000
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wraped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Member List
   /guilds/:id/permissions:
     get:
       consumes:

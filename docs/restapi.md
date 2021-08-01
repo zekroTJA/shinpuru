@@ -99,6 +99,32 @@ Returns a single guild object by it's ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/:id/:memberid
+
+#### GET
+##### Summary
+
+Get Guild Member
+
+##### Description
+
+Returns a single guild member by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Member](#modelsmember) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/:id/:memberid/ban
 
 #### POST
@@ -183,7 +209,86 @@ Unmute a muted member.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/:id/:memberid/permissions
+
+#### GET
+##### Summary
+
+Get Guild Member Permissions
+
+##### Description
+
+Returns the permission array of the given user.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.PermissionsResponse](#modelspermissionsresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/permissions/allowed
+
+#### GET
+##### Summary
+
+Get Guild Member Allowed Permissions
+
+##### Description
+
+Returns all detailed permission DNS which the member is alloed to perform.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ string ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/:id/:memberid/reports
+
+#### GET
+##### Summary
+
+Get Guild Member Reports
+
+##### Description
+
+Returns a list of reports of the given member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+| limit | query | The amount of results returned. | No | integer |
+| offset | query | The amount of results to be skipped. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.Report](#modelsreport) ] |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
 
 #### POST
 ##### Summary
@@ -208,6 +313,84 @@ Creates a member report.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.Report](#modelsreport) |
 | 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/reports/count
+
+#### GET
+##### Summary
+
+Get Guild Member Reports Count
+
+##### Description
+
+Returns the total count of reports of the given user.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Count](#modelscount) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/unbanrequests
+
+#### GET
+##### Summary
+
+Get Guild Member Unban Requests
+
+##### Description
+
+Returns the list of unban requests of the given member
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/:memberid/unbanrequests/count
+
+#### GET
+##### Summary
+
+Get Guild Member Unban Requests Count
+
+##### Description
+
+Returns the total or filtered count of unban requests of the given member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Count](#modelscount) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -385,6 +568,34 @@ Toggle enabled state of the guild invite block system.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/:id/members
+
+#### GET
+##### Summary
+
+Get Guild Member List
+
+##### Description
+
+Returns a list of guild members.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| after | query | Request members after the given member ID. | No | string |
+| limit | query | The amount of results returned. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wraped in models.ListResponse | [ [models.Member](#modelsmember) ] |
 | 400 | Bad Request | [models.Error](#modelserror) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
@@ -1797,6 +2008,12 @@ Returns general information for the landing page like the local invite parameter
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | models.PermissionsMap | object |  |  |
+
+#### models.PermissionsResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| permissions | [ string ] |  | No |
 
 #### models.PermissionsUpdate
 
