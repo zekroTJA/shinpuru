@@ -301,6 +301,17 @@ type StarboardEntryResponse struct {
 	AvatarURL      string `json:"author_avatar_url"`
 }
 
+type PermissionsMap map[string]permissions.PermissionArray
+
+type EnableStatus struct {
+	Enabled bool `json:"enabled"`
+}
+
+type FlushGuildRequest struct {
+	Validation string `json:"validation"`
+	LeaveAfter bool   `json:"leave_after"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

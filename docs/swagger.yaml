@@ -195,6 +195,15 @@ definitions:
       token:
         type: string
     type: object
+  models.AntiraidSettings:
+    properties:
+      burst:
+        type: integer
+      regeneration_period:
+        type: integer
+      state:
+        type: boolean
+    type: object
   models.CommandInfo:
     properties:
       description:
@@ -216,6 +225,16 @@ definitions:
           $ref: '#/definitions/shireikan.SubPermission'
         type: array
     type: object
+  models.Count:
+    properties:
+      count:
+        type: integer
+    type: object
+  models.EnableStatus:
+    properties:
+      enabled:
+        type: boolean
+    type: object
   models.Error:
     properties:
       code:
@@ -223,6 +242,13 @@ definitions:
       context:
         type: string
       error:
+        type: string
+    type: object
+  models.FlushGuildRequest:
+    properties:
+      leave_after:
+        type: boolean
+      validation:
         type: string
     type: object
   models.Guild:
@@ -280,6 +306,74 @@ definitions:
       verification_level:
         type: integer
     type: object
+  models.GuildKarmaEntry:
+    properties:
+      member:
+        $ref: '#/definitions/models.Member'
+      value:
+        type: integer
+    type: object
+  models.GuildLogEntry:
+    properties:
+      guildid:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      module:
+        type: string
+      severity:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  models.GuildReduced:
+    properties:
+      icon:
+        type: string
+      icon_url:
+        type: string
+      id:
+        type: string
+      joined_at:
+        type: string
+      member_count:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: string
+      region:
+        type: string
+    type: object
+  models.GuildSettings:
+    properties:
+      autoroles:
+        items:
+          type: string
+        type: array
+      joinmessagechannel:
+        type: string
+      joinmessagetext:
+        type: string
+      leavemessagechannel:
+        type: string
+      leavemessagetext:
+        type: string
+      modlogchannel:
+        type: string
+      perms:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      prefix:
+        type: string
+      voicelogchannel:
+        type: string
+    type: object
   models.InviteSettingsRequest:
     properties:
       guild_id:
@@ -297,6 +391,49 @@ definitions:
         type: string
       message:
         type: string
+    type: object
+  models.JoinLogEntry:
+    properties:
+      guild_id:
+        type: string
+      tag:
+        type: string
+      timestamp:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.KarmaRule:
+    properties:
+      action:
+        type: string
+      argument:
+        type: string
+      guildid:
+        type: string
+      id:
+        type: integer
+      trigger:
+        type: integer
+      value:
+        type: integer
+    type: object
+  models.KarmaSettings:
+    properties:
+      emotes_decrease:
+        items:
+          type: string
+        type: array
+      emotes_increase:
+        items:
+          type: string
+        type: array
+      penalty:
+        type: boolean
+      state:
+        type: boolean
+      tokens:
+        type: integer
     type: object
   models.LandingPageResponse:
     properties:
@@ -351,6 +488,85 @@ definitions:
         $ref: '#/definitions/discordgo.User'
         description: The underlying user on which the member is based.
     type: object
+  models.PermissionsMap:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
+  models.PermissionsUpdate:
+    properties:
+      perm:
+        type: string
+      role_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  models.ReasonRequest:
+    properties:
+      attachment:
+        type: string
+      reason:
+        type: string
+      timeout:
+        type: string
+    type: object
+  models.Report:
+    properties:
+      attachment_url:
+        type: string
+      created:
+        type: string
+      executor_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      timeout:
+        type: string
+      type:
+        type: integer
+      type_name:
+        type: string
+      victim_id:
+        type: string
+    type: object
+  models.StarboardEntryResponse:
+    properties:
+      author_avatar_url:
+        type: string
+      author_id:
+        type: string
+      author_username:
+        type: string
+      channel_id:
+        type: string
+      content:
+        type: string
+      guild_id:
+        type: string
+      media_urls:
+        items:
+          type: string
+        type: array
+      message_id:
+        type: string
+      message_url:
+        type: string
+      score:
+        type: integer
+      starboard_id:
+        type: string
+    type: object
+  models.State:
+    properties:
+      state:
+        type: boolean
+    type: object
   models.Status:
     properties:
       code:
@@ -391,6 +607,29 @@ definitions:
       uptime_str:
         type: string
       version:
+        type: string
+    type: object
+  models.UnbanRequest:
+    properties:
+      created:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      processed:
+        type: string
+      processed_by:
+        type: string
+      processed_message:
+        type: string
+      status:
+        type: integer
+      user_id:
+        type: string
+      user_tag:
         type: string
     type: object
   models.User:
@@ -529,6 +768,1059 @@ paths:
           schema:
             $ref: '#/definitions/models.Status'
       summary: Logout
+  /guilds:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of guilds the authenticated user has in common with
+        shinpuru.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.GuildReduced'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: List Guilds
+  /guilds/:id:
+    get:
+      consumes:
+      - application/json
+      description: Returns a single guild object by it's ID.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Guild'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild
+  /guilds/:id/antiraid/joinlog:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes all entries of the antiraid joinlog.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Reset Antiraid Joinlog
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of joined members during an antiraid trigger.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.JoinLogEntry'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Antiraid Joinlog
+  /guilds/:id/inviteblock:
+    post:
+      consumes:
+      - application/json
+      description: Toggle enabled state of the guild invite block system.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The enable status payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.EnableStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Toggle Guild Inviteblock Enable
+  /guilds/:id/permissions:
+    get:
+      consumes:
+      - application/json
+      description: Returns the specified guild permission settings.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PermissionsMap'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Permission Settings
+    post:
+      consumes:
+      - application/json
+      description: Apply a new guild permission rule for a specified role.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The permission rule payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.PermissionsUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Apply Guild Permission Rule
+  /guilds/:id/reports:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of guild modlog entries for the given guild.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 0
+        description: The offset of returned entries
+        in: query
+        name: offset
+        type: integer
+      - default: 0
+        description: The amount of returned entries (0 = all)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.Report'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Modlog
+  /guilds/:id/reports/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the total count of entries in the guild mod log.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Count'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Modlog Count
+  /guilds/:id/scoreboard:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of scoreboard entries for the given guild.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 25
+        description: Limit the amount of result values
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.GuildKarmaEntry'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Scoreboard
+  /guilds/:id/settings:
+    get:
+      consumes:
+      - application/json
+      description: Returns the specified general guild settings.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildSettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings
+    post:
+      consumes:
+      - application/json
+      description: Returns the specified general guild settings.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Modified guild settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.GuildSettings'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings
+  /guilds/:id/settings/antiraid:
+    get:
+      consumes:
+      - application/json
+      description: Returns the specified guild antiraid settings.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AntiraidSettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Antiraid Settings
+    post:
+      consumes:
+      - application/json
+      description: Update the guild antiraid settings specification.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild antiraid settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.AntiraidSettings'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Guild Antiraid Settings
+  /guilds/:id/settings/flushguilddata:
+    post:
+      consumes:
+      - application/json
+      description: Flushes all guild data from the database.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild flush payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.FlushGuildRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Flush Guild Data
+  /guilds/:id/settings/karma:
+    get:
+      consumes:
+      - application/json
+      description: Returns the specified guild karma settings.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.KarmaSettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Karma Settings
+    post:
+      consumes:
+      - application/json
+      description: Update the guild karma settings specification.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild karma settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.KarmaSettings'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Guild Karma Settings
+  /guilds/:id/settings/karma/blocklist:
+    get:
+      consumes:
+      - application/json
+      description: Returns the specified guild karma blocklist entries.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.Member'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Karma Blocklist
+  /guilds/:id/settings/karma/blocklist/:memberid:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a guild karma blocklist entry.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the guild.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Remove Guild Karma Blocklist Entry
+    put:
+      consumes:
+      - application/json
+      description: Add a guild karma blocklist entry.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the guild.
+        in: path
+        name: memberid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Add Guild Karma Blocklist Entry
+  /guilds/:id/settings/karma/rules:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of specified guild karma rules.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.KarmaRule'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings Karma Rules
+    post:
+      consumes:
+      - application/json
+      description: Create a guild karma rule.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The karma rule payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.KarmaRule'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.KarmaRule'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create Guild Settings Karma
+  /guilds/:id/settings/karma/rules/:ruleid:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a guild karma rule by ID.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the rule.
+        in: path
+        name: ruleid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Remove Guild Settings Karma
+    post:
+      consumes:
+      - application/json
+      description: Update a karma rule by ID.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the rule.
+        in: path
+        name: ruleid
+        required: true
+        type: string
+      - description: The karma rule update payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.KarmaRule'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.KarmaRule'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Guild Settings Karma
+  /guilds/:id/settings/logs:
+    get:
+      consumes:
+      - application/json
+      description: Returns the total or filtered count of guild log entries.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Count'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Log Count
+  /guilds/:id/settings/logs/state:
+    get:
+      consumes:
+      - application/json
+      description: Returns the enabled state of the guild log setting.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings Log State
+    post:
+      consumes:
+      - application/json
+      description: Update the enabled state of the log state guild setting.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The state payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.State'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Guild Settings Log State
+  /guilds/:id/settings/logs/state/:entryid:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a single or all guild log entries.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the entry to be deleted.
+        in: path
+        name: entryid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete Guild Log Entries
+  /guilds/:id/starboard:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of starboard entries for the given guild.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.StarboardEntryResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Starboard
+  /guilds/:id/unbanrequests:
+    get:
+      consumes:
+      - application/json
+      description: Returns the list of the guild unban requests.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListReponse
+          schema:
+            items:
+              $ref: '#/definitions/models.UnbanRequest'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Unbanrequests
+  /guilds/:id/unbanrequests/:requestid:
+    get:
+      consumes:
+      - application/json
+      description: Returns a single guild unban request by ID.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the unbanrequest.
+        in: path
+        name: requestid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UnbanRequest'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Single Guild Unbanrequest
+    post:
+      consumes:
+      - application/json
+      description: Process a guild unban request.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the unbanrequest.
+        in: path
+        name: requestid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UnbanRequest'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Process Guild Unbanrequest
+  /guilds/:id/unbanrequests/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the total or filtered count of guild unban requests.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Count'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Unbanrequests Count
   /me:
     get:
       consumes:
@@ -558,6 +1850,74 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: OTA Login
+  /reports/:id:
+    get:
+      consumes:
+      - application/json
+      description: Returns a single report object by its ID.
+      parameters:
+      - description: The report ID.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Report
+  /reports/:id/revoke:
+    post:
+      consumes:
+      - application/json
+      description: Revokes a given report by ID.
+      parameters:
+      - description: The report ID.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The revoke reason payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReasonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Report'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Revoke Report
   /settings/noguildinvite:
     get:
       consumes:
@@ -735,7 +2095,8 @@ paths:
         name: hexcode
         required: true
         type: string
-      - description: 'The dimension of the square image (default: 24)'
+      - default: 24
+        description: The dimension of the square image
         in: query
         name: size
         type: integer

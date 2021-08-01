@@ -71,7 +71,7 @@ func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 // @Summary Color Generator
 // @Description Produces a square image of the given color and size.
 // @Param hexcode path string true "Hex Code of the Color to produce"
-// @Param size query int false "The dimension of the square image (default: 24)"
+// @Param size query int false "The dimension of the square image" default(24)
 // @Accept json
 // @Produce image/png
 // @Success 200 {data} png image data
