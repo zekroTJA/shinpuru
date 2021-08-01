@@ -77,8 +77,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
 	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
 	router.Get("/:guildid/settings/logs/count", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsCount)
-	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
-	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntry)
+	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntries)
+	router.Delete("/:guildid/settings/logs/:id", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntries)
 	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
 	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
 	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
@@ -127,7 +127,7 @@ func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 // @Success 200 {object} models.Guild
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id [get]
+// @Router /guilds/{id} [get]
 func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -161,7 +161,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.GuildKarmaEntry "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/scoreboard [get]
+// @Router /guilds/{id}/scoreboard [get]
 func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	limit, err := wsutil.GetQueryInt(ctx, "limit", 25, 1, 100)
@@ -204,7 +204,7 @@ func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 // @Success 200 {array} sharedmodels.JoinLogEntry "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/antiraid/joinlog [get]
+// @Router /guilds/{id}/antiraid/joinlog [get]
 func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -229,7 +229,7 @@ func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.Status
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/antiraid/joinlog [delete]
+// @Router /guilds/{id}/antiraid/joinlog [delete]
 func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -249,7 +249,7 @@ func (c *GuildsController) deleteGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.StarboardEntryResponse "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/starboard [get]
+// @Router /guilds/{id}/starboard [get]
 func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	limit, err := wsutil.GetQueryInt(ctx, "limit", 20, 1, 100)
@@ -317,7 +317,7 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.Report "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/reports [get]
+// @Router /guilds/{id}/reports [get]
 func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -364,7 +364,7 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.Count
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/reports/count [get]
+// @Router /guilds/{id}/reports/count [get]
 func (c *GuildsController) getReportsCount(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -391,7 +391,7 @@ func (c *GuildsController) getReportsCount(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.GuildSettings
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings [get]
+// @Router /guilds/{id}/settings [get]
 func (c *GuildsController) getGuildSettings(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -440,7 +440,7 @@ func (c *GuildsController) getGuildSettings(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings [post]
+// @Router /guilds/{id}/settings [post]
 func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -578,7 +578,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.PermissionsMap
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/permissions [get]
+// @Router /guilds/{id}/permissions [get]
 func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -609,7 +609,7 @@ func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/permissions [post]
+// @Router /guilds/{id}/permissions [post]
 func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -660,7 +660,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/inviteblock [post]
+// @Router /guilds/{id}/inviteblock [post]
 func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -690,7 +690,7 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.KarmaSettings
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma [get]
+// @Router /guilds/{id}/settings/karma [get]
 func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -731,7 +731,7 @@ func (c *GuildsController) getGuildSettingsKarma(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma [post]
+// @Router /guilds/{id}/settings/karma [post]
 func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -777,7 +777,7 @@ func (c *GuildsController) postGuildSettingsKarma(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.Member "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/blocklist [get]
+// @Router /guilds/{id}/settings/karma/blocklist [get]
 func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -813,7 +813,7 @@ func (c *GuildsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/blocklist/:memberid [put]
+// @Router /guilds/{id}/settings/karma/blocklist/{memberid} [put]
 func (c *GuildsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -852,7 +852,7 @@ func (c *GuildsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error 
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/blocklist/:memberid [delete]
+// @Router /guilds/{id}/settings/karma/blocklist/{memberid} [delete]
 func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -881,7 +881,7 @@ func (c *GuildsController) deleteGuildSettingsKarmaBlocklist(ctx *fiber.Ctx) err
 // @Success 200 {object} models.AntiraidSettings
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/antiraid [get]
+// @Router /guilds/{id}/settings/antiraid [get]
 func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -914,7 +914,7 @@ func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/antiraid [post]
+// @Router /guilds/{id}/settings/antiraid [post]
 func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -956,7 +956,7 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 // @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListReponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/unbanrequests [get]
+// @Router /guilds/{id}/unbanrequests [get]
 func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -986,7 +986,7 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/unbanrequests/count [get]
+// @Router /guilds/{id}/unbanrequests/count [get]
 func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1026,7 +1026,7 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 // @Success 200 {object} sharedmodels.UnbanRequest
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/unbanrequests/:requestid [get]
+// @Router /guilds/{id}/unbanrequests/{requestid} [get]
 func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	id := ctx.Params("id")
@@ -1052,7 +1052,7 @@ func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 // @Success 200 {object} sharedmodels.UnbanRequest
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/unbanrequests/:requestid [post]
+// @Router /guilds/{id}/unbanrequests/{requestid} [post]
 func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -1106,7 +1106,7 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 // @Success 200 {array} sharedmodels.KarmaRule "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/rules [get]
+// @Router /guilds/{id}/settings/karma/rules [get]
 func (c *GuildsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1129,7 +1129,7 @@ func (c *GuildsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/rules [post]
+// @Router /guilds/{id}/settings/karma/rules [post]
 func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1181,7 +1181,7 @@ func (c *GuildsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/rules/:ruleid [post]
+// @Router /guilds/{id}/settings/karma/rules/{ruleid} [post]
 func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	id := ctx.Params("id")
@@ -1236,7 +1236,7 @@ func (c *GuildsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) (err err
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/karma/rules/:ruleid [delete]
+// @Router /guilds/{id}/settings/karma/rules/{ruleid} [delete]
 func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	id := ctx.Params("id")
@@ -1266,7 +1266,7 @@ func (c *GuildsController) deleteGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/logs [get]
+// @Router /guilds/{id}/settings/logs [get]
 func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1303,7 +1303,7 @@ func (c *GuildsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/logs [get]
+// @Router /guilds/{id}/settings/logs [get]
 func (c *GuildsController) getGuildSettingsLogsCount(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1330,7 +1330,7 @@ func (c *GuildsController) getGuildSettingsLogsCount(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.State
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/logs/state [get]
+// @Router /guilds/{id}/settings/logs/state [get]
 func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1355,7 +1355,7 @@ func (c *GuildsController) getGuildSettingsLogsState(ctx *fiber.Ctx) error {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/logs/state [post]
+// @Router /guilds/{id}/settings/logs/state [post]
 func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -1373,19 +1373,35 @@ func (c *GuildsController) postGuildSettingsLogsState(ctx *fiber.Ctx) error {
 }
 
 // @Summary Delete Guild Log Entries
-// @Description Delete a single or all guild log entries.
+// @Description Delete all guild log entries.
 // @Tags Guilds
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
-// @Param entryid path string false "The ID of the entry to be deleted."
 // @Success 200 {object} models.State
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/logs/state [delete]
-// @Router /guilds/:id/settings/logs/state/:entryid [delete]
-func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err error) {
+// @Router /guilds/{id}/settings/logs [delete]
+//
+// This is a dummy method for API doc generation.
+func (*GuildsController) _(*fiber.Ctx) error {
+	return nil
+}
+
+// @Summary Delete Guild Log Entries
+// @Description Delete a single log entry.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param entryid path string true "The ID of the entry to be deleted."
+// @Success 200 {object} models.State
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/logs/{entryid} [delete]
+func (c *GuildsController) deleteGuildSettingsLogEntries(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	id := ctx.Params("id")
 
@@ -1421,7 +1437,7 @@ func (c *GuildsController) deleteGuildSettingsLogEntry(ctx *fiber.Ctx) (err erro
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/settings/flushguilddata [post]
+// @Router /guilds/{id}/settings/flushguilddata [post]
 func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 

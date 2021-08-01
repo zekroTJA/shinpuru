@@ -76,8 +76,8 @@ func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 // @Tags Utilities
 // @Accept json
 // @Produce image/png
-// @Success 200 {data} png image data
-// @Router /util/color/:hexcode [get]
+// @Success 200 {file} png image data
+// @Router /util/color/{hexcode} [get]
 func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 	hexcode := ctx.Params("hexcode")
 	size := strings.ToLower(ctx.Query("size"))

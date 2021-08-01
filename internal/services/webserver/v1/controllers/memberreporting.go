@@ -57,7 +57,7 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/reports [post]
+// @Router /guilds/{id}/{memberid}/reports [post]
 func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -118,7 +118,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/kick [post]
+// @Router /guilds/{id}/{memberid}/kick [post]
 func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -182,7 +182,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/ban [post]
+// @Router /guilds/{id}/{memberid}/ban [post]
 func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -253,7 +253,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/mute [post]
+// @Router /guilds/{id}/{memberid}/mute [post]
 func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -325,7 +325,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/mute [post]
+// @Router /guilds/{id}/{memberid}/mute [post]
 func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 

@@ -55,7 +55,7 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/members [get]
+// @Router /guilds/{id}/members [get]
 func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -101,7 +101,7 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 // @Success 200 {object} models.Member
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid [get]
+// @Router /guilds/{id}/{memberid} [get]
 func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -169,7 +169,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 // @Success 200 {object} models.PermissionsResponse
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/permissions [get]
+// @Router /guilds/{id}/{memberid}/permissions [get]
 func (c *GuildMembersController) getMemberPermissions(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -200,7 +200,7 @@ func (c *GuildMembersController) getMemberPermissions(ctx *fiber.Ctx) (err error
 // @Success 200 {array} string "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/permissions/allowed [get]
+// @Router /guilds/{id}/{memberid}/permissions/allowed [get]
 func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -247,7 +247,7 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/reports [get]
+// @Router /guilds/{id}/{memberid}/reports [get]
 func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -294,7 +294,7 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 // @Success 200 {object} models.Count
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/reports/count [get]
+// @Router /guilds/{id}/{memberid}/reports/count [get]
 func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -323,7 +323,7 @@ func (c *GuildMembersController) getReportsCount(ctx *fiber.Ctx) (err error) {
 // @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/unbanrequests [get]
+// @Router /guilds/{id}/{memberid}/unbanrequests [get]
 func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")
@@ -354,7 +354,7 @@ func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err err
 // @Success 200 {object} models.Count
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/:memberid/unbanrequests/count [get]
+// @Router /guilds/{id}/{memberid}/unbanrequests/count [get]
 func (c *GuildMembersController) getMemberUnbanrequestsCount(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 	memberID := ctx.Params("memberid")

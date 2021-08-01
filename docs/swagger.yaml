@@ -828,7 +828,7 @@ paths:
       summary: List Guilds
       tags:
       - Guilds
-  /guilds/:id:
+  /guilds/{id}:
     get:
       consumes:
       - application/json
@@ -857,7 +857,7 @@ paths:
       summary: Get Guild
       tags:
       - Guilds
-  /guilds/:id/:memberid:
+  /guilds/{id}/{memberid}:
     get:
       consumes:
       - application/json
@@ -891,7 +891,7 @@ paths:
       summary: Get Guild Member
       tags:
       - Members
-  /guilds/:id/:memberid/ban:
+  /guilds/{id}/{memberid}/ban:
     post:
       consumes:
       - application/json
@@ -935,7 +935,7 @@ paths:
       summary: Create A Member Ban Report
       tags:
       - Member Reporting
-  /guilds/:id/:memberid/kick:
+  /guilds/{id}/{memberid}/kick:
     post:
       consumes:
       - application/json
@@ -979,7 +979,7 @@ paths:
       summary: Create A Member Kick Report
       tags:
       - Member Reporting
-  /guilds/:id/:memberid/mute:
+  /guilds/{id}/{memberid}/mute:
     post:
       consumes:
       - application/json
@@ -1023,7 +1023,7 @@ paths:
       summary: Unmute A Member
       tags:
       - Member Reporting
-  /guilds/:id/:memberid/permissions:
+  /guilds/{id}/{memberid}/permissions:
     get:
       consumes:
       - application/json
@@ -1057,7 +1057,7 @@ paths:
       summary: Get Guild Member Permissions
       tags:
       - Members
-  /guilds/:id/:memberid/permissions/allowed:
+  /guilds/{id}/{memberid}/permissions/allowed:
     get:
       consumes:
       - application/json
@@ -1094,7 +1094,7 @@ paths:
       summary: Get Guild Member Allowed Permissions
       tags:
       - Members
-  /guilds/:id/:memberid/reports:
+  /guilds/{id}/{memberid}/reports:
     get:
       consumes:
       - application/json
@@ -1188,7 +1188,7 @@ paths:
       summary: Create A Member Report
       tags:
       - Member Reporting
-  /guilds/:id/:memberid/reports/count:
+  /guilds/{id}/{memberid}/reports/count:
     get:
       consumes:
       - application/json
@@ -1222,7 +1222,7 @@ paths:
       summary: Get Guild Member Reports Count
       tags:
       - Members
-  /guilds/:id/:memberid/unbanrequests:
+  /guilds/{id}/{memberid}/unbanrequests:
     get:
       consumes:
       - application/json
@@ -1258,7 +1258,7 @@ paths:
       summary: Get Guild Member Unban Requests
       tags:
       - Members
-  /guilds/:id/:memberid/unbanrequests/count:
+  /guilds/{id}/{memberid}/unbanrequests/count:
     get:
       consumes:
       - application/json
@@ -1293,7 +1293,7 @@ paths:
       summary: Get Guild Member Unban Requests Count
       tags:
       - Members
-  /guilds/:id/antiraid/joinlog:
+  /guilds/{id}/antiraid/joinlog:
     delete:
       consumes:
       - application/json
@@ -1352,7 +1352,7 @@ paths:
       summary: Get Antiraid Joinlog
       tags:
       - Guilds
-  /guilds/:id/backups:
+  /guilds/{id}/backups:
     get:
       consumes:
       - application/json
@@ -1383,7 +1383,7 @@ paths:
       summary: Get Guild Backups
       tags:
       - Guild Backups
-  /guilds/:id/backups/:backupid/download:
+  /guilds/{id}/backups/{backupid}/download:
     get:
       consumes:
       - application/json
@@ -1410,7 +1410,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: data
+            type: file
         "401":
           description: Unauthorized
           schema:
@@ -1459,7 +1459,7 @@ paths:
       summary: Obtain Backup Download OTA Key
       tags:
       - Guild Backups
-  /guilds/:id/backups/toggle:
+  /guilds/{id}/backups/toggle:
     post:
       consumes:
       - application/json
@@ -1494,7 +1494,7 @@ paths:
       summary: Toggle Guild Backup Enable
       tags:
       - Guild Backups
-  /guilds/:id/inviteblock:
+  /guilds/{id}/inviteblock:
     post:
       consumes:
       - application/json
@@ -1533,7 +1533,7 @@ paths:
       summary: Toggle Guild Inviteblock Enable
       tags:
       - Guilds
-  /guilds/:id/members:
+  /guilds/{id}/members:
     get:
       consumes:
       - application/json
@@ -1579,7 +1579,7 @@ paths:
       summary: Get Guild Member List
       tags:
       - Members
-  /guilds/:id/permissions:
+  /guilds/{id}/permissions:
     get:
       consumes:
       - application/json
@@ -1646,7 +1646,7 @@ paths:
       summary: Apply Guild Permission Rule
       tags:
       - Guilds
-  /guilds/:id/reports:
+  /guilds/{id}/reports:
     get:
       consumes:
       - application/json
@@ -1687,7 +1687,7 @@ paths:
       summary: Get Guild Modlog
       tags:
       - Guilds
-  /guilds/:id/reports/count:
+  /guilds/{id}/reports/count:
     get:
       consumes:
       - application/json
@@ -1716,7 +1716,7 @@ paths:
       summary: Get Guild Modlog Count
       tags:
       - Guilds
-  /guilds/:id/scoreboard:
+  /guilds/{id}/scoreboard:
     get:
       consumes:
       - application/json
@@ -1754,7 +1754,7 @@ paths:
       summary: Get Guild Scoreboard
       tags:
       - Guilds
-  /guilds/:id/settings:
+  /guilds/{id}/settings:
     get:
       consumes:
       - application/json
@@ -1821,7 +1821,7 @@ paths:
       summary: Get Guild Settings
       tags:
       - Guilds
-  /guilds/:id/settings/antiraid:
+  /guilds/{id}/settings/antiraid:
     get:
       consumes:
       - application/json
@@ -1888,7 +1888,7 @@ paths:
       summary: Update Guild Antiraid Settings
       tags:
       - Guilds
-  /guilds/:id/settings/flushguilddata:
+  /guilds/{id}/settings/flushguilddata:
     post:
       consumes:
       - application/json
@@ -1927,7 +1927,7 @@ paths:
       summary: Flush Guild Data
       tags:
       - Guilds
-  /guilds/:id/settings/karma:
+  /guilds/{id}/settings/karma:
     get:
       consumes:
       - application/json
@@ -1994,7 +1994,7 @@ paths:
       summary: Update Guild Karma Settings
       tags:
       - Guilds
-  /guilds/:id/settings/karma/blocklist:
+  /guilds/{id}/settings/karma/blocklist:
     get:
       consumes:
       - application/json
@@ -2025,7 +2025,7 @@ paths:
       summary: Get Guild Karma Blocklist
       tags:
       - Guilds
-  /guilds/:id/settings/karma/blocklist/:memberid:
+  /guilds/{id}/settings/karma/blocklist/{memberid}:
     delete:
       consumes:
       - application/json
@@ -2100,7 +2100,7 @@ paths:
       summary: Add Guild Karma Blocklist Entry
       tags:
       - Guilds
-  /guilds/:id/settings/karma/rules:
+  /guilds/{id}/settings/karma/rules:
     get:
       consumes:
       - application/json
@@ -2169,7 +2169,7 @@ paths:
       summary: Create Guild Settings Karma
       tags:
       - Guilds
-  /guilds/:id/settings/karma/rules/:ruleid:
+  /guilds/{id}/settings/karma/rules/{ruleid}:
     delete:
       consumes:
       - application/json
@@ -2250,7 +2250,39 @@ paths:
       summary: Update Guild Settings Karma
       tags:
       - Guilds
-  /guilds/:id/settings/logs:
+  /guilds/{id}/settings/logs:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all guild log entries.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete Guild Log Entries
+      tags:
+      - Guilds
     get:
       consumes:
       - application/json
@@ -2283,7 +2315,45 @@ paths:
       summary: Get Guild Log Count
       tags:
       - Guilds
-  /guilds/:id/settings/logs/state:
+  /guilds/{id}/settings/logs/{entryid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a single log entry.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the entry to be deleted.
+        in: path
+        name: entryid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.State'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete Guild Log Entries
+      tags:
+      - Guilds
+  /guilds/{id}/settings/logs/state:
     get:
       consumes:
       - application/json
@@ -2350,44 +2420,7 @@ paths:
       summary: Update Guild Settings Log State
       tags:
       - Guilds
-  /guilds/:id/settings/logs/state/:entryid:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a single or all guild log entries.
-      parameters:
-      - description: The ID of the guild.
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: The ID of the entry to be deleted.
-        in: path
-        name: entryid
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.State'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.Error'
-      summary: Delete Guild Log Entries
-      tags:
-      - Guilds
-  /guilds/:id/starboard:
+  /guilds/{id}/starboard:
     get:
       consumes:
       - application/json
@@ -2418,7 +2451,7 @@ paths:
       summary: Get Guild Starboard
       tags:
       - Guilds
-  /guilds/:id/unbanrequests:
+  /guilds/{id}/unbanrequests:
     get:
       consumes:
       - application/json
@@ -2449,7 +2482,7 @@ paths:
       summary: Get Guild Unbanrequests
       tags:
       - Guilds
-  /guilds/:id/unbanrequests/:requestid:
+  /guilds/{id}/unbanrequests/{requestid}:
     get:
       consumes:
       - application/json
@@ -2516,7 +2549,7 @@ paths:
       summary: Process Guild Unbanrequest
       tags:
       - Guilds
-  /guilds/:id/unbanrequests/count:
+  /guilds/{id}/unbanrequests/count:
     get:
       consumes:
       - application/json
@@ -2582,7 +2615,7 @@ paths:
       summary: OTA Login
       tags:
       - OTA
-  /reports/:id:
+  /reports/{id}:
     get:
       consumes:
       - application/json
@@ -2615,7 +2648,7 @@ paths:
       summary: Get Report
       tags:
       - Reports
-  /reports/:id/revoke:
+  /reports/{id}/revoke:
     post:
       consumes:
       - application/json
@@ -2976,7 +3009,7 @@ paths:
       summary: Update OTA Usersettings State
       tags:
       - User Settings
-  /util/color/:hexcode:
+  /util/color/{hexcode}:
     get:
       consumes:
       - application/json
@@ -2998,7 +3031,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: data
+            type: file
       summary: Color Generator
       tags:
       - Utilities

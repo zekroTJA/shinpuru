@@ -74,7 +74,7 @@ Returns a list of guilds the authenticated user has in common with shinpuru.
 | 200 | Wrapped in models.ListResponse | [ [models.GuildReduced](#modelsguildreduced) ] |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
-### /guilds/:id
+### /guilds/{id}
 
 #### GET
 ##### Summary
@@ -99,7 +99,951 @@ Returns a single guild object by it's ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid
+### /guilds/{id}/antiraid/joinlog
+
+#### GET
+##### Summary
+
+Get Antiraid Joinlog
+
+##### Description
+
+Returns a list of joined members during an antiraid trigger.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.JoinLogEntry](#modelsjoinlogentry) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### DELETE
+##### Summary
+
+Reset Antiraid Joinlog
+
+##### Description
+
+Deletes all entries of the antiraid joinlog.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/backups
+
+#### GET
+##### Summary
+
+Get Guild Backups
+
+##### Description
+
+Returns a list of guild backups.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [backupmodels.Entry](#backupmodelsentry) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/backups/toggle
+
+#### POST
+##### Summary
+
+Toggle Guild Backup Enable
+
+##### Description
+
+Toggle guild backup enable state.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | Enable state payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/backups/{backupid}/download
+
+#### GET
+##### Summary
+
+Download Backup File
+
+##### Description
+
+Download a single gziped backup file.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+| ota_token | query | The previously obtained OTA token to authorize the download. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | file |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 403 | Forbidden | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Obtain Backup Download OTA Key
+
+##### Description
+
+Returns an OTA key which is used to download a backup entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/inviteblock
+
+#### POST
+##### Summary
+
+Toggle Guild Inviteblock Enable
+
+##### Description
+
+Toggle enabled state of the guild invite block system.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The enable status payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/members
+
+#### GET
+##### Summary
+
+Get Guild Member List
+
+##### Description
+
+Returns a list of guild members.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| after | query | Request members after the given member ID. | No | string |
+| limit | query | The amount of results returned. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wraped in models.ListResponse | [ [models.Member](#modelsmember) ] |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/permissions
+
+#### GET
+##### Summary
+
+Get Guild Permission Settings
+
+##### Description
+
+Returns the specified guild permission settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.PermissionsMap](#modelspermissionsmap) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Apply Guild Permission Rule
+
+##### Description
+
+Apply a new guild permission rule for a specified role.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The permission rule payload. | Yes | [models.PermissionsUpdate](#modelspermissionsupdate) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/reports
+
+#### GET
+##### Summary
+
+Get Guild Modlog
+
+##### Description
+
+Returns a list of guild modlog entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| offset | query | The offset of returned entries | No | integer |
+| limit | query | The amount of returned entries (0 = all) | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.Report](#modelsreport) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/reports/count
+
+#### GET
+##### Summary
+
+Get Guild Modlog Count
+
+##### Description
+
+Returns the total count of entries in the guild mod log.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Count](#modelscount) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/scoreboard
+
+#### GET
+##### Summary
+
+Get Guild Scoreboard
+
+##### Description
+
+Returns a list of scoreboard entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| limit | query | Limit the amount of result values | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.GuildKarmaEntry](#modelsguildkarmaentry) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings
+
+#### GET
+##### Summary
+
+Get Guild Settings
+
+##### Description
+
+Returns the specified general guild settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GuildSettings](#modelsguildsettings) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Get Guild Settings
+
+##### Description
+
+Returns the specified general guild settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | Modified guild settings payload. | Yes | [models.GuildSettings](#modelsguildsettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/antiraid
+
+#### GET
+##### Summary
+
+Get Guild Antiraid Settings
+
+##### Description
+
+Returns the specified guild antiraid settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AntiraidSettings](#modelsantiraidsettings) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Antiraid Settings
+
+##### Description
+
+Update the guild antiraid settings specification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild antiraid settings payload. | Yes | [models.AntiraidSettings](#modelsantiraidsettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/flushguilddata
+
+#### POST
+##### Summary
+
+Flush Guild Data
+
+##### Description
+
+Flushes all guild data from the database.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild flush payload. | Yes | [models.FlushGuildRequest](#modelsflushguildrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/karma
+
+#### GET
+##### Summary
+
+Get Guild Karma Settings
+
+##### Description
+
+Returns the specified guild karma settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.KarmaSettings](#modelskarmasettings) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Karma Settings
+
+##### Description
+
+Update the guild karma settings specification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild karma settings payload. | Yes | [models.KarmaSettings](#modelskarmasettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/karma/blocklist
+
+#### GET
+##### Summary
+
+Get Guild Karma Blocklist
+
+##### Description
+
+Returns the specified guild karma blocklist entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.Member](#modelsmember) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/karma/blocklist/{memberid}
+
+#### PUT
+##### Summary
+
+Add Guild Karma Blocklist Entry
+
+##### Description
+
+Add a guild karma blocklist entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### DELETE
+##### Summary
+
+Remove Guild Karma Blocklist Entry
+
+##### Description
+
+Remove a guild karma blocklist entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/karma/rules
+
+#### GET
+##### Summary
+
+Get Guild Settings Karma Rules
+
+##### Description
+
+Returns a list of specified guild karma rules.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.KarmaRule](#modelskarmarule) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Create Guild Settings Karma
+
+##### Description
+
+Create a guild karma rule.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The karma rule payload. | Yes | [models.KarmaRule](#modelskarmarule) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.KarmaRule](#modelskarmarule) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/karma/rules/{ruleid}
+
+#### POST
+##### Summary
+
+Update Guild Settings Karma
+
+##### Description
+
+Update a karma rule by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| ruleid | path | The ID of the rule. | Yes | string |
+| payload | body | The karma rule update payload. | Yes | [models.KarmaRule](#modelskarmarule) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.KarmaRule](#modelskarmarule) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### DELETE
+##### Summary
+
+Remove Guild Settings Karma
+
+##### Description
+
+Remove a guild karma rule by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| ruleid | path | The ID of the rule. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/logs
+
+#### GET
+##### Summary
+
+Get Guild Log Count
+
+##### Description
+
+Returns the total or filtered count of guild log entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Count](#modelscount) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### DELETE
+##### Summary
+
+Delete Guild Log Entries
+
+##### Description
+
+Delete all guild log entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/logs/state
+
+#### GET
+##### Summary
+
+Get Guild Settings Log State
+
+##### Description
+
+Returns the enabled state of the guild log setting.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Settings Log State
+
+##### Description
+
+Update the enabled state of the log state guild setting.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The state payload. | Yes | [models.State](#modelsstate) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/settings/logs/{entryid}
+
+#### DELETE
+##### Summary
+
+Delete Guild Log Entries
+
+##### Description
+
+Delete a single log entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| entryid | path | The ID of the entry to be deleted. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.State](#modelsstate) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/starboard
+
+#### GET
+##### Summary
+
+Get Guild Starboard
+
+##### Description
+
+Returns a list of starboard entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.StarboardEntryResponse](#modelsstarboardentryresponse) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/unbanrequests
+
+#### GET
+##### Summary
+
+Get Guild Unbanrequests
+
+##### Description
+
+Returns the list of the guild unban requests.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListReponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/unbanrequests/count
+
+#### GET
+##### Summary
+
+Get Guild Unbanrequests Count
+
+##### Description
+
+Returns the total or filtered count of guild unban requests.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Count](#modelscount) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/unbanrequests/{requestid}
+
+#### GET
+##### Summary
+
+Get Single Guild Unbanrequest
+
+##### Description
+
+Returns a single guild unban request by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| requestid | path | The ID of the unbanrequest. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Process Guild Unbanrequest
+
+##### Description
+
+Process a guild unban request.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| requestid | path | The ID of the unbanrequest. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /guilds/{id}/{memberid}
 
 #### GET
 ##### Summary
@@ -125,7 +1069,7 @@ Returns a single guild member by ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/ban
+### /guilds/{id}/{memberid}/ban
 
 #### POST
 ##### Summary
@@ -153,7 +1097,7 @@ Creates a member ban report.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/kick
+### /guilds/{id}/{memberid}/kick
 
 #### POST
 ##### Summary
@@ -181,7 +1125,7 @@ Creates a member kick report.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/mute
+### /guilds/{id}/{memberid}/mute
 
 #### POST
 ##### Summary
@@ -209,7 +1153,7 @@ Unmute a muted member.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/permissions
+### /guilds/{id}/{memberid}/permissions
 
 #### GET
 ##### Summary
@@ -235,7 +1179,7 @@ Returns the permission array of the given user.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/permissions/allowed
+### /guilds/{id}/{memberid}/permissions/allowed
 
 #### GET
 ##### Summary
@@ -261,7 +1205,7 @@ Returns all detailed permission DNS which the member is alloed to perform.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/reports
+### /guilds/{id}/{memberid}/reports
 
 #### GET
 ##### Summary
@@ -316,7 +1260,7 @@ Creates a member report.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/reports/count
+### /guilds/{id}/{memberid}/reports/count
 
 #### GET
 ##### Summary
@@ -342,7 +1286,7 @@ Returns the total count of reports of the given user.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/unbanrequests
+### /guilds/{id}/{memberid}/unbanrequests
 
 #### GET
 ##### Summary
@@ -368,7 +1312,7 @@ Returns the list of unban requests of the given member
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/:id/:memberid/unbanrequests/count
+### /guilds/{id}/{memberid}/unbanrequests/count
 
 #### GET
 ##### Summary
@@ -391,926 +1335,6 @@ Returns the total or filtered count of unban requests of the given member.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.Count](#modelscount) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/antiraid/joinlog
-
-#### GET
-##### Summary
-
-Get Antiraid Joinlog
-
-##### Description
-
-Returns a list of joined members during an antiraid trigger.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.JoinLogEntry](#modelsjoinlogentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Reset Antiraid Joinlog
-
-##### Description
-
-Deletes all entries of the antiraid joinlog.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/backups
-
-#### GET
-##### Summary
-
-Get Guild Backups
-
-##### Description
-
-Returns a list of guild backups.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [backupmodels.Entry](#backupmodelsentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/backups/:backupid/download
-
-#### GET
-##### Summary
-
-Download Backup File
-
-##### Description
-
-Download a single gziped backup file.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| backupid | path | The ID of the backup. | Yes | string |
-| ota_token | query | The previously obtained OTA token to authorize the download. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | data |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 403 | Forbidden | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Obtain Backup Download OTA Key
-
-##### Description
-
-Returns an OTA key which is used to download a backup entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| backupid | path | The ID of the backup. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/backups/toggle
-
-#### POST
-##### Summary
-
-Toggle Guild Backup Enable
-
-##### Description
-
-Toggle guild backup enable state.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | Enable state payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/inviteblock
-
-#### POST
-##### Summary
-
-Toggle Guild Inviteblock Enable
-
-##### Description
-
-Toggle enabled state of the guild invite block system.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The enable status payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/members
-
-#### GET
-##### Summary
-
-Get Guild Member List
-
-##### Description
-
-Returns a list of guild members.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| after | query | Request members after the given member ID. | No | string |
-| limit | query | The amount of results returned. | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wraped in models.ListResponse | [ [models.Member](#modelsmember) ] |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/permissions
-
-#### GET
-##### Summary
-
-Get Guild Permission Settings
-
-##### Description
-
-Returns the specified guild permission settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.PermissionsMap](#modelspermissionsmap) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Apply Guild Permission Rule
-
-##### Description
-
-Apply a new guild permission rule for a specified role.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The permission rule payload. | Yes | [models.PermissionsUpdate](#modelspermissionsupdate) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/reports
-
-#### GET
-##### Summary
-
-Get Guild Modlog
-
-##### Description
-
-Returns a list of guild modlog entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| offset | query | The offset of returned entries | No | integer |
-| limit | query | The amount of returned entries (0 = all) | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.Report](#modelsreport) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/reports/count
-
-#### GET
-##### Summary
-
-Get Guild Modlog Count
-
-##### Description
-
-Returns the total count of entries in the guild mod log.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/scoreboard
-
-#### GET
-##### Summary
-
-Get Guild Scoreboard
-
-##### Description
-
-Returns a list of scoreboard entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| limit | query | Limit the amount of result values | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.GuildKarmaEntry](#modelsguildkarmaentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings
-
-#### GET
-##### Summary
-
-Get Guild Settings
-
-##### Description
-
-Returns the specified general guild settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GuildSettings](#modelsguildsettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Get Guild Settings
-
-##### Description
-
-Returns the specified general guild settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | Modified guild settings payload. | Yes | [models.GuildSettings](#modelsguildsettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/antiraid
-
-#### GET
-##### Summary
-
-Get Guild Antiraid Settings
-
-##### Description
-
-Returns the specified guild antiraid settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AntiraidSettings](#modelsantiraidsettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Antiraid Settings
-
-##### Description
-
-Update the guild antiraid settings specification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild antiraid settings payload. | Yes | [models.AntiraidSettings](#modelsantiraidsettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/flushguilddata
-
-#### POST
-##### Summary
-
-Flush Guild Data
-
-##### Description
-
-Flushes all guild data from the database.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild flush payload. | Yes | [models.FlushGuildRequest](#modelsflushguildrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/karma
-
-#### GET
-##### Summary
-
-Get Guild Karma Settings
-
-##### Description
-
-Returns the specified guild karma settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaSettings](#modelskarmasettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Karma Settings
-
-##### Description
-
-Update the guild karma settings specification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild karma settings payload. | Yes | [models.KarmaSettings](#modelskarmasettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/karma/blocklist
-
-#### GET
-##### Summary
-
-Get Guild Karma Blocklist
-
-##### Description
-
-Returns the specified guild karma blocklist entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.Member](#modelsmember) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/karma/blocklist/:memberid
-
-#### PUT
-##### Summary
-
-Add Guild Karma Blocklist Entry
-
-##### Description
-
-Add a guild karma blocklist entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Remove Guild Karma Blocklist Entry
-
-##### Description
-
-Remove a guild karma blocklist entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/karma/rules
-
-#### GET
-##### Summary
-
-Get Guild Settings Karma Rules
-
-##### Description
-
-Returns a list of specified guild karma rules.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.KarmaRule](#modelskarmarule) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Create Guild Settings Karma
-
-##### Description
-
-Create a guild karma rule.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The karma rule payload. | Yes | [models.KarmaRule](#modelskarmarule) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaRule](#modelskarmarule) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/karma/rules/:ruleid
-
-#### POST
-##### Summary
-
-Update Guild Settings Karma
-
-##### Description
-
-Update a karma rule by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| ruleid | path | The ID of the rule. | Yes | string |
-| payload | body | The karma rule update payload. | Yes | [models.KarmaRule](#modelskarmarule) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaRule](#modelskarmarule) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Remove Guild Settings Karma
-
-##### Description
-
-Remove a guild karma rule by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| ruleid | path | The ID of the rule. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/logs
-
-#### GET
-##### Summary
-
-Get Guild Log Count
-
-##### Description
-
-Returns the total or filtered count of guild log entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/logs/state
-
-#### GET
-##### Summary
-
-Get Guild Settings Log State
-
-##### Description
-
-Returns the enabled state of the guild log setting.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Settings Log State
-
-##### Description
-
-Update the enabled state of the log state guild setting.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The state payload. | Yes | [models.State](#modelsstate) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/settings/logs/state/:entryid
-
-#### DELETE
-##### Summary
-
-Delete Guild Log Entries
-
-##### Description
-
-Delete a single or all guild log entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| entryid | path | The ID of the entry to be deleted. | No | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/starboard
-
-#### GET
-##### Summary
-
-Get Guild Starboard
-
-##### Description
-
-Returns a list of starboard entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.StarboardEntryResponse](#modelsstarboardentryresponse) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/unbanrequests
-
-#### GET
-##### Summary
-
-Get Guild Unbanrequests
-
-##### Description
-
-Returns the list of the guild unban requests.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListReponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/unbanrequests/:requestid
-
-#### GET
-##### Summary
-
-Get Single Guild Unbanrequest
-
-##### Description
-
-Returns a single guild unban request by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| requestid | path | The ID of the unbanrequest. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Process Guild Unbanrequest
-
-##### Description
-
-Process a guild unban request.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| requestid | path | The ID of the unbanrequest. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/:id/unbanrequests/count
-
-#### GET
-##### Summary
-
-Get Guild Unbanrequests Count
-
-##### Description
-
-Returns the total or filtered count of guild unban requests.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 400 | Bad Request | [models.Error](#modelserror) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -1349,7 +1373,7 @@ Logs in the current browser session by using the passed pre-obtained OTA token.
 | 200 |  |  |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
-### /reports/:id
+### /reports/{id}
 
 #### GET
 ##### Summary
@@ -1375,7 +1399,7 @@ Returns a single report object by its ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /reports/:id/revoke
+### /reports/{id}/revoke
 
 #### POST
 ##### Summary
@@ -1659,7 +1683,7 @@ Update the OTA user settings state.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /util/color/:hexcode
+### /util/color/{hexcode}
 
 #### GET
 ##### Summary
@@ -1681,7 +1705,7 @@ Produces a square image of the given color and size.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | data |
+| 200 | OK | file |
 
 ### /util/commands
 

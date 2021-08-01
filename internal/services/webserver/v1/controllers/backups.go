@@ -47,7 +47,7 @@ func (c *GuildBackupsController) Setup(container di.Container, router fiber.Rout
 // @Success 200 {array} backupmodels.Entry "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/backups [get]
+// @Router /guilds/{id}/backups [get]
 func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
@@ -71,7 +71,7 @@ func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.AccessTokenResponse
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/backups/:backupid/download [post]
+// @Router /guilds/{id}/backups/{backupid}/download [post]
 func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	backupID := ctx.Params("backupid")
@@ -97,11 +97,11 @@ func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 // @Param id path string true "The ID of the guild."
 // @Param backupid path string true "The ID of the backup."
 // @Param ota_token query string true "The previously obtained OTA token to authorize the download."
-// @Success 200 {data} gziped bakcup file
+// @Success 200 {file} gziped bakcup file
 // @Failure 401 {object} models.Error
 // @Failure 403 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/backups/:backupid/download [get]
+// @Router /guilds/{id}/backups/{backupid}/download [get]
 func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 	backupID := ctx.Params("backupid")
@@ -163,7 +163,7 @@ func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.Status
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /guilds/:id/backups/toggle [post]
+// @Router /guilds/{id}/backups/toggle [post]
 func (c *GuildBackupsController) postToggleBackups(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 

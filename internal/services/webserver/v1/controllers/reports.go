@@ -42,7 +42,7 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /reports/:id [get]
+// @Router /reports/{id} [get]
 func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 	_id := ctx.Params("id")
 
@@ -73,7 +73,7 @@ func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /reports/:id/revoke [post]
+// @Router /reports/{id}/revoke [post]
 func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
