@@ -1,0 +1,15 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+input {
+  border-bottom: solid 2px white;
+  display: block;
+}
+
+.panel {
+  width: 100%;
+  padding: 20px;
+  margin-top: 20px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}

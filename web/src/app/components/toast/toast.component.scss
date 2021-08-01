@@ -32,10 +32,6 @@
 
 .white {
   color: white !important;
-
-  > .heading {
-    border-bottom: solid 1px white !important;
-  }
 }
 
 .fade-out {
@@ -43,29 +39,24 @@
 }
 
 .toast-container {
+  display: flex;
   width: 100%;
   overflow: hidden;
   background-color: white;
   color: black;
   padding: 5px 10px;
-  border-radius: 3px;
+  border-radius: 10px;
   animation: fadeIn 0.3s ease;
   margin-bottom: 10px;
+  box-shadow: 0px 5px 15px 0px rgb(0 0 0 / 25%);
 
-  .heading {
-    display: flex;
-    border-bottom: solid 1px black;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
+  .close-btn {
+    margin-right: 0px;
+    margin-left: auto;
 
-    .close-btn {
-      margin-right: 0px;
-      margin-left: auto;
-
-      img {
-        width: 20px;
-        height: 20px;
-      }
+    img {
+      width: 20px;
+      height: 20px;
     }
   }
 }
@@ -73,17 +64,17 @@
 /* COLORS */
 
 .c-cyan {
-  background-color: #0277bd;
+  background-color: $c-blurple;
 }
 
 .c-red {
-  background-color: #c62828;
+  background-color: $c-red;
 }
 
 .c-yellow {
-  background-color: #fbc02d;
+  background-color: $c-yellow;
 }
 
 .c-green {
-  background-color: #2e7d32;
+  background-color: $c-green;
 }
