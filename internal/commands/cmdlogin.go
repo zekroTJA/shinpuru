@@ -74,7 +74,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		return c.wrapDmError(ctx, err)
 	}
 
-	token, expires, err := ota.GetKey(ctx.GetUser().ID)
+	token, expires, err := ota.GetKey(ctx.GetUser().ID, "login-via-dm")
 	if err != nil {
 		return
 	}
