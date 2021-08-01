@@ -32,6 +32,12 @@ type AccessTokenResponse struct {
 	Expires time.Time `json:"expires"`
 }
 
+type Error struct {
+	Error   string `json:"error"`
+	Code    int    `json:"code"`
+	Context string `json:"context,omitempty"`
+}
+
 // ListResponse wraps a list response object
 // with the list as Data and N as len(Data).
 type ListResponse struct {
@@ -293,6 +299,17 @@ type StarboardEntryResponse struct {
 	MessageURL     string `json:"message_url"`
 	AuthorUsername string `json:"author_username"`
 	AvatarURL      string `json:"author_avatar_url"`
+}
+
+type PermissionsMap map[string]permissions.PermissionArray
+
+type EnableStatus struct {
+	Enabled bool `json:"enabled"`
+}
+
+type FlushGuildRequest struct {
+	Validation string `json:"validation"`
+	LeaveAfter bool   `json:"leave_after"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

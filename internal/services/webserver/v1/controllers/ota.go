@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
+	_ "github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models" // Import for API documentation
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 )
@@ -32,6 +33,14 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 	router.Get("", c.getOta)
 }
 
+// @Summary OTA Login
+// @Description Logs in the current browser session by using the passed pre-obtained OTA token.
+// @Tags OTA
+// @Accept json
+// @Produce json
+// @Success 200
+// @Failure 401 {object} models.Error
+// @Router /ota [get]
 func (c *OTAController) getOta(ctx *fiber.Ctx) error {
 	token := ctx.Query("token")
 

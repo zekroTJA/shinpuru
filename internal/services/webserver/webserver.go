@@ -14,6 +14,7 @@ import (
 	mw "github.com/zekroTJA/shinpuru/internal/services/webserver/middleware"
 	v1 "github.com/zekroTJA/shinpuru/internal/services/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
+	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/limiter"
@@ -25,12 +26,6 @@ type WebServer struct {
 	app       *fiber.App
 	cfg       *config.Config
 	container di.Container
-}
-
-type errorModel struct {
-	Error   string `json:"error"`
-	Code    int    `json:"code"`
-	Context string `json:"context,omitempty"`
 }
 
 // New returns a new instance of WebServer.
@@ -117,7 +112,7 @@ func (ws *WebServer) registerRouter(router Router, routes []string, middlewares 
 func (ws *WebServer) errorHandler(ctx *fiber.Ctx, err error) error {
 	if fErr, ok := err.(*fiber.Error); ok {
 		ctx.Status(fErr.Code)
-		return ctx.JSON(&errorModel{
+		return ctx.JSON(&models.Error{
 			Error: fErr.Message,
 			Code:  fErr.Code,
 		})

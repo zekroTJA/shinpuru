@@ -17,6 +17,8 @@ NPM    	      = npm
 PRETTIER      = prettier
 NG       	  = ng
 DOCKERCOMPOSE = docker-compose
+SWAGGO		  = swag
+SWAGGER2MD    = swagger-markdown
 ###############################################
 
 # ---------------------------------------------
@@ -124,6 +126,16 @@ PHONY += devstack
 devstack:
 	$(DOCKERCOMPOSE) -f docker-compose.dev.yml \
 		up -d
+
+PHONY += devstack
+APIDOCS_OUTDIR = "$(CURDIR)/docs/restapi/v1"
+apidocs:
+	$(SWAGGO) init \
+		-g $(CURDIR)/internal/services/webserver/v1/router.go \
+		-o $(APIDOCS_OUTDIR) \
+		--parseDependency --parseDepth 2
+	rm $(APIDOCS_OUTDIR)/docs.go
+	$(SWAGGER2MD) -i $(APIDOCS_OUTDIR)/swagger.json -o $(APIDOCS_OUTDIR)/restapi.md
 
 PHONY += help
 help:

@@ -35,6 +35,13 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/commands", c.getCommands)
 }
 
+// @Summary Landing Page Info
+// @Description Returns general information for the landing page like the local invite parameters.
+// @Tags Utilities
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.LandingPageResponse
+// @Router /util/landingpageinfo [get]
 func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 	res := new(models.LandingPageResponse)
 
@@ -62,6 +69,15 @@ func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 	return ctx.JSON(res)
 }
 
+// @Summary Color Generator
+// @Description Produces a square image of the given color and size.
+// @Param hexcode path string true "Hex Code of the Color to produce"
+// @Param size query int false "The dimension of the square image" default(24)
+// @Tags Utilities
+// @Accept json
+// @Produce image/png
+// @Success 200 {file} png image data
+// @Router /util/color/{hexcode} [get]
 func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 	hexcode := ctx.Params("hexcode")
 	size := strings.ToLower(ctx.Query("size"))
@@ -114,6 +130,13 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 	return ctx.Send(data)
 }
 
+// @Summary Command List
+// @Description Returns a list of registered commands and their description.
+// @Tags Utilities
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"
+// @Router /util/commands [get]
 func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
 	cmdInstances := c.cmdHandler.GetCommandInstances()
 	cmdInfos := make([]*models.CommandInfo, len(cmdInstances))

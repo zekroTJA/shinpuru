@@ -31,6 +31,14 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/logout", c.authMw.Handle, c.postLogout)
 }
 
+// @Summary Access Token Exchange
+// @Description Exchanges the cookie-passed refresh token with a generated access token.
+// @Tags Authorization
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.AccessTokenResponse
+// @Failure 401 {object} models.Error
+// @Router /auth/accesstoken [post]
 func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies(static.RefreshTokenCookieName)
 	if refreshToken == "" {
@@ -56,10 +64,25 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 	})
 }
 
+// @Summary Authorization Check
+// @Description Returns OK if the request is authorized.
+// @Tags Authorization
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Status
+// @Failure 401 {object} models.Error
+// @Router /auth/check [get]
 func (c *AuthController) getCheck(ctx *fiber.Ctx) error {
 	return ctx.JSON(models.Ok)
 }
 
+// @Summary Logout
+// @Description Reovkes the currently used access token and clears the refresh token.
+// @Tags Authorization
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Status
+// @Router /auth/logout [post]
 func (c *AuthController) postLogout(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 

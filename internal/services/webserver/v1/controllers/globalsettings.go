@@ -33,6 +33,14 @@ func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Ro
 	router.Post("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.postNoGuildInvites)
 }
 
+// @Summary Get Presence
+// @Description Returns the bot's displayed presence status.
+// @Tags Global Settings
+// @Accept json
+// @Produce json
+// @Success 200 {object} presence.Presence
+// @Failure 401 {object} models.Error
+// @Router /settings/presence [get]
 func (c *GlobalSettingsController) getPresence(ctx *fiber.Ctx) error {
 	presenceRaw, err := c.db.GetSetting(static.SettingPresence)
 	if err != nil {
@@ -53,6 +61,16 @@ func (c *GlobalSettingsController) getPresence(ctx *fiber.Ctx) error {
 	return ctx.JSON(pre)
 }
 
+// @Summary Set Presence
+// @Description Set the bot's displayed presence status.
+// @Tags Global Settings
+// @Accept json
+// @Produce json
+// @Param payload body presence.Presence true "Presence Payload"
+// @Success 200 {object} models.APITokenResponse
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error "Is returned when no token was generated before."
+// @Router /settings/presence [post]
 func (c *GlobalSettingsController) postPresence(ctx *fiber.Ctx) error {
 	pre := new(presence.Presence)
 	if err := ctx.BodyParser(pre); err != nil {
@@ -74,6 +92,15 @@ func (c *GlobalSettingsController) postPresence(ctx *fiber.Ctx) error {
 	return ctx.JSON(pre)
 }
 
+// @Summary Get No Guild Invites Status
+// @Description Returns the settings status for the suggested guild invite when the logged in user is not on any guild with shinpuru.
+// @Tags Global Settings
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.InviteSettingsResponse
+// @Failure 401 {object} models.Error
+// @Failure 409 {object} models.Error "Returned when no channel could be found to create invite for."
+// @Router /settings/noguildinvite [get]
 func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	var guildID, message, inviteCode string
 	var err error
@@ -174,6 +201,17 @@ func (c *GlobalSettingsController) getNoGuildInvites(ctx *fiber.Ctx) error {
 	return ctx.JSON(res)
 }
 
+// @Summary Set No Guild Invites Status
+// @Description Set the status for the suggested guild invite when the logged in user is not on any guild with shinpuru.
+// @Tags Global Settings
+// @Accept json
+// @Produce json
+// @Param payload body models.InviteSettingsRequest true "Invite Settings Payload"
+// @Success 200 {object} models.APITokenResponse
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 409 {object} models.Error "Returned when no channel could be found to create invite for."
+// @Router /settings/noguildinvite [post]
 func (c *GlobalSettingsController) postNoGuildInvites(ctx *fiber.Ctx) error {
 	req := new(models.InviteSettingsRequest)
 	if err := ctx.BodyParser(req); err != nil {

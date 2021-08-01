@@ -31,6 +31,15 @@ func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Rou
 	router.Get("/bannedguilds", c.getBannedGuilds)
 }
 
+// @Summary Get Unban Requests
+// @Description Returns a list of unban requests created by the authenticated user.
+// @Tags Unban Requests
+// @Accept json
+// @Produce json
+// @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListResponse"
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /unbanrequests [get]
 func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -49,6 +58,17 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
 }
 
+// @Summary Create Unban Requests
+// @Description Create an unban reuqest.
+// @Tags Unban Requests
+// @Accept json
+// @Produce json
+// @Param payload body sharedmodels.UnbanRequest true "The unban request payload."
+// @Success 200 {object} sharedmodels.UnbanRequest
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /unbanrequests [post]
 func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
@@ -103,6 +123,15 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 	return ctx.JSON(finalReq.Hydrate())
 }
 
+// @Summary Get Banned Guilds
+// @Description Returns a list of guilds where the currently authenticated user is banned.
+// @Tags Unban Requests
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.GuildReduced "Wrapped in models.ListResponse"
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /unbanrequests/bannedguilds [get]
 func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 

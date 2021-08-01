@@ -45,6 +45,19 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 	router.Post("/unmute", pmw.HandleWs(c.session, "sp.guild.mod.mute"), c.postUnmute)
 }
 
+// @Summary Create A Member Report
+// @Description Creates a member report.
+// @Tags Member Reporting
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the victim member."
+// @Param payload body models.ReportRequest true "The report payload."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/{memberid}/reports [post]
 func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -93,6 +106,19 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
 }
 
+// @Summary Create A Member Kick Report
+// @Description Creates a member kick report.
+// @Tags Member Reporting
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the victim member."
+// @Param payload body models.ReasonRequest true "The report payload."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/{memberid}/kick [post]
 func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -144,6 +170,19 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
 }
 
+// @Summary Create A Member Ban Report
+// @Description Creates a member ban report.
+// @Tags Member Reporting
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the victim member."
+// @Param payload body models.ReasonRequest true "The report payload."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/{memberid}/ban [post]
 func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -202,6 +241,19 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
 }
 
+// @Summary Create A Member Mute Report
+// @Description Creates a member mute report.
+// @Tags Member Reporting
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the victim member."
+// @Param payload body models.ReasonRequest true "The report payload."
+// @Success 200 {object} models.Report
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/{memberid}/mute [post]
 func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
@@ -261,6 +313,19 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
 }
 
+// @Summary Unmute A Member
+// @Description Unmute a muted member.
+// @Tags Member Reporting
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param memberid path string true "The ID of the victim member."
+// @Param payload body models.ReasonRequest true "The unmute payload."
+// @Success 200 {object} models.Status
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/{memberid}/mute [post]
 func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 
