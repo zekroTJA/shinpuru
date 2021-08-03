@@ -1,6 +1,7 @@
 #container {
   width: 90vw;
   max-width: 600px;
+  height: 60vh;
 }
 
 #searchbar {
@@ -9,44 +10,64 @@
   padding: 8px 12px;
   outline: none;
   width: 100%;
+  margin-bottom: 20px;
 }
 
 .result-container {
-  margin: 20px 0;
-  background-color: rgba(0 0 0 / 30%);
-  padding: 10px;
-  border-radius: 10px;
+  overflow-y: auto;
+  height: 100%;
 
-  .tile {
-    display: flex;
-    align-items: center;
-    margin: 10px 0px;
-    transition: all 0.2s ease;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+  }
+
+  > div {
+    margin-bottom: 20px;
+    background-color: rgba(0 0 0 / 30%);
+    padding: 10px;
     border-radius: 10px;
-    cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
 
-    p {
-      margin: 0;
-    }
+    .tile {
+      display: flex;
+      align-items: center;
+      margin: 10px 0px;
+      transition: all 0.2s ease;
+      border-radius: 10px;
+      cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
 
-    > img {
-      border-radius: 100%;
-      margin-right: 20px;
-      width: 50px;
-    }
+      p {
+        margin: 0;
+      }
 
-    &:hover {
-      background-color: rgba(white, 10%);
-    }
+      > img {
+        border-radius: 100%;
+        margin-right: 20px;
+        width: 50px;
+      }
 
-    &:last-child {
-      margin-bottom: 0px;
-    }
+      &:hover {
+        background-color: rgba(white, 10%);
+      }
 
-    .small {
-      color: #7b7b7b;
+      &:last-child {
+        margin-bottom: 0px;
+      }
+
+      .small {
+        color: #7b7b7b;
+      }
     }
   }
 }
