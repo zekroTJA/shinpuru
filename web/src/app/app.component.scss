@@ -29,6 +29,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
   background-color: rgba(0 0 0 / 50%);
+}
+
+.transition {
+  transition: all 0.2s ease;
+}
+
+.blur {
+  filter: blur(20px);
 }
