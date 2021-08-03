@@ -562,6 +562,17 @@ definitions:
       type:
         type: integer
     type: object
+  models.SearchResult:
+    properties:
+      guilds:
+        items:
+          $ref: '#/definitions/models.GuildReduced'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/models.Member'
+        type: array
+    type: object
   models.StarboardEntryResponse:
     properties:
       author_avatar_url:
@@ -2687,6 +2698,31 @@ paths:
       summary: Revoke Report
       tags:
       - Reports
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Search through guilds and members by ID, name or displayname.
+      parameters:
+      - description: The search query (either ID, name or displayname).
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Global Search
+      tags:
+      - Search
   /settings/noguildinvite:
     get:
       consumes:
@@ -3078,6 +3114,8 @@ tags:
   name: Authorization
 - description: One Time Auth token endpoints.
   name: OTA
+- description: Search endpoints.
+  name: Search
 - description: API token endpoints.
   name: Tokens
 - description: Global bot settings endpoints.

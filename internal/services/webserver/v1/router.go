@@ -32,6 +32,9 @@ func (r *Router) SetContainer(container di.Container) {
 // @Tag.Name OTA
 // @tag.Description One Time Auth token endpoints.
 //
+// @Tag.Name Search
+// @tag.Description Search endpoints.
+//
 // @Tag.Name Tokens
 // @tag.Description API token endpoints.
 //
@@ -74,6 +77,7 @@ func (r *Router) Route(router fiber.Router) {
 
 	router.Use(authMw.Handle)
 
+	new(controllers.SearchController).Setup(r.container, router.Group("/search"))
 	new(controllers.TokenController).Setup(r.container, router.Group("/token"))
 	new(controllers.GlobalSettingsController).Setup(r.container, router.Group("/settings"))
 	new(controllers.ReportsController).Setup(r.container, router.Group("/reports"))

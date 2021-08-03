@@ -2909,6 +2909,44 @@
                 }
             }
         },
+        "/search": {
+            "get": {
+                "description": "Search through guilds and members by ID, name or displayname.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Global Search",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The search query (either ID, name or displayname).",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/settings/noguildinvite": {
             "get": {
                 "description": "Returns the settings status for the suggested guild invite when the logged in user is not on any guild with shinpuru.",
@@ -4270,6 +4308,23 @@
                 }
             }
         },
+        "models.SearchResult": {
+            "type": "object",
+            "properties": {
+                "guilds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.GuildReduced"
+                    }
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Member"
+                    }
+                }
+            }
+        },
         "models.StarboardEntryResponse": {
             "type": "object",
             "properties": {
@@ -4538,6 +4593,10 @@
         {
             "description": "One Time Auth token endpoints.",
             "name": "OTA"
+        },
+        {
+            "description": "Search endpoints.",
+            "name": "Search"
         },
         {
             "description": "API token endpoints.",

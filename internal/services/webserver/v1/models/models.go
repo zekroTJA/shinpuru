@@ -312,6 +312,11 @@ type FlushGuildRequest struct {
 	LeaveAfter bool   `json:"leave_after"`
 }
 
+type SearchResult struct {
+	Guilds  []*GuildReduced
+	Members []*Member
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

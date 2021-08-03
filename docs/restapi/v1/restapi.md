@@ -1426,6 +1426,30 @@ Revokes a given report by ID.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /search
+
+#### GET
+##### Summary
+
+Global Search
+
+##### Description
+
+Search through guilds and members by ID, name or displayname.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| query | query | The search query (either ID, name or displayname). | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.SearchResult](#modelssearchresult) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+
 ### /settings/noguildinvite
 
 #### GET
@@ -2077,6 +2101,13 @@ Returns general information for the landing page like the local invite parameter
 | reason | string |  | No |
 | timeout | string |  | No |
 | type | integer |  | No |
+
+#### models.SearchResult
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| guilds | [ [models.GuildReduced](#modelsguildreduced) ] |  | No |
+| members | [ [models.Member](#modelsmember) ] |  | No |
 
 #### models.StarboardEntryResponse
 
