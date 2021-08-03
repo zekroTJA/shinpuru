@@ -287,3 +287,8 @@ export interface GuildLogEntry {
   severity: number;
   timestamp: string;
 }
+
+export interface SearchResult {
+  guilds: Guild[];
+  members: Member[];
+}

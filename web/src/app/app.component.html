@@ -1,4 +1,11 @@
 <app-header id="header"></app-header>
+<div
+  *ngIf="isSearch"
+  id="search-bar-container"
+  (click)="onSearchBgClick($event)"
+>
+  <app-global-search (navigate)="onSearchNavigate($event)"></app-global-search>
+</div>
 <div id="toasts-container">
   <app-toast
     *ngFor="let t of toasts.toasts"

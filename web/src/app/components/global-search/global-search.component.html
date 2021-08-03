@@ -1,0 +1,39 @@
+<div id="container">
+  <input
+    type="text"
+    id="searchbar"
+    (input)="searchInput.emit($event.target.value)"
+    placeholder="Search ..."
+    autofocus
+  />
+  <div *ngIf="lastResult?.guilds?.length > 0" class="result-container">
+    <h5>Guilds</h5>
+    <div
+      *ngFor="let g of lastResult.guilds"
+      class="tile"
+      (click)="nav('guilds', g.id)"
+    >
+      <img [src]="g.icon_url" />
+      <div>
+        <p>{{ g.name }}</p>
+        <p class="small">{{ g.id }}</p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="lastResult?.members?.length > 0" class="result-container">
+    <h5>Members</h5>
+    <div
+      *ngFor="let m of lastResult.members"
+      class="tile"
+      (click)="nav('guilds', m.guild_id, m.user.id)"
+    >
+      <img [src]="m.avatar_url" />
+      <div>
+        <p>{{ m.nick ? m.nick : m.user.username }}</p>
+        <p class="small">
+          {{ m.user.username }}#{{ m.user.discriminator }} ({{ m.user.id }})
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
