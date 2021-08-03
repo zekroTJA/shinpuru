@@ -34,7 +34,11 @@
       [elements]="popupElements"
       (closing)="popupClose($event)"
     ></app-popup>
-    <a class="dropdown-btn">&#9660;</a>
+    <img
+      class="dropdown-icon"
+      src="/assets/triangle.svg"
+      [style.transform]="'rotate(' + (popupVisible ? 360 : 180) + 'deg)'"
+    />
     <p>{{ selfUser.username }}#{{ selfUser.discriminator }}</p>
     <img class="avatar" [src]="selfUser.avatar_url | discordAsset: '':32" />
   </div>

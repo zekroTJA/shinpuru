@@ -1,6 +1,7 @@
-<?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 306 306" style="enable-background:new 0 0 306 306;" xml:space="preserve"><g><g>
-	<g id="chevron-right">
-		<polygon points="94.35,0 58.65,35.7 175.95,153 58.65,270.3 94.35,306 247.35,153   " data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF"/>
-	</g>
-</g></g> </svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100%" height="100%" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect id="Artboard1" x="0" y="0" width="512" height="512" style="fill:none;"/>
+    <g id="Artboard11">
+        <path d="M286.547,256C286.547,268.587 278.133,275.745 269.233,284.645C261.938,291.941 123.178,430.7 123.178,430.7C106.695,447.184 106.695,473.95 123.178,490.433C139.662,506.917 166.428,506.917 182.912,490.433L388.822,284.524C397.065,276.28 401.186,265.465 401.184,254.648C401.186,243.832 397.065,233.017 388.822,224.773L185.615,21.567C169.131,5.083 142.366,5.083 125.882,21.567C109.398,38.05 109.398,64.816 125.882,81.3C125.882,81.3 260.333,215.751 269.083,224.501C277.832,233.251 286.547,243.413 286.547,256Z" style="fill:white;"/>
+    </g>
+</svg>
