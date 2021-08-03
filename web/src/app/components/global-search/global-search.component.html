@@ -5,6 +5,7 @@
     (input)="searchInput.emit($event.target.value)"
     placeholder="Search ..."
     autofocus
+    autocomplete="off"
   />
   <div class="result-container">
     <div *ngIf="lastResult?.guilds?.length > 0">
