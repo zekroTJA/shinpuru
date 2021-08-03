@@ -29,7 +29,10 @@
     >
       <img [src]="m.avatar_url" />
       <div>
-        <p>{{ m.nick ? m.nick : m.user.username }}</p>
+        <p>
+          {{ m.nick ? m.nick : m.user.username }} @ {{ m.guild_name }}
+          <span class="small">({{ m.guild_id }})</span>
+        </p>
         <p class="small">
           {{ m.user.username }}#{{ m.user.discriminator }} ({{ m.user.id }})
         </p>

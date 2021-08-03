@@ -92,8 +92,10 @@ func (c *SearchController) getSearch(ctx *fiber.Ctx) (err error) {
 			}
 			for _, f := range fetch.MemberCheckFuncs {
 				if f(m, query) {
-					m.GuildID = g.ID
-					sr.Members = append(sr.Members, models.MemberFromMember(m))
+					mm := models.MemberFromMember(m)
+					mm.GuildID = g.ID
+					mm.GuildName = g.Name
+					sr.Members = append(sr.Members, mm)
 					iM++
 					break
 				}

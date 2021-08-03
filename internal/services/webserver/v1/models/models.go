@@ -60,6 +60,7 @@ type User struct {
 type Member struct {
 	*discordgo.Member
 
+	GuildName  string    `json:"guild_name,omitempty"`
 	AvatarURL  string    `json:"avatar_url"`
 	CreatedAt  time.Time `json:"created_at"`
 	Dominance  int       `json:"dominance"`

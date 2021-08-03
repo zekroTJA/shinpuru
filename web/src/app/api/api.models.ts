@@ -32,6 +32,7 @@ export interface Role {
 export interface Member {
   user: User;
   guild_id: string;
+  guild_name: string;
   joined_at: string;
   nick: string;
   avatar_url?: string;

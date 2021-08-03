@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
-import { Member, SearchResult } from 'src/app/api/api.models';
+import { Guild, Member, SearchResult } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 
 @Component({
