@@ -25,11 +25,7 @@
     <div *ngIf="lastResult?.members?.length > 0">
       <h5>Members</h5>
       <div
-        *ngFor="
-          let m of lastResult.members
-            .concat(lastResult.members)
-            .concat(lastResult.members)
-        "
+        *ngFor="let m of lastResult.members"
         class="tile"
         (click)="nav('guilds', m.guild_id, m.user.id)"
       >
