@@ -2709,6 +2709,13 @@ paths:
         name: query
         required: true
         type: string
+      - default: 50
+        description: The maximum amount of result items (per group).
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -2716,6 +2723,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
         "401":
           description: Unauthorized
           schema:

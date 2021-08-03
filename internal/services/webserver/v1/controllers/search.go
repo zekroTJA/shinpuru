@@ -9,6 +9,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekrotja/dgrs"
@@ -34,12 +35,18 @@ func (c *SearchController) Setup(container di.Container, router fiber.Router) {
 // @Accept json
 // @Produce json
 // @Param query query string true "The search query (either ID, name or displayname)."
+// @Param limit query int false "The maximum amount of result items (per group)." default(50) minimum(1) maximum(100)
 // @Success 200 {object} models.SearchResult
+// @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Router /search [get]
 func (c *SearchController) getSearch(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 	query := strings.ToLower(ctx.Query("query"))
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 50, 1, 100)
+	if err != nil {
+		return
+	}
 
 	if query == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "query must be set")
@@ -68,16 +75,26 @@ func (c *SearchController) getSearch(ctx *fiber.Ctx) (err error) {
 		Members: make([]*models.Member, 0),
 	}
 
+	var iG, iM int
 	for _, g := range guilds {
-		for _, f := range fetch.GuildCheckFuncs {
-			if f(g, query) {
-				sr.Guilds = append(sr.Guilds, models.GuildReducedFromGuild(g))
+		if iG < limit {
+			for _, f := range fetch.GuildCheckFuncs {
+				if f(g, query) {
+					sr.Guilds = append(sr.Guilds, models.GuildReducedFromGuild(g))
+					iG++
+					break
+				}
 			}
 		}
 		for _, m := range g.Members {
+			if iM == limit {
+				break
+			}
 			for _, f := range fetch.MemberCheckFuncs {
 				if f(m, query) {
 					sr.Members = append(sr.Members, models.MemberFromMember(m))
+					iM++
+					break
 				}
 			}
 		}

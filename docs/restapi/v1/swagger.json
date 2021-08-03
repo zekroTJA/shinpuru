@@ -2929,6 +2929,15 @@
                         "name": "query",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 50,
+                        "description": "The maximum amount of result items (per group).",
+                        "name": "limit",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2936,6 +2945,12 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.SearchResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
                         }
                     },
                     "401": {

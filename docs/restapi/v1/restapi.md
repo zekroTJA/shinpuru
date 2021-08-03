@@ -1442,12 +1442,14 @@ Search through guilds and members by ID, name or displayname.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | query | query | The search query (either ID, name or displayname). | Yes | string |
+| limit | query | The maximum amount of result items (per group). | No | integer |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.SearchResult](#modelssearchresult) |
+| 400 | Bad Request | [models.Error](#modelserror) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
 ### /settings/noguildinvite
