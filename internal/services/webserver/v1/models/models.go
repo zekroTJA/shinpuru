@@ -313,8 +313,8 @@ type FlushGuildRequest struct {
 }
 
 type SearchResult struct {
-	Guilds  []*GuildReduced
-	Members []*Member
+	Guilds  []*GuildReduced `json:"guilds"`
+	Members []*Member       `json:"members"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.
