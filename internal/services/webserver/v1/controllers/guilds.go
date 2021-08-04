@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"crypto"
 	"fmt"
 	"strings"
 	"time"
+
+	_ "crypto/sha512"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -23,6 +26,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/hashutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
@@ -82,6 +86,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsState)
 	router.Post("/:guildid/settings/logs/state", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.postGuildSettingsLogsState)
 	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
+	router.Get("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.getGuildSettingsAPI)
+	router.Post("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.postGuildSettingsAPI)
 }
 
 // @Summary List Guilds
@@ -1473,6 +1479,60 @@ func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
 	c.kvc.Set(timeoutKey, true, 24*time.Hour)
 
 	return ctx.JSON(models.Ok)
+}
+
+// @Summary Get Guild Settings API State
+// @Description Returns the settings state of the Guild API.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} sharedmodels.GuildAPISettings
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/api [get]
+func (c *GuildsController) getGuildSettingsAPI(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	state, err := c.db.GetGuildAPI(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(state.Hydrate())
+}
+
+// @Summary Set Guild Settings API State
+// @Description Set the settings state of the Guild API.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.GuildAPISettingsRequest true "The guild API settings payload."
+// @Success 200 {object} sharedmodels.GuildAPISettings
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/api [post]
+func (c *GuildsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	state := new(models.GuildAPISettingsRequest)
+	if err = ctx.BodyParser(state); err != nil {
+		return
+	}
+
+	if state.ResetToken {
+		state.TokenHash = ""
+	} else if state.NewToken != "" {
+		hasher := hashutil.Hasher{HashFunc: crypto.SHA512, SaltSize: 128}
+		state.TokenHash, err = hasher.Hash(state.NewToken)
+	}
+
+	if err = c.db.SetGuildAPI(guildID, &state.GuildAPISettings); err != nil {
+		return
+	}
+
+	return ctx.JSON(state.GuildAPISettings.Hydrate())
 }
 
 // ---------------------------------------------------------------------------

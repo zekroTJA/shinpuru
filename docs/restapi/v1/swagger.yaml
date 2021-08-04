@@ -315,6 +315,28 @@ definitions:
       verification_level:
         type: integer
     type: object
+  models.GuildAPISettings:
+    properties:
+      allowed_origins:
+        type: string
+      enabled:
+        type: boolean
+      protected:
+        type: boolean
+    type: object
+  models.GuildAPISettingsRequest:
+    properties:
+      allowed_origins:
+        type: string
+      enabled:
+        type: boolean
+      protected:
+        type: boolean
+      reset_token:
+        type: boolean
+      token:
+        type: string
+    type: object
   models.GuildKarmaEntry:
     properties:
       member:
@@ -468,6 +490,8 @@ definitions:
         type: integer
       guild_id:
         description: The guild ID on which the member exists.
+        type: string
+      guild_name:
         type: string
       joined_at:
         description: The time at which the member joined the guild, in ISO8601.
@@ -1897,6 +1921,69 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Antiraid Settings
+      tags:
+      - Guilds
+  /guilds/{id}/settings/api:
+    get:
+      consumes:
+      - application/json
+      description: Returns the settings state of the Guild API.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildAPISettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings API State
+      tags:
+      - Guilds
+    post:
+      consumes:
+      - application/json
+      description: Set the settings state of the Guild API.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild API settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.GuildAPISettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildAPISettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Set Guild Settings API State
       tags:
       - Guilds
   /guilds/{id}/settings/flushguilddata:

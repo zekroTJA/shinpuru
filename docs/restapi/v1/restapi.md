@@ -533,6 +533,55 @@ Update the guild antiraid settings specification.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/{id}/settings/api
+
+#### GET
+##### Summary
+
+Get Guild Settings API State
+
+##### Description
+
+Returns the settings state of the Guild API.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GuildAPISettings](#modelsguildapisettings) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings API State
+
+##### Description
+
+Set the settings state of the Guild API.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [models.GuildAPISettingsRequest](#modelsguildapisettingsrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GuildAPISettings](#modelsguildapisettings) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/{id}/settings/flushguilddata
 
 #### POST
@@ -1934,6 +1983,24 @@ Returns general information for the landing page like the local invite parameter
 | unavailable | boolean |  | No |
 | verification_level | integer |  | No |
 
+#### models.GuildAPISettings
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| allowed_origins | string |  | No |
+| enabled | boolean |  | No |
+| protected | boolean |  | No |
+
+#### models.GuildAPISettingsRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| allowed_origins | string |  | No |
+| enabled | boolean |  | No |
+| protected | boolean |  | No |
+| reset_token | boolean |  | No |
+| token | string |  | No |
+
 #### models.GuildKarmaEntry
 
 | Name | Type | Description | Required |
@@ -2043,6 +2110,7 @@ Returns general information for the landing page like the local invite parameter
 | deaf | boolean | Whether the member is deafened at a guild level. | No |
 | dominance | integer |  | No |
 | guild_id | string | The guild ID on which the member exists. | No |
+| guild_name | string |  | No |
 | joined_at | string | The time at which the member joined the guild, in ISO8601. | No |
 | karma | integer |  | No |
 | karma_total | integer |  | No |

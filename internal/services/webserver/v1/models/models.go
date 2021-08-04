@@ -318,6 +318,12 @@ type SearchResult struct {
 	Members []*Member       `json:"members"`
 }
 
+type GuildAPISettingsRequest struct {
+	sharedmodels.GuildAPISettings
+	NewToken   string `json:"token"`
+	ResetToken bool   `json:"reset_token"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
