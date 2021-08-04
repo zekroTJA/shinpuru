@@ -42,8 +42,10 @@
 
 .dropdown-popup {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 10 !important;
-  transform: translate(-9px, 160px);
+  transform: translate(0, 55px);
   width: 100%;
 }
 
