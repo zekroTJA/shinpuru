@@ -2,10 +2,10 @@
 
 <div class="search-bar">
   <img width="24" src="/assets/search.svg" />
-  <input type="text" (input)="onSearchBarChange($event)" />
+  <input type="text" (input)="onSearchBarChange($event); lastSelected = null" />
 </div>
 
-<button class="back-top" (click)="onScrollToTop()">
+<button class="back-top" (click)="onScrollToTop(); lastSelected = null">
   <img width="24" src="/assets/arrow.svg" />
 </button>
 
@@ -15,7 +15,8 @@
     <div>
       <a
         *ngFor="let c of kv.value | commandSort"
-        (click)="scrollTo('#' + c.invokes[0])"
+        [class.selected]="lastSelected === c.invokes[0]"
+        (click)="scrollTo('#' + c.invokes[0]); lastSelected = c.invokes[0]"
         >{{ c.invokes[0] }}</a
       >
     </div>

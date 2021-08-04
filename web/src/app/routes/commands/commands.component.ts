@@ -11,8 +11,9 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./commands.component.scss'],
 })
 export class CommandsComponent implements OnInit {
-  public commands: CommandInfo[];
-  public groupMap: { [key: string]: CommandInfo[] } = {};
+  commands: CommandInfo[];
+  groupMap: { [key: string]: CommandInfo[] } = {};
+  lastSelected: string;
 
   constructor(private api: APIService, private route: ActivatedRoute) {}
 
@@ -29,12 +30,12 @@ export class CommandsComponent implements OnInit {
     }
   }
 
-  public getCommandSubPermTerm(cmd: CommandInfo, sp: SubPermission): string {
+  getCommandSubPermTerm(cmd: CommandInfo, sp: SubPermission): string {
     if (sp.term.startsWith('/')) return sp.term.substr(1);
     return cmd.domain_name + '.' + sp.term;
   }
 
-  public scrollTo(selector: string) {
+  scrollTo(selector: string) {
     const el = document.querySelector(selector);
     if (el) {
       el.scrollIntoView({
@@ -43,13 +44,13 @@ export class CommandsComponent implements OnInit {
     }
   }
 
-  public onScrollToTop() {
+  onScrollToTop() {
     window.scrollTo({
       top: 0,
     });
   }
 
-  public onSearchBarChange(e: InputEvent) {
+  onSearchBarChange(e: InputEvent) {
     const val = (e.currentTarget as HTMLInputElement).value;
     this.fetchGroups(val);
   }
