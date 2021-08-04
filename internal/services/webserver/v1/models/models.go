@@ -103,14 +103,15 @@ type Guild struct {
 // GuildReduced is a Guild model with fewer
 // details than Guild model.
 type GuildReduced struct {
-	ID          string              `json:"id"`
-	Name        string              `json:"name"`
-	Icon        string              `json:"icon"`
-	IconURL     string              `json:"icon_url"`
-	Region      string              `json:"region"`
-	OwnerID     string              `json:"owner_id"`
-	JoinedAt    discordgo.Timestamp `json:"joined_at"`
-	MemberCount int                 `json:"member_count"`
+	ID                string              `json:"id"`
+	Name              string              `json:"name"`
+	Icon              string              `json:"icon"`
+	IconURL           string              `json:"icon_url"`
+	Region            string              `json:"region"`
+	OwnerID           string              `json:"owner_id"`
+	JoinedAt          discordgo.Timestamp `json:"joined_at"`
+	MemberCount       int                 `json:"member_count"`
+	OnlineMemberCount int                 `json:"online_member_count,omitempty"`
 }
 
 // PermissionsResponse wraps a

@@ -1422,6 +1422,29 @@ Logs in the current browser session by using the passed pre-obtained OTA token.
 | 200 |  |  |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
+### /public/guilds/{id}
+
+#### GET
+##### Summary
+
+Get Public Guild
+
+##### Description
+
+Returns public guild information, if enabled by guild config.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The Guild ID. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GuildReduced](#modelsguildreduced) |
+
 ### /reports/{id}
 
 #### GET
@@ -1990,6 +2013,7 @@ Returns general information for the landing page like the local invite parameter
 | allowed_origins | string |  | No |
 | enabled | boolean |  | No |
 | protected | boolean |  | No |
+| token_hash | string |  | No |
 
 #### models.GuildAPISettingsRequest
 
@@ -2000,6 +2024,7 @@ Returns general information for the landing page like the local invite parameter
 | protected | boolean |  | No |
 | reset_token | boolean |  | No |
 | token | string |  | No |
+| token_hash | string |  | No |
 
 #### models.GuildKarmaEntry
 
@@ -2029,6 +2054,7 @@ Returns general information for the landing page like the local invite parameter
 | joined_at | string |  | No |
 | member_count | integer |  | No |
 | name | string |  | No |
+| online_member_count | integer |  | No |
 | owner_id | string |  | No |
 | region | string |  | No |
 

@@ -32,6 +32,9 @@ func (r *Router) SetContainer(container di.Container) {
 // @Tag.Name OTA
 // @tag.Description One Time Auth token endpoints.
 //
+// @Tag.Name Public
+// @tag.Description Public API endpoints.
+//
 // @Tag.Name Search
 // @tag.Description Search endpoints.
 //
@@ -70,6 +73,7 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.UtilController).Setup(r.container, router.Group("/util"))
 	new(controllers.AuthController).Setup(r.container, router.Group("/auth"))
 	new(controllers.OTAController).Setup(r.container, router.Group("/ota"))
+	new(controllers.PublicController).Setup(r.container, router.Group("/public"))
 
 	router.Get("/stack", func(ctx *fiber.Ctx) error { return ctx.JSON(ctx.App().Stack()) })
 

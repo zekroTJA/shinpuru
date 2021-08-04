@@ -323,6 +323,8 @@ definitions:
         type: boolean
       protected:
         type: boolean
+      token_hash:
+        type: string
     type: object
   models.GuildAPISettingsRequest:
     properties:
@@ -335,6 +337,8 @@ definitions:
       reset_token:
         type: boolean
       token:
+        type: string
+      token_hash:
         type: string
     type: object
   models.GuildKarmaEntry:
@@ -373,6 +377,8 @@ definitions:
         type: integer
       name:
         type: string
+      online_member_count:
+        type: integer
       owner_id:
         type: string
       region:
@@ -2713,6 +2719,27 @@ paths:
       summary: OTA Login
       tags:
       - OTA
+  /public/guilds/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns public guild information, if enabled by guild config.
+      parameters:
+      - description: The Guild ID.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildReduced'
+      summary: Get Public Guild
+      tags:
+      - Public
   /reports/{id}:
     get:
       consumes:
@@ -3212,6 +3239,8 @@ tags:
   name: Authorization
 - description: One Time Auth token endpoints.
   name: OTA
+- description: Public API endpoints.
+  name: Public
 - description: Search endpoints.
   name: Search
 - description: API token endpoints.

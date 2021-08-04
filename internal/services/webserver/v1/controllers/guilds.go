@@ -1499,7 +1499,9 @@ func (c *GuildsController) getGuildSettingsAPI(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(state.Hydrate())
+	state.Hydrate()
+	state.TokenHash = ""
+	return ctx.JSON(state)
 }
 
 // @Summary Set Guild Settings API State
@@ -1532,7 +1534,9 @@ func (c *GuildsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	return ctx.JSON(state.GuildAPISettings.Hydrate())
+	state.Hydrate()
+	state.TokenHash = ""
+	return ctx.JSON(state.GuildAPISettings)
 }
 
 // ---------------------------------------------------------------------------

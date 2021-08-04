@@ -2895,6 +2895,38 @@
                 }
             }
         },
+        "/public/guilds/{id}": {
+            "get": {
+                "description": "Returns public guild information, if enabled by guild config.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Get Public Guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The Guild ID.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GuildReduced"
+                        }
+                    }
+                }
+            }
+        },
         "/reports/{id}": {
             "get": {
                 "description": "Returns a single report object by its ID.",
@@ -4055,6 +4087,9 @@
                 },
                 "protected": {
                     "type": "boolean"
+                },
+                "token_hash": {
+                    "type": "string"
                 }
             }
         },
@@ -4074,6 +4109,9 @@
                     "type": "boolean"
                 },
                 "token": {
+                    "type": "string"
+                },
+                "token_hash": {
                     "type": "string"
                 }
             }
@@ -4132,6 +4170,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "online_member_count": {
+                    "type": "integer"
                 },
                 "owner_id": {
                     "type": "string"
@@ -4740,6 +4781,10 @@
         {
             "description": "One Time Auth token endpoints.",
             "name": "OTA"
+        },
+        {
+            "description": "Public API endpoints.",
+            "name": "Public"
         },
         {
             "description": "Search endpoints.",
