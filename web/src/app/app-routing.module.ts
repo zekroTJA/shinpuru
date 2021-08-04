@@ -20,6 +20,7 @@ import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-gene
 import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.component';
 import { DebugComponent } from './routes/debug/debug.component';
+import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 
 const routes: Routes = [
   {
@@ -62,6 +63,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/guildadmin/data',
     component: GuildAdminDataComponent,
+  },
+  {
+    path: 'guilds/:guildid/guildadmin/api',
+    component: GuildAdminApiComponent,
   },
   {
     path: 'guilds/:guildid/guildadmin',

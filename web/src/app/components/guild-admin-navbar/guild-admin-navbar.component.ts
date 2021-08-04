@@ -41,6 +41,11 @@ export class GuildAdminNavbarComponent implements OnInit {
       icon: 'data.svg',
       displayname: 'Data',
     },
+    {
+      route: 'api',
+      icon: 'cloud.svg',
+      displayname: 'API',
+    },
   ];
 
   public currentPath: string;

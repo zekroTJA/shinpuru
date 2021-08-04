@@ -1,0 +1,27 @@
+@import '../../../../sass/vars';
+@import '../../../../sass/mixins';
+
+label,
+input {
+  display: block;
+  min-width: 300px;
+}
+
+.green {
+  color: $c-green;
+}
+
+.orange {
+  color: $c-orange;
+}
+
+.uri-link {
+  background-color: rgba(0 0 0 / 20%);
+  padding: 10px 15px;
+  margin: 0px 0px 20px 0px;
+  width: fit-content;
+
+  > a {
+    color: $c-cyan !important;
+  }
+}

@@ -293,3 +293,11 @@ export interface SearchResult {
   guilds: Guild[];
   members: Member[];
 }
+
+export interface GuildSettingsApi {
+  enabled: boolean;
+  allowed_origins: string;
+  token: string;
+  reset_token: boolean;
+  protected: boolean;
+}

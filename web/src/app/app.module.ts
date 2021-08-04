@@ -55,6 +55,7 @@ import LoadingInterceptor from './api/loading.interceptor';
 import { SkeletonTileComponent } from './components/skeleton-tile/skeleton-tile.component';
 import { DebugComponent } from './routes/debug/debug.component';
 import { GlobalSearchComponent } from './components/global-search/global-search.component';
+import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import { GlobalSearchComponent } from './components/global-search/global-search.
     SkeletonTileComponent,
     DebugComponent,
     GlobalSearchComponent,
+    GuildAdminApiComponent,
   ],
   imports: [
     NgbModule,

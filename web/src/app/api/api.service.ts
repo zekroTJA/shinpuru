@@ -35,6 +35,7 @@ import {
   GuildLogEntry,
   State,
   SearchResult,
+  GuildSettingsApi,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -141,6 +142,9 @@ export class APIService {
 
   private readonly rcGuildSettingsFlushData = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/flushguilddata`;
+
+  private readonly rcGuildSettingsApi = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/api`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -923,6 +927,21 @@ export class APIService {
     });
     return this.http
       .get(this.rcSearch(), opts)
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsApi(guildID: string): Observable<GuildSettingsApi> {
+    return this.http
+      .get(this.rcGuildSettingsApi(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsApi(
+    guildID: string,
+    settings: GuildSettingsApi
+  ): Observable<GuildSettingsApi> {
+    return this.http
+      .post(this.rcGuildSettingsApi(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
