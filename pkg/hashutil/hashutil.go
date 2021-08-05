@@ -1,3 +1,5 @@
+// Package hashutil provides general utility functionalities
+// to generate simple and fast hashes with salt and pepper.
 package hashutil
 
 import (
@@ -12,18 +14,33 @@ import (
 )
 
 var (
-	ErrInvalidFormat           = errors.New("invalid hash format")
-	ErrInvalidSaltSize         = errors.New("invalid salt size: must be larger than 0")
+	// ErrInvalidFormat is returned when the passed hash has
+	// an invalid format.
+	ErrInvalidFormat = errors.New("invalid hash format")
+	// ErrInvalidSaltSize is returned when a salt size of <= 0 is
+	// provided on hash generation.
+	ErrInvalidSaltSize = errors.New("invalid salt size: must be larger than 0")
+	// ErrUnsupportedHashFunction is returned when a hash function
+	// name was provided which is not supported.
 	ErrUnsupportedHashFunction = errors.New("unsupported hash function")
 )
 
+// Hasher specifies the parameters for the hash generation
+// like the used hash function, salt byte size and pepper
+// getter function.
 type Hasher struct {
-	HashFunc     crypto.Hash
-	SaltSize     int
+	// HashFunc specifies the used hashing function.
+	HashFunc crypto.Hash
+	// SaltSize specifies the length of the randomly
+	// generated salt byte array.
+	SaltSize int
+	// PepperGetter is a function used to obtain a
+	// pepper byte array used in the hash generation.
+	//
+	// When no function is specified, no pepper will
+	// be passed in the hash generation.
 	PepperGetter func() ([]byte, error)
 }
-
-// Format: <hashFuncName>$<saltHex>$<hashHex>
 
 func (h Hasher) getHash(token string, salt []byte) (hash []byte, err error) {
 	v := append([]byte(token), salt...)
@@ -41,6 +58,11 @@ func (h Hasher) getHash(token string, salt []byte) (hash []byte, err error) {
 	return
 }
 
+// Hash creates a hash string with the specified Hasher
+// parameters.
+//
+// The generated hash is formatted as following:
+// <hashFunctionName>$<saltHex>$<hashHex>
 func (h Hasher) Hash(token string) (hash string, err error) {
 	if h.SaltSize == 0 {
 		err = ErrInvalidSaltSize
@@ -62,6 +84,13 @@ func (h Hasher) Hash(token string) (hash string, err error) {
 	return
 }
 
+// Compare takes a token and a hash to compare against and
+// returns true if the token matches the hash.
+//
+// The required hashing parameters are extracted from the
+// passed hash string. The specified token is then hashed
+// using the obtained parameters. Both hashes are then
+// compared for equality.
 func Compare(token, hash string, pepperGetter ...func() ([]byte, error)) (ok bool, err error) {
 	split := strings.Split(hash, "$")
 	if len(split) != 3 {
@@ -100,6 +129,8 @@ func Compare(token, hash string, pepperGetter ...func() ([]byte, error)) (ok boo
 	return
 }
 
+// GetHashFunc returns a crypto.Hash function by the given
+// hash function name string.
 func GetHashFunc(name string) (h crypto.Hash, err error) {
 	switch name {
 	case "MD4":
