@@ -905,7 +905,10 @@ func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 	if err != nil {
 		return
 	}
-	err = m.client.Set(context.Background(), key, configB, 0).Err()
+	if err = m.client.Set(context.Background(), key, configB, 0).Err(); err != nil {
+		return
+	}
+	err = m.Database.SetStarboardConfig(config)
 	return
 }
 

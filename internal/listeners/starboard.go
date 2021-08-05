@@ -61,6 +61,8 @@ func NewListenerStarboard(container di.Container) *ListenerStarboard {
 func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
 	self, err := l.state.SelfUser()
 	if err != nil {
+		logrus.WithError(err).Fatal("STARBOARD :: failed getting self user")
+		l.gl.Errorf(e.GuildID, "Failed getting self user: %s", err.Error())
 		return
 	}
 
