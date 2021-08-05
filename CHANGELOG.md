@@ -5,8 +5,7 @@
 ## Bugfixes
 
 - **Vulnerability Fix**: OTA tokens now support scoping and scope validation so that they can only be used for the exact purpose they were originally issued for. [#264]
-
-- 
+- Fix the heading content of the invite blocking toggle notification.
 
 # Docker
 
