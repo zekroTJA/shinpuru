@@ -3,18 +3,11 @@
 package onetimeauth
 
 import (
-	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 	"github.com/zekroTJA/timedmap"
-)
-
-var (
-	ErrInvalidToken  = errors.New("invalid token")
-	ErrInvalidClaims = errors.New("invalid claims")
-	ErrInvalidScopes = errors.New("invalid scopes")
 )
 
 // otaClaims extends jwt.StandardClaims by
