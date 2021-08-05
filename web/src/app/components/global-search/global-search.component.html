@@ -1,4 +1,9 @@
-<div id="container">
+<div
+  id="container"
+  (keyup.arrowdown)="onKeyUp(1)"
+  (keyup.arrowup)="onKeyUp(-1)"
+  (keyup.enter)="onKeyUp(0)"
+>
   <input
     type="text"
     id="searchbar"
@@ -13,7 +18,8 @@
       <div
         *ngFor="let g of lastResult.guilds"
         class="tile"
-        (click)="nav('guilds', g.id)"
+        [class.selected]="isSelected(g)"
+        (click)="nav(g)"
       >
         <img [src]="g.icon_url" />
         <div>
@@ -27,7 +33,8 @@
       <div
         *ngFor="let m of lastResult.members"
         class="tile"
-        (click)="nav('guilds', m.guild_id, m.user.id)"
+        [class.selected]="isSelected(m)"
+        (click)="nav(m)"
       >
         <img [src]="m.avatar_url" />
         <div>
