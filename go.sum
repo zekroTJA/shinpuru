@@ -811,8 +811,9 @@ github.com/zekroTJA/shireikan v0.7.0/go.mod h1:W9mFLVTrq+mdfLCRqsg9qg8Dd569FxhAe
 github.com/zekroTJA/timedmap v1.3.0/go.mod h1:ktlw5aYhoXQvOvWFL9SzltGXn1bQgJXxZzHJK4wQvsI=
 github.com/zekroTJA/timedmap v1.4.0 h1:NIkLScX6kMzkzFP7kCIkkgKYdooAJ1itkMbJODX2WPU=
 github.com/zekroTJA/timedmap v1.4.0/go.mod h1:Go4uPxMN1Wjl5IgO6HYD1tM9IQhkYEVqcrrdsI4ljXo=
-github.com/zekrotja/dgrs v0.3.1 h1:HYKa1wX3WIjUVAj4RhGKhVRvBRhCyofGpHeKyY5W/eg=
 github.com/zekrotja/dgrs v0.3.1/go.mod h1:I73ryIMJJXCQxBHyBdRALG+0+mIEXF008EF7A/fYV4I=
+github.com/zekrotja/dgrs v0.3.2 h1:tLAcUZgxVvHEbololudACOSgoq2+dEZWVNIR5RYmkws=
+github.com/zekrotja/dgrs v0.3.2/go.mod h1:I73ryIMJJXCQxBHyBdRALG+0+mIEXF008EF7A/fYV4I=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
