@@ -89,10 +89,13 @@ input {
   }
 }
 
-select {
+select,
+textarea {
   background-color: $c-nqblack;
   border: solid 1px white;
   color: white;
+  border-radius: 5px;
+  padding: 5px;
   @include transition25;
 }
 
@@ -175,10 +178,22 @@ select {
 .dark-modal .modal-content {
   background-color: #292b2c;
   color: white;
+  border-radius: 10px;
 }
 
 .dark-modal .close {
   color: white;
+}
+
+.modal-header,
+.modal-footer {
+  border-bottom: none !important;
+  border-top: none !important;
+  background-color: rgba(black, 20%);
+}
+
+.modal-body {
+  padding: 2rem 1rem !important;
 }
 
 .cbadge {
