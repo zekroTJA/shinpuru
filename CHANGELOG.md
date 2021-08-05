@@ -30,15 +30,14 @@ The design of the notifications now fits in better with the general design langu
 
 Also some of the used Icons did not fit in the new design anymore and have been adjusted. As an example, below you can see the old vs. the new drop down icon.
 
-<img src="https://user-images.githubusercontent.com/16734205/128347326-1138f5c1-6bac-4887-9b2a-915370343dca.png
-" width="300" />
-
-
+<img src="https://user-images.githubusercontent.com/16734205/128347326-1138f5c1-6bac-4887-9b2a-915370343dca.png" width="300" />
 
 
 ## Bugfixes
 
 - **Vulnerability Fix**: OTA tokens now support scoping and scope validation so that they can only be used for the exact purpose they were originally issued for. [#264]
+- Added message reaction tracking to [dgrs](https://github.com/zekrotja/dgrs) to fix starboard functionality.
+- Starboard guild settings are now also properly saved to the database instead only to cache.
 - Fix the heading content of the invite blocking toggle notification.
 
 # Docker
