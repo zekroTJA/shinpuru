@@ -31,6 +31,7 @@ const (
 	keyGuildColorReaction   = "GUILD:COLORREACTION"
 	keyGuildStarboardConfig = "GUILD:STARBOARDCONFIG"
 	keyGuildLogEnable       = "GUILD:GUILDLOG"
+	keyGuildAPI             = "GUILD:API"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -904,7 +905,10 @@ func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 	if err != nil {
 		return
 	}
-	err = m.client.Set(context.Background(), key, configB, 0).Err()
+	if err = m.client.Set(context.Background(), key, configB, 0).Err(); err != nil {
+		return
+	}
+	err = m.Database.SetStarboardConfig(config)
 	return
 }
 
@@ -937,4 +941,44 @@ func (r *RedisMiddleware) SetGuildLogDisable(guildID string, enabled bool) error
 	}
 
 	return r.Database.SetGuildLogDisable(guildID, enabled)
+}
+
+func (m *RedisMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPISettings) (err error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
+
+	data, err := json.Marshal(settings)
+	if err != nil {
+		return
+	}
+
+	if err = m.client.Set(context.Background(), key, data, 0).Err(); err != nil {
+		return
+	}
+
+	return m.Database.SetGuildAPI(guildID, settings)
+}
+
+func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPISettings, err error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
+
+	resStr, err := m.client.Get(context.Background(), key).Result()
+	if err == redis.Nil {
+		if settings, err = m.Database.GetGuildAPI(guildID); err != nil {
+			return
+		}
+		var resB []byte
+		resB, err = json.Marshal(settings)
+		if err != nil {
+			return
+		}
+		if err = m.client.Set(context.Background(), key, resB, 0).Err(); err != nil {
+			return
+		}
+		return
+	}
+
+	settings = new(models.GuildAPISettings)
+	err = json.Unmarshal([]byte(resStr), settings)
+
+	return
 }

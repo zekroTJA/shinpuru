@@ -1058,6 +1058,101 @@
                 }
             }
         },
+        "/guilds/{id}/settings/api": {
+            "get": {
+                "description": "Returns the settings state of the Guild API.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Get Guild Settings API State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GuildAPISettings"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set the settings state of the Guild API.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Set Guild Settings API State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The guild API settings payload.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GuildAPISettingsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GuildAPISettings"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{id}/settings/flushguilddata": {
             "post": {
                 "description": "Flushes all guild data from the database.",
@@ -2800,6 +2895,38 @@
                 }
             }
         },
+        "/public/guilds/{id}": {
+            "get": {
+                "description": "Returns public guild information, if enabled by guild config.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Get Public Guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The Guild ID.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GuildReduced"
+                        }
+                    }
+                }
+            }
+        },
         "/reports/{id}": {
             "get": {
                 "description": "Returns a single report object by its ID.",
@@ -2902,6 +3029,59 @@
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Search through guilds and members by ID, name or displayname.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Global Search",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The search query (either ID, name or displayname).",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 50,
+                        "description": "The maximum amount of result items (per group).",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/models.Error"
                         }
@@ -3896,6 +4076,46 @@
                 }
             }
         },
+        "models.GuildAPISettings": {
+            "type": "object",
+            "properties": {
+                "allowed_origins": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "protected": {
+                    "type": "boolean"
+                },
+                "token_hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GuildAPISettingsRequest": {
+            "type": "object",
+            "properties": {
+                "allowed_origins": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "protected": {
+                    "type": "boolean"
+                },
+                "reset_token": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "token_hash": {
+                    "type": "string"
+                }
+            }
+        },
         "models.GuildKarmaEntry": {
             "type": "object",
             "properties": {
@@ -3950,6 +4170,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "online_member_count": {
+                    "type": "integer"
                 },
                 "owner_id": {
                     "type": "string"
@@ -4131,6 +4354,9 @@
                     "description": "The guild ID on which the member exists.",
                     "type": "string"
                 },
+                "guild_name": {
+                    "type": "string"
+                },
                 "joined_at": {
                     "description": "The time at which the member joined the guild, in ISO8601.",
                     "type": "string"
@@ -4267,6 +4493,23 @@
                 },
                 "type": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.SearchResult": {
+            "type": "object",
+            "properties": {
+                "guilds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.GuildReduced"
+                    }
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Member"
+                    }
                 }
             }
         },
@@ -4538,6 +4781,14 @@
         {
             "description": "One Time Auth token endpoints.",
             "name": "OTA"
+        },
+        {
+            "description": "Public API endpoints.",
+            "name": "Public"
+        },
+        {
+            "description": "Search endpoints.",
+            "name": "Search"
         },
         {
             "description": "API token endpoints.",

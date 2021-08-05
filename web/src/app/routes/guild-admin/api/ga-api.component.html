@@ -1,0 +1,84 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+  <div>
+    <h3>Guild API</h3>
+    <p class="mt-4">
+      When enabled, this exposes a public API endpoint which returns general
+      information about this guild via the following endpoint.
+    </p>
+    <p class="uri-link" *ngIf="state">
+      <a [href]="apiUrl" target="_blank">GET {{ apiUrl }}</a>
+    </p>
+    <div *ngIf="!state">
+      <app-skeleton-tile width="110px" height="30px"></app-skeleton-tile>
+      <app-skeleton-tile
+        width="100%"
+        height="100px"
+        margin="30px 0 0 0"
+        delay="0.05s"
+      ></app-skeleton-tile>
+      <app-skeleton-tile
+        width="100%"
+        height="100px"
+        margin="30px 0 0 0"
+        delay="0.1s"
+      ></app-skeleton-tile>
+    </div>
+    <div *ngIf="state">
+      <app-slider [(ngModel)]="state.enabled">Enable</app-slider>
+
+      <h3 class="mt-2">Allowed Origins</h3>
+      <div class="mt-2">
+        <label for="i-tokens"
+          ><i class="small"
+            >A comma seperated list of origin URLs set as
+            <span class="embedded">Access-Control-Allow-Origin</span> header
+            value in the API repsonse. This specifies which web pages are
+            allowed to directly fetch this API endpoint. If nothing is set, this
+            value defaults to <span class="embedded">*</span>, which allows
+            every page to fetch this resource.</i
+          ></label
+        >
+        <input
+          type="text"
+          [(ngModel)]="state.allowed_origins"
+          placeholder="*"
+        />
+      </div>
+
+      <h3 class="mt-4">Token</h3>
+      <div class="mt-2">
+        <label for="i-tokens"
+          ><i class="small"
+            >When a token is specified, the endpoint needs to be authenticated
+            using this token either as
+            <span class="embedded">Authorization</span> header value with the
+            type <span class="embedded">bearer</span> or passed as
+            <span class="embedded">token</span> URL query on request.</i
+          ></label
+        >
+        <p *ngIf="state.protected" class="green">
+          The endpoint is currently protected.
+        </p>
+        <p *ngIf="!state.protected" class="orange">
+          The endpoint is currently not protected.
+        </p>
+        <input
+          type="password"
+          [(ngModel)]="state.token"
+          placeholder="{{ state.protected ? 'New Token' : 'Token' }}"
+        />
+      </div>
+      <div class="d-flex mt-4">
+        <button
+          *ngIf="state.protected"
+          class="bg-orange mr-3"
+          (click)="resetToken()"
+        >
+          Unprotect
+        </button>
+        <button (click)="saveSettings()">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>

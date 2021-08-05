@@ -290,6 +290,15 @@ func (m *MysqlMiddleware) setup() {
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	mErr.Append(err)
 
+	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guildapi` (" +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`enabled` int(1) NOT NULL DEFAULT '0'," +
+		"`origins` text NOT NULL DEFAULT ''," +
+		"`tokenHash` text NOT NULL DEFAULT ''," +
+		"PRIMARY KEY (`guildID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	mErr.Append(err)
+
 	if mErr.Len() > 0 {
 		logrus.WithError(mErr).Fatal("Failed database setup")
 	}
@@ -1837,6 +1846,36 @@ func (m *MysqlMiddleware) FlushGuildData(guildID string) (err error) {
 	}
 
 	return tx.Commit()
+}
+
+func (m *MysqlMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPISettings, err error) {
+	settings = new(models.GuildAPISettings)
+	err = m.Db.QueryRow(`SELECT enabled, origins, tokenHash FROM guildapi WHERE guildID = ?`, guildID).
+		Scan(&settings.Enabled, &settings.AllowedOrigins, &settings.TokenHash)
+	err = wrapNotFoundError(err)
+	return
+}
+
+func (m *MysqlMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPISettings) (err error) {
+	var ok bool
+	m.Db.QueryRow("SELECT 1 FROM guildapi WHERE guildID = ?",
+		guildID).Scan(&ok)
+
+	if ok {
+		_, err = m.Db.Exec(`
+			UPDATE guildapi 
+			SET enabled = ?, origins = ?, tokenHash = ?
+			WHERE guildID = ?`,
+			settings.Enabled, settings.AllowedOrigins, settings.TokenHash, guildID)
+	} else {
+		_, err = m.Db.Exec(`
+			INSERT INTO guildapi 
+			(guildID, enabled, origins, tokenHash)
+			VALUES (?, ?, ?, ?)`,
+			guildID, settings.Enabled, settings.AllowedOrigins, settings.TokenHash)
+	}
+
+	return
 }
 
 /////////// HELPER ///////////////

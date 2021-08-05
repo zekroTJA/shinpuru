@@ -1,38 +1,44 @@
-1.20.0
+1.21.0
 
 ## Changes
 
-### Using Reactions to control `clear` command [#249]
+### Added Global Search
 
-You can now either select single messages to be deleted by adding the ❌ reaction to the messages or you can delete all messages after (and including) the message marked with the 🔻 reaction. The delete action is then performed on entering the [`clear selected`](https://github.com/zekroTJA/shinpuru/wiki/Commands#clear) command.
+By pressing `CTRL + F` anywhere in the web interface, you can now bring up a global fuzzy search which will search through all accessable guilds and their members. You can even navigate in the search only by using the keyboard! 😉
 
-https://user-images.githubusercontent.com/16734205/126893039-d23dbe44-8bdd-4ab0-b03e-793168fbf620.mov
+![image](https://user-images.githubusercontent.com/16734205/128348276-8a81ebf3-21eb-4da6-bac0-88ec3ff4bf78.png)
 
-https://user-images.githubusercontent.com/16734205/126893059-7e54c886-9c95-4d13-ab2d-3b458614d723.mov
 
-### Setting multiple autoroles [#147]
+### Public Guild API
 
-You can now set multiple autoroles in the web interface as well as via the [`autorole`](https://github.com/zekroTJA/shinpuru/wiki/Commands#autorole) command.
+You can now enable a public API endpoint which exposes general information about your Guild via shinpuru's REST API.
 
-![](https://i.imgur.com/JDO30Uf.gif)
+![image](https://user-images.githubusercontent.com/16734205/128348885-e1e2dffc-6629-40db-b184-4fac8ac94e03.png)
 
-https://user-images.githubusercontent.com/16734205/127679480-fec63b3b-11e4-4ba7-a5f8-4e62c657e612.mov
+The output of the endpoint will then look as following.
 
-### Invite Badge
+![image](https://user-images.githubusercontent.com/16734205/128349603-ebaa5bbf-6917-44f8-b296-05b05bf5be9e.png)
 
-As you might know, when the web interface is enabled, you can use `<address>/invite` as redirect link to the invite link of the bot instance (see https://shnp.de/invite, for example). Additional to that, an endpoint was added which generates a badge with the current guild count of the instance.
 
-Examples:
+### Updated the Style of the Notifications
 
-- ![](https://shnp.de/invite/badge.svg) `https://shnp.de/invite/badge.svg`
-- ![](https://c.shnp.de/invite/badge.svg?title=invite%20(canary)&color=orange) `https://c.shnp.de/invite/badge.svg?title=invite%20(canary)&color=orange`
+The design of the notifications now fits in better with the general design language of the web app. Also the space around the notification box was adjusted to fit under the new header.
+
+<img src="https://user-images.githubusercontent.com/16734205/128346539-9dd58670-3b80-426a-9900-bd537e6be85c.png" height="400" />
+
+### Updated the Style of some Icons
+
+Also some of the used Icons did not fit in the new design anymore and have been adjusted. As an example, below you can see the old vs. the new drop down icon.
+
+<img src="https://user-images.githubusercontent.com/16734205/128347326-1138f5c1-6bac-4887-9b2a-915370343dca.png" width="300" />
+
 
 ## Bugfixes
 
-- shireikan now also uses dgrs state when passed.
-- Hydrated guild states are now obtained where required.
-- The tagxinput component has now proper item alignment.
-- Setting `@everyone` as autorole is no more possible.
+- **Vulnerability Fix**: OTA tokens now support scoping and scope validation so that they can only be used for the exact purpose they were originally issued for. [#264]
+- Added message reaction tracking to [dgrs](https://github.com/zekrotja/dgrs) to fix starboard functionality.
+- Starboard guild settings are now also properly saved to the database instead only to cache.
+- Fix the heading content of the invite blocking toggle notification.
 
 # Docker
 
@@ -43,11 +49,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.20.0
+$ docker pull zekro/shinpuru:1.21.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.20.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.21.0
 ```

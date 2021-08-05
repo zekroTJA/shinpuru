@@ -341,7 +341,7 @@
   ></app-skeleton-tile>
   <div>
     <i *ngIf="reports?.length === 0"
-      >{{ member.user.username }} has a white vest! 👌</i
+      >{{ member?.user.username }} has a white vest! 👌</i
     >
     <app-report
       *ngFor="let rep of reports"

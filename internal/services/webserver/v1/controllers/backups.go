@@ -78,7 +78,7 @@ func (c *GuildBackupsController) postDownloadBackup(ctx *fiber.Ctx) error {
 
 	ident := getBackupIdent(guildID, backupID)
 
-	token, expires, err := c.ota.GetKey(ident)
+	token, expires, err := c.ota.GetKey(ident, ctx.Path())
 	if err != nil {
 		return err
 	}

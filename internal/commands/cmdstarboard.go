@@ -112,7 +112,7 @@ func (c *CmdStarboard) Exec(ctx shireikan.Context) (err error) {
 		emote := ctx.GetArgs().Get(1).AsString()
 		if emote == "" {
 			return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-				"Invalid arguments. Use `help joinmsg` to get help about how to use this command.").
+				"Invalid arguments. Use `help starboard` to get help about how to use this command.").
 				DeleteAfter(8 * time.Second).
 				Error()
 		}

@@ -25,11 +25,14 @@ def get_pkg_description(pkg):
             return desc.strip()
 
 
-res = '# Public Packages\n\n'
+res = \
+    '<!-- insert:PUBLIC_PACKAGES -->\n' \
+    '# Public Packages\n\n'
 for pkg in os.listdir(PKG_PATH):
+    print(f'Processing package {pkg} ...')
     desc = get_pkg_description(pkg).replace('\n', ' ')
     res += '- [**`{root}/{sub}/{pkg}`**]({sub}/{pkg})  \n  *{desc}*\n\n'.format_map({
-        'root': ROOT_PKG, 
+        'root': ROOT_PKG,
         'sub': PKG_PATH,
         'pkg': pkg,
         'desc': desc,

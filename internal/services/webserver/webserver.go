@@ -111,6 +111,10 @@ func (ws *WebServer) registerRouter(router Router, routes []string, middlewares 
 
 func (ws *WebServer) errorHandler(ctx *fiber.Ctx, err error) error {
 	if fErr, ok := err.(*fiber.Error); ok {
+		if fErr == fiber.ErrUnprocessableEntity {
+			fErr = fiber.ErrBadRequest
+		}
+
 		ctx.Status(fErr.Code)
 		return ctx.JSON(&models.Error{
 			Error: fErr.Message,

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -76,7 +77,8 @@ func (m *AccessTokenMiddleware) checkOta(ctx *fiber.Ctx) (ident string, err erro
 		return
 	}
 
-	ident, err = m.ota.ValidateKey(token)
+	fmt.Println(ctx.Path())
+	ident, err = m.ota.ValidateKey(token, ctx.Path())
 	if err != nil {
 		err = fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}

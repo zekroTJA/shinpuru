@@ -1,3 +1,4 @@
+<!-- insert:PUBLIC_PACKAGES -->
 # Public Packages
 
 - [**`github.com/zekroTJA/shinpuru/pkg/acceptmsg`**](pkg/acceptmsg)  
@@ -11,6 +12,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/bytecount`**](pkg/bytecount)  
   *Package bytecount provides functionalities to format byte counts.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/checksum`**](pkg/checksum)  
+  *Package checksum provides functions to generate a hash sum from any given object.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/colors`**](pkg/colors)  
   *Package color provides general utilities for image/color objects and color codes.*
@@ -32,6 +36,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/hashutil`**](pkg/hashutil)  
+  *Package hashutil provides general utility functionalities to generate simple and fast hashes with salt and pepper.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](pkg/httpreq)  
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
@@ -65,6 +72,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
+  *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/stringutil`**](pkg/stringutil)  
   *Package stringutil provides generl string utility functions.*

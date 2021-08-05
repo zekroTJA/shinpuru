@@ -60,6 +60,7 @@ type User struct {
 type Member struct {
 	*discordgo.Member
 
+	GuildName  string    `json:"guild_name,omitempty"`
 	AvatarURL  string    `json:"avatar_url"`
 	CreatedAt  time.Time `json:"created_at"`
 	Dominance  int       `json:"dominance"`
@@ -102,14 +103,15 @@ type Guild struct {
 // GuildReduced is a Guild model with fewer
 // details than Guild model.
 type GuildReduced struct {
-	ID          string              `json:"id"`
-	Name        string              `json:"name"`
-	Icon        string              `json:"icon"`
-	IconURL     string              `json:"icon_url"`
-	Region      string              `json:"region"`
-	OwnerID     string              `json:"owner_id"`
-	JoinedAt    discordgo.Timestamp `json:"joined_at"`
-	MemberCount int                 `json:"member_count"`
+	ID                string              `json:"id"`
+	Name              string              `json:"name"`
+	Icon              string              `json:"icon"`
+	IconURL           string              `json:"icon_url"`
+	Region            string              `json:"region"`
+	OwnerID           string              `json:"owner_id"`
+	JoinedAt          discordgo.Timestamp `json:"joined_at"`
+	MemberCount       int                 `json:"member_count"`
+	OnlineMemberCount int                 `json:"online_member_count,omitempty"`
 }
 
 // PermissionsResponse wraps a
@@ -310,6 +312,17 @@ type EnableStatus struct {
 type FlushGuildRequest struct {
 	Validation string `json:"validation"`
 	LeaveAfter bool   `json:"leave_after"`
+}
+
+type SearchResult struct {
+	Guilds  []*GuildReduced `json:"guilds"`
+	Members []*Member       `json:"members"`
+}
+
+type GuildAPISettingsRequest struct {
+	sharedmodels.GuildAPISettings
+	NewToken   string `json:"token"`
+	ResetToken bool   `json:"reset_token"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

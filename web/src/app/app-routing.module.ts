@@ -19,6 +19,8 @@ import { UnbanmeComponent } from './routes/unbanme/unbanme.component';
 import { GuildAdminGeneralComponent } from './routes/guild-admin/general/ga-general.component';
 import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.component';
 import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.component';
+import { DebugComponent } from './routes/debug/debug.component';
+import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 
 const routes: Routes = [
   {
@@ -63,6 +65,10 @@ const routes: Routes = [
     component: GuildAdminDataComponent,
   },
   {
+    path: 'guilds/:guildid/guildadmin/api',
+    component: GuildAdminApiComponent,
+  },
+  {
     path: 'guilds/:guildid/guildadmin',
     redirectTo: 'guilds/:guildid/guildadmin/general',
     pathMatch: 'full',
@@ -98,6 +104,10 @@ const routes: Routes = [
   {
     path: 'unbanme',
     component: UnbanmeComponent,
+  },
+  {
+    path: 'pogchamp',
+    component: DebugComponent,
   },
   {
     path: '**',

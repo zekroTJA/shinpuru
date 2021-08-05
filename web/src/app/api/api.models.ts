@@ -32,6 +32,7 @@ export interface Role {
 export interface Member {
   user: User;
   guild_id: string;
+  guild_name: string;
   joined_at: string;
   nick: string;
   avatar_url?: string;
@@ -286,4 +287,17 @@ export interface GuildLogEntry {
   message: string;
   severity: number;
   timestamp: string;
+}
+
+export interface SearchResult {
+  guilds: Guild[];
+  members: Member[];
+}
+
+export interface GuildSettingsApi {
+  enabled: boolean;
+  allowed_origins: string;
+  token: string;
+  reset_token: boolean;
+  protected: boolean;
 }

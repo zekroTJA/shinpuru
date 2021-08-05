@@ -23,9 +23,7 @@ export class ToastComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    if (this.delay) {
-      setTimeout(() => this.hide(false), this.delay + 600);
-    }
+    setTimeout(() => this.hide(false), (this.delay ?? 6000) + 600);
 
     switch (this.color) {
       case 'cyan':

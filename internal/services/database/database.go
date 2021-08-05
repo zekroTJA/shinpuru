@@ -82,6 +82,9 @@ type Database interface {
 	GetGuildLogDisable(guildID string) (bool, error)
 	SetGuildLogDisable(guildID string, enabled bool) error
 
+	GetGuildAPI(guildID string) (*models.GuildAPISettings, error)
+	SetGuildAPI(guildID string, settings *models.GuildAPISettings) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 

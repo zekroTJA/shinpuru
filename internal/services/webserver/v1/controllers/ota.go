@@ -48,7 +48,7 @@ func (c *OTAController) getOta(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, "invalid ota token")
 	}
 
-	userID, err := c.ota.ValidateKey(token)
+	userID, err := c.ota.ValidateKey(token, "login-via-dm")
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "invalid ota token")
 	}

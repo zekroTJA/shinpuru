@@ -3,7 +3,6 @@
 package onetimeauth
 
 import (
-	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -11,17 +10,13 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
-var (
-	ErrInvalidToken  = errors.New("invalid token")
-	ErrInvalidClaims = errors.New("invalid claims")
-)
-
 // otaClaims extends jwt.StandardClaims by
 // the token string.
 type otaClaims struct {
 	jwt.StandardClaims
 
-	Token string `json:"tkn"`
+	Token  string   `json:"tkn"`
+	Scopes []string `json:"scp"`
 }
 
 // JwtOneTimeAuth implements OneTimeAuth
@@ -32,6 +27,8 @@ type JwtOneTimeAuth struct {
 
 	tokens *timedmap.TimedMap
 }
+
+var _ OneTimeAuth = (*JwtOneTimeAuth)(nil)
 
 // NewJwt initializes a new JwtOneTimeAuth with a signing
 // key generated on initialization.
@@ -60,7 +57,7 @@ func NewJwt(options *JwtOptions) (a *JwtOneTimeAuth, err error) {
 	return
 }
 
-func (a *JwtOneTimeAuth) GetKey(ident string) (token string, expires time.Time, err error) {
+func (a *JwtOneTimeAuth) GetKey(ident string, scopes ...string) (token string, expires time.Time, err error) {
 	now := time.Now()
 	expires = now.Add(a.options.Lifetime)
 
@@ -70,6 +67,7 @@ func (a *JwtOneTimeAuth) GetKey(ident string) (token string, expires time.Time, 
 	claims.ExpiresAt = expires.Unix()
 	claims.NotBefore = now.Unix()
 	claims.IssuedAt = now.Unix()
+	claims.Scopes = scopes
 	if claims.Token, err = random.GetRandBase64Str(32); err != nil {
 		return
 	}
@@ -82,7 +80,13 @@ func (a *JwtOneTimeAuth) GetKey(ident string) (token string, expires time.Time, 
 	return
 }
 
-func (a *JwtOneTimeAuth) ValidateKey(key string) (ident string, err error) {
+func (a *JwtOneTimeAuth) ValidateKey(key string, scopes ...string) (ident string, err error) {
+	defer func() {
+		if err != nil {
+			ident = ""
+		}
+	}()
+
 	token, err := jwt.Parse(key, func(t *jwt.Token) (interface{}, error) {
 		return a.signingKey, nil
 	})
@@ -101,6 +105,7 @@ func (a *JwtOneTimeAuth) ValidateKey(key string) (ident string, err error) {
 
 	ident, okS := claims["sub"].(string)
 	tkn, okT := claims["tkn"].(string)
+	scpi, _ := claims["scp"].([]interface{})
 	if !okS || !okT {
 		err = ErrInvalidClaims
 		return
@@ -111,7 +116,41 @@ func (a *JwtOneTimeAuth) ValidateKey(key string) (ident string, err error) {
 		return
 	}
 
+	var scp []string
+	if scpi != nil {
+		scp = make([]string, len(scpi))
+		for i := range scpi {
+			if scp[i], ok = scpi[i].(string); !ok {
+				err = ErrInvalidScopes
+				return
+			}
+		}
+	}
+
+	if !validateScopes(scopes, scp) {
+		err = ErrInvalidScopes
+		return
+	}
+
 	a.tokens.Remove(tkn)
 
 	return
+}
+
+func validateScopes(must []string, obtained []string) bool {
+	for _, m := range must {
+		if !contains(m, obtained) {
+			return false
+		}
+	}
+	return true
+}
+
+func contains(v string, arr []string) bool {
+	for _, a := range arr {
+		if a == v {
+			return true
+		}
+	}
+	return false
 }

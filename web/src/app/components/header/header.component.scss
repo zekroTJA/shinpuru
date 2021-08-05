@@ -4,6 +4,7 @@
 .part-container {
   display: flex;
   position: relative;
+  align-items: center;
   padding: 10px;
   border-radius: 150px;
   background-color: $c-nqblack;
@@ -41,8 +42,10 @@
 
 .dropdown-popup {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 10 !important;
-  transform: translate(-9px, 42px);
+  transform: translate(0, 55px);
   width: 100%;
 }
 
@@ -107,7 +110,6 @@
     .dropdown-btn {
       font-size: 12px;
       margin: 0 15px 0 10px;
-      border-radius: 3px;
       cursor: pointer;
       @include my-auto;
     }
@@ -144,6 +146,13 @@
   align-items: center;
   border-radius: 150px !important;
   margin: 15px 5px 0 0;
+}
+
+.dropdown-icon {
+  width: 9px;
+  margin: 0 15px 0 10px;
+  transform: rotate(180deg);
+  transition: transform 0.3s ease-in-out;
 }
 
 @media only screen and (max-width: 900px) {

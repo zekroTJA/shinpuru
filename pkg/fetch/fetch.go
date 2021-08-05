@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	roleCheckFuncs = []func(*discordgo.Role, string) bool{
+	RoleCheckFuncs = []func(*discordgo.Role, string) bool{
 		// 1. ID exact match
 		func(r *discordgo.Role, resolvable string) bool {
 			return r.ID == resolvable
@@ -36,7 +36,7 @@ var (
 		},
 	}
 
-	memberCheckFuncs = []func(*discordgo.Member, string) bool{
+	MemberCheckFuncs = []func(*discordgo.Member, string) bool{
 		// 1. ID exact match
 		func(r *discordgo.Member, resolvable string) bool {
 			return r.User.ID == resolvable
@@ -75,7 +75,7 @@ var (
 		},
 	}
 
-	channelCheckFuncs = []func(*discordgo.Channel, string) bool{
+	ChannelCheckFuncs = []func(*discordgo.Channel, string) bool{
 		// 1. ID exact match
 		func(r *discordgo.Channel, resolvable string) bool {
 			return r.ID == resolvable
@@ -102,6 +102,34 @@ var (
 			return strings.Contains(strings.ToLower(r.Name), strings.ToLower(resolvable))
 		},
 	}
+
+	GuildCheckFuncs = []func(*discordgo.Guild, string) bool{
+		// 1. ID exact match
+		func(r *discordgo.Guild, resolvable string) bool {
+			return r.ID == resolvable
+		},
+		// 2. mention exact match
+		func(r *discordgo.Guild, resolvable string) bool {
+			l := len(resolvable)
+			return l > 3 && r.ID == resolvable[2:l-1]
+		},
+		// 3. name exact match
+		func(r *discordgo.Guild, resolvable string) bool {
+			return r.Name == resolvable
+		},
+		// 4. name lowercased exact match
+		func(r *discordgo.Guild, resolvable string) bool {
+			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
+		},
+		// 5. name lowercased starts with
+		func(r *discordgo.Guild, resolvable string) bool {
+			return strings.HasPrefix(strings.ToLower(r.Name), strings.ToLower(resolvable))
+		},
+		// 6. name lowercased contains
+		func(r *discordgo.Guild, resolvable string) bool {
+			return strings.Contains(strings.ToLower(r.Name), strings.ToLower(resolvable))
+		},
+	}
 )
 
 // FetchRoles tries to fetch a role on the specified guild
@@ -119,7 +147,7 @@ func FetchRole(s DataOutlet, guildID, resolvable string, condition ...func(*disc
 	rx := regexp.MustCompile("<@&|>")
 	resolvable = rx.ReplaceAllString(resolvable, "")
 
-	for _, checkFunc := range roleCheckFuncs {
+	for _, checkFunc := range RoleCheckFuncs {
 		for _, r := range roles {
 			if len(condition) > 0 && condition[0] != nil {
 				if !condition[0](r) {
@@ -159,7 +187,7 @@ func FetchMember(s DataOutlet, guildID, resolvable string, condition ...func(*di
 
 		lastUserID = members[len(members)-1].User.ID
 
-		for _, checkFunc := range memberCheckFuncs {
+		for _, checkFunc := range MemberCheckFuncs {
 			for _, m := range members {
 				if len(condition) > 0 && condition[0] != nil {
 					if !condition[0](m) {
@@ -189,7 +217,7 @@ func FetchChannel(s DataOutlet, guildID, resolvable string, condition ...func(*d
 		return nil, err
 	}
 
-	for _, checkFunc := range channelCheckFuncs {
+	for _, checkFunc := range ChannelCheckFuncs {
 		for _, c := range channels {
 			if len(condition) > 0 && condition[0] != nil {
 				if !condition[0](c) {

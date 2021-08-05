@@ -315,6 +315,32 @@ definitions:
       verification_level:
         type: integer
     type: object
+  models.GuildAPISettings:
+    properties:
+      allowed_origins:
+        type: string
+      enabled:
+        type: boolean
+      protected:
+        type: boolean
+      token_hash:
+        type: string
+    type: object
+  models.GuildAPISettingsRequest:
+    properties:
+      allowed_origins:
+        type: string
+      enabled:
+        type: boolean
+      protected:
+        type: boolean
+      reset_token:
+        type: boolean
+      token:
+        type: string
+      token_hash:
+        type: string
+    type: object
   models.GuildKarmaEntry:
     properties:
       member:
@@ -351,6 +377,8 @@ definitions:
         type: integer
       name:
         type: string
+      online_member_count:
+        type: integer
       owner_id:
         type: string
       region:
@@ -469,6 +497,8 @@ definitions:
       guild_id:
         description: The guild ID on which the member exists.
         type: string
+      guild_name:
+        type: string
       joined_at:
         description: The time at which the member joined the guild, in ISO8601.
         type: string
@@ -561,6 +591,17 @@ definitions:
         type: string
       type:
         type: integer
+    type: object
+  models.SearchResult:
+    properties:
+      guilds:
+        items:
+          $ref: '#/definitions/models.GuildReduced'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/models.Member'
+        type: array
     type: object
   models.StarboardEntryResponse:
     properties:
@@ -1888,6 +1929,69 @@ paths:
       summary: Update Guild Antiraid Settings
       tags:
       - Guilds
+  /guilds/{id}/settings/api:
+    get:
+      consumes:
+      - application/json
+      description: Returns the settings state of the Guild API.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildAPISettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings API State
+      tags:
+      - Guilds
+    post:
+      consumes:
+      - application/json
+      description: Set the settings state of the Guild API.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild API settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.GuildAPISettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildAPISettings'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Set Guild Settings API State
+      tags:
+      - Guilds
   /guilds/{id}/settings/flushguilddata:
     post:
       consumes:
@@ -2615,6 +2719,27 @@ paths:
       summary: OTA Login
       tags:
       - OTA
+  /public/guilds/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns public guild information, if enabled by guild config.
+      parameters:
+      - description: The Guild ID.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildReduced'
+      summary: Get Public Guild
+      tags:
+      - Public
   /reports/{id}:
     get:
       consumes:
@@ -2687,6 +2812,42 @@ paths:
       summary: Revoke Report
       tags:
       - Reports
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Search through guilds and members by ID, name or displayname.
+      parameters:
+      - description: The search query (either ID, name or displayname).
+        in: query
+        name: query
+        required: true
+        type: string
+      - default: 50
+        description: The maximum amount of result items (per group).
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Global Search
+      tags:
+      - Search
   /settings/noguildinvite:
     get:
       consumes:
@@ -3078,6 +3239,10 @@ tags:
   name: Authorization
 - description: One Time Auth token endpoints.
   name: OTA
+- description: Public API endpoints.
+  name: Public
+- description: Search endpoints.
+  name: Search
 - description: API token endpoints.
   name: Tokens
 - description: Global bot settings endpoints.
