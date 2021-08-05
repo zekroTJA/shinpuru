@@ -15,7 +15,12 @@
       <option value="yellow">yellow</option>
       <option value="green">green</option>
     </select>
-    <button (click)="toasts.push(iText.value, iHeader.value, iType.value)">
+    <input #iDuration type="number" placeholder="Duration" value="5" />
+    <button
+      (click)="
+        toasts.push(iText.value, iHeader.value, iType.value, iDuration.value)
+      "
+    >
       GO!
     </button>
   </div>
