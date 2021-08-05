@@ -19,8 +19,9 @@ def main():
     end = lines.index(')')
     lines = [l for l in lines[start+1:end] if not l.endswith('// indirect')]
     modules = [Module(l) for l in lines]
-    
+
     with open('./docs/requirements.md', 'w') as f:
+        f.write('<!-- insert:REQUIREMENTS -->\n')
         f.writelines(['- {}\n'.format(m.string()) for m in modules])
 
 
