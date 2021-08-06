@@ -57,6 +57,9 @@ export class APIService {
   );
   private readonly cacheUsers = new CacheBucket<string, User>(10 * 60 * 1000);
   private readonly cacheGuilds = new CacheBucket<string, Guild>(30 * 1000);
+  private readonly cachePermissionsAllowed = new CacheBucket<string, string[]>(
+    3600 * 1000
+  );
 
   private readonly defopts = (obj?: object) => {
     const defopts = {
@@ -349,7 +352,8 @@ export class APIService {
     guildID: string,
     memberID: string
   ): Observable<string[]> {
-    // TODO: Cache response
+    const allowed = this.cachePermissionsAllowed.get(`${guildID}:${memberID}`);
+    if (allowed) return of(allowed);
 
     return this.http
       .get<ListReponse<string>>(
@@ -358,6 +362,9 @@ export class APIService {
       )
       .pipe(
         map((l) => l.data),
+        tap((l) =>
+          this.cachePermissionsAllowed.put(`${guildID}:${memberID}`, l)
+        ),
         catchError(this.errorCatcher)
       );
   }
