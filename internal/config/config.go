@@ -34,16 +34,9 @@ type DatabaseCreds struct {
 	Database string `json:"database"`
 }
 
-// DatabaseFile holds information to use a file
-// database like SQLite.
-type DatabaseFile struct {
-	DBFile string `json:"dbfile"`
-}
-
-// DatabaseRedis holds credentials and settings
-// to connect to a Redis database.
-type DatabaseRedis struct {
-	Enable   bool   `json:"enable"`
+// CacheRedis holds credentials and settings
+// to connect to a Redis instance.
+type CacheRedis struct {
 	Addr     string `json:"addr"`
 	Password string `json:"password"`
 	Type     int    `json:"type"`
@@ -53,10 +46,16 @@ type DatabaseRedis struct {
 // database module to be used and the seperate
 // "slots" for database configurations.
 type DatabaseType struct {
-	Type   string         `json:"type"`
-	MySql  *DatabaseCreds `json:"mysql"`
-	Sqlite *DatabaseFile  `json:"sqlite"`
-	Redis  *DatabaseRedis `json:"redis"`
+	Type  string         `json:"type"`
+	MySql *DatabaseCreds `json:"mysql"`
+	Redis *CacheRedis    `json:"redis"`
+}
+
+// Cache holds the preferences for caching
+// services.
+type Cache struct {
+	Redis         *CacheRedis `json:"redis"`
+	CacheDatabase bool        `json:"cachedatabase"`
 }
 
 // Loging holds configuration values for the
@@ -183,6 +182,7 @@ type Config struct {
 	Discord     *Discord      `json:"discord"`
 	Permissions *Permissions  `json:"permissions"`
 	Database    *DatabaseType `json:"database"`
+	Cache       *Cache        `json:"cache"`
 	Logging     *Logging      `json:"logging"`
 	TwitchApp   *TwitchApp    `json:"twitchapp"`
 	Storage     *StorageType  `json:"storage"`
@@ -228,17 +228,16 @@ func GetDefaultConfig() *Config {
 			DefaultAdminRules: static.DefaultAdminRules,
 		},
 		Database: &DatabaseType{
-			Type:  "sqlite",
+			Type:  "mysql",
 			MySql: &DatabaseCreds{},
-			Sqlite: &DatabaseFile{
-				DBFile: "shinpuru.sqlite3.db",
-			},
-			Redis: &DatabaseRedis{
-				Enable:   false,
+		},
+		Cache: &Cache{
+			Redis: &CacheRedis{
 				Addr:     "localhost:6379",
 				Password: "",
 				Type:     0,
 			},
+			CacheDatabase: true,
 		},
 		Logging: &Logging{
 			CommandLogging: true,
