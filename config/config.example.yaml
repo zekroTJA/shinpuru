@@ -44,11 +44,9 @@ permissions:
 
 # Database sepcific configuration
 database:
-  # Currently, this bot supports MySql (MariaDB) and SQLite3
-  # Just enter here which you want to use.
-  # Please, DO NOT USE SQLite in a real production environment
-  # and ONLY use it for testing and debugging!
-  # Here you can read why: https://github.com/zekroTJA/shinpuru/wiki/No-SQLite-in-production
+  # Currently, this bot supports only MySql (MariaDB).
+  # But when more database bindings are available, here
+  # you can choose which one to use.
   type: "mysql"
   # MySQL (MariaDB) configuration
   mysql:
@@ -60,18 +58,12 @@ database:
     password: "5up3rb4dp455w0rd"
     # Database name
     database: "shinpuru"
-  # SQLite configuration
-  sqlite:
-    # SQLite database file location
-    dbfile: "./database/shinpuru.sqlite3.db"
   # Redis can be used as ADDITIONAL database layer and
   # is not usable as database alone.
   # If you enable Redis, database calls will be cached
-  # in memory to improve response times and reduce the 
+  # in memory to improve response times and reduce the
   # load on your database.
   redis:
-    # Whether to enable redis
-    enable: false
     # Redis host address
     addr: "localhost:6379"
     # Redis password
@@ -145,7 +137,7 @@ webserver:
     # The reset duration until a request token is restored.
     limitseconds: 3
 
-# Credentials of the twitch app to connect to the 
+# Credentials of the twitch app to connect to the
 # twitch API
 # You can register a twitch API app and get the
 # credentials from this page:
