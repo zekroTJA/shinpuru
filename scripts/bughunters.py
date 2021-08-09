@@ -17,6 +17,7 @@ HEADERS = {
 POINTS_FOR_ISSUE = 1
 POINTS_FOR_PR = 2
 
+
 class BHEntry:
     def __init__(self):
         self.issues = []
@@ -26,18 +27,18 @@ class BHEntry:
     def add_issue(self, issue):
         self.issues.append(issue)
         self.points += POINTS_FOR_ISSUE
-  
+
     def add_pr(self, pr):
         self.prs.append(pr)
         self.points += POINTS_FOR_PR
-  
+
     def sort_items(self):
         self.issues.sort(key=lambda n: int(n.get("number")))
         self.prs.sort(key=lambda n: int(n.get("number")))
-  
+
     def get_formatted_issues(self):
         return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.issues]
-  
+
     def get_formatted_prs(self):
         return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.prs]
 
@@ -78,7 +79,7 @@ def query_issues(login: str, repo: str, after: str = None) -> Dict:
 
 
 def query_prs(login: str, repo: str, after: str = None) -> Dict:
-    after = ', after: {}'.format(after) if after else ''
+    after = ', after: "{}"'.format(after) if after else ''
     query = '''
     query {
       user(login: "%s") {
@@ -126,7 +127,8 @@ def query_all_prs(login: str, repo: str) -> List[Dict]:
     after = None
     while True:
         res = query_prs(login, repo, after)
-        prs_res = res.get("data").get("user").get("repository").get("pullRequests")
+        prs_res = res.get("data").get("user").get(
+            "repository").get("pullRequests")
         edges = prs_res.get("edges")
         n = len(edges)
         prs += [e.get("node") for e in edges]
@@ -139,10 +141,12 @@ def query_all_prs(login: str, repo: str) -> List[Dict]:
 
 if __name__ == "__main__":
     issues = query_all_issues("zekroTJA", "shinpuru")
-    issues = [i for i in issues if i.get("author") and i.get("author").get("login") != "zekroTJA"]
-    
+    issues = [i for i in issues if i.get("author") and i.get(
+        "author").get("login") != "zekroTJA"]
+
     prs = query_all_prs("zekroTJA", "shinpuru")
-    prs = [p for p in prs if p.get("merged") and p.get("author") and p.get("author").get("login") != "zekroTJA"]
+    prs = [p for p in prs if p.get("merged") and p.get(
+        "author") and p.get("author").get("login") != "zekroTJA"]
 
     bhs = {}
 
@@ -172,14 +176,13 @@ if __name__ == "__main__":
         issues = v.get_formatted_issues()
         prs = v.get_formatted_prs()
         points = v.points
-        
+
         data += "| [{}](https://github.com/{}) | {} | {} | `{}` |\n".format(
             k, k, ', '.join(issues), ', '.join(prs), points)
 
-
-    data += ("\n\n---\n*For explaination: A contributor gets `{}` point(s) for each " + \
+    data += ("\n\n---\n*For explaination: A contributor gets `{}` point(s) for each " +
              "created issue and `{}` point(s) for each **merged** pull request.").format(
-             POINTS_FOR_ISSUE, POINTS_FOR_PR)
+        POINTS_FOR_ISSUE, POINTS_FOR_PR)
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:
         f.write(data)
