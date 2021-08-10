@@ -29,6 +29,8 @@ res = \
     '<!-- insert:PUBLIC_PACKAGES -->\n' \
     '# Public Packages\n\n'
 for pkg in os.listdir(PKG_PATH):
+    if not path.isdir(path.join(PKG_PATH, pkg)):
+        continue
     print(f'Processing package {pkg} ...')
     desc = get_pkg_description(pkg).replace('\n', ' ')
     res += '- [**`{root}/{sub}/{pkg}`**]({sub}/{pkg})  \n  *{desc}*\n\n'.format_map({

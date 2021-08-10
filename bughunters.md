@@ -10,10 +10,10 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [ShowMeYourSkil](https://github.com/ShowMeYourSkil) | [#140](https://github.com/zekroTJA/shinpuru/issues/140), [#171](https://github.com/zekroTJA/shinpuru/issues/171), [#191](https://github.com/zekroTJA/shinpuru/issues/191), [#192](https://github.com/zekroTJA/shinpuru/issues/192), [#211](https://github.com/zekroTJA/shinpuru/issues/211), [#240](https://github.com/zekroTJA/shinpuru/issues/240) |  | `6` |
 | [Ron31](https://github.com/Ron31) | [#197](https://github.com/zekroTJA/shinpuru/issues/197), [#224](https://github.com/zekroTJA/shinpuru/issues/224) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#181](https://github.com/zekroTJA/shinpuru/pull/181) | `6` |
 | [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195), [#219](https://github.com/zekroTJA/shinpuru/issues/219), [#241](https://github.com/zekroTJA/shinpuru/issues/241) |  | `4` |
+| [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180), [#270](https://github.com/zekroTJA/shinpuru/issues/270) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `4` |
 | [Eli-Dev](https://github.com/Eli-Dev) | [#45](https://github.com/zekroTJA/shinpuru/issues/45), [#47](https://github.com/zekroTJA/shinpuru/issues/47), [#49](https://github.com/zekroTJA/shinpuru/issues/49) |  | `3` |
 | [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `3` |
 | [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
-| [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `3` |
 | [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `3` |
 | [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 | [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
@@ -26,6 +26,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
 | [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234) |  | `1` |
 | [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `1` |
+| [llPushkarSinghll](https://github.com/llPushkarSinghll) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
 
 
 ---
