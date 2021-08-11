@@ -2,6 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { APIService } from './api/api.service';
 import { LoadingBarService } from './components/header/loadingbar.service';
 import { ToastService } from './components/toast/toast.service';
 import LocalStorageUtil from './utils/localstorage';
@@ -16,7 +17,13 @@ export class AppComponent implements OnInit {
   title = 'shinpuru Web Interface';
   isSearch = false;
 
-  constructor(public toasts: ToastService, private router: Router) {}
+  private lockSearch = false;
+
+  constructor(
+    public toasts: ToastService,
+    private router: Router,
+    private api: APIService
+  ) {}
 
   ngOnInit() {
     const nlr = LocalStorageUtil.get<NextLoginRedirect>('NEXT_LOGIN_REDIRECT');
@@ -25,8 +32,15 @@ export class AppComponent implements OnInit {
       window.location.replace(nlr.destination);
     }
 
-    window.onkeydown = (e: KeyboardEvent) => {
+    window.onkeydown = async (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'f') {
+        if (
+          this.lockSearch ||
+          !(await this.api.getSelfUser().toPromise())?.id
+        ) {
+          this.lockSearch = true;
+          return;
+        }
         e.preventDefault();
         this.isSearch = true;
       }
