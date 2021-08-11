@@ -1,44 +1,40 @@
-1.21.0
+1.21.1
 
 ## Changes
 
-### Added Global Search
+### Configuration Update
 
-By pressing `CTRL + F` anywhere in the web interface, you can now bring up a global fuzzy search which will search through all accessable guilds and their members. You can even navigate in the search only by using the keyboard! 😉
+The `.database.redis` configuration has now been moved to `.cache.redis`, because the redis instance is also used for state caching and not only for database caching anymore. Also, `.database.redis` has now been marked as **deprecated and will be completely removed in upcoming patches**.
 
-![image](https://user-images.githubusercontent.com/16734205/128348276-8a81ebf3-21eb-4da6-bac0-88ec3ff4bf78.png)
+Also, a new settings key `.cache.cachedatabase` (type: `boolean`, default: `true`) has been added which enables or disables database request caching in Redis.
 
-
-### Public Guild API
-
-You can now enable a public API endpoint which exposes general information about your Guild via shinpuru's REST API.
-
-![image](https://user-images.githubusercontent.com/16734205/128348885-e1e2dffc-6629-40db-b184-4fac8ac94e03.png)
-
-The output of the endpoint will then look as following.
-
-![image](https://user-images.githubusercontent.com/16734205/128349603-ebaa5bbf-6917-44f8-b296-05b05bf5be9e.png)
-
-
-### Updated the Style of the Notifications
-
-The design of the notifications now fits in better with the general design language of the web app. Also the space around the notification box was adjusted to fit under the new header.
-
-<img src="https://user-images.githubusercontent.com/16734205/128346539-9dd58670-3b80-426a-9900-bd537e6be85c.png" height="400" />
-
-### Updated the Style of some Icons
-
-Also some of the used Icons did not fit in the new design anymore and have been adjusted. As an example, below you can see the old vs. the new drop down icon.
-
-<img src="https://user-images.githubusercontent.com/16734205/128347326-1138f5c1-6bac-4887-9b2a-915370343dca.png" width="300" />
-
+From [config/config.example.yaml](https://github.com/zekroTJA/shinpuru/blob/master/config/config.example.yaml)
+```yaml
+# Caching prefrences.
+cache:
+  # Redis connection configuration.
+  redis:
+    # Redis host address
+    addr: "localhost:6379"
+    # Redis password
+    password: "myredispassword"
+    # Database type
+    type: 0
+  # If enabled, most frequently used database
+  # requests are automatically cached in redis
+  # to minimize load on the database as well as
+  # request times.
+  # It is recomendet to leave this enabled. If
+  # you want to disable it for whatever reason,
+  # you can do it here.
+  cachedatabase: true
+```
 
 ## Bugfixes
 
-- **Vulnerability Fix**: OTA tokens now support scoping and scope validation so that they can only be used for the exact purpose they were originally issued for. [#264]
-- Added message reaction tracking to [dgrs](https://github.com/zekrotja/dgrs) to fix starboard functionality.
-- Starboard guild settings are now also properly saved to the database instead only to cache.
-- Fix the heading content of the invite blocking toggle notification.
+- In the guild settings page, the navbar now only shows the sections the current user actually has permission access to. [#268]
+- "Anonymous Reports" have now been renamed to "Ghost Reports" to prevent missunderstandings. Also added a feature explanation to the Ghost Report modal. [#270, #271]
+- The global search checks now for login status before being shown. [#273]
 
 # Docker
 
@@ -49,11 +45,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.21.0
+$ docker pull zekro/shinpuru:1.21.1
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.21.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.21.1
 ```
