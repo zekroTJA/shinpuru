@@ -48,5 +48,13 @@
         </div>
       </div>
     </div>
+    <i
+      *ngIf="
+        lastResult &&
+        lastResult.guilds.length === 0 &&
+        lastResult.members.length === 0
+      "
+      >No results found.</i
+    >
   </div>
 </div>

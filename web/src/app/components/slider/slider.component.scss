@@ -35,7 +35,7 @@ $bar-height: $nob-size + $bar-padding;
   height: $nob-size;
   border-radius: 100%;
   background-color: white;
-  @include transition25(all);
+  transition: all 0.25s ease;
 }
 
 .nobactive {

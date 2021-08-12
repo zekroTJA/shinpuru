@@ -21,16 +21,17 @@ permissions:
 
 database:
   type: mysql
-  # sqlite:
-  #   dbfile: shinpuru.sqlite3.db
   mysql:
     host: "<your db host>"
     user: "shinpuruDev"
     database: shinpuruDev
     password: "<your db user password>"
+
+cache:
   redis:
-    enable: false
     addr: "<your redis host>"
+    type: 0
+  cachedatabase: true
 
 storage:
   type: file

@@ -23,9 +23,6 @@ func InitDatabase(container di.Container) database.Database {
 	case "mysql", "mariadb":
 		db = new(mysql.MysqlMiddleware)
 		err = db.Connect(cfg.Database.MySql)
-	case "sqlite", "sqlite3":
-		logrus.Fatal("The SQLite driver is deprecated since v.1.18.0. " +
-			"Read this for more information: https://s.zekro.de/sqld")
 	}
 
 	if m, ok := db.(database.Migration); ok {
@@ -37,10 +34,12 @@ func InitDatabase(container di.Container) database.Database {
 		logrus.Warning("Skip database migration: middleware does not support migrations")
 	}
 
-	if cfg.Database.Redis != nil && cfg.Database.Redis.Enable {
+	if cfg.Cache.CacheDatabase {
 		rd := container.Get(static.DiRedis).(*goredis.Client)
 		db = redis.NewRedisMiddleware(db, rd)
 		logrus.Info("Enabled redis as database cache")
+	} else {
+		logrus.Warning("Database cache is disabled! You can enbale it in the config (.cache.cachedatabase).")
 	}
 
 	if err != nil {

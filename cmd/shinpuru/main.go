@@ -119,9 +119,9 @@ func main() {
 		Build: func(ctn di.Container) (interface{}, error) {
 			config := ctn.Get(static.DiConfig).(*config.Config)
 			return redis.NewClient(&redis.Options{
-				Addr:     config.Database.Redis.Addr,
-				Password: config.Database.Redis.Password,
-				DB:       config.Database.Redis.Type,
+				Addr:     config.Cache.Redis.Addr,
+				Password: config.Cache.Redis.Password,
+				DB:       config.Cache.Redis.Type,
 			}), nil
 		},
 	})

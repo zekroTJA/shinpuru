@@ -27,9 +27,14 @@
 
   <ng-template #modalAnonymousReport let-modal>
     <div class="modal-header">
-      <h4 class="modal-title">Anonymous Report</h4>
+      <h4 class="modal-title">Ghost Report</h4>
     </div>
     <div class="modal-body">
+      <p class="small mb-4">
+        A Ghost Report allows to report or ban a user which has broken the rules
+        and then quit the guild. Simply use the users ID to report or ban the
+        user afterwards.
+      </p>
       <h5 class="mb-2">VICTIM ID</h5>
       <input #repVictim type="text" class="w-100" placeholder="Victim ID" />
 
@@ -260,7 +265,7 @@
       <!-- MOD LOG -->
       <div class="dropdown-container mt-3">
         <app-spoiler [(ngModel)]="modlogToggle" class="w-100">
-          <div class="d-flex">
+          <div class="d-flex w-100">
             <h4 class="mx-3">Mod Log</h4>
             <p class="cbadge">
               {{
@@ -281,7 +286,7 @@
                 Unban Requests ({{ unbanReqeustsCount }} open)
               </button>
               <button *ngIf="modlogToggle" (click)="onAnonymousReport($event)">
-                Create Anonymous Report
+                Create Ghost Report
               </button>
             </div>
           </div>

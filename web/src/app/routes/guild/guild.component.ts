@@ -442,7 +442,7 @@ export class GuildComponent {
                   this.reports = [repRes].concat(this.reports);
                   this.toasts.push(
                     'Report created.',
-                    'Anonymous report created.',
+                    'Ghost report has been created.',
                     'success',
                     5000,
                     true
@@ -457,7 +457,7 @@ export class GuildComponent {
                   this.reports = [repRes].concat(this.reports);
                   this.toasts.push(
                     'User banned.',
-                    'User banned anonymously.',
+                    'User has been banned.',
                     'success',
                     5000,
                     true

@@ -58,11 +58,10 @@ database:
     password: "5up3rb4dp455w0rd"
     # Database name
     database: "shinpuru"
-  # Redis can be used as ADDITIONAL database layer and
-  # is not usable as database alone.
-  # If you enable Redis, database calls will be cached
-  # in memory to improve response times and reduce the
-  # load on your database.
+
+# Caching prefrences.
+cache:
+  # Redis connection configuration.
   redis:
     # Redis host address
     addr: "localhost:6379"
@@ -70,6 +69,14 @@ database:
     password: "myredispassword"
     # Database type
     type: 0
+  # If enabled, most frequently used database
+  # requests are automatically cached in redis
+  # to minimize load on the database as well as
+  # request times.
+  # It is recomendet to leave this enabled. If
+  # you want to disable it for whatever reason,
+  # you can do it here.
+  cachedatabase: true
 
 # Logging preferences
 logging:

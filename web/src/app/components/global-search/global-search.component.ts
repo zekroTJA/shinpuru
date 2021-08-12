@@ -31,6 +31,7 @@ export class GlobalSearchComponent implements OnInit {
       this.elements = this.elements
         .concat(this.lastResult.guilds)
         .concat(this.lastResult.members);
+      console.log(this.lastResult);
     });
     document.getElementById('searchbar').focus();
   }
