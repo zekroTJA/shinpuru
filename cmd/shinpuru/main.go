@@ -72,6 +72,7 @@ const (
 func main() {
 	// Parse command line flags
 	flag.Parse()
+	os.Args = flag.Args()
 
 	if !*flagQuiet {
 		startupmsg.Output(os.Stdout)
