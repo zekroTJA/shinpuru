@@ -9,10 +9,18 @@ import (
 
 var argsRx = regexp.MustCompile(`(?:[^\s"]+|"[^"]*")+`)
 
+// Parser takes an array of arguments and provides
+// functionalities to parse flags and values contained.
 type Parser struct {
 	args []string
 }
 
+// New initializes a new instance of Parser.
+//
+// It defaultly takes the value of os.Args[1:]
+// as array of arguments. Optionally, you can
+// pass a custom array of arguments you want
+// to scan.
 func New(args ...[]string) (p *Parser) {
 	p = &Parser{
 		args: os.Args[1:],
@@ -24,7 +32,21 @@ func New(args ...[]string) (p *Parser) {
 	return
 }
 
-func (p *Parser) Scan(param string, val interface{}) (ok bool, err error) {
+// Scan looks for the passed flag (unprefixed) in
+// the arguments array. If the flag was found, the
+// value of the flag is scanned into the pointer
+// of val. If the flag and value was found and valid,
+// true is returned. Otherwise, false is returned and
+// if an error occurs, the error is returned as well.
+//
+// Example:
+//   var config string
+//   p := argp.New([]string{"--config", "myconfig.yml"})
+//   ok, err := p.Scan("--config", &config)
+//   // config = "myconfig.yml"
+//   // ok     = true
+//   // err    = nil
+func (p *Parser) Scan(flag string, val interface{}) (ok bool, err error) {
 	var (
 		arg   string
 		sval  string
@@ -34,7 +56,7 @@ func (p *Parser) Scan(param string, val interface{}) (ok bool, err error) {
 	)
 
 	for i, arg = range p.args {
-		if strings.HasPrefix(arg, param) {
+		if strings.HasPrefix(arg, flag) {
 			found = true
 			break
 		}
@@ -43,11 +65,11 @@ func (p *Parser) Scan(param string, val interface{}) (ok bool, err error) {
 		return
 	}
 
-	if _, isBool := val.(*bool); isBool && len(arg) == len(param) {
+	if _, isBool := val.(*bool); isBool && len(arg) == len(flag) {
 		arg += "=true"
 	}
 
-	if len(arg) == len(param) {
+	if len(arg) == len(flag) {
 		if len(p.args) < i+2 {
 			return
 		}
@@ -75,8 +97,12 @@ func (p *Parser) Scan(param string, val interface{}) (ok bool, err error) {
 	return
 }
 
-func (p *Parser) String(param string, def ...string) (val string, err error) {
-	ok, err := p.Scan(param, &val)
+// String is shorthand for Scan with a string flag value.
+// It returns the scanned value and an error if the parsing
+// failed. If no flag or value was found and a def value was
+// passed, def is returned as val.
+func (p *Parser) String(flag string, def ...string) (val string, err error) {
+	ok, err := p.Scan(flag, &val)
 	if err != nil {
 		return
 	}
@@ -86,8 +112,13 @@ func (p *Parser) String(param string, def ...string) (val string, err error) {
 	return
 }
 
-func (p *Parser) Bool(param string, def ...bool) (val bool, err error) {
-	ok, err := p.Scan(param, &val)
+// Bool is shorthand for Scan with a bool flag value.
+// If the flag was passed (with or wirhout value specified),
+// true is returned. If the parsing fails, the error is
+// returned. When def is passed and no flag was found, def
+// is returned as val.
+func (p *Parser) Bool(flag string, def ...bool) (val bool, err error) {
+	ok, err := p.Scan(flag, &val)
 	if err != nil {
 		return
 	}
@@ -97,8 +128,12 @@ func (p *Parser) Bool(param string, def ...bool) (val bool, err error) {
 	return
 }
 
-func (p *Parser) Int(param string, def ...int) (val int, err error) {
-	ok, err := p.Scan(param, &val)
+// Int is shorthand for Scan with a integer flag value.
+// It returns the scanned value and an error if the parsing
+// failed. If no flag or value was found and a def value was
+// passed, def is returned as val.
+func (p *Parser) Int(flag string, def ...int) (val int, err error) {
+	ok, err := p.Scan(flag, &val)
 	if err != nil {
 		return
 	}
@@ -108,8 +143,12 @@ func (p *Parser) Int(param string, def ...int) (val int, err error) {
 	return
 }
 
-func (p *Parser) Float(param string, def ...float64) (val float64, err error) {
-	ok, err := p.Scan(param, &val)
+// Float is shorthand for Scan with a float flag value.
+// It returns the scanned value and an error if the parsing
+// failed. If no flag or value was found and a def value was
+// passed, def is returned as val.
+func (p *Parser) Float(flag string, def ...float64) (val float64, err error) {
+	ok, err := p.Scan(flag, &val)
 	if err != nil {
 		return
 	}
@@ -119,6 +158,15 @@ func (p *Parser) Float(param string, def ...float64) (val float64, err error) {
 	return
 }
 
+// Args returns all other un-scanned arguments of
+// the passed arguments array.
+//
+// Example:
+//   p := New([]string{"whats", "-n", "up"})
+//   val, err := p.Bool("-n")
+//   // val      = true
+//   // err      = nil
+//   // p.Args() = []string{"whats", "up"}
 func (p *Parser) Args() []string {
 	return p.args
 }

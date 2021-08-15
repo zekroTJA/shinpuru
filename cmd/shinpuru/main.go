@@ -59,10 +59,10 @@ const (
 
 func main() {
 	// Parse command line flags
-	flagConfig, _ := argp.Default.String("-c", "config.yml")
-	flagDevMode, _ := argp.Default.Bool("-devmode")
-	flagProfile, _ := argp.Default.String("-cpuprofile")
-	flagQuiet, _ := argp.Default.Bool("-quiet")
+	flagConfig, _ := argp.String("-c", "config.yml")
+	flagDevMode, _ := argp.Bool("-devmode")
+	flagProfile, _ := argp.String("-cpuprofile")
+	flagQuiet, _ := argp.Bool("-quiet")
 
 	if !flagQuiet {
 		startupmsg.Output(os.Stdout)
@@ -75,7 +75,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return config.NewPaerser(argp.Default.Args(), flagConfig), nil
+			return config.NewPaerser(argp.Args(), flagConfig), nil
 		},
 	})
 
