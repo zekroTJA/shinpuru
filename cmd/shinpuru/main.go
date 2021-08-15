@@ -63,6 +63,7 @@ func main() {
 	flagDevMode, _ := argp.Bool("-devmode")
 	flagProfile, _ := argp.String("-cpuprofile")
 	flagQuiet, _ := argp.Bool("-quiet")
+	_, _ = argp.Bool("-docker")
 
 	if !flagQuiet {
 		startupmsg.Output(os.Stdout)
