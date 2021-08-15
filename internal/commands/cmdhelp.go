@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sahilm/fuzzy"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -49,7 +49,7 @@ func (c *CmdHelp) IsExecutableInDMChannels() bool {
 
 func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	cmdhandler, _ := ctx.GetObject(static.DiCommandHandler).(shireikan.Handler)
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 
 	emb := &discordgo.MessageEmbed{
 		Color:  static.ColorEmbedDefault,
@@ -107,7 +107,7 @@ func (c *CmdHelp) Exec(ctx shireikan.Context) error {
 	return sendUserOrInChannel(ctx, emb)
 }
 
-func commandListEmbed(cmdInstances []shireikan.Command, cfg *config.Config, emb *discordgo.MessageEmbed) {
+func commandListEmbed(cmdInstances []shireikan.Command, cfg config.Provider, emb *discordgo.MessageEmbed) {
 	cmds := make(map[string][]shireikan.Command)
 	for _, c := range cmdInstances {
 		group := c.GetGroup()
@@ -118,8 +118,8 @@ func commandListEmbed(cmdInstances []shireikan.Command, cfg *config.Config, emb 
 	}
 
 	manualURL := static.CommandManualDocument
-	if cfg.WebServer != nil && cfg.WebServer.Enabled && cfg.WebServer.PublicAddr != "" {
-		manualURL = cfg.WebServer.PublicAddr + "/commands"
+	if cfg.Config().WebServer.Enabled && cfg.Config().WebServer.PublicAddr != "" {
+		manualURL = cfg.Config().WebServer.PublicAddr + "/commands"
 	}
 
 	emb.Title = "Command List"
@@ -139,10 +139,10 @@ func commandListEmbed(cmdInstances []shireikan.Command, cfg *config.Config, emb 
 	}
 }
 
-func commandEmbed(cmd shireikan.Command, cfg *config.Config, emb *discordgo.MessageEmbed) {
+func commandEmbed(cmd shireikan.Command, cfg config.Provider, emb *discordgo.MessageEmbed) {
 	manualURL := static.CommandManualDocument
-	if cfg.WebServer != nil && cfg.WebServer.Enabled && cfg.WebServer.PublicAddr != "" {
-		manualURL = cfg.WebServer.PublicAddr + "/commands"
+	if cfg.Config().WebServer.Enabled && cfg.Config().WebServer.PublicAddr != "" {
+		manualURL = cfg.Config().WebServer.PublicAddr + "/commands"
 	}
 
 	emb.Title = "Command Description"

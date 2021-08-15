@@ -8,8 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -26,7 +26,7 @@ var (
 type ReportService struct {
 	s   *discordgo.Session
 	db  database.Database
-	cfg *config.Config
+	cfg config.Provider
 	st  *dgrs.State
 }
 
@@ -39,7 +39,7 @@ func New(container di.Container) *ReportService {
 	return &ReportService{
 		s:   container.Get(static.DiDiscordSession).(*discordgo.Session),
 		db:  container.Get(static.DiDatabase).(database.Database),
-		cfg: container.Get(static.DiConfig).(*config.Config),
+		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(*dgrs.State),
 	}
 }
@@ -60,12 +60,12 @@ func (r *ReportService) PushReport(rep *models.Report) (*models.Report, error) {
 	}
 
 	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
-		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
+		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
 	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
 	if err == nil {
-		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.WebServer.PublicAddr))
+		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
 	return rep, nil

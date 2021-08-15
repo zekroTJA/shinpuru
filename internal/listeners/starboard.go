@@ -11,8 +11,8 @@ import (
 	"github.com/esimov/stackblur-go"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
@@ -42,19 +42,14 @@ type ListenerStarboard struct {
 }
 
 func NewListenerStarboard(container di.Container) *ListenerStarboard {
-	cfg := container.Get(static.DiConfig).(*config.Config)
-	var publicAddr string
-	if cfg.WebServer != nil {
-		publicAddr = cfg.WebServer.PublicAddr
-	}
-
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	return &ListenerStarboard{
 		db:         container.Get(static.DiDatabase).(database.Database),
 		gl:         container.Get(static.DiGuildLog).(guildlog.Logger).Section("starboard"),
 		st:         container.Get(static.DiObjectStorage).(storage.Storage),
 		karma:      container.Get(static.DiKarma).(*karma.Service),
 		state:      container.Get(static.DiState).(*dgrs.State),
-		publicAddr: publicAddr,
+		publicAddr: cfg.Config().WebServer.PublicAddr,
 	}
 }
 

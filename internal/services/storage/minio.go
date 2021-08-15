@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/minio/minio-go"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 )
 
 // Minio implements the Storage interface for
@@ -15,8 +15,8 @@ type Minio struct {
 	location string
 }
 
-func (m *Minio) Connect(cfg *config.Config) (err error) {
-	c := cfg.Storage.Minio
+func (m *Minio) Connect(cfg config.Provider) (err error) {
+	c := cfg.Config().Storage.Minio
 	m.client, err = minio.New(c.Endpoint, c.AccessKey, c.AccessSecret, c.Secure)
 	m.location = c.Location
 	return

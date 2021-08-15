@@ -4,8 +4,8 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
@@ -15,7 +15,7 @@ import (
 )
 
 func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
 	gb := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
 	tnw := container.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
@@ -26,11 +26,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "refresh token cleanup",
 		func() string {
-			spec := cfg.Defaults.Schedules.RefreshTokenCleanup
-			if cfg.Schedules != nil && cfg.Schedules.RefreshTokenCleanup != "" {
-				spec = cfg.Schedules.RefreshTokenCleanup
-			}
-			return spec
+			return cfg.Config().Schedules.RefreshTokenCleanup
 		},
 		func() {
 			n, err := db.CleanupExpiredRefreshTokens()
@@ -43,11 +39,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "guild backup",
 		func() string {
-			spec := cfg.Defaults.Schedules.GuildBackups
-			if cfg.Schedules != nil && cfg.Schedules.GuildBackups != "" {
-				spec = cfg.Schedules.GuildBackups
-			}
-			return spec
+			return cfg.Config().Schedules.GuildBackups
 		},
 		func() {
 			go gb.BackupAllGuilds()
@@ -65,11 +57,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "report expiration",
 		func() string {
-			spec := cfg.Defaults.Schedules.ReportsExpiration
-			if cfg.Schedules != nil && cfg.Schedules.ReportsExpiration != "" {
-				spec = cfg.Schedules.ReportsExpiration
-			}
-			return spec
+			return cfg.Config().Schedules.ReportsExpiration
 		},
 		func() {
 			rep.ExpireExpiredReports().ForEach(func(err error, _ int) {

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
@@ -58,9 +58,9 @@ func (c *CmdGame) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 	defPresence := &presence.Presence{
-		Game:   cfg.Discord.GeneralPrefix + "help | zekro.de",
+		Game:   cfg.Config().Discord.GeneralPrefix + "help | zekro.de",
 		Status: "online",
 	}
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -201,7 +201,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if victimIsMuted {
@@ -268,7 +268,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			"Failed creating report: ```\n"+err.Error()+"\n```").
 			Error()
 	} else {
-		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.Config().WebServer.PublicAddr))
 	}
 
 	return err

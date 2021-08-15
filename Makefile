@@ -1,4 +1,4 @@
-    
+
 ### NAMES AND LOCS ############################
 APPNAME      = shinpuru
 PACKAGE      = github.com/zekroTJA/shinpuru
@@ -57,7 +57,7 @@ PHONY = _make
 _make: deps build fe copyfe cleanup
 
 PHONY += build
-build: $(BIN) 
+build: $(BIN)
 
 PHONY += deps
 deps:
@@ -83,15 +83,15 @@ lint:
 	$(GOLINT) ./... | $(GREP) -v vendor || true
 
 $(TMPBIN):
-	$(GO) build -race -v -o $@ $(CURDIR)/cmd/$(APPNAME)/*.go 
+	$(GO) build -race -v -o $@ $(CURDIR)/cmd/$(APPNAME)/*.go
 
 PHONY += run
 run: $(TMPBIN)
-	$(TMPBIN) -c $(CONFIG) -quiet -forcecolor
+	$(TMPBIN) -c $(CONFIG) -quiet
 
 PHONY += rundev
 rundev: $(TMPBIN)
-	$(TMPBIN) -devmode -c $(CONFIG) -quiet -forcecolor
+	$(TMPBIN) -devmode -c $(CONFIG) -quiet
 
 PHONY += cleanup
 cleanup:

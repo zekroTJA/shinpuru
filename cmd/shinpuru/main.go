@@ -75,7 +75,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitConfig(flagConfig, ctn), nil
+			return config.NewPaerser(argp.Default.Args(), flagConfig), nil
 		},
 	})
 

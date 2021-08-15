@@ -4,9 +4,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
@@ -18,7 +18,7 @@ import (
 
 type GuildMembersController struct {
 	session    *discordgo.Session
-	cfg        *config.Config
+	cfg        config.Provider
 	db         database.Database
 	pmw        *middleware.PermissionsMiddleware
 	cmdHandler shireikan.Handler
@@ -27,7 +27,7 @@ type GuildMembersController struct {
 
 func (c *GuildMembersController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
@@ -133,7 +133,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 		mm.Dominance = 1
 	case guild.OwnerID == memberID:
 		mm.Dominance = 2
-	case c.cfg.Discord.OwnerID == memb.User.ID:
+	case c.cfg.Config().Discord.OwnerID == memb.User.ID:
 		mm.Dominance = 3
 	}
 
@@ -277,7 +277,7 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 	if reps != nil {
 		resReps = make([]*models.Report, len(reps))
 		for i, r := range reps {
-			resReps[i] = models.ReportFromReport(r, c.cfg.WebServer.PublicAddr)
+			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
 		}
 	}
 

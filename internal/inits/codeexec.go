@@ -5,19 +5,15 @@ import (
 
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 func InitCodeExec(container di.Container) codeexec.Factory {
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	if cfg.CodeExec == nil {
-		cfg.CodeExec = cfg.Defaults.CodeExec
-	}
-
-	switch strings.ToLower(cfg.CodeExec.Type) {
+	switch strings.ToLower(cfg.Config().CodeExec.Type) {
 
 	case "ranna":
 		exec, err := codeexec.NewRannaFactory(container)

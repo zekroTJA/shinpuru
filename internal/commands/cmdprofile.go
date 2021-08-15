@@ -7,8 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -122,13 +122,13 @@ func (c *CmdProfile) Exec(ctx shireikan.Context) error {
 		return err
 	}
 
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,
 		Title: fmt.Sprintf("Info about member %s#%s", member.User.Username, member.User.Discriminator),
 		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users profile in the web interface.",
-			cfg.WebServer.PublicAddr, ctx.GetGuild().ID, member.User.ID),
+			cfg.Config().WebServer.PublicAddr, ctx.GetGuild().ID, member.User.ID),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: member.User.AvatarURL(""),
 		},

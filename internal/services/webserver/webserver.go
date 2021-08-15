@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	mw "github.com/zekroTJA/shinpuru/internal/services/webserver/middleware"
 	v1 "github.com/zekroTJA/shinpuru/internal/services/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
@@ -24,7 +24,7 @@ import (
 // web server service.
 type WebServer struct {
 	app       *fiber.App
-	cfg       *config.Config
+	cfg       config.Provider
 	container di.Container
 }
 
@@ -33,7 +33,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 	ws = new(WebServer)
 
 	ws.container = container
-	ws.cfg = container.Get(static.DiConfig).(*config.Config)
+	ws.cfg = container.Get(static.DiConfig).(config.Provider)
 
 	ws.app = fiber.New(fiber.Config{
 		ErrorHandler:          ws.errorHandler,
@@ -44,7 +44,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 
 	if !embedded.IsRelease() {
 		ws.app.Use(cors.New(cors.Config{
-			AllowOrigins:     ws.cfg.WebServer.DebugPublicAddr,
+			AllowOrigins:     ws.cfg.Config().WebServer.DebugPublicAddr,
 			AllowHeaders:     "authorization, content-type, set-cookie, cookie, server",
 			AllowMethods:     "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS",
 			AllowCredentials: true,
@@ -53,10 +53,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 
 	ws.app.Use(mw.NewMetrics(), mw.Logger())
 
-	rlc := ws.cfg.WebServer.RateLimit
-	if rlc == nil {
-		rlc = ws.cfg.Defaults.WebServer.RateLimit
-	}
+	rlc := ws.cfg.Config().WebServer.RateLimit
 	rlh := limiter.New(limiter.Config{
 		Next: func(ctx *fiber.Ctx) bool {
 			return !rlc.Enabled
@@ -90,16 +87,16 @@ func New(container di.Container) (ws *WebServer, err error) {
 // ListenAndServeBlocking starts the HTTP listening
 // loop blocking the current go routine.
 func (ws *WebServer) ListenAndServeBlocking() error {
-	tls := ws.cfg.WebServer.TLS
+	tls := ws.cfg.Config().WebServer.TLS
 
-	if tls != nil && tls.Enabled {
+	if tls.Enabled {
 		if tls.Cert == "" || tls.Key == "" {
 			return errors.New("cert file and key file must be specified")
 		}
-		return ws.app.ListenTLS(ws.cfg.WebServer.Addr, tls.Cert, tls.Key)
+		return ws.app.ListenTLS(ws.cfg.Config().WebServer.Addr, tls.Cert, tls.Key)
 	}
 
-	return ws.app.Listen(ws.cfg.WebServer.Addr)
+	return ws.app.Listen(ws.cfg.Config().WebServer.Addr)
 }
 
 func (ws *WebServer) registerRouter(router Router, routes []string, middlewares ...fiber.Handler) {

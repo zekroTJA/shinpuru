@@ -8,8 +8,8 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/commands"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -21,16 +21,16 @@ import (
 
 func InitCommandHandler(container di.Container) shireikan.Handler {
 
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	config := container.Get(static.DiConfig).(*config.Config)
+	config := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
 	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
 	st := container.Get(static.DiState).(*dgrs.State)
 
 	cmdHandler := shireikan.New(&shireikan.Config{
-		GeneralPrefix:         config.Discord.GeneralPrefix,
+		GeneralPrefix:         config.Config().Discord.GeneralPrefix,
 		AllowBots:             false,
 		AllowDM:               true,
 		DeleteMessageAfter:    true,
@@ -50,7 +50,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 		State:           state.NewDgrs(st),
 	})
 
-	if c := cfg.Discord.GlobalCommandRateLimit; c != nil && c.Burst > 0 && c.LimitSeconds > 0 {
+	if c := cfg.Config().Discord.GlobalCommandRateLimit; c.Burst > 0 && c.LimitSeconds > 0 {
 		cmdHandler.RegisterMiddleware(
 			middleware.NewGlobalRateLimitMiddleware(c.Burst, time.Duration(c.LimitSeconds)*time.Second))
 	}
@@ -59,7 +59,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterMiddleware(gpim)
 	cmdHandler.RegisterMiddleware(&middleware.CommandStatsMiddleware{})
 
-	if cfg.Logging.CommandLogging {
+	if cfg.Config().Logging.CommandLogging {
 		cmdHandler.RegisterMiddleware(&middleware.LoggerMiddlewrae{})
 	}
 

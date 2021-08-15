@@ -89,3 +89,30 @@ func TestBool(t *testing.T) {
 		assert.NotNil(t, err)
 	}
 }
+
+func TestArgs(t *testing.T) {
+	{
+		args := []string{"-a", "abc", "-n", "heyho", "yo"}
+		p := New(args)
+		res, err := p.String("-n")
+		assert.Equal(t, "heyho", res)
+		assert.Nil(t, err)
+
+		rArgs := p.Args()
+		assert.Equal(t,
+			[]string{"-a", "abc", "yo"},
+			rArgs)
+	}
+	{
+		args := []string{"-a", "abc", "-n", "heyho", "yo"}
+		p := New(args)
+		res, err := p.Bool("-n")
+		assert.Equal(t, true, res)
+		assert.Nil(t, err)
+
+		rArgs := p.Args()
+		assert.Equal(t,
+			[]string{"-a", "abc", "heyho", "yo"},
+			rArgs)
+	}
+}

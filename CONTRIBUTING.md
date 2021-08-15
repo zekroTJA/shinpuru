@@ -102,7 +102,7 @@ When you want to use a service, just take it from the passed service conatiner b
 
 ```go
 func NewListenerStarboard(container di.Container) *ListenerStarboard {
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	var publicAddr string
 	if cfg.WebServer != nil {
 		publicAddr = cfg.WebServer.PublicAddr

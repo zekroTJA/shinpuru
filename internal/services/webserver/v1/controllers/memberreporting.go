@@ -6,9 +6,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -21,7 +21,7 @@ import (
 
 type MemberReportingController struct {
 	session *discordgo.Session
-	cfg     *config.Config
+	cfg     config.Provider
 	db      database.Database
 	st      storage.Storage
 	repSvc  *report.ReportService
@@ -30,7 +30,7 @@ type MemberReportingController struct {
 
 func (c *MemberReportingController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
@@ -103,7 +103,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Kick Report
@@ -167,7 +167,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Ban Report
@@ -238,7 +238,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Mute Report
@@ -310,7 +310,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Unmute A Member

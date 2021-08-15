@@ -6,7 +6,7 @@ import (
 	goredis "github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/services/database/redis"
@@ -17,12 +17,12 @@ func InitDatabase(container di.Container) database.Database {
 	var db database.Database
 	var err error
 
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	switch strings.ToLower(cfg.Database.Type) {
+	switch strings.ToLower(cfg.Config().Database.Type) {
 	case "mysql", "mariadb":
 		db = new(mysql.MysqlMiddleware)
-		err = db.Connect(cfg.Database.MySql)
+		err = db.Connect(cfg.Config().Database.MySql)
 	}
 
 	if m, ok := db.(database.Migration); ok {
@@ -34,7 +34,7 @@ func InitDatabase(container di.Container) database.Database {
 		logrus.Warning("Skip database migration: middleware does not support migrations")
 	}
 
-	if cfg.Cache.CacheDatabase {
+	if cfg.Config().Cache.CacheDatabase {
 		rd := container.Get(static.DiRedis).(*goredis.Client)
 		db = redis.NewRedisMiddleware(db, rd)
 		logrus.Info("Enabled redis as database cache")

@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -16,7 +16,7 @@ import (
 )
 
 type ListenerBotMention struct {
-	config *config.Config
+	config config.Provider
 	st     *dgrs.State
 
 	idLen int32
@@ -24,7 +24,7 @@ type ListenerBotMention struct {
 
 func NewListenerBotMention(container di.Container) *ListenerBotMention {
 	return &ListenerBotMention{
-		config: container.Get(static.DiConfig).(*config.Config),
+		config: container.Get(static.DiConfig).(config.Provider),
 		st:     container.Get(static.DiState).(*dgrs.State),
 		idLen:  0,
 	}
@@ -59,7 +59,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		return
 	}
 
-	prefix := l.config.Discord.GeneralPrefix
+	prefix := l.config.Config().Discord.GeneralPrefix
 	emb := embedbuilder.New().
 		WithColor(static.ColorEmbedDefault).
 		WithThumbnail(self.AvatarURL("64x64"), "", 64, 64).
@@ -71,11 +71,11 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 				"[**Here**](https://github.com/zekroTJA/shinpuru/wiki/commands) you can find "+
 				"the wiki page with a detailed list of available commands.", prefix, prefix))
 
-	if l.config.WebServer != nil && l.config.WebServer.Enabled {
+	if l.config.Config().WebServer.Enabled {
 		emb.AddField("Web Interface", fmt.Sprintf(
 			"[**Here**](%s) you can access the web interface.\n"+
 				"You can also use the `%slogin` command if you don't want to log in to the web interface via Discord.",
-			l.config.WebServer.PublicAddr, prefix))
+			l.config.Config().WebServer.PublicAddr, prefix))
 	}
 
 	emb.AddField("Repository", fmt.Sprintf(

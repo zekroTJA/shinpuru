@@ -6,7 +6,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -14,7 +13,6 @@ import (
 )
 
 type ListenerTwitchNotify struct {
-	config  *config.Config
 	db      database.Database
 	gl      guildlog.Logger
 	session *discordgo.Session
@@ -25,7 +23,6 @@ type ListenerTwitchNotify struct {
 
 func NewListenerTwitchNotify(container di.Container) *ListenerTwitchNotify {
 	return &ListenerTwitchNotify{
-		config:    container.Get(static.DiConfig).(*config.Config),
 		db:        container.Get(static.DiDatabase).(database.Database),
 		gl:        container.Get(static.DiGuildLog).(guildlog.Logger).Section("twitchnotify"),
 		session:   container.Get(static.DiDiscordSession).(*discordgo.Session),

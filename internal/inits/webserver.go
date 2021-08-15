@@ -3,7 +3,7 @@ package inits
 import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/mimefix"
@@ -11,9 +11,9 @@ import (
 
 func InitWebServer(container di.Container) (ws *webserver.WebServer) {
 
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	if cfg.WebServer != nil && cfg.WebServer.Enabled {
+	if cfg.Config().WebServer.Enabled {
 		curr, ok := mimefix.Check()
 		if !ok {
 			logrus.Infof("Mime check of .js returned invalid mime value '%s', trying to fix this now ...", curr)
@@ -36,8 +36,8 @@ func InitWebServer(container di.Container) (ws *webserver.WebServer) {
 			}
 		}()
 		logrus.WithFields(logrus.Fields{
-			"bindAddr":   cfg.WebServer.Addr,
-			"publicAddr": cfg.WebServer.PublicAddr,
+			"bindAddr":   cfg.Config().WebServer.Addr,
+			"publicAddr": cfg.Config().WebServer.PublicAddr,
 		}).Info("Web server running")
 	}
 	return

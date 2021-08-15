@@ -8,33 +8,25 @@ import (
 	ranna "github.com/ranna-go/ranna/pkg/client"
 	"github.com/ranna-go/ranna/pkg/models"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
 type RannaFactory struct {
-	cfg *config.CodeExecRanna
+	cfg *sharedmodels.CodeExecRanna
 }
 
 func NewRannaFactory(container di.Container) (e *RannaFactory, err error) {
 	e = &RannaFactory{}
 
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	if cfg.CodeExec.Ranna == nil {
-		err = errors.New("no ranna config provided")
-		return
-	}
-
-	e.cfg = cfg.CodeExec.Ranna
+	e.cfg = &cfg.Config().CodeExec.Ranna
 
 	if e.cfg.Endpoint == "" {
 		err = errors.New("no ranna endpoint provided")
 		return
-	}
-
-	if e.cfg.ApiVersion == "" {
-		e.cfg.ApiVersion = cfg.Defaults.CodeExec.Ranna.ApiVersion
 	}
 
 	if e.cfg.Token != "" && strings.Index(e.cfg.Token, " ") == -1 {

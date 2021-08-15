@@ -3,8 +3,8 @@ package inits
 import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
@@ -13,17 +13,17 @@ import (
 func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 
 	listener := container.Get(static.DiTwitchNotifyListener).(*listeners.ListenerTwitchNotify)
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
 
-	if cfg.TwitchApp == nil {
+	if cfg.Config().TwitchApp.ClientID == "" || cfg.Config().TwitchApp.ClientSecret == "" {
 		return nil
 	}
 
 	tnw, err := twitchnotify.New(
 		twitchnotify.Credentials{
-			ClientID:     cfg.TwitchApp.ClientID,
-			ClientSecret: cfg.TwitchApp.ClientSecret,
+			ClientID:     cfg.Config().TwitchApp.ClientID,
+			ClientSecret: cfg.Config().TwitchApp.ClientSecret,
 		},
 		listener.HandlerWentOnline,
 		listener.HandlerWentOffline,

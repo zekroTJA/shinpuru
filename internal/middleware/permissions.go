@@ -6,7 +6,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -24,7 +25,7 @@ import (
 // exposes functions to check permissions.
 type PermissionsMiddleware struct {
 	db  database.Database
-	cfg *config.Config
+	cfg config.Provider
 	st  *dgrs.State
 }
 
@@ -33,7 +34,7 @@ type PermissionsMiddleware struct {
 func NewPermissionMiddleware(container di.Container) *PermissionsMiddleware {
 	return &PermissionsMiddleware{
 		db:  container.Get(static.DiDatabase).(database.Database),
-		cfg: container.Get(static.DiConfig).(*config.Config),
+		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(*dgrs.State),
 	}
 }
@@ -46,7 +47,7 @@ func (m *PermissionsMiddleware) Handle(
 	}
 
 	if m.cfg == nil {
-		m.cfg, _ = ctx.GetObject(static.DiConfig).(*config.Config)
+		m.cfg, _ = ctx.GetObject(static.DiConfig).(config.Provider)
 	}
 
 	var guildID string
@@ -113,7 +114,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 		perm = make(permissions.PermissionArray, 0)
 	}
 
-	if m.cfg.Discord.OwnerID == userID {
+	if m.cfg.Config().Discord.OwnerID == userID {
 		perm = perm.Merge(permissions.PermissionArray{"+sp.*"}, false)
 		overrideExplicits = true
 	}
@@ -128,9 +129,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 
 		if userID == guild.OwnerID || (member != nil && discordutil.IsAdmin(guild, member)) {
 			var defAdminRoles []string
-			if m.cfg.Permissions != nil {
-				defAdminRoles = m.cfg.Permissions.DefaultAdminRules
-			}
+			defAdminRoles = m.cfg.Config().Permissions.DefaultAdminRules
 			if defAdminRoles == nil {
 				defAdminRoles = static.DefaultAdminRules
 			}
@@ -141,9 +140,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 	}
 
 	var defUserRoles []string
-	if m.cfg.Permissions != nil {
-		defUserRoles = m.cfg.Permissions.DefaultUserRules
-	}
+	defUserRoles = m.cfg.Config().Permissions.DefaultUserRules
 	if defUserRoles == nil {
 		defUserRoles = static.DefaultUserRules
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zekrotja/dgrs"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
@@ -19,20 +18,18 @@ import (
 )
 
 type ListenerReady struct {
-	config *config.Config
-	db     database.Database
-	gl     guildlog.Logger
-	lct    lctimer.LifeCycleTimer
-	st     *dgrs.State
+	db  database.Database
+	gl  guildlog.Logger
+	lct lctimer.LifeCycleTimer
+	st  *dgrs.State
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
 	return &ListenerReady{
-		config: container.Get(static.DiConfig).(*config.Config),
-		db:     container.Get(static.DiDatabase).(database.Database),
-		gl:     container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
-		lct:    container.Get(static.DiLifecycleTimer).(lctimer.LifeCycleTimer),
-		st:     container.Get(static.DiState).(*dgrs.State),
+		db:  container.Get(static.DiDatabase).(database.Database),
+		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
+		lct: container.Get(static.DiLifecycleTimer).(lctimer.LifeCycleTimer),
+		st:  container.Get(static.DiState).(*dgrs.State),
 	}
 }
 

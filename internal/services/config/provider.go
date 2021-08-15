@@ -1,7 +1,7 @@
 package config
 
 import (
-	oldconfig "github.com/zekroTJA/shinpuru/internal/config"
+	oldconfig "github.com/zekroTJA/shinpuru/internal/models"
 )
 
 type Provider interface {

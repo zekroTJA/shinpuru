@@ -3,7 +3,7 @@ package commands
 import (
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -44,14 +44,14 @@ func (c *CmdPrefix) IsExecutableInDMChannels() bool {
 
 func (c *CmdPrefix) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 
 	if len(ctx.GetArgs()) == 0 {
 		prefix, err := db.GetGuildPrefix(ctx.GetGuild().ID)
 		if !database.IsErrDatabaseNotFound(err) && err != nil {
 			return err
 		}
-		defPrefix := cfg.Discord.GeneralPrefix
+		defPrefix := cfg.Config().Discord.GeneralPrefix
 		if prefix == "" || prefix == defPrefix {
 			err = util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID,
 				"The current guild prefix is not set, so the default prefix of the bot must be used: ```\n"+defPrefix+"\n```",

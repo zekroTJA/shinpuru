@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -19,14 +19,14 @@ import (
 
 type UtilController struct {
 	session    *discordgo.Session
-	cfg        *config.Config
+	cfg        config.Provider
 	cmdHandler shireikan.Handler
 	st         *dgrs.State
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
@@ -45,13 +45,8 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 func (c *UtilController) getLandingPageInfo(ctx *fiber.Ctx) error {
 	res := new(models.LandingPageResponse)
 
-	publicInvites := true
-	localInvite := true
-
-	if c.cfg.WebServer.LandingPage != nil {
-		publicInvites = c.cfg.WebServer.LandingPage.ShowPublicInvites
-		localInvite = c.cfg.WebServer.LandingPage.ShowLocalInvite
-	}
+	publicInvites := c.cfg.Config().WebServer.LandingPage.ShowPublicInvites
+	localInvite := c.cfg.Config().WebServer.LandingPage.ShowLocalInvite
 
 	if publicInvites {
 		res.PublicCanaryInvite = static.PublicCanaryInvite
