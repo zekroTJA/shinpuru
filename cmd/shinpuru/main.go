@@ -1,12 +1,9 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"runtime/pprof"
-	"strings"
 	"syscall"
 	"time"
 
@@ -15,11 +12,11 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
@@ -74,23 +71,6 @@ func main() {
 	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
 
-	// Setup config parser
-	diBuilder.Add(di.Def{
-		Name: static.DiConfigParser,
-		Build: func(ctn di.Container) (p interface{}, err error) {
-			ext := strings.ToLower(filepath.Ext(flagConfig))
-			switch ext {
-			case ".yml", ".yaml":
-				p = new(config.YAMLConfigParser)
-			case ".json":
-				p = new(config.JSONConfigParser)
-			default:
-				err = errors.New("unsupported configuration file")
-			}
-			return
-		},
-	})
-
 	// Initialize config
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
@@ -111,11 +91,11 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiRedis,
 		Build: func(ctn di.Container) (interface{}, error) {
-			config := ctn.Get(static.DiConfig).(*config.Config)
+			cfg := ctn.Get(static.DiConfig).(config.Provider)
 			return redis.NewClient(&redis.Options{
-				Addr:     config.Cache.Redis.Addr,
-				Password: config.Cache.Redis.Password,
-				DB:       config.Cache.Redis.Type,
+				Addr:     cfg.Config().Cache.Redis.Addr,
+				Password: cfg.Config().Cache.Redis.Password,
+				DB:       cfg.Config().Cache.Redis.Type,
 			}), nil
 		},
 	})
@@ -335,8 +315,11 @@ func main() {
 	ctn := diBuilder.Build()
 
 	// Setting log level from config
-	cfg := ctn.Get(static.DiConfig).(*config.Config)
-	logrus.SetLevel(logrus.Level(cfg.Logging.LogLevel))
+	cfg := ctn.Get(static.DiConfig).(config.Provider)
+	if err := cfg.Parse(); err != nil {
+		logrus.WithError(err).Fatal("Failed to parse config")
+	}
+	logrus.SetLevel(logrus.Level(cfg.Config().Logging.LogLevel))
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
