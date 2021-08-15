@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/traefik/paerser/env"
 	"github.com/traefik/paerser/file"
 	"github.com/traefik/paerser/flag"
@@ -45,18 +44,12 @@ func (p *Paerser) Parse() (err error) {
 	}
 
 	args := os.Args[1:]
-	if len(p.args) > 0 {
+	if p.args != nil {
 		args = p.args
 	}
 	if err = flag.Decode(args, &cfg); err != nil {
 		return
 	}
-
-	spew.Config = spew.ConfigState{
-		Indent:                  "\t",
-		DisablePointerAddresses: true,
-	}
-	spew.Dump(cfg.Discord)
 
 	p.cfg = &cfg
 

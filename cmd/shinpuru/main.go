@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -31,20 +30,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/argp"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
 	"github.com/zekroTJA/shireikan"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
-)
-
-var (
-	flagConfig     = flag.String("c", "config.yml", "The location of the main config file")
-	flagDocker     = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
-	flagDevMode    = flag.Bool("devmode", false, "start in development mode")
-	flagForceColor = flag.Bool("forcecolor", false, "force log color")
-	flagProfile    = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
-	flagQuiet      = flag.Bool("quiet", false, "Dont print startup message")
 )
 
 const (
@@ -71,10 +62,12 @@ const (
 
 func main() {
 	// Parse command line flags
-	flag.Parse()
-	os.Args = flag.Args()
+	flagConfig, _ := argp.Default.String("-c", "config.yml")
+	flagDevMode, _ := argp.Default.Bool("-devmode")
+	flagProfile, _ := argp.Default.String("-cpuprofile")
+	flagQuiet, _ := argp.Default.Bool("-quiet")
 
-	if !*flagQuiet {
+	if !flagQuiet {
 		startupmsg.Output(os.Stdout)
 	}
 
@@ -85,7 +78,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiConfigParser,
 		Build: func(ctn di.Container) (p interface{}, err error) {
-			ext := strings.ToLower(filepath.Ext(*flagConfig))
+			ext := strings.ToLower(filepath.Ext(flagConfig))
 			switch ext {
 			case ".yml", ".yaml":
 				p = new(config.YAMLConfigParser)
@@ -102,7 +95,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitConfig(*flagConfig, ctn), nil
+			return inits.InitConfig(flagConfig, ctn), nil
 		},
 	})
 
@@ -353,11 +346,11 @@ func main() {
 	// Initial log output
 	logrus.Info("Starting up...")
 
-	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
+	if profLoc := util.GetEnv(envKeyProfile, flagProfile); profLoc != "" {
 		setupProfiler(profLoc)
 	}
 
-	if *flagDevMode {
+	if flagDevMode {
 		setupDevMode()
 	}
 

@@ -43,7 +43,7 @@ require (
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	github.com/traefik/paerser v0.1.4 // indirect
+	github.com/traefik/paerser v0.1.4
 	github.com/valyala/fasthttp v1.26.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
