@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"runtime/pprof"
@@ -59,11 +60,16 @@ const (
 
 func main() {
 	// Parse command line flags
-	flagConfig, _ := argp.String("-c", "config.yml")
-	flagDevMode, _ := argp.Bool("-devmode")
-	flagProfile, _ := argp.String("-cpuprofile")
-	flagQuiet, _ := argp.Bool("-quiet")
-	_, _ = argp.Bool("-docker")
+	flagConfig, _ := argp.String("-c", "config.yml", "Optional config file location.")
+	flagDevMode, _ := argp.Bool("-devmode", false, "Enable development mode.")
+	flagProfile, _ := argp.String("-cpuprofile", "", "CPU profile output location.")
+	flagQuiet, _ := argp.Bool("-quiet", false, "Hide startup message.")
+	_, _ = argp.Bool("-docker", false, "Docker mode (deprecated)")
+
+	if flagHelp, _ := argp.Bool("-h", false, "Display help."); flagHelp {
+		fmt.Println("Usage:\n" + argp.Help())
+		return
+	}
 
 	if !flagQuiet {
 		startupmsg.Output(os.Stdout)

@@ -113,7 +113,7 @@ type CacheRedis struct {
 	Addr     string `json:"addr"`
 	Password string `json:"password"`
 	Type     int    `json:"type"`
-	// Deprecated, just gere for downwards compatibility
+	// Deprecated. Just here for downwards compatibility.
 	Enable bool `json:"enable"`
 }
 

@@ -12,4 +12,5 @@ var (
 	Int    = singleton.Int
 	Float  = singleton.Float
 	Args   = singleton.Args
+	Help   = singleton.Help
 )
