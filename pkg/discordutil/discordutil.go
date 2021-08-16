@@ -70,3 +70,10 @@ func DeleteMessageLater(s *discordgo.Session, msg *discordgo.Message, duration t
 func IsCanNotOpenDmToUserError(err error) bool {
 	return err != nil && strings.Contains(err.Error(), `"Cannot send messages to this user"`)
 }
+
+// IsErrCode returns true when the given error is a discordgo
+// RESTError with the given code.
+func IsErrCode(err error, code int) bool {
+	apiErr, ok := err.(*discordgo.RESTError)
+	return ok && apiErr.Message.Code == code
+}
