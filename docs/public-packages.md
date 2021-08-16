@@ -7,6 +7,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/argp`**](pkg/argp)  
+  *Package argp is a stupid simple flag (argument) parser which allows to parse flags without panicing when non-registered flags are passed.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
   *Package boolutil provides simple utility functions around booleans.*
 
