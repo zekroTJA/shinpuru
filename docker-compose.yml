@@ -73,22 +73,26 @@ services:
       # Cache
       SP_CACHE_REDIS_ADDR: redis:6379
       SP_CACHE_REDIS_TYPE: 0
-      SP_CACHE_CACHEDATABASE: true
+      SP_CACHE_CACHEDATABASE: 1
       # Storage
       SP_STORAGE_TYPE: minio
       SP_STORAGE_MINIO_ENDPOINT: minio:9000
       SP_STORAGE_MINIO_ACCESSKEY: minio_access_key
       SP_STORAGE_MINIO_ACCESSSECRET: minio_secret_key
       SP_STORAGE_MINIO_LOCATION: us-east-1
-      SP_STORAGE_MINIO_SECURE: false
+      SP_STORAGE_MINIO_SECURE: 0
       # Logging
-      SP_LOGGING_COMMANDLOGGING: true
+      SP_LOGGING_COMMANDLOGGING: 1
       SP_LOGGING_LOGLEVEL: 4
       # Webserver
-      SP_WEBSERVER_ENABLED: true
+      SP_WEBSERVER_ENABLED: 1
       SP_WEBSERVER_ADDR: 0.0.0.0:8080
       SP_WEBSERVER_PUBLICADDR: https://example.com
     restart: always
+    depends_on:
+      - mysql
+      - redis
+      - minio
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.shinpuru.entrypoints=https'
