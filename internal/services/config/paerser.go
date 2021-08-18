@@ -39,7 +39,7 @@ func (p *Paerser) Parse() (err error) {
 		return
 	}
 
-	if err = env.Decode(os.Environ(), "SNP_", &cfg); err != nil {
+	if err = env.Decode(os.Environ(), "SP_", &cfg); err != nil {
 		return
 	}
 
