@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -262,7 +263,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 				Value: "MANUAL UNMUTE",
 			},
 		},
-		Timestamp: time.Unix(repID.Time()/1000, 0).Format("2006-01-02T15:04:05.000Z"),
+		Timestamp: time.Unix(repID.Time()/1000, 0).Format(timeutil.ISO8601),
 	}
 
 	if modlogChan, err := r.db.GetGuildModLog(guildID); err == nil {
