@@ -1,40 +1,62 @@
-1.21.1
+1.22.0
 
 ## Changes
 
-### Configuration Update
+### New Config Handling [#274]
 
-The `.database.redis` configuration has now been moved to `.cache.redis`, because the redis instance is also used for state caching and not only for database caching anymore. Also, `.database.redis` has now been marked as **deprecated and will be completely removed in upcoming patches**.
+shinpuru now uses [traefik/paerser](https://github.com/traefik/paerser) to parse the configuration from multiple sources at the same time. These are the available configuration sources, sorted by priority.
 
-Also, a new settings key `.cache.cachedatabase` (type: `boolean`, default: `true`) has been added which enables or disables database request caching in Redis.
+1. **Command Flags**  
+   Configuration values passed via command flags. Example:
+   ```
+   ./shinpuru \
+       --discord.token "..." \
+       --discord.generalprefix "!"
+   ```
 
-From [config/config.example.yaml](https://github.com/zekroTJA/shinpuru/blob/master/config/config.example.yaml)
-```yaml
-# Caching prefrences.
-cache:
-  # Redis connection configuration.
-  redis:
-    # Redis host address
-    addr: "localhost:6379"
-    # Redis password
-    password: "myredispassword"
-    # Database type
-    type: 0
-  # If enabled, most frequently used database
-  # requests are automatically cached in redis
-  # to minimize load on the database as well as
-  # request times.
-  # It is recomendet to leave this enabled. If
-  # you want to disable it for whatever reason,
-  # you can do it here.
-  cachedatabase: true
+2. **Environment Variables**  
+   Configuration values passed via environment variables prefixed with `SP_`. This is especially useful when hosted via Docker. Example:
+   ```
+   SP_DISCORD_TOKEN="..."
+   SP_DISCORD_GENERALPREFIX="!"
+   ```
+
+3. **Config File**  
+   You can still pass configuration as usual via configuration file. Defaultly, the config is read from `./config.yml`, but you can pass another file location via the `-c` flag. You can also use other configuration formats like JSON or TOML. Example:
+   ```
+   ./shinpuru -c config/config.yml
+   ```
+   > config/config.yml
+   ```yml
+   discord:
+     token: "..."
+     generalprefix: "!"
+   ```
+
+You can combine all configuration sources listed above. Higher priorized configuration sources will overwrite values from less priorized sources.
+
+### Embed Builder
+
+You can now send and edit embed messages in guild channels using the `POST /api/v1/channels/{id}` and `POST /api/v1/channels/{id}/{messageid}` endpoints.
+
+> This endpoint requires the `sp.chat.say` permission.
+
+Here you can find the documentation:
+https://github.com/zekroTJA/shinpuru/blob/master/docs/restapi/v1/restapi.md#channelsid
+
+There is also an embed builder using these endpoints. But because this is still kind of beta, you can currently only access it directly via the following route in the web interface.
+
 ```
+/guilds/{guildid}/utils/embeds
+```
+
+![](https://i.imgur.com/T9qEiyU.png)
 
 ## Bugfixes
 
-- In the guild settings page, the navbar now only shows the sections the current user actually has permission access to. [#268]
-- "Anonymous Reports" have now been renamed to "Ghost Reports" to prevent missunderstandings. Also added a feature explanation to the Ghost Report modal. [#270, #271]
-- The global search checks now for login status before being shown. [#273]
+- Fix report time representations. [#276]
+- Fix report unmute reason propagation. [#277]
+- Fix proper timezone handling on report expiration definition.
 
 # Docker
 
@@ -45,11 +67,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.21.1
+$ docker pull zekro/shinpuru:1.22.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.21.1
+$ docker pull ghcr.io/zekrotja/shinpuru:1.22.0
 ```
