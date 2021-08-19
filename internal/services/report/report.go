@@ -240,6 +240,10 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 	repType := stringutil.IndexOf("MUTE", models.ReportTypes)
 	repID := snowflakenodes.NodesReport[repType].Generate()
 
+	if reason == "" {
+		reason = "MANUAL UNMUTE"
+	}
+
 	emb = &discordgo.MessageEmbed{
 		Title: "Case " + repID.String(),
 		Color: models.ReportColors[repType],
@@ -260,7 +264,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 			},
 			{
 				Name:  "Description",
-				Value: "MANUAL UNMUTE",
+				Value: reason,
 			},
 		},
 		Timestamp: time.Unix(repID.Time()/1000, 0).Format(timeutil.ISO8601),
