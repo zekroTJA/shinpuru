@@ -38,3 +38,25 @@ func GetRandByteArray(len int) (data []byte, err error) {
 
 	return
 }
+
+// MustGetRandBase64Str executes GetRandBase64Str and
+// panics if an error was returned.
+func MustGetRandBase64Str(len int) string {
+	v, err := GetRandBase64Str(len)
+	if err != nil {
+		panic(err)
+	}
+
+	return v
+}
+
+// MustGetRandByteArray executes GetRandByteArray and
+// panics if an error was returned.
+func MustGetRandByteArray(len int) []byte {
+	v, err := GetRandByteArray(len)
+	if err != nil {
+		panic(err)
+	}
+
+	return v
+}

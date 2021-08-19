@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -57,7 +57,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
-	cfg := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg := ctx.GetObject(static.DiConfig).(config.Provider)
 	ota := ctx.GetObject(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 	db := ctx.GetObject(static.DiDatabase).(database.Database)
 
@@ -67,7 +67,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 	}
 
 	if !enabled {
-		enableLink := fmt.Sprintf("%s/usersettings", cfg.WebServer.PublicAddr)
+		enableLink := fmt.Sprintf("%s/usersettings", cfg.Config().WebServer.PublicAddr)
 		err = util.SendEmbedError(ctx.GetSession(), ch.ID,
 			"One Time Authorization is disabled by default. If you want to use it, you need "+
 				"to enable it first in your [**user settings page**]("+enableLink+").").Error()
@@ -79,7 +79,7 @@ func (c *CmdLogin) Exec(ctx shireikan.Context) (err error) {
 		return
 	}
 
-	link := fmt.Sprintf("%s/api/ota?token=%s", cfg.WebServer.PublicAddr, token)
+	link := fmt.Sprintf("%s/api/ota?token=%s", cfg.Config().WebServer.PublicAddr, token)
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Description: "Click this [**this link**](" + link + ") and you will be automatically logged " +

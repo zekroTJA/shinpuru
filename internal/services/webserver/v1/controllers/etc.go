@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -21,14 +21,14 @@ import (
 
 type EtcController struct {
 	session *discordgo.Session
-	cfg     *config.Config
+	cfg     config.Provider
 	authMw  auth.Middleware
 	st      *dgrs.State
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
@@ -57,7 +57,7 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 		User:      user,
 		AvatarURL: user.AvatarURL(""),
 		CreatedAt: created,
-		BotOwner:  uid == c.cfg.Discord.OwnerID,
+		BotOwner:  uid == c.cfg.Config().Discord.OwnerID,
 	}
 
 	return ctx.JSON(res)

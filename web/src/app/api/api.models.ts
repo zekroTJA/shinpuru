@@ -44,12 +44,26 @@ export interface Member {
   chat_muted: boolean;
 }
 
+export enum ChannelType {
+  GUILD_TEXT = 0,
+  DM = 1,
+  GUILD_VOICE = 2,
+  GROUP_DM = 3,
+  GUILD_CATEGORY = 4,
+  GUILD_NEWS = 5,
+  GUILD_STORE = 6,
+  GUILD_NEWS_THREAD = 10,
+  GUILD_PUBLIC_THREAD = 11,
+  GUILD_PRIVATE_THREAD = 12,
+  GUILD_STAGE_VOICE = 13,
+}
+
 export interface Channel {
   id: string;
   guild_id: string;
   name: string;
   topic: string;
-  type: number;
+  type: ChannelType;
   nsfw: boolean;
   position: number;
   user_limit: number;
@@ -300,4 +314,41 @@ export interface GuildSettingsApi {
   token: string;
   reset_token: boolean;
   protected: boolean;
+}
+
+export interface MessageEmbedField {
+  inline: boolean;
+  name: string;
+  value: string;
+}
+
+export interface MessageEmbedFooter {
+  icon_url: string;
+  proxy_icon_url: string;
+  text: string;
+}
+
+export interface MessageEmbedImage {
+  url: string;
+  proxy_url: string;
+  width: number;
+  height: number;
+}
+
+export interface MessageEmbedThumbnail extends MessageEmbedImage {}
+
+export interface MessageEmbedVideo extends MessageEmbedImage {}
+
+export interface MessageEmbed {
+  color: number;
+  title: string;
+  url: string;
+  description: string;
+  fields: MessageEmbedField[];
+  footer: MessageEmbedFooter;
+  image: MessageEmbedImage;
+  thumbnail: MessageEmbedThumbnail;
+  video: MessageEmbedVideo;
+
+  color_hex: string;
 }

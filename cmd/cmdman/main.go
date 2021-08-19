@@ -13,9 +13,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -40,6 +41,20 @@ var (
 //
 //////////////////////////////////////////////////////////////////////
 
+type DummyConfigProvider struct {
+	cfg models.Config
+}
+
+var _ config.Provider = (*DummyConfigProvider)(nil)
+
+func (cp *DummyConfigProvider) Parse() error {
+	return nil
+}
+
+func (cp *DummyConfigProvider) Config() *models.Config {
+	return &cp.cfg
+}
+
 func main() {
 	flag.Parse()
 
@@ -50,10 +65,7 @@ func main() {
 
 	diBuilder, _ := di.NewBuilder()
 
-	config := &config.Config{
-		Discord: &config.Discord{},
-		Logging: &config.Logging{},
-	}
+	config := &DummyConfigProvider{}
 	diBuilder.Set(static.DiConfig, config)
 
 	s, _ := discordgo.New()

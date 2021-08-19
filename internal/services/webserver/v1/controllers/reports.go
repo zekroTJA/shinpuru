@@ -5,8 +5,8 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
@@ -15,14 +15,14 @@ import (
 
 type ReportsController struct {
 	session *discordgo.Session
-	cfg     *config.Config
+	cfg     config.Provider
 	db      database.Database
 	repSvc  *report.ReportService
 }
 
 func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
 
@@ -59,7 +59,7 @@ func (c *ReportsController) getReport(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Revoke Report
@@ -101,7 +101,7 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 		rep,
 		uid,
 		reason.Reason,
-		c.cfg.WebServer.Addr,
+		c.cfg.Config().WebServer.Addr,
 		c.db,
 		c.session)
 

@@ -8,9 +8,9 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -31,9 +31,9 @@ func InitDiscordBotSession(container di.Container) {
 	}
 
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	session.Token = "Bot " + cfg.Discord.Token
+	session.Token = "Bot " + cfg.Config().Discord.Token
 	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 	session.StateEnabled = false
@@ -79,7 +79,7 @@ func InitDiscordBotSession(container di.Container) {
 		atomic.AddUint64(&util.StatsMessagesAnalysed, 1)
 	})
 
-	if cfg.Metrics != nil && cfg.Metrics.Enable {
+	if cfg.Config().Metrics.Enable {
 		session.AddHandler(listeners.NewListenerMetrics().Listener)
 	}
 

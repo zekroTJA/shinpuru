@@ -47,3 +47,17 @@ export function rolePosDiff(roles: Role[], m1: Member, m2: Member): number {
 
   return rm1.position - rm2.position;
 }
+
+export function padNumber(n: number, minLen: number, padChar = '0'): string {
+  const neg = n < 0;
+  const nStr = Math.abs(n).toString();
+  const diff = minLen - nStr.length;
+  if (diff <= 0) {
+    return nStr;
+  }
+  return (neg ? '-' : '') + padChar.repeat(diff) + nStr;
+}
+
+export function prefixNumner(n: number): string {
+  return (n < 0 ? '-' : '+') + n.toString();
+}

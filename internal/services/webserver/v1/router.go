@@ -65,6 +65,9 @@ func (r *Router) SetContainer(container di.Container) {
 // @Tag.Name Members
 // @tag.Description Members specific endpoints.
 //
+// @Tag.Name Channels
+// @tag.Description Channels specific endpoints.
+//
 // @BasePath /api/v1
 func (r *Router) Route(router fiber.Router) {
 	authMw := r.container.Get(static.DiAuthMiddleware).(auth.Middleware)
@@ -91,4 +94,5 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.UsersettingsController).Setup(r.container, router.Group("/usersettings"))
 	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid"))
 	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid"))
+	new(controllers.ChannelController).Setup(r.container, router.Group("/channels"))
 }

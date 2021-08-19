@@ -8,6 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/pkg/hammertime"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 )
 
 type Type int
@@ -102,7 +104,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 				Value: r.Msg,
 			},
 		},
-		Timestamp: r.GetTimestamp().Format("2006-01-02T15:04:05.000Z"),
+		Timestamp: r.GetTimestamp().Format(timeutil.ISO8601),
 		Image: &discordgo.MessageEmbedImage{
 			URL: imgstore.GetLink(r.AttachmehtURL, publicAddr),
 		},
@@ -111,7 +113,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 	if r.Timeout != nil {
 		emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 			Name:  "Expires",
-			Value: r.Timeout.Format("2006-01-02T15:04:05.000Z"),
+			Value: hammertime.Format(*r.Timeout, hammertime.Span),
 		})
 	}
 

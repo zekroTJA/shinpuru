@@ -36,6 +36,7 @@ import {
   State,
   SearchResult,
   GuildSettingsApi,
+  MessageEmbed,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -199,6 +200,9 @@ export class APIService {
 
   private readonly rcUnbanRequests = (rc: string = '') =>
     `${this.rcAPI('unbanrequests')}${rc ? '/' + rc : ''}`;
+
+  private readonly rcChannels = (chanId: string, msgId: string = '') =>
+    `${this.rcAPI('channels')}/${chanId}${msgId ? '/' + msgId : ''}`;
 
   private readonly errorCatcher = (err) => {
     if (err instanceof TypeError) {
@@ -949,6 +953,22 @@ export class APIService {
   ): Observable<GuildSettingsApi> {
     return this.http
       .post(this.rcGuildSettingsApi(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postChannels(chanID: string, embed: MessageEmbed): Observable<any> {
+    return this.http
+      .post(this.rcChannels(chanID), embed, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postChannelsMessage(
+    chanID: string,
+    msgID: string,
+    embed: MessageEmbed
+  ): Observable<any> {
+    return this.http
+      .post(this.rcChannels(chanID, msgID), embed, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

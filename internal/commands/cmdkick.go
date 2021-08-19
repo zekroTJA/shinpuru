@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -93,7 +93,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		}
 	}
 
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	rep := &models.Report{
@@ -104,7 +104,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		AttachmehtURL: attachment,
 	}
 
-	emb := rep.AsEmbed(cfg.WebServer.PublicAddr)
+	emb := rep.AsEmbed(cfg.Config().WebServer.PublicAddr)
 	emb.Title = "Report Check"
 	emb.Description = "Is everything okay so far?"
 
@@ -120,7 +120,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 				return
 			}
 
-			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.Config().WebServer.PublicAddr))
 			return
 		},
 	}

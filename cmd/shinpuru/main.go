@@ -1,13 +1,10 @@
 package main
 
 import (
-	"errors"
-	"flag"
+	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"runtime/pprof"
-	"strings"
 	"syscall"
 	"time"
 
@@ -16,11 +13,11 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
@@ -31,20 +28,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/argp"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
 	"github.com/zekroTJA/shireikan"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
-)
-
-var (
-	flagConfig     = flag.String("c", "config.yml", "The location of the main config file")
-	flagDocker     = flag.Bool("docker", false, "wether shinpuru is running in a docker container or not")
-	flagDevMode    = flag.Bool("devmode", false, "start in development mode")
-	flagForceColor = flag.Bool("forcecolor", false, "force log color")
-	flagProfile    = flag.String("cpuprofile", "", "Records a CPU profile to the desired location")
-	flagQuiet      = flag.Bool("quiet", false, "Dont print startup message")
 )
 
 const (
@@ -71,37 +60,29 @@ const (
 
 func main() {
 	// Parse command line flags
-	flag.Parse()
+	flagConfig, _ := argp.String("-c", "config.yml", "Optional config file location.")
+	flagDevMode, _ := argp.Bool("-devmode", false, "Enable development mode.")
+	flagProfile, _ := argp.String("-cpuprofile", "", "CPU profile output location.")
+	flagQuiet, _ := argp.Bool("-quiet", false, "Hide startup message.")
+	_, _ = argp.Bool("-docker", false, "Docker mode (deprecated)")
 
-	if !*flagQuiet {
+	if flagHelp, _ := argp.Bool("-h", false, "Display help."); flagHelp {
+		fmt.Println("Usage:\n" + argp.Help())
+		return
+	}
+
+	if !flagQuiet {
 		startupmsg.Output(os.Stdout)
 	}
 
 	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
 
-	// Setup config parser
-	diBuilder.Add(di.Def{
-		Name: static.DiConfigParser,
-		Build: func(ctn di.Container) (p interface{}, err error) {
-			ext := strings.ToLower(filepath.Ext(*flagConfig))
-			switch ext {
-			case ".yml", ".yaml":
-				p = new(config.YAMLConfigParser)
-			case ".json":
-				p = new(config.JSONConfigParser)
-			default:
-				err = errors.New("unsupported configuration file")
-			}
-			return
-		},
-	})
-
 	// Initialize config
 	diBuilder.Add(di.Def{
 		Name: static.DiConfig,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitConfig(*flagConfig, ctn), nil
+			return config.NewPaerser(argp.Args(), flagConfig), nil
 		},
 	})
 
@@ -117,11 +98,11 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiRedis,
 		Build: func(ctn di.Container) (interface{}, error) {
-			config := ctn.Get(static.DiConfig).(*config.Config)
+			cfg := ctn.Get(static.DiConfig).(config.Provider)
 			return redis.NewClient(&redis.Options{
-				Addr:     config.Cache.Redis.Addr,
-				Password: config.Cache.Redis.Password,
-				DB:       config.Cache.Redis.Type,
+				Addr:     cfg.Config().Cache.Redis.Addr,
+				Password: cfg.Config().Cache.Redis.Password,
+				DB:       cfg.Config().Cache.Redis.Type,
 			}), nil
 		},
 	})
@@ -341,8 +322,11 @@ func main() {
 	ctn := diBuilder.Build()
 
 	// Setting log level from config
-	cfg := ctn.Get(static.DiConfig).(*config.Config)
-	logrus.SetLevel(logrus.Level(cfg.Logging.LogLevel))
+	cfg := ctn.Get(static.DiConfig).(config.Provider)
+	if err := cfg.Parse(); err != nil {
+		logrus.WithError(err).Fatal("Failed to parse config")
+	}
+	logrus.SetLevel(logrus.Level(cfg.Config().Logging.LogLevel))
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
@@ -352,11 +336,11 @@ func main() {
 	// Initial log output
 	logrus.Info("Starting up...")
 
-	if profLoc := util.GetEnv(envKeyProfile, *flagProfile); profLoc != "" {
+	if profLoc := util.GetEnv(envKeyProfile, flagProfile); profLoc != "" {
 		setupProfiler(profLoc)
 	}
 
-	if *flagDevMode {
+	if flagDevMode {
 		setupDevMode()
 	}
 

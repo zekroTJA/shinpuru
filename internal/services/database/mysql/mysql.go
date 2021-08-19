@@ -2,13 +2,11 @@ package mysql
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -306,10 +304,7 @@ func (m *MysqlMiddleware) setup() {
 
 func (m *MysqlMiddleware) Connect(credentials ...interface{}) error {
 	var err error
-	creds := credentials[0].(*config.DatabaseCreds)
-	if creds == nil {
-		return errors.New("Database credentials from config were nil")
-	}
+	creds := credentials[0].(models.DatabaseCreds)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci&parseTime=true",
 		creds.User, creds.Password, creds.Host, creds.Database)
 	m.Db, err = sql.Open("mysql", dsn)
@@ -538,7 +533,7 @@ func (m *MysqlMiddleware) SetSetting(setting, value string) error {
 
 func (m *MysqlMiddleware) AddReport(rep *models.Report) error {
 	_, err := m.Db.Exec(`
-		INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment, timeout) 
+		INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment, timeout)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL, rep.Timeout)
 	return err
@@ -553,7 +548,7 @@ func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*models.Report, error) {
 	rep := new(models.Report)
 
 	row := m.Db.QueryRow(`
-		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout 
+		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout
 		FROM reports WHERE id = ?`, id)
 	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
 	if err == sql.ErrNoRows {
@@ -569,9 +564,9 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	}
 
 	rows, err := m.Db.Query(`
-		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout 
-		FROM reports WHERE guildID = ? 
-		ORDER BY id DESC 
+		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout
+		FROM reports WHERE guildID = ?
+		ORDER BY id DESC
 		LIMIT ?, ?
 	`, guildID, offset, limit)
 	var results []*models.Report
@@ -1863,13 +1858,13 @@ func (m *MysqlMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPIS
 
 	if ok {
 		_, err = m.Db.Exec(`
-			UPDATE guildapi 
+			UPDATE guildapi
 			SET enabled = ?, origins = ?, tokenHash = ?
 			WHERE guildID = ?`,
 			settings.Enabled, settings.AllowedOrigins, settings.TokenHash, guildID)
 	} else {
 		_, err = m.Db.Exec(`
-			INSERT INTO guildapi 
+			INSERT INTO guildapi
 			(guildID, enabled, origins, tokenHash)
 			VALUES (?, ?, ?, ?)`,
 			guildID, settings.Enabled, settings.AllowedOrigins, settings.TokenHash)

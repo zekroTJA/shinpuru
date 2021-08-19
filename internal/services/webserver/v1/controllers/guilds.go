@@ -13,9 +13,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/makeworld-the-better-one/go-isemoji"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -37,14 +37,14 @@ type GuildsController struct {
 	st      storage.Storage
 	kvc     kvcache.Provider
 	session *discordgo.Session
-	cfg     *config.Config
+	cfg     config.Provider
 	pmw     *middleware.PermissionsMiddleware
 	state   *dgrs.State
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
 	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
@@ -149,7 +149,7 @@ func (c *GuildsController) getGuild(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	gRes, err := models.GuildFromGuild(guild, memb, c.db, c.cfg.Discord.OwnerID)
+	gRes, err := models.GuildFromGuild(guild, memb, c.db, c.cfg.Config().Discord.OwnerID)
 	if err != nil {
 		return err
 	}
@@ -354,7 +354,7 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 	if reps != nil {
 		resReps = make([]*models.Report, len(reps))
 		for i, r := range reps {
-			resReps[i] = models.ReportFromReport(r, c.cfg.WebServer.PublicAddr)
+			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
 		}
 	}
 

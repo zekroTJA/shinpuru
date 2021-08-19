@@ -5,7 +5,7 @@ import (
 
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -14,9 +14,9 @@ func InitStorage(container di.Container) storage.Storage {
 	var st storage.Storage
 	var err error
 
-	cfg := container.Get(static.DiConfig).(*config.Config)
+	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	switch strings.ToLower(cfg.Storage.Type) {
+	switch strings.ToLower(cfg.Config().Storage.Type) {
 	case "minio", "s3", "googlecloud":
 		st = new(storage.Minio)
 	case "file":

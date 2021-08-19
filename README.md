@@ -149,6 +149,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/argp`**](pkg/argp)  
+  *Package argp is a stupid simple flag (argument) parser which allows to parse flags without panicing when non-registered flags are passed.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
   *Package boolutil provides simple utility functions around booleans.*
 
@@ -178,6 +181,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 - [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](pkg/hammertime)  
+  *Package hammertime provides functionailities to format a time.Time into a Discord timestamp mention. The name was used after the very useful web app hammertime.djdavid98.art.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/hashutil`**](pkg/hashutil)  
   *Package hashutil provides general utility functionalities to generate simple and fast hashes with salt and pepper.*
@@ -267,13 +273,13 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
 - [sirupsen/logrus](https://github.com/sirupsen/logrus) `(v1.8.1)`
 - [stretchr/testify](https://github.com/stretchr/testify) `(v1.7.0)`
+- [traefik/paerser](https://github.com/traefik/paerser) `(v0.1.4)`
 - [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.26.0)`
 - [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart) `(v2.0.1+incompatible)`
 - [zekroTJA/colorname](https://github.com/zekroTJA/colorname) `(v1.0.0)`
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20210607152325-775e3b0c77b9)`
 - [x/sys](https://golang.org/x/sys) `(v0.0.0-20210630005230-0f9fa26af87c)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20210611083556-38a9dc6acbc6)`

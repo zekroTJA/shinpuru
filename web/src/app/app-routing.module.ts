@@ -21,6 +21,7 @@ import { GuildAdminLogsComponent } from './routes/guild-admin/logs/ga-logs.compo
 import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.component';
 import { DebugComponent } from './routes/debug/debug.component';
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
+import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
 
 const routes: Routes = [
   {
@@ -84,6 +85,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/:memberid/reports',
     component: MemberReportsComponent,
+  },
+  {
+    path: 'guilds/:guildid/utils/embeds',
+    component: EmbedsComponent,
   },
   {
     path: 'settings',

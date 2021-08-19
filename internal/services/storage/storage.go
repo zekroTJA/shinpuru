@@ -3,13 +3,13 @@ package storage
 import (
 	"io"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 )
 
 // Storage interface provides functionalities to
 // access an object storage driver.
 type Storage interface {
-	Connect(cfg *config.Config) error
+	Connect(cfg config.Provider) error
 
 	BucketExists(name string) (bool, error)
 	CreateBucket(name string, location ...string) error

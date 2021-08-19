@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 )
 
 // File implements the Storage interface for a
@@ -15,8 +15,8 @@ type File struct {
 	location string
 }
 
-func (f *File) Connect(cfg *config.Config) (err error) {
-	f.location = cfg.Storage.File.Location
+func (f *File) Connect(cfg config.Provider) (err error) {
+	f.location = cfg.Config().Storage.File.Location
 	return nil
 }
 

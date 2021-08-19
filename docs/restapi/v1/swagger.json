@@ -89,6 +89,119 @@
                 }
             }
         },
+        "/channels/{id}": {
+            "post": {
+                "description": "Send an Embed Message into a specified Channel.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Send Embed Message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the channel.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The message embed object.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/discordgo.MessageEmbed"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/discordgo.Message"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/channels/{id}/{msgid}": {
+            "post": {
+                "description": "Update an Embed Message in a specified Channel with the given message ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Update Embed Message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the channel.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the message.",
+                        "name": "msgid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The message embed object.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/discordgo.MessageEmbed"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/discordgo.Message"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds": {
             "get": {
                 "description": "Returns a list of guilds the authenticated user has in common with shinpuru.",
@@ -3757,6 +3870,433 @@
                 }
             }
         },
+        "discordgo.Emoji": {
+            "type": "object",
+            "properties": {
+                "animated": {
+                    "type": "boolean"
+                },
+                "available": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "managed": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "require_colons": {
+                    "type": "boolean"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "discordgo.Member": {
+            "type": "object",
+            "properties": {
+                "deaf": {
+                    "description": "Whether the member is deafened at a guild level.",
+                    "type": "boolean"
+                },
+                "guild_id": {
+                    "description": "The guild ID on which the member exists.",
+                    "type": "string"
+                },
+                "joined_at": {
+                    "description": "The time at which the member joined the guild, in ISO8601.",
+                    "type": "string"
+                },
+                "mute": {
+                    "description": "Whether the member is muted at a guild level.",
+                    "type": "boolean"
+                },
+                "nick": {
+                    "description": "The nickname of the member, if they have one.",
+                    "type": "string"
+                },
+                "pending": {
+                    "description": "Is true while the member hasn't accepted the membership screen.",
+                    "type": "boolean"
+                },
+                "premium_since": {
+                    "description": "When the user used their Nitro boost on the server",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "A list of IDs of the roles which are possessed by the member.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "description": "The underlying user on which the member is based.",
+                    "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "discordgo.Message": {
+            "type": "object",
+            "properties": {
+                "activity": {
+                    "description": "Is sent with Rich Presence-related chat embeds",
+                    "$ref": "#/definitions/discordgo.MessageActivity"
+                },
+                "application": {
+                    "description": "Is sent with Rich Presence-related chat embeds",
+                    "$ref": "#/definitions/discordgo.MessageApplication"
+                },
+                "attachments": {
+                    "description": "A list of attachments present in the message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.MessageAttachment"
+                    }
+                },
+                "author": {
+                    "description": "The author of the message. This is not guaranteed to be a\nvalid user (webhook-sent messages do not possess a full author).",
+                    "$ref": "#/definitions/discordgo.User"
+                },
+                "channel_id": {
+                    "description": "The ID of the channel in which the message was sent.",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "The content of the message.",
+                    "type": "string"
+                },
+                "edited_timestamp": {
+                    "description": "The time at which the last edit of the message\noccurred, if it has been edited.",
+                    "type": "string"
+                },
+                "embeds": {
+                    "description": "A list of embeds present in the message. Multiple\nembeds can currently only be sent by webhooks.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.MessageEmbed"
+                    }
+                },
+                "flags": {
+                    "description": "The flags of the message, which describe extra features of a message.\nThis is a combination of bit masks; the presence of a certain permission can\nbe checked by performing a bitwise AND between this int and the flag.",
+                    "type": "integer"
+                },
+                "guild_id": {
+                    "description": "The ID of the guild in which the message was sent.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The ID of the message.",
+                    "type": "string"
+                },
+                "member": {
+                    "description": "Member properties for this message's author,\ncontains only partial information",
+                    "$ref": "#/definitions/discordgo.Member"
+                },
+                "mention_channels": {
+                    "description": "Channels specifically mentioned in this message\nNot all channel mentions in a message will appear in mention_channels.\nOnly textual channels that are visible to everyone in a lurkable guild will ever be included.\nOnly crossposted messages (via Channel Following) currently include mention_channels at all.\nIf no mentions in the message meet these requirements, this field will not be sent.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.Channel"
+                    }
+                },
+                "mention_everyone": {
+                    "description": "Whether the message mentions everyone.",
+                    "type": "boolean"
+                },
+                "mention_roles": {
+                    "description": "The roles mentioned in the message.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mentions": {
+                    "description": "A list of users mentioned in the message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.User"
+                    }
+                },
+                "message_reference": {
+                    "description": "MessageReference contains reference data sent with crossposted messages",
+                    "$ref": "#/definitions/discordgo.MessageReference"
+                },
+                "pinned": {
+                    "description": "Whether the message is pinned or not.",
+                    "type": "boolean"
+                },
+                "reactions": {
+                    "description": "A list of reactions to the message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.MessageReactions"
+                    }
+                },
+                "timestamp": {
+                    "description": "The time at which the messsage was sent.\nCAUTION: this field may be removed in a\nfuture API version; it is safer to calculate\nthe creation time via the ID.",
+                    "type": "string"
+                },
+                "tts": {
+                    "description": "Whether the message is text-to-speech.",
+                    "type": "boolean"
+                },
+                "type": {
+                    "description": "The type of the message.",
+                    "type": "integer"
+                },
+                "webhook_id": {
+                    "description": "The webhook ID of the message, if it was generated by a webhook",
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageActivity": {
+            "type": "object",
+            "properties": {
+                "party_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.MessageApplication": {
+            "type": "object",
+            "properties": {
+                "cover_image": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageAttachment": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "proxy_url": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.MessageEmbed": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedAuthor"
+                },
+                "color": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.MessageEmbedField"
+                    }
+                },
+                "footer": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedFooter"
+                },
+                "image": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedImage"
+                },
+                "provider": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedProvider"
+                },
+                "thumbnail": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedThumbnail"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "video": {
+                    "$ref": "#/definitions/discordgo.MessageEmbedVideo"
+                }
+            }
+        },
+        "discordgo.MessageEmbedAuthor": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "proxy_icon_url": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageEmbedField": {
+            "type": "object",
+            "properties": {
+                "inline": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageEmbedFooter": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "proxy_icon_url": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageEmbedImage": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "integer"
+                },
+                "proxy_url": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.MessageEmbedProvider": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.MessageEmbedThumbnail": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "integer"
+                },
+                "proxy_url": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.MessageEmbedVideo": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.MessageReactions": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "emoji": {
+                    "$ref": "#/definitions/discordgo.Emoji"
+                },
+                "me": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "discordgo.MessageReference": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                }
+            }
+        },
         "discordgo.PermissionOverwrite": {
             "type": "object",
             "properties": {
@@ -4825,6 +5365,10 @@
         {
             "description": "Members specific endpoints.",
             "name": "Members"
+        },
+        {
+            "description": "Channels specific endpoints.",
+            "name": "Channels"
         }
     ]
 }

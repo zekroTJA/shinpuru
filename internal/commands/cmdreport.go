@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -65,7 +65,7 @@ func (c *CmdReport) IsExecutableInDMChannels() bool {
 
 func (c *CmdReport) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if len(ctx.GetArgs()) < 1 {
@@ -91,7 +91,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 			Title: fmt.Sprintf("Reports for %s#%s",
 				victim.User.Username, victim.User.Discriminator),
 			Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
-				cfg.WebServer.PublicAddr, ctx.GetGuild().ID, victim.User.ID),
+				cfg.Config().WebServer.PublicAddr, ctx.GetGuild().ID, victim.User.ID),
 		}
 		reps, err := db.GetReportsFiltered(ctx.GetGuild().ID, victim.User.ID, -1, 0, 1000)
 		if err != nil {
@@ -102,7 +102,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		} else {
 			emb.Fields = make([]*discordgo.MessageEmbedField, 0)
 			for _, r := range reps {
-				emb.Fields = append(emb.Fields, r.AsEmbedField(cfg.WebServer.PublicAddr))
+				emb.Fields = append(emb.Fields, r.AsEmbedField(cfg.Config().WebServer.PublicAddr))
 			}
 		}
 		_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, emb)
@@ -165,7 +165,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		Type:          repType,
 	}
 
-	emb := rep.AsEmbed(cfg.WebServer.PublicAddr)
+	emb := rep.AsEmbed(cfg.Config().WebServer.PublicAddr)
 	emb.Title = "Report Check"
 	emb.Description = "Is everything okay so far?"
 
@@ -181,7 +181,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 				return
 			}
 
-			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.WebServer.PublicAddr))
+			_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, rep.AsEmbed(cfg.Config().WebServer.PublicAddr))
 			return
 		},
 	}
@@ -193,7 +193,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 
 func (c *CmdReport) revoke(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
-	cfg, _ := ctx.GetObject(static.DiConfig).(*config.Config)
+	cfg, _ := ctx.GetObject(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.GetObject(static.DiReport).(*report.ReportService)
 
 	if len(ctx.GetArgs()) < 3 {
@@ -231,7 +231,7 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 					Name:  "Revocation Reason",
 					Value: reason,
 				},
-				rep.AsEmbedField(cfg.WebServer.PublicAddr),
+				rep.AsEmbedField(cfg.Config().WebServer.PublicAddr),
 			},
 		},
 		Session:        ctx.GetSession(),
@@ -247,7 +247,7 @@ func (c *CmdReport) revoke(ctx shireikan.Context) error {
 				rep,
 				ctx.GetUser().ID,
 				reason,
-				cfg.WebServer.PublicAddr,
+				cfg.Config().WebServer.PublicAddr,
 				db,
 				ctx.GetSession())
 

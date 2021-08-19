@@ -56,6 +56,59 @@ Reovkes the currently used access token and clears the refresh token.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.Status](#modelsstatus) |
 
+### /channels/{id}
+
+#### POST
+##### Summary
+
+Send Embed Message
+
+##### Description
+
+Send an Embed Message into a specified Channel.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the channel. | Yes | string |
+| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Created | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /channels/{id}/{msgid}
+
+#### POST
+##### Summary
+
+Update Embed Message
+
+##### Description
+
+Update an Embed Message in a specified Channel with the given message ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the channel. | Yes | string |
+| msgid | path | The ID of the message. | Yes | string |
+| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds
 
 #### GET
@@ -1871,6 +1924,182 @@ Returns general information for the landing page like the local invite parameter
 | topic | string | The topic of the channel. | No |
 | type | integer | The type of the channel. | No |
 | user_limit | integer | The user limit of the voice channel. | No |
+
+#### discordgo.Emoji
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| animated | boolean |  | No |
+| available | boolean |  | No |
+| id | string |  | No |
+| managed | boolean |  | No |
+| name | string |  | No |
+| require_colons | boolean |  | No |
+| roles | [ string ] |  | No |
+| user | [discordgo.User](#discordgouser) |  | No |
+
+#### discordgo.Member
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| deaf | boolean | Whether the member is deafened at a guild level. | No |
+| guild_id | string | The guild ID on which the member exists. | No |
+| joined_at | string | The time at which the member joined the guild, in ISO8601. | No |
+| mute | boolean | Whether the member is muted at a guild level. | No |
+| nick | string | The nickname of the member, if they have one. | No |
+| pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
+| premium_since | string | When the user used their Nitro boost on the server | No |
+| roles | [ string ] | A list of IDs of the roles which are possessed by the member. | No |
+| user | [discordgo.User](#discordgouser) | The underlying user on which the member is based. | No |
+
+#### discordgo.Message
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| activity | [discordgo.MessageActivity](#discordgomessageactivity) | Is sent with Rich Presence-related chat embeds | No |
+| application | [discordgo.MessageApplication](#discordgomessageapplication) | Is sent with Rich Presence-related chat embeds | No |
+| attachments | [ [discordgo.MessageAttachment](#discordgomessageattachment) ] | A list of attachments present in the message. | No |
+| author | [discordgo.User](#discordgouser) | The author of the message. This is not guaranteed to be a valid user (webhook-sent messages do not possess a full author). | No |
+| channel_id | string | The ID of the channel in which the message was sent. | No |
+| content | string | The content of the message. | No |
+| edited_timestamp | string | The time at which the last edit of the message occurred, if it has been edited. | No |
+| embeds | [ [discordgo.MessageEmbed](#discordgomessageembed) ] | A list of embeds present in the message. Multiple embeds can currently only be sent by webhooks. | No |
+| flags | integer | The flags of the message, which describe extra features of a message. This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the flag. | No |
+| guild_id | string | The ID of the guild in which the message was sent. | No |
+| id | string | The ID of the message. | No |
+| member | [discordgo.Member](#discordgomember) | Member properties for this message's author, contains only partial information | No |
+| mention_channels | [ [discordgo.Channel](#discordgochannel) ] | Channels specifically mentioned in this message Not all channel mentions in a message will appear in mention_channels. Only textual channels that are visible to everyone in a lurkable guild will ever be included. Only crossposted messages (via Channel Following) currently include mention_channels at all. If no mentions in the message meet these requirements, this field will not be sent. | No |
+| mention_everyone | boolean | Whether the message mentions everyone. | No |
+| mention_roles | [ string ] | The roles mentioned in the message. | No |
+| mentions | [ [discordgo.User](#discordgouser) ] | A list of users mentioned in the message. | No |
+| message_reference | [discordgo.MessageReference](#discordgomessagereference) | MessageReference contains reference data sent with crossposted messages | No |
+| pinned | boolean | Whether the message is pinned or not. | No |
+| reactions | [ [discordgo.MessageReactions](#discordgomessagereactions) ] | A list of reactions to the message. | No |
+| timestamp | string | The time at which the messsage was sent. CAUTION: this field may be removed in a future API version; it is safer to calculate the creation time via the ID. | No |
+| tts | boolean | Whether the message is text-to-speech. | No |
+| type | integer | The type of the message. | No |
+| webhook_id | string | The webhook ID of the message, if it was generated by a webhook | No |
+
+#### discordgo.MessageActivity
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| party_id | string |  | No |
+| type | integer |  | No |
+
+#### discordgo.MessageApplication
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cover_image | string |  | No |
+| description | string |  | No |
+| icon | string |  | No |
+| id | string |  | No |
+| name | string |  | No |
+
+#### discordgo.MessageAttachment
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| filename | string |  | No |
+| height | integer |  | No |
+| id | string |  | No |
+| proxy_url | string |  | No |
+| size | integer |  | No |
+| url | string |  | No |
+| width | integer |  | No |
+
+#### discordgo.MessageEmbed
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| author | [discordgo.MessageEmbedAuthor](#discordgomessageembedauthor) |  | No |
+| color | integer |  | No |
+| description | string |  | No |
+| fields | [ [discordgo.MessageEmbedField](#discordgomessageembedfield) ] |  | No |
+| footer | [discordgo.MessageEmbedFooter](#discordgomessageembedfooter) |  | No |
+| image | [discordgo.MessageEmbedImage](#discordgomessageembedimage) |  | No |
+| provider | [discordgo.MessageEmbedProvider](#discordgomessageembedprovider) |  | No |
+| thumbnail | [discordgo.MessageEmbedThumbnail](#discordgomessageembedthumbnail) |  | No |
+| timestamp | string |  | No |
+| title | string |  | No |
+| type | string |  | No |
+| url | string |  | No |
+| video | [discordgo.MessageEmbedVideo](#discordgomessageembedvideo) |  | No |
+
+#### discordgo.MessageEmbedAuthor
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| icon_url | string |  | No |
+| name | string |  | No |
+| proxy_icon_url | string |  | No |
+| url | string |  | No |
+
+#### discordgo.MessageEmbedField
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| inline | boolean |  | No |
+| name | string |  | No |
+| value | string |  | No |
+
+#### discordgo.MessageEmbedFooter
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| icon_url | string |  | No |
+| proxy_icon_url | string |  | No |
+| text | string |  | No |
+
+#### discordgo.MessageEmbedImage
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| height | integer |  | No |
+| proxy_url | string |  | No |
+| url | string |  | No |
+| width | integer |  | No |
+
+#### discordgo.MessageEmbedProvider
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | No |
+| url | string |  | No |
+
+#### discordgo.MessageEmbedThumbnail
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| height | integer |  | No |
+| proxy_url | string |  | No |
+| url | string |  | No |
+| width | integer |  | No |
+
+#### discordgo.MessageEmbedVideo
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| height | integer |  | No |
+| url | string |  | No |
+| width | integer |  | No |
+
+#### discordgo.MessageReactions
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| count | integer |  | No |
+| emoji | [discordgo.Emoji](#discordgoemoji) |  | No |
+| me | boolean |  | No |
+
+#### discordgo.MessageReference
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| channel_id | string |  | No |
+| guild_id | string |  | No |
+| message_id | string |  | No |
 
 #### discordgo.PermissionOverwrite
 

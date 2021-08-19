@@ -14,7 +14,8 @@ import { format, formatDistance } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { rolePosDiff } from 'src/app/utils/utils';
+import { padNumber, rolePosDiff } from 'src/app/utils/utils';
+import { MaxLengthValidator } from '@angular/forms';
 
 @Component({
   selector: 'app-member-route',
@@ -300,6 +301,14 @@ export class MemberRouteComponent {
 
   private get formattedRepTimeout(): string | null {
     if (!this.repModalTimeout) return null;
-    return `${this.repModalTimeout}:00.00Z`;
+    const offsetHours = new Date().getTimezoneOffset() / -60;
+    const offset =
+      offsetHours !== 0
+        ? `${offsetHours < 0 ? '-' : '+'}${padNumber(
+            Math.floor(offsetHours),
+            2
+          )}:00`
+        : 'Z';
+    return `${this.repModalTimeout}:00${offset}`;
   }
 }

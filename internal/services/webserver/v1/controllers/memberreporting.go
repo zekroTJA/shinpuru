@@ -6,9 +6,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
@@ -16,12 +16,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 )
 
 type MemberReportingController struct {
 	session *discordgo.Session
-	cfg     *config.Config
+	cfg     config.Provider
 	db      database.Database
 	st      storage.Storage
 	repSvc  *report.ReportService
@@ -30,7 +31,7 @@ type MemberReportingController struct {
 
 func (c *MemberReportingController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
-	c.cfg = container.Get(static.DiConfig).(*config.Config)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
@@ -103,7 +104,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Kick Report
@@ -167,7 +168,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Ban Report
@@ -238,7 +239,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Create A Member Mute Report
@@ -266,8 +267,8 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 	}
 
 	muteRoleID, err := c.db.GetGuildMuteRole(guildID)
-	if database.IsErrDatabaseNotFound(err) {
-		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up on this guild")
+	if database.IsErrDatabaseNotFound(err) || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownRole) {
+		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up properly on this guild")
 	} else if err != nil {
 		return err
 	}
@@ -310,7 +311,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	return ctx.JSON(models.ReportFromReport(rep, c.cfg.WebServer.PublicAddr))
+	return ctx.JSON(models.ReportFromReport(rep, c.cfg.Config().WebServer.PublicAddr))
 }
 
 // @Summary Unmute A Member

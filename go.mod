@@ -7,6 +7,7 @@ require (
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/esimov/stackblur-go v1.0.0
@@ -42,6 +43,7 @@ require (
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
+	github.com/traefik/paerser v0.1.4
 	github.com/valyala/fasthttp v1.26.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0

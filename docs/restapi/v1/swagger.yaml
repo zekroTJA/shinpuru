@@ -79,6 +79,317 @@ definitions:
         description: The user limit of the voice channel.
         type: integer
     type: object
+  discordgo.Emoji:
+    properties:
+      animated:
+        type: boolean
+      available:
+        type: boolean
+      id:
+        type: string
+      managed:
+        type: boolean
+      name:
+        type: string
+      require_colons:
+        type: boolean
+      roles:
+        items:
+          type: string
+        type: array
+      user:
+        $ref: '#/definitions/discordgo.User'
+    type: object
+  discordgo.Member:
+    properties:
+      deaf:
+        description: Whether the member is deafened at a guild level.
+        type: boolean
+      guild_id:
+        description: The guild ID on which the member exists.
+        type: string
+      joined_at:
+        description: The time at which the member joined the guild, in ISO8601.
+        type: string
+      mute:
+        description: Whether the member is muted at a guild level.
+        type: boolean
+      nick:
+        description: The nickname of the member, if they have one.
+        type: string
+      pending:
+        description: Is true while the member hasn't accepted the membership screen.
+        type: boolean
+      premium_since:
+        description: When the user used their Nitro boost on the server
+        type: string
+      roles:
+        description: A list of IDs of the roles which are possessed by the member.
+        items:
+          type: string
+        type: array
+      user:
+        $ref: '#/definitions/discordgo.User'
+        description: The underlying user on which the member is based.
+    type: object
+  discordgo.Message:
+    properties:
+      activity:
+        $ref: '#/definitions/discordgo.MessageActivity'
+        description: Is sent with Rich Presence-related chat embeds
+      application:
+        $ref: '#/definitions/discordgo.MessageApplication'
+        description: Is sent with Rich Presence-related chat embeds
+      attachments:
+        description: A list of attachments present in the message.
+        items:
+          $ref: '#/definitions/discordgo.MessageAttachment'
+        type: array
+      author:
+        $ref: '#/definitions/discordgo.User'
+        description: |-
+          The author of the message. This is not guaranteed to be a
+          valid user (webhook-sent messages do not possess a full author).
+      channel_id:
+        description: The ID of the channel in which the message was sent.
+        type: string
+      content:
+        description: The content of the message.
+        type: string
+      edited_timestamp:
+        description: |-
+          The time at which the last edit of the message
+          occurred, if it has been edited.
+        type: string
+      embeds:
+        description: |-
+          A list of embeds present in the message. Multiple
+          embeds can currently only be sent by webhooks.
+        items:
+          $ref: '#/definitions/discordgo.MessageEmbed'
+        type: array
+      flags:
+        description: |-
+          The flags of the message, which describe extra features of a message.
+          This is a combination of bit masks; the presence of a certain permission can
+          be checked by performing a bitwise AND between this int and the flag.
+        type: integer
+      guild_id:
+        description: The ID of the guild in which the message was sent.
+        type: string
+      id:
+        description: The ID of the message.
+        type: string
+      member:
+        $ref: '#/definitions/discordgo.Member'
+        description: |-
+          Member properties for this message's author,
+          contains only partial information
+      mention_channels:
+        description: |-
+          Channels specifically mentioned in this message
+          Not all channel mentions in a message will appear in mention_channels.
+          Only textual channels that are visible to everyone in a lurkable guild will ever be included.
+          Only crossposted messages (via Channel Following) currently include mention_channels at all.
+          If no mentions in the message meet these requirements, this field will not be sent.
+        items:
+          $ref: '#/definitions/discordgo.Channel'
+        type: array
+      mention_everyone:
+        description: Whether the message mentions everyone.
+        type: boolean
+      mention_roles:
+        description: The roles mentioned in the message.
+        items:
+          type: string
+        type: array
+      mentions:
+        description: A list of users mentioned in the message.
+        items:
+          $ref: '#/definitions/discordgo.User'
+        type: array
+      message_reference:
+        $ref: '#/definitions/discordgo.MessageReference'
+        description: MessageReference contains reference data sent with crossposted
+          messages
+      pinned:
+        description: Whether the message is pinned or not.
+        type: boolean
+      reactions:
+        description: A list of reactions to the message.
+        items:
+          $ref: '#/definitions/discordgo.MessageReactions'
+        type: array
+      timestamp:
+        description: |-
+          The time at which the messsage was sent.
+          CAUTION: this field may be removed in a
+          future API version; it is safer to calculate
+          the creation time via the ID.
+        type: string
+      tts:
+        description: Whether the message is text-to-speech.
+        type: boolean
+      type:
+        description: The type of the message.
+        type: integer
+      webhook_id:
+        description: The webhook ID of the message, if it was generated by a webhook
+        type: string
+    type: object
+  discordgo.MessageActivity:
+    properties:
+      party_id:
+        type: string
+      type:
+        type: integer
+    type: object
+  discordgo.MessageApplication:
+    properties:
+      cover_image:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  discordgo.MessageAttachment:
+    properties:
+      filename:
+        type: string
+      height:
+        type: integer
+      id:
+        type: string
+      proxy_url:
+        type: string
+      size:
+        type: integer
+      url:
+        type: string
+      width:
+        type: integer
+    type: object
+  discordgo.MessageEmbed:
+    properties:
+      author:
+        $ref: '#/definitions/discordgo.MessageEmbedAuthor'
+      color:
+        type: integer
+      description:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/discordgo.MessageEmbedField'
+        type: array
+      footer:
+        $ref: '#/definitions/discordgo.MessageEmbedFooter'
+      image:
+        $ref: '#/definitions/discordgo.MessageEmbedImage'
+      provider:
+        $ref: '#/definitions/discordgo.MessageEmbedProvider'
+      thumbnail:
+        $ref: '#/definitions/discordgo.MessageEmbedThumbnail'
+      timestamp:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+      video:
+        $ref: '#/definitions/discordgo.MessageEmbedVideo'
+    type: object
+  discordgo.MessageEmbedAuthor:
+    properties:
+      icon_url:
+        type: string
+      name:
+        type: string
+      proxy_icon_url:
+        type: string
+      url:
+        type: string
+    type: object
+  discordgo.MessageEmbedField:
+    properties:
+      inline:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  discordgo.MessageEmbedFooter:
+    properties:
+      icon_url:
+        type: string
+      proxy_icon_url:
+        type: string
+      text:
+        type: string
+    type: object
+  discordgo.MessageEmbedImage:
+    properties:
+      height:
+        type: integer
+      proxy_url:
+        type: string
+      url:
+        type: string
+      width:
+        type: integer
+    type: object
+  discordgo.MessageEmbedProvider:
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  discordgo.MessageEmbedThumbnail:
+    properties:
+      height:
+        type: integer
+      proxy_url:
+        type: string
+      url:
+        type: string
+      width:
+        type: integer
+    type: object
+  discordgo.MessageEmbedVideo:
+    properties:
+      height:
+        type: integer
+      url:
+        type: string
+      width:
+        type: integer
+    type: object
+  discordgo.MessageReactions:
+    properties:
+      count:
+        type: integer
+      emoji:
+        $ref: '#/definitions/discordgo.Emoji'
+      me:
+        type: boolean
+    type: object
+  discordgo.MessageReference:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      message_id:
+        type: string
+    type: object
   discordgo.PermissionOverwrite:
     properties:
       allow:
@@ -847,6 +1158,82 @@ paths:
       summary: Logout
       tags:
       - Authorization
+  /channels/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Send an Embed Message into a specified Channel.
+      parameters:
+      - description: The ID of the channel.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The message embed object.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/discordgo.MessageEmbed'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/discordgo.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Send Embed Message
+      tags:
+      - Channels
+  /channels/{id}/{msgid}:
+    post:
+      consumes:
+      - application/json
+      description: Update an Embed Message in a specified Channel with the given message
+        ID.
+      parameters:
+      - description: The ID of the channel.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The ID of the message.
+        in: path
+        name: msgid
+        required: true
+        type: string
+      - description: The message embed object.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/discordgo.MessageEmbed'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/discordgo.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Embed Message
+      tags:
+      - Channels
   /guilds:
     get:
       consumes:
@@ -3261,3 +3648,5 @@ tags:
   name: Member Reporting
 - description: Members specific endpoints.
   name: Members
+- description: Channels specific endpoints.
+  name: Channels

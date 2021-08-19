@@ -12,8 +12,8 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/colorname"
-	"github.com/zekroTJA/shinpuru/internal/config"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -41,18 +41,13 @@ type ColorListener struct {
 }
 
 func NewColorListener(container di.Container) *ColorListener {
-	cfg := container.Get(static.DiConfig).(*config.Config)
-	var publicAddr string
-	if cfg.WebServer != nil {
-		publicAddr = cfg.WebServer.PublicAddr
-	}
-
+	cfg := container.Get(static.DiConfig).(config.Provider)
 	return &ColorListener{
 		db:         container.Get(static.DiDatabase).(database.Database),
 		gl:         container.Get(static.DiGuildLog).(guildlog.Logger).Section("colorlistener"),
 		pmw:        container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
 		st:         container.Get(static.DiState).(*dgrs.State),
-		publicAddr: publicAddr,
+		publicAddr: cfg.Config().WebServer.PublicAddr,
 		emojiCache: timedmap.New(1 * time.Minute),
 	}
 }

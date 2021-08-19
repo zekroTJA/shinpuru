@@ -7,6 +7,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/argp`**](pkg/argp)  
+  *Package argp is a stupid simple flag (argument) parser which allows to parse flags without panicing when non-registered flags are passed.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
   *Package boolutil provides simple utility functions around booleans.*
 
@@ -36,6 +39,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](pkg/hammertime)  
+  *Package hammertime provides functionailities to format a time.Time into a Discord timestamp mention. The name was used after the very useful web app hammertime.djdavid98.art.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/hashutil`**](pkg/hashutil)  
   *Package hashutil provides general utility functionalities to generate simple and fast hashes with salt and pepper.*

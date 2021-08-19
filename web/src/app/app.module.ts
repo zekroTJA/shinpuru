@@ -56,6 +56,7 @@ import { SkeletonTileComponent } from './components/skeleton-tile/skeleton-tile.
 import { DebugComponent } from './routes/debug/debug.component';
 import { GlobalSearchComponent } from './components/global-search/global-search.component';
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
+import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
 
 @NgModule({
   declarations: [
@@ -105,6 +106,7 @@ import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.componen
     DebugComponent,
     GlobalSearchComponent,
     GuildAdminApiComponent,
+    EmbedsComponent,
   ],
   imports: [
     NgbModule,
