@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -266,8 +267,8 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 	}
 
 	muteRoleID, err := c.db.GetGuildMuteRole(guildID)
-	if database.IsErrDatabaseNotFound(err) {
-		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up on this guild")
+	if database.IsErrDatabaseNotFound(err) || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownRole) {
+		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up properly on this guild")
 	} else if err != nil {
 		return err
 	}
