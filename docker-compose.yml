@@ -51,7 +51,7 @@ services:
 
   shinpuru:
     build: '.'
-    image: 'zekro/shinpuru:latest'
+    image: 'ghcr.io/zekrotja/shinpuru:latest'
     volumes:
       - './shinpuru/config:/etc/config'
       - '/etc/cert:/etc/cert'
