@@ -1,0 +1,41 @@
+name: Feature Request
+description: Suggest an idea or enhancement for this project.
+labels:
+  - enhancement
+assignees:
+  - zekrotja
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hey, thank you very much for filling out this form to improve the project. ❤️
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: The type of the feature request.
+      options:
+        - Enhancement of an existing feature
+        - A new feature
+        - UI/UX Enhancement
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe here the enhancement/feature as concise as possible.
+      placeholder: |
+        It would be so amazing if the `say raw` feature would have an equivalent feature in the web interface with an integrated embed builder.
+        There, you would be able to send the created embed directly into a guilds text channel.
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: attachments
+      description: Here you can append images, sketches or other stuff related to the request.
+      placeholder: |
+        Here you can see an example of the embed builder:
+        ![](https://camo.githubusercontent.com/061556529eddc4794367be3149d96d686811ffe4a6feaf8d9ee935f3a2e37ab3/68747470733a2f2f692e696d6775722e636f6d2f543971456979552e706e67)
+    validations:
+      required: false
+

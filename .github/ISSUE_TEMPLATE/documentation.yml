@@ -1,0 +1,28 @@
+name: Documentation
+description: Report an issue with the documentation of shinpuru or documentation of commands.
+labels:
+  - documentation
+assignees:
+  - zekrotja
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hey, thank you very much for filling out this form to improve the documentation of shinpuru. ❤️
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe here the issue of the documentation as concise as possible.
+      placeholder: |
+        The command usage of the `karma` command is outdated and should be updated.
+        See: https://github.com/zekroTJA/shinpuru/wiki/Commands#karma
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: attachments
+      description: Here you can append images, sketches or other stuff related to the documentation issue.
+    validations:
+      required: false
