@@ -31,7 +31,7 @@ body:
   - type: textarea
     id: attachments
     attributes:
-      label: attachments
+      label: Attachments
       description: Here you can append images, sketches or other stuff related to the request.
       placeholder: |
         Here you can see an example of the embed builder:
