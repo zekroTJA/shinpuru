@@ -1,0 +1,58 @@
+name: Bug Report
+description: Report a bug, typo or an unexpected behavior.
+labels:
+  - bug
+assignees:
+  - zekrotja
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for filling out this form to file a bug report! ❤️
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: Type of the issue
+      options:
+        - Typo
+        - Visual Issue
+        - Functional Issue
+        - Breaking Issue
+        - Crash
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe the issue or missbehaviour as concise as possible.
+      placeholder: Bots are able to gain karma when messages of them get in the starboard.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Describe here how to reproduce the problem.
+      placeholder: |
+        1. Enable starboard and karma gain.
+        2. Vote a message of a bot into starboard.
+        3. Check karma gain of the bot's account.
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Attachments
+      description: Here you are able to attach image links and/or logs related to the issue.
+      placeholder: |
+        panic: could not build `webserver` because the build function panicked: runtime error: invalid memory address or nil pointer dereference,
+        goroutine 1 [running]:,
+        github.com/sarulabs/di/v2.(*containerGetter).Get(0x0, 0xc000035680, 0xfcbf29, 0x9, 0xf63f00, 0xc00051a000),
+          /go/pkg/mod/github.com/sarulabs/di/v2@v2.4.2/containerGetter.go:17 +0x97,
+        github.com/sarulabs/di/v2.(*container).Get(0xc000035680, 0xfcbf29, 0x9, 0xf63f00, 0xc00051a000),
+          /go/pkg/mod/github.com/sarulabs/di/v2@v2.4.2/container.go:38 +0x48,
+        main.main(),
+          /build/cmd/shinpuru/main.go:308 +0xf9c
+    validations:
+      required: false
