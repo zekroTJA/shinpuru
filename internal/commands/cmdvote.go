@@ -19,7 +19,7 @@ type CmdVote struct {
 }
 
 func (c *CmdVote) GetInvokes() []string {
-	return []string{"vote", "poll"}
+	return []string{"vote", "poll", "v"}
 }
 
 func (c *CmdVote) GetDescription() string {
