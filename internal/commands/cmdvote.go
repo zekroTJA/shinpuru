@@ -58,23 +58,28 @@ func (c *CmdVote) IsExecutableInDMChannels() bool {
 func (c *CmdVote) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
 
-	if len(ctx.GetArgs()) > 0 {
-		switch strings.ToLower(ctx.GetArgs().Get(0).AsString()) {
+	args := ctx.GetArgs()
+
+	if len(args) > 0 {
+		switch strings.ToLower(args.Get(0).AsString()) {
+
+		case "create", "new":
+			return c.create(ctx, args.Splice(0, 1))
 
 		case "close":
-			return c.close(ctx)
+			return c.close(ctx, args)
 
 		case "list":
 			return listVotes(ctx)
 
 		case "expire", "expires":
-			if len(ctx.GetArgs()) < 2 {
+			if len(args) < 2 {
 				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Please cpecify a expire duration!").
 					DeleteAfter(8 * time.Second).Error()
 			}
 
-			expireDuration, err := time.ParseDuration(ctx.GetArgs().Get(1).AsString())
+			expireDuration, err := time.ParseDuration(args.Get(1).AsString())
 			if err != nil {
 				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Invalid duration format. Please take a look "+
@@ -83,8 +88,8 @@ func (c *CmdVote) Exec(ctx shireikan.Context) error {
 			}
 
 			var ivote *vote.Vote
-			if len(ctx.GetArgs()) > 2 {
-				vid := ctx.GetArgs().Get(2).AsString()
+			if len(args) > 2 {
+				vid := args.Get(2).AsString()
 				for _, v := range vote.VotesRunning {
 					if v.GuildID == ctx.GetGuild().ID && v.ID == vid {
 						ivote = v
@@ -120,12 +125,17 @@ func (c *CmdVote) Exec(ctx shireikan.Context) error {
 				fmt.Sprintf("Vote will expire at %s.", ivote.Expires.Format("01/02 15:04 MST")), "", static.ColorEmbedGreen).
 				DeleteAfter(8 * time.Second).Error()
 		}
-
 	} else {
 		return listVotes(ctx)
 	}
 
-	split := strings.Split(strings.Join(ctx.GetArgs(), " "), "|")
+	return c.create(ctx, args)
+}
+
+func (c *CmdVote) create(ctx shireikan.Context, args shireikan.ArgumentList) (err error) {
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+
+	split := strings.Split(strings.Join(args, " "), "|")
 	if len(split) < 3 || len(split) > 11 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Invalid arguments. Please use `help vote` go get help about how to use this command.").
@@ -176,13 +186,11 @@ func (c *CmdVote) Exec(ctx shireikan.Context) error {
 	}
 
 	vote.VotesRunning[ivote.ID] = ivote
-	return nil
+	return
 }
 
-func (c *CmdVote) close(ctx shireikan.Context) error {
+func (c *CmdVote) close(ctx shireikan.Context, args shireikan.ArgumentList) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
-
-	args := ctx.GetArgs()
 
 	state := vote.VoteStateClosed
 	if len(args) > 1 {
@@ -197,8 +205,8 @@ func (c *CmdVote) close(ctx shireikan.Context) error {
 	}
 
 	var ivote *vote.Vote
-	if len(ctx.GetArgs()) > 1 {
-		if strings.ToLower(ctx.GetArgs().Get(1).AsString()) == "all" {
+	if len(args) > 1 {
+		if strings.ToLower(args.Get(1).AsString()) == "all" {
 			var i int
 			for _, v := range vote.VotesRunning {
 				if v.GuildID == ctx.GetGuild().ID && v.CreatorID == ctx.GetUser().ID {
@@ -212,7 +220,7 @@ func (c *CmdVote) close(ctx shireikan.Context) error {
 			return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID, fmt.Sprintf("Closed %d votes.", i), "", 0).
 				DeleteAfter(8 * time.Second).Error()
 		}
-		vid := ctx.GetArgs().Get(1).AsString()
+		vid := args.Get(1).AsString()
 		for _, v := range vote.VotesRunning {
 			if v.GuildID == ctx.GetGuild().ID && v.ID == vid {
 				ivote = v
