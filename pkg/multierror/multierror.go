@@ -76,7 +76,7 @@ func (m *MultiError) Append(err ...error) {
 	}
 }
 
-// Len returns the ammount of errors contained
+// Len returns the amount of errors contained
 // in the MultiError container
 func (m *MultiError) Len() int {
 	return len(m.errors)

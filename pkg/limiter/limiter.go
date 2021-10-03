@@ -38,7 +38,7 @@ type Config struct {
 	Duration time.Duration `json:"restoration"`
 	// Burst is the amount of tokens which
 	// can be contained in a bucket (maximum
-	// ammount of requests which can be done
+	// amount of requests which can be done
 	// simultaniously).
 	//
 	// Default: 5
