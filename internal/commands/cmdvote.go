@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -260,7 +260,7 @@ func (c *CmdVote) close(ctx shireikan.Context, args shireikan.ArgumentList) erro
 		}
 	}
 
-	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissions).(*permissions.Permissions)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".close")
 	if ivote.CreatorID != ctx.GetUser().ID && !ok && !override {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,

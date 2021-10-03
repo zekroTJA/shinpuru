@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -100,7 +101,7 @@ func main() {
 		},
 	})
 
-	diBuilder.Set(static.DiPermissionMiddleware, &middleware.PermissionsMiddleware{})
+	diBuilder.Set(static.DiPermissions, &permissions.Permissions{})
 	diBuilder.Set(static.DiGhostpingIgnoreMiddleware, &middleware.GhostPingIgnoreMiddleware{})
 
 	ctn := diBuilder.Build()

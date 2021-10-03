@@ -1,4 +1,4 @@
-package middleware
+package permissions
 
 import (
 	"time"
@@ -14,63 +14,65 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
-	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/ken"
 )
 
-// PermissionsMiddleware is a command handler middleware
+// Permissions is a command handler middleware
 // processing permissions for command execution.
 //
 // Implements the shireikan.Middleware interface and
 // exposes functions to check permissions.
-type PermissionsMiddleware struct {
+type Permissions struct {
 	db  database.Database
 	cfg config.Provider
 	st  *dgrs.State
 }
 
-// NewPermissionMiddleware returns a new PermissionsMiddleware
+var _ ken.MiddlewareBefore = (*Permissions)(nil)
+
+// NewPermissions returns a new PermissionsMiddleware
 // instance with the passed database and config instances.
-func NewPermissionMiddleware(container di.Container) *PermissionsMiddleware {
-	return &PermissionsMiddleware{
+func NewPermissions(container di.Container) *Permissions {
+	return &Permissions{
 		db:  container.Get(static.DiDatabase).(database.Database),
 		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(*dgrs.State),
 	}
 }
 
-func (m *PermissionsMiddleware) Handle(
-	cmd shireikan.Command, ctx shireikan.Context, layer shireikan.MiddlewareLayer) (next bool, err error) {
+func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
+	cmd, ok := ctx.Command.(PermCommand)
+	if !ok {
+		next = true
+		return
+	}
 
 	if m.db == nil {
-		m.db, _ = ctx.GetObject(static.DiDatabase).(database.Database)
+		m.db, _ = ctx.Get(static.DiDatabase).(database.Database)
 	}
 
 	if m.cfg == nil {
-		m.cfg, _ = ctx.GetObject(static.DiConfig).(config.Provider)
+		m.cfg, _ = ctx.Get(static.DiConfig).(config.Provider)
 	}
 
-	var guildID string
-	if ctx.GetGuild() != nil {
-		guildID = ctx.GetGuild().ID
-	}
-
-	ok, _, err := m.CheckPermissions(ctx.GetSession(), guildID, ctx.GetUser().ID, cmd.GetDomainName())
+	ok, _, err = m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.Event.User.ID, cmd.Domain())
 
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return false, err
 	}
 
 	if !ok {
-		msg, _ := ctx.ReplyEmbedError("You are not permitted to use this command!", "Missing Permission")
-		discordutil.DeleteMessageLater(ctx.GetSession(), msg, 8*time.Second)
-		return false, nil
+		err = ctx.FollowUpError("You are not permitted to use this command!", "Missing Permission").
+			DeleteAfter(8 * time.Second).Error
+		return
 	}
 
-	return true, nil
+	ok = true
+	return
 }
 
-func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string) fiber.Handler {
+func (pmw *Permissions) HandleWs(s *discordgo.Session, required string) fiber.Handler {
 	if !stringutil.ContainsAny(required, static.AdditionalPermissions) {
 		static.AdditionalPermissions = append(static.AdditionalPermissions, required)
 	}
@@ -95,16 +97,12 @@ func (pmw *PermissionsMiddleware) HandleWs(s *discordgo.Session, required string
 	}
 }
 
-func (m *PermissionsMiddleware) GetLayer() shireikan.MiddlewareLayer {
-	return shireikan.LayerBeforeCommand
-}
-
 // GetPermissions tries to fetch the permissions array of
 // the passed user of the specified guild. The merged
 // permissions array is returned as well as the override,
 // which is true when the specified user is the bot owner,
 // guild owner or an admin of the guild.
-func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
+func (m *Permissions) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
 	if guildID != "" {
 		perm, err = m.GetMemberPermission(s, guildID, userID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
@@ -154,7 +152,7 @@ func (m *PermissionsMiddleware) GetPermissions(s *discordgo.Session, guildID, us
 // on the specified guild and returns true, if the passed dn matches the
 // fetched permissions array. Also, the override status is returned as
 // well as errors occured during permissions fetching.
-func (m *PermissionsMiddleware) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, bool, error) {
+func (m *Permissions) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, bool, error) {
 	perms, overrideExplicits, err := m.GetPermissions(s, guildID, userID)
 	if err != nil {
 		return false, false, err
@@ -165,7 +163,7 @@ func (m *PermissionsMiddleware) CheckPermissions(s *discordgo.Session, guildID, 
 
 // GetMemberPermissions returns a PermissionsArray based on the passed
 // members roles permissions rulesets for the given guild.
-func (m *PermissionsMiddleware) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
+func (m *Permissions) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.db.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err

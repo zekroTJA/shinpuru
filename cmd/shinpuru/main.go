@@ -22,6 +22,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -161,9 +162,9 @@ func main() {
 
 	// Initialize permissions command handler middleware
 	diBuilder.Add(di.Def{
-		Name: static.DiPermissionMiddleware,
+		Name: static.DiPermissions,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return middleware.NewPermissionMiddleware(ctn), nil
+			return permissions.NewPermissions(ctn), nil
 		},
 	})
 

@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -25,7 +26,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	config := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
 	st := container.Get(static.DiState).(*dgrs.State)
 

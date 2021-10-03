@@ -10,9 +10,9 @@ import (
 	"github.com/zekrotja/dgrs"
 	"golang.org/x/time/rate"
 
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -48,7 +48,7 @@ var (
 type ListenerCodeexec struct {
 	db       database.Database
 	execFact codeexec.Factory
-	pmw      *middleware.PermissionsMiddleware
+	pmw      *permissions.Permissions
 	st       *dgrs.State
 
 	langs  []string
@@ -70,7 +70,7 @@ func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error)
 	l = &ListenerCodeexec{}
 
 	l.db = container.Get(static.DiDatabase).(database.Database)
-	l.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	l.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
 	l.st = container.Get(static.DiState).(*dgrs.State)
 	l.limits = timedmap.New(limitTMCleanupInterval)
