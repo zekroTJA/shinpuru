@@ -28,6 +28,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 
 	err = k.RegisterCommands(
 		new(slashcommands.Autorole),
+		new(slashcommands.Backup),
 	)
 	if err != nil {
 		return

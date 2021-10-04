@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/ken"
 )
 
 const (
@@ -182,6 +183,86 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 			am.Session.ChannelMessageDelete(chanID, msg.ID)
 		} else {
 			am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
+		}
+	})
+
+	return am, nil
+}
+
+func (am *AcceptMessage) AsFollowUp(ctx *ken.Ctx) (*AcceptMessage, error) {
+	if am.Session == nil {
+		return nil, errors.New("session is not defined")
+	}
+	if am.Embed == nil {
+		return nil, errors.New("embed not defined")
+	}
+
+	if am.timeout <= 0 {
+		am.timeout = 1 * time.Minute
+	}
+
+	if am.AcceptFunc == nil {
+		am.AcceptFunc = func(m *discordgo.Message) error {
+			return nil
+		}
+	}
+
+	if am.DeclineFunc == nil {
+		am.DeclineFunc = func(m *discordgo.Message) error {
+			return nil
+		}
+	}
+
+	am.cErr = make(chan error, 1)
+
+	fum := ctx.FollowUpEmbed(am.Embed)
+	err := fum.Error
+	if err != nil {
+		return nil, err
+	}
+	am.Message = fum.Message
+	err = am.Session.MessageReactionAdd(fum.ChannelID, fum.ID, acceptMessageEmoteAccept)
+	err = am.Session.MessageReactionAdd(fum.ChannelID, fum.ID, acceptMessageEmoteDecline)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		time.Sleep(am.timeout)
+		am.cErr <- ErrTimeout
+
+		if am.eventUnsub != nil {
+			am.eventUnsub()
+		}
+	}()
+
+	am.eventUnsub = am.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+		if e.MessageID != fum.ID {
+			return
+		}
+
+		if e.UserID != am.Session.State.User.ID {
+			am.Session.MessageReactionRemove(am.ChannelID, am.ID, e.Emoji.Name, e.UserID)
+		}
+
+		if e.UserID == s.State.User.ID || (am.UserID != "" && am.UserID != e.UserID) {
+			return
+		}
+
+		if e.Emoji.Name != acceptMessageEmoteAccept && e.Emoji.Name != acceptMessageEmoteDecline {
+			return
+		}
+		switch e.Emoji.Name {
+		case acceptMessageEmoteAccept:
+			am.cErr <- am.AcceptFunc(fum.Message)
+		case acceptMessageEmoteDecline:
+			am.cErr <- am.DeclineFunc(fum.Message)
+		}
+		am.eventUnsub()
+		if am.DeleteMsgAfter {
+			am.Session.ChannelMessageDelete(fum.ChannelID, fum.ID)
+		} else {
+			am.Session.MessageReactionsRemoveAll(fum.ChannelID, fum.ID)
 		}
 	})
 
