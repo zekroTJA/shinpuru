@@ -24,11 +24,11 @@ func (c *Autorole) Name() string {
 }
 
 func (c *Autorole) Description() string {
-	return "Get or define the guilds autorole."
+	return "Manage guild autoroles."
 }
 
 func (c *Autorole) Version() string {
-	return ""
+	return "1.0.0"
 }
 
 func (c *Autorole) Type() discordgo.ApplicationCommandType {
