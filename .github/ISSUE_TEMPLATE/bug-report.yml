@@ -21,6 +21,18 @@ body:
         - Crash
     validations:
       required: true
+  - type: checkboxes
+    id: instances
+    attributes:
+      label: "Instances"
+      description: On which instance(s) is the issue occuring?
+      options:
+        - label: "Canary"
+          required: false
+        - label: "Stable"
+          required: false
+        - label: "Self-Hosted"
+          required: false
   - type: textarea
     id: description
     attributes:

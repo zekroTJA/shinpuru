@@ -69,7 +69,7 @@ type Report struct {
 	Anonymous     bool         `json:"-"`
 }
 
-// GetTimestamp returns the time stamp when the
+// GetTimestamp returns the timestamp when the
 // report was generated from the reports ID
 // snowflake.
 func (r *Report) GetTimestamp() time.Time {
@@ -127,7 +127,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 
 // AsEmbedField creates a discordgo.MessageEmbedField from
 // the report. publicAddr is passed to generate a publicly
-// vailable link embedded in the embed field.
+// available link embedded in the embed field.
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {
