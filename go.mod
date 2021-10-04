@@ -51,11 +51,11 @@ require (
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.3.2 // indirect
-	github.com/zekrotja/ken v0.0.0-20211003091043-470f4610e048 // indirect
+	github.com/zekrotja/ken v0.0.0-20211004080402-b2c64c2d3e0e // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
-	golang.org/x/sys v0.0.0-20211002104244-808efd93c36d
+	golang.org/x/sys v0.0.0-20211003122950-b1ebd4e1001c
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

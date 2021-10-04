@@ -20,7 +20,7 @@ import (
 	"github.com/zekrotja/dgrs"
 )
 
-func InitCommandHandler(container di.Container) shireikan.Handler {
+func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 
 	cfg := container.Get(static.DiConfig).(config.Provider)
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
@@ -39,7 +39,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 		InvokeToLower:         true,
 		UseDefaultHelpCommand: false,
 
-		OnError: errorHandler,
+		OnError: legacyErrorHandler,
 		GuildPrefixGetter: func(guildID string) (prefix string, err error) {
 			if prefix, err = db.GetGuildPrefix(guildID); database.IsErrDatabaseNotFound(err) {
 				err = nil
@@ -116,7 +116,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	return cmdHandler
 }
 
-func errorHandler(ctx shireikan.Context, errTyp shireikan.ErrorType, err error) {
+func legacyErrorHandler(ctx shireikan.Context, errTyp shireikan.ErrorType, err error) {
 	switch errTyp {
 
 	// Command execution failed

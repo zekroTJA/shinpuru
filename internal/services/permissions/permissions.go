@@ -56,7 +56,11 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 		m.cfg, _ = ctx.Get(static.DiConfig).(config.Provider)
 	}
 
-	ok, _, err = m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.Event.User.ID, cmd.Domain())
+	if ctx.User() == nil {
+		return
+	}
+
+	ok, _, err = m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.User().ID, cmd.Domain())
 
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return false, err
@@ -68,7 +72,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 		return
 	}
 
-	ok = true
+	next = true
 	return
 }
 

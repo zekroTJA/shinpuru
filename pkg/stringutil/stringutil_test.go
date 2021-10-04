@@ -182,3 +182,21 @@ func TestHasSuffixAny(t *testing.T) {
 		t.Error("falsely detected has prefix")
 	}
 }
+
+func TestSpice(t *testing.T) {
+	assert.Equal(t,
+		Splice([]string{"a", "b", "c"}, -1),
+		[]string{"a", "b", "c"})
+	assert.Equal(t,
+		Splice([]string{"a", "b", "c"}, 3),
+		[]string{"a", "b", "c"})
+	assert.Equal(t,
+		Splice([]string{"a", "b", "c"}, 0),
+		[]string{"b", "c"})
+	assert.Equal(t,
+		Splice([]string{"a", "b", "c"}, 2),
+		[]string{"a", "b"})
+	assert.Equal(t,
+		Splice([]string{"a", "b", "c"}, 1),
+		[]string{"a", "c"})
+}

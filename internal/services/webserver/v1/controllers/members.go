@@ -30,7 +30,7 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.cmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/members", c.getMembers)
