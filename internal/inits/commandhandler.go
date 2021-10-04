@@ -46,6 +46,14 @@ func systemErrorHandler(context string, err error, args ...interface{}) {
 }
 
 func commandErrorHandler(err error, ctx *ken.Ctx) {
+	// Is ignored if interaction has already been responded
+	ctx.Defer()
+
+	if err == ken.ErrNotDMCapable {
+		ctx.FollowUpError("This command can not be used in DMs.", "")
+		return
+	}
+
 	ctx.FollowUpError(
 		fmt.Sprintf("The command execution failed unexpectedly:\n```\n%s\n```", err.Error()),
 		"Command execution failed")
