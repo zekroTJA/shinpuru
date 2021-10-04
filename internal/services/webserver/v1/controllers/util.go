@@ -27,7 +27,7 @@ type UtilController struct {
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.cmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)

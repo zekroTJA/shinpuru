@@ -114,3 +114,18 @@ func HasSuffixAny(str string, suffixes ...string) bool {
 
 	return false
 }
+
+// Splice returns arr without the element at index
+// exclude.
+func Splice(arr []string, exclude int) []string {
+	if exclude < 0 || exclude >= len(arr) {
+		return arr
+	}
+	if exclude == 0 {
+		return arr[1:]
+	}
+	if exclude == len(arr)-1 {
+		return arr[:len(arr)-1]
+	}
+	return append(arr[:exclude], arr[exclude+1:]...)
+}

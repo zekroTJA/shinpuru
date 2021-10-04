@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -19,13 +20,13 @@ import (
 	"github.com/zekrotja/dgrs"
 )
 
-func InitCommandHandler(container di.Container) shireikan.Handler {
+func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 
 	cfg := container.Get(static.DiConfig).(config.Provider)
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	config := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 	gpim := container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware)
 	st := container.Get(static.DiState).(*dgrs.State)
 
@@ -38,7 +39,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 		InvokeToLower:         true,
 		UseDefaultHelpCommand: false,
 
-		OnError: errorHandler,
+		OnError: legacyErrorHandler,
 		GuildPrefixGetter: func(guildID string) (prefix string, err error) {
 			if prefix, err = db.GetGuildPrefix(guildID); database.IsErrDatabaseNotFound(err) {
 				err = nil
@@ -115,7 +116,7 @@ func InitCommandHandler(container di.Container) shireikan.Handler {
 	return cmdHandler
 }
 
-func errorHandler(ctx shireikan.Context, errTyp shireikan.ErrorType, err error) {
+func legacyErrorHandler(ctx shireikan.Context, errTyp shireikan.ErrorType, err error) {
 	switch errTyp {
 
 	// Command execution failed

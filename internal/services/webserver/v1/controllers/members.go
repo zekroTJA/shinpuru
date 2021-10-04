@@ -4,10 +4,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -20,7 +20,7 @@ type GuildMembersController struct {
 	session    *discordgo.Session
 	cfg        config.Provider
 	db         database.Database
-	pmw        *middleware.PermissionsMiddleware
+	pmw        *permissions.Permissions
 	cmdHandler shireikan.Handler
 	st         *dgrs.State
 }
@@ -29,8 +29,8 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
-	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
+	c.cmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/members", c.getMembers)

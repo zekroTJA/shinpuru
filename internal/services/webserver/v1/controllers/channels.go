@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -14,13 +14,13 @@ import (
 type ChannelController struct {
 	session *discordgo.Session
 	st      *dgrs.State
-	pmw     *middleware.PermissionsMiddleware
+	pmw     *permissions.Permissions
 }
 
 func (c *ChannelController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.st = container.Get(static.DiState).(*dgrs.State)
-	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Post("/:id", c.pmw.HandleWs(c.session, "sp.chat.say"), c.postChannelMessage)
 	router.Post("/:id/:msgid", c.pmw.HandleWs(c.session, "sp.chat.say"), c.postChannelMessage)

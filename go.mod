@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
-	github.com/bwmarrin/discordgo v0.23.2
+	github.com/bwmarrin/discordgo v0.23.3-0.20210821175000-0fad116c6c2a
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -51,10 +51,11 @@ require (
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.3.2 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	github.com/zekrotja/ken v0.0.0-20211004080402-b2c64c2d3e0e // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
+	golang.org/x/sys v0.0.0-20211003122950-b1ebd4e1001c
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

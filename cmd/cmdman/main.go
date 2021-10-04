@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -87,9 +88,9 @@ func main() {
 
 	// Initialize command handler
 	diBuilder.Add(di.Def{
-		Name: static.DiCommandHandler,
+		Name: static.DiLegacyCommandHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitCommandHandler(ctn), nil
+			return inits.InitLegacyCommandHandler(ctn), nil
 		},
 	})
 
@@ -100,12 +101,12 @@ func main() {
 		},
 	})
 
-	diBuilder.Set(static.DiPermissionMiddleware, &middleware.PermissionsMiddleware{})
+	diBuilder.Set(static.DiPermissions, &permissions.Permissions{})
 	diBuilder.Set(static.DiGhostpingIgnoreMiddleware, &middleware.GhostPingIgnoreMiddleware{})
 
 	ctn := diBuilder.Build()
 
-	cmdHandler := ctn.Get(static.DiCommandHandler).(shireikan.Handler)
+	cmdHandler := ctn.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
 		logrus.WithError(err).Fatal("Failed exporting command manual")
 	}

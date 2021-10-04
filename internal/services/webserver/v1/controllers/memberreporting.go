@@ -6,10 +6,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
@@ -37,7 +37,7 @@ func (c *MemberReportingController) Setup(container di.Container, router fiber.R
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
 	c.state = container.Get(static.DiState).(*dgrs.State)
 
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Post("/reports", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postReport)
 	router.Post("/kick", pmw.HandleWs(c.session, "sp.guild.mod.kick"), c.postKick)

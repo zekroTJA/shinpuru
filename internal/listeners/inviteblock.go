@@ -7,9 +7,9 @@ import (
 
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,14 +23,14 @@ var (
 type ListenerInviteBlock struct {
 	db  database.Database
 	gl  guildlog.Logger
-	pmw *middleware.PermissionsMiddleware
+	pmw *permissions.Permissions
 }
 
 func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
 		db:  container.Get(static.DiDatabase).(database.Database),
 		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("inviteblock"),
-		pmw: container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware),
+		pmw: container.Get(static.DiPermissions).(*permissions.Permissions),
 	}
 }
 

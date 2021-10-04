@@ -38,6 +38,8 @@ const (
 		discordgo.IntentsGuilds |
 		discordgo.IntentsGuildVoiceStates
 
+	OAuthScopes = "bot%20applications.commands"
+
 	ConfigVersion = 6
 
 	ColorEmbedError   = 0xd32f2f
