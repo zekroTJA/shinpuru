@@ -297,12 +297,11 @@ func (c *Vote) close(ctx *ken.Ctx) (err error) {
 
 	state := vote.VoteStateClosed
 
-	opts := ctx.Event.ApplicationCommandData().Options[0].Options
-	if len(opts) > 1 && !opts[1].BoolValue() {
+	if showChartV, ok := ctx.Options().Options(0).GetByNameOptional("chart"); ok && !showChartV.BoolValue() {
 		state = vote.VoteStateClosedNC
 	}
 
-	id := opts[0].StringValue()
+	id := ctx.Options().Options(0).GetByName("id").StringValue()
 
 	if strings.ToLower(id) == "all" {
 		var i int
