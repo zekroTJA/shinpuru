@@ -26,8 +26,8 @@ const (
 type Backup struct{}
 
 var (
-	_ ken.Command             = (*Autorole)(nil)
-	_ permissions.PermCommand = (*Autorole)(nil)
+	_ ken.Command             = (*Backup)(nil)
+	_ permissions.PermCommand = (*Backup)(nil)
 )
 
 func (c *Backup) Name() string {
