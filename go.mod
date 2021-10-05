@@ -18,7 +18,7 @@ require (
 	github.com/go-ini/ini v1.62.0 // indirect
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
 	github.com/go-ping/ping v0.0.0-20210506233800-ff8be3320020
-	github.com/go-redis/redis/v8 v8.11.3
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.12.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -51,11 +51,11 @@ require (
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.3.2 // indirect
-	github.com/zekrotja/ken v0.1.1 // indirect
+	github.com/zekrotja/ken v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
-	golang.org/x/sys v0.0.0-20211003122950-b1ebd4e1001c
+	golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

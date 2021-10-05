@@ -9,9 +9,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/slashcommands"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/internal/wrappers"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/ken/state"
 )
 
 func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
@@ -20,7 +20,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	perms := container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	k = ken.New(session, ken.Options{
-		State:              &wrappers.StateWrapper{st},
+		State:              state.NewDgrs(st),
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
@@ -29,6 +29,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	err = k.RegisterCommands(
 		new(slashcommands.Autorole),
 		new(slashcommands.Backup),
+		new(slashcommands.Vote),
 	)
 	if err != nil {
 		return
