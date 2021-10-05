@@ -134,7 +134,7 @@ func (c *Autorole) add(ctx *ken.Ctx, db database.Database) (err error) {
 	}
 
 	role := ctx.Options().Options(0).Get(0).
-		RoleValue(ctx.Session, ctx.Event.GuildID)
+		RoleValue(ctx)
 
 	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
 	if err != nil {
@@ -164,7 +164,7 @@ func (c *Autorole) remove(ctx *ken.Ctx, db database.Database) (err error) {
 	}
 
 	role := ctx.Options().Options(0).Get(0).
-		RoleValue(ctx.Session, ctx.Event.GuildID)
+		RoleValue(ctx)
 
 	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
 	if err != nil {
