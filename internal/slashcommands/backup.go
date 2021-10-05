@@ -198,7 +198,7 @@ func (c *Backup) restore(ctx *ken.Ctx) (err error) {
 
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	i := ctx.Event.ApplicationCommandData().Options[0].Options[0].IntValue()
+	i := ctx.Options().Options(0).Get(0).IntValue()
 	if err != nil {
 		return err
 	}
