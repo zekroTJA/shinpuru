@@ -96,24 +96,21 @@ func (c *Backup) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Backup) Run(ctx *ken.Ctx) (err error) {
-	switch ctx.Event.ApplicationCommandData().Options[0].Name {
-	case "state":
-		return c.state(ctx)
-	case "list":
-		return c.list(ctx)
-	case "restore":
-		return c.restore(ctx)
-	case "purge":
-		return c.purge(ctx)
-	}
-	return
-}
-
-func (c *Backup) state(ctx *ken.Ctx) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
 
+	err = ctx.HandleSubCommands(
+		ken.SubCommandHandler{"state", c.state},
+		ken.SubCommandHandler{"list", c.list},
+		ken.SubCommandHandler{"restore", c.restore},
+		ken.SubCommandHandler{"purge", c.purge},
+	)
+
+	return
+}
+
+func (c *Backup) state(ctx *ken.SubCommandCtx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	var (
@@ -153,11 +150,7 @@ func (c *Backup) state(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Backup) list(ctx *ken.Ctx) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
+func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	status, err := db.GetGuildBackup(ctx.Event.GuildID)
@@ -170,7 +163,7 @@ func (c *Backup) list(ctx *ken.Ctx) (err error) {
 		strStatus = ":white_check_mark:  Backups **enabled**"
 	}
 
-	_, strBackupAll, err := c.getBackupsList(ctx)
+	_, strBackupAll, err := c.getBackupsList(ctx.Ctx)
 	if err != nil {
 		return err
 	}
@@ -191,14 +184,10 @@ func (c *Backup) list(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Backup) restore(ctx *ken.Ctx) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
+func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	i := ctx.Options().Options(0).Get(0).IntValue()
+	i := ctx.Options().Get(0).IntValue()
 	if err != nil {
 		return err
 	}
@@ -252,18 +241,18 @@ func (c *Backup) restore(ctx *ken.Ctx) (err error) {
 			return
 		},
 		AcceptFunc: func(m *discordgo.Message) (err error) {
-			c.proceedRestore(ctx, backup.FileID)
+			c.proceedRestore(ctx.Ctx, backup.FileID)
 			return
 		},
 	}
 
-	if _, err = accMsg.AsFollowUp(ctx); err != nil {
+	if _, err = accMsg.AsFollowUp(ctx.Ctx); err != nil {
 		return err
 	}
 	return accMsg.Error()
 }
 
-func (c *Backup) purge(ctx *ken.Ctx) (err error) {
+func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -283,10 +272,10 @@ func (c *Backup) purge(ctx *ken.Ctx) (err error) {
 			return
 		}).
 		DoOnAccept(func(_ *discordgo.Message) (err error) {
-			c.purgeBackups(ctx)
+			c.purgeBackups(ctx.Ctx)
 			return
 		}).
-		AsFollowUp(ctx)
+		AsFollowUp(ctx.Ctx)
 
 	if err != nil {
 		return err

@@ -85,24 +85,22 @@ func (c *Autorole) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Autorole) Run(ctx *ken.Ctx) (err error) {
-	db := ctx.Get(static.DiDatabase).(database.Database)
-	switch ctx.Event.ApplicationCommandData().Options[0].Name {
-	case "show":
-		return c.show(ctx, db)
-	case "add":
-		return c.add(ctx, db)
-	case "remove":
-		return c.remove(ctx, db)
-	case "purge":
-		return c.purge(ctx, db)
-	}
-	return
-}
-
-func (c *Autorole) show(ctx *ken.Ctx, db database.Database) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
+
+	err = ctx.HandleSubCommands(
+		ken.SubCommandHandler{"show", c.show},
+		ken.SubCommandHandler{"add", c.add},
+		ken.SubCommandHandler{"remove", c.remove},
+		ken.SubCommandHandler{"purge", c.purge},
+	)
+
+	return
+}
+
+func (c *Autorole) show(ctx *ken.SubCommandCtx) (err error) {
+	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
 	if err != nil {
@@ -128,13 +126,11 @@ func (c *Autorole) show(ctx *ken.Ctx, db database.Database) (err error) {
 	return
 }
 
-func (c *Autorole) add(ctx *ken.Ctx, db database.Database) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
+func (c *Autorole) add(ctx *ken.SubCommandCtx) (err error) {
+	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	role := ctx.Options().Options(0).Get(0).
-		RoleValue(ctx)
+	role := ctx.Options().Get(0).
+		RoleValue(ctx.Ctx)
 
 	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
 	if err != nil {
@@ -158,13 +154,11 @@ func (c *Autorole) add(ctx *ken.Ctx, db database.Database) (err error) {
 	return
 }
 
-func (c *Autorole) remove(ctx *ken.Ctx, db database.Database) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
+func (c *Autorole) remove(ctx *ken.SubCommandCtx) (err error) {
+	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	role := ctx.Options().Options(0).Get(0).
-		RoleValue(ctx)
+	role := ctx.Options().Get(0).
+		RoleValue(ctx.Ctx)
 
 	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
 	if err != nil {
@@ -189,10 +183,8 @@ func (c *Autorole) remove(ctx *ken.Ctx, db database.Database) (err error) {
 	return
 }
 
-func (c *Autorole) purge(ctx *ken.Ctx, db database.Database) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
+func (c *Autorole) purge(ctx *ken.SubCommandCtx) (err error) {
+	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	if err = db.SetGuildAutoRole(ctx.Event.GuildID, []string{}); err != nil {
 		return
