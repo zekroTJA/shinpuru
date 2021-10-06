@@ -70,5 +70,5 @@ func (c *Bug) Run(ctx *ken.Ctx) (err error) {
 		},
 	}
 	_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, emb)
-	return err
+	return
 }

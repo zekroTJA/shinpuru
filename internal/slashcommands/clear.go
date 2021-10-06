@@ -93,7 +93,7 @@ func (c *Clear) Run(ctx *ken.Ctx) (err error) {
 }
 
 func (c *Clear) last(ctx *ken.SubCommandCtx) (err error) {
-	msglist, err := ctx.Session.ChannelMessages(ctx.Event.ChannelID, 1, "", "", "")
+	msglist, err := ctx.Session.ChannelMessages(ctx.Event.ChannelID, 2, "", "", "")
 	if err != nil {
 		return err
 	}
@@ -108,9 +108,9 @@ func (c *Clear) amount(ctx *ken.SubCommandCtx) (err error) {
 		user = ctx.Options()[1].UserValue(nil)
 	}
 
-	if amount < 1 || amount > 100 {
+	if amount < 1 || amount > 99 {
 		return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-			"Number of messages is invald and must be between *(including)* 1 and *(including)* 100.").
+			"Number of messages is invald and must be between *(including)* 1 and 100.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
