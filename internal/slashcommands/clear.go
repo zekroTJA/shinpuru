@@ -176,7 +176,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
 					DeleteAfter(6 * time.Second).Error()
 			}).
-			Send(ctx.Event.ChannelID)
+			AsFollowUp(ctx.Ctx)
 		return
 	}
 
@@ -201,7 +201,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
 					DeleteAfter(6 * time.Second).Error()
 			}).
-			Send(ctx.Event.ChannelID)
+			AsFollowUp(ctx.Ctx)
 		return
 	}
 
@@ -228,9 +228,11 @@ func (c *Clear) delete(ctx *ken.SubCommandCtx, msglist []*discordgo.Message) (er
 		return err
 	}
 
-	return util.SendEmbed(ctx.Session, ctx.Event.ChannelID,
-		fmt.Sprintf("Deleted %d %s.", len(msgs)-1, util.Pluralize(len(msgs)-1, "message")), "", static.ColorEmbedUpdated).
-		DeleteAfter(6 * time.Second).Error()
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: fmt.Sprintf("Deleted %d %s.", len(msgs)-1, util.Pluralize(len(msgs)-1, "message")),
+		Title:       "",
+		Color:       static.ColorEmbedUpdated,
+	}).Error
 }
 
 func (c *Clear) iterMsgsWithReactionFromUser(

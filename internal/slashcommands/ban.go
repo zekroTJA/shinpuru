@@ -160,7 +160,7 @@ func (c *Ban) Run(ctx *ken.Ctx) (err error) {
 		},
 	}
 
-	if _, err = acceptMsg.Send(ctx.Event.ChannelID); err != nil {
+	if _, err = acceptMsg.AsFollowUp(ctx); err != nil {
 		return err
 	}
 
