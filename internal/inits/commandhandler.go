@@ -39,6 +39,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Backup),
 		new(slashcommands.Ban),
 		new(slashcommands.Bug),
+		new(slashcommands.Clear),
 		new(slashcommands.Vote),
 	)
 	if err != nil {
