@@ -164,7 +164,7 @@ type ReasonRequest struct {
 type ReportRequest struct {
 	*ReasonRequest
 
-	Type sharedmodels.Type `json:"type"`
+	Type sharedmodels.ReportType `json:"type"`
 }
 
 // InviteSettingsRequest is the request model

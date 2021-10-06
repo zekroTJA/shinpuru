@@ -191,3 +191,25 @@ func (m *Permissions) GetMemberPermission(s *discordgo.Session, guildID string, 
 
 	return res, nil
 }
+
+// CheckSubPerm takes a command context and checks is the given
+// subDN is permitted.
+func (m *Permissions) CheckSubPerm(ctx *ken.Ctx, subDN string, explicit bool) (ok bool, err error) {
+	cmd, ok := ctx.Command.(PermCommand)
+	if !ok {
+		return
+	}
+
+	dn := cmd.Domain() + "." + subDN
+	if explicit {
+		dn = "!" + dn
+	}
+
+	ok, override, err := m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.User().ID, dn)
+	if err == nil && !ok && (explicit && !override) {
+		err = ctx.FollowUpError("You don't have the required permissions.", "").Error
+	}
+
+	ok = true
+	return
+}
