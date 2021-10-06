@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/zekroTJA/shinpuru/internal/services/cmdstore"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/slashcommands"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -18,13 +20,18 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	st := container.Get(static.DiState).(*dgrs.State)
 	perms := container.Get(static.DiPermissions).(*permissions.Permissions)
+	rd := container.Get(static.DiRedis).(*redis.Client)
 
-	k = ken.New(session, ken.Options{
+	k, err = ken.New(session, ken.Options{
 		State:              state.NewDgrs(st),
+		CommandStore:       cmdstore.NewRedisCmdStore(rd),
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
 	})
+	if err != nil {
+		return
+	}
 
 	err = k.RegisterCommands(
 		new(slashcommands.Autorole),
