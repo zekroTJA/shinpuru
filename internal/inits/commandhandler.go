@@ -7,10 +7,11 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/services/cmdstore"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/slashcommands"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/state"
@@ -24,7 +25,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 
 	k, err = ken.New(session, ken.Options{
 		State:              state.NewDgrs(st),
-		CommandStore:       cmdstore.NewRedisCmdStore(rd),
+		CommandStore:       rediscmdstore.New(rd, fmt.Sprintf("snp:cmdstore:%s", embedded.AppCommit)),
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,

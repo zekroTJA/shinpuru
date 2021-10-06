@@ -1,15 +1,8 @@
-package cmdstore
+package rediscmdstore
 
 import (
 	"encoding/json"
-	"fmt"
-
-	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
-
-const keyNamePattern = "snp:cmdstore:%s"
-
-var keyName = fmt.Sprintf(keyNamePattern, embedded.AppCommit)
 
 func mapToString(m map[string]string) (res string, err error) {
 	b, err := json.Marshal(m)
