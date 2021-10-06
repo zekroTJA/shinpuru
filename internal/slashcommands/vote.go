@@ -137,24 +137,21 @@ func (c *Vote) Run(ctx *ken.Ctx) (err error) {
 		return
 	}
 
-	switch ctx.Event.ApplicationCommandData().Options[0].Name {
-	case "create":
-		return c.create(ctx)
-	case "list":
-		return c.list(ctx)
-	case "expire":
-		return c.expire(ctx)
-	case "close":
-		return c.close(ctx)
-	}
+	err = ctx.HandleSubCommands(
+		ken.SubCommandHandler{"create", c.create},
+		ken.SubCommandHandler{"list", c.list},
+		ken.SubCommandHandler{"expire", c.expire},
+		ken.SubCommandHandler{"close", c.close},
+	)
+
 	return
 }
 
-func (c *Vote) create(ctx *ken.Ctx) (err error) {
+func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	body := ctx.Options().Options(0).GetByName("body").StringValue()
-	choises := ctx.Options().Options(0).GetByName("choises").StringValue()
+	body := ctx.Options().GetByName("body").StringValue()
+	choises := ctx.Options().GetByName("choises").StringValue()
 	split := strings.Split(choises, ",")
 	if len(split) < 2 || len(split) > 10 {
 		return ctx.FollowUpError(
@@ -171,12 +168,12 @@ func (c *Vote) create(ctx *ken.Ctx) (err error) {
 	}
 
 	var imgLink string
-	if imgLinkV, ok := ctx.Options().Options(0).GetByNameOptional("imageurl"); ok {
+	if imgLinkV, ok := ctx.Options().GetByNameOptional("imageurl"); ok {
 		imgLink = imgLinkV.StringValue()
 	}
 
 	var expires time.Time
-	if expiresV, ok := ctx.Options().Options(0).GetByNameOptional("timeout"); ok {
+	if expiresV, ok := ctx.Options().GetByNameOptional("timeout"); ok {
 		expiresDuration, err := time.ParseDuration(expiresV.StringValue())
 		if err != nil {
 			return ctx.FollowUpError(
@@ -205,7 +202,7 @@ func (c *Vote) create(ctx *ken.Ctx) (err error) {
 		return err
 	}
 
-	chV, ok := ctx.Options().Options(0).GetByNameOptional("channel")
+	chV, ok := ctx.Options().GetByNameOptional("channel")
 
 	var msg *discordgo.Message
 	if ok {
@@ -245,7 +242,7 @@ func (c *Vote) create(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Vote) list(ctx *ken.Ctx) (err error) {
+func (c *Vote) list(ctx *ken.SubCommandCtx) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Description: "Your open votes on this guild:",
 		Color:       static.ColorEmbedDefault,
@@ -263,10 +260,10 @@ func (c *Vote) list(ctx *ken.Ctx) (err error) {
 	return err
 }
 
-func (c *Vote) expire(ctx *ken.Ctx) (err error) {
+func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	expireDuration, err := time.ParseDuration(ctx.Options().Options(0).GetByName("timeout").StringValue())
+	expireDuration, err := time.ParseDuration(ctx.Options().GetByName("timeout").StringValue())
 	if err != nil {
 		return ctx.FollowUpError(
 			"Invalid duration format. Please take a look "+
@@ -274,7 +271,7 @@ func (c *Vote) expire(ctx *ken.Ctx) (err error) {
 			Error
 	}
 
-	id := ctx.Options().Options(0).Get(0).StringValue()
+	id := ctx.Options().Get(0).StringValue()
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
 		if v.GuildID == ctx.Event.GuildID && v.ID == id {
@@ -292,16 +289,16 @@ func (c *Vote) expire(ctx *ken.Ctx) (err error) {
 	}).Error
 }
 
-func (c *Vote) close(ctx *ken.Ctx) (err error) {
+func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	state := vote.VoteStateClosed
 
-	if showChartV, ok := ctx.Options().Options(0).GetByNameOptional("chart"); ok && !showChartV.BoolValue() {
+	if showChartV, ok := ctx.Options().GetByNameOptional("chart"); ok && !showChartV.BoolValue() {
 		state = vote.VoteStateClosedNC
 	}
 
-	id := ctx.Options().Options(0).GetByName("id").StringValue()
+	id := ctx.Options().GetByName("id").StringValue()
 
 	if strings.ToLower(id) == "all" {
 		var i int
