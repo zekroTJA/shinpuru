@@ -80,6 +80,10 @@ func (c *Ban) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Ban) Run(ctx *ken.Ctx) (err error) {
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	victim := ctx.Event.ApplicationCommandData().Options[0].UserValue(nil)
 
 	if victim.ID == ctx.User().ID {
@@ -123,22 +127,6 @@ func (c *Ban) Run(ctx *ken.Ctx) (err error) {
 			"Please enter a valid report description.").
 			DeleteAfter(8 * time.Second).Error()
 	}
-
-	/* attachments cannot be send in a slash command at this stage of time
-	repMsg, attachment = imgstore.ExtractFromMessage(repMsg, ctx.GetMessage().Attachments)
-	if attachment != "" {
-		img, err := imgstore.DownloadFromURL(attachment)
-		if err == nil && img != nil {
-			st, _ := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
-			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
-				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-			if err != nil {
-				return err
-			}
-			attachment = img.ID.String()
-		}
-	}
-	*/
 
 	cfg, _ := ctx.Get(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.Get(static.DiReport).(*report.ReportService)
