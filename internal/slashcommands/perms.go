@@ -220,7 +220,7 @@ func (c *Perms) set(ctx *ken.SubCommandCtx) (err error) {
 func (c *Perms) help(ctx *ken.SubCommandCtx) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
 
-	desc := "If you donÄt know how the permissions system works, " +
+	desc := "If you don't know how the permissions system works, " +
 		"please read [**this**](https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide) " +
 		"wiki article to learn more.\n\n"
 
