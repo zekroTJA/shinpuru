@@ -29,6 +29,10 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
+		EmbedColors: ken.EmbedColors{
+			Default: static.ColorEmbedDefault,
+			Error:   static.ColorEmbedError,
+		},
 	})
 	if err != nil {
 		return
