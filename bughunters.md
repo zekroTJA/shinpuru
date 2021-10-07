@@ -17,6 +17,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `3` |
 | [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 | [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
+| [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `2` |
 | [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57) |  | `1` |
 | [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
 | [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
