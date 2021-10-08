@@ -15,17 +15,23 @@ import (
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/state"
+	"github.com/zekrotja/ken/store"
 )
 
 func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	st := container.Get(static.DiState).(*dgrs.State)
 	perms := container.Get(static.DiPermissions).(*permissions.Permissions)
-	rd := container.Get(static.DiRedis).(*redis.Client)
+	rd, _ := container.Get(static.DiRedis).(*redis.Client)
+
+	var cmdStore store.CommandStore
+	if rd != nil {
+		cmdStore = rediscmdstore.New(rd, fmt.Sprintf("snp:cmdstore:%s", embedded.AppCommit))
+	}
 
 	k, err = ken.New(session, ken.Options{
 		State:              state.NewDgrs(st),
-		CommandStore:       rediscmdstore.New(rd, fmt.Sprintf("snp:cmdstore:%s", embedded.AppCommit)),
+		CommandStore:       cmdStore,
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
