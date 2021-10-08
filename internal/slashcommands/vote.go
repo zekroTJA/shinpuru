@@ -119,7 +119,7 @@ func (c *Vote) Options() []*discordgo.ApplicationCommandOption {
 }
 
 func (c *Vote) Domain() string {
-	return "sp.guild.config.autorole"
+	return "sp.chat.vote"
 }
 
 func (c *Vote) SubDomains() []permissions.SubPermission {

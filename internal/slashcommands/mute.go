@@ -95,7 +95,7 @@ func (c *Mute) Options() []*discordgo.ApplicationCommandOption {
 }
 
 func (c *Mute) Domain() string {
-	return "sp.guild.mod.clear"
+	return "sp.guild.mod.mute"
 }
 
 func (c *Mute) SubDomains() []permissions.SubPermission {
