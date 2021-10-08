@@ -268,6 +268,6 @@ func (l *ListenerCodeexec) checkLimit(userID string) bool {
 }
 
 func (l *ListenerCodeexec) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
-	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec.exec")
+	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec")
 	return allowed, err
 }

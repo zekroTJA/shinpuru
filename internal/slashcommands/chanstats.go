@@ -26,8 +26,8 @@ const (
 type Chanstats struct{}
 
 var (
-	_ ken.Command             = (*Bug)(nil)
-	_ permissions.PermCommand = (*Bug)(nil)
+	_ ken.Command             = (*Chanstats)(nil)
+	_ permissions.PermCommand = (*Chanstats)(nil)
 )
 
 func (c *Chanstats) Name() string {

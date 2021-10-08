@@ -97,12 +97,12 @@ var (
 	}
 
 	AdditionalPermissions = []string{
+		"sp.chat.exec",
 		// "sp.guild.admin.flushdata",
 		// "sp.guild.config.karma",
 		// "sp.guild.config.antiraid",
 		// "sp.guild.config.logs",
 		// "sp.guild.mod.unbanrequests",
-		// "sp.chat.exec.exec",
 		// "sp.chat.colorreactions",
 	}
 )
