@@ -24,8 +24,8 @@ const (
 )
 
 var (
-	_ ken.Command             = (*Bug)(nil)
-	_ permService.PermCommand = (*Bug)(nil)
+	_ ken.Command             = (*Perms)(nil)
+	_ permService.PermCommand = (*Perms)(nil)
 )
 
 func (c *Perms) Name() string {
@@ -114,7 +114,7 @@ func (c *Perms) Options() []*discordgo.ApplicationCommandOption {
 	}
 }
 
-func (c *Bug) DomainName() string {
+func (c *Perms) Domain() string {
 	return "sp.guild.config.perms"
 }
 

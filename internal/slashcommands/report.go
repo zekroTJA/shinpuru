@@ -23,8 +23,8 @@ import (
 type Report struct{}
 
 var (
-	_ ken.Command             = (*Autorole)(nil)
-	_ permissions.PermCommand = (*Autorole)(nil)
+	_ ken.Command             = (*Report)(nil)
+	_ permissions.PermCommand = (*Report)(nil)
 )
 
 func (c *Report) Name() string {

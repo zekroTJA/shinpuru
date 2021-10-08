@@ -24,8 +24,8 @@ import (
 type Mute struct{}
 
 var (
-	_ ken.Command             = (*Clear)(nil)
-	_ permissions.PermCommand = (*Clear)(nil)
+	_ ken.Command             = (*Mute)(nil)
+	_ permissions.PermCommand = (*Mute)(nil)
 )
 
 func (c *Mute) Name() string {
