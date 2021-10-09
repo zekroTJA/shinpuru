@@ -59,6 +59,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Notify),
 		new(slashcommands.Mvall),
 		new(slashcommands.Lock),
+		new(slashcommands.Inviteblock),
 	)
 	if err != nil {
 		return
