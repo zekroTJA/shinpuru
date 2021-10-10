@@ -162,7 +162,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 			msgIds = append(msgIds, m.ID)
 		}
 
-		_, err = acceptmsg.New().
+		amsg, err := acceptmsg.New().
 			WithSession(ctx.Session).
 			WithContent(
 				fmt.Sprintf("Do you really want to delete all %d messages to message %s?", len(msgIds), deleteAfterMsg.ID)).
@@ -177,7 +177,10 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					DeleteAfter(6 * time.Second).Error()
 			}).
 			AsFollowUp(ctx.Ctx)
-		return
+		if err != nil {
+			return err
+		}
+		return amsg.Error()
 	}
 
 	msgIds := make([]string, 0, len(msgs))
@@ -187,7 +190,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 	})
 
 	if len(msgIds) > 0 {
-		_, err = acceptmsg.New().
+		amsg, err := acceptmsg.New().
 			WithSession(ctx.Session).
 			WithContent(
 				fmt.Sprintf("Do you really want to delete all %d selected messages?", len(msgIds))).
@@ -202,7 +205,10 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					DeleteAfter(6 * time.Second).Error()
 			}).
 			AsFollowUp(ctx.Ctx)
-		return
+		if err != nil {
+			return err
+		}
+		return amsg.Error()
 	}
 
 	return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,

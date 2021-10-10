@@ -274,8 +274,10 @@ func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
 		},
 	}
 
-	_, err = acceptMsg.AsFollowUp(ctx.Ctx)
-	return err
+	if _, err = acceptMsg.AsFollowUp(ctx.Ctx); err != nil {
+		return
+	}
+	return acceptMsg.Error()
 }
 
 func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
@@ -346,7 +348,6 @@ func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
 	if _, err = aceptMsg.AsFollowUp(ctx.Ctx); err != nil {
 		return err
 	}
-
 	return aceptMsg.Error()
 }
 
