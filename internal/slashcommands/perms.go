@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
 
 type Perms struct{}
@@ -26,6 +27,7 @@ const (
 var (
 	_ ken.Command             = (*Perms)(nil)
 	_ permService.PermCommand = (*Perms)(nil)
+	_ cmdhelp.HelpProvider    = (*Perms)(nil)
 )
 
 func (c *Perms) Name() string {
@@ -114,6 +116,26 @@ func (c *Perms) Options() []*discordgo.ApplicationCommandOption {
 	}
 }
 
+func (c *Perms) Help(ctx *ken.SubCommandCtx) (emb *discordgo.MessageEmbed, err error) {
+	cfg := ctx.Get(static.DiConfig).(config.Provider)
+
+	desc := "If you don't know how the permissions system works, " +
+		"please read [**this**](https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide) " +
+		"wiki article to learn more.\n\n"
+
+	wsc := cfg.Config().WebServer
+	if wsc.Enabled {
+		desc += fmt.Sprintf("You can also set permissions in the [**web interface**](%s), which "+
+			"is way more visual, interactive and easy than doing it via commands. 😉",
+			wsc.PublicAddr)
+	}
+
+	emb = &discordgo.MessageEmbed{
+		Description: desc,
+	}
+	return
+}
+
 func (c *Perms) Domain() string {
 	return "sp.guild.config.perms"
 }
@@ -130,7 +152,6 @@ func (c *Perms) Run(ctx *ken.Ctx) (err error) {
 	err = ctx.HandleSubCommands(
 		ken.SubCommandHandler{"list", c.list},
 		ken.SubCommandHandler{"set", c.set},
-		ken.SubCommandHandler{"help", c.help},
 	)
 
 	return
@@ -214,24 +235,5 @@ func (c *Perms) set(ctx *ken.SubCommandCtx) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Set permission `%s` for role%s %s.",
 			dns, multipleRoles, strings.Join(rolesIds, ", ")),
-	}).Error
-}
-
-func (c *Perms) help(ctx *ken.SubCommandCtx) (err error) {
-	cfg := ctx.Get(static.DiConfig).(config.Provider)
-
-	desc := "If you don't know how the permissions system works, " +
-		"please read [**this**](https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide) " +
-		"wiki article to learn more.\n\n"
-
-	wsc := cfg.Config().WebServer
-	if wsc.Enabled {
-		desc += fmt.Sprintf("You can also set permissions in the [**web interface**](%s), which "+
-			"is way more visual, interactive and easy than doing it via commands. 😉",
-			wsc.PublicAddr)
-	}
-
-	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-		Description: desc,
 	}).Error
 }

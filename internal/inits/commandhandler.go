@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/ken/middlewares/cmdhelp"
 	"github.com/zekrotja/ken/state"
 	"github.com/zekrotja/ken/store"
 )
@@ -67,6 +68,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 
 	err = k.RegisterMiddlewares(
 		perms,
+		cmdhelp.New("help"),
 	)
 
 	return
