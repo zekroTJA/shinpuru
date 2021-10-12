@@ -66,6 +66,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Modlog),
 		new(slashcommands.Announcements),
 		new(slashcommands.Starboard),
+		new(slashcommands.Colorreation),
 	)
 	if err != nil {
 		return
