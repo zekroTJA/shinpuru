@@ -36,20 +36,20 @@ func (c *Say) Type() discordgo.ApplicationCommandType {
 	return discordgo.ChatApplicationCommand
 }
 
-var commonOpts = []*discordgo.ApplicationCommandOption{
-	{
-		Type:        discordgo.ApplicationCommandOptionChannel,
-		Name:        "channel",
-		Description: "The channel to send the message into (or to edit a message in).",
-	},
-	{
-		Type:        discordgo.ApplicationCommandOptionInteger,
-		Name:        "editmessage",
-		Description: "The ID of the message to be edited.",
-	},
-}
-
 func (c *Say) Options() []*discordgo.ApplicationCommandOption {
+	commonOpts := []*discordgo.ApplicationCommandOption{
+		{
+			Type:        discordgo.ApplicationCommandOptionChannel,
+			Name:        "channel",
+			Description: "The channel to send the message into (or to edit a message in).",
+		},
+		{
+			Type:        discordgo.ApplicationCommandOptionInteger,
+			Name:        "editmessage",
+			Description: "The ID of the message to be edited.",
+		},
+	}
+
 	return []*discordgo.ApplicationCommandOption{
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
