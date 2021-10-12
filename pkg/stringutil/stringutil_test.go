@@ -200,3 +200,20 @@ func TestSpice(t *testing.T) {
 		Splice([]string{"a", "b", "c"}, 1),
 		[]string{"a", "c"})
 }
+
+func TestCapitalize(t *testing.T) {
+	assert.Equal(t, "", Capitalize("", false))
+	assert.Equal(t, "", Capitalize("", true))
+
+	assert.Equal(t, "H", Capitalize("h", false))
+	assert.Equal(t, "H", Capitalize("h", true))
+
+	assert.Equal(t, "Hey", Capitalize("hey", false))
+	assert.Equal(t, "Hey", Capitalize("hey", true))
+
+	assert.Equal(t, "Hey was geht ab", Capitalize("hey was geht ab", false))
+	assert.Equal(t, "Hey Was Geht Ab", Capitalize("hey was geht ab", true))
+
+	assert.Equal(t, "Hey Was Geht Ab", Capitalize("Hey Was Geht Ab", false))
+	assert.Equal(t, "Hey Was Geht Ab", Capitalize("Hey Was Geht Ab", true))
+}

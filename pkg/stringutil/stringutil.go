@@ -129,3 +129,23 @@ func Splice(arr []string, exclude int) []string {
 	}
 	return append(arr[:exclude], arr[exclude+1:]...)
 }
+
+// Capitalize uppercases the first character of the
+// given string.
+//
+// If all is true, all starting characters of all
+// words in the string are capitalized.
+func Capitalize(v string, all bool) string {
+	if v == "" {
+		return ""
+	}
+	if all {
+		split := strings.Split(v, " ")
+		for i, v := range split {
+			split[i] = Capitalize(v, false)
+		}
+		return strings.Join(split, " ")
+	} else {
+		return strings.ToUpper(string(v[0])) + v[1:]
+	}
+}
