@@ -44,7 +44,7 @@ func (c *CmdExec) GetGroup() string {
 }
 
 func (c *CmdExec) GetDomainName() string {
-	return "sp.chat.exec"
+	return "sp.guild.config.exec"
 }
 
 func (c *CmdExec) GetSubPermissionRules() []shireikan.SubPermission {

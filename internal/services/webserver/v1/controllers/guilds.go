@@ -539,7 +539,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 	}
 
 	if gs.JoinMessageChannel != "" && gs.JoinMessageText != "" {
-		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.joinmsg"); err != nil {
+		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.announcements"); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		} else if !ok {
 			return fiber.ErrUnauthorized
@@ -556,7 +556,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 	}
 
 	if gs.LeaveMessageChannel != "" && gs.LeaveMessageText != "" {
-		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.leavemsg"); err != nil {
+		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.announcements"); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		} else if !ok {
 			return fiber.ErrUnauthorized
