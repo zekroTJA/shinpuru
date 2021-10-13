@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
@@ -72,6 +73,7 @@ func (c *CmdTag) IsExecutableInDMChannels() bool {
 
 func (c *CmdTag) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	st, _ := ctx.GetObject(static.DiState).(*dgrs.State)
 
 	if len(ctx.GetArgs()) < 1 {
 		tags, err := db.GetGuildTags(ctx.GetGuild().ID)
@@ -86,7 +88,7 @@ func (c *CmdTag) Exec(ctx shireikan.Context) error {
 		} else {
 			tlist := make([]string, len(tags))
 			for i, t := range tags {
-				tlist[i] = t.AsEntry(ctx.GetSession())
+				tlist[i] = t.AsEntry(st)
 			}
 			resTxt = strings.Join(tlist, "\n")
 		}
@@ -240,12 +242,14 @@ func (c *CmdTag) getRawTag(ctx shireikan.Context, db database.Database) error {
 }
 
 func (c CmdTag) getTag(ctx shireikan.Context, db database.Database) error {
+	st, _ := ctx.GetObject(static.DiState).(*dgrs.State)
+
 	tag, err, ok := getTag(ctx.GetArgs().Get(0).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, tag.AsEmbed(ctx.GetSession()))
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, tag.AsEmbed(st))
 	return err
 }
 
