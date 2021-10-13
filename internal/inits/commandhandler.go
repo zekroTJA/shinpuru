@@ -68,6 +68,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Starboard),
 		new(slashcommands.Colorreation),
 		new(slashcommands.User),
+		new(slashcommands.Twitchnotify),
 	)
 	if err != nil {
 		return
