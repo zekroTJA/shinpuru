@@ -70,6 +70,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.User),
 		new(slashcommands.Twitchnotify),
 		new(slashcommands.Tag),
+		new(slashcommands.Presence),
 	)
 	if err != nil {
 		return
