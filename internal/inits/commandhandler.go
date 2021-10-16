@@ -79,6 +79,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Id),
 		new(slashcommands.Snowflake),
 		new(slashcommands.Maintenance),
+		new(slashcommands.Info),
 	)
 	if err != nil {
 		return
