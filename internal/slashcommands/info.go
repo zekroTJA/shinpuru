@@ -1,6 +1,7 @@
 package slashcommands
 
 import (
+	_ "embed"
 	"fmt"
 	"time"
 
