@@ -2,17 +2,19 @@ package slashcommands
 
 import (
 	"fmt"
-	"strings"
+	"regexp"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
+
+var linkRx = regexp.MustCompile(`^(?:https?:\/\/)?(?:www\.)?discord(?:app)?\.com\/channels\/\d{14,22}\/(\d{14,22})\/(\d{14,22}).*$`)
 
 type Quote struct{}
 
@@ -77,20 +79,19 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 	var quoteMsg *discordgo.Message
 	var fum *ken.FollowUpMessage
-	isLink := stringutil.HasPrefixAny(ident, "https://discordapp.com/channels/", "https://discord.com/channels/", "https://canary.discordapp.com/channels/", "https://canary.discord.com/channels/")
-	if isLink {
-		split := strings.Split(ident, "/")
-		if len(split) < 2 {
-			return ctx.FollowUpError("Invalid message URL.", "").Error
-		}
-		messageID := split[len(split)-1]
-		channelID := split[len(split)-2]
+	linkMatches := linkRx.FindAllStringSubmatch(ident, 2)
+	if len(linkMatches) > 0 {
+		messageID := linkMatches[0][2]
+		channelID := linkMatches[0][1]
 		quoteMsg, err = st.Message(channelID, messageID)
 		if err != nil {
 			return ctx.FollowUpError("Message could not be found.", "").Error
 		}
 	} else {
 		messageID := ident
+		if _, err = snowflake.ParseString(messageID); err != nil {
+			return ctx.FollowUpError("Invlid message ID or link.", "").Error
+		}
 
 		msgSearchEmb := &discordgo.MessageEmbed{
 			Color:       static.ColorEmbedGray,
@@ -172,17 +173,22 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 		}
 	}
 
+	ch, err := st.Channel(quoteMsg.ChannelID)
+	if err != nil {
+		return
+	}
+
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: quoteMsg.Author.AvatarURL(""),
-			Name:    quoteMsg.Author.Mention(),
+			Name:    quoteMsg.Author.String(),
 		},
 		Description: quoteMsg.Content +
 			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg, ctx.Event.GuildID)),
 		Footer: &discordgo.MessageEmbedFooter{
 			IconURL: ctx.User().AvatarURL("16"),
-			Text:    fmt.Sprintf("<#%s> - quoted by: %s", quoteMsg.ChannelID, ctx.User().Mention()),
+			Text:    fmt.Sprintf("#%s - quoted by: %s", ch.Name, ctx.User().String()),
 		},
 		Timestamp: string(quoteMsg.Timestamp),
 	}
