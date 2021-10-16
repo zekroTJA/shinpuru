@@ -20,7 +20,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -170,6 +169,13 @@ func writeCommandDetailsList(document *strings.Builder, groups map[string][]*ken
 }
 
 func writeCommandDetails(document *strings.Builder, cmd *ken.CommandInfo) {
+	var dmCapable bool
+	if v, ok := cmd.Implementations["IsDmCapable"]; ok {
+		dmCapable, _ = v[0].(bool)
+	}
+
+	domain := cmd.Implementations["Domain"][0].(string)
+
 	fmt.Fprintf(document, "### %s\n\n", cmd.ApplicationCommand.Name)
 	fmt.Fprintf(document, "%s\n\n", cmd.ApplicationCommand.Description)
 	fmt.Fprintf(document,
@@ -177,10 +183,30 @@ func writeCommandDetails(document *strings.Builder, cmd *ken.CommandInfo) {
 			"|--|--|\n"+
 			"| Domain Name | %s |\n"+
 			"| Version | %s |\n"+
+			"| DM Capable | %t |\n"+
 			"\n\n",
-		cmd.Implementations["Domain"][0],
+		domain,
 		cmd.ApplicationCommand.Version,
+		dmCapable,
 	)
+
+	subDNSI := cmd.Implementations["SubDomains"]
+	if len(subDNSI) != 0 {
+		subDNS, ok := subDNSI[0].([]permissions.SubPermission)
+		if ok && len(subDNS) != 0 {
+			fmt.Println(subDNS, ok)
+			document.WriteString("#### Sub Permission Rules\n\n")
+			for _, perm := range subDNS {
+				explicit := ""
+				if perm.Explicit {
+					explicit = "`[EXPLICIT]` "
+				}
+				fmt.Fprintf(document, "- **`%s`** %s- %s\n",
+					getTermAssembly(domain, perm.Term), explicit, perm.Description)
+			}
+			document.WriteString("\n\n")
+		}
+	}
 
 	if len(cmd.ApplicationCommand.Options) == 0 {
 		return
@@ -231,9 +257,9 @@ func formatChoises(choises []*discordgo.ApplicationCommandOptionChoice) string {
 	return sb.String()
 }
 
-func getTermAssembly(cmd shireikan.Command, term string) string {
+func getTermAssembly(domain, term string) string {
 	if strings.HasPrefix(term, "/") {
 		return term[1:]
 	}
-	return cmd.GetDomainName() + "." + term
+	return domain + "." + term
 }
