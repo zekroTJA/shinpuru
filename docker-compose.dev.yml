@@ -31,6 +31,7 @@ services:
       - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: 'dev'
+      MYSQL_DATABASE: 'shinpuru'
     volumes:
       - 'mysql-cfg:/etc/mysql'
       - 'mysql-lib:/var/lib/mysql'
