@@ -1,62 +1,36 @@
-1.22.0
+1.23.0
 
-## Changes
+# Changes
 
-### New Config Handling [#274]
+## Slash Command Implementation [#287]
 
-shinpuru now uses [traefik/paerser](https://github.com/traefik/paerser) to parse the configuration from multiple sources at the same time. These are the available configuration sources, sorted by priority.
+> If you want to read the full story, please take a look into this issue: #287.
 
-1. **Command Flags**  
-   Configuration values passed via command flags. Example:
-   ```
-   ./shinpuru \
-       --discord.token "..." \
-       --discord.generalprefix "!"
-   ```
+TLDR: Since Discord will require a privileged intent for message content access after April 2022 (see [this article](https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Access-Deprecation-for-Verified-Bots) for more information), the current command system will not work anymore after that. So [ken](https://github.com/zekrotja/ken) was created as a Discordgo slash command framework and all commands were ported to the new system.
 
-2. **Environment Variables**  
-   Configuration values passed via environment variables prefixed with `SP_`. This is especially useful when hosted via Docker. Example:
-   ```
-   SP_DISCORD_TOKEN="..."
-   SP_DISCORD_GENERALPREFIX="!"
-   ```
+And because slash commands are so well integrated with the Discord chat, this also really improves the user experience when interacting with shinpuru.
 
-3. **Config File**  
-   You can still pass configuration as usual via configuration file. Defaultly, the config is read from `./config.yml`, but you can pass another file location via the `-c` flag. You can also use other configuration formats like JSON or TOML. Example:
-   ```
-   ./shinpuru -c config/config.yml
-   ```
-   > config/config.yml
-   ```yml
-   discord:
-     token: "..."
-     generalprefix: "!"
-   ```
+Due to the changes made, following adjustments were made:
 
-You can combine all configuration sources listed above. Higher priorized configuration sources will overwrite values from less priorized sources.
+- The `report`, `kick` and `ban` command are now combined into the single slash command `/report` where you can specify the `type` as a parameter.
+- The `game` command is now renamed to `/presence` as slash command.
+- The `joinmsg` and `leavemsg` commands are now combined into the single slash command `/announcements` where you can specify the `type` as a parameter.
 
-### Embed Builder
+Also, some commands were not ported to the new command system and will be removed subsequently.
+- The `ment` command is now obsolete because admins can now mention roles even if they are marked as not mentionable.
+- The `prefix` command is now obsolete due to slash commands do not require nor allow custom guild prefixes.
+- The `help` command is now obsolete because command information is directly displayed in the Discord chat when using slash commands.
 
-You can now send and edit embed messages in guild channels using the `POST /api/v1/channels/{id}` and `POST /api/v1/channels/{id}/{messageid}` endpoints.
+The legacy command system is from now marked as **deprecated** and will be fully removed in following updates. To be able to use slash commands, you must kick shinpuru from your guild and re-invite the bot. This is due to a new OAuth2 scope which is required for a bot to be able to register slash commands on your guild.
 
-> This endpoint requires the `sp.chat.say` permission.
+## ⚠️ Permission Adjustments
 
-Here you can find the documentation:
-https://github.com/zekroTJA/shinpuru/blob/master/docs/restapi/v1/restapi.md#channelsid
+Due to the slash command implementation, some permission domain names have changed to maintain consistency. **This will require guild administrators to adjust your permission settings accordingly.**
 
-There is also an embed builder using these endpoints. But because this is still kind of beta, you can currently only access it directly via the following route in the web interface.
-
-```
-/guilds/{guildid}/utils/embeds
-```
-
-![](https://i.imgur.com/T9qEiyU.png)
-
-## Bugfixes
-
-- Fix report time representations. [#276]
-- Fix report unmute reason propagation. [#277]
-- Fix proper timezone handling on report expiration definition.
+- `sp.guild.config.joinmsg` and `sp.guild.config.leavemsg` is now combined into **`sp.guild.config.announcements`**.
+- `sp.chat.exec` has been changed to **`sp.guild.config.exec`**.
+- `sp.guild.config.stats` has been changed to **`sp.guild.config.starboard`**.
+- `sp.game` has been changed to **`sp.presence`**.
 
 # Docker
 
@@ -67,11 +41,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.22.0
+$ docker pull zekro/shinpuru:1.23.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.22.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.23.0
 ```
