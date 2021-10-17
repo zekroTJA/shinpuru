@@ -10,6 +10,8 @@ TLDR: Since Discord will require a privileged intent for message content access 
 
 And because slash commands are so well integrated with the Discord chat, this also really improves the user experience when interacting with shinpuru.
 
+![](https://i.imgur.com/3fzORGL.gif)
+
 Due to the changes made, following adjustments were made:
 
 - The `report`, `kick` and `ban` command are now combined into the single slash command `/report` where you can specify the `type` as a parameter.
@@ -31,6 +33,14 @@ Due to the slash command implementation, some permission domain names have chang
 - `sp.chat.exec` has been changed to **`sp.guild.config.exec`**.
 - `sp.guild.config.stats` has been changed to **`sp.guild.config.starboard`**.
 - `sp.game` has been changed to **`sp.presence`**.
+
+## Access to the Embed Builder
+
+The Embed Builder can now be easily accessed via the `Utilities` tab in the web interface.
+
+![](https://i.imgur.com/ahelE4v.png)
+
+*I admit that this solution might need some improvement. Feel free to share your thoughts in the [issues](https://github.com/zekroTJA/shinpuru/issues) or [discussions](https://github.com/zekroTJA/shinpuru/discussions).* 😄
 
 # Docker
 
