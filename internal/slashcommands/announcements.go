@@ -119,7 +119,11 @@ func (c *Announcements) set(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	if chV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		currChanID = chV.ChannelValue(ctx.Ctx).ID
+		ch := chV.ChannelValue(ctx.Ctx)
+		if ch.Type != discordgo.ChannelTypeGuildText {
+			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
+		}
+		currChanID = ch.ID
 	}
 	if msgV, ok := ctx.Options().GetByNameOptional("message"); ok {
 		currMsg = msgV.StringValue()

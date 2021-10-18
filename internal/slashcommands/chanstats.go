@@ -94,7 +94,11 @@ func (c *Chanstats) Run(ctx *ken.Ctx) (err error) {
 
 	channelID := ctx.Event.ChannelID
 	if channelV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		channelID = channelV.ChannelValue(ctx).ID
+		ch := channelV.ChannelValue(ctx)
+		if ch.Type != discordgo.ChannelTypeGuildText {
+			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
+		}
+		channelID = ch.ID
 	}
 
 	limit := hardMessageLimit

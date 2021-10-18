@@ -170,7 +170,11 @@ func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (
 
 	chanID := ctx.Event.ChannelID
 	if chanV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		chanID = chanV.ChannelValue(ctx.Ctx).ID
+		ch := chanV.ChannelValue(ctx.Ctx)
+		if ch.Type != discordgo.ChannelTypeGuildText {
+			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
+		}
+		chanID = ch.ID
 	}
 
 	messageID := ""

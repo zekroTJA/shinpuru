@@ -96,7 +96,11 @@ func (c *Starboard) set(ctx *ken.SubCommandCtx) (err error) {
 	starboardConfig, err := c.getConfig(ctx)
 
 	if v, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		starboardConfig.ChannelID = v.ChannelValue(ctx.Ctx).ID
+		ch := v.ChannelValue(ctx.Ctx)
+		if ch.Type != discordgo.ChannelTypeGuildText {
+			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
+		}
+		starboardConfig.ChannelID = ch.ID
 	}
 	if v, ok := ctx.Options().GetByNameOptional("threshold"); ok {
 		starboardConfig.Threshold = int(v.IntValue())

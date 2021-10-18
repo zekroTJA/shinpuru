@@ -206,14 +206,17 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 
 	var msg *discordgo.Message
 	if ok {
-		chanID := chV.Value.(string)
-		msg, err = ctx.Session.ChannelMessageSendEmbed(chanID, emb)
+		ch := chV.ChannelValue(ctx.Ctx)
+		if ch.Type != discordgo.ChannelTypeGuildText {
+			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
+		}
+		msg, err = ctx.Session.ChannelMessageSendEmbed(ch.ID, emb)
 		if err != nil {
 			return
 		}
 		msgLink := discordutil.GetMessageLink(msg, ctx.Event.GuildID)
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-			Description: fmt.Sprintf("[Vote](%s) created in channel <#%s>.", msgLink, chanID),
+			Description: fmt.Sprintf("[Vote](%s) created in channel <#%s>.", msgLink, ch.ID),
 		}).Error
 		if err != nil {
 			return
