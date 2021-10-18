@@ -30,7 +30,7 @@ jobs:
 
       - name: Build and push to wiki
         run: |
-          go run ./cmd/cmdman -o ./docs/commandsManual.md
+          go run cmd/cmdman/v2/main.go -o ./docs/commandsManual.md
           git clone https://zekroTJA:${{ secrets.GITHUB_TOKEN }}@github.com/zekroTJA/shinpuru.wiki.git
           mv ./docs/commandsManual.md ./shinpuru.wiki/Commands.md
           git -C ./shinpuru.wiki add .

@@ -194,7 +194,6 @@ func writeCommandDetails(document *strings.Builder, cmd *ken.CommandInfo) {
 	if len(subDNSI) != 0 {
 		subDNS, ok := subDNSI[0].([]permissions.SubPermission)
 		if ok && len(subDNS) != 0 {
-			fmt.Println(subDNS, ok)
 			document.WriteString("#### Sub Permission Rules\n\n")
 			for _, perm := range subDNS {
 				explicit := ""
