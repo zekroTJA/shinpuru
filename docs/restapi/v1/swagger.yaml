@@ -9,6 +9,36 @@ definitions:
       timestamp:
         type: string
     type: object
+  discordgo.ApplicationCommandOption:
+    properties:
+      choices:
+        items:
+          $ref: '#/definitions/discordgo.ApplicationCommandOptionChoice'
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/discordgo.ApplicationCommandOption'
+        type: array
+      required:
+        description: |-
+          NOTE: This feature was on the API, but at some point developers decided to remove it.
+          So I commented it, until it will be officially on the docs.
+          Default     bool                              `json:"default"`
+        type: boolean
+      type:
+        type: integer
+    type: object
+  discordgo.ApplicationCommandOptionChoice:
+    properties:
+      name:
+        type: string
+      value:
+        type: object
+    type: object
   discordgo.Channel:
     properties:
       application_id:
@@ -120,6 +150,11 @@ definitions:
       pending:
         description: Is true while the member hasn't accepted the membership screen.
         type: boolean
+      permissions:
+        description: Total permissions of the member in the channel, including overrides,
+          returned when in the interaction object.
+        example: "0"
+        type: string
       premium_since:
         description: When the user used their Nitro boost on the server
         type: string
@@ -210,8 +245,10 @@ definitions:
         type: array
       message_reference:
         $ref: '#/definitions/discordgo.MessageReference'
-        description: MessageReference contains reference data sent with crossposted
-          messages
+        description: |-
+          MessageReference contains reference data sent with crossposted or reply messages.
+          This does not contain the reference *to* this message; this is for when *this* message references another.
+          To generate a reference to this message, use (*Message).Reference().
       pinned:
         description: Whether the message is pinned or not.
         type: boolean
@@ -826,6 +863,11 @@ definitions:
       pending:
         description: Is true while the member hasn't accepted the membership screen.
         type: boolean
+      permissions:
+        description: Total permissions of the member in the channel, including overrides,
+          returned when in the interaction object.
+        example: "0"
+        type: string
       premium_since:
         description: When the user used their Nitro boost on the server
         type: string
@@ -913,6 +955,29 @@ definitions:
         items:
           $ref: '#/definitions/models.Member'
         type: array
+    type: object
+  models.SlashCommandInfo:
+    properties:
+      description:
+        type: string
+      dm_capable:
+        type: boolean
+      domain:
+        type: string
+      group:
+        type: string
+      name:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/discordgo.ApplicationCommandOption'
+        type: array
+      subdomains:
+        items:
+          $ref: '#/definitions/permissions.SubPermission'
+        type: array
+      version:
+        type: string
     type: object
   models.StarboardEntryResponse:
     properties:
@@ -1080,6 +1145,15 @@ definitions:
     properties:
       enabled:
         type: boolean
+    type: object
+  permissions.SubPermission:
+    properties:
+      description:
+        type: string
+      explicit:
+        type: boolean
+      term:
+        type: string
     type: object
   presence.Presence:
     properties:
@@ -3614,6 +3688,23 @@ paths:
           schema:
             $ref: '#/definitions/models.LandingPageResponse'
       summary: Landing Page Info
+      tags:
+      - Utilities
+  /util/slashcommands:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of registered slash commands and their description.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              $ref: '#/definitions/models.SlashCommandInfo'
+            type: array
+      summary: Slash Command List
       tags:
       - Utilities
 swagger: "2.0"

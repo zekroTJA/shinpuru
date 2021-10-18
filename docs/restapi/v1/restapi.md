@@ -1892,6 +1892,23 @@ Returns general information for the landing page like the local invite parameter
 | ---- | ----------- | ------ |
 | 200 | OK | [models.LandingPageResponse](#modelslandingpageresponse) |
 
+### /util/slashcommands
+
+#### GET
+##### Summary
+
+Slash Command List
+
+##### Description
+
+Returns a list of registered slash commands and their description.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [models.SlashCommandInfo](#modelsslashcommandinfo) ] |
+
 ### Models
 
 #### backupmodels.Entry
@@ -1901,6 +1918,24 @@ Returns general information for the landing page like the local invite parameter
 | file_id | string |  | No |
 | guild_id | string |  | No |
 | timestamp | string |  | No |
+
+#### discordgo.ApplicationCommandOption
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| choices | [ [discordgo.ApplicationCommandOptionChoice](#discordgoapplicationcommandoptionchoice) ] |  | No |
+| description | string |  | No |
+| name | string |  | No |
+| options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
+| required | boolean | NOTE: This feature was on the API, but at some point developers decided to remove it. So I commented it, until it will be officially on the docs. Default     bool                              `json:"default"` | No |
+| type | integer |  | No |
+
+#### discordgo.ApplicationCommandOptionChoice
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | No |
+| value | object |  | No |
 
 #### discordgo.Channel
 
@@ -1948,6 +1983,7 @@ Returns general information for the landing page like the local invite parameter
 | mute | boolean | Whether the member is muted at a guild level. | No |
 | nick | string | The nickname of the member, if they have one. | No |
 | pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
+| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>_Example:_ `"0"` | No |
 | premium_since | string | When the user used their Nitro boost on the server | No |
 | roles | [ string ] | A list of IDs of the roles which are possessed by the member. | No |
 | user | [discordgo.User](#discordgouser) | The underlying user on which the member is based. | No |
@@ -1972,7 +2008,7 @@ Returns general information for the landing page like the local invite parameter
 | mention_everyone | boolean | Whether the message mentions everyone. | No |
 | mention_roles | [ string ] | The roles mentioned in the message. | No |
 | mentions | [ [discordgo.User](#discordgouser) ] | A list of users mentioned in the message. | No |
-| message_reference | [discordgo.MessageReference](#discordgomessagereference) | MessageReference contains reference data sent with crossposted messages | No |
+| message_reference | [discordgo.MessageReference](#discordgomessagereference) | MessageReference contains reference data sent with crossposted or reply messages. This does not contain the reference *to* this message; this is for when *this* message references another. To generate a reference to this message, use (*Message).Reference(). | No |
 | pinned | boolean | Whether the message is pinned or not. | No |
 | reactions | [ [discordgo.MessageReactions](#discordgomessagereactions) ] | A list of reactions to the message. | No |
 | timestamp | string | The time at which the messsage was sent. CAUTION: this field may be removed in a future API version; it is safer to calculate the creation time via the ID. | No |
@@ -2372,6 +2408,7 @@ Returns general information for the landing page like the local invite parameter
 | mute | boolean | Whether the member is muted at a guild level. | No |
 | nick | string | The nickname of the member, if they have one. | No |
 | pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
+| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>_Example:_ `"0"` | No |
 | premium_since | string | When the user used their Nitro boost on the server | No |
 | roles | [ string ] | A list of IDs of the roles which are possessed by the member. | No |
 | user | [discordgo.User](#discordgouser) | The underlying user on which the member is based. | No |
@@ -2433,6 +2470,19 @@ Returns general information for the landing page like the local invite parameter
 | ---- | ---- | ----------- | -------- |
 | guilds | [ [models.GuildReduced](#modelsguildreduced) ] |  | No |
 | members | [ [models.Member](#modelsmember) ] |  | No |
+
+#### models.SlashCommandInfo
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| description | string |  | No |
+| dm_capable | boolean |  | No |
+| domain | string |  | No |
+| group | string |  | No |
+| name | string |  | No |
+| options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
+| subdomains | [ [permissions.SubPermission](#permissionssubpermission) ] |  | No |
+| version | string |  | No |
 
 #### models.StarboardEntryResponse
 
@@ -2526,6 +2576,14 @@ Returns general information for the landing page like the local invite parameter
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | enabled | boolean |  | No |
+
+#### permissions.SubPermission
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| description | string |  | No |
+| explicit | boolean |  | No |
+| term | string |  | No |
 
 #### presence.Presence
 
