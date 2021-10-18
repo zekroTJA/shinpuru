@@ -15,9 +15,9 @@
     <div>
       <a
         *ngFor="let c of kv.value | commandSort"
-        [class.selected]="lastSelected === c.invokes[0]"
-        (click)="scrollTo('#' + c.invokes[0]); lastSelected = c.invokes[0]"
-        >{{ c.invokes[0] }}</a
+        [class.selected]="lastSelected === c.name"
+        (click)="scrollTo('#' + c.name); lastSelected = c.name"
+        >{{ c.name }}</a
       >
     </div>
   </div>
@@ -28,38 +28,79 @@
   <div
     *ngFor="let c of kv.value | commandSort"
     class="command-tile"
-    [id]="c.invokes[0]"
+    [id]="c.name"
   >
     <div class="flex-center">
-      <h5>{{ c.invokes[0] }}</h5>
-      <p class="embedded ml-2">{{ c.domain_name }}</p>
+      <h5>{{ c.name }}</h5>
+      <p class="embedded ml-2">{{ c.domain }}</p>
+      <p class="embedded ml-2">v{{ c.version }}</p>
       <span
-        *ngIf="c.is_executable_in_dm"
+        *ngIf="c.dm_capable"
         class="dmc-badge"
         [ngbTooltip]="dmcToolTipContent"
         >DMC</span
       >
     </div>
-    <div class="mt-3">
-      <span *ngFor="let invoke of c.invokes" class="invoke">{{ invoke }}</span>
-    </div>
     <div class="mt-4 details">
       <h6>Description</h6>
       <span>{{ c.description }}</span>
     </div>
-    <div class="mt-4 details">
-      <h6>Help</h6>
-      <markdown [data]="c.help.split('\n').join('<br />')"></markdown>
-    </div>
-    <div *ngIf="c.sub_permission_rules?.length > 0" class="mt-3 details">
-      <h6>Sub Permission Rules</h6>
+    <div *ngIf="c.subdomains?.length > 0" class="mt-4 details">
+      <h6>Sub Domains</h6>
       <ul>
-        <li *ngFor="let spr of c.sub_permission_rules">
-          <span>{{ getCommandSubPermTerm(c, spr) }} - </span>
-          <span *ngIf="spr.explicit">[EXPLICIT] - </span>
-          <span>{{ spr.description }}</span>
+        <li *ngFor="let sp of c.subdomains">
+          {{ getCommandSubPermTerm(c, sp) }}
         </li>
       </ul>
+    </div>
+    <div *ngIf="hasSubCommands(c)" class="mt-4 details">
+      <h6>Sub Commands</h6>
+      <div *ngFor="let opt of c.options" class="sub-command mt-3">
+        <p>
+          <strong>{{ opt.name }}</strong>
+        </p>
+        <p>
+          <i>{{ opt.description }}</i>
+        </p>
+        <table *ngIf="opt.options?.length > 0">
+          <tbody>
+            <tr>
+              <th>Argument</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+            <tr *ngFor="let subOpt of opt.options">
+              <td>{{ subOpt.name }}</td>
+              <td>{{ subOpt | commandOptionType }}</td>
+              <td>{{ subOpt.required ? 'yes' : 'no' }}</td>
+              <td>{{ subOpt.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      *ngIf="!hasSubCommands(c) && c.options?.length > 0"
+      class="mt-4 details"
+    >
+      <h6>Arguments</h6>
+      <table>
+        <tbody>
+          <tr>
+            <th>Argument</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr *ngFor="let opt of c.options">
+            <td>{{ opt.name }}</td>
+            <td>{{ opt | commandOptionType }}</td>
+            <td>{{ opt.required ? 'yes' : 'no' }}</td>
+            <td>{{ opt.description }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

@@ -201,14 +201,41 @@ export interface SubPermission {
   description: string;
 }
 
-export interface CommandInfo {
-  invokes: string[];
+export enum CommandOptionType {
+  SUBCOMMAND = 1,
+  SUBCOMMANDGROUP = 2,
+  STRING = 3,
+  INTEGER = 4,
+  BOOLEAN = 5,
+  USER = 6,
+  CHANNEL = 7,
+  ROLE = 8,
+  MENTIONABLE = 9,
+}
+
+export interface CommandOptionChoise {
+  name: string;
+  value: string;
+}
+
+export interface CommandOption {
+  type: CommandOptionType;
+  name: string;
   description: string;
-  help: string;
+  required: boolean;
+  choices: CommandOptionChoise[];
+  options: CommandOption[];
+}
+
+export interface CommandInfo {
+  name: string;
+  description: string;
+  version: string;
+  domain: string;
+  dm_capable: boolean;
+  subdomains: SubPermission[];
+  options: CommandOption[];
   group: string;
-  domain_name: string;
-  is_executable_in_dm: boolean;
-  sub_permission_rules: SubPermission[];
 }
 
 export interface KarmaSettings {

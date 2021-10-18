@@ -2,7 +2,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import { CommandInfo, SubPermission } from 'src/app/api/api.models';
+import {
+  CommandInfo,
+  CommandOptionType,
+  SubPermission,
+} from 'src/app/api/api.models';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -32,7 +36,7 @@ export class CommandsComponent implements OnInit {
 
   getCommandSubPermTerm(cmd: CommandInfo, sp: SubPermission): string {
     if (sp.term.startsWith('/')) return sp.term.substr(1);
-    return cmd.domain_name + '.' + sp.term;
+    return cmd.domain + '.' + sp.term;
   }
 
   scrollTo(selector: string) {
@@ -55,6 +59,13 @@ export class CommandsComponent implements OnInit {
     this.fetchGroups(val);
   }
 
+  hasSubCommands(cmd: CommandInfo) {
+    return (
+      cmd.options.length != 0 &&
+      cmd.options[0].type === CommandOptionType.SUBCOMMAND
+    );
+  }
+
   private fetchGroups(filter?: string) {
     const groups: { [key: string]: CommandInfo[] } = {};
 
@@ -72,11 +83,11 @@ export class CommandsComponent implements OnInit {
   private commandFilterFunc(c: CommandInfo, f: string): boolean {
     f = f.toLowerCase();
 
-    if (c.invokes.find((i) => i.toLowerCase().includes(f))) {
+    if (c.name.toLowerCase().includes(f)) {
       return true;
     }
 
-    if (c.domain_name.toLowerCase().includes(f)) {
+    if (c.domain.toLowerCase().includes(f)) {
       return true;
     }
 

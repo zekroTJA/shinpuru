@@ -8,6 +8,6 @@ import { CommandInfo } from 'src/app/api/api.models';
 })
 export class CommandSortPipe implements PipeTransform {
   transform(list: CommandInfo[]): CommandInfo[] {
-    return list.sort((a, b) => (a.invokes[0] < b.invokes[0] ? -1 : 1));
+    return list.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
 }
