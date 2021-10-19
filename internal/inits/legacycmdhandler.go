@@ -58,7 +58,6 @@ func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
-	cmdHandler.RegisterMiddleware(&middleware.CommandStatsMiddleware{})
 
 	if cfg.Config().Logging.CommandLogging {
 		cmdHandler.RegisterMiddleware(&middleware.LoggerMiddlewrae{})
