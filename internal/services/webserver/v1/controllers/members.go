@@ -75,14 +75,25 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	// TODO: use state here
-	members, err := c.session.GuildMembers(guildID, after, limit)
+	members, err := c.st.Members(guildID)
 	if err != nil {
 		return err
 	}
 
-	memblen := len(members)
-	fhmembers := make([]*models.Member, memblen)
+	if after == "" {
+		for i := 0; i < len(members); i++ {
+			if members[i].User.ID == after {
+				members = members[i+1:]
+				break
+			}
+		}
+	}
+
+	if limit > 0 && limit < len(members) {
+		members = members[:limit]
+	}
+
+	fhmembers := make([]*models.Member, len(members))
 
 	for i, m := range members {
 		fhmembers[i] = models.MemberFromMember(m)
