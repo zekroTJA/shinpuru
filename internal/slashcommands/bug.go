@@ -43,10 +43,6 @@ func (c *Bug) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Bug) Run(ctx *ken.Ctx) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "How to report a bug or request a feature",
@@ -69,7 +65,7 @@ func (c *Bug) Run(ctx *ken.Ctx) (err error) {
 			},
 		},
 	}
-	err = ctx.FollowUpEmbed(emb).Error
 
+	err = ctx.RespondEmbed(emb)
 	return
 }
