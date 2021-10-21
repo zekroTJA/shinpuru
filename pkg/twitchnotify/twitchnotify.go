@@ -190,6 +190,7 @@ func (w *NotifyWorker) getBearerToken() error {
 	if err != nil {
 		return err
 	}
+	defer res.Release()
 
 	var token bearerTokenResponse
 	if err = res.JSON(&token); err != nil {
@@ -222,6 +223,7 @@ func (w *NotifyWorker) doAuthenticatedGet(url string, data interface{}) (err err
 	if err != nil {
 		return
 	}
+	defer res.Release()
 
 	err = res.JSON(data)
 
