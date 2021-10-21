@@ -16,6 +16,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 )
 
 // UserIdent is the type of identificator for getting
@@ -36,7 +37,8 @@ const (
 )
 
 var (
-	ErrNotFound            = errors.New("not found")
+	ErrUserNotFound        = errors.New("user not found")
+	ErrGameNotFound        = errors.New("game not found")
 	ErrInvalidResponseType = errors.New("invalid response type")
 	ErrMaxUsersReached     = errors.New("max registered users reached")
 )
@@ -122,7 +124,7 @@ func (w *NotifyWorker) GetUser(identifyer string, typ UserIdent) (*User, error) 
 	}
 
 	if len(data.Data) < 1 || data.Data[0] == nil {
-		return nil, ErrNotFound
+		return nil, ErrUserNotFound
 	}
 
 	return data.Data[0], nil
@@ -266,7 +268,7 @@ func (w *NotifyWorker) getGame(gameID string) (*Game, error) {
 	}
 
 	if len(data.Data) < 1 || data.Data[0] == nil {
-		return nil, ErrNotFound
+		return nil, ErrGameNotFound
 	}
 
 	game = data.Data[0]
@@ -289,6 +291,7 @@ func (w *NotifyWorker) Handle() error {
 
 	// Execute wentOnlineHandler for each stream which
 	// is now live and was not live in the request before.
+	mErr := multierror.New()
 	for _, stream := range streams {
 		var wasOnline bool
 
@@ -306,9 +309,7 @@ func (w *NotifyWorker) Handle() error {
 		}
 
 		game, err := w.getGame(stream.GameID)
-		if err != nil {
-			return err
-		}
+		mErr.Append(err)
 
 		stream.Game = game
 		stream.ThumbnailURL = strings.Replace(stream.ThumbnailURL, "{width}x{height}", "1280x720", 1)
@@ -342,5 +343,5 @@ func (w *NotifyWorker) Handle() error {
 	w.wereLive = make([]*Stream, len(streams))
 	copy(w.wereLive, streams)
 
-	return nil
+	return mErr.Nillify()
 }
