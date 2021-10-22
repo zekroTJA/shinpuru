@@ -26,7 +26,7 @@ func (c *Ghostping) Description() string {
 }
 
 func (c *Ghostping) Version() string {
-	return "1.0.0"
+	return "1.0.1"
 }
 
 func (c *Ghostping) Type() discordgo.ApplicationCommandType {
@@ -49,6 +49,7 @@ func (c *Ghostping) Options() []*discordgo.ApplicationCommandOption {
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "message",
 					Description: "The ghost ping message pattern. Use `/ghostping help` to get more info.",
+					Required:    true,
 				},
 			},
 		},
