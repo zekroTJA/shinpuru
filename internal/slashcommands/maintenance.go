@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
@@ -28,7 +29,7 @@ func (c *Maintenance) Description() string {
 }
 
 func (c *Maintenance) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Maintenance) Type() discordgo.ApplicationCommandType {
@@ -71,6 +72,11 @@ func (c *Maintenance) Options() []*discordgo.ApplicationCommandOption {
 			Name:        "reconnect",
 			Description: "Reconnects the Discord session.",
 		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "reload-config",
+			Description: "Reloads the bots config.",
+		},
 	}
 }
 
@@ -95,6 +101,7 @@ func (c *Maintenance) Run(ctx *ken.Ctx) (err error) {
 		ken.SubCommandHandler{"flush-state", c.flushState},
 		ken.SubCommandHandler{"kill", c.kill},
 		ken.SubCommandHandler{"reconnect", c.reconnect},
+		ken.SubCommandHandler{"reload-config", c.reloadConfig},
 	)
 
 	return
@@ -156,5 +163,17 @@ func (c *Maintenance) reconnect(ctx *ken.SubCommandCtx) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "✅ Successfully reconnected.",
 		Color:       static.ColorEmbedGreen,
+	}).Error
+}
+
+func (c *Maintenance) reloadConfig(ctx *ken.SubCommandCtx) (err error) {
+	cfg := ctx.Get(static.DiConfig).(config.Provider)
+
+	if err = cfg.Parse(); err != nil {
+		return
+	}
+
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: "Config has been reloaded.\n\nSome config changes will only take effect after a restart!",
 	}).Error
 }
