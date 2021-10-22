@@ -132,6 +132,7 @@ func (d *DiscordOAuth) HandlerCallback(ctx *fiber.Ctx) error {
 	// 2. Request getting user ID
 
 	req.Header.Reset()
+	req.ResetBody()
 	req.Header.SetMethod("GET")
 	req.SetRequestURI(endpointMe)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", resAuthBody.AccessToken))
