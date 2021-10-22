@@ -15,24 +15,28 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/etag"
 	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/ken"
 )
 
 type UtilController struct {
-	session    *discordgo.Session
-	cfg        config.Provider
-	cmdHandler shireikan.Handler
-	st         *dgrs.State
+	session          *discordgo.Session
+	cfg              config.Provider
+	legacyCmdHandler shireikan.Handler
+	cmdHandler       *ken.Ken
+	st               *dgrs.State
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.legacyCmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
+	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)
 	router.Get("/color/:hexcode", c.getColor)
 	router.Get("/commands", c.getCommands)
+	router.Get("/slashcommands", c.getSlashCommands)
 }
 
 // @Summary Landing Page Info
@@ -133,7 +137,7 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"
 // @Router /util/commands [get]
 func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
-	cmdInstances := c.cmdHandler.GetCommandInstances()
+	cmdInstances := c.legacyCmdHandler.GetCommandInstances()
 	cmdInfos := make([]*models.CommandInfo, len(cmdInstances))
 
 	for i, c := range cmdInstances {
@@ -144,4 +148,22 @@ func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
 	list := &models.ListResponse{N: len(cmdInfos), Data: cmdInfos}
 
 	return ctx.JSON(list)
+}
+
+// @Summary Slash Command List
+// @Description Returns a list of registered slash commands and their description.
+// @Tags Utilities
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.SlashCommandInfo "Wrapped in models.ListResponse"
+// @Router /util/slashcommands [get]
+func (c *UtilController) getSlashCommands(ctx *fiber.Ctx) error {
+	cmdInfo := c.cmdHandler.GetCommandInfo()
+	res := make([]*models.SlashCommandInfo, len(cmdInfo))
+
+	for i, ci := range cmdInfo {
+		res[i] = models.GetSlashCommandInfoFromCommand(ci)
+	}
+
+	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
 }

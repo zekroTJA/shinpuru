@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,10 +12,12 @@ import (
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	permService "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/ken"
 )
 
 var Ok = &Status{200}
@@ -164,7 +167,7 @@ type ReasonRequest struct {
 type ReportRequest struct {
 	*ReasonRequest
 
-	Type sharedmodels.Type `json:"type"`
+	Type sharedmodels.ReportType `json:"type"`
 }
 
 // InviteSettingsRequest is the request model
@@ -268,6 +271,20 @@ type CommandInfo struct {
 	DomainName         string                    `json:"domain_name"`
 	SubPermissionRules []shireikan.SubPermission `json:"sub_permission_rules"`
 	IsExecutableInDM   bool                      `json:"is_executable_in_dm"`
+}
+
+// SlashCommandInfo wraps a slash command object
+// containing all information of a slash command
+// instance.
+type SlashCommandInfo struct {
+	Name        string                                `json:"name"`
+	Description string                                `json:"description"`
+	Version     string                                `json:"version"`
+	Options     []*discordgo.ApplicationCommandOption `json:"options"`
+	Domain      string                                `json:"domain"`
+	SubDomains  []permService.SubPermission           `json:"subdomains"`
+	DmCapable   bool                                  `json:"dm_capable"`
+	Group       string                                `json:"group"`
 }
 
 // KarmaSettings wraps settings properties for
@@ -477,4 +494,25 @@ func GetCommandInfoFromCommand(cmd shireikan.Command) *CommandInfo {
 		IsExecutableInDM:   cmd.IsExecutableInDMChannels(),
 		SubPermissionRules: cmd.GetSubPermissionRules(),
 	}
+}
+
+func GetSlashCommandInfoFromCommand(cmd *ken.CommandInfo) (ci *SlashCommandInfo) {
+	ci = new(SlashCommandInfo)
+
+	ci.Name = cmd.ApplicationCommand.Name
+	ci.Description = cmd.ApplicationCommand.Description
+	ci.Options = cmd.ApplicationCommand.Options
+	ci.Version = cmd.ApplicationCommand.Version
+	ci.Domain = cmd.Implementations["Domain"][0].(string)
+	ci.SubDomains = cmd.Implementations["SubDomains"][0].([]permService.SubPermission)
+
+	if v, ok := cmd.Implementations["IsDmCapable"]; ok && len(v) != 0 {
+		ci.DmCapable = v[0].(bool)
+	}
+
+	domainSplit := strings.Split(ci.Domain, ".")
+	ci.Group = strings.Join(domainSplit[1:len(domainSplit)-1], " ")
+	ci.Group = strings.ToUpper(ci.Group)
+
+	return
 }

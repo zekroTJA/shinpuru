@@ -13,11 +13,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/makeworld-the-better-one/go-isemoji"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
@@ -38,7 +38,7 @@ type GuildsController struct {
 	kvc     kvcache.Provider
 	session *discordgo.Session
 	cfg     config.Provider
-	pmw     *middleware.PermissionsMiddleware
+	pmw     *permservice.Permissions
 	state   *dgrs.State
 }
 
@@ -46,7 +46,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
-	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.pmw = container.Get(static.DiPermissions).(*permservice.Permissions)
 	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.state = container.Get(static.DiState).(*dgrs.State)
@@ -539,7 +539,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 	}
 
 	if gs.JoinMessageChannel != "" && gs.JoinMessageText != "" {
-		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.joinmsg"); err != nil {
+		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.announcements"); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		} else if !ok {
 			return fiber.ErrUnauthorized
@@ -556,7 +556,7 @@ func (c *GuildsController) postGuildSettings(ctx *fiber.Ctx) error {
 	}
 
 	if gs.LeaveMessageChannel != "" && gs.LeaveMessageText != "" {
-		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.leavemsg"); err != nil {
+		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.announcements"); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		} else if !ok {
 			return fiber.ErrUnauthorized

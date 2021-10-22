@@ -16,6 +16,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 )
 
 // UserIdent is the type of identificator for getting
@@ -36,7 +37,8 @@ const (
 )
 
 var (
-	ErrNotFound            = errors.New("not found")
+	ErrUserNotFound        = errors.New("user not found")
+	ErrGameNotFound        = errors.New("game not found")
 	ErrInvalidResponseType = errors.New("invalid response type")
 	ErrMaxUsersReached     = errors.New("max registered users reached")
 )
@@ -122,7 +124,7 @@ func (w *NotifyWorker) GetUser(identifyer string, typ UserIdent) (*User, error) 
 	}
 
 	if len(data.Data) < 1 || data.Data[0] == nil {
-		return nil, ErrNotFound
+		return nil, ErrUserNotFound
 	}
 
 	return data.Data[0], nil
@@ -162,7 +164,7 @@ func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 		},
 	}
 
-	if body, err := httpreq.GetFile(u.AviURL); err == nil {
+	if body, _, err := httpreq.GetFile(u.AviURL, nil); err == nil {
 		if imgData, _, err := image.Decode(body); err == nil {
 			if palette, err := vibrant.NewPaletteFromImage(imgData); err == nil {
 				for name, swatch := range palette.ExtractAwesome() {
@@ -188,6 +190,7 @@ func (w *NotifyWorker) getBearerToken() error {
 	if err != nil {
 		return err
 	}
+	defer res.Release()
 
 	var token bearerTokenResponse
 	if err = res.JSON(&token); err != nil {
@@ -220,6 +223,7 @@ func (w *NotifyWorker) doAuthenticatedGet(url string, data interface{}) (err err
 	if err != nil {
 		return
 	}
+	defer res.Release()
 
 	err = res.JSON(data)
 
@@ -266,7 +270,7 @@ func (w *NotifyWorker) getGame(gameID string) (*Game, error) {
 	}
 
 	if len(data.Data) < 1 || data.Data[0] == nil {
-		return nil, ErrNotFound
+		return nil, ErrGameNotFound
 	}
 
 	game = data.Data[0]
@@ -289,6 +293,7 @@ func (w *NotifyWorker) Handle() error {
 
 	// Execute wentOnlineHandler for each stream which
 	// is now live and was not live in the request before.
+	mErr := multierror.New()
 	for _, stream := range streams {
 		var wasOnline bool
 
@@ -306,9 +311,7 @@ func (w *NotifyWorker) Handle() error {
 		}
 
 		game, err := w.getGame(stream.GameID)
-		if err != nil {
-			return err
-		}
+		mErr.Append(err)
 
 		stream.Game = game
 		stream.ThumbnailURL = strings.Replace(stream.ThumbnailURL, "{width}x{height}", "1280x720", 1)
@@ -342,5 +345,5 @@ func (w *NotifyWorker) Handle() error {
 	w.wereLive = make([]*Stream, len(streams))
 	copy(w.wereLive, streams)
 
-	return nil
+	return mErr.Nillify()
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/ken"
 )
 
 const (
@@ -107,9 +108,11 @@ func (am *AcceptMessage) Error() error {
 	return <-am.cErr
 }
 
+type senderFunc func(emb *discordgo.MessageEmbed) (*discordgo.Message, error)
+
 // Send pushes the accept message into the specified
 // channel and sets up listener handlers for reactions.
-func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
+func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
 	if am.Session == nil {
 		return nil, errors.New("session is not defined")
 	}
@@ -135,13 +138,13 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 
 	am.cErr = make(chan error, 1)
 
-	msg, err := am.Session.ChannelMessageSendEmbed(chanID, am.Embed)
+	msg, err := sender(am.Embed)
 	if err != nil {
 		return nil, err
 	}
 	am.Message = msg
-	err = am.Session.MessageReactionAdd(chanID, msg.ID, acceptMessageEmoteAccept)
-	err = am.Session.MessageReactionAdd(chanID, msg.ID, acceptMessageEmoteDecline)
+	err = am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteAccept)
+	err = am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteDecline)
 	if err != nil {
 		return nil, err
 	}
@@ -179,11 +182,29 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 		}
 		am.eventUnsub()
 		if am.DeleteMsgAfter {
-			am.Session.ChannelMessageDelete(chanID, msg.ID)
+			am.Session.ChannelMessageDelete(msg.ChannelID, msg.ID)
 		} else {
-			am.Session.MessageReactionsRemoveAll(chanID, msg.ID)
+			am.Session.MessageReactionsRemoveAll(msg.ChannelID, msg.ID)
 		}
 	})
 
 	return am, nil
+}
+
+// Send pushes the accept message into the specified
+// channel and sets up listener handlers for reactions.
+func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
+	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
+		return am.Session.ChannelMessageSendEmbed(chanID, am.Embed)
+	})
+}
+
+// AsFollowUp pushes the accept messages as follow up
+// message to the command context and sets up listener
+// handlers for reactions.
+func (am *AcceptMessage) AsFollowUp(ctx *ken.Ctx) (*AcceptMessage, error) {
+	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
+		fum := ctx.FollowUpEmbed(am.Embed)
+		return fum.Message, fum.Error
+	})
 }

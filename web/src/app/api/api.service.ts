@@ -322,7 +322,7 @@ export class APIService {
     memberID: string,
     ignoreError: boolean = false
   ): Observable<Member> {
-    const m = this.cacheMembers.get(memberID);
+    const m = this.cacheMembers.get(`${guildID}#${memberID}`);
     if (m) {
       return of(m);
     }
@@ -330,7 +330,7 @@ export class APIService {
     return this.http
       .get<Member>(this.rcGuildMembers(guildID, memberID), this.defopts())
       .pipe(
-        this.cacheMembers.putFromPipe(memberID),
+        this.cacheMembers.putFromPipe(`${guildID}#${memberID}`),
         catchError(ignoreError ? (err) => of(null) : this.errorCatcher)
       );
   }
@@ -652,7 +652,7 @@ export class APIService {
 
   public getCommandInfos(): Observable<ListReponse<CommandInfo>> {
     return this.http
-      .get(this.rcUtil('commands'), this.defopts())
+      .get(this.rcUtil('slashcommands'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

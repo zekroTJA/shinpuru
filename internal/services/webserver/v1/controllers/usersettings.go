@@ -4,8 +4,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -13,13 +13,13 @@ import (
 type UsersettingsController struct {
 	session *discordgo.Session
 	db      database.Database
-	pmw     *middleware.PermissionsMiddleware
+	pmw     *permissions.Permissions
 }
 
 func (c *UsersettingsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.db = container.Get(static.DiDatabase).(database.Database)
-	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Get("/ota", c.getOTA)
 	router.Post("/ota", c.postOTA)

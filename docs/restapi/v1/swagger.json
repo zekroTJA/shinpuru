@@ -3770,6 +3770,32 @@
                     }
                 }
             }
+        },
+        "/util/slashcommands": {
+            "get": {
+                "description": "Returns a list of registered slash commands and their description.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Utilities"
+                ],
+                "summary": "Slash Command List",
+                "responses": {
+                    "200": {
+                        "description": "Wrapped in models.ListResponse",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SlashCommandInfo"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3784,6 +3810,47 @@
                 },
                 "timestamp": {
                     "type": "string"
+                }
+            }
+        },
+        "discordgo.ApplicationCommandOption": {
+            "type": "object",
+            "properties": {
+                "choices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.ApplicationCommandOptionChoice"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.ApplicationCommandOption"
+                    }
+                },
+                "required": {
+                    "description": "NOTE: This feature was on the API, but at some point developers decided to remove it.\nSo I commented it, until it will be officially on the docs.\nDefault     bool                              `json:\"default\"`",
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "discordgo.ApplicationCommandOptionChoice": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "object"
                 }
             }
         },
@@ -3929,6 +3996,11 @@
                     "description": "Is true while the member hasn't accepted the membership screen.",
                     "type": "boolean"
                 },
+                "permissions": {
+                    "description": "Total permissions of the member in the channel, including overrides, returned when in the interaction object.",
+                    "type": "string",
+                    "example": "0"
+                },
                 "premium_since": {
                     "description": "When the user used their Nitro boost on the server",
                     "type": "string"
@@ -4029,7 +4101,7 @@
                     }
                 },
                 "message_reference": {
-                    "description": "MessageReference contains reference data sent with crossposted messages",
+                    "description": "MessageReference contains reference data sent with crossposted or reply messages.\nThis does not contain the reference *to* this message; this is for when *this* message references another.\nTo generate a reference to this message, use (*Message).Reference().",
                     "$ref": "#/definitions/discordgo.MessageReference"
                 },
                 "pinned": {
@@ -4919,6 +4991,11 @@
                     "description": "Is true while the member hasn't accepted the membership screen.",
                     "type": "boolean"
                 },
+                "permissions": {
+                    "description": "Total permissions of the member in the channel, including overrides, returned when in the interaction object.",
+                    "type": "string",
+                    "example": "0"
+                },
                 "premium_since": {
                     "description": "When the user used their Nitro boost on the server",
                     "type": "string"
@@ -5050,6 +5127,41 @@
                     "items": {
                         "$ref": "#/definitions/models.Member"
                     }
+                }
+            }
+        },
+        "models.SlashCommandInfo": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "dm_capable": {
+                    "type": "boolean"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.ApplicationCommandOption"
+                    }
+                },
+                "subdomains": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/permissions.SubPermission"
+                    }
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },
@@ -5276,6 +5388,20 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                }
+            }
+        },
+        "permissions.SubPermission": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "explicit": {
+                    "type": "boolean"
+                },
+                "term": {
+                    "type": "string"
                 }
             }
         },

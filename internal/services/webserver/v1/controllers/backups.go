@@ -10,8 +10,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -30,7 +30,7 @@ func (c *GuildBackupsController) Setup(container di.Container, router fiber.Rout
 	c.ota = container.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Get("", c.getBackups)
 	router.Post("/toggle", pmw.HandleWs(session, "sp.guild.admin.backup"), c.postToggleBackups)

@@ -6,18 +6,29 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
+type Status string
+
 const (
+	StatusOnline    Status = "online"
+	StatusDnD       Status = "dnd"
+	StatusIdle      Status = "idle"
+	StatusInvisible Status = "invisible"
+
 	presenceSeperator = "|||"
-	validStatus       = "dnd online idle invisible"
+)
+
+var (
+	validStatus = []string{string(StatusDnD), string(StatusIdle), string(StatusInvisible), string(StatusOnline)}
 )
 
 // Presence represents a presence status with a game
 // message and a status string.
 type Presence struct {
 	Game   string `json:"game"`
-	Status string `json:"status"`
+	Status Status `json:"status"`
 }
 
 // Unmarshal deserializes the passed raw string to
@@ -30,13 +41,13 @@ func Unmarshal(raw string) (*Presence, error) {
 	}
 	return &Presence{
 		Game:   split[0],
-		Status: split[1],
+		Status: Status(split[1]),
 	}, nil
 }
 
 // Marshal produces a raw string from the presence.
 func (p *Presence) Marshal() string {
-	return p.Game + "|||" + p.Status
+	return p.Game + "|||" + string(p.Status)
 }
 
 // ToUpdateStatusData returns a discordgo.UpdateStatusData
@@ -49,7 +60,7 @@ func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 				Type: discordgo.ActivityTypeGame,
 			},
 		},
-		Status: p.Status,
+		Status: string(p.Status),
 	}
 }
 
@@ -62,7 +73,7 @@ func (p *Presence) Validate() error {
 			presenceSeperator)
 	}
 
-	if !strings.Contains(validStatus, p.Status) {
+	if !stringutil.ContainsAny(string(p.Status), validStatus) {
 		return fmt.Errorf("invalid status")
 	}
 

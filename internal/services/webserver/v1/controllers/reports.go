@@ -5,9 +5,9 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -26,7 +26,7 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
 
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Get("/:id", c.getReport)
 	router.Post("/:id/revoke", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postRevoke)

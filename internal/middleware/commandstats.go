@@ -1,29 +1,34 @@
 package middleware
 
 import (
+	"sync/atomic"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/zekroTJA/shinpuru/internal/services/metrics"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shireikan"
+	"github.com/zekrotja/ken"
 )
 
-// CommandStatsMiddleware implements shireikan.Middleware to
-// count executed commands.
+// CommandStatsMiddleware implements ken.MiddlewareAfter to
+// count command exeuction stats.
 type CommandStatsMiddleware struct{}
 
-func (m *CommandStatsMiddleware) Handle(
-	cmd shireikan.Command, ctx shireikan.Context, layer shireikan.MiddlewareLayer) (next bool, err error) {
+var _ ken.MiddlewareAfter = (*CommandStatsMiddleware)(nil)
 
-	invoke := cmd.GetInvokes()[0]
-	metrics.DiscordCommandsProcessed.
-		With(prometheus.Labels{"command": invoke}).
-		Add(1)
-
-	util.StatsCommandsExecuted++
-
-	return true, nil
+// NewCommandStatsMiddleware returns a new instance of
+// CommandStatsMiddleware.
+func NewCommandStatsMiddleware() *CommandStatsMiddleware {
+	return &CommandStatsMiddleware{}
 }
 
-func (m *CommandStatsMiddleware) GetLayer() shireikan.MiddlewareLayer {
-	return shireikan.LayerAfterCommand
+func (m *CommandStatsMiddleware) After(ctx *ken.Ctx, cmdError error) (err error) {
+	name := ctx.Command.Name()
+
+	metrics.DiscordCommandsProcessed.
+		With(prometheus.Labels{"command": name}).
+		Add(1)
+
+	atomic.AddUint64(&util.StatsCommandsExecuted, 1)
+
+	return
 }

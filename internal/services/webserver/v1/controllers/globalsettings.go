@@ -6,8 +6,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -25,10 +25,10 @@ func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Ro
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
-	pmw := container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
 
-	router.Get("/presence", pmw.HandleWs(c.session, "sp.game"), c.getPresence)
-	router.Post("/presence", pmw.HandleWs(c.session, "sp.game"), c.postPresence)
+	router.Get("/presence", pmw.HandleWs(c.session, "sp.presence"), c.getPresence)
+	router.Post("/presence", pmw.HandleWs(c.session, "sp.presence"), c.postPresence)
 	router.Get("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.getNoGuildInvites)
 	router.Post("/noguildinvite", pmw.HandleWs(c.session, "sp.noguildinvite"), c.postNoGuildInvites)
 }

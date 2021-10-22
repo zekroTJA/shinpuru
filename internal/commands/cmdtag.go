@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/zekrotja/dgrs"
 
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -72,6 +73,7 @@ func (c *CmdTag) IsExecutableInDMChannels() bool {
 
 func (c *CmdTag) Exec(ctx shireikan.Context) error {
 	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+	st, _ := ctx.GetObject(static.DiState).(*dgrs.State)
 
 	if len(ctx.GetArgs()) < 1 {
 		tags, err := db.GetGuildTags(ctx.GetGuild().ID)
@@ -86,7 +88,7 @@ func (c *CmdTag) Exec(ctx shireikan.Context) error {
 		} else {
 			tlist := make([]string, len(tags))
 			for i, t := range tags {
-				tlist[i] = t.AsEntry(ctx.GetSession())
+				tlist[i] = t.AsEntry(st)
 			}
 			resTxt = strings.Join(tlist, "\n")
 		}
@@ -172,7 +174,7 @@ func (c *CmdTag) editTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissions).(*permissions.Permissions)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".edit")
 	if err != nil {
 		return err
@@ -206,7 +208,7 @@ func (c *CmdTag) deleteTag(ctx shireikan.Context, db database.Database) error {
 		return err
 	}
 
-	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissions).(*permissions.Permissions)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, "!"+c.GetDomainName()+".delete")
 	if err != nil {
 		return err
@@ -240,12 +242,14 @@ func (c *CmdTag) getRawTag(ctx shireikan.Context, db database.Database) error {
 }
 
 func (c CmdTag) getTag(ctx shireikan.Context, db database.Database) error {
+	st, _ := ctx.GetObject(static.DiState).(*dgrs.State)
+
 	tag, err, ok := getTag(ctx.GetArgs().Get(0).AsString(), ctx, db)
 	if !ok || err != nil {
 		return err
 	}
 
-	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, tag.AsEmbed(ctx.GetSession()))
+	_, err = ctx.GetSession().ChannelMessageSendEmbed(ctx.GetChannel().ID, tag.AsEmbed(st))
 	return err
 }
 
@@ -294,7 +298,7 @@ func printNotPermitted(ctx shireikan.Context, t string) error {
 }
 
 func checkPermission(ctx shireikan.Context, dn string) (error, bool) {
-	pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+	pmw, _ := ctx.GetObject(static.DiPermissions).(*permissions.Permissions)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, dn)
 	if err != nil {
 		return err, false

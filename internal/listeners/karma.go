@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
@@ -140,7 +141,11 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 
 	// Take a karma token from the users rate limiter
 	if !l.rateLimiterTake(e.UserID, e.GuildID) {
-		// TODO: Send message that karma credits are exceeded
+		ch, err := s.UserChannelCreate(e.UserID)
+		if err == nil {
+			util.SendEmbedError(s, ch.ID,
+				"You are currently ran out of karma tokens. Please try again later.")
+		}
 		return
 	}
 

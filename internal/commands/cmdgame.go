@@ -33,7 +33,7 @@ func (c *CmdGame) GetGroup() string {
 }
 
 func (c *CmdGame) GetDomainName() string {
-	return "sp.game"
+	return "sp.presence"
 }
 
 func (c *CmdGame) GetSubPermissionRules() []shireikan.SubPermission {
@@ -80,7 +80,7 @@ func (c *CmdGame) Exec(ctx shireikan.Context) error {
 		pre.Game = strings.Join(ctx.GetArgs()[1:], " ")
 
 	case "status":
-		pre.Status = strings.ToLower(ctx.GetArgs().Get(1).AsString())
+		pre.Status = presence.Status(strings.ToLower(ctx.GetArgs().Get(1).AsString()))
 
 	default:
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,

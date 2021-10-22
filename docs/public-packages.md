@@ -49,6 +49,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](pkg/httpreq)  
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/intutil`**](pkg/intutil)  
+  *Package intutil provides some utility functionalities for integers.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/jdoodle`**](pkg/jdoodle)  
   *Package jdoodle provides an API wrapper for the jdoodle execute and credit-spent REST API.*
 
@@ -75,6 +78,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/random`**](pkg/random)  
   *Package random provides some general purpose cryptographically pseudo-random utilities.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/rediscmdstore`**](pkg/rediscmdstore)  
+  *Package rediscmdstore provides an implementation of github.com/zekrotja/ken/store.CommandStore using a redis client to store the command cache.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*

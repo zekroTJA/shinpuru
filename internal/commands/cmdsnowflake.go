@@ -82,7 +82,7 @@ func (c *CmdSnowflake) Exec(ctx shireikan.Context) error {
 		}
 	}
 
-	sfAsDc, err := snowflakenodes.ParseDiscordSnowflake(sf)
+	sfAsDc, err := snowflakenodes.ParseDiscordSnowflakeStr(sf)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (c *CmdSnowflake) printSfDc(ctx shireikan.Context, sf *snowflakenodes.Disco
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Snowflake",
-				Value: fmt.Sprintf("```\n%s\n```", sf.Snowflake),
+				Value: fmt.Sprintf("```\n%d\n```", sf.Snowflake),
 			},
 			{
 				Name:  "Type",
