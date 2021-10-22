@@ -1,7 +1,6 @@
 package listeners
 
 import (
-	"net/http"
 	"regexp"
 	"strings"
 
@@ -10,7 +9,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -53,9 +54,9 @@ func (l *ListenerInviteBlock) invokeCheck(s *discordgo.Session, msg *discordgo.M
 
 	link := rxGenLink.FindString(cont)
 	if link != "" {
-		ok, matches, err := l.followLink(link)
+		ok, matches, err := l.followLinkDeep(link, 100, 0)
 		if err != nil {
-			logrus.WithError(err).Fatal("Failed following link")
+			logrus.WithError(err).WithField("link", link).Error("Failed following link")
 			return
 		}
 		if ok {
@@ -69,17 +70,33 @@ func (l *ListenerInviteBlock) checkForInviteLink(cont string) (bool, [][]string)
 	return matches != nil, matches
 }
 
-func (l *ListenerInviteBlock) followLink(link string) (bool, [][]string, error) {
+func (l *ListenerInviteBlock) followLinkDeep(link string, maxDepth, depth int) (ok bool, matches [][]string, err error) {
+	if depth >= maxDepth {
+		return
+	}
+
 	if !strings.HasPrefix(link, "http://") && !strings.HasPrefix(link, "https://") {
 		link = "http://" + link
 	}
 
-	resp, err := http.DefaultClient.Get(link)
+	resp, err := httpreq.Get(link, nil)
 	if err != nil {
-		return false, nil, nil
+		return
+	}
+	defer resp.Release()
+
+	code := resp.StatusCode()
+	if code < 300 && code > 399 {
+		return
 	}
 
-	ok, matches := l.checkForInviteLink(resp.Request.URL.String())
+	location := string(resp.Header.Peek("location"))
+	ok, matches = l.checkForInviteLink(location)
+
+	if !ok {
+		return l.followLinkDeep(location, maxDepth, depth+1)
+	}
+
 	return ok, matches, nil
 }
 
@@ -107,6 +124,10 @@ func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Messag
 	} else {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("INVITEBLOCK :: failed getting guild invites")
 		l.gl.Errorf(e.GuildID, "Failed getting guild invites: %s", err.Error())
+	}
+
+	if ch, err := s.UserChannelCreate(e.Author.ID); err == nil {
+		util.SendEmbedError(s, ch.ID, "Your message contained an invite link to another guild so it has been deleted.")
 	}
 
 	return s.ChannelMessageDelete(e.ChannelID, e.ID)
