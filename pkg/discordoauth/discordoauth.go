@@ -4,11 +4,8 @@
 package discordoauth
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 
 	routing "github.com/qiangxue/fasthttp-routing"
@@ -99,69 +96,66 @@ func (d *DiscordOAuth) HandlerCallback(ctx *routing.Context) error {
 		"scope":         {"identify"},
 	}
 
-	values := url.Values(data)
-	req, err := http.NewRequest("POST", endpointOauth,
-		bytes.NewBuffer([]byte(values.Encode())))
-	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed creating request: "+err.Error())
-		return nil
-	}
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+	res := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(res)
 
+	values := url.Values(data)
+
+	req.Header.SetMethod("POST")
+	req.SetRequestURI(endpointOauth)
+	req.SetBody([]byte(values.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed executing request: "+err.Error())
+	if err := fasthttp.Do(req, res); err != nil {
+		d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
 		return nil
 	}
 
-	if res.StatusCode >= 300 {
-		d.onError(ctx, http.StatusUnauthorized, "")
+	if res.StatusCode() >= 300 {
+		d.onError(ctx, fasthttp.StatusUnauthorized, "")
 		return nil
 	}
 
 	resAuthBody := new(oAuthTokenResponse)
-	err = parseJSONBody(res.Body, resAuthBody)
+	err := parseJSONBody(res.Body(), resAuthBody)
 	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
+		d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
 		return nil
 	}
 
 	if resAuthBody.Error != "" || resAuthBody.AccessToken == "" {
-		d.onError(ctx, http.StatusUnauthorized, "")
+		d.onError(ctx, fasthttp.StatusUnauthorized, "")
 		return nil
 	}
 
 	// 2. Request getting user ID
 
-	req, err = http.NewRequest("GET", endpointMe, nil)
-	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed creating request: "+err.Error())
+	req.Header.Reset()
+	req.Header.SetMethod("GET")
+	req.SetRequestURI(endpointMe)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", resAuthBody.AccessToken))
+
+	if err = fasthttp.Do(req, res); err != nil {
+		d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
 		return nil
 	}
 
-	req.Header.Set("Authorization", "Bearer "+resAuthBody.AccessToken)
-
-	res, err = http.DefaultClient.Do(req)
-	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed executing request: "+err.Error())
-		return nil
-	}
-
-	if res.StatusCode >= 300 {
-		d.onError(ctx, http.StatusUnauthorized, "")
+	if res.StatusCode() >= 300 {
+		d.onError(ctx, fasthttp.StatusUnauthorized, "")
 		return nil
 	}
 
 	resGetMe := new(getUserMeResponse)
-	err = parseJSONBody(res.Body, resGetMe)
+	err = parseJSONBody(res.Body(), resGetMe)
 	if err != nil {
-		d.onError(ctx, http.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
+		d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
 		return nil
 	}
 
 	if resGetMe.Error != "" || resGetMe.ID == "" {
-		d.onError(ctx, http.StatusUnauthorized, "")
+		d.onError(ctx, fasthttp.StatusUnauthorized, "")
 		return nil
 	}
 
@@ -170,7 +164,6 @@ func (d *DiscordOAuth) HandlerCallback(ctx *routing.Context) error {
 	return nil
 }
 
-func parseJSONBody(body io.ReadCloser, v interface{}) error {
-	dec := json.NewDecoder(body)
-	return dec.Decode(v)
+func parseJSONBody(body []byte, v interface{}) error {
+	return json.Unmarshal(body, v)
 }
