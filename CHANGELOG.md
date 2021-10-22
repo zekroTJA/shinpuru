@@ -1,5 +1,8 @@
 1.23.0
 
+> *ouch*  
+> ![](https://i.imgur.com/wUPuPkC.png)
+
 # Changes
 
 ## Slash Command Implementation [#287]
@@ -42,11 +45,21 @@ The Embed Builder can now be easily accessed via the `Utilities` tab in the web 
 
 *I admit that this solution might need some improvement. Feel free to share your thoughts in the [issues](https://github.com/zekroTJA/shinpuru/issues) or [discussions](https://github.com/zekroTJA/shinpuru/discussions).* 😄
 
-## Bug Fixes
+## Bug Fixes and Changes
 
 - The amount of karma does now properly show up in the web user profile. [280]
 - Fix nilpointer crash on invalid twitch notify configuration. [f79d267](https://github.com/zekroTJA/shinpuru/pull/299/commits/f79d2678e5a0c128c8b408b549def809a942301a#diff-4a7a1b4347b1bfa6763d43f017100ca28b189f0f465ba148c7e37c6fe752ae68)
+- Fix Twitch notify handler so it does not stop when a game could not be found via the Twitch API.
+- The invite link detector now properly follows redirected links.
+- The Discord Oauth2 package now uses the `fasthttp` instead of the `net/http` client.
+- Fix Release CD workflow.
 
+# Thanks ❤️
+
+Much thanks to all people who contributed to this release.
+
+- scisneromam (@awsdcrafting)
+- Juli (@SnowJuli)
 
 # Docker
 
