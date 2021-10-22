@@ -91,6 +91,7 @@ type Discord struct {
 	ClientSecret           string                 `json:"clientsecret"`
 	GuildBackupLoc         string                 `json:"guildbackuploc"`
 	GlobalCommandRateLimit GlobalCommandRatelimit `json:"globalcommandratelimit"`
+	DisabledCommands       []string               `json:"disabledcommands"`
 }
 
 type GlobalCommandRatelimit struct {

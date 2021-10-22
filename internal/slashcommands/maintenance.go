@@ -1,12 +1,15 @@
 package slashcommands
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/mody"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -28,7 +31,7 @@ func (c *Maintenance) Description() string {
 }
 
 func (c *Maintenance) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Maintenance) Type() discordgo.ApplicationCommandType {
@@ -71,6 +74,30 @@ func (c *Maintenance) Options() []*discordgo.ApplicationCommandOption {
 			Name:        "reconnect",
 			Description: "Reconnects the Discord session.",
 		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "reload-config",
+			Description: "Reloads the bots config.",
+		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "set-config-value",
+			Description: "Set a specific config value.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "field",
+					Description: "The config fild path and name.",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "jsonvalue",
+					Description: "The value as JSON representation.",
+					Required:    true,
+				},
+			},
+		},
 	}
 }
 
@@ -95,6 +122,8 @@ func (c *Maintenance) Run(ctx *ken.Ctx) (err error) {
 		ken.SubCommandHandler{"flush-state", c.flushState},
 		ken.SubCommandHandler{"kill", c.kill},
 		ken.SubCommandHandler{"reconnect", c.reconnect},
+		ken.SubCommandHandler{"reload-config", c.reloadConfig},
+		ken.SubCommandHandler{"set-config-value", c.setConfigValue},
 	)
 
 	return
@@ -156,5 +185,41 @@ func (c *Maintenance) reconnect(ctx *ken.SubCommandCtx) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "✅ Successfully reconnected.",
 		Color:       static.ColorEmbedGreen,
+	}).Error
+}
+
+func (c *Maintenance) reloadConfig(ctx *ken.SubCommandCtx) (err error) {
+	cfg := ctx.Get(static.DiConfig).(config.Provider)
+
+	if err = cfg.Parse(); err != nil {
+		return
+	}
+
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: "Config has been reloaded.\n\nSome config changes will only take effect after a restart!",
+	}).Error
+}
+
+func (c *Maintenance) setConfigValue(ctx *ken.SubCommandCtx) (err error) {
+	cfg := ctx.Get(static.DiConfig).(config.Provider)
+
+	field := ctx.Options().GetByName("field").StringValue()
+	jsonvalue := ctx.Options().GetByName("jsonvalue").StringValue()
+
+	var errInner error
+	err = mody.Catch(func() {
+		errInner = mody.UpdateJson(cfg.Config(), field, jsonvalue)
+	})
+	if err != nil {
+		return
+	}
+	if err = errInner; err != nil {
+		return
+	}
+
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: fmt.Sprintf("Config value `%s` has been updated to `%s`.\n\n"+
+			"Keep in mind that not all config value changes will be effective.",
+			field, jsonvalue),
 	}).Error
 }

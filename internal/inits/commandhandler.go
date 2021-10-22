@@ -88,6 +88,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	}
 
 	err = k.RegisterMiddlewares(
+		middleware.NewDisableCommandsMiddleware(container),
 		perms,
 		cmdhelp.New("help"),
 		middleware.NewCommandStatsMiddleware(),
