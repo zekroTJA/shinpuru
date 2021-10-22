@@ -56,6 +56,7 @@ func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 			middleware.NewGlobalRateLimitMiddleware(c.Burst, time.Duration(c.LimitSeconds)*time.Second))
 	}
 
+	cmdHandler.RegisterMiddleware(middleware.NewDisableCommandsMiddleware(container))
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
 
