@@ -5,9 +5,9 @@
 package httpreq
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
-	"net/http"
 
 	"github.com/valyala/fasthttp"
 )
@@ -59,10 +59,13 @@ func Post(url string, headers map[string]string, data interface{}) (*Response, e
 // GetFile is shorthand for http.Get and returns
 // the body as io.Reader as well as occured errors
 // during request execution.
-func GetFile(uri string) (io.Reader, error) {
-	resp, err := http.Get(uri)
+func GetFile(url string, headers map[string]string) (r io.Reader, contentType string, err error) {
+	resp, err := Get(url, headers)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return resp.Body, err
+	defer resp.Release()
+	r = bytes.NewBuffer(resp.Body())
+	contentType = string(resp.Header.Peek("content-type"))
+	return
 }

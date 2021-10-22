@@ -98,7 +98,7 @@ func GetVibrantColorFromImage(img image.Image) (clr int, err error) {
 // GetVibrantColorFromImage requests the image from the given
 // URL and returns the vribrant accent color of an image passed.
 func GetVibrantColorFromImageUrl(url string) (clr int, err error) {
-	body, err := httpreq.GetFile(url)
+	body, _, err := httpreq.GetFile(url, nil)
 	if err != nil {
 		return
 	}

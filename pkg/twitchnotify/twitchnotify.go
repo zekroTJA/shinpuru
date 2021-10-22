@@ -164,7 +164,7 @@ func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 		},
 	}
 
-	if body, err := httpreq.GetFile(u.AviURL); err == nil {
+	if body, _, err := httpreq.GetFile(u.AviURL, nil); err == nil {
 		if imgData, _, err := image.Decode(body); err == nil {
 			if palette, err := vibrant.NewPaletteFromImage(imgData); err == nil {
 				for name, swatch := range palette.ExtractAwesome() {
