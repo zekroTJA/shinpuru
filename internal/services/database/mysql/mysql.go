@@ -40,19 +40,28 @@ var guildTables = []string{
 	"backups",
 }
 
-func (m *MysqlMiddleware) setup() {
-	mErr := multierror.New(nil)
+func (m *MysqlMiddleware) setup() (err error) {
+	if err = m.Db.Ping(); err != nil {
+		return
+	}
 
-	_, err := m.Db.Exec("CREATE TABLE IF NOT EXISTS `migrations` (" +
+	tx, err := m.Db.Begin()
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `migrations` (" +
 		"`version` int(16) NOT NULL DEFAULT '0'," +
 		"`applied` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"`releaseTag` text NOT NULL DEFAULT ''," +
 		"`releaseCommit` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`version`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `guilds` (" +
 		"`guildID` varchar(25) NOT NULL," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
@@ -70,24 +79,30 @@ func (m *MysqlMiddleware) setup() {
 		"`guildlogDisable` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `permissions` (" +
 		"`roleID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`permission` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`roleID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `reports` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`type` int(11) NOT NULL DEFAULT '0'," +
 		"`guildID` text NOT NULL DEFAULT ''," +
@@ -98,42 +113,49 @@ func (m *MysqlMiddleware) setup() {
 		"`timeout` timestamp NULL DEFAULT NULL," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `settings` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`setting` text NOT NULL DEFAULT ''," +
 		"`value` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`data` mediumtext NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `twitchnotify` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`channelID` text NOT NULL DEFAULT ''," +
 		"`twitchUserID` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `backups` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`timestamp` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"`fileID` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `tags` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`ident` text NOT NULL DEFAULT ''," +
 		"`creatorID` text NOT NULL DEFAULT ''," +
@@ -143,9 +165,11 @@ func (m *MysqlMiddleware) setup() {
 		"`lastEdit` bigint(20) NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `apitokens` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`salt` text NOT NULL," +
 		"`created` timestamp NOT NULL," +
@@ -154,18 +178,22 @@ func (m *MysqlMiddleware) setup() {
 		"`hits` bigint(20) NOT NULL," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `karma` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`userID` text NOT NULL DEFAULT ''," +
 		"`value` bigint(20) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `karmaSettings` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`emotesInc` text NOT NULL DEFAULT ''," +
@@ -174,17 +202,21 @@ func (m *MysqlMiddleware) setup() {
 		"`penalty` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaBlocklist` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `karmaBlocklist` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `karmaRules` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `karmaRules` (" +
 		"`id` varchar(25) NOT NULL," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`trigger` int(8) NOT NULL DEFAULT '0'," +
@@ -194,36 +226,44 @@ func (m *MysqlMiddleware) setup() {
 		"`checksum` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `chanlock` (" +
 		"`chanID` varchar(25) NOT NULL," +
 		"`guildID` text NOT NULL DEFAULT ''," +
 		"`executorID` text NOT NULL DEFAULT ''," +
 		"`permissions` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`chanID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `antiraidSettings` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
 		"`burst` bigint(20) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`tag` text NOT NULL DEFAULT ''," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `unbanRequests` (" +
 		"`id` varchar(25) NOT NULL DEFAULT ''," +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
@@ -235,17 +275,21 @@ func (m *MysqlMiddleware) setup() {
 		"`processedMessage` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `voicelogBlocklist` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `voicelogBlocklist` (" +
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `starboardConfig` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `starboardConfig` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`channelID` varchar(25) NOT NULL DEFAULT ''," +
 		"`threshold` int(16) NOT NULL DEFAULT '0'," +
@@ -253,9 +297,11 @@ func (m *MysqlMiddleware) setup() {
 		"`karmaGain` int(16) NOT NULL DEFAULT '3'," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `starboardEntries` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `starboardEntries` (" +
 		"`messageID` varchar(25) NOT NULL DEFAULT ''," +
 		"`starboardID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
@@ -267,17 +313,21 @@ func (m *MysqlMiddleware) setup() {
 		"`deleted` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`messageID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `refreshTokens` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `refreshTokens` (" +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`token` text NOT NULL DEFAULT ''," +
 		"`expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guildlog` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `guildlog` (" +
 		"`id` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`module` varchar(30) NOT NULL DEFAULT ''," +
@@ -286,30 +336,36 @@ func (m *MysqlMiddleware) setup() {
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`id`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
+	if err != nil {
+		return
+	}
 
-	_, err = m.Db.Exec("CREATE TABLE IF NOT EXISTS `guildapi` (" +
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `guildapi` (" +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`enabled` int(1) NOT NULL DEFAULT '0'," +
 		"`origins` text NOT NULL DEFAULT ''," +
 		"`tokenHash` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
-	mErr.Append(err)
-
-	if mErr.Len() > 0 {
-		logrus.WithError(mErr).Fatal("Failed database setup")
+	if err != nil {
+		return
 	}
+
+	err = tx.Commit()
+	return
 }
 
-func (m *MysqlMiddleware) Connect(credentials ...interface{}) error {
-	var err error
+func (m *MysqlMiddleware) Connect(credentials ...interface{}) (err error) {
 	creds := credentials[0].(models.DatabaseCreds)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?collation=utf8mb4_unicode_ci&parseTime=true",
 		creds.User, creds.Password, creds.Host, creds.Database)
-	m.Db, err = sql.Open("mysql", dsn)
-	m.setup()
-	return err
+
+	if m.Db, err = sql.Open("mysql", dsn); err != nil {
+		return
+	}
+
+	err = m.setup()
+	return
 }
 
 func (m *MysqlMiddleware) Close() {
