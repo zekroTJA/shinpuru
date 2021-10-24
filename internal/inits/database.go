@@ -23,6 +23,12 @@ func InitDatabase(container di.Container) database.Database {
 	case "mysql", "mariadb":
 		db = new(mysql.MysqlMiddleware)
 		err = db.Connect(cfg.Config().Database.MySql)
+	default:
+		logrus.Fatal("Unsupported database driver specified")
+	}
+
+	if err != nil {
+		logrus.WithError(err).Fatal("Failed connecting to database")
 	}
 
 	if m, ok := db.(database.Migration); ok {
@@ -34,6 +40,7 @@ func InitDatabase(container di.Container) database.Database {
 		logrus.Warning("Skip database migration: middleware does not support migrations")
 	}
 
+	// Redis Database Cache
 	if cfg.Config().Cache.CacheDatabase {
 		rd := container.Get(static.DiRedis).(*goredis.Client)
 		db = redis.NewRedisMiddleware(db, rd)
@@ -42,9 +49,6 @@ func InitDatabase(container di.Container) database.Database {
 		logrus.Warning("Database cache is disabled! You can enbale it in the config (.cache.cachedatabase).")
 	}
 
-	if err != nil {
-		logrus.WithError(err).Fatal("Failed connecting to database")
-	}
 	logrus.Info("Connected to database")
 
 	return db

@@ -59,29 +59,28 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		return
 	}
 
-	prefix := l.config.Config().Discord.GeneralPrefix
 	emb := embedbuilder.New().
 		WithColor(static.ColorEmbedDefault).
 		WithThumbnail(self.AvatarURL("64x64"), "", 64, 64).
 		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", embedded.AppVersion, embedded.AppCommit[:6])).
 		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", time.Now().Year()), "", "").
-		AddField("Help", fmt.Sprintf(
-			"Type `%shelp` in the chat to get a list of available commands.\n"+
-				"You can also use `%shelp <commandInvoke>` to get more details about a command.\n"+
+		AddField("Help",
+			"Type `/help` in the chat to get a list of available commands.\n"+
+				"You can also use `/help <commandInvoke>` to get more details about a command.\n"+
 				"[**Here**](https://github.com/zekroTJA/shinpuru/wiki/commands) you can find "+
-				"the wiki page with a detailed list of available commands.", prefix, prefix))
+				"the wiki page with a detailed list of available commands.")
 
 	if l.config.Config().WebServer.Enabled {
 		emb.AddField("Web Interface", fmt.Sprintf(
 			"[**Here**](%s) you can access the web interface.\n"+
-				"You can also use the `%slogin` command if you don't want to log in to the web interface via Discord.",
-			l.config.Config().WebServer.PublicAddr, prefix))
+				"You can also use the `/login` command if you don't want to log in to the web interface via Discord.",
+			l.config.Config().WebServer.PublicAddr))
 	}
 
-	emb.AddField("Repository", fmt.Sprintf(
+	emb.AddField("Repository",
 		"[**Here**](https://github.com/zekroTJA/shinpuru) you can find the open source "+
 			"repository of shinpuru. Feel free to contribute issues and pull requests, if you want.\n"+
-			"You can also use the `%sinfo` command to get more information.", prefix))
+			"You can also use the `/info` command to get more information.")
 
 	util.SendEmbedRaw(s, e.ChannelID, emb.Build())
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
+	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 )
 
 var defClient = http.Client{
@@ -29,20 +30,17 @@ type Image struct {
 // passed resource URL, downloading it and returning
 // the metadata and data of the image as well as
 // occured errors.
-func DownloadFromURL(url string) (*Image, error) {
-	resp, err := defClient.Get(url)
-	if err != nil {
-		return nil, err
-	}
+func DownloadFromURL(url string) (img *Image, err error) {
+	body, contentType, err := httpreq.GetFile(url, nil)
 
-	img := new(Image)
+	img = new(Image)
 
-	img.MimeType = resp.Header.Get("Content-Type")
+	img.MimeType = contentType
 	if img.MimeType == "" {
 		return nil, fmt.Errorf("mime type not received")
 	}
 
-	img.Data, err = ioutil.ReadAll(resp.Body)
+	img.Data, err = ioutil.ReadAll(body)
 	if err != nil {
 		return nil, err
 	}

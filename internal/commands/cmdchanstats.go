@@ -241,7 +241,7 @@ func (c *CmdChannelStats) Exec(ctx shireikan.Context) (err error) {
 		}
 	}
 
-	// If ammount of users is larger than 10,
+	// If amount of users is larger than 10,
 	// slice the results by 10.
 	if len(values) > 10 {
 		title += " (Top 10)"
@@ -351,7 +351,7 @@ func (c *CmdChannelStats) getTyp(arg string) int {
 }
 
 // getCollectedEmbed returns a discordgo.MessageEmbed displaying the
-// ammount of processed messages.
+// amount of processed messages.
 func (c *CmdChannelStats) getCollectedEmbed(collected int) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGray,

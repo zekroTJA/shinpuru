@@ -15,10 +15,10 @@ jobs:
     name: Wiki Generation
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.16
+      - name: Set up Go 1.17
         uses: actions/setup-go@v1
         with:
-          go-version: 1.16
+          go-version: 1.17
         id: go
 
       - name: Check out code into the Go module directory
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build and push to wiki
         run: |
-          go run ./cmd/cmdman -o ./docs/commandsManual.md
+          go run cmd/cmdman/v2/main.go -o ./docs/commandsManual.md
           git clone https://zekroTJA:${{ secrets.GITHUB_TOKEN }}@github.com/zekroTJA/shinpuru.wiki.git
           mv ./docs/commandsManual.md ./shinpuru.wiki/Commands.md
           git -C ./shinpuru.wiki add .

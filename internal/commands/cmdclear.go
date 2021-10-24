@@ -25,8 +25,8 @@ func (c *CmdClear) GetDescription() string {
 
 func (c *CmdClear) GetHelp() string {
 	return "`clear` - delete last message\n" +
-		"`clear <n>` - clear an ammount of messages\n" +
-		"`clear <n> <userResolvable>` - clear an ammount of messages by a specific user\n" +
+		"`clear <n>` - clear an amount of messages\n" +
+		"`clear <n> <userResolvable>` - clear an amount of messages by a specific user\n" +
 		"`clear selected` - Removes either messages selected with ❌ emote by you or all messages to the 🔻 emote by you"
 }
 

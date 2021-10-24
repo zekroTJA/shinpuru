@@ -4,10 +4,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -20,7 +20,7 @@ type GuildMembersController struct {
 	session    *discordgo.Session
 	cfg        config.Provider
 	db         database.Database
-	pmw        *middleware.PermissionsMiddleware
+	pmw        *permissions.Permissions
 	cmdHandler shireikan.Handler
 	st         *dgrs.State
 }
@@ -29,8 +29,8 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
-	c.pmw = container.Get(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
-	c.cmdHandler = container.Get(static.DiCommandHandler).(shireikan.Handler)
+	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
+	c.cmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/members", c.getMembers)
@@ -75,14 +75,25 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	// TODO: use state here
-	members, err := c.session.GuildMembers(guildID, after, limit)
+	members, err := c.st.Members(guildID)
 	if err != nil {
 		return err
 	}
 
-	memblen := len(members)
-	fhmembers := make([]*models.Member, memblen)
+	if after == "" {
+		for i := 0; i < len(members); i++ {
+			if members[i].User.ID == after {
+				members = members[i+1:]
+				break
+			}
+		}
+	}
+
+	if limit > 0 && limit < len(members) {
+		members = members[:limit]
+	}
+
+	fhmembers := make([]*models.Member, len(members))
 
 	for i, m := range members {
 		fhmembers[i] = models.MemberFromMember(m)

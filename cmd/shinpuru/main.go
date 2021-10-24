@@ -12,6 +12,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/ken"
 
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
@@ -22,6 +23,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -161,9 +163,9 @@ func main() {
 
 	// Initialize permissions command handler middleware
 	diBuilder.Add(di.Def{
-		Name: static.DiPermissionMiddleware,
+		Name: static.DiPermissions,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return middleware.NewPermissionMiddleware(ctn), nil
+			return permissions.NewPermissions(ctn), nil
 		},
 	})
 
@@ -255,11 +257,23 @@ func main() {
 		},
 	})
 
+	// Initialize legacy command handler
+	diBuilder.Add(di.Def{
+		Name: static.DiLegacyCommandHandler,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return inits.InitLegacyCommandHandler(ctn), nil
+		},
+	})
+
 	// Initialize command handler
 	diBuilder.Add(di.Def{
 		Name: static.DiCommandHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitCommandHandler(ctn), nil
+			return inits.InitCommandHandler(ctn)
+		},
+		Close: func(obj interface{}) error {
+			logrus.Info("Unegister commands ...")
+			return obj.(*ken.Ken).Unregister()
 		},
 	})
 
@@ -344,19 +358,21 @@ func main() {
 		setupDevMode()
 	}
 
+	ctn.Get(static.DiCommandHandler)
+
 	// Initialize discord session and event
 	// handlers
 	inits.InitDiscordBotSession(ctn)
 
 	// This is currently the really hacky workaround
 	// to bypass the di.Container when trying to get
-	// the Command handler instance inside a command
-	// context, because the handler can not resolve
+	// the Command legacyHandler instance inside a command
+	// context, because the legacyHandler can not resolve
 	// itself on build, so it is bypassed here using
 	// shireikans object map. Maybe I find a better
 	// solution for that at some time.
-	handler := ctn.Get(static.DiCommandHandler).(shireikan.Handler)
-	handler.SetObject(static.DiCommandHandler, handler)
+	legacyHandler := ctn.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
+	legacyHandler.SetObject(static.DiLegacyCommandHandler, legacyHandler)
 
 	// Get Web WebServer instance to start web
 	// server listener

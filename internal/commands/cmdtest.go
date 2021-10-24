@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"strings"
+	"fmt"
 
-	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shireikan"
 )
@@ -40,37 +39,11 @@ func (c *CmdTest) IsExecutableInDMChannels() bool {
 }
 
 func (c *CmdTest) Exec(ctx shireikan.Context) error {
-	gl := ctx.GetObject(static.DiGuildLog).(guildlog.Logger)
+	h := ctx.GetObject(static.DiLegacyCommandHandler).(shireikan.Handler)
 
-	severity, err := ctx.GetArgs().Get(0).AsInt()
-	if err != nil {
-		return err
+	for c := range h.GetCommandMap() {
+		fmt.Println(c)
 	}
 
-	var f func(string, string, ...interface{}) error
-
-	switch severity {
-	case 0:
-		f = gl.Debugf
-	case 1:
-		f = gl.Infof
-	case 2:
-		f = gl.Warnf
-	case 3:
-		f = gl.Errorf
-	case 4:
-		f = gl.Fatalf
-	}
-
-	gl = gl.Section(ctx.GetArgs().Get(1).AsString())
-
-	return f(ctx.GetGuild().ID, strings.Join(ctx.GetArgs()[2:], " "))
-
-	// db := ctx.GetObject(static.DiDatabase).(database.Database)
-	// st := ctx.GetObject(static.DiObjectStorage).(storage.Storage)
-
-	// return util.FlushAllGuildData(db, st, ctx.GetGuild().ID)
-
-	// fmt.Println(static.AdditionalPermissions)
-	// return nil
+	return nil
 }

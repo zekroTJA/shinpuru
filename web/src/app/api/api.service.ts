@@ -652,7 +652,7 @@ export class APIService {
 
   public getCommandInfos(): Observable<ListReponse<CommandInfo>> {
     return this.http
-      .get(this.rcUtil('commands'), this.defopts())
+      .get(this.rcUtil('slashcommands'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

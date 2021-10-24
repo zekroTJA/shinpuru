@@ -83,7 +83,7 @@ func (c *CmdBackup) switchStatus(ctx shireikan.Context, enable bool) error {
 
 	if enable {
 		return util.SendEmbed(ctx.GetSession(), ctx.GetChannel().ID, "Enabled backup for this guild.\nA full guild backup *(incl. Members, Roles, Channels and Guild Settings)* "+
-			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will habe the backup files of the last 5 days.", "", static.ColorEmbedGreen).
+			"will be created every 12 hours. Only 10 backups per guild will be saved, so you will have the backup files of the last 5 days.", "", static.ColorEmbedGreen).
 			DeleteAfter(15 * time.Second).Error()
 	}
 

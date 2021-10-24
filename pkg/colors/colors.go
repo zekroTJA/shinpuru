@@ -11,6 +11,9 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
+
+	"github.com/generaltso/vibrant"
+	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 )
 
 // FromHex returns a color.RGBA object reference
@@ -72,4 +75,38 @@ func CreateImage(clr *color.RGBA, xSize, ySize int) (*bytes.Buffer, error) {
 	}
 
 	return buff, nil
+}
+
+// GetVibrantColorFromImage returns the vribrant accent
+// color of an image passed.
+func GetVibrantColorFromImage(img image.Image) (clr int, err error) {
+	palette, err := vibrant.NewPaletteFromImage(img)
+	if err != nil {
+		return
+	}
+
+	for name, swatch := range palette.ExtractAwesome() {
+		if name == "Vibrant" {
+			clr = int(swatch.Color)
+			break
+		}
+	}
+
+	return
+}
+
+// GetVibrantColorFromImage requests the image from the given
+// URL and returns the vribrant accent color of an image passed.
+func GetVibrantColorFromImageUrl(url string) (clr int, err error) {
+	body, _, err := httpreq.GetFile(url, nil)
+	if err != nil {
+		return
+	}
+
+	img, _, err := image.Decode(body)
+	if err != nil {
+		return
+	}
+
+	return GetVibrantColorFromImage(img)
 }

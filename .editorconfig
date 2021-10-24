@@ -23,5 +23,9 @@ insert_final_newline = false
 indent_style = space
 indent_size = 4
 
+[*.bash]
+[*.sh]
+end_of_line = lf
+
 [Makefile]
 indent_style = tab

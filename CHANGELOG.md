@@ -1,62 +1,23 @@
-1.22.0
+1.23.1
 
-## Changes
+![](https://i.imgur.com/epbx2Cw.jpeg)
 
-### New Config Handling [#274]
+# Changes
 
-shinpuru now uses [traefik/paerser](https://github.com/traefik/paerser) to parse the configuration from multiple sources at the same time. These are the available configuration sources, sorted by priority.
+## Config Management
 
-1. **Command Flags**  
-   Configuration values passed via command flags. Example:
-   ```
-   ./shinpuru \
-       --discord.token "..." \
-       --discord.generalprefix "!"
-   ```
+With the [`/maintenance`](https://github.com/zekroTJA/shinpuru/wiki/Commands#maintenance) command has been extended by 2 sub-commands.
 
-2. **Environment Variables**  
-   Configuration values passed via environment variables prefixed with `SP_`. This is especially useful when hosted via Docker. Example:
-   ```
-   SP_DISCORD_TOKEN="..."
-   SP_DISCORD_GENERALPREFIX="!"
-   ```
+- `reload-config` allows to reload the config during runtime from the given config sources.
 
-3. **Config File**  
-   You can still pass configuration as usual via configuration file. Defaultly, the config is read from `./config.yml`, but you can pass another file location via the `-c` flag. You can also use other configuration formats like JSON or TOML. Example:
-   ```
-   ./shinpuru -c config/config.yml
-   ```
-   > config/config.yml
-   ```yml
-   discord:
-     token: "..."
-     generalprefix: "!"
-   ```
+- `set-config-value` allows to set config values during runtime by field name and value JSON representation.  
+  *Please use this function with caution because it can hardly impair the functionaility of shinpuru.*
 
-You can combine all configuration sources listed above. Higher priorized configuration sources will overwrite values from less priorized sources.
+Also, keep in mind that some config changes may only take effect after a restart. So both commands may have no effect.
 
-### Embed Builder
+## Bug Fixes
 
-You can now send and edit embed messages in guild channels using the `POST /api/v1/channels/{id}` and `POST /api/v1/channels/{id}/{messageid}` endpoints.
-
-> This endpoint requires the `sp.chat.say` permission.
-
-Here you can find the documentation:
-https://github.com/zekroTJA/shinpuru/blob/master/docs/restapi/v1/restapi.md#channelsid
-
-There is also an embed builder using these endpoints. But because this is still kind of beta, you can currently only access it directly via the following route in the web interface.
-
-```
-/guilds/{guildid}/utils/embeds
-```
-
-![](https://i.imgur.com/T9qEiyU.png)
-
-## Bugfixes
-
-- Fix report time representations. [#276]
-- Fix report unmute reason propagation. [#277]
-- Fix proper timezone handling on report expiration definition.
+- Set requirement on `/ghostping setup message:<string>` argument so that shinpuru will not crash anymore if the parameter was not specified.
 
 # Docker
 
@@ -67,11 +28,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.22.0
+$ docker pull zekro/shinpuru:1.23.1
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.22.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.23.1
 ```

@@ -431,6 +431,20 @@
           </div>
         </div>
       </div>
+
+      <!-- UTILITIES -->
+      <div class="dropdown-container mt-3">
+        <app-spoiler [(ngModel)]="utilitiesToggle">
+          <div class="d-flex">
+            <h4 class="mx-3">Utilities</h4>
+          </div>
+        </app-spoiler>
+        <div *ngIf="utilitiesToggle" class="my-4">
+          <button class="btn-utilities" (click)="onUtilClick('embeds')">
+            <img src="assets/message.svg" /> <span>Embed Builder</span>
+          </button>
+        </div>
+      </div>
     </ng-template>
 
     <!-- SCOREBOARD -->

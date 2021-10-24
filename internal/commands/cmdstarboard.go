@@ -39,7 +39,7 @@ func (c *CmdStarboard) GetGroup() string {
 }
 
 func (c *CmdStarboard) GetDomainName() string {
-	return "sp.guild.config.stats"
+	return "sp.guild.config.starboard"
 }
 
 func (c *CmdStarboard) GetSubPermissionRules() []shireikan.SubPermission {

@@ -5,59 +5,45 @@
 package httpreq
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"io"
-	"net/http"
-	"strconv"
-)
 
-// Response extends http.Response with some extra
-// utility functions.
-type Response struct {
-	*http.Response
-}
+	"github.com/valyala/fasthttp"
+)
 
 // Request executes a HTTP request with the given method to the
 // given URL and attaches the passed headers. When data is passed,
 // the object will be serialized using JSON encoder and attached to
 // the request body.
-func Request(method, url string, headers map[string]string, data interface{}) (*Response, error) {
-	var body io.Reader
-	var dataLen int
-	if data != nil {
-		var buffer bytes.Buffer
-		enc := json.NewEncoder(&buffer)
-		err := enc.Encode(data)
-		if err != nil {
-			return nil, err
+func Request(method, url string, headers map[string]string, data interface{}) (res *Response, err error) {
+	defer func() {
+		if err != nil && res != nil {
+			res.Release()
 		}
-		dataLen = buffer.Len()
-		body = bufio.NewReader(&buffer)
-	}
+	}()
 
-	req, err := http.NewRequest(method, url, body)
-	if err != nil {
-		return nil, err
-	}
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	res = responsePool.Get().(*Response)
+
+	req.Header.SetMethod(method)
+	req.SetRequestURI(url)
 
 	for k, v := range headers {
 		req.Header.Add(k, v)
 	}
 
-	if dataLen > 0 {
-		req.Header.Add("Content-Length", strconv.Itoa(dataLen))
+	if data != nil {
+		err = json.NewEncoder(req.BodyWriter()).Encode(data)
+		if err != nil {
+			return
+		}
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Response{
-		Response: resp,
-	}, nil
+	err = fasthttp.Do(req, res.Response)
+	return
 }
 
 // Get is shorthand for Request using the GET method.
@@ -70,22 +56,16 @@ func Post(url string, headers map[string]string, data interface{}) (*Response, e
 	return Request("POST", url, headers, data)
 }
 
-// JSON parses the response body data to the
-// passed object reference using JSON decoder
-// and returns errors occured.
-func (r *Response) JSON(v interface{}) error {
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(v)
-	return err
-}
-
 // GetFile is shorthand for http.Get and returns
 // the body as io.Reader as well as occured errors
 // during request execution.
-func GetFile(uri string) (io.Reader, error) {
-	resp, err := http.Get(uri)
+func GetFile(url string, headers map[string]string) (r io.Reader, contentType string, err error) {
+	resp, err := Get(url, headers)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return resp.Body, err
+	defer resp.Release()
+	r = bytes.NewBuffer(resp.Body())
+	contentType = string(resp.Header.Peek("content-type"))
+	return
 }

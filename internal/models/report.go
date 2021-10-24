@@ -12,10 +12,10 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 )
 
-type Type int
+type ReportType int
 
 const (
-	TypeKick Type = iota
+	TypeKick ReportType = iota
 	TypeBan
 	TypeMute
 	TypeWarn
@@ -43,7 +43,7 @@ var (
 	}
 )
 
-func TypeFromString(s string) (typ Type, err error) {
+func TypeFromString(s string) (typ ReportType, err error) {
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		return
@@ -51,7 +51,7 @@ func TypeFromString(s string) (typ Type, err error) {
 	if i < 0 || i > TypeMax {
 		err = fmt.Errorf("type out of bounds ([0..%d])", TypeMax)
 	} else {
-		typ = Type(i)
+		typ = ReportType(i)
 	}
 	return
 }
@@ -59,7 +59,7 @@ func TypeFromString(s string) (typ Type, err error) {
 // Report describes a report object.
 type Report struct {
 	ID            snowflake.ID `json:"id"`
-	Type          Type         `json:"type"`
+	Type          ReportType   `json:"type"`
 	GuildID       string       `json:"guild_id"`
 	ExecutorID    string       `json:"executor_id"`
 	VictimID      string       `json:"victim_id"`
@@ -69,7 +69,7 @@ type Report struct {
 	Anonymous     bool         `json:"-"`
 }
 
-// GetTimestamp returns the time stamp when the
+// GetTimestamp returns the timestamp when the
 // report was generated from the reports ID
 // snowflake.
 func (r *Report) GetTimestamp() time.Time {
@@ -127,7 +127,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 
 // AsEmbedField creates a discordgo.MessageEmbedField from
 // the report. publicAddr is passed to generate a publicly
-// vailable link embedded in the embed field.
+// available link embedded in the embed field.
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
 	if r.AttachmehtURL != "" {

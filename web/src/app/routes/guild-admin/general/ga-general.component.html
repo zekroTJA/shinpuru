@@ -106,7 +106,7 @@
       </div>
     </div>
     <div
-      *ngIf="guildSettingsContains('sp.guild.config.joinmsg')"
+      *ngIf="guildSettingsContains('sp.guild.config.announcements')"
       class="settings-tile"
     >
       <h5>Join Message</h5>
@@ -148,13 +148,14 @@
       </div>
     </div>
     <div
-      *ngIf="guildSettingsContains('sp.guild.config.leavemsg')"
+      *ngIf="guildSettingsContains('sp.guild.config.announcements')"
       class="settings-tile"
     >
       <h5>Leave Message</h5>
       <i>
         You can use <span class="embedded">[user]</span> to display the name or
-        <span class="embedded">[ment]</span> to mention the left user.
+        <span class="embedded">[ment]</span> to mention the user who left the
+        guild.
       </i>
       <div class="mt-3">
         <select

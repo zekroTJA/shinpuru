@@ -8,7 +8,7 @@ import (
 )
 
 // GhostPingIgnoreMiddleware implements the shireikan.Middleware
-// interface to provide message chaching for command messages
+// interface to provide message caching for command messages
 // containing user mentions to dodge the ghostping trigger.
 type GhostPingIgnoreMiddleware struct {
 	reg *timedmap.TimedMap

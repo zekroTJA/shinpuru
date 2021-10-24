@@ -65,7 +65,7 @@ func New(container di.Container) *GuildBackups {
 }
 
 // BackupAllGuilds iterates through all guilds
-// which habe guild backups enabled and initiates
+// which have guild backups enabled and initiates
 // the backup routines one after one.
 // Guild backups are not created in new goroutines
 // because of potential rate limit exceedance.

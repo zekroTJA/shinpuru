@@ -2,18 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"image"
 	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/generaltso/vibrant"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
-	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
 )
@@ -53,18 +51,10 @@ func (c *CmdGuild) Exec(ctx shireikan.Context) (err error) {
 	const maxGuildRoles = 30
 
 	g := ctx.GetGuild()
-	clr := 0
 
-	if body, err := httpreq.GetFile(g.IconURL()); err == nil {
-		if imgData, _, err := image.Decode(body); err == nil {
-			if palette, err := vibrant.NewPaletteFromImage(imgData); err == nil {
-				for name, swatch := range palette.ExtractAwesome() {
-					if name == "Vibrant" {
-						clr = int(swatch.Color)
-					}
-				}
-			}
-		}
+	clr, err := colors.GetVibrantColorFromImageUrl(g.IconURL())
+	if err != nil {
+		clr = static.ColorEmbedDefault
 	}
 
 	st := ctx.GetObject(static.DiState).(*dgrs.State)

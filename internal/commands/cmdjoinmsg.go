@@ -37,7 +37,7 @@ func (c *CmdJoinMsg) GetGroup() string {
 }
 
 func (c *CmdJoinMsg) GetDomainName() string {
-	return "sp.guild.config.joinmsg"
+	return "sp.guild.config.announcements"
 }
 
 func (c *CmdJoinMsg) GetSubPermissionRules() []shireikan.SubPermission {

@@ -57,6 +57,7 @@ import { DebugComponent } from './routes/debug/debug.component';
 import { GlobalSearchComponent } from './components/global-search/global-search.component';
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
+import { CommandOptionTypePipe } from './pipes/command-option-type.pipe';
 
 @NgModule({
   declarations: [
@@ -107,6 +108,7 @@ import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
     GlobalSearchComponent,
     GuildAdminApiComponent,
     EmbedsComponent,
+    CommandOptionTypePipe,
   ],
   imports: [
     NgbModule,

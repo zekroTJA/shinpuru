@@ -74,6 +74,7 @@ export class GuildComponent {
   public guildSettingsToggle = false;
   public permissionsToggle = false;
   public backupsToggle = false;
+  public utilitiesToggle = false;
 
   public isSearchInput = false;
 
@@ -494,5 +495,9 @@ export class GuildComponent {
 
   public onGuildSettingsClick() {
     this.router.navigate(['guilds', this.guild.id, 'guildadmin']);
+  }
+
+  public onUtilClick(sub: string) {
+    this.router.navigate(['guilds', this.guild.id, 'utils', sub]);
   }
 }

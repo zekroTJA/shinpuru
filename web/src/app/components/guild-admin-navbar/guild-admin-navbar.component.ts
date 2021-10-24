@@ -22,8 +22,7 @@ const ROUTES: Route[] = [
       'sp.guild.config.prefix',
       'sp.guild.config.modlog',
       'sp.guild.config.voicelog',
-      'sp.guild.config.joinmsg',
-      'sp.guild.config.leavemsg',
+      'sp.guild.config.announcements',
     ],
   },
   {

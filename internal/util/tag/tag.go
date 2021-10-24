@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/dgrs"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -30,7 +31,7 @@ type author struct {
 
 // AsEmbed creates a discordgo.MessageEmbed from
 // the tag information.
-func (t *Tag) AsEmbed(s *discordgo.Session) *discordgo.MessageEmbed {
+func (t *Tag) AsEmbed(s *dgrs.State) *discordgo.MessageEmbed {
 	footer := ""
 
 	author := t.formattedAuthor(s)
@@ -58,7 +59,7 @@ func (t *Tag) AsEmbed(s *discordgo.Session) *discordgo.MessageEmbed {
 
 // AsEntry returns a single formatted string line
 // to represent a tag.
-func (t *Tag) AsEntry(s *discordgo.Session) string {
+func (t *Tag) AsEntry(s *dgrs.State) string {
 	author := t.formattedAuthor(s)
 
 	return fmt.Sprintf("**%s** by %s [`%s`]", t.Ident, author.nameTag, t.ID)
@@ -72,9 +73,9 @@ func (t *Tag) RawContent() string {
 
 // formattedAuthor returns an author object from the
 // CreatorID of the tag.
-func (t *Tag) formattedAuthor(s *discordgo.Session) *author {
+func (t *Tag) formattedAuthor(s *dgrs.State) *author {
 	authorF := new(author)
-	author, err := s.GuildMember(t.GuildID, t.CreatorID)
+	author, err := s.Member(t.GuildID, t.CreatorID)
 	if err == nil && author != nil {
 		authorF.nameTag = fmt.Sprintf("%s#%s", author.User.Username, author.User.Discriminator)
 		authorF.imageURL = author.User.AvatarURL("")

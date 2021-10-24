@@ -7,8 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -101,7 +101,7 @@ func (c *CmdNotify) Exec(ctx shireikan.Context) error {
 	}
 
 	if strings.ToLower(ctx.GetArgs().Get(0).AsString()) == "setup" {
-		pmw, _ := ctx.GetObject(static.DiPermissionMiddleware).(*middleware.PermissionsMiddleware)
+		pmw, _ := ctx.GetObject(static.DiPermissions).(*permissions.Permissions)
 		ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetGuild().ID, ctx.GetUser().ID, c.GetDomainName()+".setup")
 		if err != nil {
 			return err

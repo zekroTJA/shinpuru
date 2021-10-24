@@ -137,3 +137,23 @@ button.back-top {
 .selected {
   background-color: $c-blurple;
 }
+
+.sub-command {
+}
+
+table {
+  margin: 10px 0 0 0;
+  width: 100%;
+  th {
+    text-transform: uppercase;
+    font-weight: 500;
+    opacity: 0.75;
+    font-size: 0.8em;
+  }
+  td {
+    padding-right: 10px;
+  }
+  tr {
+    border-bottom: solid 1px rgba(255, 255, 255, 0.25);
+  }
+}
