@@ -240,7 +240,11 @@ func (v *Vote) AddReactions(s *discordgo.Session) error {
 }
 
 // Tick sets the tick for the specified user to the vote.
-func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
+func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) (err error) {
+	if userID, err = HashUserID(userID, []byte(v.ID)); err != nil {
+		return
+	}
+
 	if t, ok := v.Ticks[userID]; ok {
 		t.Tick = tick
 	} else {
@@ -252,11 +256,11 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) error {
 
 	emb, err := v.AsEmbed(s)
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = s.ChannelMessageEditEmbed(v.ChannelID, v.MsgID, emb)
-	return err
+	return
 }
 
 // SetExpire sets the expiration for a vote.

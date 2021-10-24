@@ -8,6 +8,11 @@ import (
 	"github.com/bwmarrin/snowflake"
 )
 
+// HashUserID takes a userID as well as a salt value
+// to generate a unique hash.
+//
+// Therefore, the first 12 bits are cut of to obscure
+// the ID while keeping the risk of collissions low.
 func HashUserID(userID string, salt []byte) (hash string, err error) {
 	sid, err := snowflake.ParseString(userID)
 	if err != nil {
