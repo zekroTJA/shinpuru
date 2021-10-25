@@ -65,6 +65,37 @@ The web interface simply connects to the REST API exposed by the web server of s
 ![](https://user-images.githubusercontent.com/16734205/138591104-a08890f8-52b8-44ee-b0fa-40123e3b84ba.png)
 
 
+## Chat Features
+
+### Code Execution
+
+When someone posts code inside a code block, shinpuru can extract the code and language and execute it outputting the result into chat.
+
+The code is picked up and sent to a code execution engine, which safely executes the code and sends back the result via a REST API. Therefore, you can chose between [ranna](https://github.com/ranna-go) or [JDoodle](https://www.jdoodle.com/) in the config.
+
+![](https://user-images.githubusercontent.com/16734205/138688386-620119ac-659e-4903-8de8-5a6f0098666b.gif)
+
+### Karma
+
+shinpuru featues a Karma system which is inspired by Reddit. You can define specific emotes which, when attached to a message, increase or reduce the karma points of a member. You can also specify the amount of "tokens" which can be spent each hour as well as a penalty for giving negative karma, which also takes karma from the executor to prevent downvote spam.
+
+It is also possible to execute actions when passing specific amounts of karma. For example, you can add or remove roles, send messages or even kick/ban members depending on their karma points.
+
+![](https://user-images.githubusercontent.com/16734205/138691018-385ef4a9-6997-46be-a8a0-880a1427d015.png)
+
+### Color Reactions
+
+Another unique feature of shinpuru are color reactions. When enabled (see [`/colorreaction`](https://github.com/zekroTJA/shinpuru/wiki/Commands#colorreaction)), shinpuru can fetch colors from chat messages and display them into a reaction. When clicked on the reaction, more information about the color is then posted into chat.
+
+![](https://user-images.githubusercontent.com/16734205/138690308-457ac50b-3f3c-4782-82f9-c6c95a937efa.gif)
+
+### Votes
+
+You can simply create votes using the [`/vote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#vote) slash command where users can [*pseudo anonymously*](https://github.com/zekroTJA/shinpuru/wiki/Why-are-Votes-%22pseudo-anonymous%22%3F) vote using reactions.
+
+<img height="230px" src="https://user-images.githubusercontent.com/16734205/138737192-600c0385-74ce-44ab-bec8-32433b73d5ff.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737253-001d3a50-5cfb-4f48-b5e6-eb7d169ef052.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737282-9829833b-28a8-4338-8dad-0817e4d5669a.png" />
+
+
 ---
 
 # Docker
