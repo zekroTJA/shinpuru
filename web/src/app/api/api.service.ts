@@ -42,6 +42,7 @@ import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 import { CacheBucket } from './api.cache';
 import { Router } from '@angular/router';
+import { NO_LOGIN_ROUTES } from '../utils/consts';
 
 /** @format */
 
@@ -208,11 +209,11 @@ export class APIService {
     if (err instanceof TypeError) {
       return of({});
     }
-    console.error(err);
     if (err.status === 401) {
       let path = window.location.pathname;
-      if (path.startsWith('/login')) return;
+      if (NO_LOGIN_ROUTES.find((r) => path.startsWith(r))) return;
       if (!(path?.length > 0)) path = null;
+      console.log('api', path);
       this.router.navigate(['/login'], {
         queryParams: {
           redirect: path,

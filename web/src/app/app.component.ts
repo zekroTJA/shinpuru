@@ -3,8 +3,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { APIService } from './api/api.service';
-import { LoadingBarService } from './components/header/loadingbar.service';
 import { ToastService } from './components/toast/toast.service';
+import { NO_LOGIN_ROUTES } from './utils/consts';
 import LocalStorageUtil from './utils/localstorage';
 import { NextLoginRedirect } from './utils/objects';
 
@@ -27,7 +27,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     const nlr = LocalStorageUtil.get<NextLoginRedirect>('NEXT_LOGIN_REDIRECT');
-    if (nlr && nlr.deadline >= Date.now()) {
+    const path = window.location.pathname;
+    if (
+      nlr &&
+      nlr.deadline >= Date.now() &&
+      !NO_LOGIN_ROUTES.find((r) => path.startsWith(r))
+    ) {
       LocalStorageUtil.remove('NEXT_LOGIN_REDIRECT');
       window.location.replace(nlr.destination);
     }

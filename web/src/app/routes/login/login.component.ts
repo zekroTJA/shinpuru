@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
+    console.log('login', redirect);
 
     if (redirect) {
       LocalStorageUtil.set('NEXT_LOGIN_REDIRECT', {
