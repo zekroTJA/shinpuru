@@ -79,6 +79,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Delete("/:guildid/settings/karma/rules/:id", c.pmw.HandleWs(c.session, "sp.guild.config.karma"), c.deleteGuildSettingsKrameRule)
 	router.Get("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildSettingsAntiraid)
 	router.Post("/:guildid/settings/antiraid", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraid)
+	router.Post("/:guildid/settings/antiraid/action", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.postGuildSettingsAntiraidAction)
 	router.Get("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogs)
 	router.Get("/:guildid/settings/logs/count", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.getGuildSettingsLogsCount)
 	router.Delete("/:guildid/settings/logs", c.pmw.HandleWs(c.session, "sp.guild.config.logs"), c.deleteGuildSettingsLogEntries)
@@ -948,6 +949,75 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 
 	if err = c.db.SetAntiraidBurst(guildID, settings.Burst); err != nil {
 		return err
+	}
+
+	return ctx.JSON(models.Ok)
+}
+
+// @Summary Guild Antiraid Bulk Action
+// @Description Execute a specific action on antiraid listed users
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.AntiraidAction true "The antiraid action payload."
+// @Success 200 {object} models.Status
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/antiraid/action [post]
+func (c *GuildsController) postGuildSettingsAntiraidAction(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	var action models.AntiraidAction
+	if err = ctx.BodyParser(&action); err != nil {
+		return
+	}
+
+	var actF func(id string) error
+	switch action.Type {
+	case models.AntiraidActionTypeKick:
+		actF = func(id string) error {
+			return c.session.GuildMemberDelete(guildID, id)
+		}
+	case models.AntiraidActionTypeBan:
+		actF = func(id string) error {
+			return c.session.GuildBanCreateWithReason(guildID, id, "antiraid purge", 7)
+		}
+	default:
+		return fiber.NewError(fiber.StatusBadRequest, "invalid action type")
+	}
+
+	if len(action.IDs) == 0 {
+		return
+	}
+
+	joinList, err := c.db.GetAntiraidJoinList(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return fiber.NewError(fiber.StatusBadRequest, "ID list must contain entries")
+	}
+
+	var contained int
+	for _, e := range joinList {
+	inner:
+		for _, id := range action.IDs {
+			if e.UserID == id {
+				contained++
+				break inner
+			}
+		}
+	}
+	if contained != len(action.IDs) {
+		return fiber.NewError(fiber.StatusBadRequest, "ID list contains entry not contained in antiraid joinlist")
+	}
+
+	for _, id := range action.IDs {
+		if err = actF(id); err != nil {
+			return
+		}
+		if err = c.db.RemoveAntiraidJoinList(guildID, id); err != nil {
+			return
+		}
 	}
 
 	return ctx.JSON(models.Ok)

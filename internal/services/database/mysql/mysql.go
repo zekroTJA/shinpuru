@@ -1425,6 +1425,13 @@ func (m *MysqlMiddleware) FlushAntiraidJoinList(guildID string) (err error) {
 	return
 }
 
+func (m *MysqlMiddleware) RemoveAntiraidJoinList(guildID, userID string) (err error) {
+	_, err = m.Db.Exec(`DELETE FROM antiraidJoinlog WHERE guildID = ? AND userID = ?`, guildID, userID)
+	err = wrapNotFoundError(err)
+
+	return
+}
+
 func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []*models.UnbanRequest, err error) {
 	rows, err := m.Db.Query(
 		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
