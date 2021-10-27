@@ -3,7 +3,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
-import { Report, Member } from 'src/app/api/api.models';
+import { Report, User } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 
 const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
@@ -15,8 +15,8 @@ const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 })
 export class ReportComponent implements OnInit {
   @Input() public report: Report;
-  @Input() public victim: Member;
-  @Input() public executor: Member;
+  @Input() public victim: User;
+  @Input() public executor: User;
   @Input() public allowRevoke: boolean;
 
   @Output() public revoke = new EventEmitter<any>();
@@ -26,22 +26,16 @@ export class ReportComponent implements OnInit {
 
   constructor(private api: APIService) {}
 
-  ngOnInit() {
-    if (!this.executor) {
-      this.api
-        .getGuildMember(this.report.guild_id, this.report.executor_id, true)
-        .subscribe((u) => {
-          this.executor = u;
-        });
-    }
+  async ngOnInit() {
+    try {
+      if (!this.executor)
+        this.executor = await this.api
+          .getUser(this.report.executor_id)
+          .toPromise();
 
-    if (!this.victim) {
-      this.api
-        .getGuildMember(this.report.guild_id, this.report.victim_id, true)
-        .subscribe((u) => {
-          this.victim = u;
-        });
-    }
+      if (!this.victim)
+        this.victim = await this.api.getUser(this.report.victim_id).toPromise();
+    } catch {}
   }
 
   public isDiscordAttachment(url: string): boolean {

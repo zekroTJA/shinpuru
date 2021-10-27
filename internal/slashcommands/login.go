@@ -49,7 +49,7 @@ func (c *Login) Options() []*discordgo.ApplicationCommandOption {
 }
 
 func (c *Login) Domain() string {
-	return "sp.etc.Login"
+	return "sp.etc.login"
 }
 
 func (c *Login) SubDomains() []permissions.SubPermission {

@@ -46,7 +46,7 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
-	user, err := c.session.User(uid)
+	user, err := c.st.User(uid)
 	if err != nil {
 		return err
 	}

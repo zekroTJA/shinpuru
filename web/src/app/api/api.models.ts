@@ -257,6 +257,8 @@ export interface JoinlogEntry {
   user_id: string;
   tag: string;
   timestamp: Date;
+
+  selected: boolean;
 }
 
 export interface LandingPageInfo {
@@ -378,4 +380,14 @@ export interface MessageEmbed {
   video: MessageEmbedVideo;
 
   color_hex: string;
+}
+
+export enum AntiraidActionType {
+  KICK,
+  BAN,
+}
+
+export interface AntiraidAction {
+  type: AntiraidActionType;
+  ids: string[];
 }

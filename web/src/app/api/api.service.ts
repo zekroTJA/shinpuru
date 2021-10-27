@@ -37,11 +37,13 @@ import {
   SearchResult,
   GuildSettingsApi,
   MessageEmbed,
+  AntiraidAction,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
 import { CacheBucket } from './api.cache';
 import { Router } from '@angular/router';
+import { NO_LOGIN_ROUTES } from '../utils/consts';
 
 /** @format */
 
@@ -144,6 +146,9 @@ export class APIService {
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
 
+  private readonly rcGuildSettingsAntiraidAction = (guildID: string) =>
+    `${this.rcGuildSettingsAntiraid(guildID)}/action`;
+
   private readonly rcGuildSettingsFlushData = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/flushguilddata`;
 
@@ -204,15 +209,18 @@ export class APIService {
   private readonly rcChannels = (chanId: string, msgId: string = '') =>
     `${this.rcAPI('channels')}/${chanId}${msgId ? '/' + msgId : ''}`;
 
+  private readonly rcUsers = (rc: string = '') =>
+    `${this.rcAPI('users')}${rc ? '/' + rc : ''}`;
+
   private readonly errorCatcher = (err) => {
     if (err instanceof TypeError) {
       return of({});
     }
-    console.error(err);
     if (err.status === 401) {
       let path = window.location.pathname;
-      if (path.startsWith('/login')) return;
+      if (NO_LOGIN_ROUTES.find((r) => path.startsWith(r))) return;
       if (!(path?.length > 0)) path = null;
+      console.log('api', path);
       this.router.navigate(['/login'], {
         queryParams: {
           redirect: path,
@@ -768,6 +776,15 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
+  public postGuildAntiraidAction(
+    guildID: string,
+    action: AntiraidAction
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsAntiraidAction(guildID), action, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
   public getLandingPageInfo(): Observable<any> {
     return this.http
       .get(this.rcUtil('landingpageinfo'), this.defopts())
@@ -969,6 +986,12 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcChannels(chanID, msgID), embed, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUser(userID: string): Observable<User> {
+    return this.http
+      .get(this.rcUsers(userID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
