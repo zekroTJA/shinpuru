@@ -586,6 +586,33 @@ Update the guild antiraid settings specification.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/{id}/settings/antiraid/action
+
+#### POST
+##### Summary
+
+Guild Antiraid Bulk Action
+
+##### Description
+
+Execute a specific action on antiraid listed users
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The antiraid action payload. | Yes | [models.AntiraidAction](#modelsantiraidaction) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/{id}/settings/api
 
 #### GET
@@ -2211,6 +2238,13 @@ Returns a list of registered slash commands and their description.
 | ---- | ---- | ----------- | -------- |
 | expires | string |  | No |
 | token | string |  | No |
+
+#### models.AntiraidAction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| ids | [ string ] |  | No |
+| type | integer |  | No |
 
 #### models.AntiraidSettings
 
