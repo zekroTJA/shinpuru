@@ -105,10 +105,10 @@
     <div class="mt-5">
       <div class="d-flex justify-content-between">
         <h3>Antiraid Joinlog Records</h3>
-        <div>
+        <div class="d-flex">
           <button
             (click)="onDownloadJoinlog()"
-            class="sec-btn mr-2"
+            class="jl-btn sec-btn mr-2"
             [disabled]="joinlog?.length < 1"
             title="Download as JSON"
           >
@@ -116,17 +116,33 @@
           </button>
           <button
             (click)="flushJoinlog()"
-            class="refresh sec-btn mr-2"
+            class="jl-btn refresh sec-btn mr-2"
             title="Delete all list entries"
           >
             <img height="25" src="/assets/delete.svg" />
           </button>
           <button
             (click)="fetchJoinlog()"
-            class="refresh sec-btn"
+            class="jl-btn refresh sec-btn mr-3"
             title="Refresh"
           >
             <img height="25" src="/assets/refresh.svg" />
+          </button>
+          <button
+            (click)="kickSelected()"
+            class="jl-btn sec-btn bg-red mr-2"
+            title="Kick selected"
+          >
+            <img height="25" class="mr-1" src="/assets/kick.svg" />
+            <span>KICK</span>
+          </button>
+          <button
+            (click)="banSelected()"
+            class="jl-btn sec-btn bg-red"
+            title="Ban selected"
+          >
+            <img height="25" class="mr-1" src="/assets/ban.svg" />
+            <span>BAN</span>
           </button>
         </div>
       </div>
@@ -145,12 +161,26 @@
                 <th>User ID</th>
                 <th>Tag</th>
                 <th>Timestamp</th>
+                <th>
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="selectedAll"
+                    (change)="toggleSelectAll()"
+                  />
+                </th>
               </tr>
-              <tr *ngFor="let e of joinlog">
+              <tr *ngFor="let e of joinlog; index as i">
                 <td>{{ e.user_id }}</td>
                 <td>{{ e.tag }}</td>
                 <td>
                   {{ dateFormat(e.timestamp) }}
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="joinlog[i].selected"
+                    (change)="clickEntrySelect()"
+                  />
                 </td>
               </tr>
             </tbody>

@@ -37,6 +37,7 @@ import {
   SearchResult,
   GuildSettingsApi,
   MessageEmbed,
+  AntiraidAction,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -144,6 +145,9 @@ export class APIService {
 
   private readonly rcGuildSettingsAntiraid = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/antiraid`;
+
+  private readonly rcGuildSettingsAntiraidAction = (guildID: string) =>
+    `${this.rcGuildSettingsAntiraid(guildID)}/action`;
 
   private readonly rcGuildSettingsFlushData = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/flushguilddata`;
@@ -769,6 +773,15 @@ export class APIService {
   public deleteGuildAntiraidJoinlog(guildID: string): Observable<any> {
     return this.http
       .delete(this.rcGuildAntiraidJoinlog(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildAntiraidAction(
+    guildID: string,
+    action: AntiraidAction
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsAntiraidAction(guildID), action, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
