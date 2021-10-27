@@ -95,6 +95,43 @@ You can simply create votes using the [`/vote`](https://github.com/zekroTJA/shin
 
 <img height="230px" src="https://user-images.githubusercontent.com/16734205/138737192-600c0385-74ce-44ab-bec8-32433b73d5ff.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737253-001d3a50-5cfb-4f48-b5e6-eb7d169ef052.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737282-9829833b-28a8-4338-8dad-0817e4d5669a.png" />
 
+### Twitch Notifications
+
+You can add names of twitch streamers to a watchlist (see [`/twitchnotify`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitchnotify)) and when they go live, a notification message in sent into the specified channel.
+
+![](https://user-images.githubusercontent.com/16734205/138742312-202fe2de-b99d-4606-81c8-980748813939.png)
+
+### Quote Messages
+
+You can use the [`/quote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#quote) command to quote messages by ID or link (even cross-channel).
+
+![image](https://user-images.githubusercontent.com/16734205/138743500-cf16c25b-68c0-4d99-bb2c-a93d4619c8ac.png)
+
+### Starboard
+
+*As literally any other bot,* shinpuru also features a starboard! You can even specify an amount of karma members get when their message get into the starboard.
+
+![](https://user-images.githubusercontent.com/16734205/138848039-771248f3-3f67-49a6-9256-3f14c4bb12fb.png)
+
+### Channel Statistics
+
+You can use the [`/channelstats`]([`/quote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#channelstats)) command to analyze contribution statistics for specific text channels.
+
+![](https://user-images.githubusercontent.com/16734205/138848776-a5a5446a-3e5f-4a3c-8b45-4ac832822c9f.png)
+
+## Guild Security & Moderation
+
+### Report System
+
+shinpuru features a deeply integrated reporting and moderation system. You can create reports for members who violate guild rules which then are posted into a modlog channel (if specified). Also, all reports of a member can be viewed on their user profiles as well as in the web interface.
+
+Of course, you can also kick and ban members with shinpuru, which also creates a report record in the modlog. It is even possible to create so called "ghost reports". It allows to report or ban members by ID which are no more part of the server.
+
+![](https://user-images.githubusercontent.com/16734205/138853312-9bbfdb68-6875-41c4-b7ba-6febf27638f8.png)
+
+![](https://user-images.githubusercontent.com/16734205/138854271-ecec133a-70eb-4d12-8105-87be93994138.gif)
+
+When a member wants to request an unban, this can be done via the web interface.
 
 ---
 
