@@ -25,9 +25,13 @@ func TestHashCompare(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, ok)
 
-	// Lets flip a rune in the hash to make it invalid
+	// Lets flip some runes in the hash to make it invalid
 	_hash := []byte(hash)
 	_hash[10] = 'a'
+	_hash[11] = 'b'
+	_hash[12] = 'c'
+	_hash[13] = 'd'
+	_hash[14] = 'e'
 	hash = string(_hash)
 
 	ok, err = Compare(token, hash)
