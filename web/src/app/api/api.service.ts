@@ -205,6 +205,9 @@ export class APIService {
   private readonly rcChannels = (chanId: string, msgId: string = '') =>
     `${this.rcAPI('channels')}/${chanId}${msgId ? '/' + msgId : ''}`;
 
+  private readonly rcUsers = (rc: string = '') =>
+    `${this.rcAPI('users')}${rc ? '/' + rc : ''}`;
+
   private readonly errorCatcher = (err) => {
     if (err instanceof TypeError) {
       return of({});
@@ -970,6 +973,12 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcChannels(chanID, msgID), embed, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUser(userID: string): Observable<User> {
+    return this.http
+      .get(this.rcUsers(userID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
