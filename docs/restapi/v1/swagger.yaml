@@ -3575,6 +3575,21 @@ paths:
       summary: Get Banned Guilds
       tags:
       - Unban Requests
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns the information of a user by ID.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: User
+      tags:
+      - Users
   /usersettings/ota:
     get:
       consumes:

@@ -95,4 +95,5 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid"))
 	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid"))
 	new(controllers.ChannelController).Setup(r.container, router.Group("/channels"))
+	new(controllers.UsersController).Setup(r.container, router.Group("/users"))
 }

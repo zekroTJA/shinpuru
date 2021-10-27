@@ -3598,6 +3598,29 @@
                 }
             }
         },
+        "/users/{id}": {
+            "get": {
+                "description": "Returns the information of a user by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "User",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
         "/usersettings/ota": {
             "get": {
                 "description": "Returns the current state of the OTA user setting.",

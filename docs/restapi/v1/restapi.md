@@ -1791,6 +1791,23 @@ Returns a list of guilds where the currently authenticated user is banned.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /users/{id}
+
+#### GET
+##### Summary
+
+User
+
+##### Description
+
+Returns the information of a user by ID.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.User](#modelsuser) |
+
 ### /usersettings/ota
 
 #### GET
