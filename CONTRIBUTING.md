@@ -63,7 +63,7 @@ The web interface communicates with the shinpuru backend over a RESTful HTTP API
 
 If you want to add API endpoints, just add the endpoints to one of the controllers *(don't forget to register the endpoint in the controller's `Setup` method!)*, or create a new entire controller, which then needs to be registered in the API `Route`. If you need service dependencies in your controller, just add it to the controllers struct and get it from the passed `di.Container` *(more explained below)* in the `Setup` method.
 
-Also, fiber works a lot with middlewares, which can be chained anywhere into the fiber route chain. In shinpurus implementation, there are three main types of middlewares.
+Also, fiber works a lot with middlewares, which can be chained anywhere into the fiber route chain. In shinpuru's implementation, there are three main types of middlewares.
 1. The high level middlewares like the rate limiter, CORS or file system middleware, which are set before all incomming requests.
 2. Controller specific middlewares which are defined in the router. Mainly, this is used for the authorizeation middleware, which checks for auth tokens in the requests. This middleware is required by some controllers and not required for others.
 3. Endpoint specific middlewares which are defined for specific endpoints only. Mainly, this is used for the permission middleware which checks for required user permissions to execute specific endpoints.
