@@ -131,7 +131,31 @@ Of course, you can also kick and ban members with shinpuru, which also creates a
 
 ![](https://user-images.githubusercontent.com/16734205/138854271-ecec133a-70eb-4d12-8105-87be93994138.gif)
 
-When a member wants to request an unban, this can be done via the web interface.
+When a member wants to request an unban, this can be done via the web interface when navigating to `<webAddress>/unbanme`.
+
+https://user-images.githubusercontent.com/16734205/140642193-a89e90c5-f38d-40cd-82bb-d25b65aa3dc7.mp4
+
+### Guild Backups
+
+When enabled, shinpuru will create a backup of your guild's infrastructure every 12 hours. This includes guild settings, channels (names, positions and groups), roles (names, positions and permissions) and members (nicknames and applied roles).
+
+When your guild gets raided or an admin goes rouge, you can simply choose one of the created backups and reset the guilds state.
+
+The last 10 backups are stored and can be reviewed in the web interface.
+
+![](https://user-images.githubusercontent.com/16734205/140642616-20dae0d7-d2d7-421a-9d41-5a717cb4ca78.png)
+
+### Raid Alerting
+
+This system allows you to set a threshold of new user ingress reate. When this rate exceeds, for example when a lot of (bot) accounts flush in to your guild (aka `raiding`), all admins of the guild will be allerted via DM. Also, the guilds moderation setting will be raised to `Highest` so that only users with roles or a valid phone number can chat.
+
+![image](https://user-images.githubusercontent.com/16734205/140644018-9652d8c9-2716-43ae-bf5b-c1b2c17f895a.png)
+
+![](https://user-images.githubusercontent.com/16734205/140643905-32c9e258-4971-4054-b99f-ec27c8fcd33a.png)
+
+Additionally, all joined users after the event triggered are logged in a list which can be viewed in the web interface. You can also use this list to bulk kick or ban users captured in the antiraid join list.
+
+![](https://user-images.githubusercontent.com/16734205/140643988-d1b857e5-8c62-4a3e-b0ba-409dc839f46e.png)
 
 ---
 
