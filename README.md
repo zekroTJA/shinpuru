@@ -54,6 +54,107 @@ If you are sick of using chat commands, you can also use the web interface of sh
 
 https://user-images.githubusercontent.com/16734205/138589590-87301377-463d-43c3-8441-98ec84a1304c.mp4
 
+## REST API
+
+The web interface simply connects to the REST API exposed by the web server of shinpuru. You can also acquire an API token linked to your account to access the REST API directly, if you want.
+
+[**Here**](https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs) you can read more about how to connect to shinpuru's REST API and which endpoints are available.
+
+![](https://user-images.githubusercontent.com/16734205/138591104-a08890f8-52b8-44ee-b0fa-40123e3b84ba.png)
+
+
+## Chat Features
+
+### Code Execution
+
+When someone posts code inside a code block, shinpuru can extract the code and language and execute it outputting the result into chat.
+
+The code is picked up and sent to a code execution engine, which safely executes the code and sends back the result via a REST API. Therefore, you can chose between [ranna](https://github.com/ranna-go) or [JDoodle](https://www.jdoodle.com/) in the config.
+
+![](https://user-images.githubusercontent.com/16734205/138688386-620119ac-659e-4903-8de8-5a6f0098666b.gif)
+
+### Karma
+
+shinpuru featues a Karma system which is inspired by Reddit. You can define specific emotes which, when attached to a message, increase or reduce the karma points of a member. You can also specify the amount of "tokens" which can be spent each hour as well as a penalty for giving negative karma, which also takes karma from the executor to prevent downvote spam.
+
+It is also possible to execute actions when passing specific amounts of karma. For example, you can add or remove roles, send messages or even kick/ban members depending on their karma points.
+
+![](https://user-images.githubusercontent.com/16734205/138691018-385ef4a9-6997-46be-a8a0-880a1427d015.png)
+
+### Color Reactions
+
+Another unique feature of shinpuru are color reactions. When enabled (see [`/colorreaction`](https://github.com/zekroTJA/shinpuru/wiki/Commands#colorreaction)), shinpuru can fetch colors from chat messages and display them into a reaction. When clicked on the reaction, more information about the color is then posted into chat.
+
+![](https://user-images.githubusercontent.com/16734205/138690308-457ac50b-3f3c-4782-82f9-c6c95a937efa.gif)
+
+### Votes
+
+You can simply create votes using the [`/vote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#vote) slash command where users can [*pseudo anonymously*](https://github.com/zekroTJA/shinpuru/wiki/Why-are-Votes-%22pseudo-anonymous%22%3F) vote using reactions.
+
+<img height="230px" src="https://user-images.githubusercontent.com/16734205/138737192-600c0385-74ce-44ab-bec8-32433b73d5ff.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737253-001d3a50-5cfb-4f48-b5e6-eb7d169ef052.png" /><img height="230px" src="https://user-images.githubusercontent.com/16734205/138737282-9829833b-28a8-4338-8dad-0817e4d5669a.png" />
+
+### Twitch Notifications
+
+You can add names of twitch streamers to a watchlist (see [`/twitchnotify`](https://github.com/zekroTJA/shinpuru/wiki/Commands#twitchnotify)) and when they go live, a notification message in sent into the specified channel.
+
+![](https://user-images.githubusercontent.com/16734205/138742312-202fe2de-b99d-4606-81c8-980748813939.png)
+
+### Quote Messages
+
+You can use the [`/quote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#quote) command to quote messages by ID or link (even cross-channel).
+
+![image](https://user-images.githubusercontent.com/16734205/138743500-cf16c25b-68c0-4d99-bb2c-a93d4619c8ac.png)
+
+### Starboard
+
+*As literally any other bot,* shinpuru also features a starboard! You can even specify an amount of karma members get when their message get into the starboard.
+
+![](https://user-images.githubusercontent.com/16734205/138848039-771248f3-3f67-49a6-9256-3f14c4bb12fb.png)
+
+### Channel Statistics
+
+You can use the [`/channelstats`]([`/quote`](https://github.com/zekroTJA/shinpuru/wiki/Commands#channelstats)) command to analyze contribution statistics for specific text channels.
+
+![](https://user-images.githubusercontent.com/16734205/138848776-a5a5446a-3e5f-4a3c-8b45-4ac832822c9f.png)
+
+## Guild Security & Moderation
+
+### Report System
+
+shinpuru features a deeply integrated reporting and moderation system. You can create reports for members who violate guild rules which then are posted into a modlog channel (if specified). Also, all reports of a member can be viewed on their user profiles as well as in the web interface.
+
+Of course, you can also kick and ban members with shinpuru, which also creates a report record in the modlog. It is even possible to create so called "ghost reports". It allows to report or ban members by ID which are no more part of the server.
+
+![](https://user-images.githubusercontent.com/16734205/138853312-9bbfdb68-6875-41c4-b7ba-6febf27638f8.png)
+
+![](https://user-images.githubusercontent.com/16734205/138854271-ecec133a-70eb-4d12-8105-87be93994138.gif)
+
+When a member wants to request an unban, this can be done via the web interface when navigating to `<webAddress>/unbanme`.
+
+https://user-images.githubusercontent.com/16734205/140642193-a89e90c5-f38d-40cd-82bb-d25b65aa3dc7.mp4
+
+### Guild Backups
+
+When enabled, shinpuru will create a backup of your guild's infrastructure every 12 hours. This includes guild settings, channels (names, positions and groups), roles (names, positions and permissions) and members (nicknames and applied roles).
+
+When your guild gets raided or an admin goes rouge, you can simply choose one of the created backups and reset the guilds state.
+
+The last 10 backups are stored and can be reviewed in the web interface.
+
+![](https://user-images.githubusercontent.com/16734205/140642616-20dae0d7-d2d7-421a-9d41-5a717cb4ca78.png)
+
+### Raid Alerting
+
+This system allows you to set a threshold of new user ingress reate. When this rate exceeds, for example when a lot of (bot) accounts flush in to your guild (aka `raiding`), all admins of the guild will be allerted via DM. Also, the guilds moderation setting will be raised to `Highest` so that only users with roles or a valid phone number can chat.
+
+![image](https://user-images.githubusercontent.com/16734205/140644018-9652d8c9-2716-43ae-bf5b-c1b2c17f895a.png)
+
+![](https://user-images.githubusercontent.com/16734205/140643905-32c9e258-4971-4054-b99f-ec27c8fcd33a.png)
+
+Additionally, all joined users after the event triggered are logged in a list which can be viewed in the web interface. You can also use this list to bulk kick or ban users captured in the antiraid join list.
+
+![](https://user-images.githubusercontent.com/16734205/140643988-d1b857e5-8c62-4a3e-b0ba-409dc839f46e.png)
+
 ---
 
 # Docker
