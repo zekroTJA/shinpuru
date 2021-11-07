@@ -1,12 +1,7 @@
 /** @format */
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import {
-  Report,
-  Member,
-  UnbanRequest,
-  UnbanRequestState,
-} from 'src/app/api/api.models';
+import { UnbanRequest, UnbanRequestState, User } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
@@ -27,7 +22,7 @@ export class UnbanrequestComponent implements OnInit {
   @Output() public decline = new EventEmitter<any>();
   @Output() public reports = new EventEmitter<any>();
 
-  public processedBy: Member;
+  public processedBy: User;
 
   public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
     format(new Date(d), f);
@@ -47,7 +42,7 @@ export class UnbanrequestComponent implements OnInit {
 
   public async fetchProcessedBy() {
     this.processedBy = await this.api
-      .getGuildMember(this.request.guild_id, this.request.processed_by)
+      .getUser(this.request.processed_by)
       .toPromise();
   }
 }

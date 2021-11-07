@@ -284,14 +284,19 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 
 func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
 	wsPublicAddr string, db database.Database,
-	s *discordgo.Session) (*discordgo.MessageEmbed, error) {
+	s *discordgo.Session) (emb *discordgo.MessageEmbed, err error) {
 
-	err := db.DeleteReport(rep.ID)
-	if err != nil {
-		return nil, err
+	if err = db.DeleteReport(rep.ID); err != nil {
+		return
 	}
 
-	repRevEmb := &discordgo.MessageEmbed{
+	if rep.Type == models.TypeBan {
+		if err = r.s.GuildBanDelete(rep.GuildID, rep.VictimID); err != nil {
+			return
+		}
+	}
+
+	emb = &discordgo.MessageEmbed{
 		Color:       static.ReportRevokedColor,
 		Title:       "REPORT REVOCATION",
 		Description: "Revoked reports are deleted from the database and no more visible in any commands.",
@@ -309,14 +314,14 @@ func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
 	}
 
 	if modlogChan, err := db.GetGuildModLog(rep.GuildID); err == nil {
-		s.ChannelMessageSendEmbed(modlogChan, repRevEmb)
+		s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
 	dmChan, err := s.UserChannelCreate(rep.VictimID)
 	if err == nil {
-		s.ChannelMessageSendEmbed(dmChan.ID, repRevEmb)
+		s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
-	return repRevEmb, nil
+	return
 }
 
 func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err error) {

@@ -1171,6 +1171,65 @@
                 }
             }
         },
+        "/guilds/{id}/settings/antiraid/action": {
+            "post": {
+                "description": "Execute a specific action on antiraid listed users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Guild Antiraid Bulk Action",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The antiraid action payload.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AntiraidAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{id}/settings/api": {
             "get": {
                 "description": "Returns the settings state of the Guild API.",
@@ -3598,6 +3657,29 @@
                 }
             }
         },
+        "/users/{id}": {
+            "get": {
+                "description": "Returns the information of a user by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "User",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
         "/usersettings/ota": {
             "get": {
                 "description": "Returns the current state of the OTA user setting.",
@@ -4515,6 +4597,20 @@
                 },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "models.AntiraidAction": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },

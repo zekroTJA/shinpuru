@@ -2,7 +2,12 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AntiraidSettings, JoinlogEntry } from 'src/app/api/api.models';
+import {
+  AntiraidAction,
+  AntiraidActionType,
+  AntiraidSettings,
+  JoinlogEntry,
+} from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
 import { format } from 'date-fns';
@@ -16,6 +21,7 @@ import { TIME_FORMAT } from 'src/app/utils/consts';
 export class GuildAdminAntiraidComponent implements OnInit {
   public antiraidSettings: AntiraidSettings;
   public joinlog: JoinlogEntry[] = [];
+  public selectedAll: boolean;
   private guildID: string;
 
   public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
@@ -80,5 +86,37 @@ export class GuildAdminAntiraidComponent implements OnInit {
       await this.api.deleteGuildAntiraidJoinlog(this.guildID).toPromise();
       this.joinlog = [];
     } catch {}
+  }
+
+  public toggleSelectAll() {
+    console.log(this.selectedAll);
+    this.joinlog.forEach((e) => (e.selected = this.selectedAll));
+  }
+
+  public async kickSelected() {
+    try {
+      await this.antiraidAction(AntiraidActionType.KICK);
+      this.toasts.push('Users sucessfully kicked.', null, 'green');
+    } catch {}
+  }
+
+  public async banSelected() {
+    try {
+      await this.antiraidAction(AntiraidActionType.BAN);
+      this.toasts.push('Users sucessfully banned.', null, 'green');
+    } catch {}
+  }
+
+  public clickEntrySelect() {
+    this.selectedAll = this.joinlog.every((e) => e.selected);
+  }
+
+  private async antiraidAction(type: AntiraidActionType) {
+    const action: AntiraidAction = {
+      type,
+      ids: this.joinlog.filter((e) => e.selected).map((e) => e.user_id),
+    };
+    await this.api.postGuildAntiraidAction(this.guildID, action).toPromise();
+    await this.fetchJoinlog();
   }
 }

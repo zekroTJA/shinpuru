@@ -342,6 +342,18 @@ type GuildAPISettingsRequest struct {
 	ResetToken bool   `json:"reset_token"`
 }
 
+type AntiraidActionType int
+
+const (
+	AntiraidActionTypeKick = iota
+	AntiraidActionTypeBan
+)
+
+type AntiraidAction struct {
+	Type AntiraidActionType `json:"type"`
+	IDs  []string           `json:"ids"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

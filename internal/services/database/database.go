@@ -212,6 +212,7 @@ type Database interface {
 	AddToAntiraidJoinList(guildID, userID, userTag string) error
 	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
 	FlushAntiraidJoinList(guildID string) error
+	RemoveAntiraidJoinList(guildID, userID string) error
 
 	//////////////////////////////////////////////////////
 	//// STARBOARD

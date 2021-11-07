@@ -552,6 +552,15 @@ definitions:
       token:
         type: string
     type: object
+  models.AntiraidAction:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
+      type:
+        type: integer
+    type: object
   models.AntiraidSettings:
     properties:
       burst:
@@ -2390,6 +2399,45 @@ paths:
       summary: Update Guild Antiraid Settings
       tags:
       - Guilds
+  /guilds/{id}/settings/antiraid/action:
+    post:
+      consumes:
+      - application/json
+      description: Execute a specific action on antiraid listed users
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The antiraid action payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.AntiraidAction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Guild Antiraid Bulk Action
+      tags:
+      - Guilds
   /guilds/{id}/settings/api:
     get:
       consumes:
@@ -3575,6 +3623,21 @@ paths:
       summary: Get Banned Guilds
       tags:
       - Unban Requests
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns the information of a user by ID.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: User
+      tags:
+      - Users
   /usersettings/ota:
     get:
       consumes:
