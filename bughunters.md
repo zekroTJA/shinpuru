@@ -30,6 +30,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [llPushkarSinghll](https://github.com/llPushkarSinghll) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
 | [enkeyz](https://github.com/enkeyz) | [#279](https://github.com/zekroTJA/shinpuru/issues/279) |  | `1` |
 | [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
+| [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 
 
 ---
