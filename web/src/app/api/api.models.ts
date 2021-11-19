@@ -391,3 +391,8 @@ export interface AntiraidAction {
   type: AntiraidActionType;
   ids: string[];
 }
+
+export interface ChannelWithPermissions extends Channel {
+  can_read: boolean;
+  can_write: boolean;
+}

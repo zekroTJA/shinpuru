@@ -38,6 +38,7 @@ import {
   GuildSettingsApi,
   MessageEmbed,
   AntiraidAction,
+  ChannelWithPermissions,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -208,10 +209,12 @@ export class APIService {
 
   private readonly rcChannels = (
     guildId: string,
-    chanId: string,
+    chanId: string = '',
     msgId: string = ''
   ) =>
-    `${this.rcAPI('channels')}/${guildId}/${chanId}${msgId ? '/' + msgId : ''}`;
+    `${this.rcAPI('channels')}/${guildId}${chanId ? '/' + chanId : ''}${
+      msgId ? '/' + msgId : ''
+    }`;
 
   private readonly rcUsers = (rc: string = '') =>
     `${this.rcAPI('users')}${rc ? '/' + rc : ''}`;
@@ -974,6 +977,14 @@ export class APIService {
   ): Observable<GuildSettingsApi> {
     return this.http
       .post(this.rcGuildSettingsApi(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getChannels(
+    guildID: string
+  ): Observable<ListReponse<ChannelWithPermissions>> {
+    return this.http
+      .get(this.rcChannels(guildID), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Channel,
   ChannelType,
+  ChannelWithPermissions,
   Guild,
   MessageEmbed,
   MessageEmbedField,
@@ -32,6 +33,7 @@ export class EmbedsComponent implements OnInit {
   erroneousJson = false;
   channelId: string;
   editMessageId: string;
+  channels: ChannelWithPermissions[] = [];
 
   constructor(
     private api: APIService,
@@ -42,13 +44,14 @@ export class EmbedsComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.guild = await this.api.getGuild(params.guildid).toPromise();
+      this.channels = (
+        await this.api.getChannels(params.guildid).toPromise()
+      ).data;
     });
   }
 
   get textChannels(): Channel[] {
-    return this.guild?.channels?.filter(
-      (c) => c.type === ChannelType.GUILD_TEXT
-    );
+    return this.channels.filter((c) => c.can_read && c.can_write);
   }
 
   addEmbedField() {
