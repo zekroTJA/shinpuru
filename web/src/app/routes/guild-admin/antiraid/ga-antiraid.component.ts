@@ -88,8 +88,11 @@ export class GuildAdminAntiraidComponent implements OnInit {
     } catch {}
   }
 
+  public get isAnySelected(): boolean {
+    return this.joinlog.some((e) => e.selected);
+  }
+
   public toggleSelectAll() {
-    console.log(this.selectedAll);
     this.joinlog.forEach((e) => (e.selected = this.selectedAll));
   }
 
