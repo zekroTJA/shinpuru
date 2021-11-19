@@ -114,8 +114,9 @@ func (m *Permissions) GetPermissions(s *discordgo.Session, guildID, userID strin
 	}
 
 	if m.cfg.Config().Discord.OwnerID == userID {
-		perm = perm.Merge(permissions.PermissionArray{"+sp.*"}, false)
+		perm = permissions.PermissionArray{"+sp.*"}
 		overrideExplicits = true
+		return
 	}
 
 	if guildID != "" {
