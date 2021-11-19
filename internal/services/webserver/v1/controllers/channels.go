@@ -32,12 +32,13 @@ func (c *ChannelController) Setup(container di.Container, router fiber.Router) {
 // @Tags Channels
 // @Accept json
 // @Produce json
+// @Param guildid path string true "The ID of the guild."
 // @Param id path string true "The ID of the channel."
 // @Param payload body discordgo.MessageEmbed true "The message embed object."
 // @Success 201 {object} discordgo.Message
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /channels/{id} [post]
+// @Router /channels/{guildid}/{id} [post]
 func (c *ChannelController) postChannelMessage(ctx *fiber.Ctx) (err error) {
 	uid := ctx.Locals("uid").(string)
 	id := ctx.Params("id")
@@ -102,13 +103,14 @@ func (c *ChannelController) postChannelMessage(ctx *fiber.Ctx) (err error) {
 // @Tags Channels
 // @Accept json
 // @Produce json
+// @Param guildid path string true "The ID of the guild."
 // @Param id path string true "The ID of the channel."
 // @Param msgid path string true "The ID of the message."
 // @Param payload body discordgo.MessageEmbed true "The message embed object."
 // @Success 200 {object} discordgo.Message
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
-// @Router /channels/{id}/{msgid} [post]
+// @Router /channels/{guildid}/{id}/{msgid} [post]
 //
 // This is a dummy method for API doc generation.
 func (*ChannelController) _(*fiber.Ctx) error {

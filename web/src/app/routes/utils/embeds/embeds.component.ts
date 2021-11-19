@@ -82,12 +82,19 @@ export class EmbedsComponent implements OnInit {
   async sendMessage() {
     if (this.editMessageId) {
       await this.api
-        .postChannelsMessage(this.channelId, this.editMessageId, this.embed)
+        .postChannelsMessage(
+          this.guild.id,
+          this.channelId,
+          this.editMessageId,
+          this.embed
+        )
         .toPromise();
       this.toasts.push('Embed successfully updated.', '', 'success', 6000);
     } else {
       this.editMessageId = (
-        await this.api.postChannels(this.channelId, this.embed).toPromise()
+        await this.api
+          .postChannels(this.guild.id, this.channelId, this.embed)
+          .toPromise()
       ).id;
       this.toasts.push('Embed successfully sent.', '', 'success', 6000);
     }

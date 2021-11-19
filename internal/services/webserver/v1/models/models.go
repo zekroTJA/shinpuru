@@ -354,6 +354,13 @@ type AntiraidAction struct {
 	IDs  []string           `json:"ids"`
 }
 
+type ChannelWithPermissions struct {
+	*discordgo.Channel
+
+	CanRead  bool `json:"can_read"`
+	CanWrite bool `json:"can_write"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
