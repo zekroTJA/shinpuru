@@ -42,9 +42,10 @@ func (c *Starboard) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Set starboard settings.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "The channel where the starboard messages will appear.",
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "The channel where the starboard messages will appear.",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 				},
 				{
 					Type:        discordgo.ApplicationCommandOptionInteger,
@@ -97,9 +98,6 @@ func (c *Starboard) set(ctx *ken.SubCommandCtx) (err error) {
 
 	if v, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := v.ChannelValue(ctx.Ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
-		}
 		starboardConfig.ChannelID = ch.ID
 	}
 	if v, ok := ctx.Options().GetByNameOptional("threshold"); ok {

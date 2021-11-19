@@ -39,9 +39,10 @@ func (c *Say) Type() discordgo.ApplicationCommandType {
 func (c *Say) Options() []*discordgo.ApplicationCommandOption {
 	commonOpts := []*discordgo.ApplicationCommandOption{
 		{
-			Type:        discordgo.ApplicationCommandOptionChannel,
-			Name:        "channel",
-			Description: "The channel to send the message into (or to edit a message in).",
+			Type:         discordgo.ApplicationCommandOptionChannel,
+			Name:         "channel",
+			Description:  "The channel to send the message into (or to edit a message in).",
+			ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 		},
 		{
 			Type:        discordgo.ApplicationCommandOptionInteger,
@@ -171,9 +172,6 @@ func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (
 	chanID := ctx.Event.ChannelID
 	if chanV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := chanV.ChannelValue(ctx.Ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
-		}
 		chanID = ch.ID
 	}
 

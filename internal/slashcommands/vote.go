@@ -62,9 +62,10 @@ func (c *Vote) Options() []*discordgo.ApplicationCommandOption {
 					Description: "An optional image URL.",
 				},
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "The channel to create the vote in (defaultly the current channel).",
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "The channel to create the vote in (defaultly the current channel).",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 				},
 				{
 					Type:        discordgo.ApplicationCommandOptionString,
@@ -207,9 +208,6 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	var msg *discordgo.Message
 	if ok {
 		ch := chV.ChannelValue(ctx.Ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
-		}
 		msg, err = ctx.Session.ChannelMessageSendEmbed(ch.ID, emb)
 		if err != nil {
 			return

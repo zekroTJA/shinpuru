@@ -42,9 +42,10 @@ func (c *Modlog) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Set this or a specified channel as mod log channel.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "A channel to be set as mod log (current channel if not specified).",
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "A channel to be set as mod log (current channel if not specified).",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 				},
 			},
 		},
@@ -110,9 +111,6 @@ func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	ch := chV.ChannelValue(ctx.Ctx)
-	if ch.Type != discordgo.ChannelTypeGuildText {
-		return ctx.FollowUpError("Specified channel is not a text channel.", "").Error
-	}
 
 	if err = db.SetGuildModLog(ctx.Event.GuildID, ch.ID); err != nil {
 		return

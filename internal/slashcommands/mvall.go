@@ -36,10 +36,11 @@ func (c *Mvall) Type() discordgo.ApplicationCommandType {
 func (c *Mvall) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{
 		{
-			Type:        discordgo.ApplicationCommandOptionChannel,
-			Name:        "channel",
-			Description: "Voice channel to move to.",
-			Required:    true,
+			Type:         discordgo.ApplicationCommandOptionChannel,
+			Name:         "channel",
+			Description:  "Voice channel to move to.",
+			Required:     true,
+			ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildVoice},
 		},
 	}
 }
@@ -60,10 +61,6 @@ func (c *Mvall) Run(ctx *ken.Ctx) (err error) {
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
 	channel := ctx.Options().GetByName("channel").ChannelValue(ctx)
-	if channel.Type != discordgo.ChannelTypeGuildVoice {
-		return ctx.FollowUpError(
-			"The specified channel is not a voice channel.", "").Error
-	}
 
 	vs, err := st.VoiceState(ctx.Event.GuildID, ctx.User().ID)
 	if err != nil {
