@@ -38,6 +38,7 @@ import {
   GuildSettingsApi,
   MessageEmbed,
   AntiraidAction,
+  ChannelWithPermissions,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -206,8 +207,14 @@ export class APIService {
   private readonly rcUnbanRequests = (rc: string = '') =>
     `${this.rcAPI('unbanrequests')}${rc ? '/' + rc : ''}`;
 
-  private readonly rcChannels = (chanId: string, msgId: string = '') =>
-    `${this.rcAPI('channels')}/${chanId}${msgId ? '/' + msgId : ''}`;
+  private readonly rcChannels = (
+    guildId: string,
+    chanId: string = '',
+    msgId: string = ''
+  ) =>
+    `${this.rcAPI('channels')}/${guildId}${chanId ? '/' + chanId : ''}${
+      msgId ? '/' + msgId : ''
+    }`;
 
   private readonly rcUsers = (rc: string = '') =>
     `${this.rcAPI('users')}${rc ? '/' + rc : ''}`;
@@ -973,19 +980,32 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
-  public postChannels(chanID: string, embed: MessageEmbed): Observable<any> {
+  public getChannels(
+    guildID: string
+  ): Observable<ListReponse<ChannelWithPermissions>> {
     return this.http
-      .post(this.rcChannels(chanID), embed, this.defopts())
+      .get(this.rcChannels(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postChannels(
+    guildID: string,
+    chanID: string,
+    embed: MessageEmbed
+  ): Observable<any> {
+    return this.http
+      .post(this.rcChannels(guildID, chanID), embed, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
   public postChannelsMessage(
+    guildID: string,
     chanID: string,
     msgID: string,
     embed: MessageEmbed
   ): Observable<any> {
     return this.http
-      .post(this.rcChannels(chanID, msgID), embed, this.defopts())
+      .post(this.rcChannels(guildID, chanID, msgID), embed, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 

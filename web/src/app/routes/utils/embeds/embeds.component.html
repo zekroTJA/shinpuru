@@ -3,7 +3,7 @@
     <label>Channel</label>
     <select [(ngModel)]="channelId">
       <option *ngFor="let chan of textChannels" [value]="chan.id">
-        #{{ chan.name }}
+        {{ chan.name }}
       </option>
     </select>
   </div>

@@ -56,9 +56,10 @@ func (c *Twitchnotify) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Add a twitch user to be watched.",
 			Options: append(commonOpts, []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "The channel where the notifications are sent into (defaultly current channel).",
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "The channel where the notifications are sent into (defaultly current channel).",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 				},
 			}...),
 		},
@@ -143,9 +144,6 @@ func (c *Twitchnotify) add(ctx *ken.SubCommandCtx) (err error) {
 	channelID := ctx.Event.ChannelID
 	if channelV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := channelV.ChannelValue(ctx.Ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Selected channel is not a text channel.", "").Error
-		}
 		channelID = ch.ID
 	}
 

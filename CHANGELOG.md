@@ -1,31 +1,23 @@
-1.24.0
+1.25.0
 
-# Changes
+# Minor Changes
 
-## Antiraid Joinlog Bulk Actions [#282]
+- All slash commands which take a channel argument now specify the `channel type` specification so that only accepted channel types are selectable.  
+  ![image](https://user-images.githubusercontent.com/16734205/142614849-ce795a13-fe59-4096-862b-83078dbb072f.png)
 
-You can now select users from the antiraid joinlog to bulk kick or ban them directly from the web interface.
+- The buttons `Kick` and `Ban` in the antiraid joinlog are now disabled when no entry is selected. [#307]
 
-![](https://user-images.githubusercontent.com/16734205/139068595-4eac2654-a51b-496b-a2da-7ab218cef240.png)
+- In the embed builder, now only channels which the user has write permission to are shown.
 
-## Help Command Improvements
-
-You can now get more detailed help information about a specific command using the `/help` slash command.
-
-![](https://user-images.githubusercontent.com/16734205/139070186-01926e33-043a-4783-8b6e-0e887b31cadd.png)
-
-## Vote "anonymization" [#281]
-
-Before this patch, vote ticks were saved in the database with clear user IDs. That entails the risk that user votes can be backtraced from database dumps. These user IDs are now hashed so that it is more difficult for potential attackers to backtrace user votings.
-
-If you want to read more about this, please read [this wiki article](https://github.com/zekroTJA/shinpuru/wiki/Why-are-Votes-%22pseudo-anonymous%22%3F).
+- Also removed the `#` prefix of channel names in the embed builder for better searchability in the select input.
 
 # Bug Fixes
 
-- The [`/commands`](https://shnp.de/commands) web interface route can now also be accessed when not being logged in. [#301]
-- Fixed User ID resolution of reports and unban requests in the web interface. [#304]
-- Fix `/login` command domain name.
-- Fix database initialization and add database connection check.
+- Bot owners now will get full permissions regardless of guild specification.
+- Fix antiraid joinlog table structure. [#311]
+- The report revocation of bans now properly unbans the banned user. [#303]
+- Fix permission check on sending messgaes using the embed builder. [#309]
+- Fix default time formatting in web interface. [#306]
 
 # Docker
 
@@ -36,11 +28,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.24.0
+$ docker pull zekro/shinpuru:1.25.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.24.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.25.0
 ```

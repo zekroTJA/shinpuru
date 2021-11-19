@@ -16,7 +16,7 @@ import {
   GuildStarboardEntry,
 } from 'src/app/api/api.models';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { toHexClr, topRole } from '../../utils/utils';
+import { toHexClr } from '../../utils/utils';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

@@ -43,9 +43,10 @@ func (c *Lock) Type() discordgo.ApplicationCommandType {
 func (c *Lock) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{
 		{
-			Type:        discordgo.ApplicationCommandOptionChannel,
-			Name:        "channel",
-			Description: "The channel to be locked or unlocked (selects current channel if not passed).",
+			Type:         discordgo.ApplicationCommandOptionChannel,
+			Name:         "channel",
+			Description:  "The channel to be locked or unlocked (selects current channel if not passed).",
+			ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 		},
 	}
 }
@@ -69,9 +70,6 @@ func (c *Lock) Run(ctx *ken.Ctx) (err error) {
 	var ch *discordgo.Channel
 	if chV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch = chV.ChannelValue(ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Specified channel must be a text channel.", "").Error
-		}
 	} else {
 		ch, err = st.Channel(ctx.Event.ChannelID)
 		if err != nil {

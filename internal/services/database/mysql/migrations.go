@@ -11,6 +11,7 @@ var migrationFuncs = []migrationFunc{
 	migration_3,
 	migration_4,
 	migration_5,
+	migration_6,
 }
 
 // VERSION 0:
@@ -52,4 +53,15 @@ func migration_4(m *sql.Tx) (err error) {
 func migration_5(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
 		"reports", "`timeout` timestamp NULL DEFAULT NULL")
+}
+
+// VERSION 6:
+// - add property `timeout` to `reports`
+func migration_6(m *sql.Tx) (err error) {
+	_, err = m.Exec(`ALTER TABLE antiraidJoinlog DROP PRIMARY KEY;`)
+	if err != nil {
+		return
+	}
+	_, err = m.Exec(`ALTER TABLE antiraidJoinlog ADD COLUMN iid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY;`)
+	return
 }

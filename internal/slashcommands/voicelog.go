@@ -44,9 +44,10 @@ func (c *Voicelog) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Set this or a specified channel as voice log channel.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "A channel to be set as voice log (current channel if not specified).",
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "A channel to be set as voice log (current channel if not specified).",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 				},
 			},
 		},
@@ -61,10 +62,11 @@ func (c *Voicelog) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Add a voice channel to the ignorelist.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "A voice channel to be ignored.",
-					Required:    true,
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "A voice channel to be ignored.",
+					Required:     true,
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildVoice},
 				},
 			},
 		},
@@ -74,10 +76,11 @@ func (c *Voicelog) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Remove a voice channel from the ignorelist.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionChannel,
-					Name:        "channel",
-					Description: "A voice channel to be unset from the ignore list.",
-					Required:    true,
+					Type:         discordgo.ApplicationCommandOptionChannel,
+					Name:         "channel",
+					Description:  "A voice channel to be unset from the ignore list.",
+					ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildVoice},
+					Required:     true,
 				},
 			},
 		},
@@ -146,9 +149,6 @@ func (c *Voicelog) set(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	ch := chV.ChannelValue(ctx.Ctx)
-	if ch.Type != discordgo.ChannelTypeGuildText {
-		return ctx.FollowUpError("Specified channel is not a text channel.", "").Error
-	}
 
 	if err = db.SetGuildVoiceLog(ctx.Event.GuildID, ch.ID); err != nil {
 		return
@@ -177,9 +177,6 @@ func (c *Voicelog) ignore(ctx *ken.SubCommandCtx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	ch := ctx.Options().GetByName("channel").ChannelValue(ctx.Ctx)
-	if ch.Type != discordgo.ChannelTypeGuildVoice {
-		return ctx.FollowUpError("You can only put voice channels on the ignore list.", "").Error
-	}
 
 	if err = db.SetGuildVoiceLogIngore(ch.GuildID, ch.ID); err != nil {
 		return err
@@ -194,9 +191,6 @@ func (c *Voicelog) unignore(ctx *ken.SubCommandCtx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	ch := ctx.Options().GetByName("channel").ChannelValue(ctx.Ctx)
-	if ch.Type != discordgo.ChannelTypeGuildVoice {
-		return ctx.FollowUpError("You can only specify voice channels.", "").Error
-	}
 
 	if err = db.RemoveGuildVoiceLogIgnore(ch.GuildID, ch.ID); err != nil {
 		return err

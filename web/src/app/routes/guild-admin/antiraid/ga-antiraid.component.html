@@ -130,6 +130,7 @@
           </button>
           <button
             (click)="kickSelected()"
+            [disabled]="!isAnySelected"
             class="jl-btn sec-btn bg-red mr-2"
             title="Kick selected"
           >
@@ -138,6 +139,7 @@
           </button>
           <button
             (click)="banSelected()"
+            [disabled]="!isAnySelected"
             class="jl-btn sec-btn bg-red"
             title="Ban selected"
           >

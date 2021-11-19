@@ -65,9 +65,10 @@ func (c *Chanstats) Options() []*discordgo.ApplicationCommandOption {
 			},
 		},
 		{
-			Type:        discordgo.ApplicationCommandOptionChannel,
-			Name:        "channel",
-			Description: "The channel to be analyzed (defaultly current channel).",
+			Type:         discordgo.ApplicationCommandOptionChannel,
+			Name:         "channel",
+			Description:  "The channel to be analyzed (defaultly current channel).",
+			ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 		},
 		{
 			Type:        discordgo.ApplicationCommandOptionInteger,
@@ -95,9 +96,6 @@ func (c *Chanstats) Run(ctx *ken.Ctx) (err error) {
 	channelID := ctx.Event.ChannelID
 	if channelV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := channelV.ChannelValue(ctx)
-		if ch.Type != discordgo.ChannelTypeGuildText {
-			return ctx.FollowUpError("Given channel is not a text channel.", "").Error
-		}
 		channelID = ch.ID
 	}
 

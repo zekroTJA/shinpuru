@@ -52,6 +52,8 @@ https://user-images.githubusercontent.com/16734205/138589141-1cc18316-0d07-4526-
 
 If you are sick of using chat commands, you can also use the web interface of shinpuru. Simply log in with your Discord Account (alternatively, you can also use the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command).
 
+Most features of shinpuru available via slash commands are also accessible in the web interface with additional visualization and information provided.
+
 https://user-images.githubusercontent.com/16734205/138589590-87301377-463d-43c3-8441-98ec84a1304c.mp4
 
 ## REST API

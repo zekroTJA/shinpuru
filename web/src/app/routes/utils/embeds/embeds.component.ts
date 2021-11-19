@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Channel,
   ChannelType,
+  ChannelWithPermissions,
   Guild,
   MessageEmbed,
   MessageEmbedField,
@@ -32,6 +33,7 @@ export class EmbedsComponent implements OnInit {
   erroneousJson = false;
   channelId: string;
   editMessageId: string;
+  channels: ChannelWithPermissions[] = [];
 
   constructor(
     private api: APIService,
@@ -42,13 +44,14 @@ export class EmbedsComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.guild = await this.api.getGuild(params.guildid).toPromise();
+      this.channels = (
+        await this.api.getChannels(params.guildid).toPromise()
+      ).data;
     });
   }
 
   get textChannels(): Channel[] {
-    return this.guild?.channels?.filter(
-      (c) => c.type === ChannelType.GUILD_TEXT
-    );
+    return this.channels.filter((c) => c.can_read && c.can_write);
   }
 
   addEmbedField() {
@@ -82,12 +85,19 @@ export class EmbedsComponent implements OnInit {
   async sendMessage() {
     if (this.editMessageId) {
       await this.api
-        .postChannelsMessage(this.channelId, this.editMessageId, this.embed)
+        .postChannelsMessage(
+          this.guild.id,
+          this.channelId,
+          this.editMessageId,
+          this.embed
+        )
         .toPromise();
       this.toasts.push('Embed successfully updated.', '', 'success', 6000);
     } else {
       this.editMessageId = (
-        await this.api.postChannels(this.channelId, this.embed).toPromise()
+        await this.api
+          .postChannels(this.guild.id, this.channelId, this.embed)
+          .toPromise()
       ).id;
       this.toasts.push('Embed successfully sent.', '', 'success', 6000);
     }

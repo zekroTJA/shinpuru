@@ -1,8 +1,6 @@
 package permissions
 
 import (
-	"time"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -67,8 +65,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 	}
 
 	if !ok {
-		err = ctx.FollowUpError("You are not permitted to use this command!", "Missing Permission").
-			DeleteAfter(8 * time.Second).Error
+		err = ctx.RespondError("You are not permitted to use this command!", "Missing Permission")
 		return
 	}
 
@@ -117,8 +114,9 @@ func (m *Permissions) GetPermissions(s *discordgo.Session, guildID, userID strin
 	}
 
 	if m.cfg.Config().Discord.OwnerID == userID {
-		perm = perm.Merge(permissions.PermissionArray{"+sp.*"}, false)
+		perm = permissions.PermissionArray{"+sp.*"}
 		overrideExplicits = true
+		return
 	}
 
 	if guildID != "" {

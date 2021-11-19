@@ -253,11 +253,12 @@ func (m *MysqlMiddleware) setup() (err error) {
 	}
 
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `antiraidJoinlog` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`tag` text NOT NULL DEFAULT ''," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
-		"PRIMARY KEY (`userID`)" +
+		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
 		return
