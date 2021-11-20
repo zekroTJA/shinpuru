@@ -24,7 +24,7 @@ const (
 type Exec struct{}
 
 var (
-	_ ken.Command             = (*Exec)(nil)
+	_ ken.SlashCommand        = (*Exec)(nil)
 	_ permissions.PermCommand = (*Exec)(nil)
 )
 

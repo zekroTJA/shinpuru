@@ -19,7 +19,7 @@ var linkRx = regexp.MustCompile(`^(?:https?:\/\/)?(?:www\.)?discord(?:app)?\.com
 type Quote struct{}
 
 var (
-	_ ken.Command             = (*Quote)(nil)
+	_ ken.SlashCommand        = (*Quote)(nil)
 	_ permissions.PermCommand = (*Quote)(nil)
 )
 

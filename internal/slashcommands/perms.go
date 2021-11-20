@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	_ ken.Command             = (*Perms)(nil)
+	_ ken.SlashCommand        = (*Perms)(nil)
 	_ permService.PermCommand = (*Perms)(nil)
 	_ cmdhelp.HelpProvider    = (*Perms)(nil)
 )

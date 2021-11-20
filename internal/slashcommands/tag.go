@@ -19,7 +19,7 @@ import (
 type Tag struct{}
 
 var (
-	_ ken.Command             = (*Tag)(nil)
+	_ ken.SlashCommand        = (*Tag)(nil)
 	_ permissions.PermCommand = (*Tag)(nil)
 )
 

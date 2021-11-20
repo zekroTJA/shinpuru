@@ -23,7 +23,7 @@ import (
 type Report struct{}
 
 var (
-	_ ken.Command             = (*Report)(nil)
+	_ ken.SlashCommand        = (*Report)(nil)
 	_ permissions.PermCommand = (*Report)(nil)
 )
 

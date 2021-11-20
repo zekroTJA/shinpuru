@@ -20,7 +20,7 @@ const allowMask = discordgo.PermissionAll - discordgo.PermissionSendMessages
 type Lock struct{}
 
 var (
-	_ ken.Command             = (*Lock)(nil)
+	_ ken.SlashCommand        = (*Lock)(nil)
 	_ permissions.PermCommand = (*Lock)(nil)
 )
 

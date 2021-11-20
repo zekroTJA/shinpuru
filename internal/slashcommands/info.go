@@ -20,7 +20,7 @@ var infoMsg string
 type Info struct{}
 
 var (
-	_ ken.Command             = (*Info)(nil)
+	_ ken.SlashCommand        = (*Info)(nil)
 	_ permissions.PermCommand = (*Info)(nil)
 	_ ken.DmCapable           = (*Info)(nil)
 )

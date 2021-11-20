@@ -16,7 +16,7 @@ import (
 type Say struct{}
 
 var (
-	_ ken.Command             = (*Say)(nil)
+	_ ken.SlashCommand        = (*Say)(nil)
 	_ permissions.PermCommand = (*Say)(nil)
 )
 

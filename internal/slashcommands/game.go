@@ -12,7 +12,7 @@ import (
 type Presence struct{}
 
 var (
-	_ ken.Command             = (*Presence)(nil)
+	_ ken.SlashCommand        = (*Presence)(nil)
 	_ permissions.PermCommand = (*Presence)(nil)
 )
 

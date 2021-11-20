@@ -17,7 +17,7 @@ import (
 type Vote struct{}
 
 var (
-	_ ken.Command             = (*Vote)(nil)
+	_ ken.SlashCommand        = (*Vote)(nil)
 	_ permissions.PermCommand = (*Vote)(nil)
 )
 

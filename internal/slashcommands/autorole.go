@@ -15,7 +15,7 @@ import (
 type Autorole struct{}
 
 var (
-	_ ken.Command             = (*Autorole)(nil)
+	_ ken.SlashCommand        = (*Autorole)(nil)
 	_ permissions.PermCommand = (*Autorole)(nil)
 )
 

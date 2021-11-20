@@ -14,7 +14,7 @@ import (
 type Modlog struct{}
 
 var (
-	_ ken.Command             = (*Modlog)(nil)
+	_ ken.SlashCommand        = (*Modlog)(nil)
 	_ permissions.PermCommand = (*Modlog)(nil)
 )
 

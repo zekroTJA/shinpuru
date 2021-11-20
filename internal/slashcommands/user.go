@@ -19,7 +19,7 @@ import (
 type User struct{}
 
 var (
-	_ ken.Command             = (*User)(nil)
+	_ ken.SlashCommand        = (*User)(nil)
 	_ permissions.PermCommand = (*User)(nil)
 )
 
@@ -68,7 +68,16 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
-	user := ctx.Options().GetByName("user").UserValue(ctx)
+	var user *discordgo.User
+
+	for _, user = range ctx.Event.ApplicationCommandData().Resolved.Users {
+		break
+	}
+
+	if user == nil {
+		user = ctx.Options().GetByName("user").UserValue(ctx)
+	}
+
 	member, err := st.Member(ctx.Event.GuildID, user.ID, true)
 	if err != nil {
 		return

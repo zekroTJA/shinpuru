@@ -24,7 +24,7 @@ import (
 type Mute struct{}
 
 var (
-	_ ken.Command             = (*Mute)(nil)
+	_ ken.SlashCommand        = (*Mute)(nil)
 	_ permissions.PermCommand = (*Mute)(nil)
 )
 

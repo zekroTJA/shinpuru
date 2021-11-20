@@ -14,7 +14,7 @@ import (
 type Karma struct{}
 
 var (
-	_ ken.Command             = (*Karma)(nil)
+	_ ken.SlashCommand        = (*Karma)(nil)
 	_ permissions.PermCommand = (*Karma)(nil)
 )
 

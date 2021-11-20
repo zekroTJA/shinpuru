@@ -26,7 +26,7 @@ const (
 type Chanstats struct{}
 
 var (
-	_ ken.Command             = (*Chanstats)(nil)
+	_ ken.SlashCommand        = (*Chanstats)(nil)
 	_ permissions.PermCommand = (*Chanstats)(nil)
 )
 

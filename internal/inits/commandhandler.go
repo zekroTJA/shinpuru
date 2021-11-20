@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/slashcommands"
+	"github.com/zekroTJA/shinpuru/internal/usercommands"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
@@ -47,6 +48,8 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	}
 
 	err = k.RegisterCommands(
+		new(usercommands.User),
+
 		new(slashcommands.Autorole),
 		new(slashcommands.Backup),
 		new(slashcommands.Bug),
