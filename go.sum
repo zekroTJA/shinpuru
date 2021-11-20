@@ -797,6 +797,10 @@ github.com/zekrotja/ken v0.10.5-0.20211120112012-841e2bea2949 h1:FLY+U/XRnyxiX+T
 github.com/zekrotja/ken v0.10.5-0.20211120112012-841e2bea2949/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
 github.com/zekrotja/ken v0.10.5-0.20211120125059-4fdf58cf2e92 h1:CQIGNyuM+xgfNHUTuPtV+6j+8LJUESDgCaKD4jeCQ6Y=
 github.com/zekrotja/ken v0.10.5-0.20211120125059-4fdf58cf2e92/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
+github.com/zekrotja/ken v0.11.0 h1:u5rZwkO5anQh/LKUq9Iy1JIN8pNAi+Nw64hKXQLysik=
+github.com/zekrotja/ken v0.11.0/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
+github.com/zekrotja/ken v0.11.1 h1:qTndZofMU1RztTSs1Vm5j91QZhuRKZf7hkMvAfVY/pw=
+github.com/zekrotja/ken v0.11.1/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
