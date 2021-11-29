@@ -27,7 +27,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
 | [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234) |  | `1` |
 | [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `1` |
-| [llPushkarSinghll](https://github.com/llPushkarSinghll) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
+| [pushkar-pro](https://github.com/pushkar-pro) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
 | [enkeyz](https://github.com/enkeyz) | [#279](https://github.com/zekroTJA/shinpuru/issues/279) |  | `1` |
 | [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 | [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
