@@ -76,9 +76,6 @@ type Database interface {
 	GetGuildColorReaction(guildID string) (bool, error)
 	SetGuildColorReaction(guildID string, enable bool) error
 
-	GetGuildMuteRole(guildID string) (string, error)
-	SetGuildMuteRole(guildID, roleID string) error
-
 	GetGuildLogDisable(guildID string) (bool, error)
 	SetGuildLogDisable(guildID string, enabled bool) error
 

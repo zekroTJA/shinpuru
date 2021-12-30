@@ -27,7 +27,6 @@ const (
 	keyGuildBackupEnabled   = "GUILD:BACKUP"
 	keyGuildJoinMsg         = "GUILD:JOINMSG"
 	keyGuildLeaveMsg        = "GUILD:LEAVEMSG"
-	keyGuildMuteRole        = "GUILD:MUTEROLE"
 	keyGuildColorReaction   = "GUILD:COLORREACTION"
 	keyGuildStarboardConfig = "GUILD:STARBOARDCONFIG"
 	keyGuildLogEnable       = "GUILD:GUILDLOG"
@@ -494,36 +493,6 @@ func (r *RedisMiddleware) SetSetting(setting, value string) error {
 	}
 
 	return r.Database.SetSetting(setting, value)
-}
-
-func (r *RedisMiddleware) GetGuildMuteRole(guildID string) (string, error) {
-	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildMuteRole(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
-}
-
-func (r *RedisMiddleware) SetGuildMuteRole(guildID, roleID string) error {
-	var key = fmt.Sprintf("%s:%s", keyGuildMuteRole, guildID)
-
-	if err := r.client.Set(context.Background(), key, roleID, 0).Err(); err != nil {
-		return err
-	}
-
-	return r.Database.SetGuildMuteRole(guildID, roleID)
 }
 
 func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {

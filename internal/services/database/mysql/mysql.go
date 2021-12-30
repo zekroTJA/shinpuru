@@ -67,7 +67,6 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`autorole` text NOT NULL DEFAULT ''," +
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
 		"`voicelogchanID` text NOT NULL DEFAULT ''," +
-		"`muteRoleID` text NOT NULL DEFAULT ''," +
 		"`notifyRoleID` text NOT NULL DEFAULT ''," +
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
@@ -782,15 +781,6 @@ func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 func (m *MysqlMiddleware) DeleteVote(voteID string) error {
 	_, err := m.Db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
-}
-
-func (m *MysqlMiddleware) GetGuildMuteRole(guildID string) (string, error) {
-	val, err := m.getGuildSetting(guildID, "muteRoleID")
-	return val, err
-}
-
-func (m *MysqlMiddleware) SetGuildMuteRole(guildID, roleID string) error {
-	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
 func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
