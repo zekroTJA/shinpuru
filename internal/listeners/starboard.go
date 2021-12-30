@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
@@ -313,7 +314,7 @@ func (l *ListenerStarboard) getEmbed(
 		WithAuthor(msg.Author.String(), "", msg.Author.AvatarURL("16x16"), "").
 		WithDescription(fmt.Sprintf("%s\n\n[jump to message](%s)",
 			msg.Content, discordutil.GetMessageLink(msg, guildID))).
-		WithTimestamp(string(msg.Timestamp)).
+		WithTimestamp(msg.Timestamp.Format(time.RFC1123)).
 		WithColor(static.ColorEmbedDefault).
 		WithFooter(fmt.Sprintf("%d ⭐", count), "", "")
 

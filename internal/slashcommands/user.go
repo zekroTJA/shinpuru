@@ -102,10 +102,6 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 		}
 	}
 
-	joinedTime, err := member.JoinedAt.Parse()
-	if err != nil {
-		return err
-	}
 	createdTime, err := discordutil.GetDiscordSnowflakeCreationTime(member.User.ID)
 	if err != nil {
 		return err
@@ -166,7 +162,7 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 			},
 			{
 				Name: "Guild Joined",
-				Value: stringutil.EnsureNotEmpty(joinedTime.Format(time.RFC1123),
+				Value: stringutil.EnsureNotEmpty(member.JoinedAt.Format(time.RFC1123),
 					"*failed parsing timestamp*"),
 			},
 			{

@@ -169,7 +169,7 @@ func (c *CmdQuote) Exec(ctx shireikan.Context) error {
 			IconURL: ctx.GetUser().AvatarURL("16"),
 			Text:    fmt.Sprintf("#%s - quoted by: %s#%s", quoteMsgChannel.Name, ctx.GetUser().Username, ctx.GetUser().Discriminator),
 		},
-		Timestamp: string(quoteMsg.Timestamp),
+		Timestamp: quoteMsg.Timestamp.Format(time.RFC1123),
 	}
 
 	if len(quoteMsg.Attachments) > 0 {
