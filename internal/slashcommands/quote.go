@@ -70,11 +70,17 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	var comment string
+	var ident, comment string
 
-	ident := ctx.Options().GetByName("id").StringValue()
-	if commentV, ok := ctx.Options().GetByNameOptional("comment"); ok {
-		comment = commentV.StringValue()
+	for ident = range ctx.Event.ApplicationCommandData().Resolved.Messages {
+		break
+	}
+
+	if ident == "" {
+		ident = ctx.Options().GetByName("id").StringValue()
+		if commentV, ok := ctx.Options().GetByNameOptional("comment"); ok {
+			comment = commentV.StringValue()
+		}
 	}
 
 	var quoteMsg *discordgo.Message
