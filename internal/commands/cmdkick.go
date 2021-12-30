@@ -101,7 +101,7 @@ func (c *CmdKick) Exec(ctx shireikan.Context) error {
 		ExecutorID:    ctx.GetUser().ID,
 		VictimID:      victim.User.ID,
 		Msg:           repMsg,
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 	}
 
 	emb := rep.AsEmbed(cfg.Config().WebServer.PublicAddr)

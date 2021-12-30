@@ -495,7 +495,7 @@ func MemberFromMember(m *discordgo.Member) *Member {
 // attachment URL.
 func ReportFromReport(r *sharedmodels.Report, publicAddr string) *Report {
 	rtype := sharedmodels.ReportTypes[r.Type]
-	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
+	r.AttachmentURL = imgstore.GetLink(r.AttachmentURL, publicAddr)
 	return &Report{
 		Report:   r,
 		TypeName: rtype,

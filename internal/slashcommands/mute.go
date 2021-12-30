@@ -164,7 +164,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
 		Msg:           reason,
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 	}
 
 	expireV, ok := ctx.Options().GetByNameOptional("expire")

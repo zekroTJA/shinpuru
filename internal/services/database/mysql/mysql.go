@@ -591,7 +591,7 @@ func (m *MysqlMiddleware) AddReport(rep *models.Report) error {
 	_, err := m.Db.Exec(`
 		INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment, timeout)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL, rep.Timeout)
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmentURL, rep.Timeout)
 	return err
 }
 
@@ -606,7 +606,7 @@ func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*models.Report, error) {
 	row := m.Db.QueryRow(`
 		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout
 		FROM reports WHERE id = ?`, id)
-	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
 	}
@@ -632,7 +632,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -667,7 +667,7 @@ func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType, 
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -715,7 +715,7 @@ func (m *MysqlMiddleware) GetExpiredReports() (results []*models.Report, err err
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}

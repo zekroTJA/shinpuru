@@ -95,7 +95,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           repReq.Reason,
-		AttachmehtURL: repReq.Attachment,
+		AttachmentURL: repReq.Attachment,
 		Type:          repReq.Type,
 	})
 
@@ -156,7 +156,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 	})
 
 	if err == report.ErrRoleDiff {
@@ -225,7 +225,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 		Timeout:       req.Timeout,
 		Anonymous:     anonymous,
 	})
@@ -295,7 +295,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 		Timeout:       req.Timeout,
 	})
 

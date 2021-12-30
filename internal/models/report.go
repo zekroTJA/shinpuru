@@ -64,7 +64,7 @@ type Report struct {
 	ExecutorID    string       `json:"executor_id"`
 	VictimID      string       `json:"victim_id"`
 	Msg           string       `json:"message"`
-	AttachmehtURL string       `json:"attachment_url"`
+	AttachmentURL string       `json:"attachment_url"`
 	Timeout       *time.Time   `json:"timeout"`
 	Anonymous     bool         `json:"-"`
 }
@@ -106,7 +106,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 		},
 		Timestamp: r.GetTimestamp().Format(timeutil.ISO8601),
 		Image: &discordgo.MessageEmbedImage{
-			URL: imgstore.GetLink(r.AttachmehtURL, publicAddr),
+			URL: imgstore.GetLink(r.AttachmentURL, publicAddr),
 		},
 	}
 
@@ -130,8 +130,8 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 // available link embedded in the embed field.
 func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 	attachmentTxt := ""
-	if r.AttachmehtURL != "" {
-		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", imgstore.GetLink(r.AttachmehtURL, publicAddr))
+	if r.AttachmentURL != "" {
+		attachmentTxt = fmt.Sprintf("Attachment: [[open](%s)]\n", imgstore.GetLink(r.AttachmentURL, publicAddr))
 	}
 
 	return &discordgo.MessageEmbedField{

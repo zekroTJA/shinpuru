@@ -145,7 +145,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		ExecutorID:    ctx.GetUser().ID,
 		VictimID:      victim.User.ID,
 		Msg:           strings.Join(ctx.GetArgs()[1:], " "),
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 	})
 
 	if err != nil {

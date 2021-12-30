@@ -231,7 +231,7 @@ func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
 		Msg:           reason,
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 		Type:          typ,
 	}
 
