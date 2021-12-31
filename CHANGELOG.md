@@ -1,23 +1,20 @@
-1.25.0
+1.26.0
 
-# Minor Changes
+# `userinfo` user command [#308]
 
-- All slash commands which take a channel argument now specify the `channel type` specification so that only accepted channel types are selectable.  
-  ![image](https://user-images.githubusercontent.com/16734205/142614849-ce795a13-fe59-4096-862b-83078dbb072f.png)
+The `/user` slash command can now be directly executed on members using the `userinfo` user command. This is available when right-clicking on a user, going to `Apps` and clicking `userinfo`. Then, the user info card will be dropped into your currently selected text channel.
 
-- The buttons `Kick` and `Ban` in the antiraid joinlog are now disabled when no entry is selected. [#307]
+![](https://user-images.githubusercontent.com/16734205/147783482-0b3dc68c-2f07-4bed-b26c-421c0a6ddb17.png)
 
-- In the embed builder, now only channels which the user has write permission to are shown.
+# `quotemessage` message command
 
-- Also removed the `#` prefix of channel names in the embed builder for better searchability in the select input.
+The `/quote` slash command is now also usable directly via the `quotemessage` app command when right-clicking the message to be quoted. The quote message will appear in the currently selected channel as well.
 
-# Bug Fixes
+![](https://user-images.githubusercontent.com/16734205/147783769-d7b80e68-ba5a-4649-aff6-0571bb99b132.png)
 
-- Bot owners now will get full permissions regardless of guild specification.
-- Fix antiraid joinlog table structure. [#311]
-- The report revocation of bans now properly unbans the banned user. [#303]
-- Fix permission check on sending messgaes using the embed builder. [#309]
-- Fix default time formatting in web interface. [#306]
+# Mute rework [#315]
+
+Because Discord recently added the `timeout` feature, the usage of specific mute roles which disallow sending messages in all channels is no more necessary. Instead, the mute/unmute command and web interface hook utilizes the timeout implementation of Discord. So, you do not need to setup and maintain a muterole anymore and you can directly use the timeout integration of Discord with the advantages of shinpurus modlog! 🤯
 
 # Docker
 
@@ -28,11 +25,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.25.0
+$ docker pull zekro/shinpuru:1.26.0
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.25.0
+$ docker pull ghcr.io/zekrotja/shinpuru:1.26.0
 ```
