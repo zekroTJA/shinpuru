@@ -26,7 +26,7 @@ const (
 type Backup struct{}
 
 var (
-	_ ken.Command             = (*Backup)(nil)
+	_ ken.SlashCommand        = (*Backup)(nil)
 	_ permissions.PermCommand = (*Backup)(nil)
 )
 

@@ -14,7 +14,7 @@ import (
 type Starboard struct{}
 
 var (
-	_ ken.Command             = (*Starboard)(nil)
+	_ ken.SlashCommand        = (*Starboard)(nil)
 	_ permissions.PermCommand = (*Starboard)(nil)
 )
 

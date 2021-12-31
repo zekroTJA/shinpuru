@@ -76,9 +76,6 @@ type Database interface {
 	GetGuildColorReaction(guildID string) (bool, error)
 	SetGuildColorReaction(guildID string, enable bool) error
 
-	GetGuildMuteRole(guildID string) (string, error)
-	SetGuildMuteRole(guildID, roleID string) error
-
 	GetGuildLogDisable(guildID string) (bool, error)
 	SetGuildLogDisable(guildID string, enabled bool) error
 
@@ -209,7 +206,7 @@ type Database interface {
 	SetAntiraidBurst(guildID string, burst int) error
 	GetAntiraidBurst(guildID string) (int, error)
 
-	AddToAntiraidJoinList(guildID, userID, userTag string) error
+	AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) error
 	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
 	FlushAntiraidJoinList(guildID string) error
 	RemoveAntiraidJoinList(guildID, userID string) error

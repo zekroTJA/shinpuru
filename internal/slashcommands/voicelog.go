@@ -16,7 +16,7 @@ import (
 type Voicelog struct{}
 
 var (
-	_ ken.Command             = (*Voicelog)(nil)
+	_ ken.SlashCommand        = (*Voicelog)(nil)
 	_ permissions.PermCommand = (*Voicelog)(nil)
 )
 

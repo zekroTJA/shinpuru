@@ -13,7 +13,7 @@ import (
 type Mvall struct{}
 
 var (
-	_ ken.Command             = (*Mvall)(nil)
+	_ ken.SlashCommand        = (*Mvall)(nil)
 	_ permissions.PermCommand = (*Mvall)(nil)
 )
 

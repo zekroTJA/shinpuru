@@ -15,7 +15,7 @@ import (
 type Colorreation struct{}
 
 var (
-	_ ken.Command             = (*Colorreation)(nil)
+	_ ken.SlashCommand        = (*Colorreation)(nil)
 	_ permissions.PermCommand = (*Colorreation)(nil)
 )
 

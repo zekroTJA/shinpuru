@@ -17,7 +17,7 @@ import (
 type Maintenance struct{}
 
 var (
-	_ ken.Command             = (*Maintenance)(nil)
+	_ ken.SlashCommand        = (*Maintenance)(nil)
 	_ permissions.PermCommand = (*Maintenance)(nil)
 	_ ken.DmCapable           = (*Maintenance)(nil)
 )

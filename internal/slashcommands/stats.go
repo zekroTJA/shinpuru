@@ -17,7 +17,7 @@ import (
 type Stats struct{}
 
 var (
-	_ ken.Command             = (*Stats)(nil)
+	_ ken.SlashCommand        = (*Stats)(nil)
 	_ permissions.PermCommand = (*Stats)(nil)
 	_ ken.DmCapable           = (*Stats)(nil)
 )

@@ -19,7 +19,7 @@ import (
 type Login struct{}
 
 var (
-	_ ken.Command             = (*Login)(nil)
+	_ ken.SlashCommand        = (*Login)(nil)
 	_ permissions.PermCommand = (*Login)(nil)
 	_ ken.DmCapable           = (*Login)(nil)
 )

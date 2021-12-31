@@ -10,7 +10,7 @@ import (
 type Bug struct{}
 
 var (
-	_ ken.Command             = (*Bug)(nil)
+	_ ken.SlashCommand        = (*Bug)(nil)
 	_ permissions.PermCommand = (*Bug)(nil)
 )
 

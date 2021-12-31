@@ -19,7 +19,7 @@ var linkRx = regexp.MustCompile(`^(?:https?:\/\/)?(?:www\.)?discord(?:app)?\.com
 type Quote struct{}
 
 var (
-	_ ken.Command             = (*Quote)(nil)
+	_ ken.SlashCommand        = (*Quote)(nil)
 	_ permissions.PermCommand = (*Quote)(nil)
 )
 
@@ -70,11 +70,17 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	var comment string
+	var ident, comment string
 
-	ident := ctx.Options().GetByName("id").StringValue()
-	if commentV, ok := ctx.Options().GetByNameOptional("comment"); ok {
-		comment = commentV.StringValue()
+	for ident = range ctx.Event.ApplicationCommandData().Resolved.Messages {
+		break
+	}
+
+	if ident == "" {
+		ident = ctx.Options().GetByName("id").StringValue()
+		if commentV, ok := ctx.Options().GetByNameOptional("comment"); ok {
+			comment = commentV.StringValue()
+		}
 	}
 
 	var quoteMsg *discordgo.Message
@@ -190,7 +196,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 			IconURL: ctx.User().AvatarURL("16"),
 			Text:    fmt.Sprintf("#%s - quoted by: %s", ch.Name, ctx.User().String()),
 		},
-		Timestamp: string(quoteMsg.Timestamp),
+		Timestamp: string(quoteMsg.Timestamp.Format(time.RFC1123)),
 	}
 
 	if len(quoteMsg.Attachments) > 0 {

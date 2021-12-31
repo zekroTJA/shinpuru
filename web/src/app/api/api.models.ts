@@ -256,6 +256,7 @@ export interface JoinlogEntry {
   guild_id: string;
   user_id: string;
   tag: string;
+  account_created: Date;
   timestamp: Date;
 
   selected: boolean;

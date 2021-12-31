@@ -16,7 +16,7 @@ import (
 type Notify struct{}
 
 var (
-	_ ken.Command             = (*Notify)(nil)
+	_ ken.SlashCommand        = (*Notify)(nil)
 	_ permissions.PermCommand = (*Notify)(nil)
 )
 

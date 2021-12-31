@@ -158,14 +158,7 @@ func (c *GuildMembersController) getMember(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if muteRoleID, err := c.db.GetGuildMuteRole(guildID); err == nil {
-		for _, roleID := range memb.Roles {
-			if roleID == muteRoleID {
-				mm.ChatMuted = true
-				break
-			}
-		}
-	}
+	mm.ChatMuted = memb.CommunicationDisabledUntil != nil
 
 	return ctx.JSON(mm)
 }

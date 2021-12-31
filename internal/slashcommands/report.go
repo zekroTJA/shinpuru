@@ -23,7 +23,7 @@ import (
 type Report struct{}
 
 var (
-	_ ken.Command             = (*Report)(nil)
+	_ ken.SlashCommand        = (*Report)(nil)
 	_ permissions.PermCommand = (*Report)(nil)
 )
 
@@ -231,7 +231,7 @@ func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
 		Msg:           reason,
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 		Type:          typ,
 	}
 

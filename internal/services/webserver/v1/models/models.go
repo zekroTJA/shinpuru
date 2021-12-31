@@ -81,7 +81,7 @@ type Guild struct {
 	Region                   string                      `json:"region"`
 	AfkChannelID             string                      `json:"afk_channel_id"`
 	OwnerID                  string                      `json:"owner_id"`
-	JoinedAt                 discordgo.Timestamp         `json:"joined_at"`
+	JoinedAt                 time.Time                   `json:"joined_at"`
 	Splash                   string                      `json:"splash"`
 	MemberCount              int                         `json:"member_count"`
 	VerificationLevel        discordgo.VerificationLevel `json:"verification_level"`
@@ -106,15 +106,15 @@ type Guild struct {
 // GuildReduced is a Guild model with fewer
 // details than Guild model.
 type GuildReduced struct {
-	ID                string              `json:"id"`
-	Name              string              `json:"name"`
-	Icon              string              `json:"icon"`
-	IconURL           string              `json:"icon_url"`
-	Region            string              `json:"region"`
-	OwnerID           string              `json:"owner_id"`
-	JoinedAt          discordgo.Timestamp `json:"joined_at"`
-	MemberCount       int                 `json:"member_count"`
-	OnlineMemberCount int                 `json:"online_member_count,omitempty"`
+	ID                string    `json:"id"`
+	Name              string    `json:"name"`
+	Icon              string    `json:"icon"`
+	IconURL           string    `json:"icon_url"`
+	Region            string    `json:"region"`
+	OwnerID           string    `json:"owner_id"`
+	JoinedAt          time.Time `json:"joined_at"`
+	MemberCount       int       `json:"member_count"`
+	OnlineMemberCount int       `json:"online_member_count,omitempty"`
 }
 
 // PermissionsResponse wraps a
@@ -495,7 +495,7 @@ func MemberFromMember(m *discordgo.Member) *Member {
 // attachment URL.
 func ReportFromReport(r *sharedmodels.Report, publicAddr string) *Report {
 	rtype := sharedmodels.ReportTypes[r.Type]
-	r.AttachmehtURL = imgstore.GetLink(r.AttachmehtURL, publicAddr)
+	r.AttachmentURL = imgstore.GetLink(r.AttachmentURL, publicAddr)
 	return &Report{
 		Report:   r,
 		TypeName: rtype,

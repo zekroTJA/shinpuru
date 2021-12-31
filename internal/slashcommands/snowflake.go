@@ -23,7 +23,7 @@ const (
 type Snowflake struct{}
 
 var (
-	_ ken.Command             = (*Snowflake)(nil)
+	_ ken.SlashCommand        = (*Snowflake)(nil)
 	_ permissions.PermCommand = (*Snowflake)(nil)
 	_ ken.DmCapable           = (*Snowflake)(nil)
 )

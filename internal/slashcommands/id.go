@@ -13,7 +13,7 @@ import (
 type Id struct{}
 
 var (
-	_ ken.Command             = (*Id)(nil)
+	_ ken.SlashCommand        = (*Id)(nil)
 	_ permissions.PermCommand = (*Id)(nil)
 )
 

@@ -67,7 +67,6 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`autorole` text NOT NULL DEFAULT ''," +
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
 		"`voicelogchanID` text NOT NULL DEFAULT ''," +
-		"`muteRoleID` text NOT NULL DEFAULT ''," +
 		"`notifyRoleID` text NOT NULL DEFAULT ''," +
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
@@ -257,6 +256,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`tag` text NOT NULL DEFAULT ''," +
+		"`accountCreated` timestamp NOT NULL DEFAULT 0," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
@@ -592,7 +592,7 @@ func (m *MysqlMiddleware) AddReport(rep *models.Report) error {
 	_, err := m.Db.Exec(`
 		INSERT INTO reports (id, type, guildID, executorID, victimID, msg, attachment, timeout)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmehtURL, rep.Timeout)
+		rep.ID, rep.Type, rep.GuildID, rep.ExecutorID, rep.VictimID, rep.Msg, rep.AttachmentURL, rep.Timeout)
 	return err
 }
 
@@ -607,7 +607,7 @@ func (m *MysqlMiddleware) GetReport(id snowflake.ID) (*models.Report, error) {
 	row := m.Db.QueryRow(`
 		SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout
 		FROM reports WHERE id = ?`, id)
-	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+	err := row.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID, &rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 	if err == sql.ErrNoRows {
 		return nil, database.ErrDatabaseNotFound
 	}
@@ -633,7 +633,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -668,7 +668,7 @@ func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType, 
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -716,7 +716,7 @@ func (m *MysqlMiddleware) GetExpiredReports() (results []*models.Report, err err
 	for rows.Next() {
 		rep := new(models.Report)
 		err := rows.Scan(&rep.ID, &rep.Type, &rep.GuildID, &rep.ExecutorID,
-			&rep.VictimID, &rep.Msg, &rep.AttachmehtURL, &rep.Timeout)
+			&rep.VictimID, &rep.Msg, &rep.AttachmentURL, &rep.Timeout)
 		if err != nil {
 			return nil, err
 		}
@@ -782,15 +782,6 @@ func (m *MysqlMiddleware) AddUpdateVote(vote *vote.Vote) error {
 func (m *MysqlMiddleware) DeleteVote(voteID string) error {
 	_, err := m.Db.Exec("DELETE FROM votes WHERE id = ?", voteID)
 	return err
-}
-
-func (m *MysqlMiddleware) GetGuildMuteRole(guildID string) (string, error) {
-	val, err := m.getGuildSetting(guildID, "muteRoleID")
-	return val, err
-}
-
-func (m *MysqlMiddleware) SetGuildMuteRole(guildID, roleID string) error {
-	return m.setGuildSetting(guildID, "muteRoleID", roleID)
 }
 
 func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error) {
@@ -1384,9 +1375,9 @@ func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error
 	return
 }
 
-func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) (err error) {
-	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag) "+
-		"VALUES (?, ?, ?)", userID, guildID, userTag)
+func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) (err error) {
+	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag, accountCreated) "+
+		"VALUES (?, ?, ?, ?)", userID, guildID, userTag, accountCreated)
 	return
 }
 
@@ -1401,7 +1392,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 
 	res = make([]*models.JoinLogEntry, count)
 
-	rows, err := m.Db.Query("SELECT userID, tag, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
+	rows, err := m.Db.Query("SELECT `userID`, `tag`, `accountCreated`, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
 	if err != nil {
 		return
 	}
@@ -1409,7 +1400,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 	var i int
 	for rows.Next() {
 		entry := &models.JoinLogEntry{GuildID: guildID}
-		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Timestamp); err != nil {
+		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp); err != nil {
 			return
 		}
 		res[i] = entry

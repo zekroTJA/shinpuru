@@ -16,7 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -96,7 +95,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           repReq.Reason,
-		AttachmehtURL: repReq.Attachment,
+		AttachmentURL: repReq.Attachment,
 		Type:          repReq.Type,
 	})
 
@@ -157,7 +156,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 	})
 
 	if err == report.ErrRoleDiff {
@@ -226,7 +225,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 		Timeout:       req.Timeout,
 		Anonymous:     anonymous,
 	})
@@ -266,13 +265,6 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	muteRoleID, err := c.db.GetGuildMuteRole(guildID)
-	if database.IsErrDatabaseNotFound(err) || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownRole) {
-		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up properly on this guild")
-	} else if err != nil {
-		return err
-	}
-
 	if memberID == uid {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
@@ -294,14 +286,18 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		req.Attachment = img.ID.String()
 	}
 
+	if req.Timeout == nil {
+		return fiber.NewError(fiber.StatusBadRequest, "You must pass a valid mute timeout duration")
+	}
+
 	rep, err := c.repSvc.PushMute(&sharedmodels.Report{
 		GuildID:       guildID,
 		ExecutorID:    uid,
 		VictimID:      memberID,
 		Msg:           req.Reason,
-		AttachmehtURL: req.Attachment,
+		AttachmentURL: req.Attachment,
 		Timeout:       req.Timeout,
-	}, muteRoleID)
+	})
 
 	if err == report.ErrRoleDiff {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute members with higher or same permissions than/as yours")
@@ -338,13 +334,6 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	muteRoleID, err := c.db.GetGuildMuteRole(guildID)
-	if database.IsErrDatabaseNotFound(err) {
-		return fiber.NewError(fiber.StatusBadRequest, "mute role is not set up on this guild")
-	} else if err != nil {
-		return err
-	}
-
 	if memberID == uid {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not mute yourself")
 	}
@@ -353,8 +342,7 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 		guildID,
 		uid,
 		memberID,
-		req.Reason,
-		muteRoleID)
+		req.Reason)
 
 	if err == report.ErrRoleDiff {
 		return fiber.NewError(fiber.StatusBadRequest, "you can not unmute members with higher or same permissions than/as yours")

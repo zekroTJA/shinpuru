@@ -12,7 +12,7 @@ import (
 type Ghostping struct{}
 
 var (
-	_ ken.Command             = (*Ghostping)(nil)
+	_ ken.SlashCommand        = (*Ghostping)(nil)
 	_ permissions.PermCommand = (*Ghostping)(nil)
 	_ cmdhelp.HelpProvider    = (*Ghostping)(nil)
 )

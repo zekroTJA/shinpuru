@@ -16,7 +16,7 @@ import (
 type Help struct{}
 
 var (
-	_ ken.Command             = (*Help)(nil)
+	_ ken.SlashCommand        = (*Help)(nil)
 	_ permissions.PermCommand = (*Help)(nil)
 	_ ken.DmCapable           = (*Help)(nil)
 )

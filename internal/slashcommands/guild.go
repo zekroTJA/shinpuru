@@ -20,7 +20,7 @@ import (
 type Guild struct{}
 
 var (
-	_ ken.Command             = (*Guild)(nil)
+	_ ken.SlashCommand        = (*Guild)(nil)
 	_ permissions.PermCommand = (*Guild)(nil)
 )
 

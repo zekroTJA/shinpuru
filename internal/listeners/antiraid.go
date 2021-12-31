@@ -47,13 +47,21 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 	}
 }
 
+func (l *ListenerAntiraid) addToJoinlog(e *discordgo.GuildMemberAdd) {
+	creation, err := discordutil.GetDiscordSnowflakeCreationTime(e.User.ID)
+	if err != nil {
+		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed getting creation date from user snowflake")
+		l.gl.Errorf(e.GuildID, "Failed getting creation date from user snowflake (%s): %s", e.User.ID, err.Error())
+	} else if err = l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String(), creation); err != nil {
+		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
+		l.gl.Errorf(e.GuildID, "Failed adding user to joinlist (%s): %s", e.User.ID, err.Error())
+	}
+}
+
 func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
 	if v, ok := l.triggers.GetValue(e.GuildID).(time.Time); ok {
 		if time.Since(v) < arTriggerRecordLifetime {
-			if err := l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String()); err != nil {
-				logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
-				l.gl.Errorf(e.GuildID, "Failed adding user to joinlist (%s): %s", e.User.ID, err.Error())
-			}
+			l.addToJoinlog(e)
 		}
 		return
 	}
@@ -160,6 +168,8 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 				"24 hours. This log is saved for 48 hours toal.",
 		})
 	}
+
+	l.addToJoinlog(e)
 }
 
 func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst int) {

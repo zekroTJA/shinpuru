@@ -161,7 +161,7 @@ func (c *CmdReport) Exec(ctx shireikan.Context) error {
 		ExecutorID:    ctx.GetUser().ID,
 		VictimID:      victim.User.ID,
 		Msg:           repMsg,
-		AttachmehtURL: attachment,
+		AttachmentURL: attachment,
 		Type:          repType,
 	}
 

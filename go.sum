@@ -113,6 +113,8 @@ github.com/bwmarrin/discordgo v0.23.2/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+
 github.com/bwmarrin/discordgo v0.23.3-0.20210821175000-0fad116c6c2a/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/bwmarrin/discordgo v0.23.3-0.20211117035633-fd6228c0d536 h1:KLvbHLidkxOGTmdiTmii0DOJ0BDSeOCUrXuvf/9CNr0=
 github.com/bwmarrin/discordgo v0.23.3-0.20211117035633-fd6228c0d536/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
+github.com/bwmarrin/discordgo v0.23.3-0.20211228023845-29269347e820 h1:MIW5DnBVJAgAy4LYBqWwIMBB0ezklvh8b7DsYvHZHb0=
+github.com/bwmarrin/discordgo v0.23.3-0.20211228023845-29269347e820/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/bwmarrin/snowflake v0.3.0 h1:xm67bEhkKh6ij1790JB83OujPR5CzNe8QuQqAgISZN0=
 github.com/bwmarrin/snowflake v0.3.0/go.mod h1:NdZxfVWX+oR6y2K0o6qAYv6gIOP9rjG0/E9WsDpxqwE=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -791,8 +793,8 @@ github.com/zekroTJA/timedmap v1.4.0/go.mod h1:Go4uPxMN1Wjl5IgO6HYD1tM9IQhkYEVqcr
 github.com/zekrotja/dgrs v0.3.1/go.mod h1:I73ryIMJJXCQxBHyBdRALG+0+mIEXF008EF7A/fYV4I=
 github.com/zekrotja/dgrs v0.3.2 h1:tLAcUZgxVvHEbololudACOSgoq2+dEZWVNIR5RYmkws=
 github.com/zekrotja/dgrs v0.3.2/go.mod h1:I73ryIMJJXCQxBHyBdRALG+0+mIEXF008EF7A/fYV4I=
-github.com/zekrotja/ken v0.10.1 h1:h+VAjdmXzkncMVxpMx3RtndoJJu+ibPNcCGJxnXy7uI=
-github.com/zekrotja/ken v0.10.1/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
+github.com/zekrotja/ken v0.11.1 h1:qTndZofMU1RztTSs1Vm5j91QZhuRKZf7hkMvAfVY/pw=
+github.com/zekrotja/ken v0.11.1/go.mod h1:jLWvS054jKJJFU5kNeLOVfIhGhIbO9IFi3pUHFLrJzc=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=

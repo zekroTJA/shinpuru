@@ -13,7 +13,7 @@ import (
 type Inviteblock struct{}
 
 var (
-	_ ken.Command             = (*Inviteblock)(nil)
+	_ ken.SlashCommand        = (*Inviteblock)(nil)
 	_ permissions.PermCommand = (*Inviteblock)(nil)
 )
 

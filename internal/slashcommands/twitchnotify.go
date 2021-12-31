@@ -15,7 +15,7 @@ import (
 type Twitchnotify struct{}
 
 var (
-	_ ken.Command             = (*Twitchnotify)(nil)
+	_ ken.SlashCommand        = (*Twitchnotify)(nil)
 	_ permissions.PermCommand = (*Twitchnotify)(nil)
 )
 

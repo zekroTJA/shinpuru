@@ -16,7 +16,7 @@ import (
 type Clear struct{}
 
 var (
-	_ ken.Command             = (*Clear)(nil)
+	_ ken.SlashCommand        = (*Clear)(nil)
 	_ permissions.PermCommand = (*Clear)(nil)
 )
 

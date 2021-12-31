@@ -161,7 +161,7 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 
 // PushMute is shorthand for PushReport as member mute action and also
 // adds the mute role to the specified victim.
-func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models.Report, error) {
+func (r *ReportService) PushMute(rep *models.Report) (*models.Report, error) {
 	const typ = 2
 	rep.Type = typ
 
@@ -197,7 +197,7 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 		return nil, err
 	}
 
-	err = r.s.GuildMemberRoleAdd(rep.GuildID, rep.VictimID, muteRoleID)
+	err = r.s.GuildMemberTimeout(rep.GuildID, rep.VictimID, rep.Timeout)
 	if err != nil {
 		r.db.DeleteReport(rep.ID)
 		return nil, err
@@ -208,7 +208,7 @@ func (r *ReportService) PushMute(rep *models.Report, muteRoleID string) (*models
 
 // RevokeMute removes the mute role of the specified victim and sends
 // an unmute embed to the users DMs and to the mod log channel.
-func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRoleID string) (emb *discordgo.MessageEmbed, err error) {
+func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string) (emb *discordgo.MessageEmbed, err error) {
 	guild, err := r.st.Guild(guildID, true)
 	if err != nil {
 		return nil, err
@@ -228,7 +228,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason, muteRo
 		return nil, ErrRoleDiff
 	}
 
-	err = r.s.GuildMemberRoleRemove(guildID, victimID, muteRoleID)
+	err = r.s.GuildMemberTimeout(guildID, victimID, nil)
 	if err != nil {
 		return
 	}
@@ -370,12 +370,7 @@ func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error)
 	case models.TypeBan:
 		err = r.s.GuildBanDelete(rep.GuildID, rep.VictimID)
 	case models.TypeMute:
-		var rid string
-		rid, err = r.db.GetGuildMuteRole(rep.GuildID)
-		if err != nil {
-			return
-		}
-		_, err = r.RevokeMute(rep.GuildID, rep.ExecutorID, rep.VictimID, "Automatic Timeout", rid)
+		_, err = r.RevokeMute(rep.GuildID, rep.ExecutorID, rep.VictimID, "Automatic Timeout")
 	}
 	return
 }

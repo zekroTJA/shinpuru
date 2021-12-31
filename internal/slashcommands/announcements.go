@@ -21,7 +21,7 @@ const (
 type Announcements struct{}
 
 var (
-	_ ken.Command             = (*Announcements)(nil)
+	_ ken.SlashCommand        = (*Announcements)(nil)
 	_ permissions.PermCommand = (*Announcements)(nil)
 )
 

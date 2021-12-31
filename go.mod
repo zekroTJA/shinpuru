@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
-	github.com/bwmarrin/discordgo v0.23.3-0.20211117035633-fd6228c0d536
+	github.com/bwmarrin/discordgo v0.23.3-0.20211228023845-29269347e820
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -48,7 +48,7 @@ require (
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.3.2
-	github.com/zekrotja/ken v0.10.1
+	github.com/zekrotja/ken v0.11.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
