@@ -256,6 +256,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`tag` text NOT NULL DEFAULT ''," +
+		"`accountCreated` timestamp NOT NULL DEFAULT 0," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
@@ -1374,9 +1375,9 @@ func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error
 	return
 }
 
-func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string) (err error) {
-	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag) "+
-		"VALUES (?, ?, ?)", userID, guildID, userTag)
+func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) (err error) {
+	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag, accountCreated) "+
+		"VALUES (?, ?, ?, ?)", userID, guildID, userTag, accountCreated)
 	return
 }
 
@@ -1391,7 +1392,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 
 	res = make([]*models.JoinLogEntry, count)
 
-	rows, err := m.Db.Query("SELECT userID, tag, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
+	rows, err := m.Db.Query("SELECT `userID`, `tag`, `accountCreated`, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
 	if err != nil {
 		return
 	}
@@ -1399,7 +1400,7 @@ func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.Joi
 	var i int
 	for rows.Next() {
 		entry := &models.JoinLogEntry{GuildID: guildID}
-		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Timestamp); err != nil {
+		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp); err != nil {
 			return
 		}
 		res[i] = entry

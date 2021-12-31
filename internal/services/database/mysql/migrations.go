@@ -12,6 +12,7 @@ var migrationFuncs = []migrationFunc{
 	migration_4,
 	migration_5,
 	migration_6,
+	migration_7,
 }
 
 // VERSION 0:
@@ -64,4 +65,11 @@ func migration_6(m *sql.Tx) (err error) {
 	}
 	_, err = m.Exec(`ALTER TABLE antiraidJoinlog ADD COLUMN iid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY;`)
 	return
+}
+
+// VERSION 7:
+// - add property `accountCreated` to `antiraidJoinlog`
+func migration_7(m *sql.Tx) (err error) {
+	return createTableColumnIfNotExists(m,
+		"antiraidJoinlog", "`accountCreated` timestamp NOT NULL DEFAULT 0")
 }
