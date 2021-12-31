@@ -59,6 +59,11 @@ func migration_5(m *sql.Tx) (err error) {
 // VERSION 6:
 // - add property `timeout` to `reports`
 func migration_6(m *sql.Tx) (err error) {
+	_, err = m.Exec(`SELECT 1 FROM antiraidJoinlog WHERE iid > -1`)
+	if err == nil {
+		return
+	}
+
 	_, err = m.Exec(`ALTER TABLE antiraidJoinlog DROP PRIMARY KEY;`)
 	if err != nil {
 		return
