@@ -1,5 +1,11 @@
 1.26.0
 
+# Antiraid Joinlog Account Age [#283]
+
+The antiraid joinlog table now also shows the account age and creation date which is very useful to validate if an account might be boted.
+
+![](https://user-images.githubusercontent.com/16734205/147818785-6cd358d7-fa48-475f-9b4b-15defd70c730.png)
+
 # `userinfo` user command [#308]
 
 The `/user` slash command can now be directly executed on members using the `userinfo` user command. This is available when right-clicking on a user, going to `Apps` and clicking `userinfo`. Then, the user info card will be dropped into your currently selected text channel.
@@ -15,6 +21,12 @@ The `/quote` slash command is now also usable directly via the `quotemessage` ap
 # Mute rework [#315]
 
 Because Discord recently added the `timeout` feature, the usage of specific mute roles which disallow sending messages in all channels is no more necessary. Instead, the mute/unmute command and web interface hook utilizes the timeout implementation of Discord. So, you do not need to setup and maintain a muterole anymore and you can directly use the timeout integration of Discord with the advantages of shinpurus modlog! 🤯
+
+
+# Bug Fixes
+
+- Fixed a bug where the pro tip card in the web interface prevents clicking underlying elements after dismissal. [#316]
+- The rework of the mute command also obsoletes the mute role issue. [#312]
 
 # Docker
 
