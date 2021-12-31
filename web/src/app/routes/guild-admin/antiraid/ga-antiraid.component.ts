@@ -10,7 +10,7 @@ import {
 } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
-import { format } from 'date-fns';
+import { format, formatDistance } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
 
 @Component({
@@ -26,6 +26,12 @@ export class GuildAdminAntiraidComponent implements OnInit {
 
   public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
     format(new Date(d), f);
+
+  public sinceFormat = (d: string | Date) =>
+    formatDistance(new Date(d), new Date(), {
+      addSuffix: true,
+      includeSeconds: true,
+    });
 
   constructor(
     private route: ActivatedRoute,

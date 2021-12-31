@@ -162,6 +162,7 @@
               <tr>
                 <th>User ID</th>
                 <th>Tag</th>
+                <th>Account Age</th>
                 <th>Timestamp</th>
                 <th>
                   <input
@@ -174,6 +175,12 @@
               <tr *ngFor="let e of joinlog; index as i">
                 <td>{{ e.user_id }}</td>
                 <td>{{ e.tag }}</td>
+                <td>
+                  {{ sinceFormat(e.account_created) }}
+                  <span class="secondary"
+                    >({{ dateFormat(e.account_created) }})</span
+                  >
+                </td>
                 <td>
                   {{ dateFormat(e.timestamp) }}
                 </td>
