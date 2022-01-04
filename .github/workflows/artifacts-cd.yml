@@ -1,0 +1,66 @@
+name: Artifacts CD
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  frontend:
+    name: Build Frontend Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Web App
+        run: npx ng build --prod --output-path bin/web/dist/web
+      - name: Upload Artifcats
+        uses: actions/upload-artifact@v2
+        with:
+          name: webpackage
+          path: bin/
+
+
+  backend:
+    name: Build Backend Artifacts
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos:
+          - linux
+          - windows
+          - darwin
+        goarch:
+          - amd64
+          - arm64
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "^1.17"
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go get -v ./...
+      - name: Build Backend (${{ matrix.goos }}-${{ matrix.goarch }})
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o ./bin/shinpuru-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/shinpuru/main.go
+      - name: Rename Windows Binary
+        if: ${{ matrix.goos == 'windows' }}
+        env:
+          FNAME: ./bin/shinpuru-${{ matrix.goos }}-${{ matrix.goarch }}
+        run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
+      - name: Upload Artifcats
+        uses: actions/upload-artifact@v2
+        with:
+          name: shinpuru-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: bin/
