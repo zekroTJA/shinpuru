@@ -20,13 +20,13 @@ jobs:
       - name: Set up NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: '13.x'
+          node-version: '14.x'
 
       - name: Set up Hub
         run: |
           sudo snap install hub --classic
 
-      - name: Check out code into the Go module directory
+      - name: Check out code
         uses: actions/checkout@v2
 
       - name: Build releases
