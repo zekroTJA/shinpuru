@@ -18,9 +18,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Install dependencies
+        working-directory: ./web
         run: npm ci
       - name: Build Web App
-        run: npx ng build --prod --output-path bin/web/dist/web
+        working-directory: ./web
+        run: npx ng build --prod --output-path ../bin/web/dist/web
       - name: Upload Artifcats
         uses: actions/upload-artifact@v2
         with:
