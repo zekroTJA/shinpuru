@@ -21,7 +21,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `2` |
 | [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
 | [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
-| [pavll](https://github.com/pavll) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `1` |
+| [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `1` |
 | [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
 | [ENOT1KK](https://github.com/ENOT1KK) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
 | [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
