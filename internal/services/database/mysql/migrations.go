@@ -85,7 +85,7 @@ func migration_7(m *sql.Tx) (err error) {
 // - add property `requireUserVerification` to `guilds`
 func migration_8(m *sql.Tx) (err error) {
 	err = createTableColumnIfNotExists(m,
-		"users", "`verified` int(1) NOT NULL DEFAULT 0")
+		"users", "`verified` text NOT NULL DEFAULT '0'")
 	if err != nil {
 		return
 	}

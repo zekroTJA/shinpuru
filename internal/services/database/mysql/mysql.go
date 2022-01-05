@@ -86,7 +86,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
-		"`verified` int(1) NOT NULL DEFAULT 0," +
+		"`verified` text NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -1532,6 +1532,20 @@ func (m *MysqlMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 		v = "1"
 	}
 	return m.setUserSetting(userID, "enableOTA", v)
+}
+
+func (m *MysqlMiddleware) GetUserVerified(userID string) (enabled bool, err error) {
+	v, err := m.getUserSetting(userID, "verified")
+	enabled = v == "1"
+	return
+}
+
+func (m *MysqlMiddleware) SetUserVerified(userID string, enabled bool) error {
+	v := "0"
+	if enabled {
+		v = "1"
+	}
+	return m.setUserSetting(userID, "verified", v)
 }
 
 func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
