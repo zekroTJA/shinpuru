@@ -159,6 +159,7 @@ type WebServer struct {
 	LandingPage     LandingPage        `json:"landingpage"`
 	DebugPublicAddr string             `json:"debugpublicaddr,omitempty"`
 	RateLimit       WebServerRatelimit `json:"ratelimit"`
+	Captcha         Captcha            `json:"captcha"`
 }
 
 // WebServerTLS wraps preferences for the TLS
@@ -247,6 +248,13 @@ type CodeExecRanna struct {
 	Token      string `json:"token"`
 	Endpoint   string `json:"endpoint"`
 	ApiVersion string `json:"apiversion"`
+}
+
+// Captcha holds the configuration for a
+// captcha verification.
+type Captcha struct {
+	SiteKey   string `json:"sitekey"`
+	SecretKey string `json:"secretkey"`
 }
 
 // Config wraps the whole configuration structure
