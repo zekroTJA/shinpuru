@@ -53,9 +53,10 @@ type ListResponse struct {
 type User struct {
 	*discordgo.User
 
-	AvatarURL string    `json:"avatar_url"`
-	CreatedAt time.Time `json:"created_at"`
-	BotOwner  bool      `json:"bot_owner"`
+	AvatarURL       string    `json:"avatar_url"`
+	CreatedAt       time.Time `json:"created_at"`
+	BotOwner        bool      `json:"bot_owner"`
+	CaptchaVerified bool      `json:"captcha_verified"`
 }
 
 // Member extends a discordgo.Member as
@@ -359,6 +360,14 @@ type ChannelWithPermissions struct {
 
 	CanRead  bool `json:"can_read"`
 	CanWrite bool `json:"can_write"`
+}
+
+type CaptchaSiteKey struct {
+	SiteKey string `json:"sitekey"`
+}
+
+type CaptchaVerificationRequest struct {
+	Token string `json:"token"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.
