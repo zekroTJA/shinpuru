@@ -22,6 +22,7 @@ import { GuildAdminDataComponent } from './routes/guild-admin/data/ga-data.compo
 import { DebugComponent } from './routes/debug/debug.component';
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
+import { VerifyRouteComponent } from './routes/verify/verify.component';
 
 const routes: Routes = [
   {
@@ -109,6 +110,10 @@ const routes: Routes = [
   {
     path: 'unbanme',
     component: UnbanmeComponent,
+  },
+  {
+    path: 'verify',
+    component: VerifyRouteComponent,
   },
   {
     path: 'pogchamp',

@@ -39,6 +39,7 @@ import {
   MessageEmbed,
   AntiraidAction,
   ChannelWithPermissions,
+  VerificationSiteKey,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -218,6 +219,9 @@ export class APIService {
 
   private readonly rcUsers = (rc: string = '') =>
     `${this.rcAPI('users')}${rc ? '/' + rc : ''}`;
+
+  private readonly rcVerification = (rc: string = '') =>
+    `${this.rcAPI('verification')}${rc ? '/' + rc : ''}`;
 
   private readonly errorCatcher = (err) => {
     if (err instanceof TypeError) {
@@ -1012,6 +1016,18 @@ export class APIService {
   public getUser(userID: string): Observable<User> {
     return this.http
       .get(this.rcUsers(userID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getVerificationSiteKey(): Observable<VerificationSiteKey> {
+    return this.http
+      .get(this.rcVerification('sitekey'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postVerifyUser(token: string): Observable<any> {
+    return this.http
+      .post(this.rcVerification('verify'), { token }, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
