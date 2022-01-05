@@ -89,6 +89,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
 	router.Get("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.getGuildSettingsAPI)
 	router.Post("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.postGuildSettingsAPI)
+	router.Get("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.getGuildSettingsVerification)
+	router.Post("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.postGuildSettingsVerification)
 }
 
 // @Summary List Guilds
@@ -1607,6 +1609,58 @@ func (c *GuildsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
 	state.Hydrate()
 	state.TokenHash = ""
 	return ctx.JSON(state.GuildAPISettings)
+}
+
+// @Summary Get Guild Settings Verification State
+// @Description Returns the settings state of the Guild Verification.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/verification [get]
+func (c *GuildsController) getGuildSettingsVerification(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	state, err := c.db.GetGuildVerificationRequired(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	res := models.EnableStatus{
+		Enabled: state,
+	}
+
+	return ctx.JSON(res)
+}
+
+// @Summary Set Guild Settings Verification State
+// @Description Set the settings state of the Guild API.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.EnableStatus true "The guild API settings payload."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/verification [post]
+func (c *GuildsController) postGuildSettingsVerification(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	var state models.EnableStatus
+	if err = ctx.BodyParser(&state); err != nil {
+		return
+	}
+
+	err = c.db.SetGuildVerificationRequired(guildID, state.Enabled)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(state)
 }
 
 // ---------------------------------------------------------------------------
