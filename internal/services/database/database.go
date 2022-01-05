@@ -82,6 +82,9 @@ type Database interface {
 	GetGuildAPI(guildID string) (*models.GuildAPISettings, error)
 	SetGuildAPI(guildID string, settings *models.GuildAPISettings) error
 
+	GetGuildVerificationRequired(guildID string) (bool, error)
+	SetGuildVerificationRequired(guildID string, enable bool) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 

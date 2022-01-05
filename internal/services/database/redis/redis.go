@@ -16,21 +16,22 @@ import (
 const (
 	keySetting = "PROP"
 
-	keyGuildPrefix          = "GUILD:PREFIX"
-	keyGuildAutoRole        = "GUILD:AUTOROLE"
-	keyGuildModLog          = "GUILD:MODLOG"
-	keyGuildVoiceLog        = "GUILD:VOICELOG"
-	keyGuildNotifyRole      = "GUILD:NOTROLE"
-	keyGuildGhostPingMsg    = "GUILD:GPMSG"
-	keyGuildJDoodleKey      = "GUILD:JDOODLE"
-	keyGuildInviteBlock     = "GUILD:INVBLOCK"
-	keyGuildBackupEnabled   = "GUILD:BACKUP"
-	keyGuildJoinMsg         = "GUILD:JOINMSG"
-	keyGuildLeaveMsg        = "GUILD:LEAVEMSG"
-	keyGuildColorReaction   = "GUILD:COLORREACTION"
-	keyGuildStarboardConfig = "GUILD:STARBOARDCONFIG"
-	keyGuildLogEnable       = "GUILD:GUILDLOG"
-	keyGuildAPI             = "GUILD:API"
+	keyGuildPrefix                 = "GUILD:PREFIX"
+	keyGuildAutoRole               = "GUILD:AUTOROLE"
+	keyGuildModLog                 = "GUILD:MODLOG"
+	keyGuildVoiceLog               = "GUILD:VOICELOG"
+	keyGuildNotifyRole             = "GUILD:NOTROLE"
+	keyGuildGhostPingMsg           = "GUILD:GPMSG"
+	keyGuildJDoodleKey             = "GUILD:JDOODLE"
+	keyGuildInviteBlock            = "GUILD:INVBLOCK"
+	keyGuildBackupEnabled          = "GUILD:BACKUP"
+	keyGuildJoinMsg                = "GUILD:JOINMSG"
+	keyGuildLeaveMsg               = "GUILD:LEAVEMSG"
+	keyGuildColorReaction          = "GUILD:COLORREACTION"
+	keyGuildStarboardConfig        = "GUILD:STARBOARDCONFIG"
+	keyGuildLogEnable              = "GUILD:GUILDLOG"
+	keyGuildAPI                    = "GUILD:API"
+	keyGuildRequireVerificationAPI = "GUILD:REQVER"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -950,4 +951,35 @@ func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPI
 	err = json.Unmarshal([]byte(resStr), settings)
 
 	return
+}
+
+func (r *RedisMiddleware) GetGuildVerificationRequired(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildRequireVerificationAPI, guildID)
+
+	var val bool
+	err := r.client.Get(context.Background(), key).Scan(&val)
+	if err == redis.Nil {
+		val, err = r.Database.GetGuildVerificationRequired(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = r.client.Set(context.Background(), key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildVerificationRequired(guildID string, enabled bool) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildRequireVerificationAPI, guildID)
+
+	if err := r.client.Set(context.Background(), key, enabled, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildVerificationRequired(guildID, enabled)
 }

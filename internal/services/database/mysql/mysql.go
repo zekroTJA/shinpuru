@@ -76,6 +76,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
 		"`colorReaction` text NOT NULL DEFAULT ''," +
 		"`guildlogDisable` text NOT NULL DEFAULT ''," +
+		"`requireUserVerification` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -85,6 +86,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
+		"`verified` int(1) NOT NULL DEFAULT 0," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -1926,6 +1928,19 @@ func (m *MysqlMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPIS
 	}
 
 	return
+}
+
+func (m *MysqlMiddleware) GetGuildVerificationRequired(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "requireUserVerification")
+	return val == "1", err
+}
+
+func (m *MysqlMiddleware) SetGuildVerificationRequired(guildID string, enable bool) error {
+	var val string
+	if enable {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "requireUserVerification", val)
 }
 
 /////////// HELPER ///////////////
