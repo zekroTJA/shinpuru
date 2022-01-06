@@ -240,6 +240,14 @@ type Database interface {
 	//// FUNCTIONALITIES
 
 	FlushGuildData(guildID string) error
+
+	//////////////////////////////////////////////////////
+	//// VERIFICATION QUEUE
+
+	GetVerificationQueue(guildID string) ([]*models.VerificationQueueEntry, error)
+	FlushVerificationQueue(guildID string) error
+	AddVerificationQueue(e *models.VerificationQueueEntry) error
+	RemoveVerificationQueue(guildID, userID string) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err

@@ -354,6 +354,17 @@ func (m *MysqlMiddleware) setup() (err error) {
 		return
 	}
 
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `verificationQueue` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`timestamp` NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	if err != nil {
+		return
+	}
+
 	err = tx.Commit()
 	return
 }
@@ -1955,6 +1966,59 @@ func (m *MysqlMiddleware) SetGuildVerificationRequired(guildID string, enable bo
 		val = "1"
 	}
 	return m.setGuildSetting(guildID, "requireUserVerification", val)
+}
+
+func (m *MysqlMiddleware) GetVerificationQueue(guildID string) (res []*models.VerificationQueueEntry, err error) {
+	var args []interface{}
+	query := `
+		SELECT guildID, userID, timestamp
+		FROM verificationQueue
+	`
+	if guildID != "" {
+		args = []interface{}{guildID}
+		query += " WHERE guildID = ?"
+	}
+
+	rows, err := m.Db.Query(query, args...)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		r := new(models.VerificationQueueEntry)
+		if err = rows.Scan(&r.GuildID, &r.UserID, &r.Timestamp); err != nil {
+			return
+		}
+	}
+	return
+}
+
+func (m *MysqlMiddleware) FlushVerificationQueue(guildID string) (err error) {
+	var args []interface{}
+	query := `DELETE FROM verificationQueue`
+	if guildID != "" {
+		args = []interface{}{guildID}
+		query += " WHERE guildID = ?"
+	}
+	_, err = m.Db.Exec(query, args...)
+	return
+}
+
+func (m *MysqlMiddleware) AddVerificationQueue(e *models.VerificationQueueEntry) (err error) {
+	_, err = m.Db.Exec(`
+		INSERT INTO verificationQueue (guildID, userID, timestamp)
+		VALUES (?, ?, ?)
+	`, e.GuildID, e.UserID, e.Timestamp)
+	return
+}
+
+func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (err error) {
+	_, err = m.Db.Exec(`
+		DELETE FROM verificationQueue
+		WHERE guildID = ? AND userID = ?
+	`, guildID, userID)
+	err = wrapNotFoundError(err)
+	return
 }
 
 /////////// HELPER ///////////////
