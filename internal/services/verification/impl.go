@@ -6,20 +6,25 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 )
 
-const timeout = 48 * time.Hour
+const timeout = 1 * time.Minute
+
+// const timeout = 48 * time.Hour
 
 type impl struct {
 	s   *discordgo.Session
 	db  database.Database
 	cfg config.Provider
+	gl  guildlog.Logger
 }
 
 var _ Provider = (*impl)(nil)
@@ -29,6 +34,7 @@ func New(ctn di.Container) Provider {
 		s:   ctn.Get(static.DiDiscordSession).(*discordgo.Session),
 		db:  ctn.Get(static.DiDatabase).(database.Database),
 		cfg: ctn.Get(static.DiConfig).(config.Provider),
+		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("verification"),
 	}
 }
 
@@ -97,6 +103,34 @@ func (p *impl) Verify(userID string) (err error) {
 	}
 
 	return
+}
+
+func (p *impl) KickRoutine() {
+	queue, err := p.db.GetVerificationQueue("", "")
+	if err != nil {
+		logrus.WithError(err).Error("Failed getting verification queue from database")
+		return
+	}
+
+	now := time.Now()
+	for _, e := range queue {
+		if now.Before(e.Timestamp.Add(timeout)) {
+			continue
+		}
+
+		if err = p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil); err != nil {
+			logrus.WithError(err).Error("Failed removing member timeout")
+			p.gl.Errorf(e.GuildID, "Failed removing member timeout: %s", err.Error())
+		}
+		if err = p.s.GuildMemberDelete(e.GuildID, e.UserID); err != nil {
+			logrus.WithError(err).Error("Failed kicking member")
+			p.gl.Errorf(e.GuildID, "Failed kicking member: %s", err.Error())
+		}
+		if _, err = p.db.RemoveVerificationQueue(e.GuildID, e.UserID); err != nil {
+			logrus.WithError(err).Error("Failed removing member from verification queue")
+			p.gl.Errorf(e.GuildID, "Failed removing member from verification queue: %s", err.Error())
+		}
+	}
 }
 
 func (p *impl) sendDM(

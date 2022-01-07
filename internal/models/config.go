@@ -71,6 +71,7 @@ var DefaultConfig = Config{
 		GuildBackups:        "0 0 6,18 * * *",
 		RefreshTokenCleanup: "0 0 5 * * *",
 		ReportsExpiration:   "@every 5m",
+		VerificationKick:    "@every 1h",
 	},
 	CodeExec: CodeExec{
 		Type: "jdoodle",
@@ -233,6 +234,7 @@ type Schedules struct {
 	GuildBackups        string `json:"guildbackups"`
 	RefreshTokenCleanup string `json:"refreshtokencleanup"`
 	ReportsExpiration   string `json:"reportsexpiration"`
+	VerificationKick    string `json:"verificationkick"`
 }
 
 // CodeExec wraps configurations for the
