@@ -63,6 +63,9 @@ webserver:
     enabled: false
     burst: 50
     limitseconds: 3
+  captcha:
+    sitekey: "20000000-ffff-ffff-ffff-000000000002"
+    secretkey: "0x0000000000000000000000000000000000000000"
 
 # metrics:
 #   enable: true

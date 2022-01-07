@@ -143,6 +143,13 @@ webserver:
     burst: 50
     # The reset duration until a request token is restored.
     limitseconds: 3
+  # The hCaptcha credentials used for user validation.
+  # Obtainable from https://dashboard.hcaptcha.com/overview
+  captcha:
+    # Captcha Site Key
+    sitekey: "20000000-ffff-ffff-ffff-000000000002"
+    # Captcha Account Secret Key
+    secretkey: "0x0000000000000000000000000000000000000000"
 
 # Credentials of the twitch app to connect to the
 # twitch API
