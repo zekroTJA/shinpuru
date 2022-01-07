@@ -1968,15 +1968,20 @@ func (m *MysqlMiddleware) SetGuildVerificationRequired(guildID string, enable bo
 	return m.setGuildSetting(guildID, "requireUserVerification", val)
 }
 
-func (m *MysqlMiddleware) GetVerificationQueue(guildID string) (res []*models.VerificationQueueEntry, err error) {
+func (m *MysqlMiddleware) GetVerificationQueue(guildID, userID string) (res []*models.VerificationQueueEntry, err error) {
 	var args []interface{}
 	query := `
 		SELECT guildID, userID, timestamp
 		FROM verificationQueue
+		WHERE true
 	`
 	if guildID != "" {
-		args = []interface{}{guildID}
-		query += " WHERE guildID = ?"
+		args = append(args, guildID)
+		query += " AND guildID = ?"
+	}
+	if userID != "" {
+		args = append(args, userID)
+		query += " AND userID = ?"
 	}
 
 	rows, err := m.Db.Query(query, args...)
@@ -1989,6 +1994,7 @@ func (m *MysqlMiddleware) GetVerificationQueue(guildID string) (res []*models.Ve
 		if err = rows.Scan(&r.GuildID, &r.UserID, &r.Timestamp); err != nil {
 			return
 		}
+		res = append(res, r)
 	}
 	return
 }
@@ -2025,12 +2031,14 @@ func (m *MysqlMiddleware) AddVerificationQueue(e *models.VerificationQueueEntry)
 	return
 }
 
-func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (err error) {
-	_, err = m.Db.Exec(`
+func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (ok bool, err error) {
+	res, err := m.Db.Exec(`
 		DELETE FROM verificationQueue
 		WHERE guildID = ? AND userID = ?
 	`, guildID, userID)
 	err = wrapNotFoundError(err)
+	affected, err := res.RowsAffected()
+	ok = affected > 0
 	return
 }
 

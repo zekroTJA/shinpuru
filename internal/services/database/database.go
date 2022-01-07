@@ -244,10 +244,10 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// VERIFICATION QUEUE
 
-	GetVerificationQueue(guildID string) ([]*models.VerificationQueueEntry, error)
+	GetVerificationQueue(guildID, userID string) ([]*models.VerificationQueueEntry, error)
 	FlushVerificationQueue(guildID string) error
 	AddVerificationQueue(e *models.VerificationQueueEntry) error
-	RemoveVerificationQueue(guildID, userID string) error
+	RemoveVerificationQueue(guildID, userID string) (bool, error)
 }
 
 // IsErrDatabaseNotFound returns true if the passed err
