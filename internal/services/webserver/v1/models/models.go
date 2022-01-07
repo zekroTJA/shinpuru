@@ -304,6 +304,7 @@ type AntiraidSettings struct {
 	State              bool `json:"state"`
 	RegenerationPeriod int  `json:"regeneration_period"`
 	Burst              int  `json:"burst"`
+	Verification       bool `json:"verification"`
 }
 
 type UsersettingsOTA struct {

@@ -89,6 +89,12 @@ func migration_8(m *sql.Tx) (err error) {
 	if err != nil {
 		return
 	}
-	return createTableColumnIfNotExists(m,
+	err = createTableColumnIfNotExists(m,
 		"guilds", "`requireUserVerification` text NOT NULL DEFAULT ''")
+	if err != nil {
+		return
+	}
+	err = createTableColumnIfNotExists(m,
+		"antiraidSettings", "`verification` int(1) NOT NULL DEFAULT 0")
+	return
 }

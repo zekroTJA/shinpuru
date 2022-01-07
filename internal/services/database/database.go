@@ -212,6 +212,9 @@ type Database interface {
 	SetAntiraidBurst(guildID string, burst int) error
 	GetAntiraidBurst(guildID string) (int, error)
 
+	SetAntiraidVerification(guildID string, state bool) error
+	GetAntiraidVerification(guildID string) (bool, error)
+
 	AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) error
 	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
 	FlushAntiraidJoinList(guildID string) error

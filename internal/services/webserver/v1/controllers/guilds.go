@@ -912,6 +912,10 @@ func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if settings.Verification, err = c.db.GetAntiraidVerification(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	return ctx.JSON(settings)
 }
 
@@ -953,6 +957,10 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 	}
 
 	if err = c.db.SetAntiraidBurst(guildID, settings.Burst); err != nil {
+		return err
+	}
+
+	if err = c.db.SetAntiraidVerification(guildID, settings.Verification); err != nil {
 		return err
 	}
 

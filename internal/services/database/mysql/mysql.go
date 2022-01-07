@@ -247,6 +247,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
 		"`burst` bigint(20) NOT NULL DEFAULT '0'," +
+		"`verification` int(1) NOT NULL DEFAULT 0," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -1391,6 +1392,24 @@ func (m *MysqlMiddleware) GetAntiraidBurst(guildID string) (burst int, err error
 func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) (err error) {
 	_, err = m.Db.Exec("INSERT IGNORE INTO antiraidJoinlog (userID, guildID, tag, accountCreated) "+
 		"VALUES (?, ?, ?, ?)", userID, guildID, userTag, accountCreated)
+	return
+}
+
+func (m *MysqlMiddleware) SetAntiraidVerification(guildID string, state bool) (err error) {
+	_, err = m.Db.Exec(
+		"INSERT INTO antiraidSettings (guildID, verification) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE verification = ?",
+		guildID, state, state)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidVerification(guildID string) (state bool, err error) {
+	err = m.Db.QueryRow("SELECT verification FROM antiraidSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	err = wrapNotFoundError(err)
+
 	return
 }
 
