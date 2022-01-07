@@ -30,4 +30,5 @@ const (
 	DiKVCache                   = "kvcache"
 	DiRedis                     = "redisclient"
 	DiState                     = "dgstate"
+	DiVerification              = "verification"
 )

@@ -48,6 +48,7 @@ func InitDiscordBotSession(container di.Container) {
 	}
 
 	listenerStarboard := listeners.NewListenerStarboard(container)
+	listenerVerification := listeners.NewListenerVerifications(container)
 
 	session.AddHandler(listeners.NewListenerReady(container).Handler)
 	session.AddHandler(listeners.NewListenerMemberAdd(container).Handler)
@@ -74,6 +75,9 @@ func InitDiscordBotSession(container di.Container) {
 
 	session.AddHandler(listenerStarboard.ListenerReactionAdd)
 	session.AddHandler(listenerStarboard.ListenerReactionRemove)
+
+	session.AddHandler(listenerVerification.HandlerMemberAdd)
+	session.AddHandler(listenerVerification.HandlerMemberRemove)
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		atomic.AddUint64(&util.StatsMessagesAnalysed, 1)

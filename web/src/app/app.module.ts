@@ -58,6 +58,10 @@ import { GlobalSearchComponent } from './components/global-search/global-search.
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
 import { CommandOptionTypePipe } from './pipes/command-option-type.pipe';
+import { NgHcaptchaModule } from 'ng-hcaptcha';
+import { VerifyRouteComponent } from './routes/verify/verify.component';
+import { LoginButtonComponent } from './components/login-button/login-button.component';
+import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +113,9 @@ import { CommandOptionTypePipe } from './pipes/command-option-type.pipe';
     GuildAdminApiComponent,
     EmbedsComponent,
     CommandOptionTypePipe,
+    VerifyRouteComponent,
+    LoginButtonComponent,
+    GuildAdminVerificationComponent,
   ],
   imports: [
     NgbModule,
@@ -117,6 +124,7 @@ import { CommandOptionTypePipe } from './pipes/command-option-type.pipe';
     HttpClientModule,
     FormsModule,
     MarkdownModule.forRoot(),
+    NgHcaptchaModule.forRoot(),
   ],
   providers: [
     {
