@@ -17,9 +17,14 @@ You can also combine that with the antiraid system. When enabled, the user verif
 
 As visible in the screen shots, this feature is still in beta phase and bugs as well as unexpected behaviour might occur. Also, the implementation is subject to change and extension in the future. If you encounter any issues or if you have ideas to improve the system, feel free to create an issue.
 
+# Minor Changes
+
+- Add `victim` and `executor` user details to the reports list requests to avoid requesting user details for each user in the web frontend. [#322]
+
 # Bug Fixes
 
 - Fix `mute` legacy command parsing. [#325]
+- The unban requests view now uses the skeleton loaders and shows an information text when no entries are available.
 
 # Docker
 
