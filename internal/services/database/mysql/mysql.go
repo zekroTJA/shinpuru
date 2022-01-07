@@ -358,7 +358,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
-		"`timestamp` NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
