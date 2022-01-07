@@ -402,3 +402,7 @@ export interface ChannelWithPermissions extends Channel {
 export interface VerificationSiteKey {
   sitekey: string;
 }
+
+export interface GuildSettingsVerification {
+  enabled: boolean;
+}

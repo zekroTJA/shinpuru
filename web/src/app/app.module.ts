@@ -61,6 +61,7 @@ import { CommandOptionTypePipe } from './pipes/command-option-type.pipe';
 import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { VerifyRouteComponent } from './routes/verify/verify.component';
 import { LoginButtonComponent } from './components/login-button/login-button.component';
+import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import { LoginButtonComponent } from './components/login-button/login-button.com
     CommandOptionTypePipe,
     VerifyRouteComponent,
     LoginButtonComponent,
+    GuildAdminVerificationComponent,
   ],
   imports: [
     NgbModule,

@@ -23,6 +23,7 @@ import { DebugComponent } from './routes/debug/debug.component';
 import { GuildAdminApiComponent } from './routes/guild-admin/api/ga-api.component';
 import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
 import { VerifyRouteComponent } from './routes/verify/verify.component';
+import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 
 const routes: Routes = [
   {
@@ -69,6 +70,10 @@ const routes: Routes = [
   {
     path: 'guilds/:guildid/guildadmin/api',
     component: GuildAdminApiComponent,
+  },
+  {
+    path: 'guilds/:guildid/guildadmin/verification',
+    component: GuildAdminVerificationComponent,
   },
   {
     path: 'guilds/:guildid/guildadmin',

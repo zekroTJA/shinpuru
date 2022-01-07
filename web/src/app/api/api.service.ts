@@ -40,6 +40,7 @@ import {
   AntiraidAction,
   ChannelWithPermissions,
   VerificationSiteKey,
+  GuildSettingsVerification,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -156,6 +157,9 @@ export class APIService {
 
   private readonly rcGuildSettingsApi = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/api`;
+
+  private readonly rcGuildSettingsVerification = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/verification`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -1028,6 +1032,23 @@ export class APIService {
   public postVerifyUser(token: string): Observable<any> {
     return this.http
       .post(this.rcVerification('verify'), { token }, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsVerification(
+    guildID: string
+  ): Observable<GuildSettingsVerification> {
+    return this.http
+      .get(this.rcGuildSettingsVerification(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsVerification(
+    guildID: string,
+    settings: GuildSettingsVerification
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsVerification(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

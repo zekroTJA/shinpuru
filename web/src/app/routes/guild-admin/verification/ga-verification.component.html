@@ -1,0 +1,19 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+  <div>
+    <h3>User Verification</h3>
+    <p class="mt-4">
+      When enabled, this exposes a public API endpoint which returns general
+      information about this guild via the following endpoint.
+    </p>
+    <div *ngIf="!state">
+      <app-skeleton-tile width="110px" height="30px"></app-skeleton-tile>
+    </div>
+    <div *ngIf="state">
+      <app-slider [(ngModel)]="state.enabled">Enable</app-slider>
+      <div class="d-flex mt-4">
+        <button (click)="saveSettings()">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
