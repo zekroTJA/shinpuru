@@ -1,34 +1,24 @@
 package controllers
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kataras/hcaptcha"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
-	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/multierror"
-	"github.com/zekrotja/dgrs"
 )
 
 type VerificationController struct {
-	hc      *hcaptcha.Client
-	cfg     config.Provider
-	db      database.Database
-	session *discordgo.Session
-	authMw  auth.Middleware
-	st      *dgrs.State
+	hc  *hcaptcha.Client
+	cfg config.Provider
+	vs  verification.Provider
 }
 
 func (c *VerificationController) Setup(container di.Container, router fiber.Router) {
-	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
-	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
-	c.st = container.Get(static.DiState).(*dgrs.State)
-	c.db = container.Get(static.DiDatabase).(database.Database)
+	c.vs = container.Get(static.DiVerification).(verification.Provider)
 
 	c.hc = hcaptcha.New(c.cfg.Config().WebServer.Captcha.SecretKey)
 
@@ -71,26 +61,9 @@ func (c *VerificationController) postVerify(ctx *fiber.Ctx) error {
 		return fiber.ErrForbidden
 	}
 
-	if err := c.db.SetUserVerified(uid, true); err != nil {
+	err := c.vs.Verify(uid)
+	if err != nil {
 		return err
-	}
-
-	queue, err := c.db.GetVerificationQueue("", uid)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err
-	}
-
-	mErr := multierror.New()
-	for _, e := range queue {
-		ok, err := c.db.RemoveVerificationQueue(e.GuildID, e.UserID)
-		mErr.Append(err)
-		if ok {
-			mErr.Append(c.session.GuildMemberTimeout(e.GuildID, e.UserID, nil))
-		}
-	}
-
-	if mErr.Len() != 0 {
-		return mErr
 	}
 
 	return ctx.JSON(models.Ok)
