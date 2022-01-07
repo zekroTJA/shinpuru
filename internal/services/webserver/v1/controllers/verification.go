@@ -46,7 +46,8 @@ func (c *VerificationController) getSitekey(ctx *fiber.Ctx) error {
 // @Tags Verification
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.User
+// @Success 200 {object} models.Status
+// @Success 403 {object} models.Error
 // @Router /verification/verify [post]
 func (c *VerificationController) postVerify(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
