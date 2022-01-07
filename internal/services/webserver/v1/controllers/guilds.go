@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -40,6 +41,7 @@ type GuildsController struct {
 	cfg     config.Provider
 	pmw     *permservice.Permissions
 	state   *dgrs.State
+	vs      verification.Provider
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -50,6 +52,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.state = container.Get(static.DiState).(*dgrs.State)
+	c.vs = container.Get(static.DiVerification).(verification.Provider)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -1624,8 +1627,8 @@ func (c *GuildsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
 func (c *GuildsController) getGuildSettingsVerification(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
-	state, err := c.db.GetGuildVerificationRequired(guildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
+	state, err := c.vs.GetEnabled(guildID)
+	if err != nil {
 		return err
 	}
 
@@ -1655,9 +1658,9 @@ func (c *GuildsController) postGuildSettingsVerification(ctx *fiber.Ctx) (err er
 		return
 	}
 
-	err = c.db.SetGuildVerificationRequired(guildID, state.Enabled)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err
+	err = c.vs.SetEnabled(guildID, state.Enabled)
+	if err != nil {
+		return
 	}
 
 	return ctx.JSON(state)

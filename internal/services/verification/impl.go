@@ -16,9 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 )
 
-const timeout = 1 * time.Minute
-
-// const timeout = 48 * time.Hour
+const timeout = 48 * time.Hour
 
 type impl struct {
 	s   *discordgo.Session
@@ -36,6 +34,27 @@ func New(ctn di.Container) Provider {
 		cfg: ctn.Get(static.DiConfig).(config.Provider),
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("verification"),
 	}
+}
+
+func (p *impl) GetEnabled(guildID string) (ok bool, err error) {
+	ok, err = p.db.GetGuildVerificationRequired(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	return
+}
+
+func (p *impl) SetEnabled(guildID string, enabled bool) (err error) {
+	err = p.db.SetGuildVerificationRequired(guildID, enabled)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	if !enabled {
+		err = p.purgeQeueue(guildID, "")
+	}
+
+	return
 }
 
 func (p *impl) IsVerified(userID string) (ok bool, err error) {
@@ -84,24 +103,7 @@ func (p *impl) Verify(userID string) (err error) {
 		return err
 	}
 
-	queue, err := p.db.GetVerificationQueue("", userID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err
-	}
-
-	mErr := multierror.New()
-	for _, e := range queue {
-		ok, err := p.db.RemoveVerificationQueue(e.GuildID, e.UserID)
-		mErr.Append(err)
-		if ok {
-			mErr.Append(p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil))
-		}
-	}
-
-	if mErr.Len() != 0 {
-		return mErr
-	}
-
+	err = p.purgeQeueue("", userID)
 	return
 }
 
@@ -131,6 +133,24 @@ func (p *impl) KickRoutine() {
 			p.gl.Errorf(e.GuildID, "Failed removing member from verification queue: %s", err.Error())
 		}
 	}
+}
+
+func (p *impl) purgeQeueue(guildID, userID string) (err error) {
+	queue, err := p.db.GetVerificationQueue(guildID, userID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	mErr := multierror.New()
+	for _, e := range queue {
+		ok, err := p.db.RemoveVerificationQueue(e.GuildID, e.UserID)
+		mErr.Append(err)
+		if ok {
+			mErr.Append(p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil))
+		}
+	}
+
+	return mErr.Nillify()
 }
 
 func (p *impl) sendDM(
