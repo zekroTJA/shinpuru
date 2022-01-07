@@ -32,6 +32,7 @@ export class VerifyRouteComponent implements OnInit {
       'Verification successful',
       'success'
     );
+    this.selfUser.captcha_verified = true;
   }
 
   onCaptchaExpired(response: any) {
