@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -24,6 +25,7 @@ type EtcController struct {
 	cfg     config.Provider
 	authMw  auth.Middleware
 	st      *dgrs.State
+	db      database.Database
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
@@ -31,6 +33,7 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)
+	c.db = container.Get(static.DiDatabase).(database.Database)
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
@@ -51,13 +54,19 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	caapchaVerified, err := c.db.GetUserVerified(uid)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	created, _ := discordutil.GetDiscordSnowflakeCreationTime(user.ID)
 
 	res := &models.User{
-		User:      user,
-		AvatarURL: user.AvatarURL(""),
-		CreatedAt: created,
-		BotOwner:  uid == c.cfg.Config().Discord.OwnerID,
+		User:            user,
+		AvatarURL:       user.AvatarURL(""),
+		CreatedAt:       created,
+		BotOwner:        uid == c.cfg.Config().Discord.OwnerID,
+		CaptchaVerified: caapchaVerified,
 	}
 
 	return ctx.JSON(res)

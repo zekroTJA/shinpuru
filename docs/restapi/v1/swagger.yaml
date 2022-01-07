@@ -11,6 +11,18 @@ definitions:
     type: object
   discordgo.ApplicationCommandOption:
     properties:
+      autocomplete:
+        description: 'NOTE: mutually exclusive with Choices.'
+        type: boolean
+      channel_types:
+        description: |-
+          NOTE: This feature was on the API, but at some point developers decided to remove it.
+          So I commented it, until it will be officially on the docs.
+          Default     bool                              `json:"default"`
+        items:
+          description: The type of the channel.
+          type: integer
+        type: array
       choices:
         items:
           $ref: '#/definitions/discordgo.ApplicationCommandOptionChoice'
@@ -24,10 +36,6 @@ definitions:
           $ref: '#/definitions/discordgo.ApplicationCommandOption'
         type: array
       required:
-        description: |-
-          NOTE: This feature was on the API, but at some point developers decided to remove it.
-          So I commented it, until it will be officially on the docs.
-          Default     bool                              `json:"default"`
         type: boolean
       type:
         type: integer
@@ -67,7 +75,7 @@ definitions:
       last_pin_timestamp:
         description: |-
           The timestamp of the last pinned message in the channel.
-          Empty if the channel has no pinned messages.
+          nil if the channel has no pinned messages.
         type: string
       name:
         description: The name of the channel.
@@ -132,6 +140,11 @@ definitions:
     type: object
   discordgo.Member:
     properties:
+      communication_disabled_until:
+        description: |-
+          The time at which the member's timeout will expire.
+          Time in the past or nil if the user is not timed out.
+        type: string
       deaf:
         description: Whether the member is deafened at a guild level.
         type: boolean
@@ -139,7 +152,7 @@ definitions:
         description: The guild ID on which the member exists.
         type: string
       joined_at:
-        description: The time at which the member joined the guild, in ISO8601.
+        description: The time at which the member joined the guild.
         type: string
       mute:
         description: Whether the member is muted at a guild level.
@@ -197,9 +210,7 @@ definitions:
           occurred, if it has been edited.
         type: string
       embeds:
-        description: |-
-          A list of embeds present in the message. Multiple
-          embeds can currently only be sent by webhooks.
+        description: A list of embeds present in the message.
         items:
           $ref: '#/definitions/discordgo.MessageEmbed'
         type: array
@@ -296,6 +307,8 @@ definitions:
     type: object
   discordgo.MessageAttachment:
     properties:
+      ephemeral:
+        type: boolean
       filename:
         type: string
       height:
@@ -569,6 +582,13 @@ definitions:
         type: integer
       state:
         type: boolean
+      verification:
+        type: boolean
+    type: object
+  models.CaptchaSiteKey:
+    properties:
+      sitekey:
+        type: string
     type: object
   models.CommandInfo:
     properties:
@@ -608,6 +628,19 @@ definitions:
       context:
         type: string
       error:
+        type: string
+    type: object
+  models.FlatUser:
+    properties:
+      avatar_url:
+        type: string
+      bot:
+        type: boolean
+      discriminator:
+        type: string
+      id:
+        type: string
+      username:
         type: string
     type: object
   models.FlushGuildRequest:
@@ -788,6 +821,8 @@ definitions:
     type: object
   models.JoinLogEntry:
     properties:
+      account_created:
+        type: string
       guild_id:
         type: string
       tag:
@@ -844,6 +879,11 @@ definitions:
         type: string
       chat_muted:
         type: boolean
+      communication_disabled_until:
+        description: |-
+          The time at which the member's timeout will expire.
+          Time in the past or nil if the user is not timed out.
+        type: string
       created_at:
         type: string
       deaf:
@@ -857,7 +897,7 @@ definitions:
       guild_name:
         type: string
       joined_at:
-        description: The time at which the member joined the guild, in ISO8601.
+        description: The time at which the member joined the guild.
         type: string
       karma:
         type: integer
@@ -926,6 +966,8 @@ definitions:
         type: string
       created:
         type: string
+      executor:
+        $ref: '#/definitions/models.FlatUser'
       executor_id:
         type: string
       guild_id:
@@ -940,6 +982,8 @@ definitions:
         type: integer
       type_name:
         type: string
+      victim:
+        $ref: '#/definitions/models.FlatUser'
       victim_id:
         type: string
     type: object
@@ -1099,6 +1143,8 @@ definitions:
         type: boolean
       bot_owner:
         type: boolean
+      captcha_verified:
+        type: boolean
       created_at:
         type: string
       discriminator:
@@ -1241,12 +1287,46 @@ paths:
       summary: Logout
       tags:
       - Authorization
-  /channels/{id}:
+  /channels/{guildid}:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of channels the user has access to.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: guildid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/discordgo.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Allowed Channels
+      tags:
+      - Channels
+  /channels/{guildid}/{id}:
     post:
       consumes:
       - application/json
       description: Send an Embed Message into a specified Channel.
       parameters:
+      - description: The ID of the guild.
+        in: path
+        name: guildid
+        required: true
+        type: string
       - description: The ID of the channel.
         in: path
         name: id
@@ -1276,13 +1356,18 @@ paths:
       summary: Send Embed Message
       tags:
       - Channels
-  /channels/{id}/{msgid}:
+  /channels/{guildid}/{id}/{msgid}:
     post:
       consumes:
       - application/json
       description: Update an Embed Message in a specified Channel with the given message
         ID.
       parameters:
+      - description: The ID of the guild.
+        in: path
+        name: guildid
+        required: true
+        type: string
       - description: The ID of the channel.
         in: path
         name: id
@@ -3033,6 +3118,69 @@ paths:
       summary: Update Guild Settings Log State
       tags:
       - Guilds
+  /guilds/{id}/settings/verification:
+    get:
+      consumes:
+      - application/json
+      description: Returns the settings state of the Guild Verification.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EnableStatus'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings Verification State
+      tags:
+      - Guilds
+    post:
+      consumes:
+      - application/json
+      description: Set the settings state of the Guild API.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild API settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.EnableStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EnableStatus'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Set Guild Settings Verification State
+      tags:
+      - Guilds
   /guilds/{id}/starboard:
     get:
       consumes:
@@ -3770,6 +3918,40 @@ paths:
       summary: Slash Command List
       tags:
       - Utilities
+  /verification/sitekey:
+    get:
+      consumes:
+      - application/json
+      description: Returns the sitekey for the captcha
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CaptchaSiteKey'
+      summary: Sitekey
+      tags:
+      - Verification
+  /verification/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify a returned verification token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Status'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Verify
+      tags:
+      - Verification
 swagger: "2.0"
 tags:
 - description: General root API functionalities.
@@ -3804,3 +3986,5 @@ tags:
   name: Members
 - description: Channels specific endpoints.
   name: Channels
+- description: User verification endpoints.
+  name: Verification

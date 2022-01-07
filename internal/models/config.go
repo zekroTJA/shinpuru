@@ -71,6 +71,7 @@ var DefaultConfig = Config{
 		GuildBackups:        "0 0 6,18 * * *",
 		RefreshTokenCleanup: "0 0 5 * * *",
 		ReportsExpiration:   "@every 5m",
+		VerificationKick:    "@every 1h",
 	},
 	CodeExec: CodeExec{
 		Type: "jdoodle",
@@ -159,6 +160,7 @@ type WebServer struct {
 	LandingPage     LandingPage        `json:"landingpage"`
 	DebugPublicAddr string             `json:"debugpublicaddr,omitempty"`
 	RateLimit       WebServerRatelimit `json:"ratelimit"`
+	Captcha         Captcha            `json:"captcha"`
 }
 
 // WebServerTLS wraps preferences for the TLS
@@ -232,6 +234,7 @@ type Schedules struct {
 	GuildBackups        string `json:"guildbackups"`
 	RefreshTokenCleanup string `json:"refreshtokencleanup"`
 	ReportsExpiration   string `json:"reportsexpiration"`
+	VerificationKick    string `json:"verificationkick"`
 }
 
 // CodeExec wraps configurations for the
@@ -247,6 +250,13 @@ type CodeExecRanna struct {
 	Token      string `json:"token"`
 	Endpoint   string `json:"endpoint"`
 	ApiVersion string `json:"apiversion"`
+}
+
+// Captcha holds the configuration for a
+// captcha verification.
+type Captcha struct {
+	SiteKey   string `json:"sitekey"`
+	SecretKey string `json:"secretkey"`
 }
 
 // Config wraps the whole configuration structure

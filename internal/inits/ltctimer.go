@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -21,6 +22,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	tnw := container.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 	rep := container.Get(static.DiReport).(*report.ReportService)
 	gl := container.Get(static.DiGuildLog).(guildlog.Logger)
+	vs := container.Get(static.DiVerification).(verification.Provider)
 
 	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
@@ -74,6 +76,11 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 				lentry.Error("LCT :: failed expiring report")
 			})
 		})
+
+	lctSchedule(lct, "verification kick routine",
+		func() string {
+			return cfg.Config().Schedules.VerificationKick
+		}, vs.KickRoutine)
 
 	return lct
 }

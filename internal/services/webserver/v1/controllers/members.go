@@ -282,6 +282,14 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 		resReps = make([]*models.Report, len(reps))
 		for i, r := range reps {
 			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
+			user, err := c.st.User(r.VictimID)
+			if err == nil {
+				resReps[i].Victim = models.FlatUserFromUser(user)
+			}
+			user, err = c.st.User(r.ExecutorID)
+			if err == nil {
+				resReps[i].Executor = models.FlatUserFromUser(user)
+			}
 		}
 	}
 

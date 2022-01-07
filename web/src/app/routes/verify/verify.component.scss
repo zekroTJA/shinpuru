@@ -1,0 +1,16 @@
+@import '../../../sass/vars';
+
+.user-view {
+  display: flex;
+  align-items: center;
+
+  > img {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+}
+
+.text-green {
+  color: $c-green;
+}

@@ -77,10 +77,6 @@ export class HeaderComponent implements OnInit {
     );
   }
 
-  public onLogin() {
-    window.location.assign('/api/auth/login');
-  }
-
   public get routes(): string[][] {
     const rts = this.router.url.split('/').filter((e) => e.length > 0);
     let path = '';

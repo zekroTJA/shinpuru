@@ -89,7 +89,51 @@
                 }
             }
         },
-        "/channels/{id}": {
+        "/channels/{guildid}": {
+            "get": {
+                "description": "Returns a list of channels the user has access to.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Get Allowed Channels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "guildid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/discordgo.Message"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/channels/{guildid}/{id}": {
             "post": {
                 "description": "Send an Embed Message into a specified Channel.",
                 "consumes": [
@@ -103,6 +147,13 @@
                 ],
                 "summary": "Send Embed Message",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "guildid",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "The ID of the channel.",
@@ -142,7 +193,7 @@
                 }
             }
         },
-        "/channels/{id}/{msgid}": {
+        "/channels/{guildid}/{id}/{msgid}": {
             "post": {
                 "description": "Update an Embed Message in a specified Channel with the given message ID.",
                 "consumes": [
@@ -156,6 +207,13 @@
                 ],
                 "summary": "Update Embed Message",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "guildid",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "The ID of the channel.",
@@ -2125,6 +2183,101 @@
                 }
             }
         },
+        "/guilds/{id}/settings/verification": {
+            "get": {
+                "description": "Returns the settings state of the Guild Verification.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Get Guild Settings Verification State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set the settings state of the Guild API.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Set Guild Settings Verification State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The guild API settings payload.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{id}/starboard": {
             "get": {
                 "description": "Returns a list of starboard entries for the given guild.",
@@ -3878,6 +4031,58 @@
                     }
                 }
             }
+        },
+        "/verification/sitekey": {
+            "get": {
+                "description": "Returns the sitekey for the captcha",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Verification"
+                ],
+                "summary": "Sitekey",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CaptchaSiteKey"
+                        }
+                    }
+                }
+            }
+        },
+        "/verification/verify": {
+            "post": {
+                "description": "Verify a returned verification token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Verification"
+                ],
+                "summary": "Verify",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3898,6 +4103,18 @@
         "discordgo.ApplicationCommandOption": {
             "type": "object",
             "properties": {
+                "autocomplete": {
+                    "description": "NOTE: mutually exclusive with Choices.",
+                    "type": "boolean"
+                },
+                "channel_types": {
+                    "description": "NOTE: This feature was on the API, but at some point developers decided to remove it.\nSo I commented it, until it will be officially on the docs.\nDefault     bool                              `json:\"default\"`",
+                    "type": "array",
+                    "items": {
+                        "description": "The type of the channel.",
+                        "type": "integer"
+                    }
+                },
                 "choices": {
                     "type": "array",
                     "items": {
@@ -3917,7 +4134,6 @@
                     }
                 },
                 "required": {
-                    "description": "NOTE: This feature was on the API, but at some point developers decided to remove it.\nSo I commented it, until it will be officially on the docs.\nDefault     bool                              `json:\"default\"`",
                     "type": "boolean"
                 },
                 "type": {
@@ -3964,7 +4180,7 @@
                     "type": "string"
                 },
                 "last_pin_timestamp": {
-                    "description": "The timestamp of the last pinned message in the channel.\nEmpty if the channel has no pinned messages.",
+                    "description": "The timestamp of the last pinned message in the channel.\nnil if the channel has no pinned messages.",
                     "type": "string"
                 },
                 "name": {
@@ -4054,6 +4270,10 @@
         "discordgo.Member": {
             "type": "object",
             "properties": {
+                "communication_disabled_until": {
+                    "description": "The time at which the member's timeout will expire.\nTime in the past or nil if the user is not timed out.",
+                    "type": "string"
+                },
                 "deaf": {
                     "description": "Whether the member is deafened at a guild level.",
                     "type": "boolean"
@@ -4063,7 +4283,7 @@
                     "type": "string"
                 },
                 "joined_at": {
-                    "description": "The time at which the member joined the guild, in ISO8601.",
+                    "description": "The time at which the member joined the guild.",
                     "type": "string"
                 },
                 "mute": {
@@ -4135,7 +4355,7 @@
                     "type": "string"
                 },
                 "embeds": {
-                    "description": "A list of embeds present in the message. Multiple\nembeds can currently only be sent by webhooks.",
+                    "description": "A list of embeds present in the message.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/discordgo.MessageEmbed"
@@ -4249,6 +4469,9 @@
         "discordgo.MessageAttachment": {
             "type": "object",
             "properties": {
+                "ephemeral": {
+                    "type": "boolean"
+                },
                 "filename": {
                     "type": "string"
                 },
@@ -4625,6 +4848,17 @@
                 },
                 "state": {
                     "type": "boolean"
+                },
+                "verification": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.CaptchaSiteKey": {
+            "type": "object",
+            "properties": {
+                "sitekey": {
+                    "type": "string"
                 }
             }
         },
@@ -4686,6 +4920,26 @@
                     "type": "string"
                 },
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FlatUser": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "bot": {
+                    "type": "boolean"
+                },
+                "discriminator": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -4962,6 +5216,9 @@
         "models.JoinLogEntry": {
             "type": "object",
             "properties": {
+                "account_created": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -5048,6 +5305,10 @@
                 "chat_muted": {
                     "type": "boolean"
                 },
+                "communication_disabled_until": {
+                    "description": "The time at which the member's timeout will expire.\nTime in the past or nil if the user is not timed out.",
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5066,7 +5327,7 @@
                     "type": "string"
                 },
                 "joined_at": {
-                    "description": "The time at which the member joined the guild, in ISO8601.",
+                    "description": "The time at which the member joined the guild.",
                     "type": "string"
                 },
                 "karma": {
@@ -5166,6 +5427,9 @@
                 "created": {
                     "type": "string"
                 },
+                "executor": {
+                    "$ref": "#/definitions/models.FlatUser"
+                },
                 "executor_id": {
                     "type": "string"
                 },
@@ -5186,6 +5450,9 @@
                 },
                 "type_name": {
                     "type": "string"
+                },
+                "victim": {
+                    "$ref": "#/definitions/models.FlatUser"
                 },
                 "victim_id": {
                     "type": "string"
@@ -5426,6 +5693,9 @@
                 "bot_owner": {
                     "type": "boolean"
                 },
+                "captcha_verified": {
+                    "type": "boolean"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5591,6 +5861,10 @@
         {
             "description": "Channels specific endpoints.",
             "name": "Channels"
+        },
+        {
+            "description": "User verification endpoints.",
+            "name": "Verification"
         }
     ]
 }

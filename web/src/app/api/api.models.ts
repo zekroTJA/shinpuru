@@ -5,17 +5,21 @@ export interface ListReponse<T> {
   data: T[];
 }
 
-export interface User {
+export interface FlatUser {
   id: string;
   username: string;
-  avatar: string;
-  locale: string;
   discriminator: string;
-  verified: boolean;
   bot: boolean;
   avatar_url: string;
+}
+
+export interface User extends FlatUser {
+  avatar: string;
+  locale: string;
+  verified: boolean;
   created_at?: string;
   bot_owner?: boolean;
+  captcha_verified: boolean;
 }
 
 export interface Role {
@@ -102,6 +106,8 @@ export interface Report {
   guild_id: string;
   executor_id: string;
   victim_id: string;
+  victim: FlatUser;
+  executor: FlatUser;
   message: string;
   attachment_url: string;
   created?: string;
@@ -250,6 +256,7 @@ export interface AntiraidSettings {
   state: boolean;
   regeneration_period: number;
   burst: number;
+  verification: boolean;
 }
 
 export interface JoinlogEntry {
@@ -396,4 +403,12 @@ export interface AntiraidAction {
 export interface ChannelWithPermissions extends Channel {
   can_read: boolean;
   can_write: boolean;
+}
+
+export interface VerificationSiteKey {
+  sitekey: string;
+}
+
+export interface GuildSettingsVerification {
+  enabled: boolean;
 }

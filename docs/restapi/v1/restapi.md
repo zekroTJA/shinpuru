@@ -56,7 +56,32 @@ Reovkes the currently used access token and clears the refresh token.
 | ---- | ----------- | ------ |
 | 200 | OK | [models.Status](#modelsstatus) |
 
-### /channels/{id}
+### /channels/{guildid}
+
+#### GET
+##### Summary
+
+Get Allowed Channels
+
+##### Description
+
+Returns a list of channels the user has access to.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| guildid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Created | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+### /channels/{guildid}/{id}
 
 #### POST
 ##### Summary
@@ -71,6 +96,7 @@ Send an Embed Message into a specified Channel.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| guildid | path | The ID of the guild. | Yes | string |
 | id | path | The ID of the channel. | Yes | string |
 | payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
 
@@ -82,7 +108,7 @@ Send an Embed Message into a specified Channel.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
-### /channels/{id}/{msgid}
+### /channels/{guildid}/{id}/{msgid}
 
 #### POST
 ##### Summary
@@ -97,6 +123,7 @@ Update an Embed Message in a specified Channel with the given message ID.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| guildid | path | The ID of the guild. | Yes | string |
 | id | path | The ID of the channel. | Yes | string |
 | msgid | path | The ID of the message. | Yes | string |
 | payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
@@ -1046,6 +1073,55 @@ Delete a single log entry.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/{id}/settings/verification
+
+#### GET
+##### Summary
+
+Get Guild Settings Verification State
+
+##### Description
+
+Returns the settings state of the Guild Verification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings Verification State
+
+##### Description
+
+Set the settings state of the Guild API.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/{id}/starboard
 
 #### GET
@@ -1953,6 +2029,41 @@ Returns a list of registered slash commands and their description.
 | ---- | ----------- | ------ |
 | 200 | Wrapped in models.ListResponse | [ [models.SlashCommandInfo](#modelsslashcommandinfo) ] |
 
+### /verification/sitekey
+
+#### GET
+##### Summary
+
+Sitekey
+
+##### Description
+
+Returns the sitekey for the captcha
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.CaptchaSiteKey](#modelscaptchasitekey) |
+
+### /verification/verify
+
+#### POST
+##### Summary
+
+Verify
+
+##### Description
+
+Verify a returned verification token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Status](#modelsstatus) |
+| 403 | Forbidden | [models.Error](#modelserror) |
+
 ### Models
 
 #### backupmodels.Entry
@@ -1967,11 +2078,13 @@ Returns a list of registered slash commands and their description.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| autocomplete | boolean | NOTE: mutually exclusive with Choices. | No |
+| channel_types | [ integer ] | NOTE: This feature was on the API, but at some point developers decided to remove it. So I commented it, until it will be officially on the docs. Default     bool                              `json:"default"` | No |
 | choices | [ [discordgo.ApplicationCommandOptionChoice](#discordgoapplicationcommandoptionchoice) ] |  | No |
 | description | string |  | No |
 | name | string |  | No |
 | options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
-| required | boolean | NOTE: This feature was on the API, but at some point developers decided to remove it. So I commented it, until it will be officially on the docs. Default     bool                              `json:"default"` | No |
+| required | boolean |  | No |
 | type | integer |  | No |
 
 #### discordgo.ApplicationCommandOptionChoice
@@ -1991,7 +2104,7 @@ Returns a list of registered slash commands and their description.
 | icon | string | Icon of the group DM channel. | No |
 | id | string | The ID of the channel. | No |
 | last_message_id | string | The ID of the last message sent in the channel. This is not guaranteed to be an ID of a valid message. | No |
-| last_pin_timestamp | string | The timestamp of the last pinned message in the channel. Empty if the channel has no pinned messages. | No |
+| last_pin_timestamp | string | The timestamp of the last pinned message in the channel. nil if the channel has no pinned messages. | No |
 | name | string | The name of the channel. | No |
 | nsfw | boolean | Whether the channel is marked as NSFW. | No |
 | owner_id | string | ID of the DM creator Zeroed if guild channel | No |
@@ -2021,9 +2134,10 @@ Returns a list of registered slash commands and their description.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| communication_disabled_until | string | The time at which the member's timeout will expire. Time in the past or nil if the user is not timed out. | No |
 | deaf | boolean | Whether the member is deafened at a guild level. | No |
 | guild_id | string | The guild ID on which the member exists. | No |
-| joined_at | string | The time at which the member joined the guild, in ISO8601. | No |
+| joined_at | string | The time at which the member joined the guild. | No |
 | mute | boolean | Whether the member is muted at a guild level. | No |
 | nick | string | The nickname of the member, if they have one. | No |
 | pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
@@ -2043,7 +2157,7 @@ Returns a list of registered slash commands and their description.
 | channel_id | string | The ID of the channel in which the message was sent. | No |
 | content | string | The content of the message. | No |
 | edited_timestamp | string | The time at which the last edit of the message occurred, if it has been edited. | No |
-| embeds | [ [discordgo.MessageEmbed](#discordgomessageembed) ] | A list of embeds present in the message. Multiple embeds can currently only be sent by webhooks. | No |
+| embeds | [ [discordgo.MessageEmbed](#discordgomessageembed) ] | A list of embeds present in the message. | No |
 | flags | integer | The flags of the message, which describe extra features of a message. This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the flag. | No |
 | guild_id | string | The ID of the guild in which the message was sent. | No |
 | id | string | The ID of the message. | No |
@@ -2081,6 +2195,7 @@ Returns a list of registered slash commands and their description.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| ephemeral | boolean |  | No |
 | filename | string |  | No |
 | height | integer |  | No |
 | id | string |  | No |
@@ -2253,6 +2368,13 @@ Returns a list of registered slash commands and their description.
 | burst | integer |  | No |
 | regeneration_period | integer |  | No |
 | state | boolean |  | No |
+| verification | boolean |  | No |
+
+#### models.CaptchaSiteKey
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| sitekey | string |  | No |
 
 #### models.CommandInfo
 
@@ -2285,6 +2407,16 @@ Returns a list of registered slash commands and their description.
 | code | integer |  | No |
 | context | string |  | No |
 | error | string |  | No |
+
+#### models.FlatUser
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| avatar_url | string |  | No |
+| bot | boolean |  | No |
+| discriminator | string |  | No |
+| id | string |  | No |
+| username | string |  | No |
 
 #### models.FlushGuildRequest
 
@@ -2408,6 +2540,7 @@ Returns a list of registered slash commands and their description.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| account_created | string |  | No |
 | guild_id | string |  | No |
 | tag | string |  | No |
 | timestamp | string |  | No |
@@ -2448,12 +2581,13 @@ Returns a list of registered slash commands and their description.
 | ---- | ---- | ----------- | -------- |
 | avatar_url | string |  | No |
 | chat_muted | boolean |  | No |
+| communication_disabled_until | string | The time at which the member's timeout will expire. Time in the past or nil if the user is not timed out. | No |
 | created_at | string |  | No |
 | deaf | boolean | Whether the member is deafened at a guild level. | No |
 | dominance | integer |  | No |
 | guild_id | string | The guild ID on which the member exists. | No |
 | guild_name | string |  | No |
-| joined_at | string | The time at which the member joined the guild, in ISO8601. | No |
+| joined_at | string | The time at which the member joined the guild. | No |
 | karma | integer |  | No |
 | karma_total | integer |  | No |
 | mute | boolean | Whether the member is muted at a guild level. | No |
@@ -2497,6 +2631,7 @@ Returns a list of registered slash commands and their description.
 | ---- | ---- | ----------- | -------- |
 | attachment_url | string |  | No |
 | created | string |  | No |
+| executor | [models.FlatUser](#modelsflatuser) |  | No |
 | executor_id | string |  | No |
 | guild_id | string |  | No |
 | id | integer |  | No |
@@ -2504,6 +2639,7 @@ Returns a list of registered slash commands and their description.
 | timeout | string |  | No |
 | type | integer |  | No |
 | type_name | string |  | No |
+| victim | [models.FlatUser](#modelsflatuser) |  | No |
 | victim_id | string |  | No |
 
 #### models.ReportRequest
@@ -2608,6 +2744,7 @@ Returns a list of registered slash commands and their description.
 | avatar_url | string |  | No |
 | bot | boolean | Whether the user is a bot. | No |
 | bot_owner | boolean |  | No |
+| captcha_verified | boolean |  | No |
 | created_at | string |  | No |
 | discriminator | string | The discriminator of the user (4 numbers after name). | No |
 | email | string | The email of the user. This is only present when the application possesses the email scope for the user. | No |

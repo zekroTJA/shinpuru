@@ -25,6 +25,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -325,10 +326,19 @@ func main() {
 		},
 	})
 
+	// Initialize State
 	diBuilder.Add(di.Def{
 		Name: static.DiState,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return inits.InitState(ctn)
+		},
+	})
+
+	// Initialize verification service
+	diBuilder.Add(di.Def{
+		Name: static.DiVerification,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return verification.New(ctn), nil
 		},
 	})
 

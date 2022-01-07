@@ -53,9 +53,20 @@ type ListResponse struct {
 type User struct {
 	*discordgo.User
 
-	AvatarURL string    `json:"avatar_url"`
-	CreatedAt time.Time `json:"created_at"`
-	BotOwner  bool      `json:"bot_owner"`
+	AvatarURL       string    `json:"avatar_url"`
+	CreatedAt       time.Time `json:"created_at"`
+	BotOwner        bool      `json:"bot_owner"`
+	CaptchaVerified bool      `json:"captcha_verified"`
+}
+
+// FlatUser shrinks the user object to the only
+// necessary parts for the web interface.
+type FlatUser struct {
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	Discriminator string `json:"discriminator"`
+	AvatarURL     string `json:"avatar_url"`
+	Bot           bool   `json:"bot"`
 }
 
 // Member extends a discordgo.Member as
@@ -131,6 +142,8 @@ type Report struct {
 
 	TypeName string    `json:"type_name"`
 	Created  time.Time `json:"created"`
+	Executor *FlatUser `json:"executor,omitempty"`
+	Victim   *FlatUser `json:"victim,omitempty"`
 }
 
 // GuildSettings is the response model for
@@ -303,6 +316,7 @@ type AntiraidSettings struct {
 	State              bool `json:"state"`
 	RegenerationPeriod int  `json:"regeneration_period"`
 	Burst              int  `json:"burst"`
+	Verification       bool `json:"verification"`
 }
 
 type UsersettingsOTA struct {
@@ -359,6 +373,14 @@ type ChannelWithPermissions struct {
 
 	CanRead  bool `json:"can_read"`
 	CanWrite bool `json:"can_write"`
+}
+
+type CaptchaSiteKey struct {
+	SiteKey string `json:"sitekey"`
+}
+
+type CaptchaVerificationRequest struct {
+	Token string `json:"token"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.
@@ -534,4 +556,16 @@ func GetSlashCommandInfoFromCommand(cmd *ken.CommandInfo) (ci *SlashCommandInfo)
 	ci.Group = strings.ToUpper(ci.Group)
 
 	return
+}
+
+// FlatUserFromUser returns the reduced FlatUser object
+// from the given user object.
+func FlatUserFromUser(u *discordgo.User) (fu *FlatUser) {
+	return &FlatUser{
+		ID:            u.ID,
+		Username:      u.Username,
+		Discriminator: u.Discriminator,
+		AvatarURL:     u.AvatarURL(""),
+		Bot:           u.Bot,
+	}
 }

@@ -1,0 +1,20 @@
+@import '../../../../sass/vars';
+
+.beta-info {
+  border: solid 2px $c-orange;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba($c-orange, 0.1);
+
+  > h4 {
+    color: $c-orange;
+    margin-bottom: 10px;
+  }
+}
+
+.change-info {
+  border: solid 2px $c-yellow;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba($c-yellow, 0.1);
+}

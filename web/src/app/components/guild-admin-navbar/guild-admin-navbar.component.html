@@ -9,6 +9,7 @@
       >
         <img src="/assets/{{ r.icon }}" />
         <span class="content">{{ r.displayname }}</span>
+        <span *ngIf="r.beta" class="beta-tag">beta</span>
       </div>
     </div>
   </div>

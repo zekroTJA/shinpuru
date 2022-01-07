@@ -19,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -40,6 +41,7 @@ type GuildsController struct {
 	cfg     config.Provider
 	pmw     *permservice.Permissions
 	state   *dgrs.State
+	vs      verification.Provider
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -50,6 +52,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.kvc = container.Get(static.DiKVCache).(kvcache.Provider)
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.state = container.Get(static.DiState).(*dgrs.State)
+	c.vs = container.Get(static.DiVerification).(verification.Provider)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -89,6 +92,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/:guildid/settings/flushguilddata", c.pmw.HandleWs(c.session, "sp.guild.admin.flushdata"), c.postFlushGuildData)
 	router.Get("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.getGuildSettingsAPI)
 	router.Post("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.postGuildSettingsAPI)
+	router.Get("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.getGuildSettingsVerification)
+	router.Post("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.postGuildSettingsVerification)
 }
 
 // @Summary List Guilds
@@ -356,6 +361,14 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 		resReps = make([]*models.Report, len(reps))
 		for i, r := range reps {
 			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
+			user, err := c.state.User(r.VictimID)
+			if err == nil {
+				resReps[i].Victim = models.FlatUserFromUser(user)
+			}
+			user, err = c.state.User(r.ExecutorID)
+			if err == nil {
+				resReps[i].Executor = models.FlatUserFromUser(user)
+			}
 		}
 	}
 
@@ -907,6 +920,10 @@ func (c *GuildsController) getGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if settings.Verification, err = c.db.GetAntiraidVerification(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	return ctx.JSON(settings)
 }
 
@@ -948,6 +965,10 @@ func (c *GuildsController) postGuildSettingsAntiraid(ctx *fiber.Ctx) error {
 	}
 
 	if err = c.db.SetAntiraidBurst(guildID, settings.Burst); err != nil {
+		return err
+	}
+
+	if err = c.db.SetAntiraidVerification(guildID, settings.Verification); err != nil {
 		return err
 	}
 
@@ -1607,6 +1628,58 @@ func (c *GuildsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
 	state.Hydrate()
 	state.TokenHash = ""
 	return ctx.JSON(state.GuildAPISettings)
+}
+
+// @Summary Get Guild Settings Verification State
+// @Description Returns the settings state of the Guild Verification.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/verification [get]
+func (c *GuildsController) getGuildSettingsVerification(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	state, err := c.vs.GetEnabled(guildID)
+	if err != nil {
+		return err
+	}
+
+	res := models.EnableStatus{
+		Enabled: state,
+	}
+
+	return ctx.JSON(res)
+}
+
+// @Summary Set Guild Settings Verification State
+// @Description Set the settings state of the Guild API.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.EnableStatus true "The guild API settings payload."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/verification [post]
+func (c *GuildsController) postGuildSettingsVerification(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	var state models.EnableStatus
+	if err = ctx.BodyParser(&state); err != nil {
+		return
+	}
+
+	err = c.vs.SetEnabled(guildID, state.Enabled)
+	if err != nil {
+		return
+	}
+
+	return ctx.JSON(state)
 }
 
 // ---------------------------------------------------------------------------

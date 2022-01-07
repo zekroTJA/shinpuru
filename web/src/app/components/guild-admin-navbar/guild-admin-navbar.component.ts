@@ -10,6 +10,7 @@ interface Route {
   displayname: string;
   perm?: string;
   permAny?: string[];
+  beta?: boolean;
 }
 
 const ROUTES: Route[] = [
@@ -30,6 +31,13 @@ const ROUTES: Route[] = [
     icon: 'antiraid.svg',
     displayname: 'Antiraid',
     perm: 'sp.guild.config.antiraid',
+  },
+  {
+    route: 'verification',
+    icon: 'verification.svg',
+    displayname: 'Verification',
+    perm: 'sp.guild.config.verification',
+    beta: true,
   },
   {
     route: 'karma',
