@@ -13,6 +13,7 @@ var migrationFuncs = []migrationFunc{
 	migration_5,
 	migration_6,
 	migration_7,
+	migration_8,
 }
 
 // VERSION 0:
@@ -77,4 +78,23 @@ func migration_6(m *sql.Tx) (err error) {
 func migration_7(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
 		"antiraidJoinlog", "`accountCreated` timestamp NOT NULL DEFAULT 0")
+}
+
+// VERSION 8:
+// - add property `verified` to `users`
+// - add property `requireUserVerification` to `guilds`
+func migration_8(m *sql.Tx) (err error) {
+	err = createTableColumnIfNotExists(m,
+		"users", "`verified` text NOT NULL DEFAULT '0'")
+	if err != nil {
+		return
+	}
+	err = createTableColumnIfNotExists(m,
+		"guilds", "`requireUserVerification` text NOT NULL DEFAULT ''")
+	if err != nil {
+		return
+	}
+	err = createTableColumnIfNotExists(m,
+		"antiraidSettings", "`verification` int(1) NOT NULL DEFAULT 0")
+	return
 }

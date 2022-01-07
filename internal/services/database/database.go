@@ -82,11 +82,17 @@ type Database interface {
 	GetGuildAPI(guildID string) (*models.GuildAPISettings, error)
 	SetGuildAPI(guildID string, settings *models.GuildAPISettings) error
 
+	GetGuildVerificationRequired(guildID string) (bool, error)
+	SetGuildVerificationRequired(guildID string, enable bool) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 
 	GetUserOTAEnabled(userID string) (bool, error)
 	SetUserOTAEnabled(userID string, enabled bool) error
+
+	GetUserVerified(userID string) (bool, error)
+	SetUserVerified(userID string, enabled bool) error
 
 	GetUserByRefreshToken(token string) (string, time.Time, error)
 	SetUserRefreshToken(userID, token string, expires time.Time) error
@@ -206,6 +212,9 @@ type Database interface {
 	SetAntiraidBurst(guildID string, burst int) error
 	GetAntiraidBurst(guildID string) (int, error)
 
+	SetAntiraidVerification(guildID string, state bool) error
+	GetAntiraidVerification(guildID string) (bool, error)
+
 	AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) error
 	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
 	FlushAntiraidJoinList(guildID string) error
@@ -234,6 +243,14 @@ type Database interface {
 	//// FUNCTIONALITIES
 
 	FlushGuildData(guildID string) error
+
+	//////////////////////////////////////////////////////
+	//// VERIFICATION QUEUE
+
+	GetVerificationQueue(guildID, userID string) ([]*models.VerificationQueueEntry, error)
+	FlushVerificationQueue(guildID string) error
+	AddVerificationQueue(e *models.VerificationQueueEntry) error
+	RemoveVerificationQueue(guildID, userID string) (bool, error)
 }
 
 // IsErrDatabaseNotFound returns true if the passed err

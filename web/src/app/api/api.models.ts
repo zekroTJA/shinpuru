@@ -16,6 +16,7 @@ export interface User {
   avatar_url: string;
   created_at?: string;
   bot_owner?: boolean;
+  captcha_verified: boolean;
 }
 
 export interface Role {
@@ -250,6 +251,7 @@ export interface AntiraidSettings {
   state: boolean;
   regeneration_period: number;
   burst: number;
+  verification: boolean;
 }
 
 export interface JoinlogEntry {
@@ -396,4 +398,12 @@ export interface AntiraidAction {
 export interface ChannelWithPermissions extends Channel {
   can_read: boolean;
   can_write: boolean;
+}
+
+export interface VerificationSiteKey {
+  sitekey: string;
+}
+
+export interface GuildSettingsVerification {
+  enabled: boolean;
 }

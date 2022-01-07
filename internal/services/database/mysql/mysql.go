@@ -76,6 +76,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`leaveMsg` text NOT NULL DEFAULT ''," +
 		"`colorReaction` text NOT NULL DEFAULT ''," +
 		"`guildlogDisable` text NOT NULL DEFAULT ''," +
+		"`requireUserVerification` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -85,6 +86,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `users` (" +
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
+		"`verified` text NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -245,6 +247,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`state` int(1) NOT NULL DEFAULT '1'," +
 		"`limit` bigint(20) NOT NULL DEFAULT '0'," +
 		"`burst` bigint(20) NOT NULL DEFAULT '0'," +
+		"`verification` int(1) NOT NULL DEFAULT 0," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -347,6 +350,17 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`origins` text NOT NULL DEFAULT ''," +
 		"`tokenHash` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `verificationQueue` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
 		return
@@ -1381,6 +1395,24 @@ func (m *MysqlMiddleware) AddToAntiraidJoinList(guildID, userID, userTag string,
 	return
 }
 
+func (m *MysqlMiddleware) SetAntiraidVerification(guildID string, state bool) (err error) {
+	_, err = m.Db.Exec(
+		"INSERT INTO antiraidSettings (guildID, verification) "+
+			"VALUES (?, ?) "+
+			"ON DUPLICATE KEY UPDATE verification = ?",
+		guildID, state, state)
+
+	return
+}
+
+func (m *MysqlMiddleware) GetAntiraidVerification(guildID string) (state bool, err error) {
+	err = m.Db.QueryRow("SELECT verification FROM antiraidSettings WHERE guildID = ?",
+		guildID).Scan(&state)
+	err = wrapNotFoundError(err)
+
+	return
+}
+
 func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.JoinLogEntry, err error) {
 	var count int
 	err = m.Db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
@@ -1530,6 +1562,20 @@ func (m *MysqlMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 		v = "1"
 	}
 	return m.setUserSetting(userID, "enableOTA", v)
+}
+
+func (m *MysqlMiddleware) GetUserVerified(userID string) (enabled bool, err error) {
+	v, err := m.getUserSetting(userID, "verified")
+	enabled = v == "1"
+	return
+}
+
+func (m *MysqlMiddleware) SetUserVerified(userID string, enabled bool) error {
+	v := "0"
+	if enabled {
+		v = "1"
+	}
+	return m.setUserSetting(userID, "verified", v)
 }
 
 func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
@@ -1925,6 +1971,93 @@ func (m *MysqlMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPIS
 			guildID, settings.Enabled, settings.AllowedOrigins, settings.TokenHash)
 	}
 
+	return
+}
+
+func (m *MysqlMiddleware) GetGuildVerificationRequired(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "requireUserVerification")
+	return val == "1", err
+}
+
+func (m *MysqlMiddleware) SetGuildVerificationRequired(guildID string, enable bool) error {
+	var val string
+	if enable {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "requireUserVerification", val)
+}
+
+func (m *MysqlMiddleware) GetVerificationQueue(guildID, userID string) (res []*models.VerificationQueueEntry, err error) {
+	var args []interface{}
+	query := `
+		SELECT guildID, userID, timestamp
+		FROM verificationQueue
+		WHERE true
+	`
+	if guildID != "" {
+		args = append(args, guildID)
+		query += " AND guildID = ?"
+	}
+	if userID != "" {
+		args = append(args, userID)
+		query += " AND userID = ?"
+	}
+
+	rows, err := m.Db.Query(query, args...)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		r := new(models.VerificationQueueEntry)
+		if err = rows.Scan(&r.GuildID, &r.UserID, &r.Timestamp); err != nil {
+			return
+		}
+		res = append(res, r)
+	}
+	return
+}
+
+func (m *MysqlMiddleware) FlushVerificationQueue(guildID string) (err error) {
+	var args []interface{}
+	query := `DELETE FROM verificationQueue`
+	if guildID != "" {
+		args = []interface{}{guildID}
+		query += " WHERE guildID = ?"
+	}
+	_, err = m.Db.Exec(query, args...)
+	return
+}
+
+func (m *MysqlMiddleware) AddVerificationQueue(e *models.VerificationQueueEntry) (err error) {
+	res, err := m.Db.Exec(`
+		UPDATE verificationQueue
+		SET timestamp = ?
+		WHERE guildID = ? AND userID = ?
+	`, e.Timestamp, e.GuildID, e.UserID)
+
+	affected, err := res.RowsAffected()
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	if affected == 0 {
+		_, err = m.Db.Exec(`
+			INSERT INTO verificationQueue (guildID, userID, timestamp)
+			VALUES (?, ?, ?)
+		`, e.GuildID, e.UserID, e.Timestamp)
+	}
+	return
+}
+
+func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (ok bool, err error) {
+	res, err := m.Db.Exec(`
+		DELETE FROM verificationQueue
+		WHERE guildID = ? AND userID = ?
+	`, guildID, userID)
+	err = wrapNotFoundError(err)
+	affected, err := res.RowsAffected()
+	ok = affected > 0
 	return
 }
 

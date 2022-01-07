@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
@@ -32,6 +33,7 @@ type ListenerAntiraid struct {
 	db database.Database
 	gl guildlog.Logger
 	st *dgrs.State
+	vs verification.Provider
 
 	guildStates map[string]*guildState
 	triggers    *timedmap.TimedMap
@@ -44,6 +46,7 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		triggers:    timedmap.New(arTriggerCleanupDuration),
 		gl:          container.Get(static.DiGuildLog).(guildlog.Logger).Section("antiraid"),
 		st:          container.Get(static.DiState).(*dgrs.State),
+		vs:          container.Get(static.DiVerification).(verification.Provider),
 	}
 }
 
@@ -167,6 +170,19 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 				"Also, all joining users from now are saved in a log list for the following " +
 				"24 hours. This log is saved for 48 hours toal.",
 		})
+	}
+
+	ok, err = l.db.GetAntiraidVerification(e.GuildID)
+	if err != nil {
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed gettings antiraid verification state")
+		l.gl.Errorf(e.GuildID, "Failed gettings antiraid verification state: %s", err.Error())
+	}
+	if ok {
+		err = l.vs.SetEnabled(e.GuildID, true)
+		if err != nil {
+			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed enabling verification")
+			l.gl.Errorf(e.GuildID, "Failed enabling verification: %s", err.Error())
+		}
 	}
 
 	l.addToJoinlog(e)

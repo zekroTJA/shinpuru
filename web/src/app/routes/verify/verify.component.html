@@ -1,0 +1,43 @@
+<h1 class="mb-5">Account Verification</h1>
+
+<div *ngIf="selfUser; else loading">
+  <div *ngIf="selfUser?.id; else loggedOut">
+    <div class="user-view mb-4">
+      <img class="round" [src]="selfUser.avatar_url" />
+      <div>
+        <h4>{{ selfUser.username }}#{{ selfUser.discriminator }}</h4>
+        <span class="embedded">{{ selfUser.id }}</span>
+      </div>
+    </div>
+    <div *ngIf="!selfUser.captcha_verified; else alreadyVerified">
+      <div *ngIf="captchaSiteKey; else loading">
+        <p>Please sign the captcha below to verify your account.</p>
+        <ng-hcaptcha
+          [siteKey]="captchaSiteKey"
+          (error)="onCaptchaError($event)"
+          (verify)="onCaptchaVerify($event)"
+          (expired)="onCaptchaExpired($event)"
+        ></ng-hcaptcha>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loggedOut>
+  <p>
+    First, you need to log in with your Discord account to verify your account.
+  </p>
+  <app-login-button></app-login-button>
+</ng-template>
+
+<ng-template #alreadyVerified>
+  <strong class="text-green">You are already verified!</strong>&nbsp;🥳
+</ng-template>
+
+<ng-template #loading>
+  <app-skeleton-tile
+    *ngIf="!selfUser"
+    width="500px"
+    height="40px"
+  ></app-skeleton-tile>
+</ng-template>
