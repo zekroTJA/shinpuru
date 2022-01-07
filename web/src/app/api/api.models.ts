@@ -5,15 +5,18 @@ export interface ListReponse<T> {
   data: T[];
 }
 
-export interface User {
+export interface FlatUser {
   id: string;
   username: string;
-  avatar: string;
-  locale: string;
   discriminator: string;
-  verified: boolean;
   bot: boolean;
   avatar_url: string;
+}
+
+export interface User extends FlatUser {
+  avatar: string;
+  locale: string;
+  verified: boolean;
   created_at?: string;
   bot_owner?: boolean;
   captcha_verified: boolean;
@@ -103,6 +106,8 @@ export interface Report {
   guild_id: string;
   executor_id: string;
   victim_id: string;
+  victim: FlatUser;
+  executor: FlatUser;
   message: string;
   attachment_url: string;
   created?: string;

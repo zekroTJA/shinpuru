@@ -6,11 +6,18 @@
     <div class="row">
       <div class="col">
         <h4>Executor</h4>
-        <div *ngIf="executor; else executorid" class="d-flex">
-          <img class="avi" [src]="executor?.avatar_url | discordAsset: '':32" />
+        <div *ngIf="report.executor; else executorid" class="d-flex">
+          <img
+            class="avi"
+            [src]="report.executor?.avatar_url | discordAsset: '':32"
+          />
           <div>
-            <p>{{ executor?.username }}#{{ executor?.discriminator }}</p>
-            <p class="small">{{ report.executor_id }}</p>
+            <p>
+              {{ report.executor?.username }}#{{
+                report.executor?.discriminator
+              }}
+            </p>
+            <p class="small">{{ report.executor.id }}</p>
           </div>
         </div>
         <ng-template #executorid
@@ -19,11 +26,16 @@
       </div>
       <div class="col">
         <h4>Victim</h4>
-        <div *ngIf="victim; else victimid" class="d-flex">
-          <img class="avi" [src]="victim?.avatar_url | discordAsset: '':32" />
+        <div *ngIf="report.victim; else victimid" class="d-flex">
+          <img
+            class="avi"
+            [src]="report.victim?.avatar_url | discordAsset: '':32"
+          />
           <div>
-            <p>{{ victim?.username }}#{{ victim?.discriminator }}</p>
-            <p class="small">{{ report.victim_id }}</p>
+            <p>
+              {{ report.victim?.username }}#{{ report.victim?.discriminator }}
+            </p>
+            <p class="small">{{ report.victim.id }}</p>
           </div>
         </div>
         <ng-template #victimid
