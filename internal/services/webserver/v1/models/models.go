@@ -59,6 +59,16 @@ type User struct {
 	CaptchaVerified bool      `json:"captcha_verified"`
 }
 
+// FlatUser shrinks the user object to the only
+// necessary parts for the web interface.
+type FlatUser struct {
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	Discriminator string `json:"discriminator"`
+	AvatarURL     string `json:"avatar_url"`
+	Bot           bool   `json:"bot"`
+}
+
 // Member extends a discordgo.Member as
 // response model.
 type Member struct {
@@ -132,6 +142,8 @@ type Report struct {
 
 	TypeName string    `json:"type_name"`
 	Created  time.Time `json:"created"`
+	Executor *FlatUser `json:"executor,omitempty"`
+	Victim   *FlatUser `json:"victim,omitempty"`
 }
 
 // GuildSettings is the response model for
@@ -544,4 +556,16 @@ func GetSlashCommandInfoFromCommand(cmd *ken.CommandInfo) (ci *SlashCommandInfo)
 	ci.Group = strings.ToUpper(ci.Group)
 
 	return
+}
+
+// FlatUserFromUser returns the reduced FlatUser object
+// from the given user object.
+func FlatUserFromUser(u *discordgo.User) (fu *FlatUser) {
+	return &FlatUser{
+		ID:            u.ID,
+		Username:      u.Username,
+		Discriminator: u.Discriminator,
+		AvatarURL:     u.AvatarURL(""),
+		Bot:           u.Bot,
+	}
 }
