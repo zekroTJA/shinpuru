@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -72,6 +73,24 @@ func (c *VerificationController) postVerify(ctx *fiber.Ctx) error {
 
 	if err := c.db.SetUserVerified(uid, true); err != nil {
 		return err
+	}
+
+	queue, err := c.db.GetVerificationQueue("", uid)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	mErr := multierror.New()
+	for _, e := range queue {
+		ok, err := c.db.RemoveVerificationQueue(e.GuildID, e.UserID)
+		mErr.Append(err)
+		if ok {
+			mErr.Append(c.session.GuildMemberTimeout(e.GuildID, e.UserID, nil))
+		}
+	}
+
+	if mErr.Len() != 0 {
+		return mErr
 	}
 
 	return ctx.JSON(models.Ok)
