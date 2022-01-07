@@ -104,6 +104,12 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 
 	repMsgS := ctx.GetArgs()[1:]
 
+	if len(repMsgS) < 2 {
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
+			"Please enter a valid report description and timeout.").
+			DeleteAfter(8 * time.Second).Error()
+	}
+
 	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
 	if err == nil && timeout > 0 {
 		repMsgS = repMsgS[:len(repMsgS)-1]
@@ -114,12 +120,6 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 	if timeout == 0 {
 		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 			"Please enter a valid mute timeout.").
-			DeleteAfter(8 * time.Second).Error()
-	}
-
-	if len(repMsgS) < 1 {
-		return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
-			"Please enter a valid report description.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
@@ -140,12 +140,14 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 		}
 	}
 
+	timeoutT := time.Now().Add(timeout)
 	rep, err := repSvc.PushMute(&models.Report{
 		GuildID:       ctx.GetGuild().ID,
 		ExecutorID:    ctx.GetUser().ID,
 		VictimID:      victim.User.ID,
-		Msg:           strings.Join(ctx.GetArgs()[1:], " "),
+		Msg:           repMsg,
 		AttachmentURL: attachment,
+		Timeout:       &timeoutT,
 	})
 
 	if err != nil {
