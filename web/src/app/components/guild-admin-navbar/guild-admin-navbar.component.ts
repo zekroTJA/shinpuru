@@ -10,6 +10,7 @@ interface Route {
   displayname: string;
   perm?: string;
   permAny?: string[];
+  beta?: boolean;
 }
 
 const ROUTES: Route[] = [
@@ -36,6 +37,7 @@ const ROUTES: Route[] = [
     icon: 'verification.svg',
     displayname: 'Verification',
     perm: 'sp.guild.config.verification',
+    beta: true,
   },
   {
     route: 'karma',

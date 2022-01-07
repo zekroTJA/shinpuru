@@ -1,27 +1,20 @@
 @import '../../../../sass/vars';
-@import '../../../../sass/mixins';
 
-label,
-input {
-  display: block;
-  min-width: 300px;
-}
+.beta-info {
+  border: solid 2px $c-orange;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba($c-orange, 0.1);
 
-.green {
-  color: $c-green;
-}
-
-.orange {
-  color: $c-orange;
-}
-
-.uri-link {
-  background-color: rgba(0 0 0 / 20%);
-  padding: 10px 15px;
-  margin: 0px 0px 20px 0px;
-  width: fit-content;
-
-  > a {
-    color: $c-cyan !important;
+  > h4 {
+    color: $c-orange;
+    margin-bottom: 10px;
   }
+}
+
+.change-info {
+  border: solid 2px $c-yellow;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba($c-yellow, 0.1);
 }
