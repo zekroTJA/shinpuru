@@ -66,13 +66,3 @@
 .active {
   background-color: rgba($c-blurple, 0.5) !important;
 }
-
-.beta-tag {
-  color: $c-orange;
-  text-transform: uppercase;
-  font-size: 0.6em;
-  padding: 0px 5px;
-  margin-left: 10px;
-  border: solid 1px $c-orange;
-  border-radius: 100px;
-}

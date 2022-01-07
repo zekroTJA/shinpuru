@@ -251,6 +251,7 @@ export interface AntiraidSettings {
   state: boolean;
   regeneration_period: number;
   burst: number;
+  verification: boolean;
 }
 
 export interface JoinlogEntry {
