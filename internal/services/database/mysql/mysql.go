@@ -2005,10 +2005,23 @@ func (m *MysqlMiddleware) FlushVerificationQueue(guildID string) (err error) {
 }
 
 func (m *MysqlMiddleware) AddVerificationQueue(e *models.VerificationQueueEntry) (err error) {
-	_, err = m.Db.Exec(`
-		INSERT INTO verificationQueue (guildID, userID, timestamp)
-		VALUES (?, ?, ?)
-	`, e.GuildID, e.UserID, e.Timestamp)
+	res, err := m.Db.Exec(`
+		UPDATE verificationQueue
+		SET timestamp = ?
+		WHERE guildID = ? AND userID = ?
+	`, e.Timestamp, e.GuildID, e.UserID)
+
+	affected, err := res.RowsAffected()
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+
+	if affected == 0 {
+		_, err = m.Db.Exec(`
+			INSERT INTO verificationQueue (guildID, userID, timestamp)
+			VALUES (?, ?, ?)
+		`, e.GuildID, e.UserID, e.Timestamp)
+	}
 	return
 }
 
