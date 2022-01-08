@@ -32,6 +32,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 | [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 | [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
+| [LiebesWavezLP](https://github.com/LiebesWavezLP) | [#325](https://github.com/zekroTJA/shinpuru/issues/325) |  | `1` |
 
 
 ---
