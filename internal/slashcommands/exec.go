@@ -37,7 +37,7 @@ func (c *Exec) Description() string {
 }
 
 func (c *Exec) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Exec) Type() discordgo.ApplicationCommandType {
@@ -58,6 +58,19 @@ func (c *Exec) Options() []*discordgo.ApplicationCommandOption {
 		},
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "enable",
+			Description: "Set the enabled state true or false.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionBoolean,
+					Name:        "enabled",
+					Description: "The enabled state of the code execution.",
+					Required:    true,
+				},
+			},
+		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
 			Name:        "check",
 			Description: "Show the status of the current code execution setup.",
 		},
@@ -74,6 +87,18 @@ func (c *Exec) SubDomains() []permissions.SubPermission {
 
 func (c *Exec) Run(ctx *ken.Ctx) (err error) {
 	if err = ctx.Defer(); err != nil {
+		return
+	}
+
+	var ranEnable bool
+	err = ctx.HandleSubCommands(ken.SubCommandHandler{"enable", func(ctx *ken.SubCommandCtx) error {
+		ranEnable = true
+		return c.enable(ctx)
+	}})
+	if err != nil {
+		return
+	}
+	if ranEnable {
 		return
 	}
 
@@ -169,6 +194,14 @@ func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
 			if err != nil {
 				util.SendEmbedError(ctx.Session, dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
+				return
+			}
+
+			err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, true)
+			if err != nil {
+				util.SendEmbedError(ctx.Session, dmChan.ID,
+					"An unexpected error occured while saving enabled state. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
+				return
 			}
 
 			util.SendEmbed(s, dmChan.ID, "API key set and system is enabled. :ok_hand:", "", static.ColorEmbedGreen)
@@ -189,8 +222,32 @@ func (c *Exec) reset(ctx *ken.SubCommandCtx) (err error) {
 		return err
 	}
 
+	err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, false)
+	if err != nil {
+		return err
+	}
+
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "API key was deleted from database and system was disabled.",
+	}).Error
+}
+
+func (c *Exec) enable(ctx *ken.SubCommandCtx) (err error) {
+	enabled := ctx.Options().GetByName("enabled").BoolValue()
+
+	db, _ := ctx.Get(static.DiDatabase).(database.Database)
+	err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, enabled)
+	if err != nil {
+		return err
+	}
+
+	stateStr := "disabled"
+	if enabled {
+		stateStr = "enabled"
+	}
+
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: fmt.Sprintf("Code execution has been **%s** on this guild.", stateStr),
 	}).Error
 }
 
