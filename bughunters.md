@@ -18,6 +18,7 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 | [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309) |  | `2` |
 | [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
+| [LiebesWavezLP](https://github.com/LiebesWavezLP) | [#325](https://github.com/zekroTJA/shinpuru/issues/325), [#328](https://github.com/zekroTJA/shinpuru/issues/328) |  | `2` |
 | [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `2` |
 | [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
 | [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
@@ -32,7 +33,6 @@ A list to honor all people who found some bugs, had some great ideas or contribu
 | [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 | [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 | [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
-| [LiebesWavezLP](https://github.com/LiebesWavezLP) | [#325](https://github.com/zekroTJA/shinpuru/issues/325) |  | `1` |
 
 
 ---
