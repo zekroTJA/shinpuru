@@ -11,6 +11,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -28,8 +29,8 @@ const (
 	// Ratelimiter settings
 	limitTMCleanupInterval = 30 * time.Second // 10 * time.Minute
 	limitTMLifetime        = 24 * time.Hour
-	limitBurst             = 2                // 5
-	limitRate              = float64(1) / 900 // one token per 15 minutes
+	// limitBurst             = 2                // 5
+	// limitRate              = float64(1) / 900 // one token per 15 minutes
 )
 
 var (
@@ -50,6 +51,7 @@ type ListenerCodeexec struct {
 	execFact codeexec.Factory
 	pmw      *permissions.Permissions
 	st       *dgrs.State
+	cfg      config.Provider
 
 	langs  []string
 	limits *timedmap.TimedMap
@@ -73,6 +75,8 @@ func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error)
 	l.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 	l.execFact = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
 	l.st = container.Get(static.DiState).(*dgrs.State)
+	l.cfg = container.Get(static.DiConfig).(config.Provider)
+
 	l.limits = timedmap.New(limitTMCleanupInterval)
 	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
 
@@ -258,9 +262,14 @@ func (l *ListenerCodeexec) parseMessageContent(content string) (lang string, scr
 }
 
 func (l *ListenerCodeexec) checkLimit(userID string) bool {
+	cfg := l.cfg.Config().CodeExec.RateLimit
+	if !cfg.Enabled {
+		return true
+	}
+
 	limiter, ok := l.limits.GetValue(userID).(*rate.Limiter)
 	if !ok || limiter == nil {
-		limiter = rate.NewLimiter(rate.Limit(limitRate), limitBurst)
+		limiter = rate.NewLimiter(rate.Limit(1/cfg.LimitSeconds), cfg.Burst)
 		l.limits.Set(userID, limiter, limitTMLifetime)
 	}
 

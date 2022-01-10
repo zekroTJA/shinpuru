@@ -9,7 +9,8 @@ var DefaultConfig = Config{
 	Version: 6,
 	Discord: Discord{
 		GeneralPrefix: "sp!",
-		GlobalCommandRateLimit: GlobalCommandRatelimit{
+		GlobalCommandRateLimit: Ratelimit{
+			Enabled:      true,
 			Burst:        5,
 			LimitSeconds: 3,
 		},
@@ -57,7 +58,7 @@ var DefaultConfig = Config{
 			ShowLocalInvite:   true,
 			ShowPublicInvites: true,
 		},
-		RateLimit: WebServerRatelimit{
+		RateLimit: Ratelimit{
 			Enabled:      false,
 			Burst:        30,
 			LimitSeconds: 3,
@@ -78,6 +79,11 @@ var DefaultConfig = Config{
 		Ranna: CodeExecRanna{
 			ApiVersion: "v1",
 		},
+		RateLimit: Ratelimit{
+			Enabled:      true,
+			Burst:        5,
+			LimitSeconds: 60,
+		},
 	},
 }
 
@@ -85,19 +91,14 @@ var DefaultConfig = Config{
 // to the Discord API application and using the
 // OAuth2 workflow for web frontend authorization.
 type Discord struct {
-	Token                  string                 `json:"token"`
-	GeneralPrefix          string                 `json:"generalprefix"`
-	OwnerID                string                 `json:"ownerid"`
-	ClientID               string                 `json:"clientid"`
-	ClientSecret           string                 `json:"clientsecret"`
-	GuildBackupLoc         string                 `json:"guildbackuploc"`
-	GlobalCommandRateLimit GlobalCommandRatelimit `json:"globalcommandratelimit"`
-	DisabledCommands       []string               `json:"disabledcommands"`
-}
-
-type GlobalCommandRatelimit struct {
-	Burst        int `json:"burst"`
-	LimitSeconds int `json:"limitseconds"`
+	Token                  string    `json:"token"`
+	GeneralPrefix          string    `json:"generalprefix"`
+	OwnerID                string    `json:"ownerid"`
+	ClientID               string    `json:"clientid"`
+	ClientSecret           string    `json:"clientsecret"`
+	GuildBackupLoc         string    `json:"guildbackuploc"`
+	GlobalCommandRateLimit Ratelimit `json:"globalcommandratelimit"`
+	DisabledCommands       []string  `json:"disabledcommands"`
 }
 
 // DatabaseCreds holds credentials to connect to
@@ -152,15 +153,15 @@ type TwitchApp struct {
 // WebServer holds general configurations for
 // the exposed web server.
 type WebServer struct {
-	Enabled         bool               `json:"enabled"`
-	Addr            string             `json:"addr"`
-	TLS             WebServerTLS       `json:"tls"`
-	APITokenKey     string             `json:"apitokenkey"`
-	PublicAddr      string             `json:"publicaddr"`
-	LandingPage     LandingPage        `json:"landingpage"`
-	DebugPublicAddr string             `json:"debugpublicaddr,omitempty"`
-	RateLimit       WebServerRatelimit `json:"ratelimit"`
-	Captcha         Captcha            `json:"captcha"`
+	Enabled         bool         `json:"enabled"`
+	Addr            string       `json:"addr"`
+	TLS             WebServerTLS `json:"tls"`
+	APITokenKey     string       `json:"apitokenkey"`
+	PublicAddr      string       `json:"publicaddr"`
+	LandingPage     LandingPage  `json:"landingpage"`
+	DebugPublicAddr string       `json:"debugpublicaddr,omitempty"`
+	RateLimit       Ratelimit    `json:"ratelimit"`
+	Captcha         Captcha      `json:"captcha"`
 }
 
 // WebServerTLS wraps preferences for the TLS
@@ -171,9 +172,9 @@ type WebServerTLS struct {
 	Key     string `json:"keyfile"`
 }
 
-// WebServerRatelimit wraps rate limit
-// configuration for the web server.
-type WebServerRatelimit struct {
+// Ratelimit wraps generic rate limit
+// configuration.
+type Ratelimit struct {
 	Enabled      bool `json:"enabled"`
 	Burst        int  `json:"burst"`
 	LimitSeconds int  `json:"limitseconds"`
@@ -240,8 +241,9 @@ type Schedules struct {
 // CodeExec wraps configurations for the
 // code execution API used.
 type CodeExec struct {
-	Type  string        `json:"type"`
-	Ranna CodeExecRanna `json:"ranna"`
+	Type      string        `json:"type"`
+	Ranna     CodeExecRanna `json:"ranna"`
+	RateLimit Ratelimit     `json:"ratelimit"`
 }
 
 // CodeExecRanna holds configuration values

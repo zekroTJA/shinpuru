@@ -22,6 +22,8 @@ discord:
   # Specify properties for the global command
   # rate limiter middleware.
   globalcommandratelimit:
+    # Enable or disable global command rate limit.
+    enabled: true
     # Rate limit bucket token size.
     burst: 1
     # Rate limit bucket token regeneration
@@ -183,3 +185,20 @@ schedules:
   guildbackups:        '0 0 6,18 * * *'
   # Refresh token cleanup schedule
   refreshtokencleanup: '0 0 5 * * *'
+
+# Code Execution configuration.
+# Available types are:
+#  - jdoodle
+#  - ranna
+#
+# When using type 'jdoodle', you don't need to
+# specify credentials here because they are set
+# on a per guild basis.
+codeexec:
+  # Code execution engine type.
+  type: ranna
+  # Ranna instance configutaion.
+  ranna:
+    apiversion: v1
+    endpoint: 'https://public.ranna.zekro.de'
+    token: ''
