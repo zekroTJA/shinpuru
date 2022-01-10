@@ -412,3 +412,11 @@ export interface VerificationSiteKey {
 export interface GuildSettingsVerification {
   enabled: boolean;
 }
+
+export interface CodeExecSettings {
+  enabled: boolean;
+  type: string;
+  types_options?: string;
+  jdoodle_clientid?: string;
+  jdoodle_clientsecret?: string;
+}

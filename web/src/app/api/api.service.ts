@@ -41,6 +41,7 @@ import {
   ChannelWithPermissions,
   VerificationSiteKey,
   GuildSettingsVerification,
+  CodeExecSettings,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -160,6 +161,9 @@ export class APIService {
 
   private readonly rcGuildSettingsVerification = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/verification`;
+
+  private readonly rcGuildSettingsCodeExec = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/codeexec`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -1049,6 +1053,23 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildSettingsVerification(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsCodeExec(
+    guildID: string
+  ): Observable<CodeExecSettings> {
+    return this.http
+      .get(this.rcGuildSettingsCodeExec(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsCodeExec(
+    guildID: string,
+    settings: CodeExecSettings
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsCodeExec(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }
