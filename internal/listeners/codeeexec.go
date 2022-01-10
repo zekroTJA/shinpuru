@@ -125,6 +125,14 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 		return
 	}
 
+	enabled, err := l.db.GetGuildCodeExecEnabled(e.GuildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return
+	}
+	if !enabled {
+		return
+	}
+
 	wrapper, err := l.execFact.NewExecutor(e.GuildID)
 	if err != nil || wrapper == nil {
 		return
