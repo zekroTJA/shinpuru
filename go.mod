@@ -9,7 +9,6 @@ require (
 	github.com/bwmarrin/discordgo v0.23.3-0.20211228023845-29269347e820
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/esimov/stackblur-go v1.0.0
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/generaltso/vibrant v0.0.0-20200703055536-90f922bee78c
@@ -19,10 +18,11 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.20.2
+	github.com/golang-jwt/jwt/v4 v4.2.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f // indirect
+	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect

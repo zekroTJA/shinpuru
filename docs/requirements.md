@@ -1,7 +1,7 @@
 <!-- insert:REQUIREMENTS -->
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20210821175000-0fad116c6c2a)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
-- [dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go) `(v3.2.0+incompatible)`
+- [dgrijalva/jwt-go](https://github.com/golang-jwt/jwt/v4) `(v3.2.0+incompatible)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.0)`
 - [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.0)`
 - [generaltso/vibrant](https://github.com/generaltso/vibrant) `(v0.0.0-20200703055536-90f922bee78c)`
