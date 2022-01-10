@@ -14,6 +14,7 @@ import (
 	"github.com/makeworld-the-better-one/go-isemoji"
 	"github.com/sarulabs/di/v2"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
@@ -28,6 +29,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekroTJA/shinpuru/pkg/hashutil"
+	"github.com/zekroTJA/shinpuru/pkg/jdoodle"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
@@ -42,6 +44,7 @@ type GuildsController struct {
 	pmw     *permservice.Permissions
 	state   *dgrs.State
 	vs      verification.Provider
+	cef     codeexec.Factory
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -53,6 +56,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.state = container.Get(static.DiState).(*dgrs.State)
 	c.vs = container.Get(static.DiVerification).(verification.Provider)
+	c.cef = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -94,6 +98,8 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Post("/:guildid/settings/api", c.pmw.HandleWs(c.session, "sp.guild.config.api"), c.postGuildSettingsAPI)
 	router.Get("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.getGuildSettingsVerification)
 	router.Post("/:guildid/settings/verification", c.pmw.HandleWs(c.session, "sp.guild.config.verification"), c.postGuildSettingsVerification)
+	router.Get("/:guildid/settings/codeexec", c.pmw.HandleWs(c.session, "sp.guild.config.exec"), c.getGuildSettingsCodeExec)
+	router.Post("/:guildid/settings/codeexec", c.pmw.HandleWs(c.session, "sp.guild.config.exec"), c.postGuildSettingsCodeExec)
 }
 
 // @Summary List Guilds
@@ -1656,7 +1662,7 @@ func (c *GuildsController) getGuildSettingsVerification(ctx *fiber.Ctx) error {
 }
 
 // @Summary Set Guild Settings Verification State
-// @Description Set the settings state of the Guild API.
+// @Description Set the settings state of the Guild Verification.
 // @Tags Guilds
 // @Accept json
 // @Produce json
@@ -1677,6 +1683,92 @@ func (c *GuildsController) postGuildSettingsVerification(ctx *fiber.Ctx) (err er
 	err = c.vs.SetEnabled(guildID, state.Enabled)
 	if err != nil {
 		return
+	}
+
+	return ctx.JSON(state)
+}
+
+// @Summary Get Guild Settings Code Exec State
+// @Description Returns the settings state of the Guild Code Exec.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/codeexec [get]
+func (c *GuildsController) getGuildSettingsCodeExec(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	var (
+		res models.CodeExecSettings
+		err error
+	)
+
+	res.Enabled, err = c.db.GetGuildCodeExecEnabled(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	res.Type = c.cef.Name()
+
+	if res.Type == "jdoodle" {
+		creds, err := c.db.GetGuildJdoodleKey(guildID)
+		if err != nil && !database.IsErrDatabaseNotFound(err) {
+			return err
+		}
+		credsSplit := strings.Split(creds, "#")
+		if len(credsSplit) == 2 {
+			res.JdoodleClientId = credsSplit[0]
+			res.JdoodleClientSecret = credsSplit[1]
+		}
+	}
+
+	return ctx.JSON(res)
+}
+
+// @Summary Set Guild Settings Code Exec State
+// @Description Set the settings state of the Guild Code Exec.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Param payload body models.EnableStatus true "The guild API settings payload."
+// @Success 200 {object} models.EnableStatus
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/settings/codeexec [post]
+func (c *GuildsController) postGuildSettingsCodeExec(ctx *fiber.Ctx) (err error) {
+	guildID := ctx.Params("guildid")
+
+	var state models.CodeExecSettings
+	if err = ctx.BodyParser(&state); err != nil {
+		return
+	}
+
+	err = c.db.SetGuildCodeExecEnabled(guildID, state.Enabled)
+	if err != nil {
+		return
+	}
+
+	if c.cef.Name() == "jdoodle" {
+		var creds string
+		if state.JdoodleClientId == "" && state.JdoodleClientSecret == "" {
+		} else if state.JdoodleClientId != "" && state.JdoodleClientSecret != "" {
+			_, err = jdoodle.NewWrapper(state.JdoodleClientId, state.JdoodleClientSecret).CreditsSpent()
+			if err != nil {
+				return fiber.NewError(fiber.StatusBadRequest, "The JDoodle credentials are invalid.")
+			}
+			creds = fmt.Sprintf("%s#%s", state.JdoodleClientId, state.JdoodleClientSecret)
+		} else {
+			return fiber.NewError(fiber.StatusBadRequest, "Either both credential values must be empty or both must be defined!")
+		}
+
+		err = c.db.SetGuildJdoodleKey(guildID, creds)
+		if err != nil {
+			return
+		}
 	}
 
 	return ctx.JSON(state)

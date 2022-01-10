@@ -383,6 +383,15 @@ type CaptchaVerificationRequest struct {
 	Token string `json:"token"`
 }
 
+type CodeExecSettings struct {
+	EnableStatus
+
+	Type                string   `json:"type"`
+	TypesOptions        []string `json:"types_options,omitempty"`
+	JdoodleClientId     string   `json:"jdoodle_clientid,omitempty"`
+	JdoodleClientSecret string   `json:"jdoodle_clientsecret,omitempty"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

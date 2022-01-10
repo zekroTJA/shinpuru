@@ -2,6 +2,8 @@ package codeexec
 
 import "time"
 
+var AvailableFactories = []string{"ranna", "jdoodle"}
+
 type Payload struct {
 	Language    string
 	Code        string
