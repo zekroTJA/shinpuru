@@ -23,6 +23,7 @@ const (
 	keyGuildNotifyRole             = "GUILD:NOTROLE"
 	keyGuildGhostPingMsg           = "GUILD:GPMSG"
 	keyGuildJDoodleKey             = "GUILD:JDOODLE"
+	keyGuildCodeExecEnabled        = "GUILD:CODEXECE"
 	keyGuildInviteBlock            = "GUILD:INVBLOCK"
 	keyGuildBackupEnabled          = "GUILD:BACKUP"
 	keyGuildJoinMsg                = "GUILD:JOINMSG"
@@ -302,6 +303,37 @@ func (r *RedisMiddleware) SetGuildJdoodleKey(guildID, jdkey string) error {
 	}
 
 	return r.Database.SetGuildJdoodleKey(guildID, jdkey)
+}
+
+func (r *RedisMiddleware) GetGuildCodeExecEnabled(guildID string) (bool, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildCodeExecEnabled, guildID)
+
+	var val bool
+	err := r.client.Get(context.Background(), key).Scan(&val)
+	if err == redis.Nil {
+		val, err = r.Database.GetGuildCodeExecEnabled(guildID)
+		if err != nil {
+			return false, err
+		}
+
+		err = r.client.Set(context.Background(), key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildCodeExecEnabled(guildID string, enabled bool) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildCodeExecEnabled, guildID)
+
+	if err := r.client.Set(context.Background(), key, enabled, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildCodeExecEnabled(guildID, enabled)
 }
 
 func (r *RedisMiddleware) GetGuildBackup(guildID string) (bool, error) {

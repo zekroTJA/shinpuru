@@ -70,6 +70,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`notifyRoleID` text NOT NULL DEFAULT ''," +
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
+		"`codeExecEnabled` text NOT NULL DEFAULT ''," +
 		"`backup` text NOT NULL DEFAULT ''," +
 		"`inviteBlock` text NOT NULL DEFAULT ''," +
 		"`joinMsg` text NOT NULL DEFAULT ''," +
@@ -568,6 +569,19 @@ func (m *MysqlMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 
 func (m *MysqlMiddleware) SetGuildJdoodleKey(guildID, key string) error {
 	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
+func (m *MysqlMiddleware) GetGuildCodeExecEnabled(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "codeExecEnabled")
+	return val == "1", err
+}
+
+func (m *MysqlMiddleware) SetGuildCodeExecEnabled(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "codeExecEnabled", val)
 }
 
 func (m *MysqlMiddleware) GetGuildBackup(guildID string) (bool, error) {

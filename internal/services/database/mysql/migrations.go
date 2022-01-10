@@ -14,6 +14,7 @@ var migrationFuncs = []migrationFunc{
 	migration_6,
 	migration_7,
 	migration_8,
+	migration_9,
 }
 
 // VERSION 0:
@@ -96,5 +97,13 @@ func migration_8(m *sql.Tx) (err error) {
 	}
 	err = createTableColumnIfNotExists(m,
 		"antiraidSettings", "`verification` int(1) NOT NULL DEFAULT 0")
+	return
+}
+
+// VERSION 9:
+// - add property `codeExecEnabled` to `guilds`
+func migration_9(m *sql.Tx) (err error) {
+	err = createTableColumnIfNotExists(m,
+		"guilds", "`codeExecEnabled` text NOT NULL DEFAULT ''")
 	return
 }

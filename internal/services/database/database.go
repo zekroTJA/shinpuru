@@ -61,6 +61,9 @@ type Database interface {
 	GetGuildJdoodleKey(guildID string) (string, error)
 	SetGuildJdoodleKey(guildID, key string) error
 
+	GetGuildCodeExecEnabled(guildID string) (bool, error)
+	SetGuildCodeExecEnabled(guildID string, enabled bool) error
+
 	GetGuildBackup(guildID string) (bool, error)
 	SetGuildBackup(guildID string, enabled bool) error
 
