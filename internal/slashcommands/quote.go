@@ -72,8 +72,10 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 	var ident, comment string
 
-	for ident = range ctx.Event.ApplicationCommandData().Resolved.Messages {
-		break
+	if resolved := ctx.Event.ApplicationCommandData().Resolved; resolved != nil {
+		for ident = range resolved.Messages {
+			break
+		}
 	}
 
 	if ident == "" {
