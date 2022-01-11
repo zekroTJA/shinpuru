@@ -36,7 +36,7 @@ func (c *Report) Description() string {
 }
 
 func (c *Report) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Report) Type() discordgo.ApplicationCommandType {
@@ -104,7 +104,7 @@ func (c *Report) Options() []*discordgo.ApplicationCommandOption {
 			Description: "Revoke a report.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
+					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "id",
 					Description: "ID of the report to be revoked.",
 					Required:    true,
@@ -291,10 +291,15 @@ func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	id := ctx.Options().GetByName("id").IntValue()
+	idStr := ctx.Options().GetByName("id").StringValue()
 	reason := ctx.Options().GetByName("reason").StringValue()
 
-	rep, err := db.GetReport(snowflake.ID(id))
+	id, err := snowflake.ParseString(idStr)
+	if err != nil {
+		return
+	}
+
+	rep, err := db.GetReport(id)
 	if err != nil {
 		if database.IsErrDatabaseNotFound(err) {
 			return ctx.FollowUpError(

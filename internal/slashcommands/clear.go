@@ -29,7 +29,7 @@ func (c *Clear) Description() string {
 }
 
 func (c *Clear) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Clear) Type() discordgo.ApplicationCommandType {
@@ -55,7 +55,7 @@ func (c *Clear) Options() []*discordgo.ApplicationCommandOption {
 					Required:    true,
 				},
 				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
+					Type:        discordgo.ApplicationCommandOptionUser,
 					Name:        "user",
 					Description: "Clear messages send by this User",
 					Required:    false,

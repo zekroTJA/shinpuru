@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -29,7 +28,7 @@ func (c *Say) Description() string {
 }
 
 func (c *Say) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Say) Type() discordgo.ApplicationCommandType {
@@ -45,7 +44,7 @@ func (c *Say) Options() []*discordgo.ApplicationCommandOption {
 			ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
 		},
 		{
-			Type:        discordgo.ApplicationCommandOptionInteger,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Name:        "editmessage",
 			Description: "The ID of the message to be edited.",
 		},
@@ -177,7 +176,7 @@ func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (
 
 	messageID := ""
 	if msgV, ok := ctx.Options().GetByNameOptional("editmessage"); ok {
-		messageID = snowflake.ParseInt64(msgV.IntValue()).String()
+		messageID = msgV.StringValue()
 	}
 
 	var msg *discordgo.Message

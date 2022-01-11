@@ -37,7 +37,7 @@ func (c *Snowflake) Description() string {
 }
 
 func (c *Snowflake) Version() string {
-	return "1.0.0"
+	return "1.1.0"
 }
 
 func (c *Snowflake) Type() discordgo.ApplicationCommandType {
@@ -47,7 +47,7 @@ func (c *Snowflake) Type() discordgo.ApplicationCommandType {
 func (c *Snowflake) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{
 		{
-			Type:        discordgo.ApplicationCommandOptionInteger,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Name:        "snowflake",
 			Description: "The snowflake ID.",
 			Required:    true,
@@ -81,15 +81,18 @@ func (c *Snowflake) Run(ctx *ken.Ctx) (err error) {
 		return
 	}
 
-	sfid := ctx.Options().GetByName("snowflake").IntValue()
+	sfStr := ctx.Options().GetByName("snowflake").StringValue()
+	sfId, err := snowflake.ParseString(sfStr)
+	if err != nil {
+		return
+	}
 
 	typ := -1
 	if typV, ok := ctx.Options().GetByNameOptional("type"); ok {
 		typ = int(typV.IntValue())
 	}
 
-	sfAsDc := snowflakenodes.ParseDiscordSnowflake(int(sfid))
-	sfAsSp := snowflake.ParseInt64(sfid)
+	sfAsDc := snowflakenodes.ParseDiscordSnowflake(int(sfId.Int64()))
 	if err != nil {
 		return err
 	}
@@ -107,7 +110,7 @@ func (c *Snowflake) Run(ctx *ken.Ctx) (err error) {
 	case snowflakeTypeDiscord:
 		emb = c.embSfDc(sfAsDc)
 	case snowflakeTypeShinpuru:
-		emb = c.embSfSp(sfAsSp)
+		emb = c.embSfSp(sfId)
 	}
 
 	return ctx.FollowUpEmbed(emb).Error
