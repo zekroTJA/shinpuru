@@ -55,7 +55,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 
 	votes, err := l.db.GetVotes()
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed getting votes from DB")
+		logrus.WithError(err).Error("Failed getting votes from DB")
 	} else {
 		vote.VotesRunning = votes
 		_, err = l.lct.Schedule("*/10 * * * * *", func() {
@@ -71,7 +71,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 			}
 		})
 		if err != nil {
-			logrus.WithError(err).Fatal("LCT :: failed scheduling votes job")
+			logrus.WithError(err).Error("LCT :: failed scheduling votes job")
 		}
 	}
 

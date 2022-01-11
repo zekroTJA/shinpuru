@@ -75,7 +75,7 @@ func (bck *GuildBackups) BackupAllGuilds() {
 	logrus.WithField("nGuilds", len(guilds)).Infof("Initializing guild backups")
 
 	if err != nil {
-		logrus.WithError(err).Fatal("failed getting backup guilds")
+		logrus.WithError(err).Error("failed getting backup guilds")
 		return
 	}
 

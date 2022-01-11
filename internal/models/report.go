@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/pkg/hammertime"
-	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 )
 
 type ReportType int
@@ -104,7 +103,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 				Value: r.Msg,
 			},
 		},
-		Timestamp: r.GetTimestamp().Format(timeutil.ISO8601),
+		Timestamp: r.GetTimestamp().Format(time.RFC3339),
 		Image: &discordgo.MessageEmbedImage{
 			URL: imgstore.GetLink(r.AttachmentURL, publicAddr),
 		},

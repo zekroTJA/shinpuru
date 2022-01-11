@@ -781,7 +781,7 @@ func (m *MysqlMiddleware) GetVotes() (map[string]*vote.Vote, error) {
 		var voteID, rawData string
 		err := rows.Scan(&voteID, &rawData)
 		if err != nil {
-			logrus.WithError(err).Fatal("An error occured reading vote from database")
+			logrus.WithError(err).Error("An error occured reading vote from database")
 			continue
 		}
 		vote, err := vote.Unmarshal(rawData)

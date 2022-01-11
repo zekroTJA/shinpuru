@@ -4,7 +4,7 @@ When enabled by config, shinpuru exposes a RESTful HTTP API which exposes all fu
 
 ## Authentication
 
-All requests to the API needs to be authenticated and authorized. To authenticate your requests, you need to generate an API token in shinpurus web interface.
+All requests to the API needs to be authenticated and authorized. To authenticate your requests, you need to generate an API token in shinpuru's web interface.
 
 ![](https://i.imgur.com/KYp2OdR.png)
 ![](https://i.imgur.com/RBrQwrH.png)

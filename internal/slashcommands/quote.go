@@ -196,7 +196,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 			IconURL: ctx.User().AvatarURL("16"),
 			Text:    fmt.Sprintf("#%s - quoted by: %s", ch.Name, ctx.User().String()),
 		},
-		Timestamp: string(quoteMsg.Timestamp.Format(time.RFC1123)),
+		Timestamp: string(quoteMsg.Timestamp.Format(time.RFC3339)),
 	}
 
 	if len(quoteMsg.Attachments) > 0 {
