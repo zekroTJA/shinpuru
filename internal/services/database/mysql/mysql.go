@@ -30,14 +30,27 @@ type MysqlMiddleware struct {
 var _ database.Database = (*MysqlMiddleware)(nil)
 
 var guildTables = []string{
-	"guilds", "permissions",
-	"twitchnotify", "tags", "karma",
-	"karmaSettings", "karmaBlocklist",
-	"karmaRules", "chanlock", "antiraidSettings",
-	"antiraidJoinlog", "unbanRequests",
-	"voicelogBlocklist", "starboardConfig",
-	"starboardEntries", "guildlog", "reports",
+	"antiraidJoinlog",
+	"antiraidSettings",
 	"backups",
+	"chanlock",
+	"guildapi",
+	"guildlog",
+	"guilds",
+	"karma",
+	"karmaBlocklist",
+	"karmaRules",
+	"karmaSettings",
+	"permissions",
+	"reports",
+	"starboardConfig",
+	"starboardEntries",
+	"tags",
+	"twitchnotify",
+	"unbanRequests",
+	"verificationQueue",
+	"voicelogBlocklist",
+	"votes",
 }
 
 func (m *MysqlMiddleware) setup() (err error) {
