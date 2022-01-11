@@ -64,7 +64,7 @@ func (l *ListenerVoiceUpdate) sendLeaveMsg(s *discordgo.Session, voiceLogChan, u
 func (l *ListenerVoiceUpdate) isBlocked(guildID, chanID string) (ok bool) {
 	ok, err := l.db.IsGuildVoiceLogIgnored(guildID, chanID)
 	if err != nil {
-		logrus.WithError(err).Fatal("VOICELOG :: failed getting blocked state")
+		logrus.WithError(err).Error("VOICELOG :: failed getting blocked state")
 		l.gl.Errorf(guildID, "Failed getting blocked state: %s", err.Error())
 	}
 	return

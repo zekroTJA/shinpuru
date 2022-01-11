@@ -47,7 +47,7 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 
 	ident, err := c.rth.ValidateRefreshToken(refreshToken)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).Fatal("WEBSERVER :: failed validating refresh token")
+		logrus.WithError(err).Error("WEBSERVER :: failed validating refresh token")
 	}
 	if ident == "" {
 		return fiber.ErrUnauthorized

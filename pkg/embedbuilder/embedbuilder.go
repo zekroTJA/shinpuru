@@ -2,7 +2,11 @@
 // to create discordgo message embeds.
 package embedbuilder
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 // EmbedBuilder provides a builder pattern to
 // create a discordgo message embed.
@@ -103,8 +107,8 @@ func (b *EmbedBuilder) WithThumbnail(url, proxyUrl string, width, height int) *E
 }
 
 // WithTimestamp sets a timestamp to the embed.
-func (b *EmbedBuilder) WithTimestamp(timestamp string) *EmbedBuilder {
-	b.emb.Timestamp = timestamp
+func (b *EmbedBuilder) WithTimestamp(timestamp time.Time) *EmbedBuilder {
+	b.emb.Timestamp = timestamp.Format(time.RFC3339)
 	return b
 }
 
