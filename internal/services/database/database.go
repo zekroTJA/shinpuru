@@ -102,6 +102,8 @@ type Database interface {
 	RevokeUserRefreshToken(userID string) error
 	CleanupExpiredRefreshTokens() (int64, error)
 
+	FlushUserData(userID string) (res map[string]int, err error)
+
 	//////////////////////////////////////////////////////
 	//// REPORTS
 

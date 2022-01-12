@@ -53,6 +53,22 @@ var guildTables = []string{
 	"votes",
 }
 
+type tableColumn struct {
+	Table  string
+	Column string
+}
+
+var userTables = []tableColumn{
+	{"antiraidJoinlog", "userID"},
+	{"apitokens", "userID"},
+	{"refreshTokens", "userID"},
+	{"starboardEntries", "authorID"},
+	{"tags", "creatorID"},
+	{"unbanRequests", "userID"},
+	{"unbanRequests", "processedBy"},
+	{"users", "userID"},
+}
+
 func (m *MysqlMiddleware) setup() (err error) {
 	if err = m.Db.Ping(); err != nil {
 		return
@@ -2085,6 +2101,55 @@ func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (ok bo
 	err = wrapNotFoundError(err)
 	affected, err := res.RowsAffected()
 	ok = affected > 0
+	return
+}
+
+func (m *MysqlMiddleware) FlushUserData(userID string) (res map[string]int, err error) {
+	res = make(map[string]int)
+
+	r, err := m.Db.Exec(`
+		UPDATE reports
+		SET executorID = "000000000000000000"
+		WHERE executorID = ? AND victimID != ?
+	`, userID, userID)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+	affected, err := r.RowsAffected()
+	if err != nil {
+		return
+	}
+	res["reports"] = int(affected)
+
+	r, err = m.Db.Exec(`
+		DELETE FROM karma
+		WHERE userID = ?
+		AND value >= 0
+	`, userID)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+	affected, err = r.RowsAffected()
+	if err != nil {
+		return
+	}
+	res["karma"] = int(affected)
+
+	for _, tc := range userTables {
+		r, err = m.Db.Exec(fmt.Sprintf(`
+			DELETE FROM %s
+			WHERE %s = ?
+		`, tc.Table, tc.Column), userID)
+		if err != nil && err != sql.ErrNoRows {
+			return
+		}
+		affected, err = r.RowsAffected()
+		if err != nil {
+			return
+		}
+		res[tc.Table] = int(affected)
+	}
+
 	return
 }
 
