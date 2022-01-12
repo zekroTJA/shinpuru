@@ -10,6 +10,8 @@ import (
 	"github.com/zekrotja/dgrs"
 )
 
+const day = 24 * time.Hour
+
 func InitState(container di.Container) (s *dgrs.State, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	rd := container.Get(static.DiRedis).(redis.Cmdable)
@@ -19,7 +21,10 @@ func InitState(container di.Container) (s *dgrs.State, err error) {
 		DiscordSession: session,
 		FetchAndStore:  true,
 		Lifetimes: dgrs.Lifetimes{
-			Message: 14 * 24 * time.Hour, // 14 Days
+			Message:  30 * day,
+			Member:   30 * day,
+			User:     30 * day,
+			Presence: 30 * day,
 		},
 	})
 }
