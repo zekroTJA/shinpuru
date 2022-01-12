@@ -1072,4 +1072,10 @@ export class APIService {
       .post(this.rcGuildSettingsCodeExec(guildID), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
+
+  public postUserSettingsFlush(): Observable<object> {
+    return this.http
+      .post(this.rcUserSettings('flush'), {}, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
 }
