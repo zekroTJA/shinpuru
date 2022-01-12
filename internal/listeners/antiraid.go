@@ -146,7 +146,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 	l.triggers.Set(e.GuildID, time.Now(), arTriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
-			l.gl.Errorf(e.GuildID, "Failed flusing joinlist: %s", err.Error())
+			l.gl.Errorf(e.GuildID, "Failed flushing joinlist: %s", err.Error())
 		}
 	})
 
