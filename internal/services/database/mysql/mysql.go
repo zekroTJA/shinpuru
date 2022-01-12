@@ -50,7 +50,6 @@ var guildTables = []string{
 	"unbanRequests",
 	"verificationQueue",
 	"voicelogBlocklist",
-	"votes",
 }
 
 type tableColumn struct {

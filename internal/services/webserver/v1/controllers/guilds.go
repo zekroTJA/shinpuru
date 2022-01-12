@@ -1563,7 +1563,7 @@ func (c *GuildsController) postFlushGuildData(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid validation")
 	}
 
-	if err = util.FlushAllGuildData(c.db, c.st, guildID); err != nil {
+	if err = util.FlushAllGuildData(c.session, c.db, c.st, guildID); err != nil {
 		return
 	}
 
