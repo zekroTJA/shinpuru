@@ -7,18 +7,22 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/dgrs"
 )
 
 type UsersettingsController struct {
 	session *discordgo.Session
 	db      database.Database
+	state   *dgrs.State
 	pmw     *permissions.Permissions
 }
 
 func (c *UsersettingsController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.db = container.Get(static.DiDatabase).(database.Database)
+	c.state = container.Get(static.DiState).(*dgrs.State)
 	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Get("/ota", c.getOTA)
@@ -86,7 +90,7 @@ func (c *UsersettingsController) postOTA(ctx *fiber.Ctx) error {
 func (c *UsersettingsController) postFlush(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
-	res, err := c.db.FlushUserData(uid)
+	res, err := util.FlushAllUserData(c.db, c.state, uid)
 	if err != nil {
 		return err
 	}

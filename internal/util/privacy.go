@@ -57,3 +57,28 @@ func FlushAllGuildData(
 
 	return mErr.Nillify()
 }
+
+func FlushAllUserData(
+	db database.Database,
+	state *dgrs.State,
+	userID string,
+) (res map[string]int, err error) {
+	res, err = db.FlushUserData(userID)
+	if err != nil {
+		return
+	}
+
+	guildIDs, err := state.UserGuilds(userID)
+	if err != nil {
+		return
+	}
+
+	for _, gid := range guildIDs {
+		if err = state.RemoveMember(gid, userID); err != nil {
+			return
+		}
+	}
+
+	err = state.RemoveUser(userID)
+	return
+}
