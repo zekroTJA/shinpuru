@@ -7,9 +7,16 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
+	"github.com/zekrotja/dgrs"
 )
 
-func FlushAllGuildData(s *discordgo.Session, db database.Database, st storage.Storage, guildID string) (err error) {
+func FlushAllGuildData(
+	s *discordgo.Session,
+	db database.Database,
+	st storage.Storage,
+	state *dgrs.State,
+	guildID string,
+) (err error) {
 	backups, err := db.GetBackups(guildID)
 	if err != nil {
 		return
@@ -31,6 +38,10 @@ func FlushAllGuildData(s *discordgo.Session, db database.Database, st storage.St
 	}
 
 	if err = db.FlushGuildData(guildID); err != nil {
+		return
+	}
+
+	if err = state.RemoveGuild(guildID, true); err != nil {
 		return
 	}
 
