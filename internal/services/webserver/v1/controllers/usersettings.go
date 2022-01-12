@@ -23,6 +23,7 @@ func (c *UsersettingsController) Setup(container di.Container, router fiber.Rout
 
 	router.Get("/ota", c.getOTA)
 	router.Post("/ota", c.postOTA)
+	router.Post("/flush", c.postFlush)
 }
 
 // @Summary Get OTA Usersettings State
@@ -71,4 +72,24 @@ func (c *UsersettingsController) postOTA(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(data)
+}
+
+// @Summary FLush all user data
+// @Description Flush all user data.
+// @Tags User Settings
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UsersettingsOTA
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Router /usersettings/flush [post]
+func (c *UsersettingsController) postFlush(ctx *fiber.Ctx) error {
+	uid := ctx.Locals("uid").(string)
+
+	res, err := c.db.FlushUserData(uid)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(res)
 }
