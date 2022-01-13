@@ -1383,6 +1383,101 @@
                 }
             }
         },
+        "/guilds/{id}/settings/codeexec": {
+            "get": {
+                "description": "Returns the settings state of the Guild Code Exec.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Get Guild Settings Code Exec State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set the settings state of the Guild Code Exec.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Set Guild Settings Code Exec State",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The guild API settings payload.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EnableStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{id}/settings/flushguilddata": {
             "post": {
                 "description": "Flushes all guild data from the database.",
@@ -2227,7 +2322,7 @@
                 }
             },
             "post": {
-                "description": "Set the settings state of the Guild API.",
+                "description": "Set the settings state of the Guild Verification.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3220,6 +3315,29 @@
                 }
             }
         },
+        "/privacyinfo": {
+            "get": {
+                "description": "Returns general global privacy information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Etc"
+                ],
+                "summary": "Privacy Information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Privacy"
+                        }
+                    }
+                }
+            }
+        },
         "/public/guilds/{id}": {
             "get": {
                 "description": "Returns public guild information, if enabled by guild config.",
@@ -3828,6 +3946,41 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/usersettings/flush": {
+            "post": {
+                "description": "Flush all user data.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Settings"
+                ],
+                "summary": "FLush all user data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UsersettingsOTA"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
                         }
                     }
                 }
@@ -4894,6 +5047,20 @@
                 }
             }
         },
+        "models.Contact": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Count": {
             "type": "object",
             "properties": {
@@ -5401,6 +5568,20 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "models.Privacy": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Contact"
+                    }
+                },
+                "noticeurl": {
+                    "type": "string"
                 }
             }
         },

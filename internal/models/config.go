@@ -261,6 +261,20 @@ type Captcha struct {
 	SecretKey string `json:"secretkey"`
 }
 
+// Contact holds contact information.
+type Contact struct {
+	Title string `json:"title"`
+	Value string `json:"value"`
+	URL   string `json:"url,omitempty"`
+}
+
+// Privacy holds privacy and contact
+// information shown in shinpuru.
+type Privacy struct {
+	NoticeURL string    `json:"noticeurl"`
+	Contact   []Contact `json:"contact"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -278,4 +292,5 @@ type Config struct {
 	Metrics     Metrics      `json:"metrics"`
 	Schedules   Schedules    `json:"schedules"`
 	CodeExec    CodeExec     `json:"codeexec"`
+	Privacy     Privacy      `json:"privacy"`
 }

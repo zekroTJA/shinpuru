@@ -689,6 +689,55 @@ Set the settings state of the Guild API.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /guilds/{id}/settings/codeexec
+
+#### GET
+##### Summary
+
+Get Guild Settings Code Exec State
+
+##### Description
+
+Returns the settings state of the Guild Code Exec.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings Code Exec State
+
+##### Description
+
+Set the settings state of the Guild Code Exec.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /guilds/{id}/settings/flushguilddata
 
 #### POST
@@ -1105,7 +1154,7 @@ Set Guild Settings Verification State
 
 ##### Description
 
-Set the settings state of the Guild API.
+Set the settings state of the Guild Verification.
 
 ##### Parameters
 
@@ -1578,6 +1627,23 @@ Logs in the current browser session by using the passed pre-obtained OTA token.
 | 200 |  |  |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
+### /privacyinfo
+
+#### GET
+##### Summary
+
+Privacy Information
+
+##### Description
+
+Returns general global privacy information.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.Privacy](#modelsprivacy) |
+
 ### /public/guilds/{id}
 
 #### GET
@@ -1910,6 +1976,25 @@ Returns the information of a user by ID.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.User](#modelsuser) |
+
+### /usersettings/flush
+
+#### POST
+##### Summary
+
+FLush all user data
+
+##### Description
+
+Flush all user data.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
 
 ### /usersettings/ota
 
@@ -2388,6 +2473,14 @@ Verify a returned verification token.
 | is_executable_in_dm | boolean |  | No |
 | sub_permission_rules | [ [shireikan.SubPermission](#shireikansubpermission) ] |  | No |
 
+#### models.Contact
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| title | string |  | No |
+| url | string |  | No |
+| value | string |  | No |
+
 #### models.Count
 
 | Name | Type | Description | Required |
@@ -2616,6 +2709,13 @@ Verify a returned verification token.
 | ---- | ---- | ----------- | -------- |
 | perm | string |  | No |
 | role_ids | [ string ] |  | No |
+
+#### models.Privacy
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| contact | [ [models.Contact](#modelscontact) ] |  | No |
+| noticeurl | string |  | No |
 
 #### models.ReasonRequest
 

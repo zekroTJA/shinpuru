@@ -356,6 +356,13 @@ func main() {
 		FullTimestamp:   true,
 		TimestampFormat: "2006/01/02 15:04:05 MST",
 	})
+	if err := config.Validate(cfg); err != nil {
+		entry := logrus.NewEntry(logrus.StandardLogger())
+		if validationError, ok := err.(config.ValidationError); ok {
+			entry = entry.WithField("key", validationError.Key())
+		}
+		entry.WithError(err).Fatal("Invalid config")
+	}
 
 	// Initial log output
 	logrus.Info("Starting up...")
