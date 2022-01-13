@@ -86,15 +86,20 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: backend
-          path: bin/final/
+          path: bin/source/
       - name: Retrieve frontend binaries
         uses: actions/download-artifact@v2
         with:
           name: frontend
-          path: bin/final/
+          path: bin/source/
       - name: Inject Version into Changelog
         run: |-
            sed -i "s/\[VERSION\]/$(git describe --tags --abbrev=0)/g" CHANGELOG.md
+      - name: Bundle Artifacts
+        working-directory: bin/source/
+        run: |-
+          mkdir ../final
+          tar -czvf ../final/build_assets.tar.gz *
       - name: Generate Checksums
         working-directory: bin/final/
         run: |-
