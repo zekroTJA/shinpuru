@@ -182,6 +182,17 @@ export interface SystemInfo {
   guilds: number;
 }
 
+export interface Contact {
+  title: string;
+  value: string;
+  url?: string;
+}
+
+export interface PrivacyInfo {
+  noticeurl: string;
+  contact: Contact[];
+}
+
 export interface APIToken {
   created: Date;
   expires: Date;

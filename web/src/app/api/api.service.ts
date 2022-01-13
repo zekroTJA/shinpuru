@@ -42,6 +42,7 @@ import {
   VerificationSiteKey,
   GuildSettingsVerification,
   CodeExecSettings,
+  PrivacyInfo,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -654,6 +655,12 @@ export class APIService {
   public getSystemInfo(): Observable<SystemInfo> {
     return this.http
       .get(this.rcAPI('sysinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getPrivacyInfo(): Observable<PrivacyInfo> {
+    return this.http
+      .get(this.rcAPI('privacyinfo'), this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 
