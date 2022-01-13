@@ -1,44 +1,73 @@
 name: Releases CD
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
 
 jobs:
 
-  releases-deploy:
-
-    name: GitHub Releases Deploy
+  frontend:
+    name: Build Frontend Artifacts
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.17
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.17
-
       - name: Set up NodeJS
         uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-
-      - name: Set up Hub
-        run: |
-          sudo snap install hub --classic
-
       - name: Check out code
         uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: ./web
+        run: npm ci
+      - name: Build Web App
+        working-directory: ./web
+        run: npx ng build --prod --output-path ../bin/web/dist/web
+      - name: Upload Artifcats
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend
+          path: bin/
+          retention-days: 1
 
-      - name: Build releases
-        run: |
-          bash ./ci/build.sh
 
-      - name: Deploy to Releases
+  backend:
+    name: Build Backend Artifacts
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos:
+          - linux
+          - windows
+          - darwin
+        goarch:
+          - amd64
+          - arm64
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: "^1.17"
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go get -v ./...
+      - name: Populate info embeds
+        run: bash ./ci/populateinfo.sh
+      - name: Build Backend (${{ matrix.goos }}-${{ matrix.goarch }})
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: 'hub release create
-            -a ./deploy/build_assets.tar.gz
-            -a ./deploy/md5sum.txt
-            -a ./deploy/sha256sum.txt
-            -F ./CHANGELOG.md
-            $(git describe --tags --abbrev=0)'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o ./bin/shinpuru-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/shinpuru/main.go
+      - name: Rename Windows Binary
+        if: ${{ matrix.goos == 'windows' }}
+        env:
+          FNAME: ./bin/shinpuru-${{ matrix.goos }}-${{ matrix.goarch }}
+        run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
+      - name: Upload Artifcats
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend
+          path: bin/
+          retention-days: 1
