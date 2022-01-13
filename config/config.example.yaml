@@ -202,3 +202,13 @@ codeexec:
     apiversion: v1
     endpoint: 'https://public.ranna.zekro.de'
     token: ''
+  # Rate limit configuration per user
+  # for running code in chat.
+  ratelimit:
+    # Whether or not to enable the rate limiting.
+    enabled: true
+    # The burst rate of the limiter.
+    burst: 5
+    # The time in seconds between regeneration
+    # of rate limiter tokens.
+    limitseconds: 60
