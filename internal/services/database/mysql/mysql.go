@@ -1456,29 +1456,25 @@ func (m *MysqlMiddleware) GetAntiraidVerification(guildID string) (state bool, e
 }
 
 func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.JoinLogEntry, err error) {
-	var count int
-	err = m.Db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
-		Scan(&count)
-	err = wrapNotFoundError(err)
+	query := "SELECT `userID`, `tag`, `accountCreated`, `timestamp`, `guildID` FROM antiraidJoinlog"
+	var args []interface{}
+
+	if guildID != "" {
+		query += " WHERE guildID = ?"
+		args = []interface{}{guildID}
+	}
+
+	rows, err := m.Db.Query(query, args...)
 	if err != nil {
 		return
 	}
 
-	res = make([]*models.JoinLogEntry, count)
-
-	rows, err := m.Db.Query("SELECT `userID`, `tag`, `accountCreated`, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
-	if err != nil {
-		return
-	}
-
-	var i int
 	for rows.Next() {
 		entry := &models.JoinLogEntry{GuildID: guildID}
-		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp); err != nil {
+		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp, &entry.GuildID); err != nil {
 			return
 		}
-		res[i] = entry
-		i++
+		res = append(res, entry)
 	}
 
 	return
