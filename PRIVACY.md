@@ -33,6 +33,8 @@ This includes the following data:
 - User input text
 - User uploaded media
 
+Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API.
+
 User IDs are used to link stored data to Discord users like:
 - API and refresh tokens for authentication against shinpuru's API (for example via the web interface)
 - User specific settings
@@ -41,8 +43,6 @@ User IDs are used to link stored data to Discord users like:
 - Karma scores per guild
 - Ownership of a created tag or vote
 - Starboard entries
-
-Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API.
 
 User input text and uploaded media is stored to be used in the following cases:
 - Reason and proof for a created report
