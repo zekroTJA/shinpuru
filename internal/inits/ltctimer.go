@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
+	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
@@ -81,6 +82,11 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 		func() string {
 			return cfg.Config().Schedules.VerificationKick
 		}, vs.KickRoutine)
+
+	lctSchedule(lct, "antiraid joinlog flush",
+		func() string {
+			return "@every 1h"
+		}, antiraid.FlushExpired(db, gl))
 
 	return lct
 }
