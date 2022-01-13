@@ -48,6 +48,12 @@ User input text and uploaded media is stored to be used in the following cases:
 - Reason and proof for a created report
 - Description of vote contents
 
+shinpuru also has a feature called `Antiraid` which watches the influx rate of users to a guild. When shinpuru detects an anomaly, the system triggers and all following users joining are logged. **This data is automatically removed after 48 hours**. These logs include the following data:
+- User ID
+- Username and Discriminator
+- Account created date *(calculated from the ID)*
+- Guild join timestamp
+
 ### B) Performance
 
 shinpuru **temporarily** caches a lot of data from the Discord API to improve performance and reduce load on the Discord API (primarily to avoid rate limit timeouts). All sensitive data stored in the cache is no longer stored than 30 days.
@@ -98,3 +104,8 @@ Because of measures to avoid abusement of the security systems implemented into 
 - User settings temporarily stored in the cache
 
 If you want this data to be removed, please contact me (zekro) directly. You can find my contact information [at the top of this document](#contact-details).
+
+---
+
+shinpuru Privacy Notice v1.0.0.  
+Last Edit: 2022/01/13.
