@@ -25,7 +25,7 @@ There are two main purposes data is collected and stored in shinpuru:
 
 ### A) Persistence
 
-Some data is stored **persistently (permanently)** stored in the database of shinpuru to ensure a good user experience as well as maintaining security features implemented in shinpuru.
+Some data is stored **persistently (permanently)** in the database of shinpuru to ensure a good user experience as well as maintaining state for security features implemented in shinpuru.
 
 This includes the following data:
 - User IDs
@@ -34,7 +34,7 @@ This includes the following data:
 - User uploaded media
 
 User IDs are used to link stored data to Discord users like:
-- API and refresh tokens for authentication against the API (for example via the web interface)
+- API and refresh tokens for authentication against shinpuru's API (for example via the web interface)
 - User specific settings
 - User verification states
 - Reports created by or against users
