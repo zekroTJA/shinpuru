@@ -5,8 +5,6 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - "*"
 
 jobs:
 
@@ -107,9 +105,15 @@ jobs:
           sha256sum * | tee ../sha256sum.txt
           mv ../md5sum.txt ./
           mv ../sha256sum.txt ./
-      - name: Upload Artifcats
-        uses: actions/upload-artifact@v2
-        with:
-          name: final-test
-          path: bin/final/
-          retention-days: 1
+      - name: Set up Hub
+        run: |-
+          sudo snap install hub --classic
+      - name: Deploy to Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: 'hub release create
+            -a ./bin/final/build_assets.tar.gz
+            -a ./bin/final/md5sum.txt
+            -a ./bin/final/sha256sum.txt
+            -F ./CHANGELOG.md
+            $(git describe --tags --abbrev=0)'
