@@ -1,4 +1,4 @@
-1.27.1
+[VERSION]
 
 > **Attention**  
 > This is a hotfix patch for issue #332. If you want to see the changelog for release 1.26.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.27.0).
@@ -18,11 +18,11 @@ Pull the docker image of this release:
 From DockerHub:
 
 ```
-$ docker pull zekro/shinpuru:1.27.1
+$ docker pull zekro/shinpuru:[VERSION]
 ```
 
 From GHCR:
 
 ```
-$ docker pull ghcr.io/zekrotja/shinpuru:1.27.1
+$ docker pull ghcr.io/zekrotja/shinpuru:[VERSION]
 ```
