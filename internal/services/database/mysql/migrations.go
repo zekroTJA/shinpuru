@@ -102,8 +102,11 @@ func migration_8(m *sql.Tx) (err error) {
 
 // VERSION 9:
 // - add property `codeExecEnabled` to `guilds`
+// - add property `starboardOptout` to `users`
 func migration_9(m *sql.Tx) (err error) {
 	err = createTableColumnIfNotExists(m,
 		"guilds", "`codeExecEnabled` text NOT NULL DEFAULT ''")
+	err = createTableColumnIfNotExists(m,
+		"users", "`starboardOptout` text NOT NULL DEFAULT '0'")
 	return
 }

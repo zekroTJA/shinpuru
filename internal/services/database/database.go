@@ -97,6 +97,9 @@ type Database interface {
 	GetUserVerified(userID string) (bool, error)
 	SetUserVerified(userID string, enabled bool) error
 
+	GetUserStarboardOptout(userID string) (bool, error)
+	SetUserStarboardOptout(userID string, enabled bool) error
+
 	GetUserByRefreshToken(token string) (string, time.Time, error)
 	SetUserRefreshToken(userID, token string, expires time.Time) error
 	RevokeUserRefreshToken(userID string) error

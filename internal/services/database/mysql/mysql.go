@@ -116,6 +116,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
 		"`verified` text NOT NULL DEFAULT '0'," +
+		"`starboardOptout` text NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -1614,6 +1615,20 @@ func (m *MysqlMiddleware) SetUserVerified(userID string, enabled bool) error {
 		v = "1"
 	}
 	return m.setUserSetting(userID, "verified", v)
+}
+
+func (m *MysqlMiddleware) GetUserStarboardOptout(userID string) (enabled bool, err error) {
+	v, err := m.getUserSetting(userID, "starboardOptout")
+	enabled = v == "1"
+	return
+}
+
+func (m *MysqlMiddleware) SetUserStarboardOptout(userID string, enabled bool) error {
+	v := "0"
+	if enabled {
+		v = "1"
+	}
+	return m.setUserSetting(userID, "starboardOptout", v)
 }
 
 func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
