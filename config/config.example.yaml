@@ -212,3 +212,20 @@ codeexec:
     # The time in seconds between regeneration
     # of rate limiter tokens.
     limitseconds: 60
+
+# Privacy information and contact details
+# which are shown in the /info command as well
+# as in the web interface.
+privacy:
+  # URL to your privacy notice.
+  # DO NOT USE THE NOTICE BELOW BECAUSE IT IS ONLY
+  # VALID FOR THE OFFICAL HOST OF SHINPURU!
+  noticeurl: https://github.com/zekroTJA/shinpuru/blob/master/PRIVACY.md
+  # Contact details.
+  contact:
+      # Title of the contact type
+    - title: E-Mail
+      # The displayed value
+      value: contact@example.de
+      # An optional link URL
+      url: "mailto:contact@example.de"
