@@ -30,14 +30,42 @@ type MysqlMiddleware struct {
 var _ database.Database = (*MysqlMiddleware)(nil)
 
 var guildTables = []string{
-	"guilds", "permissions",
-	"twitchnotify", "tags", "karma",
-	"karmaSettings", "karmaBlocklist",
-	"karmaRules", "chanlock", "antiraidSettings",
-	"antiraidJoinlog", "unbanRequests",
-	"voicelogBlocklist", "starboardConfig",
-	"starboardEntries", "guildlog", "reports",
+	"antiraidJoinlog",
+	"antiraidSettings",
 	"backups",
+	"chanlock",
+	"guildapi",
+	"guildlog",
+	"guilds",
+	"karma",
+	"karmaBlocklist",
+	"karmaRules",
+	"karmaSettings",
+	"permissions",
+	"reports",
+	"starboardConfig",
+	"starboardEntries",
+	"tags",
+	"twitchnotify",
+	"unbanRequests",
+	"verificationQueue",
+	"voicelogBlocklist",
+}
+
+type tableColumn struct {
+	Table  string
+	Column string
+}
+
+var userTables = []tableColumn{
+	{"antiraidJoinlog", "userID"},
+	{"apitokens", "userID"},
+	{"refreshTokens", "userID"},
+	{"starboardEntries", "authorID"},
+	{"tags", "creatorID"},
+	{"unbanRequests", "userID"},
+	{"unbanRequests", "processedBy"},
+	{"users", "userID"},
 }
 
 func (m *MysqlMiddleware) setup() (err error) {
@@ -70,6 +98,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`notifyRoleID` text NOT NULL DEFAULT ''," +
 		"`ghostPingMsg` text NOT NULL DEFAULT ''," +
 		"`jdoodleToken` text NOT NULL DEFAULT ''," +
+		"`codeExecEnabled` text NOT NULL DEFAULT ''," +
 		"`backup` text NOT NULL DEFAULT ''," +
 		"`inviteBlock` text NOT NULL DEFAULT ''," +
 		"`joinMsg` text NOT NULL DEFAULT ''," +
@@ -87,6 +116,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`userID` varchar(25) NOT NULL," +
 		"`enableOTA` text NOT NULL DEFAULT '0'," +
 		"`verified` text NOT NULL DEFAULT '0'," +
+		"`starboardOptout` text NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`userID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -568,6 +598,19 @@ func (m *MysqlMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 
 func (m *MysqlMiddleware) SetGuildJdoodleKey(guildID, key string) error {
 	return m.setGuildSetting(guildID, "jdoodleToken", key)
+}
+
+func (m *MysqlMiddleware) GetGuildCodeExecEnabled(guildID string) (bool, error) {
+	val, err := m.getGuildSetting(guildID, "codeExecEnabled")
+	return val == "1", err
+}
+
+func (m *MysqlMiddleware) SetGuildCodeExecEnabled(guildID string, enabled bool) error {
+	var val string
+	if enabled {
+		val = "1"
+	}
+	return m.setGuildSetting(guildID, "codeExecEnabled", val)
 }
 
 func (m *MysqlMiddleware) GetGuildBackup(guildID string) (bool, error) {
@@ -1414,29 +1457,25 @@ func (m *MysqlMiddleware) GetAntiraidVerification(guildID string) (state bool, e
 }
 
 func (m *MysqlMiddleware) GetAntiraidJoinList(guildID string) (res []*models.JoinLogEntry, err error) {
-	var count int
-	err = m.Db.QueryRow("SELECT COUNT(userID) FROM antiraidJoinlog WHERE guildID = ?", guildID).
-		Scan(&count)
-	err = wrapNotFoundError(err)
+	query := "SELECT `userID`, `tag`, `accountCreated`, `timestamp`, `guildID` FROM antiraidJoinlog"
+	var args []interface{}
+
+	if guildID != "" {
+		query += " WHERE guildID = ?"
+		args = []interface{}{guildID}
+	}
+
+	rows, err := m.Db.Query(query, args...)
 	if err != nil {
 		return
 	}
 
-	res = make([]*models.JoinLogEntry, count)
-
-	rows, err := m.Db.Query("SELECT `userID`, `tag`, `accountCreated`, `timestamp` FROM antiraidJoinlog WHERE guildID = ?", guildID)
-	if err != nil {
-		return
-	}
-
-	var i int
 	for rows.Next() {
 		entry := &models.JoinLogEntry{GuildID: guildID}
-		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp); err != nil {
+		if err = rows.Scan(&entry.UserID, &entry.Tag, &entry.Created, &entry.Timestamp, &entry.GuildID); err != nil {
 			return
 		}
-		res[i] = entry
-		i++
+		res = append(res, entry)
 	}
 
 	return
@@ -1576,6 +1615,20 @@ func (m *MysqlMiddleware) SetUserVerified(userID string, enabled bool) error {
 		v = "1"
 	}
 	return m.setUserSetting(userID, "verified", v)
+}
+
+func (m *MysqlMiddleware) GetUserStarboardOptout(userID string) (enabled bool, err error) {
+	v, err := m.getUserSetting(userID, "starboardOptout")
+	enabled = v == "1"
+	return
+}
+
+func (m *MysqlMiddleware) SetUserStarboardOptout(userID string, enabled bool) error {
+	v := "0"
+	if enabled {
+		v = "1"
+	}
+	return m.setUserSetting(userID, "starboardOptout", v)
 }
 
 func (m *MysqlMiddleware) GetGuildVoiceLogIgnores(guildID string) (res []string, err error) {
@@ -2058,6 +2111,55 @@ func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (ok bo
 	err = wrapNotFoundError(err)
 	affected, err := res.RowsAffected()
 	ok = affected > 0
+	return
+}
+
+func (m *MysqlMiddleware) FlushUserData(userID string) (res map[string]int, err error) {
+	res = make(map[string]int)
+
+	r, err := m.Db.Exec(`
+		UPDATE reports
+		SET executorID = "000000000000000000"
+		WHERE executorID = ? AND victimID != ?
+	`, userID, userID)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+	affected, err := r.RowsAffected()
+	if err != nil {
+		return
+	}
+	res["reports"] = int(affected)
+
+	r, err = m.Db.Exec(`
+		DELETE FROM karma
+		WHERE userID = ?
+		AND value >= 0
+	`, userID)
+	if err != nil && err != sql.ErrNoRows {
+		return
+	}
+	affected, err = r.RowsAffected()
+	if err != nil {
+		return
+	}
+	res["karma"] = int(affected)
+
+	for _, tc := range userTables {
+		r, err = m.Db.Exec(fmt.Sprintf(`
+			DELETE FROM %s
+			WHERE %s = ?
+		`, tc.Table, tc.Column), userID)
+		if err != nil && err != sql.ErrNoRows {
+			return
+		}
+		affected, err = r.RowsAffected()
+		if err != nil {
+			return
+		}
+		res[tc.Table] = int(affected)
+	}
+
 	return
 }
 

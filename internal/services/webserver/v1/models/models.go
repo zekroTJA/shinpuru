@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
@@ -323,6 +323,10 @@ type UsersettingsOTA struct {
 	Enabled bool `json:"enabled"`
 }
 
+type UsersettingsPrivacy struct {
+	StarboardOptout bool `json:"starboard_optout"`
+}
+
 // StarboardEntryResponse wraps a starboard entry
 // as response model containing hydrated information
 // of the author.
@@ -381,6 +385,15 @@ type CaptchaSiteKey struct {
 
 type CaptchaVerificationRequest struct {
 	Token string `json:"token"`
+}
+
+type CodeExecSettings struct {
+	EnableStatus
+
+	Type                string   `json:"type"`
+	TypesOptions        []string `json:"types_options,omitempty"`
+	JdoodleClientId     string   `json:"jdoodle_clientid,omitempty"`
+	JdoodleClientSecret string   `json:"jdoodle_clientsecret,omitempty"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

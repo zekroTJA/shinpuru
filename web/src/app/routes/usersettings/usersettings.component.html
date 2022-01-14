@@ -1,84 +1,202 @@
 <div>
-    <h1 class="mt-3">User Settings</h1>
+  <h1 class="mt-3">User Settings</h1>
 
-    <div class="settings-container">
-        <div class="mb-4">
-            <a id="apitoken"></a>
-            <h2>API Token</h2>
-            <p class="mt-3">
-                <a href="https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs" target="_blank">
-                <strong>Here</strong>
-            </a> you can find the API documentation of shinpuru.</p>
-        </div>
-    
-        <app-spinner *ngIf="!token && !notGenerated" [started]="true"></app-spinner>
-        
-        <div *ngIf="notGenerated">
-            <i>No API token is generated.</i>
-        </div>
-    
-        <div *ngIf="token">
-            <div *ngIf="token.token" class="mb-4">
-                <div class="warning mb-3">
-                    <h3>Warning</h3>
-                    <p>
-                        The token is only shown after re-initialization once. As soon as you reload
-                        this page, the token will not be shown again!
-                    </p>
-                </div>
-                <a (click)="revealToken = !revealToken">{{ revealToken ? 'Hide Token' : 'Reveal Token' }}</a>
-                <p *ngIf="revealToken" class="embed">{{ token.token }}</p>
-                <div class="mt-3">
-                    <button (click)="copyTokenToClipboard()">Copy Token</button>
-                </div>
-            </div>
-    
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Created</th>
-                        <td>{{ dateFormat(token.created) }}</td>
-                    </tr>
-                    <tr>
-                        <th>Expires</th>
-                        <td>{{ dateFormat(token.expires) }}</td>
-                    </tr>
-                    <tr>
-                        <th>Last Access</th>
-                        <td>{{ dateFormat(token.last_access) }}</td>
-                    </tr>
-                    <tr>
-                        <th>Hits</th>
-                        <td>{{ token.hits }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    
-        <div class="mt-4">
-            <button class="bg-orange mr-3" (click)="generateToken()">
-                {{ token ? 'REGENERATE TOKEN' : 'GENERATE TOKEN' }}
-            </button>
-            <button *ngIf="token" class="bg-red" (click)="resetToken()">
-                DELETE TOKEN
-            </button>
-        </div>
-    </div>
-    
-    <div class="settings-container">
-        <a id="ota"></a>
-        <h2>One Time Auth</h2>
-        <app-spinner *ngIf="!ota" [started]="true"></app-spinner>
-        <div *ngIf="ota" class="mt-3">
-            <p>
-                OTA is disabled by default, because it uses URL queries to pass the OTA credential, which
-                <i>might</i> be insecure. Read 
-                <a href="https://github.com/zekroTJA/shinpuru/wiki/One-Time-Authentication-(OTA)" target="_blank" class="link">here</a> 
-                about how OTA works and which security considerations are to keep in mind.
-            </p>
-            <app-slider [(ngModel)]="ota.enabled">Enable</app-slider>
-            <button class="bg-green" (click)="onOTASave()">SAVE</button>
-        </div>
+  <div class="settings-container">
+    <div class="mb-4">
+      <a id="apitoken"></a>
+      <h2>API Token</h2>
+      <p class="mt-3">
+        <a
+          href="https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs"
+          target="_blank"
+        >
+          <strong>Here</strong>
+        </a>
+        you can find the API documentation of shinpuru.
+      </p>
     </div>
 
+    <app-skeleton-tile
+      *ngIf="!token && !notGenerated"
+      width="360px"
+      height="141px"
+    ></app-skeleton-tile>
+
+    <div *ngIf="notGenerated">
+      <i>No API token is generated.</i>
+    </div>
+
+    <div *ngIf="token">
+      <div *ngIf="token.token" class="mb-4">
+        <div class="warning mb-3">
+          <h3>Warning</h3>
+          <p>
+            The token is only shown after re-initialization once. As soon as you
+            reload this page, the token will not be shown again!
+          </p>
+        </div>
+        <a (click)="revealToken = !revealToken">{{
+          revealToken ? 'Hide Token' : 'Reveal Token'
+        }}</a>
+        <p *ngIf="revealToken" class="embed">{{ token.token }}</p>
+        <div class="mt-3">
+          <button (click)="copyTokenToClipboard()">Copy Token</button>
+        </div>
+      </div>
+
+      <table>
+        <tbody>
+          <tr>
+            <th>Created</th>
+            <td>{{ dateFormat(token.created) }}</td>
+          </tr>
+          <tr>
+            <th>Expires</th>
+            <td>{{ dateFormat(token.expires) }}</td>
+          </tr>
+          <tr>
+            <th>Last Access</th>
+            <td>{{ dateFormat(token.last_access) }}</td>
+          </tr>
+          <tr>
+            <th>Hits</th>
+            <td>{{ token.hits }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <button class="bg-orange mr-3" (click)="generateToken()">
+        {{ token ? 'REGENERATE TOKEN' : 'GENERATE TOKEN' }}
+      </button>
+      <button *ngIf="token" class="bg-red" (click)="resetToken()">
+        DELETE TOKEN
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-container">
+    <a id="ota"></a>
+    <h2>One Time Auth</h2>
+    <div class="mt-3">
+      <p>
+        OTA is disabled by default, because it uses URL queries to pass the OTA
+        credential, which
+        <i>might</i> be insecure. Read
+        <a
+          href="https://github.com/zekroTJA/shinpuru/wiki/One-Time-Authentication-(OTA)"
+          target="_blank"
+          class="link"
+          >here</a
+        >
+        about how OTA works and which security considerations are to keep in
+        mind.
+      </p>
+      <app-skeleton-tile
+        *ngIf="!ota"
+        width="100px"
+        height="20px"
+        margin="0 0 20px 0"
+        delay="0.1s"
+      ></app-skeleton-tile>
+      <app-slider *ngIf="ota" [(ngModel)]="ota.enabled">Enable</app-slider>
+      <button class="bg-green" (click)="onOTASave()">SAVE</button>
+    </div>
+  </div>
+
+  <div class="settings-container">
+    <a id="privacy"></a>
+    <h2>Privacy</h2>
+    <div class="mt-3">
+      <h4>Starboard</h4>
+      <p class="mt-3">
+        The starboard allows users to vote high quality or funny messages into
+        the "starboard", where all votes messages are presented with their vote
+        count. This starboard is represented as channel on the guild as well as
+        section in the web interface. Therefore, the message content needs to be
+        stored in the database. If you don't want your messages to be presented
+        in the starboard, here you can opt-out from it globally.
+      </p>
+      <app-skeleton-tile
+        *ngIf="!privacy"
+        width="100px"
+        height="20px"
+        margin="0 0 20px 0"
+        delay="0.1s"
+      ></app-skeleton-tile>
+      <app-slider *ngIf="privacy" [(ngModel)]="privacy.starboard_optout"
+        >Opt-out from Starboard</app-slider
+      >
+      <button class="bg-green" (click)="onPrivacySave()">SAVE</button>
+    </div>
+    <div class="user-data-flush mt-4">
+      <p>
+        Following, you are able to remove data linked to your Discord account ID
+        in shinpurus database.<br />
+        <br />
+        This does not apply to the following data:
+      </p>
+      <ul>
+        <li>Reports created against you.</li>
+        <li>
+          Reports created by you are not removed but your ID will be anonymized.
+        </li>
+        <li>Karma entries when your karma score is below 0.</li>
+        <li>Data temporarily stored in the cache.</li>
+      </ul>
+      <p>
+        Not all settings and data will be removed immediately after flushing
+        your data because some settings stored in the database are cached to
+        improve performance.
+      </p>
+      <button class="bg-red" (click)="flushData()">DELETE USER DATA</button>
+    </div>
+  </div>
 </div>
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Delete ALL guild data?</h4>
+  </div>
+  <div class="modal-body">
+    <p>
+      Do you really want to delete your user data
+      <strong>PERMANENTLY</strong>?<br />
+      This includes the following information:
+    </p>
+    <ul>
+      <li>Starboard entries</li>
+      <li>API tokens</li>
+      <li>Refresh tokens</li>
+      <li>Tags created by you</li>
+      <li>Unban requests created or processed by you</li>
+      <li>Your user settings</li>
+      <li>Your verification state</li>
+    </ul>
+    <p>
+      Because of the removal of refresh tokens, you will be logged out after
+      data removal.
+    </p>
+    <p>
+      Please enter your user name below to confirm.<br />
+      <span class="embedded">{{ selfUser.username }}</span>
+    </p>
+    <input
+      type="text"
+      class="w-100"
+      [(ngModel)]="validator"
+      placeholder="Username"
+    />
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="modal.close(true)"
+      class="bg-red"
+      [disabled]="validator !== selfUser.username"
+    >
+      DELETE ALL DATA
+    </button>
+    <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+  </div>
+</ng-template>

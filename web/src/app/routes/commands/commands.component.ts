@@ -61,7 +61,7 @@ export class CommandsComponent implements OnInit {
 
   hasSubCommands(cmd: CommandInfo) {
     return (
-      cmd.options.length != 0 &&
+      cmd.options?.length > 0 &&
       cmd.options[0].type === CommandOptionType.SUBCOMMAND
     );
   }

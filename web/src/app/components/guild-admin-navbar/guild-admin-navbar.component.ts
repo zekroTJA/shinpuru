@@ -33,6 +33,12 @@ const ROUTES: Route[] = [
     perm: 'sp.guild.config.antiraid',
   },
   {
+    route: 'codeexec',
+    icon: 'code.svg',
+    displayname: 'Code Execution',
+    perm: 'sp.guild.config.exec',
+  },
+  {
     route: 'verification',
     icon: 'verification.svg',
     displayname: 'Verification',

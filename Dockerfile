@@ -24,7 +24,7 @@ COPY web .
 # Get dependencies
 RUN npm ci
 # Build static web app files
-RUN npx ng build --prod=true \
+RUN npx ng build --configuration production \
   --output-path dist
 
 # ------------------------------------------------------------

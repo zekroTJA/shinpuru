@@ -122,6 +122,16 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	ok, err = l.db.GetUserStarboardOptout(msg.Author.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		logrus.WithError(err).Error("STARBOARD :: failed getting starboard user optout")
+		l.gl.Errorf(e.GuildID, "Failed getting starboard user optout: %s", err.Error())
+		return
+	}
+	if ok {
+		return
+	}
+
 	starboardEntry, err := l.db.GetStarboardEntry(msg.ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).Error("STARBOARD :: failed getting starboard entry")
@@ -343,9 +353,11 @@ func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err e
 
 	iimg = thumbnail.Make(iimg, int(maxSize))
 
-	cDone := make(chan struct{}, 1)
-	iimg = stackblur.Process(iimg, uint32(iimg.Bounds().Dx()), uint32(iimg.Bounds().Dy()), 50, cDone)
-	<-cDone
+	iimg, err = stackblur.Run(iimg, 50)
+	fmt.Println(err)
+	if err != nil {
+		return
+	}
 
 	newImgData := bytes.NewBuffer([]byte{})
 	err = jpeg.Encode(newImgData, iimg, &jpeg.Options{

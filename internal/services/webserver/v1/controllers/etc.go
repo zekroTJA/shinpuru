@@ -9,6 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
+	_ "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
@@ -37,6 +38,7 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
+	router.Get("/privacyinfo", c.getPrivacyinfo)
 }
 
 // @Summary Me
@@ -123,4 +125,15 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(res)
+}
+
+// @Summary Privacy Information
+// @Description Returns general global privacy information.
+// @Tags Etc
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Privacy
+// @Router /privacyinfo [get]
+func (c *EtcController) getPrivacyinfo(ctx *fiber.Ctx) error {
+	return ctx.JSON(c.cfg.Config().Privacy)
 }

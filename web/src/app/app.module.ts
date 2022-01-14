@@ -62,6 +62,7 @@ import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { VerifyRouteComponent } from './routes/verify/verify.component';
 import { LoginButtonComponent } from './components/login-button/login-button.component';
 import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
+import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-codeexec.component';
 
 @NgModule({
   declarations: [
@@ -116,6 +117,7 @@ import { GuildAdminVerificationComponent } from './routes/guild-admin/verificati
     VerifyRouteComponent,
     LoginButtonComponent,
     GuildAdminVerificationComponent,
+    GuildAdminCodeExecComponent,
   ],
   imports: [
     NgbModule,

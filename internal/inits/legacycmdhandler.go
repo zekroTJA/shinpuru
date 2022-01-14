@@ -57,6 +57,7 @@ func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 	}
 
 	cmdHandler.RegisterMiddleware(middleware.NewDisableCommandsMiddleware(container))
+	cmdHandler.RegisterMiddleware(middleware.NewDeprecationMiddleware(container))
 	cmdHandler.RegisterMiddleware(pmw)
 	cmdHandler.RegisterMiddleware(gpim)
 

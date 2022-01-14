@@ -16,6 +16,7 @@ const typeColors = ['#d81b60', '#e53935', '#009688', '#fb8c00', '#8e24aa'];
 export class ReportComponent implements OnInit {
   @Input() public report: Report;
   @Input() public allowRevoke: boolean;
+  @Input() public fetchData: boolean;
 
   @Output() public revoke = new EventEmitter<any>();
 
@@ -26,12 +27,12 @@ export class ReportComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      if (!this.report.executor)
+      if (!this.report.executor && this.fetchData)
         this.report.executor = await this.api
           .getUser(this.report.executor_id)
           .toPromise();
 
-      if (!this.report.victim)
+      if (!this.report.victim && this.fetchData)
         this.report.victim = await this.api
           .getUser(this.report.victim_id)
           .toPromise();

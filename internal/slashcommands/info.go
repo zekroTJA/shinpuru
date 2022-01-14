@@ -3,9 +3,11 @@ package slashcommands
 import (
 	_ "embed"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
@@ -70,6 +72,13 @@ func (c *Info) Run(ctx *ken.Ctx) (err error) {
 
 	invLink := util.GetInviteLink(self.ID)
 
+	cfg := ctx.Get(static.DiConfig).(config.Provider)
+	var privacyContacts strings.Builder
+	for _, c := range cfg.Config().Privacy.Contact {
+		privacyContacts.WriteString(
+			fmt.Sprintf("- %s: [%s](%s)\n", c.Title, c.Value, c.URL))
+	}
+
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "Info",
@@ -95,6 +104,11 @@ func (c *Info) Run(ctx *ken.Ctx) (err error) {
 				Name: "Invite",
 				Value: fmt.Sprintf("[Invite Link](%s).\n```\n%s\n```",
 					invLink, invLink),
+			},
+			{
+				Name: "Privacy",
+				Value: fmt.Sprintf("[Privacy Notice](%s)\n\nContact:\n%s",
+					cfg.Config().Privacy.NoticeURL, privacyContacts.String()),
 			},
 			{
 				Name:  "Bug Hunters",

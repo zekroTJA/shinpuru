@@ -46,3 +46,10 @@ a {
     margin: 0;
   }
 }
+
+.user-data-flush {
+  background-color: rgba($c-red, 0.2);
+  border: solid 2px $c-red;
+  border-radius: 5px;
+  padding: 10px;
+}

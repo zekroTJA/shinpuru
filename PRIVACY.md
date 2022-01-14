@@ -1,54 +1,111 @@
-# Privacy
+# Privacy Notice
 
 This document explains which data is collected and stored by shinpuru, why it is collected and what you can do to delete your data from shinpuru.
 
-## Which data is collected by shinpuru?
+The main instances of shinpuru and it's databases are running on a VPS hosted by [contabo.de](https://contabo.de/) in Germany. The server is hosted by me, Ringo Hoffmann aka. zekro (contact details below). 
 
-The following data is stored persistently which can be directly linked to your guild and/or user account.
+**This privacy notice only refers to the main instances of shinpuru (`shinpuru#4878` / https://shnp.de and `shinpuru Canary#3479` / https://c.shnp.de) and excludes all 3rd party hosted instances and forks of shinpuru.**
 
+## Contact details
+
+Ringo Hoffmann
+
+Mail: contact@zekro.de  
+Twitter: https://twitter.com/zekrotja
+
+You can also contact me on my Discord: `zekro#0001` @ https://discord.zekro.de
+
+If you need my address, please refer to my Imprint: https://www.zekro.de/imprint
+
+## Which data is collected and for what purpose?
+
+All data collected by shinpuru either originates from direct user input or via the Discord REST and Gateway API. 
+
+There are two main purposes data is collected and stored in shinpuru:
+
+### A) Persistence
+
+Some data is stored **persistently (permanently)** in the database of shinpuru to ensure a good user experience as well as maintaining state for security features implemented in shinpuru.
+
+This includes the following data:
 - User IDs
-- Guild IDs
-- Channel IDs
-- Role IDs
-- Message IDs
-- Message Contents*
-- Message Attachments*
+- Message content¹
+- User input text
+- User uploaded media
 
-**Message contents and media attachments are only stored for specific purposes and not in a general way. No message contents or message attachments are logged in any way.*
+¹Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API. The users are abloe to globally opt-out from the starboard via the privacy settings in the unser settings in the web interface.
 
-## Why is this data stored?
+User IDs are used to link stored data to Discord users like:
+- API and refresh tokens for authentication against shinpuru's API (for example via the web interface)
+- User specific settings
+- User verification states
+- Reports created by or against users
+- Karma scores per guild
+- Ownership of a created tag or vote
+- Starboard entries
 
-First of all, Guild IDs are saved to store settings, preferences and permissions in combination with a guild. Channel IDs are stored for setting destinations for join/leave mesasges, voice log, mod log and the starboard. Role IDs need to be stored to map permission rules with assigned roles to users.
+User input text and uploaded media is stored to be used in the following cases:
+- Reason and proof for a created report
+- Description of vote contents
 
-Message IDs are stored in combination with Channel and Guild IDs to link to vote messages or to the original messages of starboard messages. When a message is presented in the starboard, the message content is stored to the database to present it in the web interface.
+shinpuru also has a feature called `Antiraid` which watches the influx rate of users to a guild. When shinpuru detects an anomaly, the system triggers and all following users joining are logged. **This data is automatically removed after 48 hours**. These logs include the following data:
+- User ID
+- Username and Discriminator
+- Account created date *(calculated from the ID)*
+- Guild join timestamp
 
-User IDs are explicitly stored for API tokens, karma points, the karma blocklist, the antiraid joinlog, unban requests and refresh tokens *(for the web authentication system)*.
+### B) Performance
 
-User IDs and message IDs are also stored temporarily for limiting and ensuring functionality of some features like the karma or starboard system. As mentioned, the storage is only temporarily and time limited.
+shinpuru **temporarily** caches a lot of data from the Discord API to improve performance and reduce load on the Discord API (primarily to avoid rate limit timeouts). All sensitive data stored in the cache is no longer stored than 30 days.
 
-## How and where is this data stored?
+This includes the following data:
+- User IDs
+- Usernames
+- Discriminators
+- Avatar IDs
+- Nicknames
+- Guild join timestamps
+- Message content / embeds
 
-Data is stored in in 3 primary "levels" in the shinpuru stack.
+The main purpose of storing this data is to requesting it from the cache, if available, instead of from the Discord API. This massively reduces latencies and avoids frequent calls to the Discord API, which will result in rate limit timeouts.
 
-The first level are caches inside the applications memory. Data in this level is only stored for a short time period and not persistent. This layer is mostly used for caching, rate limiting and scheduling tasks.
+## How can I remove my personal data from shinpuru?
 
-The second layer is another deeper cache layer which sits between the database and the application and mirrors parts of the database to reduce access times of highly frequently requested data from the database and also reducing the load on the database as well. This data is only stored during the runtime of the redis instance, so it is semi-persistent. Also, this cache is used for multiple instances of shinpuru when sharding is used.
+There are two options in place to directly remove personal data in the web interface.
 
-The third layer is the central MariaDB database of shinpuru where all persistent data is stored permanently.
+### A) Guild data removal
 
-If you are interested in details where which data is stored in which way, take a look at the [database implementation of shinpuru](https://github.com/zekroTJA/shinpuru/tree/master/internal/services/database).
+You are able to remove all stored data linked to your guild via the web interface. Therefore, open the web interface, select the desired guild, click on the ⚙️ Button to go to the guild settings, select `Data` in the navigation menu and click on `DELETE ALL GUILD DATA PERMANENTLY`.
 
-## How can I remove my data?
+https://user-images.githubusercontent.com/16734205/149119858-f41fe4e6-8239-45ec-b23d-c8a666e2d128.mp4
 
-If you want to delete all guild data, this includes all reports and associated image data; all backups and associated backup files; all karma scores, settings, rules and blocklist; all starboard entries and configuration; all guild settings and permission specifications; tags; antiraid settings and joinlog and all unban requests; you can do it in the guild settings in the web interface at `/guilds/:guildid/guildadmin/data`.
+This removes **all** data from the database and cache which is linked to the guild.
 
-To do so, you need the `sp.guild.admin.flushdata` permission.
+### B) User data removal
 
-![](https://i.imgur.com/vI2J0k9.png)
+You can remove personal data stored and linked to your Discord account directly via the web interface. Therefore, log in to the web interface, navigate to `User Settings` and press `DELETE USER DATA` in the `Privacy` section.
 
-Otherwise, if you want to have specific user data removed, please contact me via mail to [privacy[at]zekro.de](mailto:privacy@zekro.de). Please send by any type of authentication that the account ID you privide is actually yours. That can be a screen-shot or I will contact you via Discord directly, if you want. Also, please describe as detailed as possible which data you want to have removed.
+https://user-images.githubusercontent.com/16734205/149120171-1d698e73-def1-42e9-a653-d7c2caed5bd6.mp4
 
-## Any questions?
+This action removes the following data linked to your Discord account:
+- Starboard entries 
+- API tokens
+- Refresh tokens
+- Tags created by you
+- Unban requests created or processed by you
+- Your user settings
+- Your verification state
+- User and member data in the cache
 
-If you have any questions or privacy concerns, feel free to contact me. 😊  
-https://zekro.de/contact
+Because of measures to avoid abusement of the security systems implemented into shinpuru (like the report and karma system), not all data is removed which is linked to the user. The following data will not be removed by this action:
+- Reports created against you
+- Reports created by you are not removed but your ID will be anonymized
+- Karma entries when your karma score is below 0
+- User settings temporarily stored in the cache
+
+If you want this data to be removed, please contact me (zekro) directly. You can find my contact information [at the top of this document](#contact-details).
+
+---
+
+shinpuru Privacy Notice v1.0.0.  
+Last Edit: 2022/01/13.

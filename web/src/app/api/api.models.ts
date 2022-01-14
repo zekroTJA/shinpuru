@@ -182,6 +182,17 @@ export interface SystemInfo {
   guilds: number;
 }
 
+export interface Contact {
+  title: string;
+  value: string;
+  url?: string;
+}
+
+export interface PrivacyInfo {
+  noticeurl: string;
+  contact: Contact[];
+}
+
 export interface APIToken {
   created: Date;
   expires: Date;
@@ -411,4 +422,16 @@ export interface VerificationSiteKey {
 
 export interface GuildSettingsVerification {
   enabled: boolean;
+}
+
+export interface CodeExecSettings {
+  enabled: boolean;
+  type: string;
+  types_options?: string;
+  jdoodle_clientid?: string;
+  jdoodle_clientsecret?: string;
+}
+
+export interface UserSettingsPrivacy {
+  starboard_optout: boolean;
 }

@@ -1,20 +1,28 @@
 /** @format */
 
-import { Component } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
-import { APIToken, UserSettingsOTA } from 'src/app/api/api.models';
+import {
+  APIToken,
+  User,
+  UserSettingsOTA,
+  UserSettingsPrivacy,
+} from 'src/app/api/api.models';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ToastService } from 'src/app/components/toast/toast.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-usersettings',
   templateUrl: './usersettings.component.html',
   styleUrls: ['./usersettings.component.scss'],
 })
-export class UserSettingsComponent {
+export class UserSettingsComponent implements OnInit {
+  @ViewChild('modalConfirm') private modalConfirm: TemplateRef<any>;
+
   public dateFormat = (d: string | Date, f = TIME_FORMAT) =>
     format(new Date(d), f);
 
@@ -23,9 +31,21 @@ export class UserSettingsComponent {
   public revealToken = false;
 
   public ota: UserSettingsOTA;
+  public privacy: UserSettingsPrivacy;
 
-  constructor(private api: APIService, private toats: ToastService) {
+  public selfUser: User;
+  public validator: string;
+
+  constructor(
+    private api: APIService,
+    private toats: ToastService,
+    private modals: NgbModal,
+    private toasts: ToastService
+  ) {}
+
+  public async ngOnInit() {
     this.fetch();
+    this.selfUser = await this.api.getSelfUser().toPromise();
   }
 
   public resetToken() {
@@ -74,6 +94,46 @@ export class UserSettingsComponent {
     });
   }
 
+  public onPrivacySave() {
+    this.api.postUserSettingsPrivacy(this.privacy).subscribe((data) => {
+      this.privacy = data;
+      this.toats.push(
+        'Privacy settings successfully updated.',
+        'Privacy Settings Updated',
+        'green',
+        3000
+      );
+    });
+  }
+
+  public async flushData() {
+    this.validator = '';
+    try {
+      const res = await this.modals.open(this.modalConfirm, {
+        windowClass: 'dark-modal',
+      }).result;
+      if (!res) return;
+      if (this.validator !== this.selfUser.username) {
+        this.toasts.push(
+          'The entered user name does not match!',
+          'Validation failed',
+          'error',
+          10000
+        );
+        return;
+      }
+      const fres = await this.api.postUserSettingsFlush().toPromise();
+      const fresAssembled = Object.keys(fres)
+        .map((k) => `${k}: ${fres[k]}, `)
+        .join('\n');
+      this.toasts.push(
+        'Removed entries: ' + fresAssembled,
+        'User data removed!',
+        'success'
+      );
+    } catch {}
+  }
+
   private fetch() {
     this.api
       .getAPIToken(true)
@@ -83,9 +143,9 @@ export class UserSettingsComponent {
         this.token = data;
       });
 
-    this.api.getUserSettingsOTA().subscribe((data) => {
-      console.log(data);
-      this.ota = data;
-    });
+    this.api.getUserSettingsOTA().subscribe((data) => (this.ota = data));
+    this.api
+      .getUserSettingsPrivacy()
+      .subscribe((data) => (this.privacy = data));
   }
 }

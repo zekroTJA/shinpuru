@@ -2,7 +2,7 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
-import { SystemInfo } from 'src/app/api/api.models';
+import { PrivacyInfo, SystemInfo } from 'src/app/api/api.models';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
 
@@ -13,6 +13,7 @@ import { TIME_FORMAT } from 'src/app/utils/consts';
 })
 export class InfoComponent implements OnDestroy {
   public sysinfo: SystemInfo;
+  public privacyinfo: PrivacyInfo;
   public uptime: number;
 
   private refreshTimer: any;
@@ -49,6 +50,9 @@ export class InfoComponent implements OnDestroy {
       this.sysinfo = sysinfo;
       this.uptime = sysinfo.uptime;
     });
+    this.api
+      .getPrivacyInfo()
+      .subscribe((privacyinfo) => (this.privacyinfo = privacyinfo));
   }
 
   public byteCountFormatter(bc: number) {

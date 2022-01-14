@@ -611,6 +611,15 @@ definitions:
           $ref: '#/definitions/shireikan.SubPermission'
         type: array
     type: object
+  models.Contact:
+    properties:
+      title:
+        type: string
+      url:
+        type: string
+      value:
+        type: string
+    type: object
   models.Count:
     properties:
       count:
@@ -951,6 +960,15 @@ definitions:
           type: string
         type: array
     type: object
+  models.Privacy:
+    properties:
+      contact:
+        items:
+          $ref: '#/definitions/models.Contact'
+        type: array
+      noticeurl:
+        type: string
+    type: object
   models.ReasonRequest:
     properties:
       attachment:
@@ -1199,6 +1217,11 @@ definitions:
   models.UsersettingsOTA:
     properties:
       enabled:
+        type: boolean
+    type: object
+  models.UsersettingsPrivacy:
+    properties:
+      starboard_optout:
         type: boolean
     type: object
   permissions.SubPermission:
@@ -2586,6 +2609,69 @@ paths:
       summary: Set Guild Settings API State
       tags:
       - Guilds
+  /guilds/{id}/settings/codeexec:
+    get:
+      consumes:
+      - application/json
+      description: Returns the settings state of the Guild Code Exec.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EnableStatus'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Guild Settings Code Exec State
+      tags:
+      - Guilds
+    post:
+      consumes:
+      - application/json
+      description: Set the settings state of the Guild Code Exec.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The guild API settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.EnableStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EnableStatus'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Set Guild Settings Code Exec State
+      tags:
+      - Guilds
   /guilds/{id}/settings/flushguilddata:
     post:
       consumes:
@@ -3150,7 +3236,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Set the settings state of the Guild API.
+      description: Set the settings state of the Guild Verification.
       parameters:
       - description: The ID of the guild.
         in: path
@@ -3376,6 +3462,21 @@ paths:
       summary: OTA Login
       tags:
       - OTA
+  /privacyinfo:
+    get:
+      consumes:
+      - application/json
+      description: Returns general global privacy information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Privacy'
+      summary: Privacy Information
+      tags:
+      - Etc
   /public/guilds/{id}:
     get:
       consumes:
@@ -3786,6 +3887,29 @@ paths:
       summary: User
       tags:
       - Users
+  /usersettings/flush:
+    post:
+      consumes:
+      - application/json
+      description: Flush all user data.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsOTA'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: FLush all user data
+      tags:
+      - User Settings
   /usersettings/ota:
     get:
       consumes:
@@ -3840,6 +3964,62 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Update OTA Usersettings State
+      tags:
+      - User Settings
+  /usersettings/privacy:
+    get:
+      consumes:
+      - application/json
+      description: Returns the current Privacy user settinga.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsPrivacy'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Privacy Usersettings
+      tags:
+      - User Settings
+    post:
+      consumes:
+      - application/json
+      description: Update the Privacy user settings.
+      parameters:
+      - description: The privacy settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsersettingsPrivacy'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsPrivacy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Privacy Usersettings
       tags:
       - User Settings
   /util/color/{hexcode}:

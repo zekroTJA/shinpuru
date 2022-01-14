@@ -41,6 +41,9 @@ import {
   ChannelWithPermissions,
   VerificationSiteKey,
   GuildSettingsVerification,
+  CodeExecSettings,
+  PrivacyInfo,
+  UserSettingsPrivacy,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -160,6 +163,9 @@ export class APIService {
 
   private readonly rcGuildSettingsVerification = (guildID: string) =>
     `${this.rcGuildSettings(guildID)}/verification`;
+
+  private readonly rcGuildSettingsCodeExec = (guildID: string) =>
+    `${this.rcGuildSettings(guildID)}/codeexec`;
 
   private readonly rcGuildPermissions = (guildID: string) =>
     `${this.rcGuilds(guildID)}/permissions`;
@@ -653,6 +659,12 @@ export class APIService {
       .pipe(catchError(this.errorCatcher));
   }
 
+  public getPrivacyInfo(): Observable<PrivacyInfo> {
+    return this.http
+      .get(this.rcAPI('privacyinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
   public getAPIToken(ignoreError: boolean = false): Observable<APIToken> {
     let req = this.http.get<APIToken>(this.rcAPI('token'), this.defopts());
     if (!ignoreError) {
@@ -1049,6 +1061,43 @@ export class APIService {
   ): Observable<any> {
     return this.http
       .post(this.rcGuildSettingsVerification(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getGuildSettingsCodeExec(
+    guildID: string
+  ): Observable<CodeExecSettings> {
+    return this.http
+      .get(this.rcGuildSettingsCodeExec(guildID), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postGuildSettingsCodeExec(
+    guildID: string,
+    settings: CodeExecSettings
+  ): Observable<any> {
+    return this.http
+      .post(this.rcGuildSettingsCodeExec(guildID), settings, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUserSettingsFlush(): Observable<object> {
+    return this.http
+      .post(this.rcUserSettings('flush'), {}, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUserSettingsPrivacy(): Observable<UserSettingsPrivacy> {
+    return this.http
+      .get(this.rcUserSettings('privacy'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUserSettingsPrivacy(
+    settings: UserSettingsPrivacy
+  ): Observable<UserSettingsPrivacy> {
+    return this.http
+      .post(this.rcUserSettings('privacy'), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

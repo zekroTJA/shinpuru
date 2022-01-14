@@ -42,7 +42,7 @@ func (l *ListenerVerifications) HandlerMemberRemove(s *discordgo.Session, e *dis
 
 func (l *ListenerVerifications) enabled(guildID string) (ok bool) {
 	ok, err := l.db.GetGuildVerificationRequired(guildID)
-	if err != nil {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).WithField("gid", guildID).Error("Failed getting guild verification state from database")
 		l.gl.Errorf(guildID, "Failed getting guild verification state from database: %s", err.Error())
 	}

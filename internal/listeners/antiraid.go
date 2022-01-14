@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
+	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
@@ -20,8 +21,6 @@ import (
 
 const (
 	arTriggerCleanupDuration = 1 * time.Hour
-	arTriggerRecordLifetime  = 24 * time.Hour
-	arTriggerLifetime        = 2 * arTriggerRecordLifetime
 )
 
 type guildState struct {
@@ -63,7 +62,7 @@ func (l *ListenerAntiraid) addToJoinlog(e *discordgo.GuildMemberAdd) {
 
 func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
 	if v, ok := l.triggers.GetValue(e.GuildID).(time.Time); ok {
-		if time.Since(v) < arTriggerRecordLifetime {
+		if time.Since(v) < antiraid.TriggerRecordLifetime {
 			l.addToJoinlog(e)
 		}
 		return
@@ -143,10 +142,10 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		return
 	}
 
-	l.triggers.Set(e.GuildID, time.Now(), arTriggerLifetime, func(v interface{}) {
+	l.triggers.Set(e.GuildID, time.Now(), antiraid.TriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
-			l.gl.Errorf(e.GuildID, "Failed flusing joinlist: %s", err.Error())
+			l.gl.Errorf(e.GuildID, "Failed flushing joinlist: %s", err.Error())
 		}
 	})
 

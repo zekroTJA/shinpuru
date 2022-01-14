@@ -70,8 +70,10 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 
 	var user *discordgo.User
 
-	for _, user = range ctx.Event.ApplicationCommandData().Resolved.Users {
-		break
+	if resolved := ctx.Event.ApplicationCommandData().Resolved; resolved != nil {
+		for _, user = range ctx.Event.ApplicationCommandData().Resolved.Users {
+			break
+		}
 	}
 
 	if user == nil {
