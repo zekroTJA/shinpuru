@@ -122,6 +122,16 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	ok, err = l.db.GetUserStarboardOptout(msg.Author.ID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		logrus.WithError(err).Error("STARBOARD :: failed getting starboard user optout")
+		l.gl.Errorf(e.GuildID, "Failed getting starboard user optout: %s", err.Error())
+		return
+	}
+	if ok {
+		return
+	}
+
 	starboardEntry, err := l.db.GetStarboardEntry(msg.ID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		logrus.WithError(err).Error("STARBOARD :: failed getting starboard entry")
