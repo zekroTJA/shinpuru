@@ -29,9 +29,11 @@ Some data is stored **persistently (permanently)** in the database of shinpuru t
 
 This includes the following data:
 - User IDs
-- Message content
+- Message content¹
 - User input text
 - User uploaded media
+
+¹Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API. The users are abloe to globally opt-out from the starboard via the privacy settings in the unser settings in the web interface.
 
 User IDs are used to link stored data to Discord users like:
 - API and refresh tokens for authentication against shinpuru's API (for example via the web interface)
@@ -42,11 +44,15 @@ User IDs are used to link stored data to Discord users like:
 - Ownership of a created tag or vote
 - Starboard entries
 
-Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API.
-
 User input text and uploaded media is stored to be used in the following cases:
 - Reason and proof for a created report
 - Description of vote contents
+
+shinpuru also has a feature called `Antiraid` which watches the influx rate of users to a guild. When shinpuru detects an anomaly, the system triggers and all following users joining are logged. **This data is automatically removed after 48 hours**. These logs include the following data:
+- User ID
+- Username and Discriminator
+- Account created date *(calculated from the ID)*
+- Guild join timestamp
 
 ### B) Performance
 
@@ -98,3 +104,8 @@ Because of measures to avoid abusement of the security systems implemented into 
 - User settings temporarily stored in the cache
 
 If you want this data to be removed, please contact me (zekro) directly. You can find my contact information [at the top of this document](#contact-details).
+
+---
+
+shinpuru Privacy Notice v1.0.0.  
+Last Edit: 2022/01/13.
