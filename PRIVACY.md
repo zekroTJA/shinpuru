@@ -29,11 +29,11 @@ Some data is stored **persistently (permanently)** in the database of shinpuru t
 
 This includes the following data:
 - User IDs
-- Message content
+- Message content¹
 - User input text
 - User uploaded media
 
-Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API.
+¹Message content is stored only when a message has been voted into the starboard. The starboard is also available in the web interface and therefore, the content of the original message is stored to display it in the web interface without overloading the Discord API. The users are abloe to globally opt-out from the starboard via the privacy settings in the unser settings in the web interface.
 
 User IDs are used to link stored data to Discord users like:
 - API and refresh tokens for authentication against shinpuru's API (for example via the web interface)
