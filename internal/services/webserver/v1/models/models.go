@@ -323,6 +323,10 @@ type UsersettingsOTA struct {
 	Enabled bool `json:"enabled"`
 }
 
+type UsersettingsPrivacy struct {
+	StarboardOptout bool `json:"starboard_optout"`
+}
+
 // StarboardEntryResponse wraps a starboard entry
 // as response model containing hydrated information
 // of the author.

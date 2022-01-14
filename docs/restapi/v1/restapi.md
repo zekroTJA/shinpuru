@@ -2039,6 +2039,49 @@ Update the OTA user settings state.
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
+### /usersettings/privacy
+
+#### GET
+##### Summary
+
+Get Privacy Usersettings
+
+##### Description
+
+Returns the current Privacy user settinga.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
+#### POST
+##### Summary
+
+Update Privacy Usersettings
+
+##### Description
+
+Update the Privacy user settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| payload | body | The privacy settings payload. | Yes | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
+| 400 | Bad Request | [models.Error](#modelserror) |
+| 401 | Unauthorized | [models.Error](#modelserror) |
+| 404 | Not Found | [models.Error](#modelserror) |
+
 ### /util/color/{hexcode}
 
 #### GET
@@ -2864,6 +2907,12 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | enabled | boolean |  | No |
+
+#### models.UsersettingsPrivacy
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| starboard_optout | boolean |  | No |
 
 #### permissions.SubPermission
 

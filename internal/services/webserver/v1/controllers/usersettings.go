@@ -27,6 +27,8 @@ func (c *UsersettingsController) Setup(container di.Container, router fiber.Rout
 
 	router.Get("/ota", c.getOTA)
 	router.Post("/ota", c.postOTA)
+	router.Get("/privacy", c.getPrivacy)
+	router.Post("/privacy", c.postPrivacy)
 	router.Post("/flush", c.postFlush)
 }
 
@@ -76,6 +78,59 @@ func (c *UsersettingsController) postOTA(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(data)
+}
+
+// @Summary Get Privacy Usersettings
+// @Description Returns the current Privacy user settinga.
+// @Tags User Settings
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UsersettingsPrivacy
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /usersettings/privacy [get]
+func (c *UsersettingsController) getPrivacy(ctx *fiber.Ctx) error {
+	uid := ctx.Locals("uid").(string)
+
+	var (
+		res models.UsersettingsPrivacy
+		err error
+	)
+
+	res.StarboardOptout, err = c.db.GetUserStarboardOptout(uid)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(res)
+}
+
+// @Summary Update Privacy Usersettings
+// @Description Update the Privacy user settings.
+// @Tags User Settings
+// @Accept json
+// @Produce json
+// @Param payload body models.UsersettingsPrivacy true "The privacy settings payload."
+// @Success 200 {object} models.UsersettingsPrivacy
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /usersettings/privacy [post]
+func (c *UsersettingsController) postPrivacy(ctx *fiber.Ctx) error {
+	uid := ctx.Locals("uid").(string)
+
+	var err error
+
+	var res models.UsersettingsPrivacy
+	if err = ctx.BodyParser(&res); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err = c.db.SetUserStarboardOptout(uid, res.StarboardOptout); err != nil {
+		return err
+	}
+
+	return ctx.JSON(res)
 }
 
 // @Summary FLush all user data

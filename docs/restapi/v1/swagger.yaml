@@ -1219,6 +1219,11 @@ definitions:
       enabled:
         type: boolean
     type: object
+  models.UsersettingsPrivacy:
+    properties:
+      starboard_optout:
+        type: boolean
+    type: object
   permissions.SubPermission:
     properties:
       description:
@@ -3959,6 +3964,62 @@ paths:
           schema:
             $ref: '#/definitions/models.Error'
       summary: Update OTA Usersettings State
+      tags:
+      - User Settings
+  /usersettings/privacy:
+    get:
+      consumes:
+      - application/json
+      description: Returns the current Privacy user settinga.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsPrivacy'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get Privacy Usersettings
+      tags:
+      - User Settings
+    post:
+      consumes:
+      - application/json
+      description: Update the Privacy user settings.
+      parameters:
+      - description: The privacy settings payload.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsersettingsPrivacy'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersettingsPrivacy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update Privacy Usersettings
       tags:
       - User Settings
   /util/color/{hexcode}:
