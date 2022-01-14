@@ -6,6 +6,8 @@ import { CommandOption, CommandOptionType } from '../api/api.models';
 })
 export class CommandOptionTypePipe implements PipeTransform {
   transform(opt: CommandOption): string {
-    return (Object.values(CommandOptionType)[opt.type] as string).toLowerCase();
+    return (
+      Object.values(CommandOptionType)[opt.type - 1] as string
+    ).toLowerCase();
   }
 }
