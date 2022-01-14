@@ -38,7 +38,7 @@ for BUILD in ${BUILDS[*]}; do
                 -X github.com/zekroTJA/shinpuru/internal/util.AppCommit=$COMMIT \
                 -X github.com/zekroTJA/shinpuru/internal/util.Release=TRUE" \
                 ./cmd/shinpuru)
-            
+
 
     if [ "$OS" = "windows" ]; then
         mv ${BUILDPATH}/${BUILDNAME}_windows_$ARCH $BUILDPATH/${BUILDNAME}_windows_${ARCH}.exe
@@ -47,7 +47,7 @@ done
 
 cd web
 npm ci
-npx ng build --prod --output-path ../bin/web/dist/web
+npx ng build --configuration production --output-path ../bin/web/dist/web
 cd ..
 
 mkdir deploy

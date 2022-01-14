@@ -23,7 +23,7 @@ jobs:
         run: npm ci
       - name: Build Web App
         working-directory: ./web
-        run: npx ng build --prod --output-path ../bin/web/dist/web
+        run: npx ng build --configuration production --output-path ../bin/web/dist/web
       - name: Upload Artifcats
         uses: actions/upload-artifact@v2
         with:

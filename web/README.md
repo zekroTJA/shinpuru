@@ -14,5 +14,5 @@ ng serve --port 8081
 
 With the following command, you can build the static files of the web app which are located in the `dist` directory afterwards.
 ```
-ng build --prod
+ng build --configuration production
 ```
