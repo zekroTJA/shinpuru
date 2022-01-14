@@ -16,7 +16,11 @@
       </p>
     </div>
 
-    <app-spinner *ngIf="!token && !notGenerated" [started]="true"></app-spinner>
+    <app-skeleton-tile
+      *ngIf="!token && !notGenerated"
+      width="360px"
+      height="141px"
+    ></app-skeleton-tile>
 
     <div *ngIf="notGenerated">
       <i>No API token is generated.</i>
@@ -75,8 +79,7 @@
   <div class="settings-container">
     <a id="ota"></a>
     <h2>One Time Auth</h2>
-    <app-spinner *ngIf="!ota" [started]="true"></app-spinner>
-    <div *ngIf="ota" class="mt-3">
+    <div class="mt-3">
       <p>
         OTA is disabled by default, because it uses URL queries to pass the OTA
         credential, which
@@ -90,7 +93,14 @@
         about how OTA works and which security considerations are to keep in
         mind.
       </p>
-      <app-slider [(ngModel)]="ota.enabled">Enable</app-slider>
+      <app-skeleton-tile
+        *ngIf="!ota"
+        width="100px"
+        height="20px"
+        margin="0 0 20px 0"
+        delay="0.1s"
+      ></app-skeleton-tile>
+      <app-slider *ngIf="ota" [(ngModel)]="ota.enabled">Enable</app-slider>
       <button class="bg-green" (click)="onOTASave()">SAVE</button>
     </div>
   </div>
@@ -98,6 +108,28 @@
   <div class="settings-container">
     <a id="privacy"></a>
     <h2>Privacy</h2>
+    <div class="mt-3">
+      <h4>Starboard</h4>
+      <p class="mt-3">
+        The starboard allows users to vote high quality or funny messages into
+        the "starboard", where all votes messages are presented with their vote
+        count. This starboard is represented as channel on the guild as well as
+        section in the web interface. Therefore, the message content needs to be
+        stored in the database. If you don't want your messages to be presented
+        in the starboard, here you can opt-out from it globally.
+      </p>
+      <app-skeleton-tile
+        *ngIf="!privacy"
+        width="100px"
+        height="20px"
+        margin="0 0 20px 0"
+        delay="0.1s"
+      ></app-skeleton-tile>
+      <app-slider *ngIf="privacy" [(ngModel)]="privacy.starboard_optout"
+        >Opt-out from Starboard</app-slider
+      >
+      <button class="bg-green" (click)="onPrivacySave()">SAVE</button>
+    </div>
     <div class="user-data-flush mt-4">
       <p>
         Following, you are able to remove data linked to your Discord account ID

@@ -43,6 +43,7 @@ import {
   GuildSettingsVerification,
   CodeExecSettings,
   PrivacyInfo,
+  UserSettingsPrivacy,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -1083,6 +1084,20 @@ export class APIService {
   public postUserSettingsFlush(): Observable<object> {
     return this.http
       .post(this.rcUserSettings('flush'), {}, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUserSettingsPrivacy(): Observable<UserSettingsPrivacy> {
+    return this.http
+      .get(this.rcUserSettings('privacy'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public postUserSettingsPrivacy(
+    settings: UserSettingsPrivacy
+  ): Observable<UserSettingsPrivacy> {
+    return this.http
+      .post(this.rcUserSettings('privacy'), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
   }
 }

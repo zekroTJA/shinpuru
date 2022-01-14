@@ -431,3 +431,7 @@ export interface CodeExecSettings {
   jdoodle_clientid?: string;
   jdoodle_clientsecret?: string;
 }
+
+export interface UserSettingsPrivacy {
+  starboard_optout: boolean;
+}

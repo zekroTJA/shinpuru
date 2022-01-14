@@ -4,7 +4,12 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { APIService } from 'src/app/api/api.service';
 import { format } from 'date-fns';
 import { TIME_FORMAT } from 'src/app/utils/consts';
-import { APIToken, User, UserSettingsOTA } from 'src/app/api/api.models';
+import {
+  APIToken,
+  User,
+  UserSettingsOTA,
+  UserSettingsPrivacy,
+} from 'src/app/api/api.models';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ToastService } from 'src/app/components/toast/toast.service';
@@ -26,6 +31,7 @@ export class UserSettingsComponent implements OnInit {
   public revealToken = false;
 
   public ota: UserSettingsOTA;
+  public privacy: UserSettingsPrivacy;
 
   public selfUser: User;
   public validator: string;
@@ -88,6 +94,18 @@ export class UserSettingsComponent implements OnInit {
     });
   }
 
+  public onPrivacySave() {
+    this.api.postUserSettingsPrivacy(this.privacy).subscribe((data) => {
+      this.privacy = data;
+      this.toats.push(
+        'Privacy settings successfully updated.',
+        'Privacy Settings Updated',
+        'green',
+        3000
+      );
+    });
+  }
+
   public async flushData() {
     this.validator = '';
     try {
@@ -125,9 +143,9 @@ export class UserSettingsComponent implements OnInit {
         this.token = data;
       });
 
-    this.api.getUserSettingsOTA().subscribe((data) => {
-      console.log(data);
-      this.ota = data;
-    });
+    this.api.getUserSettingsOTA().subscribe((data) => (this.ota = data));
+    this.api
+      .getUserSettingsPrivacy()
+      .subscribe((data) => (this.privacy = data));
   }
 }
