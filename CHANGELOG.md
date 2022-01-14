@@ -91,16 +91,16 @@ As you can see above, this now also allows to set and reset JDoodle credentials 
 
 # Legacy Command Deprecation Warning
 
-When you use a legacy ("non-slash command"), you will not be presented with a deprecation warning (not every time, but once per day). If you want to read more about legacy command deprecation, please read [this wiki article](https://github.com/zekroTJA/shinpuru/wiki/Legacy-Command-Deprecation).
+When you use a legacy ("non-slash command"), you will now be presented with a deprecation warning (not every time, but once per day). If you want to read more about legacy command deprecation, please read [this wiki article](https://github.com/zekroTJA/shinpuru/wiki/Legacy-Command-Deprecation).
 
 ![](https://user-images.githubusercontent.com/16734205/149315269-cd0f65ec-0235-4bc8-89d3-5baf7c053ed2.png)
 
 # Bug Fixes
 
 - Fixed a bug where the bot crashes when using the `/quote` or `/user` slash command. [#334]
-- Switch to using `string` instead of `int` parameter types for snowflake input in slash command because `int` types will show as invalid when too long.
-- Fix command info view type mapping. [#337]
-- Fix a bug where the command info view does not load.
+- Switched to using `string` instead of `int` parameter types for snowflake input in slash command because `int` types will show as invalid when too long.
+- Fixed command info type mapping. [#337]
+- Fixed a bug where the command info view does not load.
 
 # Docker
 
