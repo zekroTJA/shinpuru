@@ -26,11 +26,8 @@ const (
 	removeHandlerTimeout         = 3 * time.Minute
 	removeHandlerCleanupInterval = 1 * time.Minute
 
-	// Ratelimiter settings
 	limitTMCleanupInterval = 30 * time.Second // 10 * time.Minute
 	limitTMLifetime        = 24 * time.Hour
-	// limitBurst             = 2                // 5
-	// limitRate              = float64(1) / 900 // one token per 15 minutes
 )
 
 var (
