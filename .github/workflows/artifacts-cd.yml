@@ -1,6 +1,7 @@
 name: Artifacts CD
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
