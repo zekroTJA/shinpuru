@@ -29,7 +29,7 @@ func NewRefreshTokenRequestHandler(container di.Container) *RefreshTokenRequestH
 }
 
 func (h *RefreshTokenRequestHandler) LoginFailedHandler(ctx *fiber.Ctx, status int, msg string) error {
-	return fiber.ErrUnauthorized
+	return fiber.NewError(status, msg)
 }
 
 func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
