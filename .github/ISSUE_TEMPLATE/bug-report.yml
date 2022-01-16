@@ -21,18 +21,17 @@ body:
         - Crash
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: instances
     attributes:
-      label: "Instances"
-      description: On which instance(s) is the issue occuring?
+      label: Instance
+      description: Which instance are you using?
       options:
-        - label: "Canary"
-          required: false
-        - label: "Stable"
-          required: false
-        - label: "Self-Hosted"
-          required: false
+        - "Main Stable (shinpuru#4878 / shnp.de)"
+        - "Main Canary (shinpuru Canary#3479 / c.shnp.de)"
+        - "3rd Party Hosted (something else)"
+        - "Selfhosted Docker"
+        - "Selfhosted Binaries"
   - type: textarea
     id: description
     attributes:
@@ -49,7 +48,7 @@ body:
       placeholder: |
         1. Enable starboard and karma gain.
         2. Vote a message of a bot into starboard.
-        3. Check karma gain of the bot's account.
+        3. Check karma gain of the bot"s account.
     validations:
       required: true
   - type: textarea
