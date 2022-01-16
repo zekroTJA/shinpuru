@@ -186,6 +186,25 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 		return
 	}
 
+	// Sometimes, the Author can be nil on a message somehow
+	// (see #342). Therefore, refrech message from API when
+	// Author is nil. If Author is still nil, nah fuck it.
+	if quoteMsg.Author == nil {
+		quoteMsg, err = ctx.Session.ChannelMessage(quoteMsg.ChannelID, quoteMsg.ID)
+		if err != nil {
+			return err
+		}
+		if quoteMsg.Author == nil {
+			quoteMsg.Author = &discordgo.User{
+				ID:            "000000000000000000",
+				Username:      "Discord doesn't want to give the author of this message :(",
+				Avatar:        "",
+				Discriminator: "0000",
+			}
+		}
+		st.SetMessage(quoteMsg)
+	}
+
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Author: &discordgo.MessageEmbedAuthor{
