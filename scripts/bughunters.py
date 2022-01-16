@@ -1,5 +1,6 @@
 # flake8: noqa: E501
 
+import itertools
 import requests
 import json
 import os
@@ -11,7 +12,7 @@ GH_GQL_ENDPOINT = 'https://api.github.com/graphql'
 OUTPUT_FILE = './bughunters.md'
 
 HEADERS = {
-    'Authorization': "bearer " + os.environ.get('GITHUB_TOKEN')
+    'Authorization': f"bearer {os.environ.get('GITHUB_TOKEN')}"
 }
 
 POINTS_FOR_ISSUE = 1
@@ -37,10 +38,10 @@ class BHEntry:
         self.prs.sort(key=lambda n: int(n.get("number")))
 
     def get_formatted_issues(self):
-        return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.issues]
+        return [f'[#{n.get("number")}]({n.get("url")})' for n in self.issues]
 
     def get_formatted_prs(self):
-        return ["[#{}]({})".format(n.get("number"), n.get("url")) for n in self.prs]
+        return [f'[#{n.get("number")}]({n.get("url")})' for n in self.prs]
 
 
 def do_req(query: str) -> Dict:
@@ -52,7 +53,7 @@ def do_req(query: str) -> Dict:
 
 
 def query_issues(login: str, repo: str, after: str = None) -> Dict:
-    after = ', after: "{}"'.format(after) if after else ''
+    after = f', after: "{after}"' if after else ''
     query = '''
     query {
       user(login: "%s") {
@@ -79,7 +80,7 @@ def query_issues(login: str, repo: str, after: str = None) -> Dict:
 
 
 def query_prs(login: str, repo: str, after: str = None) -> Dict:
-    after = ', after: "{}"'.format(after) if after else ''
+    after = f', after: "{after}"' if after else ''
     query = '''
     query {
       user(login: "%s") {
@@ -94,7 +95,10 @@ def query_prs(login: str, repo: str, after: str = None) -> Dict:
                 },
                 number,
                 url,
-                merged
+                merged,
+                changedFiles,
+                additions,
+                deletions
               }
             }
           }
@@ -139,6 +143,23 @@ def query_all_prs(login: str, repo: str) -> List[Dict]:
     return prs
 
 
+def medal(i: int) -> str:
+    if i > 2:
+        return ""
+    return ["🥇", "🥈", "🥉"][i] + " "
+
+
+def get_pr_stats(prs: List[Dict]) -> Dict:
+    additions = 0
+    deletions = 0
+    changedFiles = 0
+    for pr in prs:
+        additions += pr.get('additions')
+        deletions += pr.get('deletions')
+        changedFiles += pr.get('changedFiles')
+    return [additions, deletions, changedFiles]
+
+
 if __name__ == "__main__":
     issues = query_all_issues("zekroTJA", "shinpuru")
     issues = [i for i in issues if i.get("author") and i.get(
@@ -162,27 +183,30 @@ if __name__ == "__main__":
             bhs[author] = BHEntry()
         bhs[author].add_pr(p)
 
-    data = "# Bug Hunters\n\n" + \
-           "A list to honor all people who found some bugs, had some great ideas " + \
-           "or contributed directly to shinpuru. ❤️\n\n" + \
-           "| GitHub | Issues | PRs | Points* |\n" + \
+    [additions, deletions, changedFiles] = get_pr_stats(prs)
+
+    data = "# Bug Hunters\n\n" \
+           "A list to honor all people who found some bugs, had some great ideas " \
+           "or contributed directly to shinpuru. ❤️\n\n" \
+           f"In total, **{len(bhs)}** different wonderful people contributed a sum of " \
+           f"**{len(issues)}** issues and **{len(prs)}** pull requests (with {additions} " \
+           f"added and {deletions} deleted lines of code in {changedFiles} different files)! 🎉\n\n" \
+           "| GitHub | Issues | PRs | Points* |\n" \
            "|--------|--------|-----|---------|\n"
 
     items = sorted(bhs.items(), key=lambda x: x[1].points, reverse=True)
 
+    i = 0
     for k, v in items:
         v.sort_items()
-
         issues = v.get_formatted_issues()
         prs = v.get_formatted_prs()
         points = v.points
+        data += f'| {medal(i)} [{k}](https://github.com/{k}) | {", ".join(issues)} | {", ".join(prs)} | `{points}` |\n'
+        i += 1
 
-        data += "| [{}](https://github.com/{}) | {} | {} | `{}` |\n".format(
-            k, k, ', '.join(issues), ', '.join(prs), points)
-
-    data += ("\n\n---\n*For explaination: A contributor gets `{}` point(s) for each " +
-             "created issue and `{}` point(s) for each **merged** pull request.").format(
-        POINTS_FOR_ISSUE, POINTS_FOR_PR)
+    data += f'\n\n---\n*For explaination: A contributor gets `{POINTS_FOR_ISSUE}` point(s) for each ' \
+        'created issue and `{POINTS_FOR_PR}` point(s) for each **merged** pull request.'
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:
         f.write(data)
