@@ -6,6 +6,7 @@ discord:
   ownerid: "<your user ID>"
   clientid: "<your bot client id>"
   clientsecret: "<your bot client secret>"
+  disabledcommands:
   # globalcommandratelimit:
   #   burst: 1
   #   limitseconds: 10
@@ -70,3 +71,9 @@ webserver:
 # metrics:
 #   enable: true
 #   addr: ":9091"
+
+privacy:
+  noticeurl: test
+  contact:
+    - title: test
+      value: test
