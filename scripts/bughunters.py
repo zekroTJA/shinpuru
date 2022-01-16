@@ -16,7 +16,7 @@ HEADERS = {
 }
 
 POINTS_FOR_ISSUE = 1
-POINTS_FOR_PR = 2
+POINTS_FOR_PR = 3
 
 
 class BHEntry:
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         i += 1
 
     data += f'\n\n---\n*For explaination: A contributor gets `{POINTS_FOR_ISSUE}` point(s) for each ' \
-        'created issue and `{POINTS_FOR_PR}` point(s) for each **merged** pull request.'
+        f'created issue and `{POINTS_FOR_PR}` point(s) for each **merged** pull request.'
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:
         f.write(data)
