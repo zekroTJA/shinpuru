@@ -108,25 +108,21 @@ func (d *DiscordOAuth) HandlerCallback(ctx *fiber.Ctx) error {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if err := fasthttp.Do(req, res); err != nil {
-		d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
-		return nil
+		return d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
 	}
 
 	if res.StatusCode() >= 300 {
-		d.onError(ctx, fasthttp.StatusUnauthorized, "")
-		return nil
+		return d.onError(ctx, fasthttp.StatusUnauthorized, "invalid auth code")
 	}
 
 	resAuthBody := new(oAuthTokenResponse)
 	err := parseJSONBody(res.Body(), resAuthBody)
 	if err != nil {
-		d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
-		return nil
+		return d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
 	}
 
 	if resAuthBody.Error != "" || resAuthBody.AccessToken == "" {
-		d.onError(ctx, fasthttp.StatusUnauthorized, "")
-		return nil
+		return d.onError(ctx, fasthttp.StatusUnauthorized, "empty auth response")
 	}
 
 	// 2. Request getting user ID
@@ -138,30 +134,24 @@ func (d *DiscordOAuth) HandlerCallback(ctx *fiber.Ctx) error {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", resAuthBody.AccessToken))
 
 	if err = fasthttp.Do(req, res); err != nil {
-		d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
-		return nil
+		return d.onError(ctx, fasthttp.StatusInternalServerError, "failed executing request: "+err.Error())
 	}
 
 	if res.StatusCode() >= 300 {
-		d.onError(ctx, fasthttp.StatusUnauthorized, "")
-		return nil
+		return d.onError(ctx, fasthttp.StatusUnauthorized, "user request failed")
 	}
 
 	resGetMe := new(getUserMeResponse)
 	err = parseJSONBody(res.Body(), resGetMe)
 	if err != nil {
-		d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
-		return nil
+		return d.onError(ctx, fasthttp.StatusInternalServerError, "failed parsing Discord API response: "+err.Error())
 	}
 
 	if resGetMe.Error != "" || resGetMe.ID == "" {
-		d.onError(ctx, fasthttp.StatusUnauthorized, "")
-		return nil
+		return d.onError(ctx, fasthttp.StatusUnauthorized, "empty user response")
 	}
 
-	d.onSuccess(ctx, resGetMe.ID)
-
-	return nil
+	return d.onSuccess(ctx, resGetMe.ID)
 }
 
 func parseJSONBody(body []byte, v interface{}) error {
