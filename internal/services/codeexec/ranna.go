@@ -17,6 +17,8 @@ type RannaFactory struct {
 	cfg *sharedmodels.CodeExecRanna
 }
 
+var _ Factory = (*RannaFactory)(nil)
+
 func NewRannaFactory(container di.Container) (e *RannaFactory, err error) {
 	e = &RannaFactory{}
 
@@ -40,7 +42,7 @@ func (e *RannaFactory) Name() string {
 	return "ranna"
 }
 
-func (e *RannaFactory) Languages() (langs []string, err error) {
+func (e *RannaFactory) Specs() (specs models.SpecMap, err error) {
 	exec, err := e.NewExecutor("")
 	if err != nil {
 		return
@@ -48,18 +50,7 @@ func (e *RannaFactory) Languages() (langs []string, err error) {
 
 	client := exec.(*RannaExecutor).client
 
-	spec, err := client.Spec()
-	if err != nil {
-		return
-	}
-
-	langs = make([]string, len(spec))
-	i := 0
-	for k := range spec {
-		langs[i] = k
-		i++
-	}
-
+	specs, err = client.Spec()
 	return
 }
 
@@ -83,10 +74,11 @@ type RannaExecutor struct {
 
 func (e *RannaExecutor) Exec(p Payload) (res Response, err error) {
 	r, err := e.client.Exec(models.ExecutionRequest{
-		Language:    p.Language,
-		Code:        p.Code,
-		Arguments:   p.Args,
-		Environment: p.Environment,
+		Language:         p.Language,
+		Code:             p.Code,
+		Arguments:        p.Args,
+		Environment:      p.Environment,
+		InlineExpression: p.Inline,
 	})
 	if err != nil {
 		return

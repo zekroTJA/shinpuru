@@ -5,9 +5,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ranna-go/ranna/pkg/models"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/sop"
 	"golang.org/x/time/rate"
 
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
@@ -31,7 +33,9 @@ const (
 )
 
 var (
-	runReactionEmoji = "▶"
+	runReactionEmoji    = "▶"
+	inlineReactionEmoji = "⏩"
+	helpReactionEmoji   = "❔"
 
 	replaces = map[string]string{
 		"js":         "nodejs",
@@ -50,7 +54,7 @@ type ListenerCodeexec struct {
 	st       *dgrs.State
 	cfg      config.Provider
 
-	langs  []string
+	specs  models.SpecMap
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
 }
@@ -77,7 +81,7 @@ func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error)
 	l.limits = timedmap.New(limitTMCleanupInterval)
 	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
 
-	l.langs, err = l.execFact.Languages()
+	l.specs, err = l.execFact.Specs()
 
 	return
 }
@@ -111,13 +115,7 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 		lang = _repl
 	}
 
-	var isValidLang bool
-	for _, lng := range l.langs {
-		if lang == lng {
-			isValidLang = true
-		}
-	}
-
+	spec, isValidLang := l.specs.Get(lang)
 	if !isValidLang {
 		return
 	}
@@ -136,6 +134,18 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 	}
 
 	err = s.MessageReactionAdd(e.ChannelID, e.ID, runReactionEmoji)
+	if err != nil {
+		return
+	}
+
+	if spec.SupportsTemplating() {
+		err = s.MessageReactionAdd(e.ChannelID, e.ID, inlineReactionEmoji)
+		if err != nil {
+			return
+		}
+	}
+
+	err = s.MessageReactionAdd(e.ChannelID, e.ID, helpReactionEmoji)
 	if err != nil {
 		return
 	}
@@ -168,12 +178,20 @@ func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *disc
 		return
 	}
 
-	if eReact.Emoji.Name != runReactionEmoji {
+	if eReact.Emoji.Name != runReactionEmoji &&
+		eReact.Emoji.Name != inlineReactionEmoji &&
+		eReact.Emoji.Name != helpReactionEmoji {
 		return
 	}
 
 	jdMsg, ok := l.msgMap.GetValue(eReact.MessageID).(*execMessage)
 	if !ok || jdMsg == nil {
+		return
+	}
+
+	if eReact.Emoji.Name == helpReactionEmoji {
+		l.printHelp(s, eReact.ChannelID)
+		s.MessageReactionsRemoveEmoji(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name)
 		return
 	}
 
@@ -198,6 +216,7 @@ func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *disc
 	result, err := jdMsg.wrapper.Exec(codeexec.Payload{
 		Language: jdMsg.lang,
 		Code:     jdMsg.script,
+		Inline:   eReact.Emoji.Name == inlineReactionEmoji,
 	})
 
 	if err != nil {
@@ -284,4 +303,36 @@ func (l *ListenerCodeexec) checkLimit(userID string) bool {
 func (l *ListenerCodeexec) checkPermission(s *discordgo.Session, guildID, userID string) (bool, error) {
 	allowed, _, err := l.pmw.CheckPermissions(s, guildID, userID, "sp.chat.exec")
 	return allowed, err
+}
+
+func (l *ListenerCodeexec) printHelp(s *discordgo.Session, channelID string) (err error) {
+	inlinable := sop.Map(sop.MapFlat(l.specs).Filter(func(v sop.Tuple[string, *models.Spec], i int) bool {
+		return v.V2 != nil && v.V2.SupportsTemplating()
+	}), func(v sop.Tuple[string, *models.Spec], i int) string {
+		return v.V1
+	})
+
+	msg := fmt.Sprintf(
+		"When the %s emote pops up under a message, you can execute the code contained in "+
+			"the message and the result will be posted directly back into the chat.", runReactionEmoji)
+
+	if inlinable.Len() > 0 {
+		msg += fmt.Sprintf(
+			"\n\n"+
+				"Additionally, when the %s pops up, the used code language supports inline execution."+
+				"This means, you can execute code without the boilerplate and focus on the important parts.\n\n"+
+				"Example with boilerplate: ```go\npackage main\nimport \"fmt\"\nfunc main() "+
+				"{\n\tfmt.Println(\"Hello World!\")\n}\n```\n"+
+				"Example with inline execution: ```go\nimport \"fmt\"\nfmt.Println(\"Hello World!\")\n```\n\n"+
+				"The following languages support inline execution:\n```\n%s\n```",
+			inlineReactionEmoji, strings.Join(inlinable.Unwrap(), ", "))
+	}
+
+	emb := embedbuilder.New().
+		WithTitle("In-Chat Code Execution").
+		WithColor(static.ColorEmbedDefault).
+		WithDescription(msg)
+	util.SendEmbedRaw(s, channelID, emb.Build())
+
+	return
 }
