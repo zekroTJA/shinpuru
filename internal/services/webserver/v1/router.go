@@ -50,6 +50,9 @@ func (r *Router) SetContainer(container di.Container) {
 // @Tag.Name Guilds
 // @tag.Description Guild specific endpoints.
 //
+// @Tag.Name Guild Settings
+// @Tag.Description Guild specific settings endpoints.
+//
 // @Tag.Name Guild Backups
 // @tag.Description Guild backup endpoints.
 //
@@ -92,12 +95,13 @@ func (r *Router) Route(router fiber.Router) {
 	new(controllers.GlobalSettingsController).Setup(r.container, router.Group("/settings"))
 	new(controllers.ReportsController).Setup(r.container, router.Group("/reports"))
 	new(controllers.GuildsController).Setup(r.container, router.Group("/guilds"))
-	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups"))
-	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests"))
-	new(controllers.UsersettingsController).Setup(r.container, router.Group("/usersettings"))
 	new(controllers.MemberReportingController).Setup(r.container, router.Group("/guilds/:guildid/:memberid"))
+	new(controllers.GuildBackupsController).Setup(r.container, router.Group("/guilds/:guildid/backups"))
+	new(controllers.GuildsSettingsController).Setup(r.container, router.Group("/guilds/:guildid/settings"))
 	new(controllers.GuildMembersController).Setup(r.container, router.Group("/guilds/:guildid"))
 	new(controllers.ChannelController).Setup(r.container, router.Group("/channels/:guildid"))
 	new(controllers.UsersController).Setup(r.container, router.Group("/users"))
+	new(controllers.UsersettingsController).Setup(r.container, router.Group("/usersettings"))
+	new(controllers.UnbanrequestsController).Setup(r.container, router.Group("/unbanrequests"))
 	new(controllers.VerificationController).Setup(r.container, router.Group("/verification"))
 }

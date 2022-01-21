@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # --- STAGE 1: Build Backend and Go Tools
-FROM golang:1.17-alpine AS build-be
+FROM golang:1.18beta1-alpine AS build-be
 WORKDIR /build
 
 # Copy source files

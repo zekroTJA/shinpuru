@@ -1,6 +1,10 @@
 package codeexec
 
-import "time"
+import (
+	"time"
+
+	"github.com/ranna-go/ranna/pkg/models"
+)
 
 var AvailableFactories = []string{"ranna", "jdoodle"}
 
@@ -9,6 +13,7 @@ type Payload struct {
 	Code        string
 	Args        []string
 	Environment map[string]string
+	Inline      bool
 }
 
 type Response struct {
@@ -21,7 +26,7 @@ type Response struct {
 
 type Factory interface {
 	Name() string
-	Languages() ([]string, error)
+	Specs() (models.SpecMap, error)
 	NewExecutor(guildID string) (Executor, error)
 }
 
