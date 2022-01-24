@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **29** different wonderful people contributed a sum of **71** issues and **14** pull requests (with 631 added and 81 deleted lines of code in 46 different files)! 🎉
+In total, **30** different wonderful people contributed a sum of **72** issues and **14** pull requests (with 631 added and 81 deleted lines of code in 46 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -35,6 +35,7 @@ In total, **29** different wonderful people contributed a sum of **71** issues a
 |  [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
+|  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346) |  | `1` |
 
 
 ---
