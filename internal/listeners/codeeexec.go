@@ -165,6 +165,10 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	l.msgMap.Set(e.ID, jdMsg, removeHandlerTimeout, func(v interface{}) {
 		s.MessageReactionRemove(e.ChannelID, e.ID, runReactionEmoji, self.ID)
+		s.MessageReactionRemove(e.ChannelID, e.ID, helpReactionEmoji, self.ID)
+		if spec.SupportsTemplating() {
+			s.MessageReactionRemove(e.ChannelID, e.ID, inlineReactionEmoji, self.ID)
+		}
 	})
 }
 
