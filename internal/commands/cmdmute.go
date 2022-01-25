@@ -201,7 +201,12 @@ func (c *CmdMute) list(ctx shireikan.Context) error {
 	}
 
 	emb.Color = static.ColorEmbedDefault
-	emb.Description = ""
+	emb.Title = "Muted Members"
+	if len(emb.Fields) == 0 {
+		emb.Description = "*No users are currently muted.*"
+	} else {
+		emb.Description = ""
+	}
 
 	_, err = ctx.GetSession().ChannelMessageEditEmbed(ctx.GetChannel().ID, msg.ID, emb)
 	return err
