@@ -14,7 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/voidbuffer"
+	"github.com/zekroTJA/shinpuru/pkg/voidbuffer/v2"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
 )
@@ -25,7 +25,7 @@ const (
 
 type guildState struct {
 	rl *ratelimit.Limiter
-	bf *voidbuffer.VoidBuffer
+	bf *voidbuffer.VoidBuffer[string]
 }
 
 type ListenerAntiraid struct {
@@ -82,7 +82,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 	if !ok || state == nil {
 		state = &guildState{
 			rl: ratelimit.NewLimiter(limitDur, burst),
-			bf: voidbuffer.New(50),
+			bf: voidbuffer.New[string](50),
 		}
 		l.guildStates[e.GuildID] = state
 	} else {

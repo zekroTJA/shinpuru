@@ -14,7 +14,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/sop"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -265,25 +267,27 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	// backup ID - created ID
 	ids := make(map[string]string)
 	channelsPos := make(map[string]int)
-	orderedRoles := make([]*discordgo.Role, len(backup.Roles))
+	orderedRoles := make(map[int]*discordgo.Role)
 
 	// CREATE ROLES
 	asyncWriteStatus(statusC, "updating and creating roles")
+	roles, err := bck.session.GuildRoles(guildID)
+	if err != nil {
+		return err
+	}
 	for _, r := range backup.Roles {
-		roles, err := bck.session.GuildRoles(guildID)
-		if err != nil {
-			return err
-		}
-
 		var rObj *discordgo.Role
 		for _, crObj := range roles {
 			if crObj.ID == r.ID {
 				rObj = crObj
 			}
 		}
-
 		if rObj == nil {
 			rObj, err = bck.session.GuildRoleCreate(guildID)
+			if err != nil {
+				asyncWriteError(errorsC, err)
+				continue
+			}
 		}
 		_, err = bck.session.GuildRoleEdit(guildID, rObj.ID, r.Name, r.Color,
 			r.Hoist, r.Permissions, r.Mentionable)
@@ -298,7 +302,12 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 
 	// RE-POSITION ROLES
 	asyncWriteStatus(statusC, "re-position roles")
-	_, err = bck.session.GuildRoleReorder(guildID, orderedRoles)
+	or := sop.Map(sop.MapFlat(orderedRoles).Sort(func(p, q sop.Tuple[int, *discordgo.Role], i int) bool {
+		return p.V1 < q.V1
+	}), func(v sop.Tuple[int, *discordgo.Role], i int) *discordgo.Role {
+		return v.V2
+	}).Unwrap()
+	_, err = bck.session.GuildRoleReorder(guildID, or)
 	if err != nil {
 		asyncWriteError(errorsC, err)
 	}
@@ -340,8 +349,54 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 		channelsPos[cObj.ID] = c.Position
 	}
 
-	// CREATE CHANNELS AND ADD TO CATEGORIES
-	asyncWriteStatus(statusC, "updating and creating channels")
+	// CREATE CATEGORIES
+	asyncWriteStatus(statusC, "updating and creating categories")
+	for _, c := range backup.Channels {
+		if c.Type != int(discordgo.ChannelTypeGuildCategory) {
+			continue
+		}
+
+		cObj, _ := bck.session.Channel(c.ID)
+		if cObj != nil && cObj.GuildID != guildID {
+			cObj = nil
+		}
+
+		for _, po := range c.PermissionOverwrites {
+			po.ID = ids[po.ID]
+		}
+
+		if cObj == nil {
+			cObj, err = bck.session.GuildChannelCreateComplex(guildID,
+				discordgo.GuildChannelCreateData{
+					Bitrate:              c.Bitrate,
+					NSFW:                 c.NSFW,
+					Name:                 c.Name,
+					ParentID:             ids[c.ParentID],
+					PermissionOverwrites: c.PermissionOverwrites,
+					Topic:                c.Topic,
+					Type:                 discordgo.ChannelType(c.Type),
+					UserLimit:            c.UserLimit,
+				})
+		} else {
+			_, err = bck.session.ChannelEditComplex(cObj.ID,
+				&discordgo.ChannelEdit{
+					Bitrate:              c.Bitrate,
+					NSFW:                 c.NSFW,
+					Name:                 c.Name,
+					ParentID:             ids[c.ParentID],
+					PermissionOverwrites: c.PermissionOverwrites,
+					Topic:                c.Topic,
+					UserLimit:            c.UserLimit,
+				})
+		}
+		if err != nil {
+			asyncWriteError(errorsC, err)
+			continue
+		}
+
+		channelsPos[cObj.ID] = c.Position
+		ids[c.ID] = cObj.ID
+	}
 	for _, c := range backup.Channels {
 		if c.Type == int(discordgo.ChannelTypeGuildCategory) {
 			continue
@@ -406,7 +461,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 
 		newRoles := make([]string, len(m.Roles))
 		for i, r := range m.Roles {
-			newRoles[i] = ids[r]
+			newRoles[i] = inline.NC(ids[r], r)
 		}
 
 		if mObj != nil {

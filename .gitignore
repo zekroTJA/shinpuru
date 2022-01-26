@@ -12,3 +12,4 @@ deploy/
 .vscode/.ropeproject
 cmd/test/*
 .DS_Store
+web/.angular/

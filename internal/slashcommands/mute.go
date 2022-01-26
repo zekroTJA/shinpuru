@@ -234,7 +234,12 @@ func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	emb.Color = static.ColorEmbedDefault
-	emb.Description = ""
+	emb.Title = "Muted Members"
+	if len(emb.Fields) == 0 {
+		emb.Description = "*No users are currently muted.*"
+	} else {
+		emb.Description = ""
+	}
 
 	err = fum.Edit(&discordgo.WebhookEdit{
 		Embeds: []*discordgo.MessageEmbed{emb},
