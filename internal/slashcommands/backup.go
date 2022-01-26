@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/logmsg"
 	"github.com/zekrotja/ken"
 )
 
@@ -241,8 +242,7 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 			return
 		},
 		AcceptFunc: func(m *discordgo.Message) (err error) {
-			c.proceedRestore(ctx.Ctx, backup.FileID)
-			return
+			return c.proceedRestore(ctx.Ctx, backup.FileID)
 		},
 	}
 
@@ -317,46 +317,24 @@ func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]*backupmodels.Entry, string, er
 	return backups, strBackupAll, nil
 }
 
-func (c *Backup) proceedRestore(ctx *ken.Ctx, fileID string) {
+func (c *Backup) proceedRestore(ctx *ken.Ctx, fileID string) (err error) {
 	statusChan := make(chan string)
 	errorsChan := make(chan error)
 
-	statusMsg, _ := ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID,
-		&discordgo.MessageEmbed{
-			Color:       static.ColorEmbedGray,
-			Description: "initializing backup restoring...",
-		})
-
-	if statusMsg != nil {
-		go func() {
-			for {
-				select {
-				case status, ok := <-statusChan:
-					if !ok {
-						continue
-					}
-					ctx.Session.ChannelMessageEditEmbed(statusMsg.ChannelID, statusMsg.ID, &discordgo.MessageEmbed{
-						Color:       static.ColorEmbedGray,
-						Description: status + "...",
-					})
-				case err, ok := <-errorsChan:
-					if !ok || err == nil {
-						continue
-					}
-					util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-						"An unexpected error occured while restoring backup (process will not be aborted): ```\n"+err.Error()+"\n```")
-				}
-			}
-		}()
+	statusMsg, err := logmsg.New(ctx.Session, ctx.Event.ChannelID, &discordgo.MessageEmbed{
+		Title: "Backup Restoration Status",
+		Color: static.ColorEmbedGray,
+	}, statusChan, errorsChan, "initializing backup restoring...")
+	if err != nil {
+		return
 	}
+	defer statusMsg.Close("✔️ Backup restoration finished!")
 
 	bck, _ := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
 
-	err := bck.RestoreBackup(ctx.Event.GuildID, fileID, statusChan, errorsChan)
-	if err != nil {
-		util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-			fmt.Sprintf("An unexpected error occured while restoring backup: ```\n%s\n```", err.Error()))
-	}
+	err = bck.RestoreBackup(ctx.Event.GuildID, fileID, statusChan, errorsChan)
+
+	return
 }
 
 func (c *Backup) purgeBackups(ctx *ken.Ctx) {
