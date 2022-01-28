@@ -3,6 +3,7 @@ package birthday
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -90,17 +91,33 @@ func (b *BirthdayService) Schedule() (err error) {
 }
 
 func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err error) {
+	user, err := b.st.User(bd.UserID)
+	if err != nil {
+		return
+	}
+
 	age := ""
 	if bd.ShowYear {
 		age = suffix(time.Now().Year()-bd.Date.Year()) + " "
 	}
+
+	userMention := user.Mention() + "'"
+	if !strings.HasPrefix(strings.ToLower(user.Username), "s") && !strings.HasPrefix(strings.ToLower(user.Username), "z") {
+		userMention += "s"
+	}
+
 	desc := fmt.Sprintf(
-		"Today is <@!%s>'s %sbirthday! Happy birthday to you!  🥳 🎉 🎊",
-		bd.UserID, age)
+		"Today is %s %sbirthday!\n\nHappy birthday to you!  🥳 🎉 🎊",
+		userMention, age)
 
 	_, err = b.session.ChannelMessageSendEmbed(chanID, &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedDefault,
 		Description: desc,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL:    user.AvatarURL(""),
+			Width:  24,
+			Height: 24,
+		},
 	})
 	return
 }
