@@ -18,6 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -339,6 +340,13 @@ func main() {
 		Name: static.DiVerification,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return verification.New(ctn), nil
+		},
+	})
+
+	diBuilder.Add(di.Def{
+		Name: static.DiBirthday,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return birthday.New(ctn), nil
 		},
 	})
 

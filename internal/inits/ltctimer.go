@@ -5,6 +5,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -24,6 +25,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	rep := container.Get(static.DiReport).(*report.ReportService)
 	gl := container.Get(static.DiGuildLog).(guildlog.Logger)
 	vs := container.Get(static.DiVerification).(verification.Provider)
+	bd := container.Get(static.DiBirthday).(*birthday.BirthdayService)
 
 	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
@@ -87,6 +89,13 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 		func() string {
 			return "@every 1h"
 		}, antiraid.FlushExpired(db, gl))
+
+	lctSchedule(lct, "birthday notifications",
+		func() string {
+			return "0 0 * * * *"
+		}, func() {
+			bd.Schedule()
+		})
 
 	return lct
 }
