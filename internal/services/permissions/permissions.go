@@ -1,6 +1,8 @@
 package permissions
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -203,7 +205,12 @@ func (m *Permissions) CheckSubPerm(
 		return
 	}
 
-	dn := cmd.Domain() + "." + subDN
+	var dn string
+	if strings.HasPrefix(subDN, "/") {
+		dn = subDN[1:]
+	} else {
+		dn = cmd.Domain() + "." + subDN
+	}
 	if explicit {
 		dn = "!" + dn
 	}
