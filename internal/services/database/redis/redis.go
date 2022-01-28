@@ -33,6 +33,7 @@ const (
 	keyGuildLogEnable              = "GUILD:GUILDLOG"
 	keyGuildAPI                    = "GUILD:API"
 	keyGuildRequireVerificationAPI = "GUILD:REQVER"
+	keyGuildBirthdayChanID         = "GUILD:BIRTHDAYCHAN"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -1014,4 +1015,34 @@ func (r *RedisMiddleware) SetGuildVerificationRequired(guildID string, enabled b
 	}
 
 	return r.Database.SetGuildVerificationRequired(guildID, enabled)
+}
+
+func (r *RedisMiddleware) GetGuildBirthdayChan(guildID string) (string, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildBirthdayChanID, guildID)
+
+	val, err := r.client.Get(context.Background(), key).Result()
+	if err == redis.Nil {
+		val, err = r.Database.GetGuildBirthdayChan(guildID)
+		if err != nil {
+			return "", err
+		}
+
+		err = r.client.Set(context.Background(), key, val, 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return "", err
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildBirthdayChan(guildID, newPrefix string) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildBirthdayChanID, guildID)
+
+	if err := r.client.Set(context.Background(), key, newPrefix, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildBirthdayChan(guildID, newPrefix)
 }

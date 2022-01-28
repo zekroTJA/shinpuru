@@ -50,6 +50,7 @@ var guildTables = []string{
 	"unbanRequests",
 	"verificationQueue",
 	"voicelogBlocklist",
+	"birthdays",
 }
 
 type tableColumn struct {
@@ -66,6 +67,7 @@ var userTables = []tableColumn{
 	{"unbanRequests", "userID"},
 	{"unbanRequests", "processedBy"},
 	{"users", "userID"},
+	{"birthdays", "userID"},
 }
 
 func (m *MysqlMiddleware) setup() (err error) {
@@ -106,6 +108,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`colorReaction` text NOT NULL DEFAULT ''," +
 		"`guildlogDisable` text NOT NULL DEFAULT ''," +
 		"`requireUserVerification` text NOT NULL DEFAULT ''," +
+		"`birthdaychanID` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -390,6 +393,18 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
 		"`userID` varchar(25) NOT NULL DEFAULT ''," +
 		"`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP()," +
+		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `birthdays` (" +
+		"`iid` int(11) NOT NULL AUTO_INCREMENT," +
+		"`guildID` varchar(25) NOT NULL DEFAULT ''," +
+		"`userID` varchar(25) NOT NULL DEFAULT ''," +
+		"`date` timestamp," +
+		"`showYear` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -2161,6 +2176,66 @@ func (m *MysqlMiddleware) FlushUserData(userID string) (res map[string]int, err 
 	}
 
 	return
+}
+
+func (m *MysqlMiddleware) GetGuildBirthdayChan(guildID string) (chanID string, err error) {
+	chanID, err = m.getGuildSetting(guildID, "birthdaychanID")
+	return
+}
+
+func (m *MysqlMiddleware) SetGuildBirthdayChan(guildID string, chanID string) (err error) {
+	err = m.setGuildSetting(guildID, "birthdaychanID", chanID)
+	return
+}
+
+func (m *MysqlMiddleware) GetBirthdays(guildID string) (bd []*models.Birthday, err error) {
+	query := "SELECT guildID, userID, `date`, showYear FROM birthdays"
+	var params []interface{}
+
+	if guildID != "" {
+		query += " WHERE guildID = ?"
+		params = []interface{}{guildID}
+	}
+
+	rows, err := m.Db.Query(query, params...)
+	if err != nil {
+		err = wrapNotFoundError(err)
+		return
+	}
+
+	for rows.Next() {
+		b := &models.Birthday{}
+		err = rows.Scan(&b.GuildID, &b.UserID, &b.Date, &b.ShowYear)
+		if err != nil {
+			return
+		}
+		bd = append(bd, b)
+	}
+
+	return
+}
+
+func (m *MysqlMiddleware) SetBirthday(bd *models.Birthday) (err error) {
+	res, err := m.Db.Exec(
+		"UPDATE birthdays SET `date` = ?, showYear = ? "+
+			"WHERE guildID = ? AND userID = ?",
+		bd.Date, bd.ShowYear, bd.GuildID, bd.UserID)
+	if err != nil {
+		return wrapNotFoundError(err)
+	}
+	ar, err := res.RowsAffected()
+	if ar == 0 {
+		_, err = m.Db.Exec(
+			"INSERT INTO birthdays (guildID, userID, `date`, showYear) "+
+				"VALUES (?, ?, ?, ?)", bd.GuildID, bd.UserID, bd.Date, bd.ShowYear)
+	}
+	return wrapNotFoundError(err)
+}
+
+func (m *MysqlMiddleware) DeleteBirthday(guildID, userID string) (err error) {
+	_, err = m.Db.Exec("DELETE FROM birthdays WHERE guildID = ? AND userID = ?",
+		guildID, userID)
+	return wrapNotFoundError(err)
 }
 
 /////////// HELPER ///////////////

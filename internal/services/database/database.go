@@ -88,6 +88,9 @@ type Database interface {
 	GetGuildVerificationRequired(guildID string) (bool, error)
 	SetGuildVerificationRequired(guildID string, enable bool) error
 
+	GetGuildBirthdayChan(guildID string) (string, error)
+	SetGuildBirthdayChan(guildID string, chanID string) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 
@@ -259,6 +262,13 @@ type Database interface {
 	FlushVerificationQueue(guildID string) error
 	AddVerificationQueue(e *models.VerificationQueueEntry) error
 	RemoveVerificationQueue(guildID, userID string) (bool, error)
+
+	//////////////////////////////////////////////////////
+	//// BIRTHDAYS
+
+	GetBirthdays(guildID string) ([]*models.Birthday, error)
+	SetBirthday(m *models.Birthday) error
+	DeleteBirthday(guildID, userID string) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err
