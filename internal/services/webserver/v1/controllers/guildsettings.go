@@ -94,7 +94,6 @@ func (c *GuildsSettingsController) Setup(container di.Container, router fiber.Ro
 // @Router /guilds/{id}/settings [get]
 func (c *GuildsSettingsController) getGuildSettings(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
-	fmt.Println("test")
 
 	gs := new(models.GuildSettings)
 	var err error
@@ -1063,7 +1062,7 @@ func (c *GuildsSettingsController) getGuildSettingsVerification(ctx *fiber.Ctx) 
 	guildID := ctx.Params("guildid")
 
 	state, err := c.vs.GetEnabled(guildID)
-	if err != nil {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
