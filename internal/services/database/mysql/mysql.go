@@ -447,7 +447,7 @@ func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (er
 	res, err := m.Db.Exec(
 		fmt.Sprintf("UPDATE guilds SET %s = ? WHERE guildID = ?", key),
 		value, guildID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		return
 	}
 
@@ -461,7 +461,7 @@ func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (er
 			guildID, value)
 	}
 
-	return
+	return nil
 }
 
 func (m *MysqlMiddleware) getUserSetting(userID, key string) (string, error) {
