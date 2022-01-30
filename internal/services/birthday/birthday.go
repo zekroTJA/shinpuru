@@ -59,6 +59,12 @@ func (b *BirthdayService) Schedule() (err error) {
 		if !ok || gbds.Len() == 0 {
 			continue
 		}
+
+		gbds = gbds.Filter(isTodayFilter())
+		if gbds.Len() == 0 {
+			continue
+		}
+
 		bdayChan, err := b.db.GetGuildBirthdayChan(guild.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			logrus.WithError(err).WithField("gid", guild.ID).Error("failed getting birthday channel")
@@ -76,15 +82,13 @@ func (b *BirthdayService) Schedule() (err error) {
 			continue
 		}
 
-		gbds.
-			Filter(isTodayFilter()).
-			Each(func(v *models.Birthday, i int) {
-				err := b.sendMessage(bdayChan, v)
-				if err != nil {
-					logrus.WithError(err).WithField("gid", guild.ID).Error("failed sending birthday message")
-					b.gl.Errorf(guild.ID, "Failed sending birthday message: %s", err.Error())
-				}
-			})
+		gbds.Each(func(v *models.Birthday, i int) {
+			err := b.sendMessage(bdayChan, v)
+			if err != nil {
+				logrus.WithError(err).WithField("gid", guild.ID).Error("failed sending birthday message")
+				b.gl.Errorf(guild.ID, "Failed sending birthday message: %s", err.Error())
+			}
+		})
 	}
 
 	return
