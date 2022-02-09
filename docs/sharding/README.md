@@ -1,0 +1,43 @@
+# Instance Sharding
+
+Simply said, with sharding you can split up receiving events across multiple instances (shards). If you want to read more about that, please read the official [Discord docs](https://discord.com/developers/docs/topics/gateway#sharding).
+
+## Setup
+
+First of all, you need a shared host for the MySQL Database, Minio or S3 Storage as well as for the Redis instance. All shards will connect to these instances to share a common data persistency and state. The shards itself can be basically hosted anywhere as long as you have access to the instances of the services mentioned before.
+
+To enable sharding, you need to set your `total` shard amount in the config. As specified in the Discord documentation, you can also use different amounts across shards to switch instances or to dynamically allocate more instances.
+```yml
+discord:
+  sharding:
+    total: 5
+```
+
+Now, you can apply shard IDs either directly and statically for each instance via config or reserve IDs automatically using the shared state instance.
+
+If you want to go full manual, just set the shard ID via the config.
+```yml
+discord:
+  sharding:
+    id: 2
+    total: 5
+```
+
+If you want to let `dgrs` take care of the distribution of share IDs, just set `autoid` to `true`.
+```yml
+discord:
+  sharding:
+    autoid: true
+    total: 5
+```
+
+> **Attention:** Manually set IDs will not be registered in the `dgrs` state and will be picked by shards with `autoid` enabled. It is generally not recomendet to mix both configuration variants.
+
+## Example
+
+If you want to play around with an example, take a look at the `docker-compose.yml` in this directory. It will set up all services required by shinpuru as well as three replicas of shinpuru using `autoid` to distribute shard IDs.
+
+Just apply the `docker-compose.yml` to a Docker swarm stack.
+```
+docker swarm deploy -c docs/sharding/docker-compose.yml shinpuru
+```

@@ -1,0 +1,79 @@
+version: '3.9'
+
+volumes:
+  minio:
+  mysql-cfg:
+  mysql-lib:
+
+services:
+  traefik:
+    image: 'traefik:latest'
+    command:
+      - '--providers.docker'
+      - '--providers.docker.swarmMode'
+      - '--providers.file.directory=/etc/traefik/dynamic_conf'
+      - '--entrypoints.http.address=:80'
+      - '--entrypoints.https.address=:443'
+      - '--providers.docker.exposedByDefault=false'
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './traefik/config:/etc/traefik/dynamic_conf'
+      # - '/etc/cert:/etc/cert:ro'
+    restart: always
+
+  minio:
+    image: 'minio/minio:latest'
+    volumes:
+      - 'minio:/data'
+    environment:
+      MINIO_ACCESS_KEY: 'minio_access_key'
+      MINIO_SECRET_KEY: 'minio_secret_key'
+      MINIO_REGION_NAME: 'us-east-1'
+    command: server /data # --certs-dir /etc/cert
+    restart: always
+
+  redis:
+    image: 'redis:latest'
+    expose:
+      - '6379'
+    restart: always
+
+  mysql:
+    image: 'mariadb:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_root_password
+      MYSQL_DATABASE: shinpuru
+    volumes:
+      - 'mysql-cfg:/etc/mysql'
+      - 'mysql-lib:/var/lib/mysql'
+    restart: always
+
+  shinpuru:
+    image: 'shinpuru'
+    # image: 'ghcr.io/zekrotja/shinpuru:canary'
+    volumes:
+      - './shinpuru.yml:/etc/config/config.yml:ro'
+    environment:
+      SP_DISCORD_SHARDING_TOTAL: 3
+      # You need to enable AUTOID so that each replica reserves
+      # a unique shard ID from the central state.
+      # You can set a static shard ID using the environment variable
+      # SP_DISCORD_SHARDING_ID, but in this case, this will not work.
+      SP_DISCORD_SHARDING_AUTOID: 'true'
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+      - minio
+    deploy:
+      replicas: 3
+      labels:
+        traefik.enable: 'true'
+        traefik.port: '80'
+        traefik.backend.loadbalancer.sticky: 'true'
+        traefik.http.routers.whoami.entrypoints: 'http'
+        traefik.http.routers.whoami.rule: 'PathPrefix(`/`)'
+        traefik.http.services.whoami.loadbalancer.server.port: 80
