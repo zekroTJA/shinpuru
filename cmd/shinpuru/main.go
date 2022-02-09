@@ -387,7 +387,8 @@ func main() {
 
 	// Initialize discord session and event
 	// handlers
-	inits.InitDiscordBotSession(ctn)
+	releaseShard := inits.InitDiscordBotSession(ctn)
+	defer releaseShard()
 
 	// This is currently the really hacky workaround
 	// to bypass the di.Container when trying to get
