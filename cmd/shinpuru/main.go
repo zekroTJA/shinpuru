@@ -352,6 +352,8 @@ func main() {
 
 	// Build dependency injection container
 	ctn := diBuilder.Build()
+	// Tear down dependency instances
+	defer ctn.DeleteWithSubContainers()
 
 	// Setting log level from config
 	cfg := ctn.Get(static.DiConfig).(config.Provider)
@@ -418,9 +420,6 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-
-	// Tear down dependency instances
-	ctn.DeleteWithSubContainers()
 }
 
 func setupDevMode() {

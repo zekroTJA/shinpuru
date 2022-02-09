@@ -68,7 +68,10 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 		}
 
 		release = func() {
-			st.ReleaseShard(id)
+			logrus.WithField("id", id).Info("Releasing shard ID")
+			if err = st.ReleaseShard(id); err != nil {
+				logrus.WithError(err).Error("Failed releasing shard ID")
+			}
 		}
 
 		logrus.
