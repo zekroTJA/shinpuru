@@ -131,4 +131,6 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed connecting Discord bot session")
 	}
+
+	return
 }
