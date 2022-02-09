@@ -99,6 +99,13 @@ type Discord struct {
 	GuildBackupLoc         string    `json:"guildbackuploc"`
 	GlobalCommandRateLimit Ratelimit `json:"globalcommandratelimit"`
 	DisabledCommands       []string  `json:"disabledcommands"`
+	Sharding               Sharding  `json:"sharding"`
+}
+
+// Sharding holds configuration for guild event sharding.
+type Sharding struct {
+	ID    int `json:"id"`
+	Total int `json:"total"`
 }
 
 // DatabaseCreds holds credentials to connect to

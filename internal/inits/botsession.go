@@ -37,6 +37,13 @@ func InitDiscordBotSession(container di.Container) {
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 	session.StateEnabled = false
 
+	if shardCfg := cfg.Config().Discord.Sharding; shardCfg.Total > 1 {
+		if shardCfg.ID < 0 || shardCfg.ID >= shardCfg.Total {
+			logrus.Fatal("Shard ID must be in range [0, sharding.Total)")
+		}
+		session.Identify.Shard = &[2]int{shardCfg.ID, shardCfg.Total}
+	}
+
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)
 	listenerColors := listeners.NewColorListener(container)
