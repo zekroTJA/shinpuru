@@ -54,6 +54,10 @@ var DefaultConfig = Config{
 		TLS: WebServerTLS{
 			Enabled: false,
 		},
+		AccessToken: AccessToken{
+			Secret:          random.MustGetRandBase64Str(64),
+			LifetimeSeconds: 10 * 60,
+		},
 		LandingPage: LandingPage{
 			ShowLocalInvite:   true,
 			ShowPublicInvites: true,
@@ -169,6 +173,14 @@ type WebServer struct {
 	DebugPublicAddr string       `json:"debugpublicaddr,omitempty"`
 	RateLimit       Ratelimit    `json:"ratelimit"`
 	Captcha         Captcha      `json:"captcha"`
+	AccessToken     AccessToken  `json:"accesstoken"`
+}
+
+// AccessToken holds the secret and lifetime for
+// JWT access token signature.
+type AccessToken struct {
+	Secret          string `json:"secret"`
+	LifetimeSeconds int    `json:"lifetimeseconds"`
 }
 
 // WebServerTLS wraps preferences for the TLS
