@@ -108,8 +108,9 @@ type Discord struct {
 
 // Sharding holds configuration for guild event sharding.
 type Sharding struct {
-	ID    int `json:"id"`
-	Total int `json:"total"`
+	AutoID bool `json:"autoid"`
+	ID     int  `json:"id"`
+	Total  int  `json:"total"`
 }
 
 // DatabaseCreds holds credentials to connect to
