@@ -24,6 +24,8 @@ func init() {
 }
 
 func InitDiscordBotSession(container di.Container) (release func()) {
+	release = func() {}
+
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -57,20 +59,16 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 			if id, err = st.ReserveShard(); err != nil {
 				logrus.WithError(err).Fatal("Failed receiving alive shards from state")
 			}
+			release = func() {
+				logrus.WithField("id", id).Info("Releasing shard ID")
+				if err = st.ReleaseShard(id); err != nil {
+					logrus.WithError(err).Error("Failed releasing shard ID")
+				}
+			}
 		} else {
 			id = shardCfg.ID
 			if id < 0 || id >= shardCfg.Total {
 				logrus.Fatalf("Shard ID must be in range [0, %d)", shardCfg.Total)
-			}
-			if _, err = st.ReserveShard(id); err != nil {
-				logrus.WithError(err).Fatal("Failed reserving predefined shard")
-			}
-		}
-
-		release = func() {
-			logrus.WithField("id", id).Info("Releasing shard ID")
-			if err = st.ReleaseShard(id); err != nil {
-				logrus.WithError(err).Error("Failed releasing shard ID")
 			}
 		}
 
