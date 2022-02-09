@@ -34,7 +34,6 @@ func InitDiscordBotSession(container di.Container) {
 	cfg := container.Get(static.DiConfig).(config.Provider)
 
 	session.Token = "Bot " + cfg.Config().Discord.Token
-	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 	session.StateEnabled = false
 
