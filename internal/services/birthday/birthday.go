@@ -41,7 +41,7 @@ func (b *BirthdayService) Schedule() (err error) {
 	}
 
 	shardId, shardTotal := discordutil.GetShardOfSession(b.session)
-	if shardTotal > 2 {
+	if shardTotal > 1 {
 		bdays = sop.Slice(bdays).
 			Filter(func(v *models.Birthday, _ int) bool {
 				id, err := discordutil.GetShardOfGuild(v.GuildID, shardTotal)
