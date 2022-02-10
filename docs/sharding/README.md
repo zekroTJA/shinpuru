@@ -33,6 +33,8 @@ discord:
 
 > **Attention:** Manually set IDs will not be registered in the `dgrs` state and will be picked by shards with `autoid` enabled. It is generally not recomendet to mix both configuration variants.
 
+Also, keep in mind that some scheduled functions are only executed on the instance with the shard ID `0`. So, you must ensure that there is **only one single** instance with shard ID `0`. Otherwise, unexpected behavior might occur. 
+
 ## Example
 
 If you want to play around with an example, take a look at the `docker-compose.yml` in this directory. It will set up all services required by shinpuru as well as three replicas of shinpuru using `autoid` to distribute shard IDs.
