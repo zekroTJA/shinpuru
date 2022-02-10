@@ -43,3 +43,21 @@ Just apply the `docker-compose.yml` to a Docker swarm stack.
 ```
 docker swarm deploy -c docs/sharding/docker-compose.yml shinpuru
 ```
+
+## How does `autoid` work?
+
+When `autoid` is enabled in the config, shinpuru will reserve a shard ID from the shared Redis state using [`dgrs`](https://github.com/zekroTJA/dgrs). This reservation lasts for one minute. Therefore, a heartbeat ticker is started which refreshes the reservation every 45 seconds. When the instance "dies", the reservation is released. Also, when shinpuru shuts down, the reservation is released as well.
+
+IDs are reserved consecutively starting with 0. When an ID is released in between two reserved consecutive IDs, it will be used for the next reservation.
+
+Example:
+```
+reserve → 0
+reserve → 1
+reserve → 2
+release 1
+reserve → 1
+reserve → 3
+```
+
+This system does not take the total amount of shards in respective to be able to scale up dynamically. This also means, if you reserve more shard IDs than specified in total, shinpuru will not start.
