@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/sop"
 )
@@ -37,6 +38,16 @@ func (b *BirthdayService) Schedule() (err error) {
 	bdays, err := b.db.GetBirthdays("")
 	if err != nil {
 		return
+	}
+
+	shardId, shardTotal := discordutil.GetShardOfSession(b.session)
+	if shardTotal > 2 {
+		bdays = sop.Slice(bdays).
+			Filter(func(v *models.Birthday, _ int) bool {
+				id, err := discordutil.GetShardOfGuild(v.GuildID, shardTotal)
+				return err == nil && id == shardId
+			}).
+			Unwrap()
 	}
 
 	bdayMap := sop.GroupE[*models.Birthday](

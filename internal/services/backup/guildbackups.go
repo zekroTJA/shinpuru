@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/sop"
@@ -52,6 +53,18 @@ func asyncWriteError(c chan error, err error) {
 	}()
 }
 
+func (bck *GuildBackups) guilds() (guilds []string, err error) {
+	guilds, err = bck.db.GetGuilds()
+	shardID, shardTotal := discordutil.GetShardOfSession(bck.session)
+	if shardTotal > 1 {
+		guilds = sop.Slice(guilds).Filter(func(v string, i int) bool {
+			id, err := discordutil.GetShardOfGuild(v, shardTotal)
+			return err == nil && id == shardID
+		}).Unwrap()
+	}
+	return
+}
+
 // New initializes a new GuildBackups instance using
 // the passed discordgo Session, database provider,
 // and storage provider. Also, the ticker loop is
@@ -72,7 +85,7 @@ func New(container di.Container) *GuildBackups {
 // Guild backups are not created in new goroutines
 // because of potential rate limit exceedance.
 func (bck *GuildBackups) BackupAllGuilds() {
-	guilds, err := bck.db.GetGuilds()
+	guilds, err := bck.guilds()
 
 	logrus.WithField("nGuilds", len(guilds)).Infof("Initializing guild backups")
 
