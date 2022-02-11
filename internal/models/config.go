@@ -295,6 +295,12 @@ type Privacy struct {
 	Contact   []Contact `json:"contact"`
 }
 
+// Giphy holds credentials and configuration
+// to connect to the Giphy.com API.
+type Giphy struct {
+	APIKey string `json:"apikey"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -312,5 +318,6 @@ type Config struct {
 	Metrics     Metrics      `json:"metrics"`
 	Schedules   Schedules    `json:"schedules"`
 	CodeExec    CodeExec     `json:"codeexec"`
+	Giphy       Giphy        `json:"giphy"`
 	Privacy     Privacy      `json:"privacy"`
 }
