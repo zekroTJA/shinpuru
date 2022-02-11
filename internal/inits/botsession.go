@@ -52,12 +52,12 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 				WithField("d", d.Round(time.Millisecond).String()).
 				Info("Sleeping before retrieving shard ID")
 			time.Sleep(d)
-			if id, err = st.ReserveShard(); err != nil {
+			if id, err = st.ReserveShard(shardCfg.Pool); err != nil {
 				logrus.WithError(err).Fatal("Failed receiving alive shards from state")
 			}
 			release = func() {
 				logrus.WithField("id", id).Info("Releasing shard ID")
-				if err = st.ReleaseShard(id); err != nil {
+				if err = st.ReleaseShard(shardCfg.Pool, id); err != nil {
 					logrus.WithError(err).Error("Failed releasing shard ID")
 				}
 			}

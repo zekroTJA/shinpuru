@@ -110,6 +110,7 @@ type Discord struct {
 type Sharding struct {
 	AutoID bool `json:"autoid"`
 	ID     int  `json:"id"`
+	Pool   int  `json:"pool"`
 	Total  int  `json:"total"`
 }
 
