@@ -47,7 +47,7 @@ func (c *Birthday) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "set-cannel",
+			Name:        "set-channel",
 			Description: "Set birthday message channel.",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
@@ -63,7 +63,7 @@ func (c *Birthday) Options() []*discordgo.ApplicationCommandOption {
 		},
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "unset-cannel",
+			Name:        "unset-channel",
 			Description: "Unset birthday message channel.",
 		},
 		{
@@ -113,8 +113,8 @@ func (c *Birthday) Run(ctx *ken.Ctx) (err error) {
 	}
 
 	err = ctx.HandleSubCommands(
-		ken.SubCommandHandler{"set-cannel", c.setChannel},
-		ken.SubCommandHandler{"unset-cannel", c.unsetChannel},
+		ken.SubCommandHandler{"set-channel", c.setChannel},
+		ken.SubCommandHandler{"unset-channel", c.unsetChannel},
 		ken.SubCommandHandler{"set", c.set},
 		ken.SubCommandHandler{"remove", c.remove},
 	)
