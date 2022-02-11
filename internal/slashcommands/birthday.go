@@ -203,9 +203,15 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	err = ctx.RespondEmbed(&discordgo.MessageEmbed{
+	emb := &discordgo.MessageEmbed{
 		Description: "Your birthday has successfully been registered.",
-	})
+	}
+	fu := ctx.FollowUpEmbed(emb)
+	err = fu.Error
+	if !showYear {
+		fu.Delete()
+		_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, emb)
+	}
 
 	return
 }
