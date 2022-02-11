@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"runtime/pprof"
@@ -18,6 +19,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -42,6 +44,10 @@ import (
 const (
 	envKeyProfile = "CPUPROFILE"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -342,8 +348,17 @@ func main() {
 		},
 	})
 
+	diBuilder.Add(di.Def{
+		Name: static.DiBirthday,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return birthday.New(ctn), nil
+		},
+	})
+
 	// Build dependency injection container
 	ctn := diBuilder.Build()
+	// Tear down dependency instances
+	defer ctn.DeleteWithSubContainers()
 
 	// Setting log level from config
 	cfg := ctn.Get(static.DiConfig).(config.Provider)
@@ -379,7 +394,8 @@ func main() {
 
 	// Initialize discord session and event
 	// handlers
-	inits.InitDiscordBotSession(ctn)
+	releaseShard := inits.InitDiscordBotSession(ctn)
+	defer releaseShard()
 
 	// This is currently the really hacky workaround
 	// to bypass the di.Container when trying to get
@@ -409,9 +425,6 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-
-	// Tear down dependency instances
-	ctn.DeleteWithSubContainers()
 }
 
 func setupDevMode() {

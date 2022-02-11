@@ -10,7 +10,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/zekroTJA/shinpuru/pkg/boolutil"
 )
 
 const (
@@ -33,6 +32,7 @@ const (
 	keyGuildLogEnable              = "GUILD:GUILDLOG"
 	keyGuildAPI                    = "GUILD:API"
 	keyGuildRequireVerificationAPI = "GUILD:REQVER"
+	keyGuildBirthdayChanID         = "GUILD:BIRTHDAYCHAN"
 
 	keyKarmaState       = "KARMA:STATE"
 	keyKarmaemotesInc   = "KARMA:EMOTES:ENC"
@@ -92,22 +92,9 @@ func (r *RedisMiddleware) Close() {
 
 func (r *RedisMiddleware) GetGuildPrefix(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildPrefix, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildPrefix(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildPrefix(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildPrefix(guildID, newPrefix string) error {
@@ -157,22 +144,9 @@ func (r *RedisMiddleware) SetGuildAutoRole(guildID string, autoRoleIDs []string)
 
 func (r *RedisMiddleware) GetGuildModLog(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildModLog, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildModLog(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildModLog(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildModLog(guildID, chanID string) error {
@@ -187,22 +161,9 @@ func (r *RedisMiddleware) SetGuildModLog(guildID, chanID string) error {
 
 func (r *RedisMiddleware) GetGuildVoiceLog(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildVoiceLog, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildVoiceLog(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildVoiceLog(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildVoiceLog(guildID, chanID string) error {
@@ -217,22 +178,9 @@ func (r *RedisMiddleware) SetGuildVoiceLog(guildID, chanID string) error {
 
 func (r *RedisMiddleware) GetGuildNotifyRole(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildNotifyRole, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildNotifyRole(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildNotifyRole(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildNotifyRole(guildID, roleID string) error {
@@ -247,22 +195,9 @@ func (r *RedisMiddleware) SetGuildNotifyRole(guildID, roleID string) error {
 
 func (r *RedisMiddleware) GetGuildGhostpingMsg(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildGhostPingMsg, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildGhostpingMsg(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildGhostpingMsg(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
@@ -277,22 +212,9 @@ func (r *RedisMiddleware) SetGuildGhostpingMsg(guildID, msg string) error {
 
 func (r *RedisMiddleware) GetGuildJdoodleKey(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildJDoodleKey, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildJdoodleKey(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildJdoodleKey(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildJdoodleKey(guildID, jdkey string) error {
@@ -307,23 +229,9 @@ func (r *RedisMiddleware) SetGuildJdoodleKey(guildID, jdkey string) error {
 
 func (r *RedisMiddleware) GetGuildCodeExecEnabled(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildCodeExecEnabled, guildID)
-
-	var val bool
-	err := r.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildCodeExecEnabled(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetGuildCodeExecEnabled(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildCodeExecEnabled(guildID string, enabled bool) error {
@@ -338,23 +246,9 @@ func (r *RedisMiddleware) SetGuildCodeExecEnabled(guildID string, enabled bool) 
 
 func (r *RedisMiddleware) GetGuildBackup(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildBackupEnabled, guildID)
-
-	var val bool
-	err := r.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildBackup(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetGuildBackup(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildBackup(guildID string, enabled bool) error {
@@ -369,22 +263,9 @@ func (r *RedisMiddleware) SetGuildBackup(guildID string, enabled bool) error {
 
 func (r *RedisMiddleware) GetGuildInviteBlock(guildID string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildInviteBlock, guildID)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildInviteBlock(guildID)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildInviteBlock(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildInviteBlock(guildID string, data string) error {
@@ -469,23 +350,9 @@ func (r *RedisMiddleware) SetGuildLeaveMsg(guildID string, channelID string, msg
 
 func (r *RedisMiddleware) GetGuildColorReaction(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildColorReaction, guildID)
-
-	var val bool
-	err := r.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildColorReaction(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetGuildColorReaction(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildColorReaction(guildID string, enabled bool) error {
@@ -500,22 +367,9 @@ func (r *RedisMiddleware) SetGuildColorReaction(guildID string, enabled bool) er
 
 func (r *RedisMiddleware) GetSetting(setting string) (string, error) {
 	var key = fmt.Sprintf("%s:%s", keySetting, setting)
-
-	val, err := r.client.Get(context.Background(), key).Result()
-	if err == redis.Nil {
-		val, err = r.Database.GetSetting(setting)
-		if err != nil {
-			return "", err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return val, nil
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetSetting(setting)
+	})
 }
 
 func (r *RedisMiddleware) SetSetting(setting, value string) error {
@@ -590,23 +444,9 @@ func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
 
 func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
-
-	var val bool
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetKarmaState(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (bool, error) {
+		return m.Database.GetKarmaState(guildID)
+	})
 }
 
 func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) error {
@@ -662,23 +502,9 @@ func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
 
 func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
-
-	var val int
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetKarmaTokens(guildID)
-		if err != nil {
-			return 0, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return 0, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (int, error) {
+		return m.Database.GetKarmaTokens(guildID)
+	})
 }
 
 func (m *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
@@ -693,43 +519,16 @@ func (m *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
 
 func (m *RedisMiddleware) GetKarmaPenalty(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
-
-	var val bool
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetKarmaPenalty(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (bool, error) {
+		return m.Database.GetKarmaPenalty(guildID)
+	})
 }
 
 func (m *RedisMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
 	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
-
-	err = m.client.Get(context.Background(), key).Scan(&ok)
-	if err == redis.Nil {
-		ok, err = m.Database.IsKarmaBlockListed(guildID, userID)
-		if err != nil {
-			return
-		}
-
-		err = m.client.SetBit(context.Background(), key, 0, boolutil.AsInt(ok)).Err()
-		return
-	}
-	if err != nil {
-		return
-	}
-
-	return
+	return Get(m, key, func() (bool, error) {
+		return m.Database.IsKarmaBlockListed(guildID, userID)
+	})
 }
 
 func (m *RedisMiddleware) AddKarmaBlockList(guildID, userID string) (err error) {
@@ -764,23 +563,9 @@ func (m *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
 
 func (m *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidState, guildID)
-
-	var val bool
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetAntiraidState(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (bool, error) {
+		return m.Database.GetAntiraidState(guildID)
+	})
 }
 
 func (m *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) error {
@@ -795,23 +580,9 @@ func (m *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) err
 
 func (m *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidLimit, guildID)
-
-	var val int
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetAntiraidRegeneration(guildID)
-		if err != nil {
-			return 0, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return 0, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (int, error) {
+		return m.Database.GetAntiraidRegeneration(guildID)
+	})
 }
 
 func (m *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
@@ -826,44 +597,16 @@ func (m *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
 
 func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidBurst, guildID)
-
-	var val int
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetAntiraidBurst(guildID)
-		if err != nil {
-			return 0, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return 0, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (int, error) {
+		return m.Database.GetAntiraidBurst(guildID)
+	})
 }
 
 func (m *RedisMiddleware) GetUserOTAEnabled(userID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyUserEnableOTA, userID)
-
-	var val bool
-	err := m.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = m.Database.GetUserOTAEnabled(userID)
-		if err != nil {
-			return false, err
-		}
-
-		err = m.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(m, key, func() (bool, error) {
+		return m.Database.GetUserOTAEnabled(userID)
+	})
 }
 
 func (m *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
@@ -916,23 +659,9 @@ func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (er
 
 func (r *RedisMiddleware) GetGuildLogDisable(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildLogEnable, guildID)
-
-	var val bool
-	err := r.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildLogDisable(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetGuildLogDisable(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildLogDisable(guildID string, enabled bool) error {
@@ -987,23 +716,9 @@ func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPI
 
 func (r *RedisMiddleware) GetGuildVerificationRequired(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildRequireVerificationAPI, guildID)
-
-	var val bool
-	err := r.client.Get(context.Background(), key).Scan(&val)
-	if err == redis.Nil {
-		val, err = r.Database.GetGuildVerificationRequired(guildID)
-		if err != nil {
-			return false, err
-		}
-
-		err = r.client.Set(context.Background(), key, val, 0).Err()
-		return val, err
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return val, nil
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetGuildVerificationRequired(guildID)
+	})
 }
 
 func (r *RedisMiddleware) SetGuildVerificationRequired(guildID string, enabled bool) error {
@@ -1014,4 +729,21 @@ func (r *RedisMiddleware) SetGuildVerificationRequired(guildID string, enabled b
 	}
 
 	return r.Database.SetGuildVerificationRequired(guildID, enabled)
+}
+
+func (r *RedisMiddleware) GetGuildBirthdayChan(guildID string) (string, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildBirthdayChanID, guildID)
+	return Get(r, key, func() (string, error) {
+		return r.Database.GetGuildBirthdayChan(guildID)
+	})
+}
+
+func (r *RedisMiddleware) SetGuildBirthdayChan(guildID, newPrefix string) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildBirthdayChanID, guildID)
+
+	if err := r.client.Set(context.Background(), key, newPrefix, 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildBirthdayChan(guildID, newPrefix)
 }

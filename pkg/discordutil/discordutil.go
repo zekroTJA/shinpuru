@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 )
 
 // GetMessageLink assembles and returns a message link by
@@ -76,4 +77,31 @@ func IsCanNotOpenDmToUserError(err error) bool {
 func IsErrCode(err error, code int) bool {
 	apiErr, ok := err.(*discordgo.RESTError)
 	return ok && apiErr.Message.Code == code
+}
+
+// GetShardOfGuild parses the passed guild ID into a snowflake.
+// Then, the ID of the corresponding shard ID is calculated using
+// the formula
+//   shardId = (guildId >> 22) % numShards
+// as documented here
+//   https://discord.com/developers/docs/topics/gateway#sharding
+func GetShardOfGuild(guildID string, numShards int) (id int, err error) {
+	sf, err := snowflake.ParseString(guildID)
+	if err != nil {
+		return
+	}
+	id = int((sf.Int64() >> 22) % int64(numShards))
+	return
+}
+
+// GetShardOfSession returns the current shard ID and
+// total shard count set in the passed session.
+func GetShardOfSession(s *discordgo.Session) (id, total int) {
+	if s.Identify.Shard == nil {
+		return
+	}
+	sh := *s.Identify.Shard
+	id = sh[0]
+	total = sh[1]
+	return
 }

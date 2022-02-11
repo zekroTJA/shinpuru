@@ -31,4 +31,5 @@ const (
 	DiRedis                     = "redisclient"
 	DiState                     = "dgstate"
 	DiVerification              = "verification"
+	DiBirthday                  = "birthday"
 )

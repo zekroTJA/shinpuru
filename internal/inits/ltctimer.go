@@ -1,10 +1,12 @@
 package inits
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
+	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -13,6 +15,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 )
 
@@ -24,11 +27,18 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	rep := container.Get(static.DiReport).(*report.ReportService)
 	gl := container.Get(static.DiGuildLog).(guildlog.Logger)
 	vs := container.Get(static.DiVerification).(verification.Provider)
+	bd := container.Get(static.DiBirthday).(*birthday.BirthdayService)
+	s := container.Get(static.DiDiscordSession).(*discordgo.Session)
+
+	shardID, shardTotal := discordutil.GetShardOfSession(s)
 
 	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
 
 	lctSchedule(lct, "refresh token cleanup",
 		func() string {
+			if shardTotal > 1 && shardID != 0 {
+				return ""
+			}
 			return cfg.Config().Schedules.RefreshTokenCleanup
 		},
 		func() {
@@ -50,6 +60,9 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "twitch notify",
 		func() string {
+			if shardTotal > 1 && shardID != 0 {
+				return ""
+			}
 			return "@every 60s"
 		},
 		func() {
@@ -63,6 +76,9 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "report expiration",
 		func() string {
+			if shardTotal > 1 && shardID != 0 {
+				return ""
+			}
 			return cfg.Config().Schedules.ReportsExpiration
 		},
 		func() {
@@ -80,19 +96,35 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 
 	lctSchedule(lct, "verification kick routine",
 		func() string {
+			if shardTotal > 1 && shardID != 0 {
+				return ""
+			}
 			return cfg.Config().Schedules.VerificationKick
 		}, vs.KickRoutine)
 
 	lctSchedule(lct, "antiraid joinlog flush",
 		func() string {
+			if shardTotal > 1 && shardID != 0 {
+				return ""
+			}
 			return "@every 1h"
 		}, antiraid.FlushExpired(db, gl))
+
+	lctSchedule(lct, "birthday notifications",
+		func() string {
+			return "0 0 * * * *"
+		}, func() {
+			bd.Schedule()
+		})
 
 	return lct
 }
 
 func lctSchedule(lct lctimer.LifeCycleTimer, name string, specGetter func() string, job func()) {
 	spec := specGetter()
+	if spec == "" {
+		return
+	}
 	_, err := lct.Schedule(spec, job)
 	if err != nil {
 		logrus.WithError(err).WithField("name", name).Fatalf("LCT :: failed scheduling job")

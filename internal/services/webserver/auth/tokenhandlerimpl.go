@@ -83,13 +83,14 @@ type JWTAccessTokenHandler struct {
 // NewJWTAccessTokenHandler returns a new instance
 // of JWTAccessTokenHandler
 func NewJWTAccessTokenHandler(container di.Container) (ath *JWTAccessTokenHandler, err error) {
-	secret, err := random.GetRandByteArray(32)
+	cfg := container.Get(static.DiConfig).(config.Provider).
+		Config().WebServer.AccessToken
 	if err != nil {
 		return nil, err
 	}
 	ath = &JWTAccessTokenHandler{
-		sessionExpiration: 10 * time.Minute, // TODO: Get from config
-		sessionSecret:     secret,           // TODO: Get from config
+		sessionExpiration: time.Duration(cfg.LifetimeSeconds) * time.Second,
+		sessionSecret:     []byte(cfg.Secret),
 	}
 	return
 }

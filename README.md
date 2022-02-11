@@ -212,6 +212,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/giphy`**](pkg/giphy)  
+  *Package giphy provides a crappy and inclomplete - but at least bloat free - Giphy API client.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](pkg/hammertime)  
   *Package hammertime provides functionailities to format a time.Time into a Discord timestamp mention. The name was used after the very useful web app hammertime.djdavid98.art.*
 
@@ -220,6 +223,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 - [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](pkg/httpreq)  
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/inline`**](pkg/inline)  
+  *Package inline provides general inline operation functions like inline if or null coalescence.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/intutil`**](pkg/intutil)  
   *Package intutil provides some utility functionalities for integers.*
@@ -232,6 +238,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 - [**`github.com/zekroTJA/shinpuru/pkg/limiter`**](pkg/limiter)  
   *Package limiter provides a fiber middleware for a bucket based request rate limiter.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/logmsg`**](pkg/logmsg)  
+  *No package description.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
   *Package mimefix provides functionalities to bypass this issue with fasthttp on windows hosts*: https://github.com/golang/go/issues/32350*
@@ -306,7 +315,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20210814192603-33684e887a6d)`
 - [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.11.0)`
 - [qiangxue/fasthttp-routing](https://github.com/qiangxue/fasthttp-routing) `(v0.0.0-20160225050629-6ccdc2a18d87)`
-- [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.1.0)`
+- [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.2.1-0.20220121125614-50d5fceefc7c)`
 - [cron/v3](https://github.com/robfig/cron/v3) `(v3.0.1)`
 - [sahilm/fuzzy](https://github.com/sahilm/fuzzy) `(v0.1.0)`
 - [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
@@ -319,8 +328,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.3.2)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.4.5)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.11.1)`
+- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.0)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20211028202545-6944b10bf410)`
 - [x/sys](https://golang.org/x/sys) `(v0.0.0-20220111092808-5a964db01320)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20211116232009-f0f3c7e86c11)`

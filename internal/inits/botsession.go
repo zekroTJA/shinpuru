@@ -1,8 +1,10 @@
 package inits
 
 import (
+	"math/rand"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -14,9 +16,12 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/dgrs"
 )
 
-func InitDiscordBotSession(container di.Container) {
+func InitDiscordBotSession(container di.Container) (release func()) {
+	release = func() {}
+
 	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
@@ -34,9 +39,41 @@ func InitDiscordBotSession(container di.Container) {
 	cfg := container.Get(static.DiConfig).(config.Provider)
 
 	session.Token = "Bot " + cfg.Config().Discord.Token
-	session.StateEnabled = true
 	session.Identify.Intents = discordgo.MakeIntent(static.Intents)
 	session.StateEnabled = false
+
+	if shardCfg := cfg.Config().Discord.Sharding; shardCfg.Total > 1 {
+		st := container.Get(static.DiState).(*dgrs.State)
+
+		var id int
+		if shardCfg.AutoID {
+			d := time.Duration(rand.Int63n(int64(5 * time.Second)))
+			logrus.
+				WithField("d", d.Round(time.Millisecond).String()).
+				Info("Sleeping before retrieving shard ID")
+			time.Sleep(d)
+			if id, err = st.ReserveShard(shardCfg.Pool); err != nil {
+				logrus.WithError(err).Fatal("Failed receiving alive shards from state")
+			}
+			release = func() {
+				logrus.WithField("id", id).Info("Releasing shard ID")
+				if err = st.ReleaseShard(shardCfg.Pool, id); err != nil {
+					logrus.WithError(err).Error("Failed releasing shard ID")
+				}
+			}
+		} else {
+			id = shardCfg.ID
+			if id < 0 || id >= shardCfg.Total {
+				logrus.Fatalf("Shard ID must be in range [0, %d)", shardCfg.Total)
+			}
+		}
+
+		logrus.
+			WithField("id", id).
+			WithField("total", shardCfg.Total).
+			Info("Running in sharded mode")
+		session.Identify.Shard = &[2]int{id, shardCfg.Total}
+	}
 
 	listenerInviteBlock := listeners.NewListenerInviteBlock(container)
 	listenerGhostPing := listeners.NewListenerGhostPing(container)
@@ -91,4 +128,6 @@ func InitDiscordBotSession(container di.Container) {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed connecting Discord bot session")
 	}
+
+	return
 }

@@ -25,3 +25,10 @@ func NowAddPtr(d time.Duration) *time.Time {
 	t := time.Now().Add(d)
 	return &t
 }
+
+// DateOnly returns the given DateTime
+// with time set to 00:00:00.
+func DateOnly(t time.Time) time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+}

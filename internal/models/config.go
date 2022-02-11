@@ -54,6 +54,10 @@ var DefaultConfig = Config{
 		TLS: WebServerTLS{
 			Enabled: false,
 		},
+		AccessToken: AccessToken{
+			Secret:          random.MustGetRandBase64Str(64),
+			LifetimeSeconds: 10 * 60,
+		},
 		LandingPage: LandingPage{
 			ShowLocalInvite:   true,
 			ShowPublicInvites: true,
@@ -99,6 +103,15 @@ type Discord struct {
 	GuildBackupLoc         string    `json:"guildbackuploc"`
 	GlobalCommandRateLimit Ratelimit `json:"globalcommandratelimit"`
 	DisabledCommands       []string  `json:"disabledcommands"`
+	Sharding               Sharding  `json:"sharding"`
+}
+
+// Sharding holds configuration for guild event sharding.
+type Sharding struct {
+	AutoID bool `json:"autoid"`
+	ID     int  `json:"id"`
+	Pool   int  `json:"pool"`
+	Total  int  `json:"total"`
 }
 
 // DatabaseCreds holds credentials to connect to
@@ -162,6 +175,14 @@ type WebServer struct {
 	DebugPublicAddr string       `json:"debugpublicaddr,omitempty"`
 	RateLimit       Ratelimit    `json:"ratelimit"`
 	Captcha         Captcha      `json:"captcha"`
+	AccessToken     AccessToken  `json:"accesstoken"`
+}
+
+// AccessToken holds the secret and lifetime for
+// JWT access token signature.
+type AccessToken struct {
+	Secret          string `json:"secret"`
+	LifetimeSeconds int    `json:"lifetimeseconds"`
 }
 
 // WebServerTLS wraps preferences for the TLS
@@ -275,6 +296,12 @@ type Privacy struct {
 	Contact   []Contact `json:"contact"`
 }
 
+// Giphy holds credentials and configuration
+// to connect to the Giphy.com API.
+type Giphy struct {
+	APIKey string `json:"apikey"`
+}
+
 // Config wraps the whole configuration structure
 // including a version, which must not be changed
 // by users to identify the integrity of config
@@ -292,5 +319,6 @@ type Config struct {
 	Metrics     Metrics      `json:"metrics"`
 	Schedules   Schedules    `json:"schedules"`
 	CodeExec    CodeExec     `json:"codeexec"`
+	Giphy       Giphy        `json:"giphy"`
 	Privacy     Privacy      `json:"privacy"`
 }

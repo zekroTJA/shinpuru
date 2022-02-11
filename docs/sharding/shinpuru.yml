@@ -1,0 +1,51 @@
+configVersionPleaseDoNotChange: 6
+
+database:
+  mysql:
+    database: 'shinpuru'
+    host: 'mysql:3306'
+    password: 'mysql_root_password'
+    user: 'root'
+  type: mysql
+
+cache:
+  redis:
+    addr: "redis:6379"
+    type: 0
+  cachedatabase: true
+
+discord:
+  clientid: '<your client id>'
+  clientsecret: '<your client secret>'
+  ownerid: '221905671296253953'
+  token: '<your bot token>'
+
+logging:
+  loglevel: 5
+
+storage:
+  minio:
+    accesskey: 'dev-access-key'
+    accesssecret: 'dev-secret-key'
+    endpoint: 'minio:9000'
+    location: us-east-1
+    secure: false
+  type: minio
+
+webserver:
+  enabled: true
+  addr: :80
+  apitokenkey: 'Q@RH9hcoAd&bX7pBRpT6KW#orAg$S4)TxNNyRGQzBvD$&WBDjM%EDVwyF'
+  # IMPORTANT: To make interactions in the web interface independent of
+  #            the instance, you must specify a static secret here which
+  #            will be used to sign access token JWTs.
+  accesstoken:
+    secret: 'HH6rXYvAzRbbDX*$)xwF&G@xnUx6S9^H)V#HLj(jNn7PB9ozxA)AnZNfitYWr)(p'
+  publicaddr: http://localhost
+
+privacy:
+  noticeurl: https://github.com/zekroTJA/shinpuru/blob/master/PRIVACY.md
+  contact:
+    - title: E-Mail
+      value: contact@example.com
+      url: "mailto:contact@example.com"
