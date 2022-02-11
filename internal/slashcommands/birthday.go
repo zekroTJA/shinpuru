@@ -100,7 +100,7 @@ func (c *Birthday) Domain() string {
 func (c *Birthday) SubDomains() []permissions.SubPermission {
 	return []permissions.SubPermission{
 		{
-			Term:        "/sp.guild.settings.birthday",
+			Term:        "/sp.guild.config.birthday",
 			Explicit:    false,
 			Description: "Allows setting the birthday channel.",
 		},
@@ -226,7 +226,7 @@ func (c *Birthday) remove(ctx *ken.SubCommandCtx) (err error) {
 }
 
 func parseDate(matches []string, showYear bool) (date time.Time, err error) {
-	var y, m, d, offset int = 1, 0, 0, 0
+	var y, m, d, offset int = 1970, 0, 0, 0
 	if matches[1] != "" {
 		if y, err = strconv.Atoi(matches[1]); err != nil {
 			return
