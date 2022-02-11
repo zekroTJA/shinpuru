@@ -15,7 +15,7 @@
 - [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20210814192603-33684e887a6d)`
 - [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.11.0)`
 - [qiangxue/fasthttp-routing](https://github.com/qiangxue/fasthttp-routing) `(v0.0.0-20160225050629-6ccdc2a18d87)`
-- [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.1.0)`
+- [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.2.1-0.20220121125614-50d5fceefc7c)`
 - [cron/v3](https://github.com/robfig/cron/v3) `(v3.0.1)`
 - [sahilm/fuzzy](https://github.com/sahilm/fuzzy) `(v0.1.0)`
 - [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
@@ -28,8 +28,9 @@
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.3.2)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.4.5)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.11.1)`
+- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.0)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20211028202545-6944b10bf410)`
 - [x/sys](https://golang.org/x/sys) `(v0.0.0-20220111092808-5a964db01320)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20211116232009-f0f3c7e86c11)`

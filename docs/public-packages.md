@@ -40,6 +40,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/giphy`**](pkg/giphy)  
+  *Package giphy provides a crappy and inclomplete - but at least bloat free - Giphy API client.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](pkg/hammertime)  
   *Package hammertime provides functionailities to format a time.Time into a Discord timestamp mention. The name was used after the very useful web app hammertime.djdavid98.art.*
 
@@ -48,6 +51,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](pkg/httpreq)  
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/inline`**](pkg/inline)  
+  *Package inline provides general inline operation functions like inline if or null coalescence.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/intutil`**](pkg/intutil)  
   *Package intutil provides some utility functionalities for integers.*
@@ -60,6 +66,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/limiter`**](pkg/limiter)  
   *Package limiter provides a fiber middleware for a bucket based request rate limiter.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/logmsg`**](pkg/logmsg)  
+  *No package description.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
   *Package mimefix provides functionalities to bypass this issue with fasthttp on windows hosts*: https://github.com/golang/go/issues/32350*
