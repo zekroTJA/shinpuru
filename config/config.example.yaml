@@ -29,6 +29,21 @@ discord:
     # Rate limit bucket token regeneration
     # in seconds.
     limitseconds: 10
+  # Discord instance sharding configuration.
+  sharding:
+    # When enabled, shard IDs are automatically
+    # distributed via synced state.
+    autoid: true
+    # Pool defines the ID bin from where the
+    # shard IDs are taken when autoid is enabled.
+    pool: 0
+    # Specify a static shard ID. This is ignored
+    # when autoid is enabled.
+    id: 0
+    # Specifies the total amount of shards.
+    # This must be set, also if you are
+    # using autoid.
+    total: 5
 
 # Default permissions for users and admins
 permissions:
@@ -145,6 +160,16 @@ webserver:
     burst: 50
     # The reset duration until a request token is restored.
     limitseconds: 3
+  # Access token configuration.
+  accesstoken:
+    # Secret used to sign JWT access tokens. This must be set when
+    # you want to loadbalance bwetween multiple instances of shinpuru.
+    # If not specified, the signing key will be randomly generated
+    # on startup.
+    secret: 'HH6rXYvAzRbbDX*$)xwF&G@xnUx6S9^H)V#HLj(jNn7PB9ozxA)AnZNfitYWr)(p'
+    # Specify the access token lifetime in seconds.
+    # If not specified, this defaults to 600 seconds.
+    lifetimeseconds: 600
   # The hCaptcha credentials used for user validation.
   # Obtainable from https://dashboard.hcaptcha.com/overview
   captcha:
@@ -163,6 +188,13 @@ twitchapp:
   clientid: "zcwbsvg71qmo6to9813jkdvsh1rch4"
   # Client Secret
   clientsecret: "nlf6pl00vf4hz4oszgxytlpo9q6h52"
+
+# Giphy API configuration.
+giphy:
+  # API key for the Giphy REST API.
+  # This can be obtained by creating an API app here:
+  # https://developers.giphy.com/dashboard/
+  apikey: "dWl3ZXF6diBzZGR0NnczNDg5NTZuZG4w"
 
 # Prometheus metrics endpoint configuration
 metrics:
