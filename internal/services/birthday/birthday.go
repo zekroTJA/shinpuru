@@ -2,6 +2,7 @@ package birthday
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -10,15 +11,18 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/giphy"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/sop"
 )
 
 type BirthdayService struct {
+	gif     *giphy.Client
 	db      database.Database
 	st      *dgrs.State
 	session *discordgo.Session
@@ -26,12 +30,19 @@ type BirthdayService struct {
 }
 
 func New(ctn di.Container) *BirthdayService {
-	return &BirthdayService{
+	b := &BirthdayService{
 		db:      ctn.Get(static.DiDatabase).(database.Database),
 		st:      ctn.Get(static.DiState).(*dgrs.State),
 		session: ctn.Get(static.DiDiscordSession).(*discordgo.Session),
 		gl:      ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("birthday"),
 	}
+
+	cfg := ctn.Get(static.DiConfig).(config.Provider)
+	if apiKey := cfg.Config().Giphy.APIKey; apiKey != "" {
+		b.gif = giphy.New(apiKey, "v1")
+	}
+
+	return b
 }
 
 func (b *BirthdayService) Schedule() (err error) {
@@ -117,7 +128,7 @@ func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err e
 	}
 
 	userMention := user.Mention() + "'"
-	if !strings.HasPrefix(strings.ToLower(user.Username), "s") && !strings.HasPrefix(strings.ToLower(user.Username), "z") {
+	if !strings.HasSuffix(strings.ToLower(user.Username), "s") && !strings.HasSuffix(strings.ToLower(user.Username), "z") {
 		userMention += "s"
 	}
 
@@ -125,7 +136,7 @@ func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err e
 		"Today is %s %sbirthday!\n\nHappy birthday to you!  🥳 🎉 🎊",
 		userMention, age)
 
-	_, err = b.session.ChannelMessageSendEmbed(chanID, &discordgo.MessageEmbed{
+	emb := &discordgo.MessageEmbed{
 		Color:       static.ColorEmbedDefault,
 		Description: desc,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
@@ -133,7 +144,35 @@ func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err e
 			Width:  24,
 			Height: 24,
 		},
-	})
+	}
+
+	if gif := b.randomGif(); gif != nil {
+		width, _ := strconv.Atoi(gif.Width)
+		height, _ := strconv.Atoi(gif.Height)
+		emb.Image = &discordgo.MessageEmbedImage{
+			URL:    gif.Url,
+			Width:  width,
+			Height: height,
+		}
+	}
+
+	_, err = b.session.ChannelMessageSendEmbed(chanID, emb)
+	return
+}
+
+func (b *BirthdayService) randomGif() (img *giphy.Image) {
+	if b.gif == nil {
+		return
+	}
+	rng := rand.Intn(100)
+	res, err := b.gif.Search("birthday", 1, rng, "pg")
+	if err != nil {
+		logrus.WithError(err).Error("failed searching for birthday gif")
+		return
+	}
+	if len(res) != 0 {
+		img = &res[0].Images.FixedWidth
+	}
 	return
 }
 
