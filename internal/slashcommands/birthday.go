@@ -182,7 +182,7 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 				"The expected date format is `YYYY-MM-DD` or `MM-DD`. "+
 				"You can also use `/` or `.` as delimiters.\n\n"+
 				"You might also want to attach a timezone offset in the "+
-				"format of `+TZ` (in hours after UTC eastern direction).", "").Error
+				"format of `[+-]TZ` (in hours offset of UTC).", "").Error
 	}
 	date, err := parseDate(matches[0], showYear)
 	if err == errYear {
