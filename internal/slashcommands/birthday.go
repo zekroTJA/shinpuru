@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	dateRe  = regexp.MustCompile(`^(?:(\d{4})[\/\-\.])?(\d{1,2})[\/\-\.](\d{1,2})(?:\+(\d{1,2}))?$`)
+	dateRe  = regexp.MustCompile(`^(?:(\d{4})[\/\-\.])?(\d{1,2})[\/\-\.](\d{1,2})([\+\-](?:\d{1,2}))?$`)
 	errYear = errors.New("You need to specify a year when you want to show your birthday year.")
 )
 
@@ -241,9 +241,17 @@ func parseDate(matches []string, showYear bool) (date time.Time, err error) {
 	if d, err = strconv.Atoi(matches[3]); err != nil {
 		return
 	}
-	if matches[4] != "" {
-		if offset, err = strconv.Atoi(matches[4]); err != nil {
+	if offsetStr := matches[4]; offsetStr != "" {
+		prefix := offsetStr[0]
+		if offset, err = strconv.Atoi(offsetStr[1:]); err != nil {
 			return
+		}
+		if offset < 0 || offset > 23 {
+			err = errors.New("timezone offset must be in range [-23, 23]")
+			return
+		}
+		if prefix == '-' {
+			offset = 24 - offset
 		}
 	}
 	date = time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.FixedZone("Offset", offset*3600))
