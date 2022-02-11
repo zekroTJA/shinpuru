@@ -31,6 +31,8 @@ discord:
     total: 5
 ```
 
+You can also bin your automatically distributed IDs into pools. It allows distributing an ID multiple times. This is especially usefull if you want to hand over one instance stack to another with zero downtime. To do so, just spin up another stack with another `pool` ID. Then, all instances ill receive shard IDs starting at `0` again. After that, you can shut down the instance on pool `0`, which is also the default pool if not further specified.
+
 > **Attention:** Manually set IDs will not be registered in the `dgrs` state and will be picked by shards with `autoid` enabled. It is generally not recomendet to mix both configuration variants.
 
 Also, keep in mind that some scheduled functions are only executed on the instance with the shard ID `0`. So, you must ensure that there is **only one single** instance with shard ID `0`. Otherwise, unexpected behavior might occur. 
@@ -52,12 +54,30 @@ IDs are reserved consecutively starting with 0. When an ID is released in betwee
 
 Example:
 ```
-reserve → 0
-reserve → 1
-reserve → 2
-release 1
-reserve → 1
-reserve → 3
+reserve pool:0 → 0
+reserve pool:0 → 1
+reserve pool:0 → 2
+release pool:0 shardid:1
+reserve pool:0 → 1
+reserve pool:0 → 3
+```
+
+Below, you can see an example how the reservation will look when handing over one instance stack to another with two used pools.
+```
+# pool 0 spin up
+reserve pool:0 → 0
+reserve pool:0 → 1
+reserve pool:0 → 2
+
+# pool 1 spin up
+reserve pool:1 → 0
+reserve pool:1 → 1
+reserve pool:1 → 2
+
+# pool 0 shut down
+release pool:0 shardid:2
+release pool:0 shardid:1
+release pool:0 shardid:0
 ```
 
 This system does not take the total amount of shards in respective to be able to scale up dynamically. This also means, if you reserve more shard IDs than specified in total, shinpuru will not start.

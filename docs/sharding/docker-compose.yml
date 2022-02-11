@@ -63,6 +63,10 @@ services:
       # You can set a static shard ID using the environment variable
       # SP_DISCORD_SHARDING_ID, but in this case, this will not work.
       SP_DISCORD_SHARDING_AUTOID: 'true'
+      # If you might want to run multiple instances on same shard IDs,
+      # for example to hand over one stack to another with zero downtime,
+      # you can do it by setting another pool.
+      SP_DISCORD_SHARDING_POOL: 0
     restart: always
     depends_on:
       - mysql
