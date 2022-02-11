@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"runtime/pprof"
@@ -43,6 +44,10 @@ import (
 const (
 	envKeyProfile = "CPUPROFILE"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 //////////////////////////////////////////////////////////////////////
 //

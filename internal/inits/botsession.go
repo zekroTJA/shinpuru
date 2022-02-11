@@ -19,10 +19,6 @@ import (
 	"github.com/zekrotja/dgrs"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 func InitDiscordBotSession(container di.Container) (release func()) {
 	release = func() {}
 
