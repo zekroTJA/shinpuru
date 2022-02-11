@@ -105,10 +105,17 @@ func (b *BirthdayService) Schedule() (err error) {
 		}
 
 		gbds.Each(func(v *models.Birthday, i int) {
-			err := b.sendMessage(bdayChan, v)
+			memb, err := b.st.Member(v.GuildID, v.UserID)
+			if memb == nil || memb.User == nil {
+				if err == nil || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+					err = b.db.DeleteBirthday(v.GuildID, v.UserID)
+				}
+			} else {
+				err = b.sendMessage(memb, bdayChan, v)
+			}
 			if err != nil {
-				logrus.WithError(err).WithField("gid", guild.ID).Error("failed sending birthday message")
-				b.gl.Errorf(guild.ID, "Failed sending birthday message: %s", err.Error())
+				logrus.WithError(err).WithField("gid", guild.ID).Error("failed handling birthday")
+				b.gl.Errorf(guild.ID, "Failed handling birthday: %s", err.Error())
 			}
 		})
 	}
@@ -116,19 +123,14 @@ func (b *BirthdayService) Schedule() (err error) {
 	return
 }
 
-func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err error) {
-	user, err := b.st.User(bd.UserID)
-	if err != nil {
-		return
-	}
-
+func (b *BirthdayService) sendMessage(memb *discordgo.Member, chanID string, bd *models.Birthday) (err error) {
 	age := ""
 	if bd.ShowYear {
 		age = suffix(time.Now().Year()-bd.Date.Year()) + " "
 	}
 
-	userMention := user.Mention() + "'"
-	if !strings.HasSuffix(strings.ToLower(user.Username), "s") && !strings.HasSuffix(strings.ToLower(user.Username), "z") {
+	userMention := memb.Mention() + "'"
+	if !strings.HasSuffix(strings.ToLower(memb.User.Username), "s") && !strings.HasSuffix(strings.ToLower(memb.User.Username), "z") {
 		userMention += "s"
 	}
 
@@ -140,7 +142,7 @@ func (b *BirthdayService) sendMessage(chanID string, bd *models.Birthday) (err e
 		Color:       static.ColorEmbedDefault,
 		Description: desc,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL:    user.AvatarURL(""),
+			URL:    memb.User.AvatarURL(""),
 			Width:  24,
 			Height: 24,
 		},
