@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **31** different wonderful people contributed a sum of **73** issues and **14** pull requests (with 631 added and 81 deleted lines of code in 46 different files)! 🎉
+In total, **31** different wonderful people contributed a sum of **73** issues and **15** pull requests (with 635 added and 85 deleted lines of code in 47 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -16,6 +16,7 @@ In total, **31** different wonderful people contributed a sum of **73** issues a
 |  [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195), [#219](https://github.com/zekroTJA/shinpuru/issues/219), [#241](https://github.com/zekroTJA/shinpuru/issues/241) |  | `4` |
 |  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `4` |
 |  [LiebesWavezLP](https://github.com/LiebesWavezLP) | [#325](https://github.com/zekroTJA/shinpuru/issues/325), [#328](https://github.com/zekroTJA/shinpuru/issues/328), [#340](https://github.com/zekroTJA/shinpuru/issues/340), [#343](https://github.com/zekroTJA/shinpuru/issues/343) |  | `4` |
+|  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346) | [#351](https://github.com/zekroTJA/shinpuru/pull/351) | `4` |
 |  [Eli-Dev](https://github.com/Eli-Dev) | [#45](https://github.com/zekroTJA/shinpuru/issues/45), [#47](https://github.com/zekroTJA/shinpuru/issues/47), [#49](https://github.com/zekroTJA/shinpuru/issues/49) |  | `3` |
 |  [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
 |  [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `3` |
@@ -35,7 +36,6 @@ In total, **31** different wonderful people contributed a sum of **73** issues a
 |  [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
-|  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346) |  | `1` |
 |  [kindh0623](https://github.com/kindh0623) | [#348](https://github.com/zekroTJA/shinpuru/issues/348) |  | `1` |
 
 
