@@ -32,7 +32,7 @@ func (h *RefreshTokenRequestHandler) LoginFailedHandler(ctx *fiber.Ctx, status i
 	return fiber.NewError(status, msg)
 }
 
-func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
+func (h *RefreshTokenRequestHandler) BindRefreshToken(ctx *fiber.Ctx, uid string) error {
 	user, _ := h.session.User(uid)
 	if user == nil {
 		return fiber.ErrUnauthorized
@@ -54,6 +54,13 @@ func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid str
 		Secure:   embedded.IsRelease(),
 	})
 
+	return nil
+}
+
+func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
+	if err := h.BindRefreshToken(ctx, uid); err != nil {
+		return err
+	}
 	return ctx.Redirect("/", fiber.StatusTemporaryRedirect)
 }
 
