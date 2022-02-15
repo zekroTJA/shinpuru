@@ -240,9 +240,9 @@ export class APIService {
     if (err.status === 401) {
       let path = window.location.pathname;
       if (NO_LOGIN_ROUTES.find((r) => path.startsWith(r))) return;
-      if (path?.length > 1) {
+      if (path?.length > 1 && path !== '/start') {
         console.log('api', path);
-        this.router.navigate(['/'], {
+        this.router.navigate(['/start'], {
           queryParams: {
             redirect: path,
           },
