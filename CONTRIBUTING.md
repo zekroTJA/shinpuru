@@ -43,7 +43,7 @@ shinpuru mainly uses MySQL/MariaDB as database. You *can* also use SQLite3 for d
 - Linux: https://opensource.com/article/20/10/mariadb-mysql-linux
 - Docker: https://hub.docker.com/_/mariadb/
 
-Redis is used as database cache. The [`RedisMiddleware`](https://github.com/zekroTJA/shinpuru/blob/master/internal/services/database/redis/redis.go) generaly inherits functionalities from the specified database middleware instance and only overwrites using the specified functions. The database cache always keeps the cache as well as the database hot and always first tries to get objects from cache and, if not available there, from database.
+Redis is used as database cache. The [`RedisMiddleware`](https://github.com/zekroTJA/shinpuru/blob/master/internal/services/database/redis/redis.go) generally inherits functionalities from the specified database middleware instance and only overwrites using the specified functions. The database cache always keeps the cache as well as the database hot and always first tries to get objects from cache and, if not available there, from database.
 
 ![](https://i.imgur.com/TgkuhUY.png)
 
@@ -65,7 +65,7 @@ If you want to add API endpoints, just add the endpoints to one of the controlle
 
 Also, fiber works a lot with middlewares, which can be chained anywhere into the fiber route chain. In shinpuru's implementation, there are three main types of middlewares.
 1. The high level middlewares like the rate limiter, CORS or file system middleware, which are set before all incomming requests.
-2. Controller specific middlewares which are defined in the router. Mainly, this is used for the authorizeation middleware, which checks for auth tokens in the requests. This middleware is required by some controllers and not required for others.
+2. Controller specific middlewares which are defined in the router. Mainly, this is used for the authorization middleware, which checks for auth tokens in the requests. This middleware is required by some controllers and not required for others.
 3. Endpoint specific middlewares which are defined for specific endpoints only. Mainly, this is used for the permission middleware which checks for required user permissions to execute specific endpoints.
 
 Here you can see a simple overview over the routing structure of the shinpuru webserver.
@@ -98,7 +98,7 @@ As you can see, all service identifiers are registered in the [`internal/util/st
 
 After building the `diBuilder`, you will have a `di.Container` to work with where you can get any service registered. Because all services are registered in the `App` scope, once they are initialized, all requests are getting the same instance of the service. This makes service development very easy, because every service is getting passed the same service container and every service can grab the instance of any other registered service instance.
 
-When you want to use a service, just take it from the passed service conatiner by the specified identifier. Let's take a look at the [`starboard` listener](https://github.com/zekroTJA/shinpuru/blob/master/internal/listeners/starboard.go) , for example:
+When you want to use a service, just take it from the passed service container by the specified identifier. Let's take a look at the [`starboard` listener](https://github.com/zekroTJA/shinpuru/blob/master/internal/listeners/starboard.go), for example:
 
 ```go
 func NewListenerStarboard(container di.Container) *ListenerStarboard {
@@ -134,7 +134,7 @@ This package is using a [crontab styled syntax](https://pkg.go.dev/github.com/ro
 
 The shinpuru web frontend is a compiled [**Angular**](https://angular.io) SPA, which is directly hosted form the shinpuru web server. The source files are located at [`/web`](https://github.com/zekroTJA/shinpuru/blob/master/web) Stylesheets are written in [**SCSS**](https://sass-lang.com/documentation/syntax) because SCSS has huge advantages to default CSS like nesting, mixins and variables, which are widely used in stylesheets.
 
-The Angular web app is built like a typical Angular application with reusable components, routes, services and pipes. The communication with the REST API is handled by the [`APIService`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.service.ts). API models are specified in the [`api.models.ts`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.models.ts) file. Also, the API stores some objects like member information in a [`CacheBucket`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.cache.ts) for short-time caching them on the client side to reduce the load on the REST API. Also, an [interceptor](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/auth.interceptor.ts) is chained before the API service which adds the collected `accessToken` to each reqeust. If the `accessToken` is not existent, expired or invalid, the `accessToken` will be collected using the `refreshToken` set as cookie. The access token is then stored and the request is retried with the now existent access token.
+The Angular web app is built like a typical Angular application with reusable components, routes, services and pipes. The communication with the REST API is handled by the [`APIService`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.service.ts). API models are specified in the [`api.models.ts`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.models.ts) file. Also, the API stores some objects like member information in a [`CacheBucket`](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/api.cache.ts) for short-time caching them on the client side to reduce the load on the REST API. Also, an [interceptor](https://github.com/zekroTJA/shinpuru/blob/master/web/src/app/api/auth.interceptor.ts) is chained before the API service which adds the collected `accessToken` to each request. If the `accessToken` is not existent, expired or invalid, the `accessToken` will be collected using the `refreshToken` set as cookie. The access token is then stored and the request is retried with the now existent access token.
 
 ## Preparing a Development Environment
 
