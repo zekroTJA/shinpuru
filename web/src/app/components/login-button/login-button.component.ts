@@ -14,6 +14,5 @@ export class LoginButtonComponent implements OnInit {
 
   onLogin() {
     this.login.emit();
-    window.location.assign('/api/auth/login');
   }
 }

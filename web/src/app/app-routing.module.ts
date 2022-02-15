@@ -2,7 +2,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './routes/login/login.component';
+import { StartComponent } from './routes/start/start.component';
 import { HomeComponent } from './routes/home/home.component';
 import { GuildComponent } from './routes/guild/guild.component';
 import { MemberRouteComponent } from './routes/member/member.component';
@@ -25,20 +25,20 @@ import { EmbedsComponent } from './routes/utils/embeds/embeds.component';
 import { VerifyRouteComponent } from './routes/verify/verify.component';
 import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-codeexec.component';
+import { LoginComponent } from './routes/login/login.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/guilds',
-    pathMatch: 'full',
-  },
-  {
-    path: 'guilds',
-    component: HomeComponent,
+    component: StartComponent,
   },
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'guilds',
+    component: HomeComponent,
   },
   {
     path: 'guilds/:id',
@@ -131,7 +131,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/guilds',
+    redirectTo: '/',
     pathMatch: 'full',
   },
 ];

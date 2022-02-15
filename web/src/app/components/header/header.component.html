@@ -45,7 +45,7 @@
 
   <ng-template #tmpLogin>
     <div class="d-flex ml-auto">
-      <app-login-button></app-login-button>
+      <app-login-button (login)="onLogin()"></app-login-button>
     </div>
   </ng-template>
 </div>

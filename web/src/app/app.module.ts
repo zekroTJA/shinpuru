@@ -8,7 +8,7 @@ import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './routes/login/login.component';
+import { StartComponent } from './routes/start/start.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { HomeComponent } from './routes/home/home.component';
@@ -67,7 +67,7 @@ import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-co
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
+    StartComponent,
     HeaderComponent,
     ToastComponent,
     HomeComponent,

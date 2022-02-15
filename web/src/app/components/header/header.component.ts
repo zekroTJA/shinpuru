@@ -90,9 +90,13 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  public onLogin() {
+    this.router.navigate(['/login']);
+  }
+
   private logout() {
     this.api.logout().subscribe(() => {
-      window.location.assign('/login');
+      window.location.assign('/');
     });
   }
 
