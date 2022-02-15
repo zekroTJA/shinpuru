@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 	"github.com/zekroTJA/timedmap"
@@ -26,6 +27,7 @@ type AuthController struct {
 	ath          auth.AccessTokenHandler
 	authMw       auth.Middleware
 	st           *dgrs.State
+	session      *discordgo.Session
 	oauthHandler auth.RequestHandler
 
 	pushcodeSubs *timedmap.TimedMap
@@ -40,7 +42,7 @@ type pushCodeWaiter struct {
 	closed       bool
 }
 
-func (pcw *pushCodeWaiter) close() {
+func (pcw *pushCodeWaiter) close() bool {
 	pcw.mtx.Lock()
 	defer pcw.mtx.Unlock()
 
@@ -48,7 +50,10 @@ func (pcw *pushCodeWaiter) close() {
 		close(pcw.fin)
 		pcw.subscription()
 		pcw.closed = true
+		return true
 	}
+
+	return false
 }
 
 func (c *AuthController) Setup(container di.Container, router fiber.Router) {
@@ -57,6 +62,7 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	c.ath = container.Get(static.DiAuthAccessTokenHandler).(auth.AccessTokenHandler)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)
+	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.oauthHandler = container.Get(static.DiOAuthHandler).(auth.RequestHandler)
 
 	c.pushcodeSubs = timedmap.New(10 * time.Second)
@@ -165,6 +171,8 @@ func (c *AuthController) pushCode(ctx *fiber.Ctx) (err error) {
 				pcw.fin <- struct{}{}
 			}
 		})
+	} else {
+		pcw.code = req.Code
 	}
 
 	<-pcw.fin
@@ -174,7 +182,10 @@ func (c *AuthController) pushCode(ctx *fiber.Ctx) (err error) {
 	}
 
 	c.pushcodeSubs.Remove(ipaddr)
-	pcw.close()
+	if pcw.close() {
+		util.SendEmbed(c.session, pcw.res.ChannelID,
+			"You will now being logged in!", "", static.ColorEmbedGreen)
+	}
 
 	err = c.oauthHandler.BindRefreshToken(ctx, pcw.res.Author.ID)
 	if err != nil {
