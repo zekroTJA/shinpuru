@@ -16,6 +16,10 @@ export class LoginComponent implements OnInit {
     while (await this.pushCode());
   }
 
+  onDiscordLogin() {
+    window.location.assign('/api/auth/login');
+  }
+
   private generatePushCode() {
     this.code = getCryptoRandomString(16);
   }
