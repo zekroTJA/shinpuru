@@ -1,1 +1,18 @@
-<p>login works!</p>
+<div class="login-container">
+  <section class="discord">
+    <p>Either log in via Discord OAuth2</p>
+    <div class="mt-3">
+      <button href="/api/auth/login">
+        <img src="assets/dc-logo-blurple.svg" />
+        <span>Login with Discord</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="alt">
+    <p>Or DM the following Code to shinpuru on Discord</p>
+    <div class="mt-3">
+      <app-hider [value]="code"></app-hider>
+    </div>
+  </section>
+</div>

@@ -63,6 +63,8 @@ import { VerifyRouteComponent } from './routes/verify/verify.component';
 import { LoginButtonComponent } from './components/login-button/login-button.component';
 import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-codeexec.component';
+import { HiderComponent } from './components/hider/hider.component';
+import { LoginComponent } from './routes/login/login.component';
 
 @NgModule({
   declarations: [
@@ -118,6 +120,8 @@ import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-co
     LoginButtonComponent,
     GuildAdminVerificationComponent,
     GuildAdminCodeExecComponent,
+    LoginComponent,
+    HiderComponent,
   ],
   imports: [
     NgbModule,

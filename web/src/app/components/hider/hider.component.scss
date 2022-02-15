@@ -1,0 +1,50 @@
+@import '../../../sass/vars';
+
+.container {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  border-radius: 5px;
+  background-color: $c-blurple;
+  padding: 10px 20px;
+
+  > input {
+    width: 100%;
+    text-align: center;
+    outline: none;
+    color: currentColor;
+    transition: all 0.2s ease-in-out;
+  }
+
+  &.isHidden {
+    background-color: $c-font-general;
+    color: $c-bg-general;
+  }
+}
+
+.copy-info {
+  @keyframes copy-info-anim {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    25% {
+      opacity: 0.8;
+    }
+    75% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(-1.5em);
+      opacity: 0;
+    }
+  }
+
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: $c-font-general;
+  animation: copy-info-anim 1.5s ease;
+}

@@ -40,7 +40,9 @@ export class HeaderComponent implements OnInit {
     private api: APIService,
     private router: Router,
     public loadingBar: LoadingBarService
-  ) {
+  ) {}
+
+  ngOnInit() {
     this.api.getSelfUser().subscribe((user) => {
       this.selfUser = user;
       if (user.bot_owner) {
@@ -50,9 +52,7 @@ export class HeaderComponent implements OnInit {
         } as PopupElement);
       }
     });
-  }
 
-  ngOnInit() {
     this.popupElements.push(
       {
         el: this.logoutTemplate,
@@ -92,6 +92,10 @@ export class HeaderComponent implements OnInit {
 
   public onLogin() {
     this.router.navigate(['/login']);
+  }
+
+  public get isLoginPage(): boolean {
+    return window.location.pathname.startsWith('/login');
   }
 
   private logout() {
