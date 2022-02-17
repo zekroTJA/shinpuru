@@ -9,16 +9,14 @@ on:
       - '**.md'
 
 jobs:
-
   wiki-generate:
-
     name: Wiki Generation
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.17
         uses: actions/setup-go@v1
         with:
-          go-version: "1.18beta2"
+          go-version: '1.18rc1'
         id: go
 
       - name: Check out code into the Go module directory
