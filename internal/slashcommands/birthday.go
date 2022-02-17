@@ -20,7 +20,9 @@ var (
 	errYear = errors.New("You need to specify a year when you want to show your birthday year.")
 )
 
-type Birthday struct{}
+type Birthday struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Birthday)(nil)
@@ -206,12 +208,7 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Description: "Your birthday has successfully been registered.",
 	}
-	fu := ctx.FollowUpEmbed(emb)
-	err = fu.Error
-	if !showYear {
-		fu.Delete()
-		_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, emb)
-	}
+	err = ctx.FollowUpEmbed(emb).Error
 
 	return
 }
