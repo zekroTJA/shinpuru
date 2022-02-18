@@ -156,37 +156,41 @@
   </div>
 
   <div>
-    <div class="emebd-preview" [style.border-color]="embed.color_hex">
+    <div class="emebd-preview" [style.border-color]="composedEmbed.color_hex">
       <div class="d-flex">
         <div class="content">
-          <div *ngIf="embed.title" class="header">
-            <a *ngIf="embed.url" [href]="embed.url">
-              {{ embed.title }}
+          <div *ngIf="composedEmbed.title" class="header">
+            <a *ngIf="composedEmbed.url" [href]="composedEmbed.url">
+              {{ composedEmbed.title }}
             </a>
             <a *ngIf="!embed.url">
-              {{ embed.title }}
+              {{ composedEmbed.title }}
             </a>
           </div>
-          <div class="description" *ngIf="embed.description">
-            <p>{{ embed.description }}</p>
+          <div class="description" *ngIf="composedEmbed.description">
+            <p>{{ composedEmbed.description }}</p>
           </div>
-          <div *ngIf="embed.fields?.length > 0" class="fields">
+          <div *ngIf="composedEmbed.fields?.length > 0" class="fields">
             <div
-              *ngFor="let f of embed.fields"
+              *ngFor="let f of composedEmbed.fields"
               [style.display]="f.inline ? 'inline-block' : 'block'"
             >
               <p class="heading">{{ f.name }}</p>
               <p>{{ f.value }}</p>
             </div>
           </div>
-          <img *ngIf="embed.image.url" class="image" [src]="embed.image.url" />
-          <div *ngIf="embed.footer.text" class="footer">
-            <img [src]="embed.footer.icon_url" />
-            <span>{{ embed.footer.text }}</span>
+          <img
+            *ngIf="composedEmbed.image?.url"
+            class="image"
+            [src]="composedEmbed.image?.url"
+          />
+          <div *ngIf="composedEmbed.footer?.text" class="footer">
+            <img [src]="composedEmbed.footer?.icon_url" />
+            <span>{{ composedEmbed.footer?.text }}</span>
           </div>
         </div>
-        <div *ngIf="embed.thumbnail.url" class="thumbnail">
-          <img [src]="embed.thumbnail.url" />
+        <div *ngIf="composedEmbed.thumbnail?.url" class="thumbnail">
+          <img [src]="composedEmbed.thumbnail?.url" />
         </div>
       </div>
     </div>

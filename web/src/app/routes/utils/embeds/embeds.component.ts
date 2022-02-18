@@ -102,4 +102,29 @@ export class EmbedsComponent implements OnInit {
       this.toasts.push('Embed successfully sent.', '', 'success', 6000);
     }
   }
+
+  get composedEmbed(): MessageEmbed {
+    if (isEmpty(this.embed))
+      return {
+        title: 'Preview',
+        description: 'This is a preview 🥳',
+      } as MessageEmbed;
+    return this.embed;
+  }
+}
+
+function isEmpty(obj: object): boolean {
+  if (!obj) return true;
+  for (const v of Object.values(obj)) {
+    if (Array.isArray(v)) {
+      if (v.length !== 0) return false;
+      continue;
+    }
+    if (typeof v === 'object') {
+      if (!isEmpty(v)) return false;
+      continue;
+    }
+    if (!!v) return false;
+  }
+  return true;
 }
