@@ -13,3 +13,5 @@ deploy/
 cmd/test/*
 .DS_Store
 web/.angular/
+internal/util/embedded/webdist/*
+!internal/util/embedded/webdist/keep

@@ -3,7 +3,6 @@ package webserver
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,6 +14,7 @@ import (
 	v1 "github.com/zekroTJA/shinpuru/internal/services/webserver/v1"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/limiter"
@@ -73,8 +73,12 @@ func New(container di.Container) (ws *WebServer, err error) {
 	new(controllers.InviteController).Setup(ws.container, ws.app.Group("/invite"))
 	ws.registerRouter(new(v1.Router), []string{"/api/v1", "/api"}, rlh)
 
+	fs, err := wsutil.GetFS()
+	if err != nil {
+		return
+	}
 	ws.app.Use(filesystem.New(filesystem.Config{
-		Root:         http.Dir("web/dist/web"),
+		Root:         fs,
 		Browse:       true,
 		Index:        "index.html",
 		MaxAge:       3600,

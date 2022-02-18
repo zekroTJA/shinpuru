@@ -54,7 +54,7 @@ endif
 
 
 PHONY = _make
-_make: deps build fe copyfe cleanup
+_make: deps fe copyfe build cleanup
 
 PHONY += build
 build: $(BIN)
@@ -103,8 +103,7 @@ fe:
 
 PHONY += copyfe
 copyfe:
-	mkdir -p bin/web/dist
-	cp -R web/dist/web bin/web/dist
+	cp -R web/dist/web/* internal/util/embedded/webdist
 
 PHONY += runfe
 runfe:

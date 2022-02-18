@@ -2,11 +2,16 @@ package wsutil
 
 import (
 	"fmt"
+	"io/fs"
+	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
 
 // GetQueryInt tries to get a value from request query
@@ -74,4 +79,24 @@ func ErrInternalOrNotFound(err error) error {
 		return fiber.ErrNotFound
 	}
 	return err
+}
+
+func GetFS() (f http.FileSystem, err error) {
+	fsys, err := fs.Sub(embedded.FrontendFiles, "webdist")
+	if err != nil {
+		return
+	}
+	_, err = fsys.Open("index.html")
+	if os.IsNotExist(err) {
+		logrus.Info("WS :: using web files form web/dist/web")
+		f = http.Dir("web/dist/web")
+		err = nil
+		return
+	}
+	if err != nil {
+		return
+	}
+	logrus.Info("WS :: using embedded web files")
+	f = http.FS(fsys)
+	return
 }
