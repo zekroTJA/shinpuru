@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   Channel,
-  ChannelType,
   ChannelWithPermissions,
   Guild,
   MessageEmbed,
@@ -14,7 +13,6 @@ import {
 } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
 import { ToastService } from 'src/app/components/toast/toast.service';
-
 @Component({
   selector: 'app-embeds',
   templateUrl: './embeds.component.html',
@@ -33,7 +31,7 @@ export class EmbedsComponent implements OnInit {
   erroneousJson = false;
   channelId: string;
   editMessageId: string;
-  channels: ChannelWithPermissions[] = [];
+  channels: ChannelWithPermissions[];
 
   constructor(
     private api: APIService,
@@ -51,7 +49,9 @@ export class EmbedsComponent implements OnInit {
   }
 
   get textChannels(): Channel[] {
-    return this.channels.filter((c) => c.can_read && c.can_write);
+    return this.channels?.filter(
+      (c) => c.can_read && c.can_write && c.type === 0
+    );
   }
 
   addEmbedField() {

@@ -1,4 +1,4 @@
-<div class="mt-4 send-header" *ngIf="guild">
+<div class="mt-4 send-header" *ngIf="guild && textChannels; else channelLoader">
   <div>
     <label>Channel</label>
     <select [(ngModel)]="channelId">
@@ -20,6 +20,12 @@
     </button>
   </div>
 </div>
+
+<ng-template #channelLoader>
+  <div class="mt-4">
+    <app-skeleton-tile width="100%" height="83px"></app-skeleton-tile>
+  </div>
+</ng-template>
 
 <div class="mt-4 container">
   <div class="embed-builder">
