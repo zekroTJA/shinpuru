@@ -29,8 +29,8 @@ jobs:
       - name: Upload Artifcats
         uses: actions/upload-artifact@v2
         with:
-          name: webpackage
-          path: bin/
+          name: frontend
+          path: bin/web/dist/web
 
   backend:
     name: Build Backend Artifacts
