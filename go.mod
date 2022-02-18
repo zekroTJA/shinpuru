@@ -34,7 +34,7 @@ require (
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.5.1
 	github.com/zekrotja/ken v0.12.1
-	github.com/zekrotja/sop v0.3.0
+	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
@@ -70,6 +70,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	golang.org/x/exp v0.0.0-20220217172124-1812c5b45e43 // indirect
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect

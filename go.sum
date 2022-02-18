@@ -813,6 +813,8 @@ github.com/zekrotja/ken v0.12.1 h1:wFvqDFYhnO2aNZ1zZibMIsQnd7uRC4RfW21xzUftVWA=
 github.com/zekrotja/ken v0.12.1/go.mod h1:HLNM5sf0saf8UFQx+wm02V7W38g70JlvToL1JHIotbg=
 github.com/zekrotja/sop v0.3.0 h1:wEcsCRfuFbXHfTRo/LqeElFyXDceA0GhPqMEbk9dU8E=
 github.com/zekrotja/sop v0.3.0/go.mod h1:hf+fkLDFOG7sb+Tf3Lv0xf80W73MOUBUKIR4vEwterk=
+github.com/zekrotja/sop v0.3.1 h1:zJ0kk5w1y7aWZjaVwV2QZzfV868sHI6rQntLTFfsv3k=
+github.com/zekrotja/sop v0.3.1/go.mod h1:GKiPMHHdPpoKb+C48M6SXqoQmC2c2fEtUznHNxhDnrQ=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
@@ -872,6 +874,8 @@ golang.org/x/exp v0.0.0-20191227195350-da58074b4299/go.mod h1:2RIsYlXP63K8oxa1u0
 golang.org/x/exp v0.0.0-20200119233911-0405dc783f0a/go.mod h1:2RIsYlXP63K8oxa1u096TMicItID8zy7Y6sNkU49FU4=
 golang.org/x/exp v0.0.0-20200207192155-f17229e696bd/go.mod h1:J/WKrq2StrnmMY6+EHIKF9dgMWnmCNThgcyBT1FY9mM=
 golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6/go.mod h1:3jZMyOhIsHpP37uCMkUooju7aAi5cS1Q23tOzKc+0MU=
+golang.org/x/exp v0.0.0-20220217172124-1812c5b45e43 h1:Xo03zeNci09uW1tocp7+8X7YizAdkD/BKNkl9lsqKHQ=
+golang.org/x/exp v0.0.0-20220217172124-1812c5b45e43/go.mod h1:lRnflEfy7nRvpQCcpkwaSP1nkrSyjkyFNcqXKfSXLMc=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190802002840-cff245a6509b/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/image v0.0.0-20211028202545-6944b10bf410 h1:hTftEOvwiOq2+O8k2D5/Q7COC7k5Qcrgc2TFURJYnvQ=
