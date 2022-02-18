@@ -69,7 +69,7 @@ func main() {
 	config := &DummyConfigProvider{}
 	diBuilder.Set(static.DiConfig, config)
 
-	s, _ := discordgo.New()
+	s, _ := discordgo.New("")
 	diBuilder.Set(static.DiDiscordSession, s)
 
 	// Initialize database middleware and shutdown routine

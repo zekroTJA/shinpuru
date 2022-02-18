@@ -11,6 +11,11 @@ type RequestHandler interface {
 	// wrong during the authentication process.
 	LoginFailedHandler(ctx *fiber.Ctx, status int, msg string) error
 
+	// BindRefreshToken generates a refresh token
+	// and binds it as cookie to the passed
+	// context.
+	BindRefreshToken(ctx *fiber.Ctx, uid string) error
+
 	// LoginSuccessHandler is called when the
 	// authentication process was successful.
 	//

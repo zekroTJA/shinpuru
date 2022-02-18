@@ -131,6 +131,10 @@ label {
 
   .content {
     width: 100%;
+
+    > *:first-child {
+      margin-top: 0 !important;
+    }
   }
 
   .header {
@@ -146,7 +150,11 @@ label {
   }
 
   .fields {
+    margin-top: 16px;
     > div {
+      &:first-child {
+        margin-top: 0;
+      }
       margin: 16px 16px 0px 0;
       > p {
         margin: 0;

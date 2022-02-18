@@ -1,6 +1,7 @@
 package embedded
 
 import (
+	"embed"
 	_ "embed"
 	"strings"
 )
@@ -14,6 +15,9 @@ var (
 	AppDate string
 	//go:embed Release.txt
 	Release string
+
+	//go:embed webdist
+	FrontendFiles embed.FS
 )
 
 func IsRelease() bool {

@@ -240,13 +240,14 @@ export class APIService {
     if (err.status === 401) {
       let path = window.location.pathname;
       if (NO_LOGIN_ROUTES.find((r) => path.startsWith(r))) return;
-      if (!(path?.length > 0)) path = null;
-      console.log('api', path);
-      this.router.navigate(['/login'], {
-        queryParams: {
-          redirect: path,
-        },
-      });
+      if (path?.length > 1 && path !== '/start') {
+        console.log('api', path);
+        this.router.navigate(['/start'], {
+          queryParams: {
+            redirect: path,
+          },
+        });
+      }
       return of(null);
     }
 
@@ -1099,5 +1100,9 @@ export class APIService {
     return this.http
       .post(this.rcUserSettings('privacy'), settings, this.defopts())
       .pipe(catchError(this.errorCatcher));
+  }
+
+  public postPushCode(code: string): Observable<any> {
+    return this.http.post(this.rcAuth('pushcode'), { code }, this.defopts());
   }
 }

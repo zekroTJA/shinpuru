@@ -396,6 +396,10 @@ type CodeExecSettings struct {
 	JdoodleClientSecret string   `json:"jdoodle_clientsecret,omitempty"`
 }
 
+type PushCodeRequest struct {
+	Code string `json:"code"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

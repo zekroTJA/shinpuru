@@ -14,7 +14,7 @@ const day = 24 * time.Hour
 
 func InitState(container di.Container) (s *dgrs.State, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
-	rd := container.Get(static.DiRedis).(redis.Cmdable)
+	rd := container.Get(static.DiRedis).(*redis.Client)
 
 	return dgrs.New(dgrs.Options{
 		RedisClient:    rd,

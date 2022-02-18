@@ -1,10 +1,6 @@
-/** @format */
-
 import { Component, OnInit } from '@angular/core';
-import { LandingPageInfo } from 'src/app/api/api.models';
 import { APIService } from 'src/app/api/api.service';
-import LocalStorageUtil from 'src/app/utils/localstorage';
-import { NextLoginRedirect } from 'src/app/utils/objects';
+import { getCryptoRandomString } from 'src/app/utils/crypto';
 
 @Component({
   selector: 'app-login',
@@ -12,37 +8,29 @@ import { NextLoginRedirect } from 'src/app/utils/objects';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  public info: LandingPageInfo;
+  code: string;
 
-  constructor(private api: APIService) {
-    this.api.getLandingPageInfo().subscribe((info) => {
-      this.info = info;
-    });
+  constructor(private api: APIService) {}
+
+  async ngOnInit() {
+    while (await this.pushCode());
   }
 
-  ngOnInit() {
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get('redirect');
-    console.log('login', redirect);
-
-    if (redirect) {
-      LocalStorageUtil.set('NEXT_LOGIN_REDIRECT', {
-        destination: redirect,
-        deadline: Date.now() + 5 * 60 * 1000,
-      } as NextLoginRedirect);
-    }
+  onDiscordLogin() {
+    window.location.assign('/api/auth/login');
   }
 
-  public scrollTo(id: string) {
-    const e = document.querySelector('#' + id);
-    if (e) {
-      e.scrollIntoView({
-        behavior: 'smooth',
-      });
-    }
+  private generatePushCode() {
+    this.code = getCryptoRandomString(16);
   }
 
-  public get currentYear(): number {
-    return new Date().getFullYear();
+  private async pushCode(): Promise<boolean> {
+    this.generatePushCode();
+    try {
+      await this.api.postPushCode(this.code).toPromise();
+      window.location.assign('/guilds');
+      return false;
+    } catch {}
+    return true;
   }
 }

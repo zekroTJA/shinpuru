@@ -8,7 +8,7 @@ import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './routes/login/login.component';
+import { StartComponent } from './routes/start/start.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { HomeComponent } from './routes/home/home.component';
@@ -63,11 +63,13 @@ import { VerifyRouteComponent } from './routes/verify/verify.component';
 import { LoginButtonComponent } from './components/login-button/login-button.component';
 import { GuildAdminVerificationComponent } from './routes/guild-admin/verification/ga-verification.component';
 import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-codeexec.component';
+import { HiderComponent } from './components/hider/hider.component';
+import { LoginComponent } from './routes/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
+    StartComponent,
     HeaderComponent,
     ToastComponent,
     HomeComponent,
@@ -118,6 +120,8 @@ import { GuildAdminCodeExecComponent } from './routes/guild-admin/codeexec/ga-co
     LoginButtonComponent,
     GuildAdminVerificationComponent,
     GuildAdminCodeExecComponent,
+    LoginComponent,
+    HiderComponent,
   ],
   imports: [
     NgbModule,

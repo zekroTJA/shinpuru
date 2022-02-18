@@ -61,25 +61,26 @@ export class UserSettingsComponent implements OnInit {
     });
   }
 
-  public copyTokenToClipboard() {
-    const selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = this.token.token;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
-    this.toats.push(
-      'Copied token to clipboard.',
-      'Token copied',
-      'success',
-      4000,
-      true
-    );
+  public async copyTokenToClipboard() {
+    try {
+      await navigator.clipboard.writeText(this.token.token);
+      this.toats.push(
+        'Copied token to clipboard.',
+        'Token copied',
+        'success',
+        4000,
+        true
+      );
+    } catch (err) {
+      err.message;
+      this.toats.push(
+        err?.message ?? err ?? 'Unknown error',
+        'Falied copying to clipboard',
+        'error',
+        4000,
+        true
+      );
+    }
   }
 
   public onOTASave() {

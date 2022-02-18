@@ -188,7 +188,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiDiscordSession,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return discordgo.New()
+			return discordgo.New("")
 		},
 		Close: func(obj interface{}) error {
 			session := obj.(*discordgo.Session)
