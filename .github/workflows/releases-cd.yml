@@ -99,7 +99,7 @@ jobs:
       - name: Deploy to Releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: 'hub release create
-          -i ./bin/*
+        run: "hub release create
+          $(ls ./bin -1 | xargs -I % printf '-a ./bin/% ')
           -F ./CHANGELOG.md
-          $(git describe --tags --abbrev=0)'
+          $(git describe --tags --abbrev=0)"
