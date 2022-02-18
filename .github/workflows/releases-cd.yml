@@ -27,12 +27,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: frontend
-          path: bin/
+          path: bin/web/dist/web
           retention-days: 1
 
   backend:
     name: Build Backend Artifacts
     runs-on: ubuntu-latest
+    needs:
+      - frontend
     strategy:
       matrix:
         goos:
@@ -49,6 +51,11 @@ jobs:
           go-version: '1.18rc1'
       - name: Check out code
         uses: actions/checkout@v2
+      - name: Retrieve frontend files
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend
+          path: internal/util/embedded/webdist
       - name: Get dependencies
         run: go get -v ./...
       - name: Populate info embeds
@@ -74,7 +81,6 @@ jobs:
     name: Deploy to Releases
     runs-on: ubuntu-latest
     needs:
-      - 'frontend'
       - 'backend'
     steps:
       - name: Checkout
@@ -83,27 +89,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: backend
-          path: bin/source/
-      - name: Retrieve frontend binaries
-        uses: actions/download-artifact@v2
-        with:
-          name: frontend
-          path: bin/source/
+          path: bin/
       - name: Inject Version into Changelog
         run: |-
           sed -i "s/\[VERSION\]/$(git describe --tags --abbrev=0)/g" CHANGELOG.md
-      - name: Bundle Artifacts
-        working-directory: bin/source/
-        run: |-
-          mkdir ../final
-          tar -czvf ../final/build_assets.tar.gz *
-      - name: Generate Checksums
-        working-directory: bin/final/
-        run: |-
-          md5sum * | tee ../md5sum.txt
-          sha256sum * | tee ../sha256sum.txt
-          mv ../md5sum.txt ./
-          mv ../sha256sum.txt ./
       - name: Set up Hub
         run: |-
           sudo snap install hub --classic
@@ -111,8 +100,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: 'hub release create
-          -a ./bin/final/build_assets.tar.gz
-          -a ./bin/final/md5sum.txt
-          -a ./bin/final/sha256sum.txt
+          -i ./bin/*
           -F ./CHANGELOG.md
           $(git describe --tags --abbrev=0)'
