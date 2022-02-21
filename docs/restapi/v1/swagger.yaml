@@ -44,8 +44,7 @@ definitions:
     properties:
       name:
         type: string
-      value:
-        type: object
+      value: {}
     type: object
   discordgo.Channel:
     properties:
@@ -268,6 +267,11 @@ definitions:
         items:
           $ref: '#/definitions/discordgo.MessageReactions'
         type: array
+      sticker_items:
+        description: An array of Sticker objects, if any were sent.
+        items:
+          $ref: '#/definitions/discordgo.Sticker'
+        type: array
       timestamp:
         description: |-
           The time at which the messsage was sent.
@@ -485,6 +489,31 @@ definitions:
       position:
         description: The position of this role in the guild's role hierarchy.
         type: integer
+    type: object
+  discordgo.Sticker:
+    properties:
+      available:
+        type: boolean
+      description:
+        type: string
+      format_type:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      pack_id:
+        type: string
+      sort_value:
+        type: integer
+      tags:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/discordgo.User'
     type: object
   discordgo.User:
     properties:
@@ -2401,7 +2430,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2439,7 +2468,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/antiraid:
     get:
       consumes:
@@ -2468,7 +2497,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Antiraid Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2506,7 +2535,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Antiraid Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/antiraid/action:
     post:
       consumes:
@@ -2545,7 +2574,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Guild Antiraid Bulk Action
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/api:
     get:
       consumes:
@@ -2574,7 +2603,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings API State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2608,7 +2637,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings API State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/codeexec:
     get:
       consumes:
@@ -2637,7 +2666,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Code Exec State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2671,7 +2700,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings Code Exec State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/flushguilddata:
     post:
       consumes:
@@ -2710,7 +2739,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Flush Guild Data
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma:
     get:
       consumes:
@@ -2739,7 +2768,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Karma Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2777,7 +2806,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Karma Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/blocklist:
     get:
       consumes:
@@ -2808,7 +2837,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Karma Blocklist
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/blocklist/{memberid}:
     delete:
       consumes:
@@ -2846,7 +2875,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Remove Guild Karma Blocklist Entry
       tags:
-      - Guilds
+      - Guild Settings
     put:
       consumes:
       - application/json
@@ -2883,7 +2912,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Add Guild Karma Blocklist Entry
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/rules:
     get:
       consumes:
@@ -2914,7 +2943,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Karma Rules
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2952,7 +2981,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Create Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/rules/{ruleid}:
     delete:
       consumes:
@@ -2990,7 +3019,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Remove Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3033,7 +3062,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs:
     delete:
       consumes:
@@ -3066,7 +3095,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Delete Guild Log Entries
       tags:
-      - Guilds
+      - Guild Settings
     get:
       consumes:
       - application/json
@@ -3098,7 +3127,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Log Count
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs/{entryid}:
     delete:
       consumes:
@@ -3136,7 +3165,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Delete Guild Log Entries
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs/state:
     get:
       consumes:
@@ -3165,7 +3194,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Log State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3203,7 +3232,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Settings Log State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/verification:
     get:
       consumes:
@@ -3232,7 +3261,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Verification State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3266,7 +3295,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings Verification State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/starboard:
     get:
       consumes:
@@ -4154,6 +4183,8 @@ tags:
   name: Reports
 - description: Guild specific endpoints.
   name: Guilds
+- description: Guild specific settings endpoints.
+  name: Guild Settings
 - description: Guild backup endpoints.
   name: Guild Backups
 - description: Unban requests endpoints.

@@ -1037,7 +1037,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings",
                 "parameters": [
@@ -1079,7 +1079,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings",
                 "parameters": [
@@ -1138,7 +1138,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Antiraid Settings",
                 "parameters": [
@@ -1180,7 +1180,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Update Guild Antiraid Settings",
                 "parameters": [
@@ -1239,7 +1239,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Guild Antiraid Bulk Action",
                 "parameters": [
@@ -1298,7 +1298,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings API State",
                 "parameters": [
@@ -1340,7 +1340,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Set Guild Settings API State",
                 "parameters": [
@@ -1393,7 +1393,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings Code Exec State",
                 "parameters": [
@@ -1435,7 +1435,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Set Guild Settings Code Exec State",
                 "parameters": [
@@ -1488,7 +1488,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Flush Guild Data",
                 "parameters": [
@@ -1547,7 +1547,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Karma Settings",
                 "parameters": [
@@ -1589,7 +1589,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Update Guild Karma Settings",
                 "parameters": [
@@ -1648,7 +1648,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Karma Blocklist",
                 "parameters": [
@@ -1695,7 +1695,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Add Guild Karma Blocklist Entry",
                 "parameters": [
@@ -1750,7 +1750,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Remove Guild Karma Blocklist Entry",
                 "parameters": [
@@ -1807,7 +1807,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings Karma Rules",
                 "parameters": [
@@ -1852,7 +1852,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Create Guild Settings Karma",
                 "parameters": [
@@ -1911,7 +1911,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Update Guild Settings Karma",
                 "parameters": [
@@ -1975,7 +1975,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Remove Guild Settings Karma",
                 "parameters": [
@@ -2032,7 +2032,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Log Count",
                 "parameters": [
@@ -2080,7 +2080,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Delete Guild Log Entries",
                 "parameters": [
@@ -2130,7 +2130,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings Log State",
                 "parameters": [
@@ -2172,7 +2172,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Update Guild Settings Log State",
                 "parameters": [
@@ -2231,7 +2231,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Delete Guild Log Entries",
                 "parameters": [
@@ -2288,7 +2288,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Get Guild Settings Verification State",
                 "parameters": [
@@ -2330,7 +2330,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Guilds"
+                    "Guild Settings"
                 ],
                 "summary": "Set Guild Settings Verification State",
                 "parameters": [
@@ -4385,9 +4385,7 @@
                 "name": {
                     "type": "string"
                 },
-                "value": {
-                    "type": "object"
-                }
+                "value": {}
             }
         },
         "discordgo.Channel": {
@@ -4653,6 +4651,13 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/discordgo.MessageReactions"
+                    }
+                },
+                "sticker_items": {
+                    "description": "An array of Sticker objects, if any were sent.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.Sticker"
                     }
                 },
                 "timestamp": {
@@ -4966,6 +4971,44 @@
                 "position": {
                     "description": "The position of this role in the guild's role hierarchy.",
                     "type": "integer"
+                }
+            }
+        },
+        "discordgo.Sticker": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "format_type": {
+                    "type": "integer"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pack_id": {
+                    "type": "string"
+                },
+                "sort_value": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/discordgo.User"
                 }
             }
         },
@@ -6111,6 +6154,10 @@
         {
             "description": "Guild specific endpoints.",
             "name": "Guilds"
+        },
+        {
+            "description": "Guild specific settings endpoints.",
+            "name": "Guild Settings"
         },
         {
             "description": "Guild backup endpoints.",

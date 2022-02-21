@@ -2220,7 +2220,7 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
-| value | object |  | No |
+| value |  |  | No |
 
 #### discordgo.Channel
 
@@ -2297,6 +2297,7 @@ Verify a returned verification token.
 | message_reference | [discordgo.MessageReference](#discordgomessagereference) | MessageReference contains reference data sent with crossposted or reply messages. This does not contain the reference *to* this message; this is for when *this* message references another. To generate a reference to this message, use (*Message).Reference(). | No |
 | pinned | boolean | Whether the message is pinned or not. | No |
 | reactions | [ [discordgo.MessageReactions](#discordgomessagereactions) ] | A list of reactions to the message. | No |
+| sticker_items | [ [discordgo.Sticker](#discordgosticker) ] | An array of Sticker objects, if any were sent. | No |
 | timestamp | string | The time at which the messsage was sent. CAUTION: this field may be removed in a future API version; it is safer to calculate the creation time via the ID. | No |
 | tts | boolean | Whether the message is text-to-speech. | No |
 | type | integer | The type of the message. | No |
@@ -2445,6 +2446,22 @@ Verify a returned verification token.
 | name | string | The name of the role. | No |
 | permissions | string | The permissions of the role on the guild (doesn't include channel overrides). This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the permission.<br>_Example:_ `"0"` | No |
 | position | integer | The position of this role in the guild's role hierarchy. | No |
+
+#### discordgo.Sticker
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| available | boolean |  | No |
+| description | string |  | No |
+| format_type | integer |  | No |
+| guild_id | string |  | No |
+| id | string |  | No |
+| name | string |  | No |
+| pack_id | string |  | No |
+| sort_value | integer |  | No |
+| tags | string |  | No |
+| type | integer |  | No |
+| user | [discordgo.User](#discordgouser) |  | No |
 
 #### discordgo.User
 
