@@ -48,7 +48,7 @@ func (c *Twitchnotify) Options() []*discordgo.ApplicationCommandOption {
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
 			Name:        "list",
-			Description: "List alöl registered notifies for the guild.",
+			Description: "List all registered notifies for the guild.",
 		},
 		{
 			Type:        discordgo.ApplicationCommandOptionSubCommand,
