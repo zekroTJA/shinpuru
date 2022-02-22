@@ -36,8 +36,11 @@ import {
   StarboardSortOrder,
   State,
   UnbanRequest,
+  Channel,
+  MessageEmbed,
+  ReportRequest,
+  VerificationSiteKey,
 } from './models';
-import { Channel, MessageEmbed, ReportRequest, VerificationSiteKey } from '.';
 
 export class EtcClient extends SubClient {
   constructor(client: Client) {
