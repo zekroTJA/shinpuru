@@ -19,8 +19,6 @@ import {
   Presence,
   ReasonRequest,
   Report,
-} from './models';
-import {
   AntiraidAction,
   AntiraidSettings,
   CodeExecSettings,
@@ -38,7 +36,8 @@ import {
   StarboardSortOrder,
   State,
   UnbanRequest,
-} from '.';
+} from './models';
+import { Channel, MessageEmbed, ReportRequest, VerificationSiteKey } from '.';
 
 export class EtcClient extends SubClient {
   constructor(client: Client) {
@@ -164,6 +163,48 @@ export class ReportsClient extends SubClient {
   }
 }
 
+export class GuildMemberClient extends SubClient {
+  constructor(client: Client, guildID: string, memberID: string) {
+    super(client, `guilds/${guildID}/${memberID}`);
+  }
+
+  get(): Promise<Member> {
+    return this.req('GET', '/');
+  }
+
+  permissions(): Promise<PermissionResponse> {
+    return this.req('GET', 'permissions');
+  }
+
+  permissionsAllowed(): Promise<string[]> {
+    return this.req('GET', 'permissions/allowed');
+  }
+
+  reports(): Promise<ListResponse<Report>> {
+    return this.req('GET', 'reports');
+  }
+
+  reportsCount(): Promise<Count> {
+    return this.req('GET', 'reports/count');
+  }
+
+  ban(reason: ReasonRequest): Promise<Report> {
+    return this.req('POST', 'ban', reason);
+  }
+
+  kick(reason: ReasonRequest): Promise<Report> {
+    return this.req('POST', 'kick', reason);
+  }
+
+  mute(reason: ReasonRequest): Promise<Report> {
+    return this.req('POST', 'mute', reason);
+  }
+
+  report(reason: ReportRequest): Promise<Report> {
+    return this.req('POST', 'reports', reason);
+  }
+}
+
 export class GuildsClient extends SubClient {
   constructor(private _client: Client) {
     super(_client, 'guilds');
@@ -260,6 +301,14 @@ export class GuildsClient extends SubClient {
 
   backups(id: string): GuildBackupsClient {
     return new GuildBackupsClient(this._client, id);
+  }
+
+  members(id: string): Promise<ListResponse<Member>> {
+    return this.req('GET', `${id}/members`);
+  }
+
+  member(id: string, memberID: string): GuildMemberClient {
+    return new GuildMemberClient(this._client, id, memberID);
   }
 }
 
@@ -403,5 +452,74 @@ export class GuildBackupsClient extends SubClient {
 
   toggle(enabled: boolean): Promise<CodeResponse> {
     return this.req('POST', 'toggle', { enabled });
+  }
+}
+
+export class UnbanRequestsClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'unbanrequests');
+  }
+
+  list(): Promise<ListResponse<UnbanRequest>> {
+    return this.req('GET', '/');
+  }
+
+  create(request: UnbanRequest): Promise<UnbanRequest> {
+    return this.req('POST', '/', request);
+  }
+
+  guilds(): Promise<ListResponse<Guild>> {
+    return this.req('GET', 'bannedguilds');
+  }
+}
+
+export class ChannelsClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'channels');
+  }
+
+  list(guildID: string): Promise<ListResponse<Channel>> {
+    return this.req('GET', `${guildID}`);
+  }
+
+  sendEmbedMessage(
+    guildID: string,
+    channelID: string,
+    embed: MessageEmbed
+  ): Promise<Channel> {
+    return this.req('POST', `${guildID}/${channelID}`, embed);
+  }
+
+  updateEmbedMessage(
+    guildID: string,
+    channelID: string,
+    messageID: string,
+    embed: MessageEmbed
+  ): Promise<Channel> {
+    return this.req('POST', `${guildID}/${channelID}/${messageID}`, embed);
+  }
+}
+
+export class VerificationsClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'verification');
+  }
+
+  sitekey(): Promise<VerificationSiteKey> {
+    return this.req('GET', 'sitekey');
+  }
+
+  verify(token: string): Promise<VerificationSiteKey> {
+    return this.req('POST', 'verify', { token });
+  }
+}
+
+export class UsersClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'users');
+  }
+
+  get(id: string): Promise<User> {
+    return this.req('GET', id);
   }
 }

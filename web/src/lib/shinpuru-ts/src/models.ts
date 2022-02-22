@@ -96,7 +96,7 @@ export interface Guild {
 }
 
 export interface PermissionResponse {
-  permissions: number;
+  permissions: string[];
 }
 
 export interface Report {
