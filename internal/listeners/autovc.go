@@ -7,7 +7,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
-	"log"
 	"strings"
 )
 
@@ -51,7 +50,7 @@ func (l *ListenerAutoVoice) Handler(s *discordgo.Session, e *discordgo.VoiceStat
 			return
 		}
 
-		if err := l.createAutoVC(s, e.UserID, e.GuildID); err != nil {
+		if err := l.createAutoVC(s, e.UserID, e.GuildID, vsNew.ChannelID); err != nil {
 			return
 		}
 
@@ -62,7 +61,7 @@ func (l *ListenerAutoVoice) Handler(s *discordgo.Session, e *discordgo.VoiceStat
 
 		} else if strings.Contains(idString, vsNew.ChannelID) && autovcCache[e.UserID] == "" {
 			if autovcCache[e.UserID] == "" {
-				if err := l.createAutoVC(s, e.UserID, e.GuildID); err != nil {
+				if err := l.createAutoVC(s, e.UserID, e.GuildID, vsNew.ChannelID); err != nil {
 					return
 				}
 			} else {
@@ -86,7 +85,11 @@ func (l *ListenerAutoVoice) Handler(s *discordgo.Session, e *discordgo.VoiceStat
 	}
 }
 
-func (l *ListenerAutoVoice) createAutoVC(s *discordgo.Session, userID, guildID string) error {
+func (l *ListenerAutoVoice) createAutoVC(s *discordgo.Session, userID, guildID, parentChannelId string) error {
+	parentCh, err := l.st.Channel(parentChannelId)
+	if err != nil {
+		return err
+	}
 	user, err := l.st.User(userID)
 	if err != nil {
 		return err
@@ -95,9 +98,15 @@ func (l *ListenerAutoVoice) createAutoVC(s *discordgo.Session, userID, guildID s
 	if err != nil {
 		return err
 	}
+	ch, err = s.ChannelEditComplex(ch.ID, &discordgo.ChannelEdit{
+		ParentID: parentCh.ParentID,
+		Position: parentCh.Position,
+	})
+	if err != nil {
+		return err
+	}
 	autovcCache[userID] = ch.ID
 	if err := s.GuildMemberMove(guildID, userID, &ch.ID); err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil
