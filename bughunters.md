@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **31** different wonderful people contributed a sum of **73** issues and **14** pull requests (with 631 added and 81 deleted lines of code in 46 different files)! 🎉
+In total, **31** different wonderful people contributed a sum of **75** issues and **17** pull requests (with 645 added and 95 deleted lines of code in 51 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -10,8 +10,10 @@ In total, **31** different wonderful people contributed a sum of **73** issues a
 | 🥈  [voxain](https://github.com/voxain) | [#52](https://github.com/zekroTJA/shinpuru/issues/52), [#61](https://github.com/zekroTJA/shinpuru/issues/61), [#67](https://github.com/zekroTJA/shinpuru/issues/67), [#147](https://github.com/zekroTJA/shinpuru/issues/147), [#148](https://github.com/zekroTJA/shinpuru/issues/148), [#150](https://github.com/zekroTJA/shinpuru/issues/150), [#153](https://github.com/zekroTJA/shinpuru/issues/153), [#159](https://github.com/zekroTJA/shinpuru/issues/159), [#163](https://github.com/zekroTJA/shinpuru/issues/163), [#165](https://github.com/zekroTJA/shinpuru/issues/165), [#183](https://github.com/zekroTJA/shinpuru/issues/183), [#187](https://github.com/zekroTJA/shinpuru/issues/187), [#203](https://github.com/zekroTJA/shinpuru/issues/203), [#210](https://github.com/zekroTJA/shinpuru/issues/210), [#249](https://github.com/zekroTJA/shinpuru/issues/249), [#250](https://github.com/zekroTJA/shinpuru/issues/250) |  | `16` |
 | 🥉  [error2507](https://github.com/error2507) | [#28](https://github.com/zekroTJA/shinpuru/issues/28), [#29](https://github.com/zekroTJA/shinpuru/issues/29), [#55](https://github.com/zekroTJA/shinpuru/issues/55) | [#1](https://github.com/zekroTJA/shinpuru/pull/1), [#2](https://github.com/zekroTJA/shinpuru/pull/2) | `9` |
 |  [Ron31](https://github.com/Ron31) | [#197](https://github.com/zekroTJA/shinpuru/issues/197), [#224](https://github.com/zekroTJA/shinpuru/issues/224) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#181](https://github.com/zekroTJA/shinpuru/pull/181) | `8` |
+|  [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) | [#352](https://github.com/zekroTJA/shinpuru/pull/352), [#355](https://github.com/zekroTJA/shinpuru/pull/355) | `7` |
 |  [ShowMeYourSkil](https://github.com/ShowMeYourSkil) | [#140](https://github.com/zekroTJA/shinpuru/issues/140), [#171](https://github.com/zekroTJA/shinpuru/issues/171), [#191](https://github.com/zekroTJA/shinpuru/issues/191), [#192](https://github.com/zekroTJA/shinpuru/issues/192), [#211](https://github.com/zekroTJA/shinpuru/issues/211), [#240](https://github.com/zekroTJA/shinpuru/issues/240) |  | `6` |
 |  [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180), [#270](https://github.com/zekroTJA/shinpuru/issues/270), [#284](https://github.com/zekroTJA/shinpuru/issues/284) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `6` |
+|  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346), [#353](https://github.com/zekroTJA/shinpuru/issues/353), [#354](https://github.com/zekroTJA/shinpuru/issues/354) | [#351](https://github.com/zekroTJA/shinpuru/pull/351) | `6` |
 |  [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `4` |
 |  [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195), [#219](https://github.com/zekroTJA/shinpuru/issues/219), [#241](https://github.com/zekroTJA/shinpuru/issues/241) |  | `4` |
 |  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `4` |
@@ -32,10 +34,8 @@ In total, **31** different wonderful people contributed a sum of **73** issues a
 |  [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `1` |
 |  [PushkarOP](https://github.com/PushkarOP) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
 |  [enkeyz](https://github.com/enkeyz) | [#279](https://github.com/zekroTJA/shinpuru/issues/279) |  | `1` |
-|  [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) |  | `1` |
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
-|  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346) |  | `1` |
 |  [kindh0623](https://github.com/kindh0623) | [#348](https://github.com/zekroTJA/shinpuru/issues/348) |  | `1` |
 
 

@@ -95,6 +95,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`guildID` varchar(25) NOT NULL," +
 		"`prefix` text NOT NULL DEFAULT ''," +
 		"`autorole` text NOT NULL DEFAULT ''," +
+		"`autovc` text NOT NULL DEFAULT ''," +
 		"`modlogchanID` text NOT NULL DEFAULT ''," +
 		"`voicelogchanID` text NOT NULL DEFAULT ''," +
 		"`notifyRoleID` text NOT NULL DEFAULT ''," +
@@ -513,6 +514,18 @@ func (m *MysqlMiddleware) GetGuildAutoRole(guildID string) ([]string, error) {
 
 func (m *MysqlMiddleware) SetGuildAutoRole(guildID string, autoRoleIDs []string) error {
 	return m.setGuildSetting(guildID, "autorole", strings.Join(autoRoleIDs, ";"))
+}
+
+func (m *MysqlMiddleware) GetGuildAutoVC(guildID string) ([]string, error) {
+	val, err := m.getGuildSetting(guildID, "autovc")
+	if val == "" {
+		return []string{}, err
+	}
+	return strings.Split(val, ";"), err
+}
+
+func (m *MysqlMiddleware) SetGuildAutoVC(guildID string, autoVCIDs []string) error {
+	return m.setGuildSetting(guildID, "autovc", strings.Join(autoVCIDs, ";"))
 }
 
 func (m *MysqlMiddleware) GetGuildModLog(guildID string) (string, error) {

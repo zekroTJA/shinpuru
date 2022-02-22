@@ -75,6 +75,7 @@ func InitLegacyCommandHandler(container di.Container) shireikan.Handler {
 	cmdHandler.RegisterCommand(&commands.CmdQuote{})
 	cmdHandler.RegisterCommand(&commands.CmdGame{})
 	cmdHandler.RegisterCommand(&commands.CmdAutorole{})
+	cmdHandler.RegisterCommand(&commands.CmdAutovc{})
 	cmdHandler.RegisterCommand(&commands.CmdReport{})
 	cmdHandler.RegisterCommand(&commands.CmdModlog{})
 	cmdHandler.RegisterCommand(&commands.CmdKick{})

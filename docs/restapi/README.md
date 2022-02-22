@@ -36,11 +36,11 @@ There are two ways around this.
 1. Use pointers for everything.
 2. Specify that **all** values are defined as "set".
 
-The first solution was not suitable in my opinion, because it would reqire a lot code around `nil` and proper value checking of each model property, which would also introduce a lot new fault sources. Also, because shinpuru's API utilizes a lot of the original models of [discordgo](https://github.com/bwmarrin/discordgo), this would require a lot of model wrapping and double definitions.
+The first solution was not suitable in my opinion, because it would require a lot code around `nil` and proper value checking of each model property, which would also introduce a lot new fault sources. Also, because shinpuru's API utilizes a lot of the original models of [discordgo](https://github.com/bwmarrin/discordgo), this would require a lot of model wrapping and double definitions.
 
 So, I went for the second solution*. 
 
-Every property is specified as "set" by the API on update. That means, if you pass `null` as value of a string, that means the valaue of the property will be updated to `""`, which is the default zero value of a string. Long story short, even if you want to update only single properties of a model, you must pass the whole model on update to ensure consistency, even if this means that you need to get the current values before you can update them.
+Every property is specified as "set" by the API on update. That means, if you pass `null` as value of a string, that means the value of the property will be updated to `""`, which is the default zero value of a string. Long story short, even if you want to update only single properties of a model, you must pass the whole model on update to ensure consistency, even if this means that you need to get the current values before you can update them.
 
 Let's take the [`/settings/presence` endpoint](), for example. We want to update the `game` value.
 
