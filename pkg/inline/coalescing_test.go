@@ -7,37 +7,12 @@ import (
 )
 
 func TestII(t *testing.T) {
-	{
-		var v struct{}
-		assert.Equal(t,
-			2,
-			II[*struct{}](nil, 1, 2))
-		assert.Equal(t,
-			1,
-			II(&v, 1, 2))
-	}
-
-	{
-		var v string
-		assert.Equal(t,
-			2,
-			II(v, 1, 2))
-		v = "asd"
-		assert.Equal(t,
-			1,
-			II(&v, 1, 2))
-	}
-
-	{
-		var v int
-		assert.Equal(t,
-			2,
-			II(v, 1, 2))
-		v = 1
-		assert.Equal(t,
-			1,
-			II(&v, 1, 2))
-	}
+	assert.Equal(t,
+		2,
+		II(false, 1, 2))
+	assert.Equal(t,
+		1,
+		II(true, 1, 2))
 }
 
 func TestNC(t *testing.T) {
