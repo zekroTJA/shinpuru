@@ -135,7 +135,7 @@ func (c *Autovc) add(ctx *ken.SubCommandCtx) (err error) {
 		ChannelValue(ctx.Ctx)
 
 	autovcs, err := db.GetGuildAutoVC(ctx.Event.GuildID)
-	if err != nil {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return
 	}
 
