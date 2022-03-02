@@ -115,6 +115,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
+  *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
