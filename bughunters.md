@@ -29,7 +29,7 @@ In total, **33** different wonderful people contributed a sum of **76** issues a
 |  [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
 |  [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `1` |
 |  [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
-|  [ENOT1KK](https://github.com/ENOT1KK) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
+|  [Barrer0](https://github.com/Barrer0) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
 |  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
 |  [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234) |  | `1` |
 |  [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `1` |
