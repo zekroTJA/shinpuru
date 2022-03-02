@@ -60,6 +60,7 @@ export class APIService {
   private rootURL = '';
 
   private accessToken: AccessTokenModel;
+  private accessTokenMtx: Promise<any> | undefined;
 
   private readonly cacheMembers = new CacheBucket<string, Member>(
     10 * 60 * 1000
@@ -279,10 +280,25 @@ export class APIService {
   }
 
   public getAndSetAccessToken(): Observable<AccessTokenModel> {
+    if (this.accessTokenMtx) {
+      return new Observable((sub) => {
+        this.accessTokenMtx.then(() => sub.next(this.accessToken));
+      });
+    }
+
+    let resolve: (_: any) => void;
+    this.accessTokenMtx = new Promise((res) => {
+      resolve = res;
+    });
     return this.http
       .post<any>(this.rcAuth('accesstoken'), null, this.defopts())
       .pipe(catchError(this.errorCatcher))
-      .pipe(tap((res) => (this.accessToken = res)));
+      .pipe(
+        tap((res) => {
+          this.accessToken = res;
+          resolve({});
+        })
+      );
   }
 
   public logout(): Observable<any> {
