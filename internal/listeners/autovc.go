@@ -1,13 +1,15 @@
 package listeners
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/slices"
 	"github.com/zekrotja/dgrs"
-	"strings"
 )
 
 type ListenerAutoVoice struct {
@@ -28,7 +30,7 @@ func NewListenerAutoVoice(container di.Container) *ListenerAutoVoice {
 	}
 }
 
-func (l *ListenerAutoVoice) Handler(s *discordgo.Session, e *discordgo.VoiceStateUpdate) {
+func (l *ListenerAutoVoice) HandlerVoiceUpdate(s *discordgo.Session, e *discordgo.VoiceStateUpdate) {
 
 	allowed, _, err := l.pmw.CheckPermissions(s, e.GuildID, e.UserID, "sp.chat.autochannel")
 	if err != nil || !allowed {
@@ -84,6 +86,22 @@ func (l *ListenerAutoVoice) Handler(s *discordgo.Session, e *discordgo.VoiceStat
 		}
 
 	}
+}
+
+func (l *ListenerAutoVoice) HandlerChannelDelete(s *discordgo.Session, e *discordgo.ChannelDelete) {
+	autoVCs, err := l.db.GetGuildAutoVC(e.GuildID)
+	if err != nil || len(autoVCs) == 0 {
+		return
+	}
+
+	i := slices.IndexOf(autoVCs, e.Channel.ID)
+	if i == -1 {
+		return
+	}
+
+	autoVCs, _ = slices.Splice(autoVCs, i, 1)
+
+	l.db.SetGuildAutoVC(e.GuildID, autoVCs)
 }
 
 func (l *ListenerAutoVoice) createAutoVC(s *discordgo.Session, userID, guildID, parentChannelId string) error {
