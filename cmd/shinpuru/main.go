@@ -382,6 +382,13 @@ func main() {
 	// Initial log output
 	logrus.Info("Starting up...")
 
+	if old, curr, latest := util.CheckForUpdate(); old {
+		logrus.
+			WithField("current", curr.String()).
+			WithField("latest", latest.String()).
+			Warn("Update available")
+	}
+
 	if profLoc := util.GetEnv(envKeyProfile, flagProfile); profLoc != "" {
 		setupProfiler(profLoc)
 	}
