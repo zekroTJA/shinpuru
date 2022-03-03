@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
+	"github.com/zekroTJA/shinpuru/pkg/versioncheck"
 	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/ken"
 )
@@ -398,6 +399,14 @@ type CodeExecSettings struct {
 
 type PushCodeRequest struct {
 	Code string `json:"code"`
+}
+
+type UpdateInfoResponse struct {
+	Current    versioncheck.Semver `json:"current"`
+	CurrentStr string              `json:"current_str"`
+	Latest     versioncheck.Semver `json:"latest"`
+	LatestStr  string              `json:"latest_str"`
+	IsOld      bool                `json:"isold"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.
