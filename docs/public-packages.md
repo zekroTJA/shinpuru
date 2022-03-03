@@ -97,6 +97,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](pkg/slices)  
+  *Package slices adds generic utility functionalities for slices.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
   *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
