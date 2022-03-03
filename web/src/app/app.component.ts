@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { APIService } from './api/api.service';
 import { ToastService } from './components/toast/toast.service';
+import { UpdateService } from './services/update.service';
 import { NO_LOGIN_ROUTES } from './utils/consts';
 import LocalStorageUtil from './utils/localstorage';
 import { NextLoginRedirect } from './utils/objects';
@@ -22,7 +23,8 @@ export class AppComponent implements OnInit {
   constructor(
     public toasts: ToastService,
     private router: Router,
-    private api: APIService
+    private api: APIService,
+    private update: UpdateService
   ) {}
 
   ngOnInit() {
@@ -36,6 +38,8 @@ export class AppComponent implements OnInit {
       LocalStorageUtil.remove('NEXT_LOGIN_REDIRECT');
       window.location.replace(nlr.destination);
     }
+
+    this.update.check();
 
     window.onkeydown = async (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'f') {

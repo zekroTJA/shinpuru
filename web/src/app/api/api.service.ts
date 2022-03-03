@@ -44,6 +44,7 @@ import {
   CodeExecSettings,
   PrivacyInfo,
   UserSettingsPrivacy,
+  UpdateInfoResponse,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -1119,6 +1120,14 @@ export class APIService {
   }
 
   public postPushCode(code: string): Observable<any> {
-    return this.http.post(this.rcAuth('pushcode'), { code }, this.defopts());
+    return this.http
+      .post(this.rcAuth('pushcode'), { code }, this.defopts())
+      .pipe(catchError(this.errorCatcher));
+  }
+
+  public getUpdateInfo(): Observable<UpdateInfoResponse> {
+    return this.http
+      .get(this.rcUtil('updateinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
   }
 }

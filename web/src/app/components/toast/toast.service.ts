@@ -1,6 +1,6 @@
 /** @format */
 
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 
 export interface Toast {
   text: string;
@@ -16,17 +16,22 @@ export interface Toast {
 export class ToastService {
   toasts: Toast[] = [];
 
+  onRemove = new EventEmitter<Toast>();
+
   push(
     text: string,
     heading: string,
     type: 'cyan' | 'red' | 'error' | 'yellow' | 'warning' | 'green' | 'success',
     delay: number = null,
     closable: boolean = true
-  ) {
-    this.toasts.push({ text, heading, type, delay, closable });
+  ): Toast {
+    const t = { text, heading, type, delay, closable };
+    this.toasts.push(t);
+    return t;
   }
 
-  remove(toast) {
+  remove(toast: Toast) {
     this.toasts = this.toasts.filter((t) => t !== toast);
+    this.onRemove.emit(toast);
   }
 }
