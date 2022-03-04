@@ -104,6 +104,7 @@ type Discord struct {
 	GlobalCommandRateLimit Ratelimit `json:"globalcommandratelimit"`
 	DisabledCommands       []string  `json:"disabledcommands"`
 	Sharding               Sharding  `json:"sharding"`
+	GuildsLimit            int       `json:"guildslimit"`
 }
 
 // Sharding holds configuration for guild event sharding.
