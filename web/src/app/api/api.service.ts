@@ -1122,7 +1122,12 @@ export class APIService {
   public postPushCode(code: string): Observable<any> {
     return this.http
       .post(this.rcAuth('pushcode'), { code }, this.defopts())
-      .pipe(catchError(this.errorCatcher));
+      .pipe(
+        catchError((err) => {
+          if (err.status === 410) throw err;
+          return this.errorCatcher(err);
+        })
+      );
   }
 
   public getUpdateInfo(): Observable<UpdateInfoResponse> {
