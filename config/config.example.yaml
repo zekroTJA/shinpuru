@@ -19,6 +19,10 @@ discord:
   # The client secret for the bot's application account
   # Get this from https://discord.com/developers/applications
   clientsecret: "273n9awshbr3w7zb5cq3ucbq234q43q"
+  # Specify a maximum of guilds the bot can
+  # be member of. When set to 0, there is
+  # no limit applied.
+  guildslimit: 0
   # Specify properties for the global command
   # rate limiter middleware.
   globalcommandratelimit:

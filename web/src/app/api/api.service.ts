@@ -44,6 +44,7 @@ import {
   CodeExecSettings,
   PrivacyInfo,
   UserSettingsPrivacy,
+  UpdateInfoResponse,
 } from './api.models';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../components/toast/toast.service';
@@ -60,6 +61,7 @@ export class APIService {
   private rootURL = '';
 
   private accessToken: AccessTokenModel;
+  private accessTokenMtx: Promise<any> | undefined;
 
   private readonly cacheMembers = new CacheBucket<string, Member>(
     10 * 60 * 1000
@@ -279,10 +281,25 @@ export class APIService {
   }
 
   public getAndSetAccessToken(): Observable<AccessTokenModel> {
+    if (this.accessTokenMtx) {
+      return new Observable((sub) => {
+        this.accessTokenMtx.then(() => sub.next(this.accessToken));
+      });
+    }
+
+    let resolve: (_: any) => void;
+    this.accessTokenMtx = new Promise((res) => {
+      resolve = res;
+    });
     return this.http
       .post<any>(this.rcAuth('accesstoken'), null, this.defopts())
       .pipe(catchError(this.errorCatcher))
-      .pipe(tap((res) => (this.accessToken = res)));
+      .pipe(
+        tap((res) => {
+          this.accessToken = res;
+          resolve({});
+        })
+      );
   }
 
   public logout(): Observable<any> {
@@ -1103,6 +1120,19 @@ export class APIService {
   }
 
   public postPushCode(code: string): Observable<any> {
-    return this.http.post(this.rcAuth('pushcode'), { code }, this.defopts());
+    return this.http
+      .post(this.rcAuth('pushcode'), { code }, this.defopts())
+      .pipe(
+        catchError((err) => {
+          if (err.status === 410) throw err;
+          return this.errorCatcher(err);
+        })
+      );
+  }
+
+  public getUpdateInfo(): Observable<UpdateInfoResponse> {
+    return this.http
+      .get(this.rcUtil('updateinfo'), this.defopts())
+      .pipe(catchError(this.errorCatcher));
   }
 }

@@ -17,6 +17,7 @@ const (
 
 	keyGuildPrefix                 = "GUILD:PREFIX"
 	keyGuildAutoRole               = "GUILD:AUTOROLE"
+	keyGuildAutoVC                 = "GUILD:AUTOVC"
 	keyGuildModLog                 = "GUILD:MODLOG"
 	keyGuildVoiceLog               = "GUILD:VOICELOG"
 	keyGuildNotifyRole             = "GUILD:NOTROLE"
@@ -140,6 +141,41 @@ func (r *RedisMiddleware) SetGuildAutoRole(guildID string, autoRoleIDs []string)
 	}
 
 	return r.Database.SetGuildAutoRole(guildID, autoRoleIDs)
+}
+
+func (r *RedisMiddleware) GetGuildAutoVC(guildID string) ([]string, error) {
+	var key = fmt.Sprintf("%s:%s", keyGuildAutoVC, guildID)
+
+	valC, err := r.client.Get(context.Background(), key).Result()
+	val := strings.Split(valC, ";")
+	if err == redis.Nil {
+		val, err = r.Database.GetGuildAutoVC(guildID)
+		if err != nil {
+			return nil, err
+		}
+
+		err = r.client.Set(context.Background(), key, strings.Join(val, ";"), 0).Err()
+		return val, err
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if valC == "" {
+		return []string{}, nil
+	}
+
+	return val, nil
+}
+
+func (r *RedisMiddleware) SetGuildAutoVC(guildID string, autoVCIDs []string) error {
+	var key = fmt.Sprintf("%s:%s", keyGuildAutoVC, guildID)
+
+	if err := r.client.Set(context.Background(), key, strings.Join(autoVCIDs, ";"), 0).Err(); err != nil {
+		return err
+	}
+
+	return r.Database.SetGuildAutoVC(guildID, autoVCIDs)
 }
 
 func (r *RedisMiddleware) GetGuildModLog(guildID string) (string, error) {

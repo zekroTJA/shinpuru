@@ -9,6 +9,9 @@ services:
       - '--entrypoints.http.address=:80'
       - '--entrypoints.https.address=:443'
       - '--providers.docker.exposedByDefault=false'
+      - "--certificatesResolvers.le.acme.email=<your@email>" # ⚠️ <- enter your email here
+      - "--certificatesResolvers.le.acme.storage=/etc/certstore/acme.json"
+      - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=http"
     ports:
       - '80:80'
       - '443:443'
@@ -87,17 +90,18 @@ services:
       # Webserver
       SP_WEBSERVER_ENABLED: 1
       SP_WEBSERVER_ADDR: 0.0.0.0:8080
-      SP_WEBSERVER_PUBLICADDR: https://example.com
+      SP_WEBSERVER_PUBLICADDR: <https://example.com>
     restart: always
     depends_on:
       - mysql
       - redis
       - minio
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.shinpuru.entrypoints=https'
-      - 'traefik.http.routers.shinpuru.tls=true'
-      - 'traefik.http.routers.shinpuru.rule=Host(`example.com`)'
+      traefik.enable: "true"
+      traefik.http.routers.shinpuru.entrypoints: "https"
+      traefik.http.routers.shinpuru.tls: "true"
+      traefik.http.routers.shinpuru.tls.certresolver: "le"
+      traefik.http.routers.shinpuru.rule: "Host(`<example.com>`)" # ⚠️ <- enter your domain here
 
   ###############################################################################
   # The following two services are only important if
@@ -118,7 +122,8 @@ services:
   #   expose:
   #     - '3000'
   #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.http.routers.grafana.entrypoints=https'
-  #     - 'traefik.http.routers.grafana.tls=true'
-  #     - 'traefik.http.routers.grafana.rule=Host(`grafana.example.com`)'
+  #     traefik.enable: "true"
+  #     traefik.http.routers.grafana.entrypoints: "https"
+  #     traefik.http.routers.grafana.tls: "true"
+  #     traefik.http.routers.grafana.tls.certresolver: "le"
+  #     traefik.http.routers.grafana.rule: "Host(`grafana.<example.com>`)"

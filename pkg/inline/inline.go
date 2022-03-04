@@ -8,13 +8,12 @@ package inline
 // TIn, s is returned. Otherwise, p is returned.
 //
 // This is comparable to a syntax like
-//   res = v == default(TIn) ? p : s
-func II[TIn comparable, TOut any](v TIn, p, s TOut) TOut {
-	var def TIn
-	if v == def {
-		return s
+//   res = v ? p : s
+func II[TOut any](v bool, p, s TOut) TOut {
+	if v {
+		return p
 	}
-	return p
+	return s
 }
 
 // NC (nil coalescence) takes a comparable
@@ -25,5 +24,6 @@ func II[TIn comparable, TOut any](v TIn, p, s TOut) TOut {
 // This is comparable to a syntax like
 //   res = v ?? s
 func NC[T comparable](v, s T) T {
-	return II(v, v, s)
+	var def T
+	return II(v == def, s, v)
 }

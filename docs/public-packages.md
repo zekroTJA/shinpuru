@@ -97,6 +97,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](pkg/slices)  
+  *Package slices adds generic utility functionalities for slices.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
   *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
@@ -114,6 +117,9 @@
 
 - [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
+  *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
 
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*

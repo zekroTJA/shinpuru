@@ -1,5 +1,5 @@
 <!-- insert:REQUIREMENTS -->
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20211228023845-29269347e820)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20220216202327-6015eed9333e)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.2)`
 - [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.0)`
@@ -28,9 +28,9 @@
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.4.5)`
-- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.11.1)`
-- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.0)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.1)`
+- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.12.1)`
+- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20211028202545-6944b10bf410)`
-- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220111092808-5a964db01320)`
+- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220209214540-3681064d5158)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20211116232009-f0f3c7e86c11)`

@@ -16,6 +16,7 @@ var migrationFuncs = []migrationFunc{
 	migration_8,
 	migration_9,
 	migration_10,
+	migration_11,
 }
 
 // VERSION 0:
@@ -117,5 +118,13 @@ func migration_9(m *sql.Tx) (err error) {
 func migration_10(m *sql.Tx) (err error) {
 	err = createTableColumnIfNotExists(m,
 		"guilds", "`birthdaychanID` text NOT NULL DEFAULT ''")
+	return
+}
+
+// VERSION 11:
+// - add property `autovc` to `guilds`
+func migration_11(m *sql.Tx) (err error) {
+	err = createTableColumnIfNotExists(m,
+		"guilds", "`autovc` text NOT NULL DEFAULT ''")
 	return
 }

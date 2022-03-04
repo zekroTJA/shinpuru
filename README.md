@@ -269,6 +269,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](pkg/slices)  
+  *Package slices adds generic utility functionalities for slices.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
   *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
@@ -287,6 +290,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
+  *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
@@ -299,7 +305,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 ### Back End
 
 <!-- start:REQUIREMENTS -->
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20211228023845-29269347e820)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20220216202327-6015eed9333e)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.2)`
 - [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.0)`
@@ -328,11 +334,11 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.4.5)`
-- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.11.1)`
-- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.0)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.1)`
+- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.12.1)`
+- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20211028202545-6944b10bf410)`
-- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220111092808-5a964db01320)`
+- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220209214540-3681064d5158)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20211116232009-f0f3c7e86c11)`
 <!-- end:REQUIREMENTS -->
 

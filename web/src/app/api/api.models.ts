@@ -435,3 +435,18 @@ export interface CodeExecSettings {
 export interface UserSettingsPrivacy {
   starboard_optout: boolean;
 }
+
+export interface Semver {
+  major: number;
+  minor: number;
+  patch: number;
+  attachment: string;
+}
+
+export interface UpdateInfoResponse {
+  current: Semver;
+  current_str: string;
+  latest: Semver;
+  latest_str: string;
+  isold: boolean;
+}
