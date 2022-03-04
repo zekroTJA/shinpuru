@@ -49,6 +49,7 @@ SP_DISCORD_GUILDSLIMIT=90
 
 - Fixed some typos in autorole and twitch notify command. [#358]
 - Fixed a bug that simultanious unauthorized requests produce multiple concurrent access token requests. [#361]
+- Fixed error message in login screen when push codes are timing out.
 
 # Acknowledgements
 
