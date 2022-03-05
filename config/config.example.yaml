@@ -236,7 +236,7 @@ codeexec:
   # Ranna instance configutaion.
   ranna:
     apiversion: v1
-    endpoint: 'https://public.ranna.zekro.de'
+    endpoint: 'https://public.ranna.dev'
     token: ''
   # Rate limit configuration per user
   # for running code in chat.
