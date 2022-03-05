@@ -53,7 +53,6 @@ services:
     restart: always
 
   shinpuru:
-    build: '.'
     image: 'ghcr.io/zekrotja/shinpuru:latest'
     volumes:
       - './shinpuru/config:/etc/config'
