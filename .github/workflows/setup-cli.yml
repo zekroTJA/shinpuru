@@ -44,5 +44,5 @@ jobs:
       - name: Upload Artifcats
         uses: actions/upload-artifact@v2
         with:
-          name: backend
+          name: setup
           path: bin/
