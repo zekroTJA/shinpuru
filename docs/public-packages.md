@@ -118,6 +118,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/validators`**](pkg/validators)  
+  *Package validators provides some (more or less) general purpose validator functions for user inputs.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
   *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
 

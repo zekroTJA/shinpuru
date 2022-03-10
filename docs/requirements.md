@@ -9,8 +9,10 @@
 - [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.6.0)`
 - [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.24.0)`
 - [jwt/v4](https://github.com/golang-jwt/jwt/v4) `(v4.2.0)`
+- [joho/godotenv](https://github.com/joho/godotenv) `(v1.3.0)`
 - [kataras/hcaptcha](https://github.com/kataras/hcaptcha) `(v0.0.0-20200711031247-2927d4faf32f)`
 - [makeworld-the-better-one/go-isemoji](https://github.com/makeworld-the-better-one/go-isemoji) `(v1.3.0)`
+- [manifoldco/promptui](https://github.com/manifoldco/promptui) `(v0.9.0)`
 - [minio/minio-go](https://github.com/minio/minio-go) `(v6.0.14+incompatible)`
 - [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20210814192603-33684e887a6d)`
 - [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.11.0)`
