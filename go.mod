@@ -13,8 +13,10 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.24.0
 	github.com/golang-jwt/jwt/v4 v4.2.0
+	github.com/joho/godotenv v1.3.0
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/makeworld-the-better-one/go-isemoji v1.3.0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/narqo/go-badge v0.0.0-20210814192603-33684e887a6d
 	github.com/prometheus/client_golang v1.11.0
@@ -46,6 +48,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
