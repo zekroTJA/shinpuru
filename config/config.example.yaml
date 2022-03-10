@@ -138,6 +138,8 @@ webserver:
   enabled: true
   # Address to expose web server to
   addr: 0.0.0.0:8080
+  # secret to sign API JWTs with
+  apitokenkey: CuNsIsHOE8ItrCXKsbGx453REpywRqVd
   # TLS configuration
   tls:
     # Use TLS (HTTPS)
