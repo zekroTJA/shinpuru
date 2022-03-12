@@ -48,7 +48,7 @@ Logout
 
 ##### Description
 
-Reovkes the currently used access token and clears the refresh token.
+Revokes the currently used access token and clears the refresh token.
 
 ##### Responses
 

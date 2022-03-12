@@ -54,6 +54,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(messagecommands.Quote),
 
 		new(slashcommands.Autorole),
+		new(slashcommands.Autovc),
 		new(slashcommands.Backup),
 		new(slashcommands.Bug),
 		new(slashcommands.Clear),

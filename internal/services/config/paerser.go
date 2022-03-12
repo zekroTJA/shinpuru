@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/traefik/paerser/env"
 	"github.com/traefik/paerser/file"
 	"github.com/traefik/paerser/flag"
@@ -39,6 +40,7 @@ func (p *Paerser) Parse() (err error) {
 		return
 	}
 
+	godotenv.Load()
 	if err = env.Decode(os.Environ(), "SP_", &cfg); err != nil {
 		return
 	}

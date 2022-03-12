@@ -177,7 +177,7 @@ func (c *Autorole) remove(ctx *ken.SubCommandCtx) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
-		Description: "Role was successfully assigned as autorole.",
+		Description: "Role was successfully removed as autorole.",
 	}).Error
 
 	return

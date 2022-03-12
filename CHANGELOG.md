@@ -1,53 +1,61 @@
 [VERSION]
 
 <!-- > **Attention**  
-> This is a hotfix patch for issue #332. If you want to see the changelog for release 1.26.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.27.0). -->
+> This is a hotfix patch. If you want to see the changelog for release 1.30.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.30.0). -->
 
-# Birthday Notifications [#349]
+# shinpuru is now finally verified! 🎉
 
-shinpuru now features birthday notifications!
+Even though this does not relate to the actual release, I just want to say that the stable shinpuru instance ([`shinpuru#4878` / shnp.de](https://shnp.de)) is now verified for privileged intents. That means that the 100 guilds limit is now lifted and you can now invite shinpuru on howmany guidld you want! That also means that services which rely on member events and message content will still be operational in the future.
 
-![](https://user-images.githubusercontent.com/16734205/153576590-28b51ce9-e11f-4aa1-b86b-41fc7d6d6a31.gif)
+# Auto Voice Channel [#324, #357]
 
-Simply, set your birthday using the `/birthday set` slash command. The date must be in the format `YYYY-MM-DD[+-]TIMEZONE`. You can also use `/` or `.` as separator. The timezone must be set to your local time zone in offset hours from UTC. So, for example, for `CET` this would be `+1`, for `EST`, this would be `-5` and so on. 
+Thanks to the contribution of @TomRomeo, shinpuru now supports auto voice channels. You can simply specify a voice channel as auto voice channel using the `/autovc add` command. After joining the auto voice channel, a new channel is created and you are automatically moved into this channel. After that, all your friends can join this channel with you. After you leave the channel, it is automatically removed again.
 
-It is also possible to just set a month and day if you don't want to store your birth year. If you want to show your age in the notification, you can enable it by setting `show-year` to `True`. Otherwise, your age will be hidden in the notification.
+https://user-images.githubusercontent.com/16734205/156553740-3628a6cf-5386-4b54-86ff-87c10cbf2cf9.mp4
 
-![](https://user-images.githubusercontent.com/16734205/153576393-73616bd2-b21d-4813-bdb8-ad146cecc542.png)
+# Update Information
 
-*With age hidden, it would look like this.*  
-![](https://user-images.githubusercontent.com/16734205/153580431-e5a0f4b9-1b51-473f-bfa4-40c3fa650c89.gif)
+shinpuru now also checks for updates by comparing the current build version with the latest tag of the GitHub repository. If a newer version is available, you will see this notification on startup in the log.
 
-You can, of course, also unset your birthday at any time.
+![](https://user-images.githubusercontent.com/16734205/156564557-6c406006-8ae0-4113-9ef4-b470e97e7cd8.png)
 
-![](https://user-images.githubusercontent.com/16734205/153577075-e191e2d8-1e39-4ab4-9a24-31e5939d887f.png)
+Also, when the bot owner logs in to the web interface, they will also receive a notification showing the available upgrade.
 
-To enable birthday notifications in your guild, you need to specify a birthday channel. This requires the permission `sp.guild.config.birthday`
+![](https://user-images.githubusercontent.com/16734205/156564782-081a8355-4033-4a83-8ec3-a67c1971e255.png)
 
-![](https://user-images.githubusercontent.com/16734205/153576456-9c184ae0-4408-4ded-9dce-9f69ee36f5e9.png)
+# Guilds Limit
 
-To unset this setting, simply use the `/birthday unset-cannel` command. 
+You can now specify a global guilds limit in the config on which your shinpuru instance can be member of. This might be useful to either hard-cap the amount of guilds to preserve resources or to avoid hitting the magical 100 guilds cap of unverified bot accounts.
 
-To enable Gifs in the birthday message, the bot needs a Giphy API key. You can get one by creating a Giphy acount and going to the [Developer Dashboard](https://developers.giphy.com/dashboard/). There you can create an app. After that, copy the API key and add it ti shinpuru's config.
-```yaml
-giphy:
-  apikey: dWl3ZXF6diBzZGR0NnczNDg5NTZuZG4w
+When applied and the guild limit is exceeded after shinpuru joins a new guild, it will leave the guild and send an informative message to the owner of the guild.
+
+![](https://user-images.githubusercontent.com/16734205/156731242-484bba6e-66dc-4105-9979-3e84855c21dc.png)
+
+*Via config file*
+```yml
+discord:
+  # Specify a maximum of guilds the bot can
+  # be member of. When set to 0, there is
+  # no limit applied.
+  guildslimit: 90
 ```
 
-# Sharding [#238]
-
-If you are running shinpuru of a lot of Guilds, you might want to split up your single instance into multiple instances to split up the load. This is now possible using Discord's Gateway sharding.
-
-> I **strongly** recommend taking a look into [Discord's Documentation](https://discord.com/developers/docs/topics/gateway#sharding) about sharding when you want to split up your instance.
-
-You can simply spin up multiple instances of shinpuru behind a load balancer which all connect to the same database and redis instance. This distributes a common synced persistent state between all instances.
-
-If you want to set up sharding and load balancing, you can find more information on how to set up and configure shinpuru [**here**](https://github.com/zekroTJA/shinpuru/tree/dev/docs/sharding). There you can also find an example deploymet using docker swarm.
+*Or via environment variable*
+```
+SP_DISCORD_GUILDSLIMIT=90
+```
 
 # Bug Fixes
 
-- Fix a bug where guild settings were not saved to database.
-- Properly bubble up errors when setting guild settings.
+- Fixed some typos in autorole and twitch notify command. [#358]
+- Fixed a bug that simultanious unauthorized requests produce multiple concurrent access token requests. [#361]
+- Fixed error message in login screen when push codes are timing out.
+
+# Acknowledgements
+
+Big thanks to the following people who contributed to this release.
+
+- @TomRomeo
 
 # Docker
 

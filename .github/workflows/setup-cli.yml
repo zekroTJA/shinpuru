@@ -1,0 +1,48 @@
+name: Setup CLI CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+      - "dev"
+    paths:
+      - "cmd/setup/**"
+
+jobs:
+  cli:
+    name: Build CLI Artifacts
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos:
+          - linux
+          - windows
+          - darwin
+        goarch:
+          - amd64
+          - arm64
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.18rc1'
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go get -v ./...
+      - name: Build CLI (${{ matrix.goos }}-${{ matrix.goarch }})
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/setup/main.go
+      - name: Rename Windows Binary
+        if: ${{ matrix.goos == 'windows' }}
+        env:
+          FNAME: ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }}
+        run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
+      - name: Upload Artifcats
+        uses: actions/upload-artifact@v2
+        with:
+          name: setup
+          path: bin/

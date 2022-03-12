@@ -77,7 +77,7 @@ The code is picked up and sent to a code execution engine, which safely executes
 
 ### Karma
 
-shinpuru featues a Karma system which is inspired by Reddit. You can define specific emotes which, when attached to a message, increase or reduce the karma points of a member. You can also specify the amount of "tokens" which can be spent each hour as well as a penalty for giving negative karma, which also takes karma from the executor to prevent downvote spam.
+shinpuru features a Karma system which is inspired by Reddit. You can define specific emotes which, when attached to a message, increase or reduce the karma points of a member. You can also specify the amount of "tokens" which can be spent each hour as well as a penalty for giving negative karma, which also takes karma from the executor to prevent downvote spam.
 
 It is also possible to execute actions when passing specific amounts of karma. For example, you can add or remove roles, send messages or even kick/ban members depending on their karma points.
 
@@ -147,7 +147,7 @@ The last 10 backups are stored and can be reviewed in the web interface.
 
 ### Raid Alerting
 
-This system allows you to set a threshold of new user ingress reate. When this rate exceeds, for example when a lot of (bot) accounts flush in to your guild (aka `raiding`), all admins of the guild will be allerted via DM. Also, the guilds moderation setting will be raised to `Highest` so that only users with roles or a valid phone number can chat.
+This system allows you to set a threshold of new user ingress rate. When this rate exceeds, for example when a lot of (bot) accounts flush in to your guild (aka `raiding`), all admins of the guild will be alerted via DM. Also, the guilds moderation setting will be raised to `Highest` so that only users with roles or a valid phone number can chat.
 
 ![image](https://user-images.githubusercontent.com/16734205/140644018-9652d8c9-2716-43ae-bf5b-c1b2c17f895a.png)
 
@@ -269,6 +269,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](pkg/slices)  
+  *Package slices adds generic utility functionalities for slices.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
   *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
@@ -287,6 +290,12 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/validators`**](pkg/validators)  
+  *Package validators provides some (more or less) general purpose validator functions for user inputs.*
+
+- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
+  *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
@@ -299,7 +308,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 ### Back End
 
 <!-- start:REQUIREMENTS -->
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20211228023845-29269347e820)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.23.3-0.20220216202327-6015eed9333e)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.0.2)`
 - [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.0)`
@@ -309,8 +318,10 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.6.0)`
 - [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.24.0)`
 - [jwt/v4](https://github.com/golang-jwt/jwt/v4) `(v4.2.0)`
+- [joho/godotenv](https://github.com/joho/godotenv) `(v1.3.0)`
 - [kataras/hcaptcha](https://github.com/kataras/hcaptcha) `(v0.0.0-20200711031247-2927d4faf32f)`
 - [makeworld-the-better-one/go-isemoji](https://github.com/makeworld-the-better-one/go-isemoji) `(v1.3.0)`
+- [manifoldco/promptui](https://github.com/manifoldco/promptui) `(v0.9.0)`
 - [minio/minio-go](https://github.com/minio/minio-go) `(v6.0.14+incompatible)`
 - [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20210814192603-33684e887a6d)`
 - [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.11.0)`
@@ -328,11 +339,11 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
 - [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.4.5)`
-- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.11.1)`
-- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.0)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.1)`
+- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.12.1)`
+- [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.0.0-20211028202545-6944b10bf410)`
-- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220111092808-5a964db01320)`
+- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220209214540-3681064d5158)`
 - [x/time](https://golang.org/x/time) `(v0.0.0-20211116232009-f0f3c7e86c11)`
 <!-- end:REQUIREMENTS -->
 

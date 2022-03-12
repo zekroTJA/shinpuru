@@ -38,6 +38,9 @@ type Database interface {
 	GetGuildAutoRole(guildID string) ([]string, error)
 	SetGuildAutoRole(guildID string, autoRoleIDs []string) error
 
+	GetGuildAutoVC(guildID string) ([]string, error)
+	SetGuildAutoVC(guildID string, autoVCIDs []string) error
+
 	GetGuildModLog(guildID string) (string, error)
 	SetGuildModLog(guildID, chanID string) error
 

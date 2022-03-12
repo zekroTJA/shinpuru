@@ -19,6 +19,10 @@ discord:
   # The client secret for the bot's application account
   # Get this from https://discord.com/developers/applications
   clientsecret: "273n9awshbr3w7zb5cq3ucbq234q43q"
+  # Specify a maximum of guilds the bot can
+  # be member of. When set to 0, there is
+  # no limit applied.
+  guildslimit: 0
   # Specify properties for the global command
   # rate limiter middleware.
   globalcommandratelimit:
@@ -134,6 +138,8 @@ webserver:
   enabled: true
   # Address to expose web server to
   addr: 0.0.0.0:8080
+  # secret to sign API JWTs with
+  apitokenkey: CuNsIsHOE8ItrCXKsbGx453REpywRqVd
   # TLS configuration
   tls:
     # Use TLS (HTTPS)
@@ -232,7 +238,7 @@ codeexec:
   # Ranna instance configutaion.
   ranna:
     apiversion: v1
-    endpoint: 'https://public.ranna.zekro.de'
+    endpoint: 'https://public.ranna.dev'
     token: ''
   # Rate limit configuration per user
   # for running code in chat.

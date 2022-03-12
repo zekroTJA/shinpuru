@@ -105,3 +105,18 @@ func GetShardOfSession(s *discordgo.Session) (id, total int) {
 	total = sh[1]
 	return
 }
+
+// SendDMEmbed sends a DM to the given user ID by opening
+// a DM channel to the user and sending the message.
+func SendDMEmbed(
+	s *discordgo.Session,
+	userID string,
+	emb *discordgo.MessageEmbed,
+) (msg *discordgo.Message, err error) {
+	ch, err := s.UserChannelCreate(userID)
+	if err != nil {
+		return
+	}
+	msg, err = s.ChannelMessageSendEmbed(ch.ID, emb)
+	return
+}

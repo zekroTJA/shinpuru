@@ -37,6 +37,7 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/color/:hexcode", c.getColor)
 	router.Get("/commands", c.getCommands)
 	router.Get("/slashcommands", c.getSlashCommands)
+	router.Get("/updateinfo", c.getUpdateInfo)
 }
 
 // @Summary Landing Page Info
@@ -166,4 +167,20 @@ func (c *UtilController) getSlashCommands(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
+}
+
+// @Summary Update Information
+// @Description Returns update information.
+// @Tags Utilities
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UpdateInfoResponse "Update info response"
+// @Router /util/updateinfo [get]
+func (c *UtilController) getUpdateInfo(ctx *fiber.Ctx) error {
+	var res models.UpdateInfoResponse
+	res.IsOld, res.Current, res.Latest = util.CheckForUpdate()
+	res.CurrentStr = res.Current.String()
+	res.LatestStr = res.Latest.String()
+
+	return ctx.JSON(res)
 }
