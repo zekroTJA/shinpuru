@@ -61,7 +61,6 @@ export class HttpClient implements IHttpClient {
       headers.set('Authorization', `accessToken ${this.accessToken.token}`);
     }
     const fullPath = `${this.endpoint}/${path}`.replace(/(?<=[^:])\/\//g, '/');
-    console.log('fullpath', fullPath);
     const res = await window.fetch(fullPath, {
       method,
       headers,

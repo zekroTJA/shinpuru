@@ -16,7 +16,6 @@ export const App: React.FC = () => {
   const { theme } = useStoredTheme();
 
   useEffect(() => {
-    console.log('test');
     APIClient.etc.sysinfo().then(console.log).catch(console.error);
   }, []);
 
