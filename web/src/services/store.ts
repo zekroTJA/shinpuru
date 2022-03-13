@@ -1,5 +1,5 @@
-import { AppTheme } from 'theme/theme';
-import LocalStorageUtil from 'util/localstorage';
+import { AppTheme } from '../theme/theme';
+import LocalStorageUtil from '../util/localstorage';
 import create from 'zustand';
 
 export interface Store {
