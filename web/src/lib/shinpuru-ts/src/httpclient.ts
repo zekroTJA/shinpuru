@@ -60,9 +60,9 @@ export class HttpClient implements IHttpClient {
         );
       headers.set('Authorization', `accessToken ${this.accessToken.token}`);
     }
-
-    path = path.replace('//', '/');
-    const res = await window.fetch(`${this.endpoint}/${path}`, {
+    const fullPath = `${this.endpoint}/${path}`.replace(/(?<=[^:])\/\//g, '/');
+    console.log('fullpath', fullPath);
+    const res = await window.fetch(fullPath, {
       method,
       headers,
       body: body ? JSON.stringify(body) : null,
