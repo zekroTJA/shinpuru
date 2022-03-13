@@ -98,6 +98,10 @@ export class AuthClient extends SubClient {
   logout(): Promise<CodeResponse> {
     return this.req('POST', 'logout');
   }
+
+  pushCode(code: string): Promise<CodeResponse> {
+    return this.req('POST', 'pushcode', { code });
+  }
 }
 
 export class SearchClient extends SubClient {

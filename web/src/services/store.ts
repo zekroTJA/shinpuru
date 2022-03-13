@@ -1,10 +1,14 @@
 import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
 import create from 'zustand';
+import { User } from '../lib/shinpuru-ts/src';
 
 export interface Store {
   theme: AppTheme;
   setTheme: (v: AppTheme) => void;
+
+  selfUser?: User;
+  setSelfUser: (selfUser: User) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -18,4 +22,7 @@ export const useStore = create<Store>((set, get) => ({
     set({ theme });
     LocalStorageUtil.set('shinpuru.theme', theme);
   },
+
+  selfUser: undefined,
+  setSelfUser: (selfUser: User) => set({ selfUser }),
 }));

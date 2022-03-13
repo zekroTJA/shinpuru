@@ -3,52 +3,34 @@ export enum AppTheme {
   LIGHT = 1,
 }
 
-export interface Theme {
-  background: string;
-  accent: string;
-  accentLight: string;
-  accentDark: string;
-  text: string;
-  gray: string;
-  darkGray: string;
-  textRed: string;
-
-  info: string;
-  success: string;
-  warn: string;
-  error: string;
-}
-
-export const DarkTheme: Theme = {
+export const DarkTheme = {
   background: '#1e1e1e',
-  accent: '#00acd7',
-  accentLight: '#0081d7',
-  accentDark: '#001419',
-  text: '#f4f4f5',
-  gray: '#455a64',
-  darkGray: '#263238',
-  textRed: '#EF5350',
+  background2: '#262626',
 
-  info: '#039BE5',
-  success: '#7CB342',
-  warn: '#FB8C00',
-  error: '#D81B60',
+  text: '#f4f4f5',
+
+  white: '#f4f4f5',
+  whiteDarker: '#dddddd',
+  blurple: '#5865f2',
+  blurpleDarker: '#4450d6',
+  darkGray: '#1e1e1e',
+  red: '#ed4245',
+  orange: '#f57c00',
+  yellow: '#fbc02d',
+  green: '#43a047',
+  lime: '#57f287',
+  cyan: '#03a9f4',
+  purple: '#eb459e',
 };
 
 export const LightTheme: Theme = {
-  background: '#fffffe',
-  accent: '#00acd7',
-  accentLight: '#0081d7',
-  accentDark: '#bdd3d9',
-  text: '#212121',
-  gray: '#e5e5e5',
-  darkGray: '#e5e5e5',
-  textRed: '#EF5350',
+  ...DarkTheme,
 
-  info: '#039BE5',
-  success: '#7CB342',
-  warn: '#FB8C00',
-  error: '#D81B60',
+  background: '#fffffe',
+  background2: '#dddddd',
+
+  text: '#212121',
 };
 
 export const DefaultTheme = DarkTheme;
+export type Theme = typeof DefaultTheme;
