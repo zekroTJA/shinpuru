@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as SPHeader } from '../../assets/sp-header.svg';
 import { useApi } from '../../hooks/useApi';
@@ -23,6 +25,8 @@ const StyledNav = styled.nav`
 export const Navbar: React.FC<Props> = ({}) => {
   const { t } = useTranslation('components');
   const fetch = useApi();
+  const nav = useNavigate();
+  const { guildid } = useParams();
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [selectedGuild, setSelectedGuild] = useState<Guild>();
 
@@ -30,10 +34,16 @@ export const Navbar: React.FC<Props> = ({}) => {
     fetch((c) => c.guilds.list())
       .then((r) => {
         setGuilds(r.data);
-        setSelectedGuild(r.data[0]);
+        const guild = r.data.find((g) => g.id === guildid) ?? r.data[0];
+        setSelectedGuild(guild);
       })
       .catch();
   }, []);
+
+  useEffect(() => {
+    if (!selectedGuild) return;
+    nav('guilds/' + selectedGuild.id);
+  }, [selectedGuild]);
 
   return (
     <StyledNav>

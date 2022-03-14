@@ -1,6 +1,6 @@
+import { Outlet, Route, Router, Routes } from 'react-router';
 import styled from 'styled-components';
 import { Navbar } from '../components/Navbar';
-import { useSelfUser } from '../hooks/useSelfUser';
 
 interface Props {}
 
@@ -9,11 +9,17 @@ const RouteContainer = styled.div`
   height: 100%;
 `;
 
+const RouterOutlet = styled.main`
+  padding: 2em 2em 0 1em;
+`;
+
 export const DashboardRoute: React.FC<Props> = ({}) => {
-  const selfUser = useSelfUser();
   return (
     <RouteContainer>
       <Navbar />
+      <RouterOutlet>
+        <Outlet />
+      </RouterOutlet>
     </RouteContainer>
   );
 };

@@ -37,7 +37,7 @@ const OptionsList = styled.div<{ show: boolean }>`
   max-height: 20em;
   overflow-y: auto;
   transform: translateY(0.3em);
-  box-shadow: 0 0.5em 3em 0 rgba(0 0 0 / 50%);
+  box-shadow: 0 0.3em 2em 0 rgba(0 0 0 / 25%);
   background-color: ${(p) => p.theme.background3};
   transition: opacity 0.2s ease;
 `;
