@@ -1,0 +1,10 @@
+{
+  "hider": {
+    "placeholder": "Hover to show"
+  },
+  "navbar": {
+    "section": {
+      "guilds": "Guilds"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
@@ -51,6 +52,7 @@ const Hint = styled.p`
 `;
 
 export const Hider: React.FC<Props> = ({ content, ...props }) => {
+  const { t } = useTranslation('components');
   const [isHover, setIsHover] = useState(false);
   const [showCopyHint, setShowCopyHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -71,18 +73,16 @@ export const Hider: React.FC<Props> = ({ content, ...props }) => {
     setIsHover(false);
   };
 
+  const htsTxt = t('hider.placeholder');
+
   return (
     <StyledDiv
       onMouseEnter={_mouseEnter}
       onMouseLeave={_mouseLeave}
-      ln={content.length < 13 ? 13 : content.length}
+      ln={content.length < htsTxt.length ? htsTxt.length : content.length}
       {...props}
     >
-      <input
-        ref={inputRef}
-        value={isHover ? content : 'Hover to show'}
-        readOnly
-      />
+      <input ref={inputRef} value={isHover ? content : htsTxt} readOnly />
       {showCopyHint && <Hint>Copied to clipboard!</Hint>}
     </StyledDiv>
   );

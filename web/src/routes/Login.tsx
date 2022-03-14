@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { getCryptoRandomString } from '../util/crypto';
 import { useNavigate } from 'react-router';
 import { Embed } from '../components/Embed';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface Props {}
 
@@ -92,6 +93,7 @@ const StyledSmall = styled.small`
 `;
 
 export const LoginRoute: React.FC<Props> = ({}) => {
+  const { t } = useTranslation('routes.login');
   const [pushCode, setPushCode] = useState('');
   const fetch = useApi();
   const nav = useNavigate();
@@ -105,7 +107,7 @@ export const LoginRoute: React.FC<Props> = ({}) => {
     setPushCode(code);
     try {
       await fetch((c) => c.auth.pushCode(code));
-      nav('/home');
+      nav('/db');
       return false;
     } catch {}
     return true;
@@ -118,23 +120,22 @@ export const LoginRoute: React.FC<Props> = ({}) => {
   return (
     <OuterContainer>
       <TileDiscord>
-        <p>Either log in with your Discord Account via OAuth2</p>
+        <p>{t('discord.title')}</p>
         <a href={LOGIN_ROUTE}>
           <Button>
             <DiscordIcon />
-            Login with Discord
+            {t('discord.action')}
           </Button>
         </a>
-        <StyledSmall>
-          We don't store your E-Mail mail address or anything else and just
-          verify your ID.
-        </StyledSmall>
+        <StyledSmall>{t('discord.subline')}</StyledSmall>
       </TileDiscord>
       <TileAlt>
-        <p>Or DM the following Code to shinpuru on Discord</p>
+        <p>{t('alternative.title')}</p>
         <StyledHider content={pushCode} />
         <StyledSmall>
-          Alternatively, you can also use the <Embed>/login</Embed> command.
+          <Trans i18nKey="alternative.subline" ns="routes.login">
+            Alternatively, you can also use the <Embed>/login</Embed> command.
+          </Trans>
         </StyledSmall>
       </TileAlt>
     </OuterContainer>

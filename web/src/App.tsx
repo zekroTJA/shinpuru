@@ -8,7 +8,7 @@ import {
 import { StartRoute } from './routes/Start';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { LoginRoute } from './routes/Login';
-import { HomeRoute } from './routes/Home';
+import { DashboardRoute } from './routes/Dashboard';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -36,8 +36,8 @@ export const App: React.FC = () => {
           <Routes>
             <Route path="start" element={<StartRoute />} />
             <Route path="login" element={<LoginRoute />} />
-            <Route path="home" element={<HomeRoute />} />
-            <Route path="*" element={<Navigate to="home" />} />
+            <Route path="db" element={<DashboardRoute />} />
+            <Route path="*" element={<Navigate to="db" />} />
           </Routes>
         </Router>
       </AppContainer>

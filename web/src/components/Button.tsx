@@ -4,7 +4,7 @@ export const Button = styled.button`
   font-size: 1rem;
   font-family: 'Roboto', sans-serif;
   color: ${(p) => p.theme.text};
-  background: ${(p) => p.theme.blurple};
+  background: ${(p) => p.theme.accent};
   border: none;
   padding: 0.8em 1em;
   border-radius: 3px;
