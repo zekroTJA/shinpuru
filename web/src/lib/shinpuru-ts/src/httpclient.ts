@@ -31,6 +31,7 @@ interface AccessToken extends AccessTokenModel {
 
 export class HttpClient implements IHttpClient {
   private accessToken: AccessToken | null = null;
+  private accessTokenRequest: Promise<AccessTokenModel> | undefined;
 
   constructor(
     protected endpoint: string,
@@ -92,7 +93,9 @@ export class HttpClient implements IHttpClient {
   }
 
   private async getAccessToken(): Promise<AccessTokenModel> {
-    return this.req('POST', 'auth/accesstoken');
+    if (!this.accessTokenRequest)
+      this.accessTokenRequest = this.req('POST', 'auth/accesstoken');
+    return this.accessTokenRequest;
   }
 
   private async getAndSetAccessToken<T>(replay: () => Promise<T>): Promise<T> {
