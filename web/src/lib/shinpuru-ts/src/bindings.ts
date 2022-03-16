@@ -310,8 +310,8 @@ export class GuildsClient extends SubClient {
     return new GuildBackupsClient(this._client, id);
   }
 
-  members(id: string): Promise<ListResponse<Member>> {
-    return this.req('GET', `${id}/members`);
+  members(id: string, limit = 50, offset = 0): Promise<ListResponse<Member>> {
+    return this.req('GET', `${id}/members?limit=${limit}&offset=${offset}`);
   }
 
   member(id: string, memberID: string): GuildMemberClient {
