@@ -14,4 +14,10 @@ export const ColorTile = styled(Container)<Props>`
     ${(p) => p.color},
     ${(p) => Color(p.color).darken(0.15).hex()}
   );
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.03);
+  }
 `;

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Guild } from '../../lib/shinpuru-ts/src';
-import { ReactComponent as DiscordIcon } from '../../assets/dc-logo.svg';
+import { DiscordImage } from '../DiscordImage';
 
 interface Props {
   guild: Guild;
@@ -15,16 +15,13 @@ const StyledDiv = styled.div`
     height: 1.2em;
     aspect-ratio: 1;
     margin-right: 0.5em;
-    border-radius: 100%;
   }
 `;
 
 export const Option: React.FC<Props> = ({ guild }) => {
-  const guildIcon =
-    guild.icon_url === '' ? <DiscordIcon /> : <img src={guild.icon_url} />;
   return (
     <StyledDiv>
-      {guildIcon}
+      <DiscordImage src={guild.icon_url} round />
       <span>{guild.name}</span>
     </StyledDiv>
   );

@@ -11,6 +11,7 @@ const RouteContainer = styled.div`
 
 const RouterOutlet = styled.main`
   padding: 1em 1em 0 1em;
+  width: 100%;
 `;
 
 export const DashboardRoute: React.FC<Props> = ({}) => {
