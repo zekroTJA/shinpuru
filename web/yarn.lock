@@ -3827,12 +3827,12 @@ http-proxy-middleware@^2.0.0:
   integrity sha512-1bloEwnrHMnCoO/Gcwbz7eSVvW50KPES01PecpagI+YLNLci4AcuKJrujW4Mc3sBLpFxMSlsLNHS5Nl/lvrTPA==
   dependencies:
     "@types/http-proxy" "^1.17.8"
-    http-proxy "^1.18.1"
+    http-proxy "1.18.1"
     is-glob "^4.0.1"
     is-plain-obj "^3.0.0"
     micromatch "^4.0.2"
 
-http-proxy@^1.18.1:
+http-proxy@1.18.1:
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.18.1.tgz#401541f0534884bbf95260334e72f88ee3976549"
   integrity sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==
@@ -4443,7 +4443,7 @@ karma@~6.3.4:
     dom-serialize "^2.2.1"
     glob "^7.1.7"
     graceful-fs "^4.2.6"
-    http-proxy "^1.18.1"
+    http-proxy "1.18.1"
     isbinaryfile "^4.0.8"
     lodash "^4.17.21"
     log4js "^6.4.1"
