@@ -60,12 +60,17 @@ services:
     expose:
       - '8080'
     environment:
+      SP_VERSION: 6
       # Discord Config
       SP_DISCORD_TOKEN: <discord_token>
       SP_DISCORD_GENERALPREFIX: sp!
       SP_DISCORD_OWNERID: <your_user_id>
       SP_DISCORD_CLIENTID: <application_id>
       SP_DISCORD_CLIENTSECRET: <client_secret>
+      SP_DISCORD_GUILDSLIMIT: 0
+      SP_DISCORD_GLOBALCOMMANDRATELIMIT_ENABLED: 1
+      SP_DISCORD_GLOBALCOMMANDRATELIMIT_BURST: 3
+      SP_DISCORD_GLOBALCOMMANDRATELIMIT_LIMITSECONDS: 20
       # Database
       SP_DATABASE_TYPE: mysql
       SP_DATABASE_MYSQL_HOST: mysql
@@ -76,6 +81,9 @@ services:
       SP_CACHE_REDIS_ADDR: redis:6379
       SP_CACHE_REDIS_TYPE: 0
       SP_CACHE_CACHEDATABASE: 1
+      # Logging
+      SP_LOGGING_COMMANDLOGGING: 1
+      SP_LOGGING_LOGLEVEL: 4
       # Storage
       SP_STORAGE_TYPE: minio
       SP_STORAGE_MINIO_ENDPOINT: minio:9000
@@ -83,13 +91,30 @@ services:
       SP_STORAGE_MINIO_ACCESSSECRET: minio_secret_key
       SP_STORAGE_MINIO_LOCATION: us-east-1
       SP_STORAGE_MINIO_SECURE: 0
-      # Logging
-      SP_LOGGING_COMMANDLOGGING: 1
-      SP_LOGGING_LOGLEVEL: 4
       # Webserver
       SP_WEBSERVER_ENABLED: 1
       SP_WEBSERVER_ADDR: 0.0.0.0:8080
+      SP_WEBSERVER_APITOKENKEY: <Random string which sould have at least 64 characters>
       SP_WEBSERVER_PUBLICADDR: <https://example.com>
+      SP_WEBSERVER_RATELIMIT_ENABLED: 1
+      SP_WEBSERVER_RATELIMIT_BURST: 50
+      SP_WEBSERVER_RATELIMIT_LIMITSECONDS: 3
+      SP_WEBSERVER_ACCESSTOKEN_LIFETIMESECONDS: 600
+      SP_WEBSERVER_CAPTCHA_SITEKEY: <hCaptcha Sitekey>
+      SP_WEBSERVER_CAPTCHA_SECRETKEY: <hCaptcha Secretkey>
+      # Codeexec
+      SP_CODEEXEC_TYPE: "ranna"
+      SP_CODEEXEC_RANNA_APIVERSION: "v1"
+      SP_CODEEXEC_RANNA_ENDPOINT: "https://public.ranna.dev"
+      SP_CODEEXEC_RATELIMIT_ENABLED: 1
+      SP_CODEEXEC_RATELIMIT_BURST: 5
+      SP_CODEEXEC_RATELIMIT_LIMITSECONDS: 60
+      # Privacy
+      # ⚠️ YOU MUST CHANGE THIS WHEN YOU HOST YOUR SHINPURU INSTANCE PUBLICLY!
+      SP_PRIVACY_NOTICEURL: "https://github.com/zekroTJA/shinpuru/blob/master/PRIVACY.md"
+      SP_PRIVACY_CONTACT_0_TITLE: "E-Mail"
+      SP_PRIVACY_CONTACT_0_VALUE: "<your@mail.address>"
+      SP_PRIVACY_CONTACT_0_URL: "mailto:<your@mail.address>"
     restart: always
     depends_on:
       - mysql
