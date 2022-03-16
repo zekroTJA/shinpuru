@@ -23,7 +23,7 @@ const ValueContainer = styled.div`
   background-color: ${(p) => p.theme.background};
   width: 100%;
   padding: 0.6em;
-  border: solid 1px ${(p) => p.theme.accent};
+  border: solid 1px ${(p) => p.theme.accentDarker};
 `;
 
 const OptionsList = styled.div<{ show: boolean }>`
@@ -46,7 +46,7 @@ const OptionContainer = styled.div`
   padding: 0.6em;
   transition: background-color 0.2s ease;
   &:hover {
-    background-color: ${(p) => p.theme.accent};
+    background-color: ${(p) => p.theme.accentDarker};
   }
 `;
 

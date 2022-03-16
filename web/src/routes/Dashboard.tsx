@@ -10,7 +10,7 @@ const RouteContainer = styled.div`
 `;
 
 const RouterOutlet = styled.main`
-  padding: 2em 2em 0 1em;
+  padding: 1em 1em 0 1em;
 `;
 
 export const DashboardRoute: React.FC<Props> = ({}) => {

@@ -9,7 +9,8 @@ import { StartRoute } from './routes/Start';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { LoginRoute } from './routes/Login';
 import { DashboardRoute } from './routes/Dashboard';
-import { Guild } from './routes/Dashboard/Guild';
+import { GuildHome } from './routes/Dashboard/Guilds/GuildHome';
+import { GuildMembersRoute } from './routes/Dashboard/Guilds/GuildMembers';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -38,7 +39,10 @@ export const App: React.FC = () => {
             <Route path="start" element={<StartRoute />} />
             <Route path="login" element={<LoginRoute />} />
             <Route path="db" element={<DashboardRoute />}>
-              <Route path="guilds/:guildid" element={<Guild />} />
+              <Route
+                path="guilds/:guildid/members"
+                element={<GuildMembersRoute />}
+              />
             </Route>
             <Route path="*" element={<Navigate to="db" />} />
           </Routes>

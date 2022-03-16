@@ -4,7 +4,11 @@
   },
   "navbar": {
     "section": {
-      "guilds": "Guilds"
+      "guilds": {
+        "title": "Guilds",
+        "home": "Home",
+        "members": "Members"
+      }
     }
   }
 }
