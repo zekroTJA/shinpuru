@@ -117,6 +117,12 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	if msg.Author == nil {
+		logrus.WithError(err).Error("STARBOARD :: message author is nil")
+		l.gl.Errorf(e.GuildID, "Message author is nil (%s): %s", e.MessageID, err.Error())
+		return
+	}
+
 	ok, score := l.hitsThreshhold(msg, starboardConfig)
 	if !ok {
 		return
