@@ -1,12 +1,10 @@
 import styled from 'styled-components';
-import { useApi } from '../../hooks/useApi';
 import { Guild, Member } from '../../lib/shinpuru-ts/src';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Embed } from '../Embed';
 import { Flex } from '../Flex';
 import { RoleList } from '../RoleList';
-import { Tag } from '../Tag';
 
 interface Props {
   member?: Member;
@@ -58,7 +56,7 @@ const Header = styled(Flex)`
 export const MemberLarge: React.FC<Props> = ({ member, guild }) => {
   return !!member && !!guild ? (
     <StyledContainer>
-      <DiscordImage src={member.avatar_url} round />
+      <DiscordImage src={member.avatar_url} />
       <div>
         <Header>
           <h2>{!!member.nick ? member.nick : member.user.username}</h2>

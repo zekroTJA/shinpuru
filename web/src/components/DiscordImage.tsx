@@ -8,11 +8,7 @@ type ImgProps = {
 type Props = React.ImgHTMLAttributes<any> & ImgProps;
 
 const StyledImg = styled.img<ImgProps>`
-  ${(p) =>
-    p.round &&
-    css`
-      border-radius: 100%;
-    `}
+  border-radius: ${(p) => (p.round ? '100%' : '8px')};
 `;
 
 export const DiscordImage: React.FC<Props> = ({ src, ...props }) => {

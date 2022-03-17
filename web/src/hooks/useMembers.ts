@@ -1,17 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Member } from '../lib/shinpuru-ts/src';
 import { useApi } from './useApi';
 
-export const useMembers = (guildid?: string) => {
+export const useMembers = (
+  guildid?: string,
+  limit = 100,
+  filter = ''
+): [Member[] | undefined, () => Promise<any>] => {
   const fetch = useApi();
   const [members, setMembers] = useState<Member[]>();
+  const afterRef = useRef('');
+
+  const _load = (reset = false) => {
+    if (!guildid) return Promise.resolve();
+    if (reset) afterRef.current = '';
+    return fetch((c) =>
+      c.guilds.members(guildid, limit, afterRef.current, filter)
+    )
+      .then((res) => {
+        setMembers([...(!members || reset ? [] : members), ...res.data]);
+        afterRef.current = res.data[res.data.length - 1].user.id;
+      })
+      .catch();
+  };
 
   useEffect(() => {
-    if (!guildid) return;
-    fetch((c) => c.guilds.members(guildid))
-      .then((res) => setMembers(res.data))
-      .catch();
-  }, [guildid]);
+    _load(true);
+  }, [guildid, filter]);
 
-  return members;
+  return [members, _load];
 };

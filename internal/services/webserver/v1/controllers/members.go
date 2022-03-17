@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -14,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/sop"
 )
 
 type GuildMembersController struct {
@@ -80,7 +83,14 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if after == "" {
+	if filter := ctx.Query("filter"); filter != "" {
+		filter = strings.ToLower(filter)
+		members = sop.Slice(members).Filter(func(v *discordgo.Member, i int) bool {
+			return strings.Contains(strings.ToLower(v.Nick), filter) ||
+				strings.Contains(strings.ToLower(v.User.Username), filter) ||
+				strings.Contains(strings.ToLower(v.User.ID), filter)
+		}).Unwrap()
+	} else if after != "" {
 		for i := 0; i < len(members); i++ {
 			if members[i].User.ID == after {
 				members = members[i+1:]
