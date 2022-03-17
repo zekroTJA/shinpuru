@@ -1,7 +1,6 @@
 package slashcommands
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 
@@ -12,9 +11,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
-	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util"
-	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
+	"github.com/zekroTJA/shinpuru/internal/util/cmdutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
 	"github.com/zekrotja/ken"
@@ -36,7 +34,7 @@ func (c *Report) Description() string {
 }
 
 func (c *Report) Version() string {
-	return "1.1.0"
+	return "1.2.0"
 }
 
 func (c *Report) Type() discordgo.ApplicationCommandType {
@@ -63,14 +61,6 @@ func (c *Report) Options() []*discordgo.ApplicationCommandOption {
 						{
 							Name:  "ad",
 							Value: 4,
-						},
-						{
-							Name:  "kick",
-							Value: 0,
-						},
-						{
-							Name:  "ban",
-							Value: 1,
 						},
 					},
 				},
@@ -150,16 +140,6 @@ func (c *Report) SubDomains() []permissions.SubPermission {
 			Description: "Warn a member.",
 		},
 		{
-			Term:        "kick",
-			Explicit:    false,
-			Description: "Kick a member.",
-		},
-		{
-			Term:        "ban",
-			Explicit:    false,
-			Description: "Ban a member.",
-		},
-		{
 			Term:        "revoke",
 			Explicit:    false,
 			Description: "Revoke a report.",
@@ -182,102 +162,16 @@ func (c *Report) Run(ctx *ken.Ctx) (err error) {
 }
 
 func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
-	cfg := ctx.Get(static.DiConfig).(config.Provider)
-	repSvc := ctx.Get(static.DiReport).(*report.ReportService)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
 	typ := models.ReportType(ctx.Options().GetByName("type").IntValue())
-	victim := ctx.Options().GetByName("user").UserValue(ctx.Ctx)
-	reason := ctx.Options().GetByName("reason").StringValue()
 
-	var dn string
-	switch typ {
-	case models.TypeKick:
-		dn = "kick"
-	case models.TypeBan:
-		dn = "ban"
-	case models.TypeWarn, models.TypeAd:
-		dn = "warn"
-	}
-
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, dn, false)
+	ok, err := pmw.CheckSubPerm(ctx.Ctx, "warn", false)
 	if err != nil && ok {
 		return
 	}
 
-	var attachment, expire string
-	if imageurlV, ok := ctx.Options().GetByNameOptional("imageurl"); ok {
-		attachment = imageurlV.StringValue()
-	}
-	if expireV, ok := ctx.Options().GetByNameOptional("expire"); ok {
-		expire = expireV.StringValue()
-	}
-
-	if attachment != "" {
-		img, err := imgstore.DownloadFromURL(attachment)
-		if err == nil && img != nil {
-			st, _ := ctx.Get(static.DiObjectStorage).(storage.Storage)
-			err = st.PutObject(static.StorageBucketImages, img.ID.String(),
-				bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-			if err != nil {
-				return err
-			}
-			attachment = img.ID.String()
-		}
-	}
-
-	rep := &models.Report{
-		GuildID:       ctx.Event.GuildID,
-		ExecutorID:    ctx.User().ID,
-		VictimID:      victim.ID,
-		Msg:           reason,
-		AttachmentURL: attachment,
-		Type:          typ,
-	}
-
-	if expire != "" {
-		exp, err := time.ParseDuration(expire)
-		if err != nil {
-			err = ctx.FollowUpError(
-				fmt.Sprintf("Invalid duration:\n```\n%s```", err.Error()), "").Error
-			return err
-		}
-		expT := time.Now().Add(exp)
-		rep.Timeout = &expT
-	}
-
-	emb := rep.AsEmbed(cfg.Config().WebServer.PublicAddr)
-	emb.Title = "Report Check"
-	emb.Description = "Is everything okay so far?"
-
-	acceptMsg := acceptmsg.AcceptMessage{
-		Embed:          emb,
-		Session:        ctx.Session,
-		UserID:         ctx.User().ID,
-		DeleteMsgAfter: true,
-		AcceptFunc: func(msg *discordgo.Message) (err error) {
-			switch typ {
-			case models.TypeKick:
-				rep, err = repSvc.PushKick(rep)
-			case models.TypeBan:
-				rep, err = repSvc.PushBan(rep)
-			default:
-				rep, err = repSvc.PushReport(rep)
-			}
-
-			if err != nil {
-				return
-			}
-
-			_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, rep.AsEmbed(cfg.Config().WebServer.PublicAddr))
-			return
-		},
-	}
-
-	if _, err = acceptMsg.AsFollowUp(ctx.Ctx); err != nil {
-		return
-	}
-	return acceptMsg.Error()
+	return cmdutil.CmdReport(ctx, typ)
 }
 
 func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
