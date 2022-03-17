@@ -3,7 +3,7 @@ module github.com/zekroTJA/shinpuru
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.23.3-0.20220216202327-6015eed9333e
+	github.com/bwmarrin/discordgo v0.24.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/esimov/stackblur-go v1.0.2
 	github.com/gabriel-vasile/mimetype v1.4.0
@@ -34,12 +34,13 @@ require (
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
-	github.com/zekrotja/dgrs v0.5.1
+	github.com/zekrotja/dgrs v0.5.2
 	github.com/zekrotja/ken v0.12.1
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -79,6 +80,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
