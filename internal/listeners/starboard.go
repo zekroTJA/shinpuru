@@ -111,6 +111,12 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	msg, err := l.state.Message(e.ChannelID, e.MessageID)
+	fmt.Printf("From cache: %+v\n", msg)
+	{
+		test, _ := s.ChannelMessage(e.ChannelID, e.MessageID)
+		fmt.Printf("From API: %+v\n", test)
+	}
+
 	if err != nil {
 		logrus.WithError(err).Error("STARBOARD :: failed getting message")
 		l.gl.Errorf(e.GuildID, "Failed getting message (%s): %s", e.MessageID, err.Error())
