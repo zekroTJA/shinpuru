@@ -360,7 +360,7 @@ func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err e
 
 	iimg = thumbnail.Make(iimg, int(maxSize))
 
-	iimg, err = stackblur.Run(iimg, 50)
+	iimg, err = stackblur.Process(iimg, 50)
 	fmt.Println(err)
 	if err != nil {
 		return
