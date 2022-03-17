@@ -202,7 +202,7 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 // AsFollowUp pushes the accept messages as follow up
 // message to the command context and sets up listener
 // handlers for reactions.
-func (am *AcceptMessage) AsFollowUp(ctx *ken.Ctx) (*AcceptMessage, error) {
+func (am *AcceptMessage) AsFollowUp(ctx ken.Context) (*AcceptMessage, error) {
 	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
 		fum := ctx.FollowUpEmbed(am.Embed)
 		return fum.Message, fum.Error
