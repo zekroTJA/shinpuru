@@ -99,8 +99,8 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		if err = l.db.SetStarboardConfig(starboardConfig); err != nil {
 			logrus.WithError(err).Error("STARBOARD :: failed disabling starboard")
 			l.gl.Errorf(e.GuildID, "Failed disabling starboard: %s", err.Error())
-			return
 		}
+		return
 	}
 
 	msgChannel, err := l.state.Channel(e.ChannelID)
@@ -111,11 +111,6 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	}
 
 	msg, err := l.state.Message(e.ChannelID, e.MessageID)
-	fmt.Printf("From cache: %+v\n", msg)
-	{
-		test, _ := s.ChannelMessage(e.ChannelID, e.MessageID)
-		fmt.Printf("From API: %+v\n", test)
-	}
 
 	if err != nil {
 		logrus.WithError(err).Error("STARBOARD :: failed getting message")
