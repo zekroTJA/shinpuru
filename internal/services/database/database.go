@@ -247,7 +247,7 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// GUILDLOG
 
-	GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity) ([]*models.GuildLogEntry, error)
+	GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity, ascending bool) ([]*models.GuildLogEntry, error)
 	GetGuildLogEntriesCount(guildID string, severity models.GuildLogSeverity) (int, error)
 	AddGuildLogEntry(entry *models.GuildLogEntry) error
 	DeleteLogEntry(guildID string, id snowflake.ID) error

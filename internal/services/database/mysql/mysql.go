@@ -1946,11 +1946,21 @@ func (m *MysqlMiddleware) SetGuildLogDisable(guildID string, enabled bool) error
 	return m.setGuildSetting(guildID, "guildlogDisable", val)
 }
 
-func (m *MysqlMiddleware) GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity) (res []*models.GuildLogEntry, err error) {
+func (m *MysqlMiddleware) GetGuildLogEntries(
+	guildID string,
+	offset, limit int,
+	severity models.GuildLogSeverity,
+	ascending bool,
+) (res []*models.GuildLogEntry, err error) {
+	order := "DESC"
+	if ascending {
+		order = "ASC"
+	}
 	rows, err := m.Db.Query(
 		"SELECT id, module, message, severity, `timestamp` "+
 			"FROM guildlog "+
 			"WHERE guildID = ? AND (? < 0 OR severity = ?)"+
+			"ORDER BY `timestamp` "+order+" "+
 			"LIMIT ?, ?",
 		guildID, severity, severity,
 		offset, limit)
