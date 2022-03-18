@@ -10,6 +10,7 @@ export const useSelfMember = (guildid?: string) => {
 
   useEffect(() => {
     if (!guildid || !selfUser) return;
+    setMember(undefined);
     fetch((c) => c.guilds.member(guildid, selfUser.id).get())
       .then((res) => setMember(res))
       .catch();

@@ -15,7 +15,6 @@ export const useApi = () => {
           nav('/start');
         }
       }
-      // console.error(e);
       throw e;
     }
   }

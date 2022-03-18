@@ -1,12 +1,15 @@
 import styled from 'styled-components';
 import { Container } from './Container';
 import Color from 'color';
+import { Clickable } from './styleParts';
 
 type Props = {
   color: string;
 };
 
 export const ColorTile = styled(Container)<Props>`
+  ${Clickable()}
+
   font-family: 'Cantarell', sans-serif;
   font-size: 1.2em;
   background: linear-gradient(
@@ -14,10 +17,4 @@ export const ColorTile = styled(Container)<Props>`
     ${(p) => p.color},
     ${(p) => Color(p.color).darken(0.15).hex()}
   );
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: scale(1.03);
-  }
 `;

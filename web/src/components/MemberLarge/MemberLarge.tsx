@@ -1,10 +1,12 @@
 import styled from 'styled-components';
 import { Guild, Member } from '../../lib/shinpuru-ts/src';
+import { memberName } from '../../util/users';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Embed } from '../Embed';
 import { Flex } from '../Flex';
 import { RoleList } from '../RoleList';
+import { Clickable } from '../styleParts';
 
 interface Props {
   member?: Member;
@@ -12,6 +14,8 @@ interface Props {
 }
 
 const StyledContainer = styled(Container)`
+  ${Clickable(1.01)}
+
   display: flex;
   width: 100%;
 
@@ -59,7 +63,7 @@ export const MemberLarge: React.FC<Props> = ({ member, guild }) => {
       <DiscordImage src={member.avatar_url} />
       <div>
         <Header>
-          <h2>{!!member.nick ? member.nick : member.user.username}</h2>
+          <h2>{memberName(member, false)}</h2>
           <small>
             {member.user.username}#{member.user.discriminator}
           </small>

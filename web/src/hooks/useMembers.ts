@@ -19,10 +19,15 @@ export const useMembers = (
     )
       .then((res) => {
         setMembers([...(!members || reset ? [] : members), ...res.data]);
-        afterRef.current = res.data[res.data.length - 1].user.id;
+        if (res.data.length !== 0)
+          afterRef.current = res.data[res.data.length - 1].user.id;
       })
       .catch();
   };
+
+  useEffect(() => {
+    setMembers(undefined);
+  }, [guildid]);
 
   useEffect(() => {
     _load(true);
