@@ -798,8 +798,11 @@ func (c *GuildsSettingsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	order := ctx.Query("order", "desc")
+	ascending := order == "asc"
 
-	res, err := c.db.GetGuildLogEntries(guildID, offset, limit, sharedmodels.GuildLogSeverity(severity))
+	res, err := c.db.GetGuildLogEntries(
+		guildID, offset, limit, sharedmodels.GuildLogSeverity(severity), ascending)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}

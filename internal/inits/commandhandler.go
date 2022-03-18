@@ -90,6 +90,8 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Info),
 		new(slashcommands.Help),
 		new(slashcommands.Birthday),
+		new(slashcommands.Kick),
+		new(slashcommands.Ban),
 	)
 	if err != nil {
 		return

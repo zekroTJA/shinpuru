@@ -48,7 +48,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: '1.18rc1'
+          go-version: '1.18'
       - name: Check out code
         uses: actions/checkout@v2
       - name: Retrieve frontend files
@@ -93,7 +93,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: '1.18rc1'
+          go-version: '1.18'
       - name: Check out code
         uses: actions/checkout@v2
       - name: Get dependencies
@@ -102,7 +102,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: go build -o ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/shinpuru/main.go
+        run: go build -o ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/setup/main.go
       - name: Rename Windows Binary
         if: ${{ matrix.goos == 'windows' }}
         env:

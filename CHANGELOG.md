@@ -3,59 +3,47 @@
 <!-- > **Attention**  
 > This is a hotfix patch. If you want to see the changelog for release 1.30.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.30.0). -->
 
-# shinpuru is now finally verified! 🎉
+# Interactive Setup
 
-Even though this does not relate to the actual release, I just want to say that the stable shinpuru instance ([`shinpuru#4878` / shnp.de](https://shnp.de)) is now verified for privileged intents. That means that the 100 guilds limit is now lifted and you can now invite shinpuru on howmany guidld you want! That also means that services which rely on member events and message content will still be operational in the future.
+Recently, a lot of questions about the setup of shinpuru received me. shinpuru has a lot of configuration values and ways to configure it, so I decided to create a small tool where you can enter all your settings and credentials and which creates a pre-configured `docker-compose.yml` which you can simply use to set up shinpuru on your server. 
 
-# Auto Voice Channel [#324, #357]
+https://user-images.githubusercontent.com/16734205/158845896-50eb4869-fa2a-42f0-887c-0b946ddcecd0.mp4
 
-Thanks to the contribution of @TomRomeo, shinpuru now supports auto voice channels. You can simply specify a voice channel as auto voice channel using the `/autovc add` command. After joining the auto voice channel, a new channel is created and you are automatically moved into this channel. After that, all your friends can join this channel with you. After you leave the channel, it is automatically removed again.
+Simply download the tool from the releases below, execute it in your terminal, enter your settings and credentials and then you will have a ready to go Docker Compose set up to be deployed to your server.
 
-https://user-images.githubusercontent.com/16734205/156553740-3628a6cf-5386-4b54-86ff-87c10cbf2cf9.mp4
+# Report QoL Changes
 
-# Update Information
+Previosuly, you were able to report, kick and ban users using the `type` parameter of the report command. On the one side, this is highly unintuitive because people more likely expect a ban and kick command for each action separately. Also, this is very inconsistent with the `mute` command, which is actually also just a report type with extra actions like banning an kicking as well at it has its own command.
 
-shinpuru now also checks for updates by comparing the current build version with the latest tag of the GitHub repository. If a newer version is available, you will see this notification on startup in the log.
+So, with report you can now only create, list and revoke reports and banning as well as kicking members is done with both separate commands `ban` and `kick`.
 
-![](https://user-images.githubusercontent.com/16734205/156564557-6c406006-8ae0-4113-9ef4-b470e97e7cd8.png)
+This change also results in some changes to the permissions.
+- `sp.guild.mod.report.kick` is now `sp.guild.mod.kick`
+- `sp.guild.mod.report.ban` is now `sp.guild.mod.ban`
 
-Also, when the bot owner logs in to the web interface, they will also receive a notification showing the available upgrade.
+# Starboard Changes [#369 <small>*nice*</small>]
 
-![](https://user-images.githubusercontent.com/16734205/156564782-081a8355-4033-4a83-8ec3-a67c1971e255.png)
+When posing message with links to images or videos, these are extracted from the message and put into the embed itself when voted into the starboard.
 
-# Guilds Limit
+Also, videos are now properly displayed in the web interface. And yes, autoplay is disabled and the volume is muted by default. 😉
 
-You can now specify a global guilds limit in the config on which your shinpuru instance can be member of. This might be useful to either hard-cap the amount of guilds to preserve resources or to avoid hitting the magical 100 guilds cap of unverified bot accounts.
+![](https://user-images.githubusercontent.com/16734205/158994685-eae81863-77c0-4e82-b05e-a01b273a1577.gif)
 
-When applied and the guild limit is exceeded after shinpuru joins a new guild, it will leave the guild and send an informative message to the owner of the guild.
+# Minor Changes
 
-![](https://user-images.githubusercontent.com/16734205/156731242-484bba6e-66dc-4105-9979-3e84855c21dc.png)
+- The guild log order in the web inetrface is now descending starting with the latest entries. This is way more intuitive and easier to look for recent issues. [#366]
 
-*Via config file*
-```yml
-discord:
-  # Specify a maximum of guilds the bot can
-  # be member of. When set to 0, there is
-  # no limit applied.
-  guildslimit: 90
-```
-
-*Or via environment variable*
-```
-SP_DISCORD_GUILDSLIMIT=90
-```
+- shinpuru now reads a `.env` file in the directory of the executable and applies it to the environment vaiables.
 
 # Bug Fixes
 
-- Fixed some typos in autorole and twitch notify command. [#358]
-- Fixed a bug that simultanious unauthorized requests produce multiple concurrent access token requests. [#361]
-- Fixed error message in login screen when push codes are timing out.
+- Fixed a bug which results in a `nil` author on a message retrieved from the cache which lead to a panic when voting such a message into the starboard. [#366]
 
-# Acknowledgements
+- Not available or deleted starboard channels are now properly cleared from the settings when voting messages into it.
 
-Big thanks to the following people who contributed to this release.
+# Code Base
 
-- @TomRomeo
+So that go 1.18 has now officially being released, you can now compile shinpuru with the latest version of the Go toolchain instead of using a pre-release build.
 
 # Docker
 
