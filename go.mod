@@ -34,7 +34,7 @@ require (
 	github.com/zekroTJA/ratelimit v1.0.0
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
-	github.com/zekrotja/dgrs v0.5.2
+	github.com/zekrotja/dgrs v0.5.3
 	github.com/zekrotja/ken v0.13.0
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867
@@ -61,8 +61,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
-	github.com/kr/pretty v0.2.1 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
