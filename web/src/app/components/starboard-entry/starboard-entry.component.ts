@@ -14,4 +14,16 @@ export class StarboardEntryComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  get imageUrls(): string[] {
+    return this.entry.media_urls.filter((url) => isImage(url));
+  }
+
+  get videoUrls(): string[] {
+    return this.entry.media_urls.filter((url) => !isImage(url));
+  }
+}
+
+function isImage(v: string): boolean {
+  return !!v.match('.*\\.(?:jpe?g|png|webp|gif|tiff|svg).*');
 }
