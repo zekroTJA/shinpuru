@@ -21,6 +21,14 @@ This change also results in some changes to the permissions.
 - `sp.guild.mod.report.kick` is now `sp.guild.mod.kick`
 - `sp.guild.mod.report.ban` is now `sp.guild.mod.ban`
 
+# Starboard Changes [#369 <small>*nice*</small>]
+
+When posing message with links to images or videos, these are extracted from the message and put into the embed itself when voted into the starboard.
+
+Also, videos are now properly displayed in the web interface. And yes, autoplay is disabled and the volume is muted by default. 😉
+
+![](https://user-images.githubusercontent.com/16734205/158994685-eae81863-77c0-4e82-b05e-a01b273a1577.gif)
+
 # Minor Changes
 
 - The guild log order in the web inetrface is now descending starting with the latest entries. This is way more intuitive and easier to look for recent issues. [#366]
