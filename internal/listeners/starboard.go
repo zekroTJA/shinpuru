@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	"regexp"
+	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/esimov/stackblur-go"
@@ -29,6 +32,9 @@ const maxSize = 500.0
 
 var (
 	errPublicAddrUnset = errors.New("publicAddr unset")
+
+	rxImageURL = regexp.MustCompile(`https?:\/\/.+\.(?:jpe?g|png|webp|gif|tiff|svg)(?:[\?#&%][^\s]+)?`)
+	rxVideoURL = regexp.MustCompile(`https?:\/\/.+\.(?:mp4|m4a|mkv|webm|mpg|mp2|mpeg|mpv|m4p|avi|wmv|mov|flv)(?:[\?#&%][^\s]+)?`)
 )
 
 type ListenerStarboard struct {
@@ -146,6 +152,8 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 		return
 	}
 
+	extractImage(msg)
+
 	censorMedia := msgChannel.NSFW && !starboardChannel.NSFW
 
 	var giveKarma bool
@@ -199,9 +207,12 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 			Score:       score,
 			Deleted:     false,
 		}
-
 		for i, a := range msg.Attachments {
 			starboardEntry.MediaURLs[i] = a.URL
+		}
+
+		if len(msg.Embeds) != 0 && msg.Embeds[0].Video != nil && msg.Embeds[0].Video.URL != "" {
+			starboardEntry.MediaURLs = append(starboardEntry.MediaURLs, msg.Embeds[0].Video.URL)
 		}
 	} else {
 		_, err = s.ChannelMessageEditEmbed(starboardConfig.ChannelID, starboardEntry.StarboardID, l.getEmbed(msg, e.GuildID, score))
@@ -267,6 +278,11 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 		return
 	}
 
+	// This is to ensure, that the event, which updates the message and its reaction
+	// count went through before this event is called and the message is received
+	// from cache even before it has been updated by the otehr event listener.
+	// Kinda janky, but yeah, async stuff 🎉
+	time.Sleep(500 * time.Millisecond)
 	msg, err := l.state.Message(e.ChannelID, e.MessageID)
 	if err != nil {
 		logrus.WithError(err).Error("STARBOARD :: failed getting message")
@@ -326,6 +342,10 @@ func (l *ListenerStarboard) getEmbed(
 	guildID string,
 	count int,
 ) *discordgo.MessageEmbed {
+	var videoURL string
+	extractImage(msg)
+	videoURL, msg.Content = extractRegex(msg.Content, rxVideoURL)
+
 	emb := embedbuilder.New().
 		WithAuthor(msg.Author.String(), "", msg.Author.AvatarURL("16x16"), "").
 		WithDescription(fmt.Sprintf("%s\n\n[jump to message](%s)",
@@ -333,6 +353,10 @@ func (l *ListenerStarboard) getEmbed(
 		WithTimestamp(msg.Timestamp).
 		WithColor(static.ColorEmbedDefault).
 		WithFooter(fmt.Sprintf("%d ⭐", count), "", "")
+
+	if videoURL != "" {
+		emb.WithVideo(videoURL, 0, 0)
+	}
 
 	if len(msg.Attachments) > 0 {
 		att := msg.Attachments[0]
@@ -383,4 +407,21 @@ func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err e
 	targetURL = fmt.Sprintf("%s/imagestore/%s.jpeg", l.publicAddr, img.ID.String())
 
 	return
+}
+
+func extractRegex(content string, rx *regexp.Regexp) (url string, rest string) {
+	url = rx.FindString(content)
+	rest = strings.Replace(content, url, "", 1)
+	return
+}
+
+func extractImage(msg *discordgo.Message) {
+	url, rest := extractRegex(msg.Content, rxImageURL)
+	if url == "" {
+		return
+	}
+	msg.Content = rest
+	msg.Attachments = append(msg.Attachments, &discordgo.MessageAttachment{
+		URL: url,
+	})
 }
