@@ -55,10 +55,14 @@ export class HttpClient implements IHttpClient {
     if (this.options.authorization)
       headers.set('Authorization', this.options.authorization);
     else if (this.accessToken) {
-      if (Date.now() - this.accessToken.expiresDate.getTime() > 0)
+      if (Date.now() - this.accessToken.expiresDate.getTime() > 0) {
+        // Setting access token null here to avoid getting here again
+        // right after we call getAndSetAccessToken().
+        this.accessToken = null;
         return await this.getAndSetAccessToken(() =>
           this.req(method, path, body, appendHeaders)
         );
+      }
       headers.set('Authorization', `accessToken ${this.accessToken.token}`);
     }
     const fullPath = `${this.endpoint}/${path}`.replace(/(?<=[^:])\/\//g, '/');
@@ -100,6 +104,7 @@ export class HttpClient implements IHttpClient {
 
   private async getAndSetAccessToken<T>(replay: () => Promise<T>): Promise<T> {
     const token = await this.getAccessToken();
+    this.accessTokenRequest = undefined;
     this.accessToken = token as AccessToken;
     this.accessToken.expiresDate = new Date(token.expires);
     return await replay();
