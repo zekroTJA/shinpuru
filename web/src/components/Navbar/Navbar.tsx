@@ -47,10 +47,10 @@ export const Navbar: React.FC<Props> = ({}) => {
       .catch();
   }, []);
 
-  useEffect(() => {
-    if (!selectedGuild) return;
-    nav(`guilds/${selectedGuild.id}/members`);
-  }, [selectedGuild]);
+  const _onGuildSelect = (g: Guild) => {
+    setSelectedGuild(g);
+    nav(`guilds/${g.id}/members`);
+  };
 
   return (
     <StyledNav>
@@ -59,7 +59,7 @@ export const Navbar: React.FC<Props> = ({}) => {
         <GuildSelect
           guilds={guilds}
           value={selectedGuild}
-          onElementSelect={(g) => setSelectedGuild(g)}
+          onElementSelect={_onGuildSelect}
         />
         <EntryContainer>
           {/* <Entry path={`guilds/${selectedGuild?.id}/home`}>

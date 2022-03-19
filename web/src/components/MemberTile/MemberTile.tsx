@@ -7,6 +7,7 @@ import { Clickable } from '../styleParts';
 
 interface Props {
   member: Member;
+  onClick?: (member: Member) => void;
 }
 
 const StyledContainer = styled(Container)`
@@ -34,9 +35,9 @@ const Details = styled.div`
   }
 `;
 
-export const MemberTile: React.FC<Props> = ({ member }) => {
+export const MemberTile: React.FC<Props> = ({ member, onClick = () => {} }) => {
   return (
-    <StyledContainer>
+    <StyledContainer onClick={() => onClick(member)}>
       <DiscordImage src={member.avatar_url} />
       <Details>
         <h4>{memberName(member)}</h4>

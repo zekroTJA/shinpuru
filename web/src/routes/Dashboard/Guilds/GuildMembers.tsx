@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
 import { Button } from '../../../components/Button';
 import { MemberLarge } from '../../../components/MemberLarge';
@@ -11,6 +11,7 @@ import { useSelfMember } from '../../../hooks/useSelfMember';
 import { debounce } from 'debounce';
 import { useTranslation } from 'react-i18next';
 import { Loader } from '../../../components/Loader';
+import { Member } from '../../../lib/shinpuru-ts/src';
 
 interface Props {}
 
@@ -32,6 +33,7 @@ const LoadMoreButton = styled(Button)`
 export const GuildMembersRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.guildmembers');
   const { guildid } = useParams();
+  const nav = useNavigate();
   const selfMember = useSelfMember(guildid);
   const guild = useGuild(guildid);
   const [search, setSearch] = useState('');
@@ -39,11 +41,15 @@ export const GuildMembersRoute: React.FC<Props> = ({}) => {
 
   const _onSearchInput = useCallback(debounce(setSearch, 500), []);
 
+  const _navToMember = (member: Member) => {
+    nav(member.user.id);
+  };
+
   return (
     <>
-      {(selfMember && <MemberLarge member={selfMember} guild={guild} />) || (
-        <Loader width="100%" height="6em" />
-      )}
+      {(selfMember && (
+        <MemberLarge member={selfMember} guild={guild} onClick={_navToMember} />
+      )) || <Loader width="100%" height="6em" />}
       {(members && selfMember && (
         <MembersSection>
           <SearchBar
@@ -54,7 +60,11 @@ export const GuildMembersRoute: React.FC<Props> = ({}) => {
             {members
               .filter((m) => m.user.id !== selfMember.user.id)
               .map((m) => (
-                <MemberTile key={`memb-${m.user.id}`} member={m} />
+                <MemberTile
+                  key={`memb-${m.user.id}`}
+                  member={m}
+                  onClick={_navToMember}
+                />
               ))}
           </MemberTiles>
           {members.length > 0 &&

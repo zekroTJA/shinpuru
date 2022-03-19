@@ -11,6 +11,7 @@ import { LoginRoute } from './routes/Login';
 import { DashboardRoute } from './routes/Dashboard';
 import { GuildHome } from './routes/Dashboard/Guilds/GuildHome';
 import { GuildMembersRoute } from './routes/Dashboard/Guilds/GuildMembers';
+import { MemebrRoute } from './routes/Dashboard/Guilds/Member';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -42,6 +43,10 @@ export const App: React.FC = () => {
               <Route
                 path="guilds/:guildid/members"
                 element={<GuildMembersRoute />}
+              />
+              <Route
+                path="guilds/:guildid/members/:memberid"
+                element={<MemebrRoute />}
               />
             </Route>
             <Route path="*" element={<Navigate to="db" />} />

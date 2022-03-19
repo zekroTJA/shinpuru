@@ -11,6 +11,7 @@ import { Clickable } from '../styleParts';
 interface Props {
   member?: Member;
   guild?: Guild;
+  onClick?: (member: Member) => void;
 }
 
 const StyledContainer = styled(Container)`
@@ -57,9 +58,13 @@ const Header = styled(Flex)`
   }
 `;
 
-export const MemberLarge: React.FC<Props> = ({ member, guild }) => {
+export const MemberLarge: React.FC<Props> = ({
+  member,
+  guild,
+  onClick = () => {},
+}) => {
   return !!member && !!guild ? (
-    <StyledContainer>
+    <StyledContainer onClick={() => onClick(member)}>
       <DiscordImage src={member.avatar_url} />
       <div>
         <Header>
