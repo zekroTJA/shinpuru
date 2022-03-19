@@ -10,6 +10,7 @@ import { getCryptoRandomString } from '../util/crypto';
 import { useNavigate } from 'react-router';
 import { Embed } from '../components/Embed';
 import { Trans, useTranslation } from 'react-i18next';
+import { LinearGradient } from '../components/styleParts';
 
 interface Props {}
 
@@ -57,11 +58,7 @@ const Tile = styled(Container)`
 `;
 
 const TileDiscord = styled(Tile)`
-  background: linear-gradient(
-    140deg,
-    ${(p) => p.theme.blurple} 0%,
-    ${(p) => p.theme.blurpleDarker} 100%
-  );
+  ${(p) => LinearGradient(p.theme.blurple)};
 
   ${Button} {
     background-color: ${(p) => p.theme.white};
@@ -70,11 +67,7 @@ const TileDiscord = styled(Tile)`
 `;
 
 const TileAlt = styled(Tile)`
-  background: linear-gradient(
-    140deg,
-    ${(p) => p.theme.white} 0%,
-    ${(p) => p.theme.whiteDarker} 100%
-  );
+  ${(p) => LinearGradient(p.theme.white)};
 
   color: ${(p) => p.theme.darkGray};
 `;

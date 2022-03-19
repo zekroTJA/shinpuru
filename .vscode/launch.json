@@ -5,7 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "type": "firefox",
+      "request": "launch",
+      "name": "Debug Webapp",
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:8081",
+      "preLaunchTask": "run-vite-server"
+    },
+    {
+      "name": "Debug Backend",
       "type": "go",
       "request": "launch",
       "mode": "auto",

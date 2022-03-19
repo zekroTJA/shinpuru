@@ -9,8 +9,8 @@ interface Props {
 }
 
 export const Loader = styled.div<Props>`
-  width: ${(p) => p.width};
-  height: ${(p) => p.height};
+  min-width: ${(p) => p.width};
+  min-height: ${(p) => p.height};
   border-radius: ${(p) => p.borderRadius};
   margin: ${(p) => p.margin};
   position: relative;

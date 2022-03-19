@@ -1,7 +1,7 @@
 import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
 import create from 'zustand';
-import { User } from '../lib/shinpuru-ts/src';
+import { Guild, User } from '../lib/shinpuru-ts/src';
 
 export interface Store {
   theme: AppTheme;
@@ -9,6 +9,12 @@ export interface Store {
 
   selfUser?: User;
   setSelfUser: (selfUser: User) => void;
+
+  guilds?: Guild[];
+  setGuilds: (guilds: Guild[]) => void;
+
+  selectedGuild?: Guild;
+  setSelectedGuild: (selectedGuild: Guild) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -25,4 +31,10 @@ export const useStore = create<Store>((set, get) => ({
 
   selfUser: undefined,
   setSelfUser: (selfUser: User) => set({ selfUser }),
+
+  guilds: undefined,
+  setGuilds: (guilds) => set({ guilds }),
+
+  selectedGuild: undefined,
+  setSelectedGuild: (selectedGuild) => set({ selectedGuild }),
 }));

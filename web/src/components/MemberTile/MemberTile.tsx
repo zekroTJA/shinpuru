@@ -4,6 +4,7 @@ import { memberName } from '../../util/users';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Clickable } from '../styleParts';
+import { ReactComponent as BotIcon } from '../../assets/settings.svg';
 
 interface Props {
   member: Member;
@@ -35,12 +36,19 @@ const Details = styled.div`
   }
 `;
 
+const StyledBotIcon = styled(BotIcon)`
+  color: ${(p) => p.theme.blurple};
+  stroke-width: 2;
+`;
+
 export const MemberTile: React.FC<Props> = ({ member, onClick = () => {} }) => {
   return (
     <StyledContainer onClick={() => onClick(member)}>
       <DiscordImage src={member.avatar_url} />
       <Details>
-        <h4>{memberName(member)}</h4>
+        <h4>
+          {memberName(member)} {member.user.bot && <StyledBotIcon />}
+        </h4>
         <span>
           {member.user.username}#{member.user.discriminator}
         </span>

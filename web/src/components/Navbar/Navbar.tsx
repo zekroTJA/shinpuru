@@ -10,6 +10,8 @@ import { Section } from './Section';
 import { ReactComponent as SPHeader } from '../../assets/sp-header.svg';
 import { ReactComponent as HomeIcon } from '../../assets/home.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
+import { useGuilds } from '../../hooks/useGuilds';
+import { useStore } from '../../services/store';
 
 interface Props {}
 
@@ -30,22 +32,18 @@ const EntryContainer = styled.div`
 
 export const Navbar: React.FC<Props> = ({}) => {
   const { t } = useTranslation('components');
-  const fetch = useApi();
   const nav = useNavigate();
   const { guildid } = useParams();
-
-  const [guilds, setGuilds] = useState<Guild[]>([]);
-  const [selectedGuild, setSelectedGuild] = useState<Guild>();
+  const guilds = useGuilds();
+  const [selectedGuild, setSelectedGuild] = useStore((s) => [
+    s.selectedGuild,
+    s.setSelectedGuild,
+  ]);
 
   useEffect(() => {
-    fetch((c) => c.guilds.list())
-      .then((r) => {
-        setGuilds(r.data);
-        const guild = r.data.find((g) => g.id === guildid) ?? r.data[0];
-        setSelectedGuild(guild);
-      })
-      .catch();
-  }, []);
+    if (!!guilds)
+      setSelectedGuild(guilds.find((g) => g.id === guildid) ?? guilds[0]);
+  }, [guildid, guilds]);
 
   const _onGuildSelect = (g: Guild) => {
     setSelectedGuild(g);
@@ -57,7 +55,7 @@ export const Navbar: React.FC<Props> = ({}) => {
       <SPHeader width="auto" height="auto" />
       <Section title={t('navbar.section.guilds.title')}>
         <GuildSelect
-          guilds={guilds}
+          guilds={guilds ?? []}
           value={selectedGuild}
           onElementSelect={_onGuildSelect}
         />

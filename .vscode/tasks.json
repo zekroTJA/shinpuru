@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "run-vite-server",
+      "type": "shell",
+      "command": "yarn",
+      "args": ["start"],
+      "options": {
+        "cwd": "web/"
+      },
+      "isBackground": true
+    }
+  ]
+}

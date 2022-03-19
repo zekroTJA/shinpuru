@@ -1,6 +1,8 @@
-import { Outlet } from 'react-router';
+import { useEffect } from 'react';
+import { Outlet, useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
 import { Navbar } from '../components/Navbar';
+import { useGuilds } from '../hooks/useGuilds';
 
 interface Props {}
 
@@ -17,6 +19,15 @@ const RouterOutlet = styled.main`
 `;
 
 export const DashboardRoute: React.FC<Props> = ({}) => {
+  const guilds = useGuilds();
+  const { guildid } = useParams();
+  const nav = useNavigate();
+
+  useEffect(() => {
+    if (!!guilds && guilds.length !== 0 && !guildid)
+      nav(`guilds/${guilds[0].id}/members`);
+  }, [guilds, guildid]);
+
   return (
     <RouteContainer>
       <Navbar />
