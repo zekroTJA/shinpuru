@@ -10,6 +10,7 @@ import { useMembers } from '../../../hooks/useMembers';
 import { useSelfMember } from '../../../hooks/useSelfMember';
 import { debounce } from 'debounce';
 import { useTranslation } from 'react-i18next';
+import { Loader } from '../../../components/Loader';
 
 interface Props {}
 
@@ -40,8 +41,10 @@ export const GuildMembersRoute: React.FC<Props> = ({}) => {
 
   return (
     <>
-      <MemberLarge member={selfMember} guild={guild} />
-      {members && selfMember && (
+      {(selfMember && <MemberLarge member={selfMember} guild={guild} />) || (
+        <Loader width="100%" height="6em" />
+      )}
+      {(members && selfMember && (
         <MembersSection>
           <SearchBar
             onValueChange={_onSearchInput}
@@ -62,6 +65,11 @@ export const GuildMembersRoute: React.FC<Props> = ({}) => {
               </LoadMoreButton>
             )}
         </MembersSection>
+      )) || (
+        <>
+          <Loader width="100%" height="2em" margin="1em 0 0 0" />
+          <Loader width="100%" height="6em" margin="1em 0 0 0" />
+        </>
       )}
     </>
   );
