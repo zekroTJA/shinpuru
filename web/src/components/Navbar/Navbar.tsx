@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
-import { useApi } from '../../hooks/useApi';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';
 import { Entry } from './Entry';
 import { Section } from './Section';
 import { ReactComponent as SPHeader } from '../../assets/sp-header.svg';
-import { ReactComponent as HomeIcon } from '../../assets/home.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { useGuilds } from '../../hooks/useGuilds';
 import { useStore } from '../../services/store';
