@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useMember } from '../../../hooks/useMember';
 import { DiscordImage } from '../../../components/DiscordImage';
 import { Loader } from '../../../components/Loader';
@@ -9,12 +9,13 @@ import { RoleList } from '../../../components/RoleList';
 import { useGuild } from '../../../hooks/useGuild';
 import { Flex } from '../../../components/Flex';
 import { Embed } from '../../../components/Embed';
-import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
-import { LinearGradient } from '../../../components/styleParts';
 import { Heading } from '../../../components/Heading';
-import { format } from 'date-fns';
-import { formatDate, formatSince } from '../../../util/date';
+import { formatDate } from '../../../util/date';
 import { SinceDate } from '../../../components/SinceDate';
+import { Hint } from '../../../components/Hint';
+import { useSelfUser } from '../../../hooks/useSelfUser';
+import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
+import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
 
 interface Props {}
 
@@ -38,18 +39,8 @@ const StyledDiscordImage = styled(DiscordImage)`
   margin-right: 1em;
 `;
 
-const BotContainer = styled(Flex)`
-  ${(p) => LinearGradient(p.theme.blurple)};
-
-  border-radius: 12px;
-  padding: 0.5em;
+const MarginHint = styled(Hint)`
   margin-bottom: 1em;
-
-  > svg {
-    height: 1.5em;
-    width: auto;
-    margin-right: 0.5em;
-  }
 `;
 
 const Section = styled.section`
@@ -86,18 +77,23 @@ const Loaders = () => (
 );
 
 export const MemebrRoute: React.FC<Props> = ({}) => {
-  const { t, i18n } = useTranslation('routes.member');
+  const { t } = useTranslation('routes.member');
   const { guildid, memberid } = useParams();
+  const theme = useTheme();
+
+  const selfUser = useSelfUser();
   const guild = useGuild(guildid);
   const [member, memberReq] = useMember(guildid, memberid);
 
   return member ? (
     <MemberContainer>
       {member.user.bot && (
-        <BotContainer>
-          <BotIcon />
-          <span>{t('isbot')}</span>
-        </BotContainer>
+        <MarginHint icon={<BotIcon />}>{t('isbot')}</MarginHint>
+      )}
+      {member.user.id === selfUser?.id && (
+        <MarginHint icon={<InfoIcon />} color={theme.green}>
+          {t('isyou')}
+        </MarginHint>
       )}
       <Header>
         <StyledDiscordImage src={member.avatar_url} />
