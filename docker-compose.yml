@@ -10,7 +10,6 @@ services:
       - '--entrypoints.https.address=:443'
       - '--providers.docker.exposedByDefault=false'
       - "--certificatesResolvers.le.acme.email=<your@email>" # ⚠️ <- enter your email here
-      - "--certificatesResolvers.le.acme.storage=/etc/certstore/acme.json"
       - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=http"
     ports:
       - '80:80'
@@ -18,7 +17,6 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/config:/etc/traefik/dynamic_conf'
-      - '/etc/cert:/etc/cert:ro'
     restart: always
 
   minio:
