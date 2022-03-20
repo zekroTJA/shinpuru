@@ -4,7 +4,7 @@ import { memberName } from '../../util/users';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Clickable } from '../styleParts';
-import { ReactComponent as BotIcon } from '../../assets/settings.svg';
+import { ReactComponent as BotIcon } from '../../assets/bot.svg';
 
 interface Props {
   member: Member;

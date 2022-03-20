@@ -1,24 +1,19 @@
 import styled from 'styled-components';
+import { Heading } from '../Heading';
 
 interface Props {
   title: string;
 }
 
-const StyledSection = styled.section`
-  > h4 {
-    display: block;
-    font-family: 'Cantarell', sans-serif;
-    font-size: 0.7em;
-    text-transform: uppercase;
-    opacity: 0.6;
-  }
+const StyledHeading = styled(Heading)`
+  font-size: 0.7em;
 `;
 
 export const Section: React.FC<Props> = ({ title, children }) => {
   return (
-    <StyledSection>
-      <h4>{title}</h4>
+    <section>
+      <StyledHeading>{title}</StyledHeading>
       {children}
-    </StyledSection>
+    </section>
   );
 };

@@ -1,3 +1,8 @@
 {
-  "isbot": "This member is a Bot."
+  "isbot": "This member is a Bot.",
+  "info": {
+    "heading": "General User Information",
+    "guild-joined": "Joined Guild",
+    "account-created": "Account Created"
+  }
 }
