@@ -7,6 +7,7 @@ interface Props {
 
 const StyledHeading = styled(Heading)`
   font-size: 0.7em;
+  margin-top: 2em;
 `;
 
 export const Section: React.FC<Props> = ({ title, children }) => {

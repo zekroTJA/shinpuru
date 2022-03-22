@@ -13,5 +13,9 @@
   },
   "sincedate": {
     "since": "<1>{{dateSince}}</1> ago"
+  },
+  "report": {
+    "reason": "Reason",
+    "revoke": "Revoke"
   }
 }

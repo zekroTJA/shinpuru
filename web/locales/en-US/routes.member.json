@@ -5,5 +5,16 @@
     "heading": "General User Information",
     "guild-joined": "Joined Guild",
     "account-created": "Account Created"
+  },
+  "karma": {
+    "heading": "Karma",
+    "guild": "Guild",
+    "total": "Total"
+  },
+  "permissions": {
+    "heading": "Permissions"
+  },
+  "reports": {
+    "heading": "Reports"
   }
 }

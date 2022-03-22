@@ -16,6 +16,13 @@ import { Hint } from '../../../components/Hint';
 import { useSelfUser } from '../../../hooks/useSelfUser';
 import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
 import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
+import { Container } from '../../../components/Container';
+import { KarmaTile } from '../../../components/KarmaTile';
+import { PermsSimpleList } from '../../../components/Permissions';
+import { useEffect, useState } from 'react';
+import { Report } from '../../../lib/shinpuru-ts/src';
+import { MemberReportsList } from '../../../components/Report';
+import { usePerms } from '../../../hooks/usePerms';
 
 interface Props {}
 
@@ -40,11 +47,12 @@ const StyledDiscordImage = styled(DiscordImage)`
 `;
 
 const MarginHint = styled(Hint)`
-  margin-bottom: 1em;
+  margin-bottom: 1.5em;
 `;
 
-const Section = styled.section`
-  margin-top: 2em;
+const Section = styled(Container)<{ hide?: boolean; fw?: boolean }>`
+  ${(p) => (p.hide ? 'display: none;' : '')}
+  width: ${(p) => (p.fw ? '100%' : 'fit-content')};
 `;
 
 const Table = styled.table`
@@ -63,6 +71,15 @@ const Table = styled.table`
 const Secondary = styled.span`
   opacity: 0.6;
 `;
+
+const DetailsContainer = styled(Flex)`
+  margin-top: 1.5em;
+  gap: 1em;
+  flex-wrap: wrap;
+  align-items: stretch;
+`;
+
+const ReportsContainer = styled.div``;
 
 const Loaders = () => (
   <>
@@ -84,6 +101,23 @@ export const MemebrRoute: React.FC<Props> = ({}) => {
   const selfUser = useSelfUser();
   const guild = useGuild(guildid);
   const [member, memberReq] = useMember(guildid, memberid);
+  const [perms, setPerms] = useState<string[]>();
+  const [reports, setReports] = useState<Report[]>();
+  const { isAllowed } = usePerms(guild?.id);
+
+  useEffect(() => {
+    memberReq((c) => c.permissions())
+      .then((res) => setPerms(res.permissions))
+      .catch();
+  }, []);
+
+  useEffect(() => {
+    if (member && !member.user.bot) {
+      memberReq((c) => c.reports())
+        .then((res) => setReports(res.data))
+        .catch();
+    }
+  }, [member]);
 
   return member ? (
     <MemberContainer>
@@ -95,6 +129,7 @@ export const MemebrRoute: React.FC<Props> = ({}) => {
           {t('isyou')}
         </MarginHint>
       )}
+
       <Header>
         <StyledDiscordImage src={member.avatar_url} />
         <div>
@@ -110,33 +145,54 @@ export const MemebrRoute: React.FC<Props> = ({}) => {
           )}
         </div>
       </Header>
-      <Section>
-        <Heading>{t('info.heading')}</Heading>
-        <Table>
-          <tbody>
-            <tr>
-              <th>{t('info.guild-joined')}</th>
-              <td>
-                {formatDate(member.joined_at)}
-                <br />
-                <Secondary>
-                  <SinceDate date={member.joined_at} />
-                </Secondary>
-              </td>
-            </tr>
-            <tr>
-              <th>{t('info.account-created')}</th>
-              <td>
-                {formatDate(member.created_at)}
-                <br />
-                <Secondary>
-                  <SinceDate date={member.created_at} />
-                </Secondary>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
-      </Section>
+
+      <DetailsContainer>
+        <Section>
+          <Heading>{t('info.heading')}</Heading>
+          <Table>
+            <tbody>
+              <tr>
+                <th>{t('info.guild-joined')}</th>
+                <td>
+                  {formatDate(member.joined_at)}
+                  <br />
+                  <Secondary>
+                    <SinceDate date={member.joined_at} />
+                  </Secondary>
+                </td>
+              </tr>
+              <tr>
+                <th>{t('info.account-created')}</th>
+                <td>
+                  {formatDate(member.created_at)}
+                  <br />
+                  <Secondary>
+                    <SinceDate date={member.created_at} />
+                  </Secondary>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </Section>
+        <Section hide={member.user.bot}>
+          <Heading>{t('karma.heading')}</Heading>
+          <Flex gap="1em">
+            <KarmaTile heading={t('karma.guild')} points={member.karma} />
+            <KarmaTile heading={t('karma.total')} points={member.karma_total} />
+          </Flex>
+        </Section>
+        <Section hide={member.user.bot}>
+          <Heading>{t('permissions.heading')}</Heading>
+          <PermsSimpleList perms={perms} />
+        </Section>
+        <Section hide={member.user.bot} fw>
+          <Heading>{t('reports.heading')}</Heading>
+          <MemberReportsList
+            reports={reports}
+            revokeAllowed={isAllowed('sp.guild.mod.report.revoke')}
+          />
+        </Section>
+      </DetailsContainer>
     </MemberContainer>
   ) : (
     <Loaders />

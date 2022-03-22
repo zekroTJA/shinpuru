@@ -183,7 +183,7 @@ export class GuildMemberClient extends SubClient {
     return this.req('GET', 'permissions');
   }
 
-  permissionsAllowed(): Promise<string[]> {
+  permissionsAllowed(): Promise<ListResponse<string>> {
     return this.req('GET', 'permissions/allowed');
   }
 

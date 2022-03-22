@@ -99,9 +99,17 @@ export interface PermissionResponse {
   permissions: string[];
 }
 
+export enum ReportType {
+  KICK,
+  BAN,
+  MUTE,
+  WARN,
+  AD,
+}
+
 export interface Report {
   id: string;
-  type: number;
+  type: ReportType;
   type_name?: string;
   guild_id: string;
   executor_id: string;
