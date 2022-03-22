@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,8 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/ken"
 	"github.com/zekrotja/sop"
 )
 
@@ -24,7 +25,7 @@ type GuildMembersController struct {
 	cfg        config.Provider
 	db         database.Database
 	pmw        *permissions.Permissions
-	cmdHandler shireikan.Handler
+	cmdHandler *ken.Ken
 	st         *dgrs.State
 }
 
@@ -33,7 +34,7 @@ func (c *GuildMembersController) Setup(container di.Container, router fiber.Rout
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
-	c.cmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
+	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
 	router.Get("/members", c.getMembers)
@@ -227,25 +228,45 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 		return err
 	}
 
-	cmds := c.cmdHandler.GetCommandInstances()
+	cmds := c.cmdHandler.GetCommandInfo()
 
-	allowed := make([]string, len(cmds)+len(static.AdditionalPermissions))
-	i := 0
+	allowed := sop.Set([]string{})
 	for _, cmd := range cmds {
-		if perms.Check(cmd.GetDomainName()) {
-			allowed[i] = cmd.GetDomainName()
-			i++
+		rDomain := cmd.Implementations["Domain"]
+		if len(rDomain) != 1 {
+			continue
+		}
+		domain, ok := rDomain[0].(string)
+		if !ok {
+			continue
+		}
+		if perms.Check(domain) {
+			allowed.Push(domain)
+		}
+
+		rSubs := cmd.Implementations["SubDomains"]
+		if len(rSubs) != 1 {
+			continue
+		}
+		subs, ok := rSubs[0].([]permissions.SubPermission)
+		if !ok {
+			continue
+		}
+		for _, sub := range subs {
+			comb := fmt.Sprintf("%s.%s", domain, sub.Term)
+			if perms.Check(comb) {
+				allowed.Push(comb)
+			}
 		}
 	}
 
 	for _, p := range static.AdditionalPermissions {
 		if perms.Check(p) {
-			allowed[i] = p
-			i++
+			allowed.Push(p)
 		}
 	}
 
-	return ctx.JSON(&models.ListResponse{N: i, Data: allowed[:i]})
+	return ctx.JSON(&models.ListResponse{N: allowed.Len(), Data: allowed.Unwrap()})
 }
 
 // @Summary Get Guild Member Reports
