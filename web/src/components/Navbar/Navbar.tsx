@@ -6,7 +6,7 @@ import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';
 import { Entry } from './Entry';
 import { Section } from './Section';
-import { ReactComponent as SPHeader } from '../../assets/sp-header.svg';
+import SPHeader from '../../assets/sp-header.svg'; // Imported as path so that it can be bundled separately because it is kinda big.
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { useGuilds } from '../../hooks/useGuilds';
 import { useStore } from '../../services/store';
@@ -50,7 +50,7 @@ export const Navbar: React.FC<Props> = ({}) => {
 
   return (
     <StyledNav>
-      <SPHeader width="auto" height="auto" />
+      <img src={SPHeader} width="auto" height="auto" />
       <Section title={t('navbar.section.guilds.title')}>
         <GuildSelect
           guilds={guilds ?? []}

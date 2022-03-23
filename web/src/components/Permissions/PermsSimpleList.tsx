@@ -11,7 +11,7 @@ interface Props {
 const PermsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 0.7em;
 
   > section {
     display: flex;

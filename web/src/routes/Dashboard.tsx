@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, useNavigate, useParams } from 'react-router';
+import { Outlet, useNavigate, useParams, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { Navbar } from '../components/Navbar';
 import { useGuilds } from '../hooks/useGuilds';
@@ -21,10 +21,11 @@ const RouterOutlet = styled.main`
 export const DashboardRoute: React.FC<Props> = ({}) => {
   const guilds = useGuilds();
   const { guildid } = useParams();
+  const loc = useLocation();
   const nav = useNavigate();
 
   useEffect(() => {
-    if (!!guilds && guilds.length !== 0 && !guildid)
+    if (loc.pathname === '/db' && !!guilds && guilds.length !== 0 && !guildid)
       nav(`guilds/${guilds[0].id}/members`);
   }, [guilds, guildid]);
 

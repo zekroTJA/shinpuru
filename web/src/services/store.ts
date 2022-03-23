@@ -2,6 +2,7 @@ import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
 import create from 'zustand';
 import { Guild, User } from '../lib/shinpuru-ts/src';
+import { Notification } from '../components/Notifications';
 
 export interface Store {
   theme: AppTheme;
@@ -15,6 +16,9 @@ export interface Store {
 
   selectedGuild?: Guild;
   setSelectedGuild: (selectedGuild: Guild) => void;
+
+  notifications: Notification[];
+  setNotifications: (notifications: Notification[]) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -37,4 +41,7 @@ export const useStore = create<Store>((set, get) => ({
 
   selectedGuild: undefined,
   setSelectedGuild: (selectedGuild) => set({ selectedGuild }),
+
+  notifications: [],
+  setNotifications: (notifications) => set({ notifications }),
 }));

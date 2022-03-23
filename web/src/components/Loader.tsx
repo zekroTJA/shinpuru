@@ -1,5 +1,5 @@
 import Color from 'color';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 interface Props {
   width?: string;
@@ -7,6 +7,15 @@ interface Props {
   borderRadius?: string;
   margin?: string;
 }
+
+const LoaderKF = keyframes`
+  from {
+    transform: translateX(-80%);
+  }
+  to {
+    transform: translateX(80%);
+  }
+`;
 
 export const Loader = styled.div<Props>`
   min-width: ${(p) => p.width};
@@ -16,15 +25,6 @@ export const Loader = styled.div<Props>`
   position: relative;
   overflow: hidden;
   background-color: ${(p) => new Color(p.theme.text).fade(0.9).hexa()};
-
-  @keyframes loader-anim {
-    from {
-      transform: translateX(-80%);
-    }
-    to {
-      transform: translateX(80%);
-    }
-  }
 
   &::after {
     content: '';
@@ -37,7 +37,7 @@ export const Loader = styled.div<Props>`
       ${(p) => new Color(p.theme.text).fade(0.9).hexa()} 50%,
       ${(p) => new Color(p.theme.text).fade(1).hexa()} 80%
     );
-    animation: loader-anim 3s infinite;
+    animation: ${LoaderKF} 3s infinite;
   }
 `;
 

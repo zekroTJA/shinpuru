@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   content: string;
@@ -22,21 +22,21 @@ const StyledDiv = styled.div<{ ln: number }>`
   }
 `;
 
-const Hint = styled.p`
-  @keyframes hint-anim {
-    0% {
-      opacity: 0;
-      transform: translateY(-2em);
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-3.5em);
-    }
+const HintKF = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-2em);
   }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-3.5em);
+  }
+`;
 
+const Hint = styled.p`
   position: absolute;
   top: 0;
   left: 0;
@@ -48,7 +48,7 @@ const Hint = styled.p`
   width: 100%;
   opacity: 0;
   transform: translateY(-1.5em);
-  animation: hint-anim 1.5s ease;
+  animation: ${HintKF} 1.5s ease;
 `;
 
 export const Hider: React.FC<Props> = ({ content, ...props }) => {

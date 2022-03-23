@@ -12,6 +12,8 @@ import { DashboardRoute } from './routes/Dashboard';
 import { GuildHome } from './routes/Dashboard/Guilds/GuildHome';
 import { GuildMembersRoute } from './routes/Dashboard/Guilds/GuildMembers';
 import { MemebrRoute } from './routes/Dashboard/Guilds/Member';
+import { DebugRoute } from './routes/Debug';
+import { Notifications } from './components/Notifications';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -48,10 +50,14 @@ export const App: React.FC = () => {
                 path="guilds/:guildid/members/:memberid"
                 element={<MemebrRoute />}
               />
+              {import.meta.env.DEV && (
+                <Route path="debug" element={<DebugRoute />} />
+              )}
             </Route>
             <Route path="*" element={<Navigate to="db" />} />
           </Routes>
         </Router>
+        <Notifications />
       </AppContainer>
       <GlobalStyle />
     </ThemeProvider>
