@@ -85,7 +85,7 @@ const StyledSmall = styled.small`
   font-size: 0.7em;
 `;
 
-export const LoginRoute: React.FC<Props> = ({}) => {
+const LoginRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.login');
   const [pushCode, setPushCode] = useState('');
   const fetch = useApi();
@@ -134,3 +134,5 @@ export const LoginRoute: React.FC<Props> = ({}) => {
     </OuterContainer>
   );
 };
+
+export default LoginRoute;

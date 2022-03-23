@@ -16,7 +16,7 @@ export const useApi = () => {
       if (e instanceof APIError) {
         if (e.code === 401) {
           nav('/start');
-        } else {
+        } else if (e.code !== 410) {
           pushNotification({
             type: NotificationType.ERROR,
             delay: 8000,

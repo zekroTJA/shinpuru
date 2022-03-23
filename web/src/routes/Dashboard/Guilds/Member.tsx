@@ -93,7 +93,7 @@ const Loaders = () => (
   </>
 );
 
-export const MemebrRoute: React.FC<Props> = ({}) => {
+const MemberRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.member');
   const { guildid, memberid } = useParams();
   const theme = useTheme();
@@ -198,3 +198,5 @@ export const MemebrRoute: React.FC<Props> = ({}) => {
     <Loaders />
   );
 };
+
+export default MemberRoute;

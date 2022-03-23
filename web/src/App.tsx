@@ -7,13 +7,19 @@ import {
 } from 'react-router-dom';
 import { StartRoute } from './routes/Start';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { LoginRoute } from './routes/Login';
-import { DashboardRoute } from './routes/Dashboard';
-import { GuildHome } from './routes/Dashboard/Guilds/GuildHome';
-import { GuildMembersRoute } from './routes/Dashboard/Guilds/GuildMembers';
-import { MemebrRoute } from './routes/Dashboard/Guilds/Member';
-import { DebugRoute } from './routes/Debug';
 import { Notifications } from './components/Notifications';
+import React, { Suspense } from 'react';
+import { DashboardRoute } from './routes/Dashboard';
+import { DebugRoute } from './routes/Debug';
+import { RouteSuspense } from './components/RouteSuspense';
+
+const LoginRoute = React.lazy(() => import('./routes/Login'));
+const GuildMembersRoute = React.lazy(
+  () => import('./routes/Dashboard/Guilds/GuildMembers')
+);
+const MemberRoute = React.lazy(
+  () => import('./routes/Dashboard/Guilds/Member')
+);
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -44,11 +50,19 @@ export const App: React.FC = () => {
             <Route path="db" element={<DashboardRoute />}>
               <Route
                 path="guilds/:guildid/members"
-                element={<GuildMembersRoute />}
+                element={
+                  <RouteSuspense>
+                    <GuildMembersRoute />
+                  </RouteSuspense>
+                }
               />
               <Route
                 path="guilds/:guildid/members/:memberid"
-                element={<MemebrRoute />}
+                element={
+                  <RouteSuspense>
+                    <MemberRoute />
+                  </RouteSuspense>
+                }
               />
               {import.meta.env.DEV && (
                 <Route path="debug" element={<DebugRoute />} />
