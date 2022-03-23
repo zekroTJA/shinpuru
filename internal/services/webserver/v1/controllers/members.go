@@ -110,7 +110,7 @@ func (c *GuildMembersController) getMembers(ctx *fiber.Ctx) (err error) {
 		fhmembers[i] = models.MemberFromMember(m)
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(fhmembers), Data: fhmembers})
+	return ctx.JSON(models.NewListResponse(fhmembers))
 }
 
 // @Summary Get Guild Member
@@ -266,7 +266,7 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 		}
 	}
 
-	return ctx.JSON(&models.ListResponse{N: allowed.Len(), Data: allowed.Unwrap()})
+	return ctx.JSON(models.NewListResponse(allowed.Unwrap()))
 }
 
 // @Summary Get Guild Member Reports
@@ -324,7 +324,7 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 		}
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(resReps), Data: resReps})
+	return ctx.JSON(models.NewListResponse(resReps))
 }
 
 // @Summary Get Guild Member Reports Count
@@ -383,7 +383,7 @@ func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err err
 		r.Hydrate()
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+	return ctx.JSON(models.NewListResponse(requests))
 }
 
 // @Summary Get Guild Member Unban Requests Count

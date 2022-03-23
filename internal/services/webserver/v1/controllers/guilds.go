@@ -99,7 +99,7 @@ func (c *GuildsController) getGuilds(ctx *fiber.Ctx) (err error) {
 	}
 	guildRs = guildRs[:i]
 
-	return ctx.JSON(&models.ListResponse{N: len(guildRs), Data: guildRs})
+	return ctx.JSON(models.NewListResponse(guildRs))
 }
 
 // @Summary Get Guild
@@ -176,7 +176,7 @@ func (c *GuildsController) getGuildScoreboard(ctx *fiber.Ctx) error {
 		i++
 	}
 
-	return ctx.JSON(&models.ListResponse{N: i, Data: results[:i]})
+	return ctx.JSON(models.NewListResponse(results[:i]))
 }
 
 // @Summary Get Antiraid Joinlog
@@ -201,7 +201,7 @@ func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 		joinlog = make([]*sharedmodels.JoinLogEntry, 0)
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(joinlog), Data: joinlog})
+	return ctx.JSON(models.NewListResponse(joinlog))
 }
 
 // @Summary Reset Antiraid Joinlog
@@ -287,7 +287,7 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 		i++
 	}
 
-	return ctx.JSON(&models.ListResponse{N: i, Data: results[:i]})
+	return ctx.JSON(models.NewListResponse(results[:i]))
 }
 
 // @Summary Get Guild Modlog
@@ -344,7 +344,7 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(resReps), Data: resReps})
+	return ctx.JSON(models.NewListResponse(resReps))
 }
 
 // @Summary Get Guild Modlog Count
@@ -511,7 +511,7 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 		r.Hydrate()
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+	return ctx.JSON(models.NewListResponse(requests))
 }
 
 // @Summary Get Guild Unbanrequests Count

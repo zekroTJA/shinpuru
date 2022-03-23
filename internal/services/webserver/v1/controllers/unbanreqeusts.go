@@ -55,7 +55,7 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 		r.Hydrate()
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+	return ctx.JSON(models.NewListResponse(requests))
 }
 
 // @Summary Create Unban Requests
@@ -140,7 +140,7 @@ func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(guildsArr), Data: guildsArr})
+	return ctx.JSON(models.NewListResponse(guildsArr))
 }
 
 // --- HELPERS ------------
