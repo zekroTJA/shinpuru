@@ -8,7 +8,7 @@ import {
 import { StartRoute } from './routes/Start';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { Notifications } from './components/Notifications';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { DashboardRoute } from './routes/Dashboard';
 import { DebugRoute } from './routes/Debug';
 import { RouteSuspense } from './components/RouteSuspense';
