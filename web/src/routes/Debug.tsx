@@ -101,6 +101,7 @@ export const DebugRoute: React.FC<Props> = () => {
         Send
       </Button>
       <Button
+        variant="blue"
         onClick={() =>
           pushNotification(
             getRandomNotification(
