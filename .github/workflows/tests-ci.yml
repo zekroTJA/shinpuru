@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - '*'
-    paths-ignore:
-      - '**.md'
+    paths:
+      - "pkg/**"
 
 jobs:
   tests:
