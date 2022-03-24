@@ -85,6 +85,10 @@ const StyledSmall = styled.small`
   font-size: 0.7em;
 `;
 
+const DiscordButton = styled(Button)`
+  background: ${(p) => p.theme.white};
+`;
+
 const LoginRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.login');
   const [pushCode, setPushCode] = useState('');
@@ -115,10 +119,10 @@ const LoginRoute: React.FC<Props> = () => {
       <TileDiscord>
         <p>{t('discord.title')}</p>
         <a href={LOGIN_ROUTE}>
-          <Button>
+          <DiscordButton>
             <DiscordIcon />
             {t('discord.action')}
-          </Button>
+          </DiscordButton>
         </a>
         <StyledSmall>{t('discord.subline')}</StyledSmall>
       </TileDiscord>
