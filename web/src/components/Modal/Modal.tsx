@@ -43,7 +43,7 @@ const ModalContainer = styled(Container)<Show>`
   padding: 0;
   max-height: 90vh;
   width: 90vw;
-  max-width: 60em;
+  max-width: fit-content;
   overflow-y: auto;
 
   > section {
@@ -58,8 +58,7 @@ export const Modal: React.FC<Props> = ({
   heading,
   onClose = () => {},
 }) => {
-  const _heading =
-    typeof heading === 'string' ? <Heading>{heading}</Heading> : heading;
+  const _heading = typeof heading === 'string' ? <Heading>{heading}</Heading> : heading;
 
   const _onBackgroundClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     if ((e.target as HTMLElement).id !== BACKGROUND_ID) return;
@@ -67,11 +66,7 @@ export const Modal: React.FC<Props> = ({
   };
 
   return (
-    <ModalOutlet
-      id={BACKGROUND_ID}
-      show={show}
-      onMouseDown={_onBackgroundClick}
-    >
+    <ModalOutlet id={BACKGROUND_ID} show={show} onMouseDown={_onBackgroundClick}>
       <ModalContainer show={show}>
         {_heading && <ModalHeader>{_heading}</ModalHeader>}
         <section>{children}</section>

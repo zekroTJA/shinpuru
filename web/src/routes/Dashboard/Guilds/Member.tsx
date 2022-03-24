@@ -12,12 +12,16 @@ import { Heading } from '../../../components/Heading';
 import { Hint } from '../../../components/Hint';
 import { KarmaTile } from '../../../components/KarmaTile';
 import { Loader } from '../../../components/Loader';
+import { ModalRevokeReport } from '../../../components/Modals/ModalRevokeReport';
+import { NotificationType } from '../../../components/Notifications';
 import { PermsSimpleList } from '../../../components/Permissions';
 import { MemberReportsList } from '../../../components/Report';
 import { RoleList } from '../../../components/RoleList';
 import { SinceDate } from '../../../components/SinceDate';
+import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useMember } from '../../../hooks/useMember';
+import { useNotifications } from '../../../hooks/useNotifications';
 import { usePerms } from '../../../hooks/usePerms';
 import { useSelfUser } from '../../../hooks/useSelfUser';
 import { Report } from '../../../lib/shinpuru-ts/src';
@@ -95,6 +99,8 @@ const MemberRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.member');
   const { guildid, memberid } = useParams();
   const theme = useTheme();
+  const fetch = useApi();
+  const { pushNotification } = useNotifications();
 
   const selfUser = useSelfUser();
   const guild = useGuild(guildid);
@@ -102,6 +108,34 @@ const MemberRoute: React.FC<Props> = () => {
   const [perms, setPerms] = useState<string[]>();
   const [reports, setReports] = useState<Report[]>();
   const { isAllowed } = usePerms(guild?.id);
+
+  const [revokeReport, setRevokeReport] = useState<Report>();
+
+  const _revokeReport = (rep: Report) => {
+    setRevokeReport(rep);
+  };
+
+  const _revokeReportConfirm = (rep: Report, reason: string) => {
+    if (!revokeReport || !reports) return;
+
+    fetch((c) =>
+      c.reports.revoke(revokeReport.id, {
+        reason,
+      }),
+    )
+      .then(() => {
+        const i = reports.findIndex((r) => r.id === rep.id);
+        if (i !== -1) reports.splice(i, 1);
+        console.log(rep, i);
+        setReports([...reports]);
+        pushNotification({
+          heading: t('notifications.reportrevoked.heading'),
+          message: t('notifications.reportrevoked.message'),
+          type: NotificationType.SUCCESS,
+        });
+      })
+      .catch();
+  };
 
   useEffect(() => {
     memberReq((c) => c.permissions())
@@ -119,6 +153,12 @@ const MemberRoute: React.FC<Props> = () => {
 
   return member ? (
     <MemberContainer>
+      <ModalRevokeReport
+        report={revokeReport}
+        onConfirm={_revokeReportConfirm}
+        onClose={() => setRevokeReport(undefined)}
+      />
+
       {member.user.bot && <MarginHint icon={<BotIcon />}>{t('isbot')}</MarginHint>}
       {member.user.id === selfUser?.id && (
         <MarginHint icon={<InfoIcon />} color={theme.green}>
@@ -184,7 +224,7 @@ const MemberRoute: React.FC<Props> = () => {
           <MemberReportsList
             reports={reports}
             revokeAllowed={isAllowed('sp.guild.mod.report.revoke')}
-            onRevoke={(rep) => {}}
+            onRevoke={_revokeReport}
           />
         </Section>
       </DetailsContainer>

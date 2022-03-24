@@ -16,5 +16,11 @@
   },
   "reports": {
     "heading": "Reports"
+  },
+  "notifications": {
+    "reportrevoked": {
+      "heading": "Report Revoked",
+      "message": "Report has been revoked successfully."
+    }
   }
 }
