@@ -3,27 +3,20 @@ import { enUS, de } from 'date-fns/locale';
 
 const LANG_MAP: { [key: string]: Locale } = {
   'en-US': enUS,
-  'de': de,
+  de: de,
   'de-DE': de,
 };
 
-export const formatDate = (
-  date: string | Date | undefined | null,
-  locale?: string
-) => {
+export const formatDate = (date: string | Date | undefined | null, locale?: string) => {
   if (!date) return 'n/a';
-  if (typeof date === 'string') date = new Date(date);
-  return format(date, 'dd/LL/yyyy HH:mm:ss O');
+  const _date = typeof date === 'string' ? new Date(date) : date;
+  return format(_date, 'dd/LL/yyyy HH:mm:ss O');
 };
 
-export const formatSince = (
-  date: string | Date | undefined | null,
-  locale?: string
-) => {
+export const formatSince = (date: string | Date | undefined | null, locale?: string) => {
   if (!date) return 'n/a';
-  if (typeof date === 'string') date = new Date(date);
-  return formatDistance(date, new Date(), { locale: getLocale(locale) });
+  const _date = typeof date === 'string' ? new Date(date) : date;
+  return formatDistance(_date, new Date(), { locale: getLocale(locale) });
 };
 
-const getLocale = (v?: string): Locale =>
-  (!!v ? LANG_MAP[v] : undefined) ?? enUS;
+const getLocale = (v?: string): Locale => (!!v ? LANG_MAP[v] : undefined) ?? enUS;

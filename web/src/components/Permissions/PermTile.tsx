@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { LinearGradient } from '../styleParts';
 import { Tag } from '../Tag';
+import { LinearGradient } from '../styleParts';
 import { isAllowed } from './util';
 
 interface Props {

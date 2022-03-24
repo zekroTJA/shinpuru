@@ -30,7 +30,8 @@
   },
   "scripts": {
     "start": "vite --port 8081",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "lint": "eslint ."
   },
   "browserslist": {
     "production": [
@@ -48,6 +49,7 @@
     "@types/color": "^3.0.3",
     "@types/debounce": "^1.2.1",
     "@vitejs/plugin-react": "^1.2.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "typescript": "^4.5.2",
     "typescript-styled-plugin": "^0.18.1",
     "vite": "^2.8.6",

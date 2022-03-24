@@ -1,7 +1,7 @@
-import { FlatUser } from '../../lib/shinpuru-ts/src';
+import styled from 'styled-components';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as HammerTarget } from '../../assets/target.svg';
-import styled from 'styled-components';
+import { FlatUser } from '../../lib/shinpuru-ts/src';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 
@@ -30,18 +30,12 @@ const ReportUserContainer = styled(Container)`
   }
 `;
 
-export const ReportUser: React.FC<Props> = ({
-  fallbackId,
-  user,
-  isEcecutor,
-}) => {
+export const ReportUser: React.FC<Props> = ({ fallbackId, user, isEcecutor }) => {
   return (
     <ReportUserContainer>
       {isEcecutor ? <HammerIcon /> : <HammerTarget />}
       <DiscordImage src={user?.avatar_url} round />
-      <span>
-        {user ? `${user.username}#${user.discriminator}` : <i>{fallbackId}</i>}
-      </span>
+      <span>{user ? `${user.username}#${user.discriminator}` : <i>{fallbackId}</i>}</span>
     </ReportUserContainer>
   );
 };

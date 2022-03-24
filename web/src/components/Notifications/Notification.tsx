@@ -1,10 +1,10 @@
 import styled, { css, Keyframes, keyframes } from 'styled-components';
+import { ReactComponent as CloseIcon } from '../../assets/close.svg';
 import { ANIMATION_DELAY } from '../../hooks/useNotifications';
 import { Container } from '../Container';
 import { Heading } from '../Heading';
 import { LinearGradient } from '../styleParts';
 import { Notification, NotificationMeta, NotificationType } from './models';
-import { ReactComponent as CloseIcon } from '../../assets/close.svg';
 
 interface Props {
   n: Notification;

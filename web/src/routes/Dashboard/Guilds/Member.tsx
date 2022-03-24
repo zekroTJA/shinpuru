@@ -1,28 +1,28 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import styled, { useTheme } from 'styled-components';
-import { useMember } from '../../../hooks/useMember';
-import { DiscordImage } from '../../../components/DiscordImage';
-import { Loader } from '../../../components/Loader';
-import { memberName } from '../../../util/users';
-import { RoleList } from '../../../components/RoleList';
-import { useGuild } from '../../../hooks/useGuild';
-import { Flex } from '../../../components/Flex';
-import { Embed } from '../../../components/Embed';
-import { Heading } from '../../../components/Heading';
-import { formatDate } from '../../../util/date';
-import { SinceDate } from '../../../components/SinceDate';
-import { Hint } from '../../../components/Hint';
-import { useSelfUser } from '../../../hooks/useSelfUser';
 import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
 import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
 import { Container } from '../../../components/Container';
+import { DiscordImage } from '../../../components/DiscordImage';
+import { Embed } from '../../../components/Embed';
+import { Flex } from '../../../components/Flex';
+import { Heading } from '../../../components/Heading';
+import { Hint } from '../../../components/Hint';
 import { KarmaTile } from '../../../components/KarmaTile';
+import { Loader } from '../../../components/Loader';
 import { PermsSimpleList } from '../../../components/Permissions';
-import { useEffect, useState } from 'react';
-import { Report } from '../../../lib/shinpuru-ts/src';
 import { MemberReportsList } from '../../../components/Report';
+import { RoleList } from '../../../components/RoleList';
+import { SinceDate } from '../../../components/SinceDate';
+import { useGuild } from '../../../hooks/useGuild';
+import { useMember } from '../../../hooks/useMember';
 import { usePerms } from '../../../hooks/usePerms';
+import { useSelfUser } from '../../../hooks/useSelfUser';
+import { Report } from '../../../lib/shinpuru-ts/src';
+import { formatDate } from '../../../util/date';
+import { memberName } from '../../../util/users';
 
 interface Props {}
 
@@ -119,9 +119,7 @@ const MemberRoute: React.FC<Props> = () => {
 
   return member ? (
     <MemberContainer>
-      {member.user.bot && (
-        <MarginHint icon={<BotIcon />}>{t('isbot')}</MarginHint>
-      )}
+      {member.user.bot && <MarginHint icon={<BotIcon />}>{t('isbot')}</MarginHint>}
       {member.user.id === selfUser?.id && (
         <MarginHint icon={<InfoIcon />} color={theme.green}>
           {t('isyou')}
@@ -138,9 +136,7 @@ const MemberRoute: React.FC<Props> = () => {
             </small>
             <Embed>{member.user.id}</Embed>
           </HeaderName>
-          {guild && (
-            <RoleList guildroles={guild.roles!} roleids={member.roles} />
-          )}
+          {guild && <RoleList guildroles={guild.roles!} roleids={member.roles} />}
         </div>
       </Header>
 

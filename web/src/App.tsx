@@ -1,25 +1,16 @@
-import { useStoredTheme } from './hooks/useStoredTheme';
-import {
-  BrowserRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-} from 'react-router-dom';
-import { StartRoute } from './routes/Start';
+import React from 'react';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { Notifications } from './components/Notifications';
-import React from 'react';
+import { RouteSuspense } from './components/RouteSuspense';
+import { useStoredTheme } from './hooks/useStoredTheme';
 import { DashboardRoute } from './routes/Dashboard';
 import { DebugRoute } from './routes/Debug';
-import { RouteSuspense } from './components/RouteSuspense';
+import { StartRoute } from './routes/Start';
 
 const LoginRoute = React.lazy(() => import('./routes/Login'));
-const GuildMembersRoute = React.lazy(
-  () => import('./routes/Dashboard/Guilds/GuildMembers')
-);
-const MemberRoute = React.lazy(
-  () => import('./routes/Dashboard/Guilds/Member')
-);
+const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
+const MemberRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Member'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -64,9 +55,7 @@ export const App: React.FC = () => {
                   </RouteSuspense>
                 }
               />
-              {import.meta.env.DEV && (
-                <Route path="debug" element={<DebugRoute />} />
-              )}
+              {import.meta.env.DEV && <Route path="debug" element={<DebugRoute />} />}
             </Route>
             <Route path="*" element={<Navigate to="db" />} />
           </Routes>

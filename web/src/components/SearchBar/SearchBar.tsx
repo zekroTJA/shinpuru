@@ -1,6 +1,6 @@
-import { Input } from '../Input';
-import { ReactComponent as SearchIcon } from '../../assets/search.svg';
 import styled from 'styled-components';
+import { ReactComponent as SearchIcon } from '../../assets/search.svg';
+import { Input } from '../Input';
 
 type Props = React.HTMLAttributes<HTMLInputElement> & {
   value?: string;
@@ -25,19 +25,11 @@ const SearchContainer = styled.div`
   }
 `;
 
-export const SearchBar: React.FC<Props> = ({
-  value,
-  onValueChange = () => {},
-  ...props
-}) => {
+export const SearchBar: React.FC<Props> = ({ value, onValueChange = () => {}, ...props }) => {
   return (
     <SearchContainer>
       <SearchIcon />
-      <Input
-        value={value}
-        onInput={(e) => onValueChange(e.currentTarget.value)}
-        {...props}
-      />
+      <Input value={value} onInput={(e) => onValueChange(e.currentTarget.value)} {...props} />
     </SearchContainer>
   );
 };

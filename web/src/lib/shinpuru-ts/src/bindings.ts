@@ -1,6 +1,5 @@
-import { GuildLogEntry, User } from './models';
 import { Client } from './client';
-import { SubClient } from './subclient';
+import { GuildLogEntry, User } from './models';
 import {
   AccessTokenModel,
   APIToken,
@@ -41,6 +40,7 @@ import {
   ReportRequest,
   VerificationSiteKey,
 } from './models';
+import { SubClient } from './subclient';
 
 export class EtcClient extends SubClient {
   constructor(client: Client) {
@@ -141,9 +141,7 @@ export class GlobalSettingsClient extends SubClient {
     return this.req('GET', 'noguildinvite');
   }
 
-  setNoGuildInvitesStatus(
-    ngi: InviteSettingsRequest
-  ): Promise<InviteSettingsResponse> {
+  setNoGuildInvitesStatus(ngi: InviteSettingsRequest): Promise<InviteSettingsResponse> {
     return this.req('POST', 'noguildinvite', ngi);
   }
 
@@ -233,10 +231,7 @@ export class GuildsClient extends SubClient {
     return this.req('DELETE', `${id}/antiraid/joinlog`);
   }
 
-  setInviteBlock(
-    id: string,
-    enabled: boolean
-  ): Promise<ListResponse<JoinlogEntry>> {
+  setInviteBlock(id: string, enabled: boolean): Promise<ListResponse<JoinlogEntry>> {
     return this.req('POST', `${id}/inviteblock`, { enabled });
   }
 
@@ -244,18 +239,11 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/permissions`);
   }
 
-  applyPermission(
-    id: string,
-    update: PermissionsUpdate
-  ): Promise<CodeResponse> {
+  applyPermission(id: string, update: PermissionsUpdate): Promise<CodeResponse> {
     return this.req('POST', `${id}/permissions`, update);
   }
 
-  reports(
-    id: string,
-    limit: number = 20,
-    offset: number = 0
-  ): Promise<ListResponse<Report>> {
+  reports(id: string, limit: number = 20, offset: number = 0): Promise<ListResponse<Report>> {
     return this.req('GET', `${id}/reports?limit=${limit}&offset=${offset}`);
   }
 
@@ -263,10 +251,7 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/reports/count`);
   }
 
-  scoreboard(
-    id: string,
-    limit: number = 20
-  ): Promise<ListResponse<GuildScoreboardEntry>> {
+  scoreboard(id: string, limit: number = 20): Promise<ListResponse<GuildScoreboardEntry>> {
     return this.req('GET', `${id}/scoreboard?limit=${limit}`);
   }
 
@@ -274,12 +259,9 @@ export class GuildsClient extends SubClient {
     id: string,
     sort: StarboardSortOrder = 'latest',
     limit: number = 20,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<ListResponse<GuildStarboardEntry>> {
-    return this.req(
-      'GET',
-      `${id}/starboard?limit=${limit}&offset=${offset}&sort=${sort}`
-    );
+    return this.req('GET', `${id}/starboard?limit=${limit}&offset=${offset}&sort=${sort}`);
   }
 
   unbanrequests(id: string): Promise<ListResponse<UnbanRequest>> {
@@ -297,7 +279,7 @@ export class GuildsClient extends SubClient {
   respondUnbanrequest(
     id: string,
     requestId: string,
-    request: UnbanRequest
+    request: UnbanRequest,
   ): Promise<ListResponse<UnbanRequest>> {
     return this.req('POST', `${id}/unbanrequests/${requestId}`, request);
   }
@@ -310,16 +292,8 @@ export class GuildsClient extends SubClient {
     return new GuildBackupsClient(this._client, id);
   }
 
-  members(
-    id: string,
-    limit = 50,
-    after = '',
-    filter = ''
-  ): Promise<ListResponse<Member>> {
-    return this.req(
-      'GET',
-      `${id}/members?limit=${limit}&after=${after}&filter=${filter}`
-    );
+  members(id: string, limit = 50, after = '', filter = ''): Promise<ListResponse<Member>> {
+    return this.req('GET', `${id}/members?limit=${limit}&after=${after}&filter=${filter}`);
   }
 
   member(id: string, memberID: string): GuildMemberClient {
@@ -408,15 +382,8 @@ export class GuildSettingsClient extends SubClient {
     return this.req('POST', `karma/rules/${rule.id}`, rule);
   }
 
-  logs(
-    limit = 50,
-    offset = 0,
-    severity = -1
-  ): Promise<ListResponse<GuildLogEntry>> {
-    return this.req(
-      'GET',
-      `logs?limit=${limit}&offset=${offset}&severity=${severity}`
-    );
+  logs(limit = 50, offset = 0, severity = -1): Promise<ListResponse<GuildLogEntry>> {
+    return this.req('GET', `logs?limit=${limit}&offset=${offset}&severity=${severity}`);
   }
 
   logsCount(): Promise<Count> {
@@ -497,11 +464,7 @@ export class ChannelsClient extends SubClient {
     return this.req('GET', `${guildID}`);
   }
 
-  sendEmbedMessage(
-    guildID: string,
-    channelID: string,
-    embed: MessageEmbed
-  ): Promise<Channel> {
+  sendEmbedMessage(guildID: string, channelID: string, embed: MessageEmbed): Promise<Channel> {
     return this.req('POST', `${guildID}/${channelID}`, embed);
   }
 
@@ -509,7 +472,7 @@ export class ChannelsClient extends SubClient {
     guildID: string,
     channelID: string,
     messageID: string,
-    embed: MessageEmbed
+    embed: MessageEmbed,
   ): Promise<Channel> {
     return this.req('POST', `${guildID}/${channelID}/${messageID}`, embed);
   }

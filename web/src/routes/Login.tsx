@@ -1,16 +1,16 @@
+import { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import styled from 'styled-components';
+import { ReactComponent as DiscordIcon } from '../assets/dc-logo-blurple.svg';
 import { Button } from '../components/Button';
 import { Container } from '../components/Container';
-import { ReactComponent as DiscordIcon } from '../assets/dc-logo-blurple.svg';
-import { LOGIN_ROUTE } from '../services/api';
-import { Hider } from '../components/Hider';
-import { useApi } from '../hooks/useApi';
-import { useEffect, useState } from 'react';
-import { getCryptoRandomString } from '../util/crypto';
-import { useNavigate } from 'react-router';
 import { Embed } from '../components/Embed';
-import { Trans, useTranslation } from 'react-i18next';
+import { Hider } from '../components/Hider';
 import { LinearGradient } from '../components/styleParts';
+import { useApi } from '../hooks/useApi';
+import { LOGIN_ROUTE } from '../services/api';
+import { getCryptoRandomString } from '../util/crypto';
 
 interface Props {}
 
