@@ -30,7 +30,7 @@ const LoadMoreButton = styled(Button)`
   margin: 1em auto 0 auto;
 `;
 
-const GuildMembersRoute: React.FC<Props> = ({}) => {
+const GuildMembersRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildmembers');
   const { guildid } = useParams();
   const nav = useNavigate();

@@ -17,7 +17,7 @@ const StyledDiv = styled.div`
 
 const Loading = () => <span>loading ...</span>;
 
-export const GuildHome: React.FC<Props> = ({}) => {
+export const GuildHome: React.FC<Props> = () => {
   const { guildid } = useParams();
   const fetch = useApi();
   const theme = useTheme();

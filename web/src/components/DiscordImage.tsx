@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import DCLogoURL from '../assets/dc-logo.svg';
 
 type ImgProps = {

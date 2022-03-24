@@ -24,7 +24,7 @@ const Div = styled(Flex)<HintProps>`
 `;
 
 export const Hint: React.FC<Props> = ({ icon, children, ...props }) => {
-  const _icon = typeof icon === 'string' ? <img src={icon} /> : icon;
+  const _icon = typeof icon === 'string' ? <img src={icon} alt="" /> : icon;
   return (
     <Div {...props}>
       {_icon ?? <></>}

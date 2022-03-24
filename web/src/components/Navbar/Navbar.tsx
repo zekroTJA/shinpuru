@@ -28,7 +28,7 @@ const EntryContainer = styled.div`
   margin-top: 1em;
 `;
 
-export const Navbar: React.FC<Props> = ({}) => {
+export const Navbar: React.FC<Props> = () => {
   const { t } = useTranslation('components');
   const nav = useNavigate();
   const { guildid } = useParams();
@@ -50,7 +50,7 @@ export const Navbar: React.FC<Props> = ({}) => {
 
   return (
     <StyledNav>
-      <img src={SPHeader} width="auto" height="auto" />
+      <img src={SPHeader} width="auto" height="auto" alt="shinpuru Heading" />
       <Section title={t('navbar.section.guilds.title')}>
         <GuildSelect
           guilds={guilds ?? []}

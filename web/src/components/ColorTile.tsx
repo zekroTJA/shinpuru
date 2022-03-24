@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { Container } from './Container';
-import Color from 'color';
 import { Clickable, LinearGradient } from './styleParts';
 
 type Props = {

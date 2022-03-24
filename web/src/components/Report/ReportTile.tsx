@@ -5,12 +5,14 @@ import { formatDate } from '../../util/date';
 import { Container } from '../Container';
 import { Embed } from '../Embed';
 import { Heading } from '../Heading';
+import { LinkButton } from '../LinkButton';
 import { LinearGradient } from '../styleParts';
 import { ReportUser } from './ReportUser';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   report: Report;
   revokeAllowed?: boolean;
+  onRevoke?: () => void;
 };
 
 const ReportTileContainer = styled(Container)`
@@ -94,6 +96,7 @@ const Spacer = styled.div`
 export const ReportTile: React.FC<Props> = ({
   report,
   revokeAllowed,
+  onRevoke = () => {},
   ...props
 }) => {
   const { t } = useTranslation('components');
@@ -111,7 +114,9 @@ export const ReportTile: React.FC<Props> = ({
       <Section>
         <Heading>{t('report.reason')}</Heading>
         <span>{report.message}</span>
-        {report.attachment_url && <img src={report.attachment_url} />}
+        {report.attachment_url && (
+          <img src={report.attachment_url} alt="Report Attachment" />
+        )}
       </Section>
       <hr />
       <Footer>
@@ -123,7 +128,7 @@ export const ReportTile: React.FC<Props> = ({
         {revokeAllowed && (
           <>
             <Spacer />
-            <a>{t('report.revoke')}</a>
+            <LinkButton onClick={onRevoke}>{t('report.revoke')}</LinkButton>
           </>
         )}
       </Footer>

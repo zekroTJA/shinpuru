@@ -79,8 +79,6 @@ const DetailsContainer = styled(Flex)`
   align-items: stretch;
 `;
 
-const ReportsContainer = styled.div``;
-
 const Loaders = () => (
   <>
     <Flex>
@@ -93,7 +91,7 @@ const Loaders = () => (
   </>
 );
 
-const MemberRoute: React.FC<Props> = ({}) => {
+const MemberRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.member');
   const { guildid, memberid } = useParams();
   const theme = useTheme();
@@ -190,6 +188,7 @@ const MemberRoute: React.FC<Props> = ({}) => {
           <MemberReportsList
             reports={reports}
             revokeAllowed={isAllowed('sp.guild.mod.report.revoke')}
+            onRevoke={(rep) => {}}
           />
         </Section>
       </DetailsContainer>

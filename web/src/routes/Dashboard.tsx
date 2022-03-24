@@ -18,7 +18,7 @@ const RouterOutlet = styled.main`
   overflow-y: auto;
 `;
 
-export const DashboardRoute: React.FC<Props> = ({}) => {
+export const DashboardRoute: React.FC<Props> = () => {
   const guilds = useGuilds();
   const { guildid } = useParams();
   const loc = useLocation();

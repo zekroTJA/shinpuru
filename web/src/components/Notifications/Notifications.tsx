@@ -15,7 +15,7 @@ const NotificationsContainer = styled.div`
   padding: 1em;
 `;
 
-export const Notifications: React.FC<Props> = ({}) => {
+export const Notifications: React.FC<Props> = () => {
   const { notifications, hideNotification } = useNotifications();
   return (
     <NotificationsContainer>

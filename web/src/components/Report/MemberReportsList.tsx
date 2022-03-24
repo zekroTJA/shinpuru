@@ -6,6 +6,7 @@ import { ReportTile } from './ReportTile';
 interface Props {
   reports?: Report[];
   revokeAllowed?: boolean;
+  onRevoke?: (rep: Report) => void;
 }
 
 const ReportsContainer = styled.div`
@@ -16,13 +17,19 @@ const ReportsContainer = styled.div`
 
 export const MemberReportsList: React.FC<Props> = ({
   reports,
-  revokeAllowed: revokeAlloed,
+  revokeAllowed,
+  onRevoke = () => {},
 }) => {
   return !!reports ? (
     <ReportsContainer>
       {(reports.length === 0 && <i>This user has a white vest! 👌</i>) ||
         reports.map((r) => (
-          <ReportTile report={r} revokeAllowed={revokeAlloed} key={r.id} />
+          <ReportTile
+            report={r}
+            revokeAllowed={revokeAllowed}
+            onRevoke={() => onRevoke(r)}
+            key={r.id}
+          />
         ))}
     </ReportsContainer>
   ) : (

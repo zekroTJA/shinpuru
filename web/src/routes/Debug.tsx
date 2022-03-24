@@ -50,7 +50,7 @@ const getRandomNotification = (delay?: number) => {
 
 // This component will not be exported in the final
 // production build!
-export const DebugRoute: React.FC<Props> = ({}) => {
+export const DebugRoute: React.FC<Props> = () => {
   const NOTIFICATION_OPTIONS = [
     { id: 'INFO', display: 'INFO', value: NotificationType.INFO },
     {

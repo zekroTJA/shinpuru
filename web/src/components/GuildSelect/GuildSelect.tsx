@@ -1,5 +1,5 @@
 import { Guild } from '../../lib/shinpuru-ts/src';
-import { Select, Element, Props as SelectProps } from '../Select';
+import { Select, Element } from '../Select';
 import { Option } from './Option';
 
 type Props = {

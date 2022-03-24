@@ -85,7 +85,7 @@ const StyledSmall = styled.small`
   font-size: 0.7em;
 `;
 
-const LoginRoute: React.FC<Props> = ({}) => {
+const LoginRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.login');
   const [pushCode, setPushCode] = useState('');
   const fetch = useApi();
