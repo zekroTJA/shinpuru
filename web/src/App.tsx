@@ -36,7 +36,7 @@ export const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <AppContainer>
         <HookedModal />
-        <Router>
+        <Router basename={import.meta.env.BASE_URL}>
           <Routes>
             <Route path="start" element={<StartRoute />} />
             <Route path="login" element={<LoginRoute />} />

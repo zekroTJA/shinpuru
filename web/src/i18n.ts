@@ -7,6 +7,10 @@ i18next
   .use(initReactI18next)
   .use(I18NextHttpBackend)
   .use(I18nextBrowserLanguageDetector)
-  .init({ fallbackLng: 'en-US', interpolation: { escapeValue: true } });
+  .init({
+    fallbackLng: 'en-US',
+    interpolation: { escapeValue: true },
+    backend: { loadPath: import.meta.env.BASE_URL + 'locales/{{lng}}/{{ns}}.json' },
+  });
 
 export default i18next;
