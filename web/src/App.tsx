@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { HookedModal } from './components/Modal';
 import { Notifications } from './components/Notifications';
 import { RouteSuspense } from './components/RouteSuspense';
 import { useStoredTheme } from './hooks/useStoredTheme';
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
+        <HookedModal />
         <Router>
           <Routes>
             <Route path="start" element={<StartRoute />} />

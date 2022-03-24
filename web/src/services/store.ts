@@ -1,5 +1,6 @@
 import create from 'zustand';
 import { Notification } from '../components/Notifications';
+import { ModalState } from '../hooks/useModal';
 import { Guild, User } from '../lib/shinpuru-ts/src';
 import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
@@ -19,6 +20,9 @@ export interface Store {
 
   notifications: Notification[];
   setNotifications: (notifications: Notification[]) => void;
+
+  modal: ModalState<any>;
+  setModal: (modal: ModalState<any>) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -42,4 +46,7 @@ export const useStore = create<Store>((set, get) => ({
 
   notifications: [],
   setNotifications: (notifications) => set({ notifications }),
+
+  modal: { isOpen: false },
+  setModal: (modal) => set({ modal }),
 }));

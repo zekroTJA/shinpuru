@@ -5,16 +5,20 @@ import { Heading } from '../components/Heading';
 import { Input } from '../components/Input';
 import { Notification, NotificationType } from '../components/Notifications';
 import { Element, Select } from '../components/Select';
+import { useModal } from '../hooks/useModal';
 import { useNotifications } from '../hooks/useNotifications';
 import { randomFrom, randomNumber } from '../util/rand';
 
 interface Props {}
 
 const DebugContainer = styled.div`
-  > * {
-    width: 100%;
-    display: block;
-    margin: 0 0.5em 0.5em 0.5em;
+  > section {
+    margin-bottom: 2em;
+    > * {
+      width: 100%;
+      display: block;
+      margin: 0 0.5em 0.5em 0.5em;
+    }
   }
 `;
 
@@ -65,55 +69,68 @@ export const DebugRoute: React.FC<Props> = () => {
     },
     { id: 'ERROR', display: 'ERROR', value: NotificationType.ERROR },
   ];
-  const [notType, setNotType] = useState<Element<NotificationType>>(
-    NOTIFICATION_OPTIONS[0]
-  );
+  const [notType, setNotType] = useState<Element<NotificationType>>(NOTIFICATION_OPTIONS[0]);
 
   const refInptTitle = useRef<HTMLInputElement>(null);
   const refInptContent = useRef<HTMLInputElement>(null);
   const refInptDelay = useRef<HTMLInputElement>(null);
 
   const { pushNotification } = useNotifications();
+  const { openModal } = useModal<number>();
+
+  const _openModal = () => {
+    openModal({
+      content: 'heyo',
+      heading: 'test modal',
+      controls: [
+        { name: 'ok', value: 1 },
+        { name: 'cancel', value: 2, variant: 'gray' },
+      ],
+    }).then(console.log);
+  };
 
   return (
     <DebugContainer>
-      <Heading>Notifications</Heading>
-      <Input ref={refInptTitle} placeholder="title" />
-      <Input ref={refInptContent} placeholder="content" />
-      <Select
-        value={notType}
-        onElementSelect={(e) => setNotType(e)}
-        options={NOTIFICATION_OPTIONS}
-      />
-      <Input ref={refInptDelay} placeholder="delay" type="number" min="0" />
-      <Button
-        onClick={() =>
-          pushNotification({
-            heading: refInptTitle.current?.value,
-            message: refInptContent.current?.value ?? 'empty message',
-            type: notType.value,
-            delay: refInptDelay.current?.value
-              ? parseInt(refInptDelay.current?.value)
-              : undefined,
-          })
-        }
-      >
-        Send
-      </Button>
-      <Button
-        variant="blue"
-        onClick={() =>
-          pushNotification(
-            getRandomNotification(
-              refInptDelay.current?.value
+      <section>
+        <Heading>Notifications</Heading>
+        <Input ref={refInptTitle} placeholder="title" />
+        <Input ref={refInptContent} placeholder="content" />
+        <Select
+          value={notType}
+          onElementSelect={(e) => setNotType(e)}
+          options={NOTIFICATION_OPTIONS}
+        />
+        <Input ref={refInptDelay} placeholder="delay" type="number" min="0" />
+        <Button
+          onClick={() =>
+            pushNotification({
+              heading: refInptTitle.current?.value,
+              message: refInptContent.current?.value ?? 'empty message',
+              type: notType.value,
+              delay: refInptDelay.current?.value
                 ? parseInt(refInptDelay.current?.value)
-                : undefined
+                : undefined,
+            })
+          }>
+          Send
+        </Button>
+        <Button
+          variant="blue"
+          onClick={() =>
+            pushNotification(
+              getRandomNotification(
+                refInptDelay.current?.value ? parseInt(refInptDelay.current?.value) : undefined,
+              ),
             )
-          )
-        }
-      >
-        Send Random
-      </Button>
+          }>
+          Send Random
+        </Button>
+      </section>
+
+      <section>
+        <Heading>Modals</Heading>
+        <Button onClick={_openModal}>Open</Button>
+      </section>
     </DebugContainer>
   );
 };
