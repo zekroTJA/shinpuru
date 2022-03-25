@@ -3,6 +3,7 @@ package webserver
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -72,6 +73,14 @@ func New(container di.Container) (ws *WebServer, err error) {
 	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
 	new(controllers.InviteController).Setup(ws.container, ws.app.Group("/invite"))
 	ws.registerRouter(new(v1.Router), []string{"/api/v1", "/api"}, rlh)
+
+	ws.app.Group("/beta").Use(filesystem.New(filesystem.Config{
+		Root:         http.Dir("web.new/dist/web"),
+		Browse:       true,
+		Index:        "index.html",
+		MaxAge:       3600,
+		NotFoundFile: "index.html",
+	}))
 
 	fs, err := wsutil.GetFS()
 	if err != nil {
