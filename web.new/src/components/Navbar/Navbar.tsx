@@ -36,7 +36,7 @@ export const Navbar: React.FC<Props> = () => {
   const [selectedGuild, setSelectedGuild] = useStore((s) => [s.selectedGuild, s.setSelectedGuild]);
 
   useEffect(() => {
-    if (!!guilds) setSelectedGuild(guilds.find((g) => g.id === guildid) ?? guilds[0]);
+    if (!!guilds && !!guildid) setSelectedGuild(guilds.find((g) => g.id === guildid) ?? guilds[0]);
   }, [guildid, guilds]);
 
   const _onGuildSelect = (g: Guild) => {

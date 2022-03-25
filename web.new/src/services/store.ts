@@ -27,12 +27,12 @@ export interface Store {
 
 export const useStore = create<Store>((set, get) => ({
   theme: LocalStorageUtil.get(
-    'shinpuru.theme',
+    'shnp.theme',
     window.matchMedia('(prefers-color-scheme: dark)').matches ? AppTheme.DARK : AppTheme.LIGHT,
   )!,
   setTheme: (theme) => {
     set({ theme });
-    LocalStorageUtil.set('shinpuru.theme', theme);
+    LocalStorageUtil.set('shnp.theme', theme);
   },
 
   selfUser: undefined,
@@ -42,7 +42,11 @@ export const useStore = create<Store>((set, get) => ({
   setGuilds: (guilds) => set({ guilds }),
 
   selectedGuild: undefined,
-  setSelectedGuild: (selectedGuild) => set({ selectedGuild }),
+  setSelectedGuild: (selectedGuild) => {
+    set({ selectedGuild });
+    console.log('SET SELECTED GUILD', selectedGuild?.id);
+    if (!!selectedGuild) LocalStorageUtil.set('shnp.selectedguild', selectedGuild.id);
+  },
 
   notifications: [],
   setNotifications: (notifications) => set({ notifications }),

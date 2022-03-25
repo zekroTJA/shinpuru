@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useParams, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { Navbar } from '../components/Navbar';
 import { useGuilds } from '../hooks/useGuilds';
+import LocalStorageUtil from '../util/localstorage';
 
 interface Props {}
 
@@ -25,8 +26,16 @@ export const DashboardRoute: React.FC<Props> = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    if (loc.pathname === '/db' && !!guilds && guilds.length !== 0 && !guildid)
-      nav(`guilds/${guilds[0].id}/members`);
+    if (loc.pathname.replaceAll('/', '') === 'db' && !!guilds && guilds.length !== 0 && !guildid) {
+      console.log(
+        guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')),
+        LocalStorageUtil.get<string>('shnp.selectedguild'),
+      );
+      const guild =
+        guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')) ??
+        guilds[0];
+      nav(`guilds/${guild.id}/members`);
+    }
   }, [guilds, guildid]);
 
   return (
