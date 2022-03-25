@@ -37,7 +37,7 @@ COPY web.new .
 # Get dependencies
 RUN yarn
 # Build static web app files
-RUN yarn build --base=/beta
+RUN yarn build --base=/beta/ --outDir=dist
 
 # ------------------------------------------------------------
 # --- STAGE 3: Final runtime environment
