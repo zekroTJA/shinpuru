@@ -1,0 +1,26 @@
+{
+  "isbot": "This member is a Bot.",
+  "isyou": "Hey, this is you! 👀",
+  "info": {
+    "heading": "General User Information",
+    "guild-joined": "Joined Guild",
+    "account-created": "Account Created"
+  },
+  "karma": {
+    "heading": "Karma",
+    "guild": "Guild",
+    "total": "Total"
+  },
+  "permissions": {
+    "heading": "Permissions"
+  },
+  "reports": {
+    "heading": "Reports"
+  },
+  "notifications": {
+    "reportrevoked": {
+      "heading": "Report Revoked",
+      "message": "Report has been revoked successfully."
+    }
+  }
+}

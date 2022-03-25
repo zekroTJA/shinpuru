@@ -1,0 +1,15 @@
+{
+  "name": "shinpuru-ts",
+  "version": "1.0.0",
+  "description": "REST API wrapper for shinpuru.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "zekroTJA",
+  "license": "MIT",
+  "dependencies": {}
+}
