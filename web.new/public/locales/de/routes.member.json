@@ -1,0 +1,26 @@
+{
+  "isbot": "Dieser Nutzer ist ein Bot-Account.",
+  "isyou": "Hey, das sind Sie! 👀",
+  "info": {
+    "heading": "Generelle Nutzerinformationen",
+    "guild-joined": "Guild beigetreten",
+    "account-created": "Account erstellt"
+  },
+  "karma": {
+    "heading": "Karma",
+    "guild": "Guild",
+    "total": "Total"
+  },
+  "permissions": {
+    "heading": "Berechtigungen"
+  },
+  "reports": {
+    "heading": "Meldungen"
+  },
+  "notifications": {
+    "reportrevoked": {
+      "heading": "Meldung widerrufen",
+      "message": "Meldung wurde erfolgreich widerrufen."
+    }
+  }
+}
