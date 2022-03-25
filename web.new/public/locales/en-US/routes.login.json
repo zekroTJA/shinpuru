@@ -6,7 +6,6 @@
   },
   "alternative": {
     "title": "Or DM the following Code to shinpuru on Discord",
-    "action": "Login with Discord",
     "subline": "Alternatively, you can also use the <1>/login</1> command."
   }
 }
