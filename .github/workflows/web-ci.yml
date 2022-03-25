@@ -6,14 +6,14 @@ on:
     branches:
       - "*"
     paths:
-      - "web/**"
+      - "web.new/**"
   pull_request:
     types:
       - opened
       - reopened
       - edited
     paths:
-      - "web/**"
+      - "web.new/**"
 
 jobs:
   lint:
@@ -25,8 +25,8 @@ jobs:
       - name: Check out Code
         uses: actions/checkout@v2
       - name: Install Dependencies
-        working-directory: 'web'
+        working-directory: 'web.new'
         run: yarn
       - name: ESLint
-        working-directory: 'web'
+        working-directory: 'web.new'
         run: yarn lint
