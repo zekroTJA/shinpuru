@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Modal } from '../Modal';
 
 export type Props<T extends unknown> = React.HTMLAttributes<HTMLDivElement> & {
   options: Element<T>[];
@@ -13,17 +14,20 @@ export type Element<T> = {
   value: T;
 };
 
-const SelectContainer = styled.div`
-  position: relative;
-  cursor: pointer;
-`;
-
 const ValueContainer = styled.div`
   border-radius: 8px;
   background-color: ${(p) => p.theme.background};
   width: 100%;
   padding: 0.6em;
   border: solid 1px ${(p) => p.theme.accentDarker};
+`;
+
+const OptionContainer = styled.div`
+  padding: 0.6em;
+  transition: background-color 0.2s ease;
+  &:hover {
+    background-color: ${(p) => p.theme.accentDarker};
+  }
 `;
 
 const OptionsList = styled.div<{ show: boolean }>`
@@ -42,11 +46,30 @@ const OptionsList = styled.div<{ show: boolean }>`
   transition: opacity 0.2s ease;
 `;
 
-const OptionContainer = styled.div`
-  padding: 0.6em;
-  transition: background-color 0.2s ease;
-  &:hover {
-    background-color: ${(p) => p.theme.accentDarker};
+const OptionsModal = styled(Modal)`
+  > div > section {
+    padding: 0px;
+
+    > ${OptionContainer} {
+      padding: 1em;
+    }
+  }
+`;
+
+const SelectContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+
+  @media (orientation: portrait) {
+    ${OptionsList} {
+      display: none;
+    }
+  }
+
+  @media (orientation: landscape) {
+    ${OptionsModal} {
+      display: none;
+    }
   }
 `;
 
@@ -72,29 +95,29 @@ export const Select = <T extends unknown>({
     onElementSelect(e);
   };
 
+  const _onSelectionClick: React.MouseEventHandler<HTMLDivElement> = (e) =>
+    stopPropagation(e.nativeEvent, () => setSelect(!select));
+
   useEffect(() => {
     window.addEventListener('click', _onWindowClick);
     return () => window.removeEventListener('click', _onWindowClick);
   }, []);
 
+  const _options = options
+    .filter((o) => o.id !== value?.id)
+    .map((o) => (
+      <OptionContainer key={o.id} onClick={() => _onSelect(o)}>
+        {o.display}
+      </OptionContainer>
+    ));
+
   return (
     <SelectContainer {...props}>
-      <ValueContainer
-        onClick={(e) =>
-          stopPropagation(e.nativeEvent, () => setSelect(!select))
-        }
-      >
-        {value?.display}
-      </ValueContainer>
-      <OptionsList show={select}>
-        {options
-          .filter((o) => o.id !== value?.id)
-          .map((o) => (
-            <OptionContainer key={o.id} onClick={() => _onSelect(o)}>
-              {o.display}
-            </OptionContainer>
-          ))}
-      </OptionsList>
+      <ValueContainer onClick={_onSelectionClick}>{value?.display}</ValueContainer>
+      <OptionsList show={select}>{_options}</OptionsList>
+      <OptionsModal show={select} onClose={() => setSelect(false)}>
+        {_options}
+      </OptionsModal>
     </SelectContainer>
   );
 };

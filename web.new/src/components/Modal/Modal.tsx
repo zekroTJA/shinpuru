@@ -16,7 +16,8 @@ type Content = {
 };
 
 type Props = Show &
-  Content & {
+  Content &
+  React.HTMLAttributes<HTMLDivElement> & {
     onClose?: () => void;
   };
 
@@ -57,6 +58,7 @@ export const Modal: React.FC<Props> = ({
   controls,
   heading,
   onClose = () => {},
+  ...props
 }) => {
   const _heading = typeof heading === 'string' ? <Heading>{heading}</Heading> : heading;
 
@@ -66,7 +68,7 @@ export const Modal: React.FC<Props> = ({
   };
 
   return (
-    <ModalOutlet id={BACKGROUND_ID} show={show} onMouseDown={_onBackgroundClick}>
+    <ModalOutlet id={BACKGROUND_ID} show={show} onMouseDown={_onBackgroundClick} {...props}>
       <ModalContainer show={show}>
         {_heading && <ModalHeader>{_heading}</ModalHeader>}
         <section>{children}</section>

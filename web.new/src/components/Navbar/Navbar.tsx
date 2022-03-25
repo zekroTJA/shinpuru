@@ -2,16 +2,42 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
-import SPHeader from '../../assets/sp-header.svg'; // Imported as path so that it can be bundled separately because it is kinda big.
+import SPBrand from '../../assets/sp-brand.svg';
+import SPIcon from '../../assets/sp-icon.png';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { useGuilds } from '../../hooks/useGuilds';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { useStore } from '../../services/store';
 import { GuildSelect } from '../GuildSelect';
+import { Heading } from '../Heading';
 import { Entry } from './Entry';
 import { Section } from './Section';
 
 interface Props {}
+
+const Brand = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  > img {
+    width: 100%;
+    &:first-child {
+      width: 38px;
+      height: 38px;
+    }
+  }
+`;
+
+const EntryContainer = styled.div`
+  margin-top: 1em;
+`;
+
+const StyledEntry = styled(Entry)`
+  height: 100%;
+`;
+
+const StyledGuildSelect = styled(GuildSelect)``;
 
 const StyledNav = styled.nav`
   display: flex;
@@ -22,10 +48,26 @@ const StyledNav = styled.nav`
   border-radius: 12px;
   width: 25vw;
   max-width: 15em;
-`;
 
-const EntryContainer = styled.div`
-  margin-top: 1em;
+  @media (orientation: portrait) {
+    width: fit-content;
+
+    ${Brand} > img:last-child {
+      display: none;
+    }
+
+    ${StyledEntry} span {
+      display: none;
+    }
+
+    ${StyledGuildSelect} > div > div > span {
+      display: none;
+    }
+
+    ${Heading} {
+      display: none;
+    }
+  }
 `;
 
 export const Navbar: React.FC<Props> = () => {
@@ -46,18 +88,21 @@ export const Navbar: React.FC<Props> = () => {
 
   return (
     <StyledNav>
-      <img src={SPHeader} width="auto" height="auto" alt="shinpuru Heading" />
+      <Brand>
+        <img src={SPIcon} alt="shinpuru Heading" />
+        <img src={SPBrand} alt="shinpuru Heading" />
+      </Brand>
       <Section title={t('navbar.section.guilds.title')}>
-        <GuildSelect guilds={guilds ?? []} value={selectedGuild} onElementSelect={_onGuildSelect} />
+        <StyledGuildSelect
+          guilds={guilds ?? []}
+          value={selectedGuild}
+          onElementSelect={_onGuildSelect}
+        />
         <EntryContainer>
-          {/* <Entry path={`guilds/${selectedGuild?.id}/home`}>
-            <HomeIcon />
-            {t('navbar.section.guilds.home')}
-          </Entry> */}
-          <Entry path={`guilds/${selectedGuild?.id}/members`}>
+          <StyledEntry path={`guilds/${selectedGuild?.id}/members`}>
             <UsersIcon />
-            {t('navbar.section.guilds.members')}
-          </Entry>
+            <span>{t('navbar.section.guilds.members')}</span>
+          </StyledEntry>
         </EntryContainer>
       </Section>
       {/* <Section title={t('navbar.section.users')}></Section> */}

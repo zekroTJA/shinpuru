@@ -9,12 +9,12 @@ interface Props {
 const StyledDiv = styled.div`
   display: flex;
   align-items: center;
+  gap: 0.5em;
 
   > img,
   svg {
     height: 1.2em;
     aspect-ratio: 1;
-    margin-right: 0.5em;
   }
 `;
 
