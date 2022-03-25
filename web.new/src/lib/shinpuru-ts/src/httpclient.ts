@@ -1,5 +1,6 @@
 import { APIError } from './errors';
 import { AccessTokenModel, ErrorReponse } from './models';
+import { replaceDoublePath } from './util';
 
 export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'PATCH' | 'OPTIONS';
 
@@ -51,7 +52,7 @@ export class HttpClient implements IHttpClient {
       }
       headers.set('Authorization', `accessToken ${this.accessToken.token}`);
     }
-    const fullPath = `${this.endpoint}/${path}`.replace(/(?<=[^:])\/\//g, '/');
+    const fullPath = replaceDoublePath(`${this.endpoint}/${path}`);
     const res = await window.fetch(fullPath, {
       method,
       headers,
