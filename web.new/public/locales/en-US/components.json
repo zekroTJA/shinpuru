@@ -39,5 +39,8 @@
       "back": "Bring me back to the stable page",
       "accept": "Accept and continue in the beta page"
     }
+  },
+  "memberreportlist": {
+    "noreports": "This user has a white vest! 👌"
   }
 }

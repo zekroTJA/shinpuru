@@ -39,5 +39,8 @@
       "back": "Bring mich zurück zu der stabilen Version",
       "accept": "Akzeptieren und fortfahren auf der Beta-Version"
     }
+  },
+  "memberreportlist": {
+    "noreports": "Dieser Nutzer hat eine weiße Weste! 👌"
   }
 }

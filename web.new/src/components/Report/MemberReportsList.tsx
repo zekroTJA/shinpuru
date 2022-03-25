@@ -1,3 +1,5 @@
+import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Report } from '../../lib/shinpuru-ts/src';
 import { Loader } from '../Loader';
@@ -20,9 +22,10 @@ export const MemberReportsList: React.FC<Props> = ({
   revokeAllowed,
   onRevoke = () => {},
 }) => {
+  const { t } = useTranslation('components');
   return !!reports ? (
     <ReportsContainer>
-      {(reports.length === 0 && <i>This user has a white vest! 👌</i>) ||
+      {(reports.length === 0 && <i>{t('memberreportlist.noreports')}</i>) ||
         reports.map((r) => (
           <ReportTile
             report={r}
