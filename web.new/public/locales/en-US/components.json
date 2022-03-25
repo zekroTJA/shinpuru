@@ -31,5 +31,13 @@
       "cancel": "Cancel",
       "revoke": "Revoke"
     }
+  },
+  "modalbetagreeter": {
+    "heading": "Beta Version",
+    "message": "This is a very early preview version of the reworked web interface of shinpuru which gives you the opportunity to test and play around with the early versions as they are in development.\n\nIf you discover any bugs or if you have suggestions how to improve things, feel absolutely free to either create an [**issue**](https://github.com/zekroTJA/shinpuru/issues/new/choose) or to contact me directly via my [Discord Guild](https://dc.zekro.de).\n\nPlease only continue using the beta version though if you are okay with the following things:\n1. Only a small subset of functionality is implemented in the beta version.\n2. Implemented features will be buggy, incomplete or impaire the user experience.\n3. Unexpected behaviour might impaire crucial security or moderation settings.",
+    "controls": {
+      "back": "Bring me back to the stable page",
+      "accept": "Accept and continue in the beta page"
+    }
   }
 }

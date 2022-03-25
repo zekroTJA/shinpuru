@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { HookedModal } from './components/Modal';
+import { ModalBetaGreeter } from './components/Modals/ModalBetaGreeter';
 import { Notifications } from './components/Notifications';
 import { RouteSuspense } from './components/RouteSuspense';
 import { useStoredTheme } from './hooks/useStoredTheme';
@@ -36,6 +37,7 @@ export const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <AppContainer>
         <HookedModal />
+        <ModalBetaGreeter />
         <Router basename={import.meta.env.BASE_URL}>
           <Routes>
             <Route path="start" element={<StartRoute />} />
