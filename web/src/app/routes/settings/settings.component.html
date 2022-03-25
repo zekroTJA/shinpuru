@@ -1,0 +1,69 @@
+<div>
+    <h1 class="mb-4">Global Bot Settings</h1>
+
+    <h3>Presence</h3>
+    <app-spinner *ngIf="!presence; else presenceTemp" [started]="true"></app-spinner>
+    <ng-template #presenceTemp>
+        <div class="d-flex mt-3">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Game</th>
+                        <td>
+                            <input type="text" [(ngModel)]="presence.game" class=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <select [(ngModel)]="presence.status" class="my-3">
+                            <option ngValue="online">online</option>
+                            <option ngValue="dnd">do not disturb</option>
+                            <option ngValue="idle">idle</option>
+                            <option ngValue="invisible">invisible</option>
+                        </select>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="bg-green ml-auto mb-auto" (click)="updatePresence()">UPDATE PRESENCE</button>
+        </div>
+    </ng-template>
+
+    <h3 class="mt-4">Guild Invite</h3>
+    <app-spinner *ngIf="!inviteSettings; else inviteTemp" [started]="true"></app-spinner>
+    <ng-template #inviteTemp>
+        <div class="d-flex mt-3">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Guild</th>
+                        <td>
+                            <select [(ngModel)]="inviteSettingsFields.guild_id" class="my-3">
+                                <option *ngFor="let g of guilds" [ngValue]="g.id">{{ g.name }}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Message</th>
+                        <td>
+                            <input type="text" [(ngModel)]="inviteSettingsFields.message" class=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Invite Code</th>
+                        <td>
+                            <input type="text" [(ngModel)]="inviteSettingsFields.invite_code" class=""/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="ml-auto mb-auto">
+                <div class="mb-3">
+                    <button class="bg-green w-100" (click)="updateInvite()">UPDATE INVITE</button>
+                </div>
+                <div>
+                    <button class="bg-orange w-100" (click)="resetInvite()">RESET INVITE</button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

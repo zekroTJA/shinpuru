@@ -1,0 +1,16 @@
+<div class="navbar-container">
+  <div class="navbar">
+    <div class="items shade">
+      <div
+        *ngFor="let r of routes"
+        class="item"
+        [class.active]="currentPath === r.route"
+        (click)="navigate(r)"
+      >
+        <img src="/assets/{{ r.icon }}" />
+        <span class="content">{{ r.displayname }}</span>
+        <span *ngIf="r.beta" class="beta-tag">beta</span>
+      </div>
+    </div>
+  </div>
+</div>

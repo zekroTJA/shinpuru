@@ -1,0 +1,55 @@
+<div class="request-container">
+  <p class="type-heading" [style.background-color]="typeColor">
+    {{ request.status | unbanrequestState | uppercase }}
+  </p>
+  <div class="inner-container">
+    <div class="d-flex">
+      <div>
+        <h4>REQUESTER</h4>
+        <p>
+          {{ request.user_tag }}
+          <span class="embedded">{{ request.user_id }}</span>
+        </p>
+
+        <h4 class="mt-3">REQUESTERS MESSAGE</h4>
+        <p>{{ request.message }}</p>
+
+        <div *ngIf="request.status !== UnbanRequestState.PENDING">
+          <h4 class="mt-3">PROCESSED BY</h4>
+          <div *ngIf="processedBy; else processedByID" class="d-flex">
+            <img
+              class="avi"
+              [src]="processedBy?.avatar_url | discordAsset: '':32"
+            />
+            <div>
+              <p>
+                {{ processedBy?.username }}#{{ processedBy?.discriminator }}
+              </p>
+              <p class="small">{{ request.processed_by }}</p>
+            </div>
+          </div>
+          <ng-template #processedByID
+            ><p>{{ request.processed_by }}</p></ng-template
+          >
+
+          <h4 class="mt-3">PROCESSORS MESSAGE</h4>
+          <p>{{ request.processed_message }}</p>
+        </div>
+      </div>
+      <div
+        class="controls"
+        *ngIf="showControls && request.status === UnbanRequestState.PENDING"
+      >
+        <button (click)="accept.emit()" class="bg-green">ACCEPT</button>
+        <button (click)="decline.emit()" class="bg-red">DECLINE</button>
+      </div>
+    </div>
+
+    <div class="footer d-flex">
+      <p>Submitted: {{ dateFormat(request.created) }}</p>
+      <p *ngIf="showControls">
+        &nbsp;&nbsp;|&nbsp;&nbsp;<a (click)="reports.emit()">Show Reports</a>
+      </p>
+    </div>
+  </div>
+</div>

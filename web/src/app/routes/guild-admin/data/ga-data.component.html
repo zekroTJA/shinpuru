@@ -1,0 +1,79 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+  <div>
+    <h3>Data Removal</h3>
+    <p class="mt-4">
+      Here you can delete <strong>ALL</strong> data stored in shinpuru's database
+      and object storage associated to this guild.<br />
+      This includes the following data sets:
+    </p>
+    <ul>
+      <li><strong>All Reports and associated image data</strong></li>
+      <li><strong>All backups and associated data</strong></li>
+      <li><strong>Karma Scores, Rules, Settings and Blocklist</strong></li>
+      <li>All starboard entries and configuration</li>
+      <li>All guild log entries</li>
+      <li>Guild Settings</li>
+      <li>Permission Specifications</li>
+      <li>Tags</li>
+      <li>Antiraid Settings and Joinlog</li>
+      <li>Unban Requests</li>
+    </ul>
+    <i class="small">This action can only be performed once every 24 hours.</i>
+    <div class="delete-container mt-4">
+      <button class="delete-button mr-3" (click)="onGuildDataDelete()">
+        DELETE ALL GUILD DATA PERMANENTLY
+      </button>
+      <div class="slider">
+        <app-slider class="slider" [(ngModel)]="leaveAfter"
+          >Remove Bot from Guild after deletion</app-slider
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Delete ALL guild data?</h4>
+  </div>
+  <div class="modal-body">
+    <p>
+      Do you really want to delete <strong>ALL</strong> guild data
+      <strong>PERMANENTLY</strong>?<br />
+      This includes the following information:
+    </p>
+    <ul>
+      <li><strong>All Reports and associated image data</strong></li>
+      <li><strong>All backups and associated data</strong></li>
+      <li><strong>Karma Scores, Rules, Settings and Blocklist</strong></li>
+      <li>All starboard entries and configuration</li>
+      <li>All guild log entries</li>
+      <li>Guild Settings</li>
+      <li>Permission Specifications</li>
+      <li>Tags</li>
+      <li>Antiraid Settings and Joinlog</li>
+      <li>Unban Requests</li>
+    </ul>
+    <p>
+      Please enter the guild name below to confirm.<br />
+      <span class="embedded">{{ guild.name }}</span>
+    </p>
+    <input
+      type="text"
+      class="w-100"
+      [(ngModel)]="validator"
+      placeholder="Guild Name"
+    />
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="modal.close(true)"
+      class="bg-red"
+      [disabled]="validator !== guild.name"
+    >
+      DELETE ALL DATA
+    </button>
+    <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+  </div>
+</ng-template>

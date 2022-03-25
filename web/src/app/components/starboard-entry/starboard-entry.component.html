@@ -1,0 +1,19 @@
+<div class="starboard-entry-container">
+  <div class="header">
+    <img [src]="entry.author_avatar_url | discordAsset: '':32" />
+    <span>{{ entry.author_username }}</span>
+    <span class="score"> {{ entry.score }} ⭐ </span>
+  </div>
+  <div class="content">
+    <span>{{ entry.content | capText: 240 }}</span>
+  </div>
+  <div class="media">
+    <img *ngFor="let murl of imageUrls" [src]="murl" />
+    <video
+      *ngFor="let murl of videoUrls"
+      [src]="murl"
+      controls
+      [volume]="0"
+    ></video>
+  </div>
+</div>

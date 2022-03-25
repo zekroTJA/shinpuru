@@ -1,0 +1,19 @@
+<div class="starboard-container">
+    <div class="d-flex mb-3 mt-1 ml-1">
+        <h6>Starboard</h6>
+        <button class="ml-auto btn-sort" (click)="sortOrderChange.emit()">Sort by {{sortOrder}}</button>
+    </div>
+    <app-spinner id="spinner-load-permissions" *ngIf="starboard == null; else scoreboardContainer" [started]="true"></app-spinner>
+    <ng-template #scoreboardContainer>
+        <i *ngIf="starboard.length < 1">Starboard is empty. :(</i>
+        <a 
+            *ngFor="let e of starboard; index as i" 
+            class="scoreboard-entry"
+            href="{{ e.message_url }}"
+            target="_blank"
+            title="{{ e.author_username }}"
+        >
+            <app-starboard-entry [entry]="e"></app-starboard-entry>
+        </a>
+    </ng-template>
+</div>

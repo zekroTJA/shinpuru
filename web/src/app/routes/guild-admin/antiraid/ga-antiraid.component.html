@@ -1,0 +1,214 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+  <div *ngIf="!antiraidSettings">
+    <app-skeleton-tile height="44px" margin="0 0 20px 0"></app-skeleton-tile>
+    <app-skeleton-tile
+      height="153px"
+      margin="0 0 20px 0"
+      delay="0.05s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="110px"
+      margin="0 0 20px 0"
+      delay="0.1s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="110px"
+      margin="0 0 40px 0"
+      delay="0.15s"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="44px"
+      width="75px"
+      delay="0.2s"
+      margin="0 0 40px 0"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="33px"
+      delay="0.25s"
+      margin="0 0 10px 0"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      height="33px"
+      delay="0.25s"
+      margin="0 0 10px 0"
+    ></app-skeleton-tile>
+  </div>
+  <div *ngIf="antiraidSettings">
+    <app-slider [(ngModel)]="antiraidSettings.state"
+      >Antiraid-System enabled</app-slider
+    >
+
+    <div class="mt-3 mw">
+      <h3>Explaination</h3>
+      <i class="small">
+        The antiraid system works with the
+        <a href="https://en.wikipedia.org/wiki/Token_bucket" target="_blank"
+          >token bucket</a
+        >
+        system. It works like a bucket which can fit the number of
+        <span class="embedded">Burst Amounts</span> of tokens. At the start, the
+        bucket is completely filled up with tokens. Every time a member joins,
+        one of these tokens is consumed and every time, the specified
+        <span class="embedded">Regeneration Period</span> is elapsed, one token
+        is added to the bucket until it is full again. If the bucket is empty
+        and another token is tried to be reserved, the antiraid system
+        triggers.<br />
+        Following, the servers
+        <span class="embedded">verification level</span> is set to
+        <span class="embedded">highest</span>
+        and over the next 24 hours, all joining members are listed in the
+        joinlog below. This list is then saved for the following 48 hours after
+        the system has triggered.
+      </i>
+    </div>
+
+    <div class="mt-4 mw">
+      <label for="i-regeneration">
+        Regeneration Duration<br />
+        <i class="small"
+          >This is the average, nominal amount of seconds between two users join
+          your server. Maybe under or overcut this value as you prefer or as it
+          works bet on your guild.</i
+        >
+      </label>
+      <input
+        id="i-regeneration"
+        type="number"
+        min="1"
+        [(ngModel)]="antiraidSettings.regeneration_period"
+      />
+    </div>
+
+    <div class="mt-4 mw">
+      <label for="i-burst">
+        Burst Amounts<br />
+        <i class="small"
+          >This is the amount of users which can join in a short period of time
+          without triggering the antiraid system. It works like a buffer which
+          increases by one per join and decreases every elapse of the
+          regeneration duration defined above.
+        </i>
+      </label>
+      <input
+        id="i-burst"
+        type="number"
+        min="1"
+        [(ngModel)]="antiraidSettings.burst"
+      />
+    </div>
+
+    <div class="mt-4 mw">
+      Enable User Verification<span class="beta-tag">beta</span><br />
+      <i class="small"
+        >When enabled, the user verification will be enabled automatically when
+        the antiraid system triggers.
+      </i>
+      <div class="mt-2">
+        <app-slider [(ngModel)]="antiraidSettings.verification"
+          >Enable</app-slider
+        >
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button (click)="onSave()">SAVE</button>
+    </div>
+
+    <div class="mt-5">
+      <div class="d-flex justify-content-between">
+        <h3>Antiraid Joinlog Records</h3>
+        <div class="d-flex">
+          <button
+            (click)="onDownloadJoinlog()"
+            class="jl-btn sec-btn mr-2"
+            [disabled]="joinlog?.length < 1"
+            title="Download as JSON"
+          >
+            <img height="25" src="/assets/download.svg" />
+          </button>
+          <button
+            (click)="flushJoinlog()"
+            class="jl-btn refresh sec-btn mr-2"
+            title="Delete all list entries"
+          >
+            <img height="25" src="/assets/delete.svg" />
+          </button>
+          <button
+            (click)="fetchJoinlog()"
+            class="jl-btn refresh sec-btn mr-3"
+            title="Refresh"
+          >
+            <img height="25" src="/assets/refresh.svg" />
+          </button>
+          <button
+            (click)="kickSelected()"
+            [disabled]="!isAnySelected"
+            class="jl-btn sec-btn bg-red mr-2"
+            title="Kick selected"
+          >
+            <img height="25" class="mr-1" src="/assets/kick.svg" />
+            <span>KICK</span>
+          </button>
+          <button
+            (click)="banSelected()"
+            [disabled]="!isAnySelected"
+            class="jl-btn sec-btn bg-red"
+            title="Ban selected"
+          >
+            <img height="25" class="mr-1" src="/assets/ban.svg" />
+            <span>BAN</span>
+          </button>
+        </div>
+      </div>
+      <div class="mt-4">
+        <i *ngIf="joinlog?.length < 1; else joinlogTable"
+          >No entries available currently.</i
+        >
+        <ng-template #joinlogTable>
+          <i class="small"
+            >The data in this table only persists for 48 hours after the trigger
+            of the antiraid system.</i
+          >
+          <table class="w-100 mt-2">
+            <tbody>
+              <tr>
+                <th>User ID</th>
+                <th>Tag</th>
+                <th>Account Age</th>
+                <th>Timestamp</th>
+                <th>
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="selectedAll"
+                    (change)="toggleSelectAll()"
+                  />
+                </th>
+              </tr>
+              <tr *ngFor="let e of joinlog; index as i">
+                <td>{{ e.user_id }}</td>
+                <td>{{ e.tag }}</td>
+                <td>
+                  {{ sinceFormat(e.account_created) }}
+                  <span class="secondary"
+                    >({{ dateFormat(e.account_created) }})</span
+                  >
+                </td>
+                <td>
+                  {{ dateFormat(e.timestamp) }}
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="joinlog[i].selected"
+                    (change)="clickEntrySelect()"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<a class="btn" (click)="onClick()">
+    <div class="container-slider">
+        <div class="bar" [class.baractive]="value"></div>
+        <div class="nob" [class.nobactive]="value"></div>
+    </div>
+    <ng-content></ng-content>
+</a>

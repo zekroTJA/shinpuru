@@ -1,0 +1,58 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+.login-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  font-family: 'Cantarell';
+  font-size: 1.2rem;
+  text-align: center;
+
+  > section {
+    padding: 40vh 10vw 0 10vw;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > div {
+      max-width: 21em;
+    }
+
+    button {
+      color: $c-bg-general;
+      background-color: $c-font-general;
+
+      > img {
+        height: 1em;
+        margin-right: 0.5em;
+      }
+    }
+  }
+
+  .discord {
+    background-color: $c-blurple;
+
+    button {
+      color: $c-blurple;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    > section {
+      padding: 0 10vw 0 10vw;
+      justify-content: center;
+    }
+  }
+}
+
+.hint {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}

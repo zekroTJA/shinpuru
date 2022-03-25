@@ -1,0 +1,71 @@
+label,
+input {
+  display: block;
+}
+
+table,
+tbody,
+tr,
+th,
+td {
+  border: solid 1px #6c757d;
+}
+
+th,
+td {
+  padding: 5px 10px;
+}
+
+td > button {
+  padding: 2px 5px;
+}
+
+.small {
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+.karma-rule-input {
+  max-width: 80px;
+  text-align: center;
+}
+
+.karma-rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: rgba(black, 0.2);
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover .btn-rule-remove {
+    opacity: 1;
+  }
+
+  .btn-rule-remove {
+    opacity: 0;
+    background-color: #f44336;
+    width: 25px;
+    height: 25px;
+    padding: 0px;
+    background-image: url('/assets/delete.svg');
+    background-size: 75%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.2s ease;
+  }
+}
+
+.message-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rule-container {
+  display: flex;
+  flex-wrap: wrap;
+}

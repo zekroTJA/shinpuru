@@ -1,0 +1,205 @@
+<div class="mt-4 send-header" *ngIf="guild && textChannels; else channelLoader">
+  <div>
+    <label>Channel</label>
+    <select [(ngModel)]="channelId">
+      <option *ngFor="let chan of textChannels" [value]="chan.id">
+        {{ chan.name }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <label>Edit Message</label>
+    <input type="text" [(ngModel)]="editMessageId" placeholder="Message ID" />
+  </div>
+  <div>
+    <button
+      [disabled]="!channelId || !(embed.title || embed.description)"
+      (click)="sendMessage()"
+    >
+      {{ editMessageId ? 'Edit' : 'Send' }}
+    </button>
+  </div>
+</div>
+
+<ng-template #channelLoader>
+  <div class="mt-4">
+    <app-skeleton-tile width="100%" height="83px"></app-skeleton-tile>
+  </div>
+</ng-template>
+
+<div class="mt-4 container">
+  <div class="embed-builder">
+    <label for="title">Title</label>
+    <input id="title" type="text" [(ngModel)]="embed.title" />
+
+    <label for="description">Description</label>
+    <textarea id="description" [(ngModel)]="embed.description"></textarea>
+
+    <label for="embedurl">Embed URL</label>
+    <input id="embedurl" type="text" [(ngModel)]="embed.url" />
+
+    <label for="color">Color</label>
+    <div class="color-picker">
+      <input
+        id="color"
+        type="color"
+        [(ngModel)]="embed.color_hex"
+        (ngModelChange)="updateColor($event)"
+      />
+      <input
+        type="text"
+        [(ngModel)]="embed.color_hex"
+        (ngModelChange)="updateColor($event)"
+      />
+    </div>
+
+    <label>Fields</label>
+    <div *ngFor="let field of embed.fields; index as i" class="embed-field">
+      <img
+        class="close-btn"
+        src="/assets/close.svg"
+        (click)="removeEmbedField(i)"
+      />
+      <div class="sub-container">
+        <label for="field-name-{{ i }}">Name</label>
+        <input
+          id="field-name-{{ i }}"
+          type="text"
+          [(ngModel)]="embed.fields[i].name"
+        />
+        <label for="field-value-{{ i }}">Value</label>
+        <input
+          id="field-value-{{ i }}"
+          type="text"
+          [(ngModel)]="embed.fields[i].value"
+        />
+        <div class="slider">
+          <app-slider [(ngModel)]="embed.fields[i].inline">Inline</app-slider>
+        </div>
+      </div>
+    </div>
+    <button class="btn-add-field" (click)="addEmbedField()">+</button>
+
+    <label>Thumbnail</label>
+    <div class="sub-container">
+      <label for="thumbnail-url">URL</label>
+      <input id="thumbnail-url" type="text" [(ngModel)]="embed.thumbnail.url" />
+      <label for="thumbnail-proxy-url">Proxy URL</label>
+      <input
+        id="thumbnail-proxy-url"
+        type="text"
+        [(ngModel)]="embed.thumbnail.proxy_url"
+      />
+      <label for="thumbnail-proxy-url">Dimensions</label>
+      <div class="d-flex">
+        <input
+          type="text"
+          class="mr-3"
+          placeholder="width"
+          [(ngModel)]="embed.thumbnail.width"
+        />
+        x
+        <input
+          type="text"
+          class="ml-3"
+          placeholder="height"
+          [(ngModel)]="embed.thumbnail.height"
+        />
+      </div>
+    </div>
+
+    <label>Image</label>
+    <div class="sub-container">
+      <label for="image-url">URL</label>
+      <input id="image-url" type="text" [(ngModel)]="embed.image.url" />
+      <label for="image-proxy-url">Proxy URL</label>
+      <input
+        id="image-proxy-url"
+        type="text"
+        [(ngModel)]="embed.image.proxy_url"
+      />
+      <label for="image-proxy-url">Dimensions</label>
+      <div class="d-flex">
+        <input
+          type="text"
+          class="mr-3"
+          placeholder="width"
+          [(ngModel)]="embed.image.width"
+        />
+        x
+        <input
+          type="text"
+          class="ml-3"
+          placeholder="height"
+          [(ngModel)]="embed.image.height"
+        />
+      </div>
+    </div>
+
+    <label>Footer</label>
+    <div class="sub-container">
+      <label for="footer-text">Text</label>
+      <input id="footer-text" type="text" [(ngModel)]="embed.footer.text" />
+      <label for="footer-icon-url">Icon URL</label>
+      <input
+        id="footer-icon-url"
+        type="text"
+        [(ngModel)]="embed.footer.icon_url"
+      />
+      <label for="footer-proxy-icon-url">Proxy Icon URL</label>
+      <input
+        id="footer-proxy-icon-url"
+        type="text"
+        [(ngModel)]="embed.footer.proxy_icon_url"
+      />
+    </div>
+  </div>
+
+  <div>
+    <div class="emebd-preview" [style.border-color]="composedEmbed.color_hex">
+      <div class="d-flex">
+        <div class="content">
+          <div *ngIf="composedEmbed.title" class="header">
+            <a *ngIf="composedEmbed.url" [href]="composedEmbed.url">
+              {{ composedEmbed.title }}
+            </a>
+            <a *ngIf="!embed.url">
+              {{ composedEmbed.title }}
+            </a>
+          </div>
+          <div class="description" *ngIf="composedEmbed.description">
+            <p>{{ composedEmbed.description }}</p>
+          </div>
+          <div *ngIf="composedEmbed.fields?.length > 0" class="fields">
+            <div
+              *ngFor="let f of composedEmbed.fields"
+              [style.display]="f.inline ? 'inline-block' : 'block'"
+            >
+              <p class="heading">{{ f.name }}</p>
+              <p>{{ f.value }}</p>
+            </div>
+          </div>
+          <img
+            *ngIf="composedEmbed.image?.url"
+            class="image"
+            [src]="composedEmbed.image?.url"
+          />
+          <div *ngIf="composedEmbed.footer?.text" class="footer">
+            <img [src]="composedEmbed.footer?.icon_url" />
+            <span>{{ composedEmbed.footer?.text }}</span>
+          </div>
+        </div>
+        <div *ngIf="composedEmbed.thumbnail?.url" class="thumbnail">
+          <img [src]="composedEmbed.thumbnail?.url" />
+        </div>
+      </div>
+    </div>
+    <div class="json-data">
+      <textarea
+        [value]="embed | json"
+        (input)="jsonInput($event.target.value)"
+        [class.error]="erroneousJson"
+      ></textarea>
+    </div>
+  </div>
+</div>

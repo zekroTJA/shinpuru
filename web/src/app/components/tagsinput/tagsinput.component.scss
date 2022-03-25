@@ -1,0 +1,35 @@
+@import '../../../sass/vars';
+
+$c-tags: $c-blurple;
+
+@mixin flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.input-control {
+  @include flex-wrap;
+}
+
+.suggested-tags {
+  @include flex-wrap;
+}
+
+.tag {
+  padding: 3px 6px;
+  background-color: $c-tags;
+  border-radius: 5px;
+  margin: 10px 10px 0px 0px;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 1em;
+    height: 1em;
+    margin-left: 7px;
+  }
+
+  &.invalid {
+    background-color: $c-red;
+  }
+}

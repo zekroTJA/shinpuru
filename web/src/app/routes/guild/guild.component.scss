@@ -1,0 +1,330 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+#heading-container {
+  display: flex;
+
+  h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  img {
+    width: 50px;
+    height: 50px;
+    @include round;
+  }
+
+  * {
+    margin-right: 20px;
+    @include my-auto;
+  }
+
+  p {
+    font-size: 14px;
+  }
+}
+
+#user-info {
+  width: 100%;
+  background-color: $c-nqblack;
+  display: flex;
+  border-radius: 10px;
+  padding: 20px 10px 20px 20px;
+
+  @include hover-btn(1.01);
+
+  p.embedded {
+    font-size: 14px;
+  }
+
+  img {
+    border-radius: 100%;
+    height: 80px;
+    width: 80px;
+    margin-right: 20px;
+  }
+
+  .permlvl {
+    margin-right: 0;
+    margin-left: auto;
+    width: 100px;
+    border-radius: 5px;
+    display: flex;
+
+    div {
+      text-align: center;
+      width: 100%;
+      @include my-auto;
+
+      p {
+        margin-bottom: 0;
+      }
+
+      .pl-title {
+        font-size: 11px;
+      }
+
+      .pl-lvl {
+        font-size: 22px;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.dropdown-container {
+  background-color: rgba(black, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.scoreboard-container {
+  @media only screen and (min-width: 1650px) {
+    display: block;
+    position: fixed;
+    top: 50px;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    overflow: auto;
+    border-radius: 10px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+    }
+  }
+
+  margin-top: 30px;
+  widows: 100%;
+}
+
+.starboard-container {
+  @media only screen and (min-width: 1650px) {
+    display: block;
+    position: fixed;
+    top: 50px;
+    bottom: 20px;
+    left: 20px;
+    width: 320px;
+    overflow: auto;
+    border-radius: 10px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+    }
+  }
+
+  margin-top: 30px;
+  widows: 100%;
+}
+
+.btn-save {
+  width: 100%;
+  background-color: $c-green;
+}
+
+.perms-role {
+  font-size: 16px;
+}
+
+.permission-view {
+  ul {
+    list-style-type: none;
+  }
+
+  .remove-btn {
+    margin-left: 10px;
+    @include my-auto;
+    width: 16px;
+    height: 16px;
+    background-image: url('/assets/close.svg');
+    background-size: contain;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.add-permission {
+  background-color: $c-nqblack;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.display-more-btn {
+  padding: 10px 30px !important;
+  @include mx-auto;
+}
+
+.security-embed {
+  border: solid 2px $c-lime;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 250px;
+  background-color: rgba($c-lime, 0.2);
+
+  &.disabled {
+    border-color: $c-orange;
+    background-color: rgba($c-orange, 0.2);
+
+    & button {
+      background-color: $c-orange;
+    }
+  }
+
+  > div {
+    margin-top: 5px;
+  }
+
+  > .status > img {
+    margin-right: 5px;
+  }
+
+  button {
+    padding: 0px;
+    margin-top: auto;
+    width: 100%;
+    background-color: $c-green;
+  }
+}
+
+.security-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  > div {
+    margin-right: 20px;
+    margin-top: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.backups-container {
+  width: fit-content;
+
+  > * {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+      background-color: rgba($c-blurple, 0.5);
+    }
+  }
+}
+
+.backups-entry {
+  display: flex;
+  background-color: rgba(black, 0.15);
+  padding: 5px 10px;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: space-between;
+
+  .number {
+    background-color: rgba(black, 0.25);
+    padding: 0px 10px;
+    border-radius: 5px;
+  }
+
+  > button {
+    padding: 0px 10px;
+    background-color: #00000069;
+  }
+
+  > * {
+    margin-right: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.rep-reason {
+  width: 100%;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+.advanced {
+  background-color: rgba($c-orange, 0.25);
+}
+
+.advanced-button {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 50% !important;
+  width: 70px;
+  height: 70px;
+  padding: 10px !important;
+  cursor: pointer;
+  opacity: 0.9;
+  margin: 10px !important;
+  outline: none;
+
+  @include hover-btn(1.07, 5px);
+}
+
+.spoiler-buttons {
+  margin-left: auto;
+  > button {
+    padding: 6px 10px;
+    background-color: transparent;
+    border: solid 1px white;
+    font-size: 12px;
+    margin-left: 10px;
+  }
+}
+
+.btn-guild-settings {
+  background-image: url('/assets/settings.svg');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 0px;
+  min-height: 35px;
+  min-width: 35px;
+  margin-left: auto;
+  margin-right: 0px !important;
+}
+
+.btn-utilities {
+  display: flex;
+  align-items: center;
+  > img {
+    height: 1.2em;
+    width: 1.2em;
+    margin-right: 10px;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #user-info {
+    height: fit-content;
+  }
+}

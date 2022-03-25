@@ -1,0 +1,21 @@
+<div>
+    <app-spinner id="spinner-load-permissions" *ngIf="scoreboard == null; else scoreboardContainer" [started]="true"></app-spinner>
+    <ng-template #scoreboardContainer>
+        <i *ngIf="scoreboard.length < 1">Scoreboard is empty. :(</i>
+        <a 
+            *ngFor="let s of scoreboard; index as i" 
+            class="scoreboard-entry"
+            routerLink="/guilds/{{ guildID }}/{{ s.member.user.id }}"
+        >
+            <div class="index">
+                <span>#{{ i + 1 }}</span>
+            </div>
+            <img [src]="s.member.avatar_url" width="40" height="40"/>
+            <div>
+                <p class="m-0">{{s.member.user.username}}#{{s.member.user.discriminator}}</p>
+                <p class="embedded m-0">{{s.member.user.id}}</p>
+            </div>
+            <app-karma-tile class="ml-auto" [value]="s.value"></app-karma-tile>
+        </a>
+    </ng-template>
+</div>

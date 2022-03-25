@@ -1,0 +1,47 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+$nob-size: 18px;
+$bar-padding: 6px;
+$bar-width: 45px;
+
+$bar-height: $nob-size + $bar-padding;
+
+.btn {
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+}
+
+.container-slider {
+  padding: 0px;
+  width: $bar-width;
+  margin-right: 10px;
+}
+
+.bar {
+  width: $bar-width;
+  height: $bar-height;
+  border-radius: $bar-height;
+  background-color: rgba(0, 0, 0, 0.3);
+  @include transition25(all);
+}
+
+.nob {
+  position: relative;
+  top: -$nob-size - ($bar-padding / 2);
+  left: $bar-padding / 2;
+  width: $nob-size;
+  height: $nob-size;
+  border-radius: 100%;
+  background-color: white;
+  transition: all 0.25s ease;
+}
+
+.nobactive {
+  left: $bar-width - $nob-size - ($bar-padding / 2);
+}
+
+.baractive {
+  background-color: $c-blurple;
+}

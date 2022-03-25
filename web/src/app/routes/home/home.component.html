@@ -1,0 +1,81 @@
+<!-- @format -->
+
+<app-protip uid="logincommand">
+  You can use the
+  <a class="embedded link" href="/commands#login" target="_blank">/login</a>
+  command to log in to the web interface without logging in to your browser with
+  Discord.<br />
+  <br />
+  But before, you need to enable this feature
+  <a class="link" href="/usersettings#ota">here</a>.
+</app-protip>
+
+<div class="mt-4">
+  <div class="d-flex">
+    <div class="guilds-list-container">
+      <ng-template [ngIf]="!guilds">
+        <app-skeleton-tile
+          *ngFor="let i of [0, 1, 2, 3, 4, 5, 6]"
+          height="330px"
+          width="250px"
+          margin="0px 10px 20px 10px"
+          delay="0.{{ i }}s"
+        ></app-skeleton-tile>
+      </ng-template>
+      <ng-template [ngIf]="guilds">
+        <a
+          *ngFor="let g of guilds"
+          class="guild-container"
+          routerLink="/guilds/{{ g.id }}"
+        >
+          <div class="guild-tn">
+            <img
+              [src]="
+                g.icon_url | discordAsset: '/assets/dc-logo.svg':256:!!g.icon
+              "
+            />
+          </div>
+          <div class="info-container">
+            <h1 [title]="g.name">{{ g.name }}</h1>
+            <span>{{ g.member_count }} members</span>
+          </div>
+        </a>
+      </ng-template>
+    </div>
+  </div>
+
+  <div *ngIf="inviteSettings" class="no-guilds">
+    <h3 class="mb-3">You are not sharing any guild with shinpuru :(</h3>
+    <div *ngIf="inviteSettings.guild">
+      <p>
+        {{
+          inviteSettings.message ||
+            'Join this guild below to get experienced with shinpuru! ;)'
+        }}
+      </p>
+      <div class="d-flex">
+        <a
+          class="guild-container mx-auto"
+          [href]="inviteSettings.invite_url"
+          target="_blank"
+        >
+          <div class="guild-tn">
+            <img
+              [src]="
+                inviteSettings.guild.icon_url
+                  | discordAsset
+                    : '/assets/dc-logo.svg'
+                    : 512
+                    : !!inviteSettings.guild.icon
+              "
+            />
+          </div>
+          <div class="info-container">
+            <h1>{{ inviteSettings.guild.name }}</h1>
+            <p>{{ inviteSettings.guild.member_count }} members</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

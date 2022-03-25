@@ -1,0 +1,27 @@
+<div class="mt-4">
+  <p class="mb-4">
+    Welcome to the debug panel which zekro is using for testing stuff during
+    front end development! Why is this available in production? Because why not,
+    it's funny. 😁 If you want to contribute, feel free to do here what you
+    want. 😉
+  </p>
+  <div class="panel">
+    <h4>Notification Testing</h4>
+    <input #iHeader placeholder="header" />
+    <input #iText placeholder="text" />
+    <select #iType>
+      <option value="cyan">cyan</option>
+      <option value="red">red</option>
+      <option value="yellow">yellow</option>
+      <option value="green">green</option>
+    </select>
+    <input #iDuration type="number" placeholder="Duration" value="5" />
+    <button
+      (click)="
+        toasts.push(iText.value, iHeader.value, iType.value, iDuration.value)
+      "
+    >
+      GO!
+    </button>
+  </div>
+</div>

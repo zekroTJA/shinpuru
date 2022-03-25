@@ -1,0 +1,20 @@
+@import '../../../../sass/vars';
+
+label,
+input {
+  display: block;
+  width: 100%;
+}
+
+.btn-reset {
+  padding: 0 10px;
+  font-size: 0.8em;
+  margin-left: auto;
+}
+
+.warning {
+  border: solid 2px $c-orange;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba($c-orange, 0.1);
+}

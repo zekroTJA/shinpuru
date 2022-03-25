@@ -1,0 +1,81 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+
+  50% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+}
+
+.white {
+  color: white !important;
+}
+
+.fade-out {
+  animation: fadeOut 0.6s ease !important;
+}
+
+.toast-container {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  background-color: white;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease;
+  margin-bottom: 10px;
+  box-shadow: 0px 5px 15px 0px rgb(0 0 0 / 25%);
+
+  .close-btn {
+    margin-right: 0px;
+    margin-left: auto;
+    padding-left: 10px;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* COLORS */
+
+.c-cyan {
+  background-color: $c-blurple;
+}
+
+.c-red {
+  background-color: $c-red;
+}
+
+.c-yellow {
+  background-color: $c-yellow;
+}
+
+.c-green {
+  background-color: $c-green;
+}

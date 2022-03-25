@@ -1,0 +1,9 @@
+<div 
+    class="role-container" 
+    [style.border-color]="role.color ? toHexClr(role.color) : 'white'"
+>
+    <div
+        [style.background-color]="role.color ? toHexClr(role.color) : 'white'"
+    ></div>
+    <p>{{ role.name }}</p>
+</div>

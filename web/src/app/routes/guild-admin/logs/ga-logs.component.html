@@ -1,0 +1,101 @@
+<app-guild-admin-navbar></app-guild-admin-navbar>
+<div class="guild-settings-container">
+  <div>
+    <div *ngIf="!state">
+      <app-skeleton-tile height="44px" margin="0 0 40px 0"></app-skeleton-tile>
+    </div>
+    <div *ngIf="state">
+      <app-slider [(ngModel)]="state.state" (switch)="onEnabledChanged($event)"
+        >Enable Guild Logging</app-slider
+      >
+      <p *ngIf="!state.state" class="warn">
+        Attention: Guild logging is disabled, so you will not get any notice of
+        any guild events!
+      </p>
+    </div>
+
+    <div *ngIf="!entries">
+      <app-skeleton-tile
+        height="44px"
+        margin="40px 0 20px 0"
+        delay="0.05s"
+      ></app-skeleton-tile>
+      <app-skeleton-tile
+        height="33px"
+        delay="0.1s"
+        margin="0 0 10px 0"
+      ></app-skeleton-tile>
+    </div>
+    <div *ngIf="entries" class="mt-4">
+      <div class="d-flex">
+        <div class="page-dialer mr-3">
+          <button (click)="pageDial(-1)"></button>
+          <span>{{ offset + 1 }} ... {{ pageEnd }} ({{ entriesCount }})</span>
+          <button (click)="pageDial(1)"></button>
+        </div>
+        <select
+          [selected]="severity"
+          (change)="onSeverityChange($event.target.value)"
+        >
+          <option [value]="-1">{{ getSeverity(-1).name }}</option>
+          <option [value]="0">{{ getSeverity(0).name }}</option>
+          <option [value]="1">{{ getSeverity(1).name }}</option>
+          <option [value]="2">{{ getSeverity(2).name }}</option>
+          <option [value]="3">{{ getSeverity(3).name }}</option>
+          <option [value]="4">{{ getSeverity(4).name }}</option>
+        </select>
+        <button class="btn-delete-entries ml-auto" (click)="deleteEntries()">
+          <img src="/assets/delete.svg" height="20" />
+          <span>{{
+            entriesSelected.length === 0
+              ? 'Delete ALL entries'
+              : 'Delete ' + entriesSelected.length + ' selected entries'
+          }}</span>
+        </button>
+      </div>
+      <table class="mt-3">
+        <tbody>
+          <tr>
+            <th>Timestamp</th>
+            <th>Severity</th>
+            <th>Module</th>
+            <th>Message</th>
+          </tr>
+          <tr
+            *ngFor="let e of entries"
+            (click)="selectUnselectEntry(e)"
+            class="entry-line"
+            [class.selected]="entriesSelected.includes(e)"
+          >
+            <td>{{ dateFormat(e.timestamp) }}</td>
+            <td
+              class="severity-field"
+              [style.background-color]="getSeverity(e.severity).color"
+            >
+              {{ getSeverity(e.severity).name }}
+            </td>
+            <td>{{ e.module }}</td>
+            <td>{{ e.message }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalDeleteAll let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Delete ALL log entries?</h4>
+  </div>
+  <div class="modal-body">
+    <p>
+      Do you really want to delete <strong>ALL {{ entriesCount }}</strong> log
+      entries for this guild?<br />
+      This action can not be undone!
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close(true)" class="bg-red">DELETE ALL</button>
+    <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+  </div>
+</ng-template>

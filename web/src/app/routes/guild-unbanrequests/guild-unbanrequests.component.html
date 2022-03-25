@@ -1,0 +1,59 @@
+<div>
+  <div *ngIf="!unbanRequests" class="mt-4">
+    <app-skeleton-tile
+      width="100%"
+      height="300px"
+      margin="0 0 20px 0"
+    ></app-skeleton-tile>
+    <app-skeleton-tile
+      width="100%"
+      height="300px"
+      delay="0.2s"
+    ></app-skeleton-tile>
+  </div>
+  <div *ngIf="unbanRequests?.length == 0" class="empty-list">
+    <i>There are currently no open or closed unban requests.</i>
+  </div>
+  <div *ngFor="let r of unbanRequests" class="mt-4">
+    <app-unbanrequest
+      [request]="r"
+      [showControls]="true"
+      (reports)="onReports(r)"
+      (accept)="onAccept(r)"
+      (decline)="onDecline(r)"
+    ></app-unbanrequest>
+  </div>
+</div>
+
+<ng-template #modalProcess let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      {{ isAccept ? 'ACCEPT' : 'DECLINE' }} UNBAN REQUEST
+    </h4>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>{{ isAccept ? 'Accept' : 'Decline' }}</strong> unban request of
+      user
+      <strong>{{ selected.user_tag }}</strong>
+      <span class="embedded">{{ selected.user_id }}</span
+      >.
+    </p>
+    <h4>MESSAGE</h4>
+    <textarea
+      rows="5"
+      class="message mt-2"
+      [(ngModel)]="processMessage"
+    ></textarea>
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="modal.close(true)"
+      class="bg-orange"
+      [disabled]="!processMessage"
+    >
+      EXECUTE {{ isAccept ? 'ACCEPT' : 'DECLINE' }}
+    </button>
+    <button (click)="modal.close()" ngbAutofocus>CANCEL</button>
+  </div>
+</ng-template>

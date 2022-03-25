@@ -1,0 +1,96 @@
+@import '../../../../sass/vars';
+@import '../../../../sass/mixins';
+
+label,
+input {
+  display: block;
+}
+
+table,
+tbody,
+tr,
+th,
+td {
+  border: solid 1px #6c757d;
+}
+
+td,
+th {
+  padding: 2px 5px;
+}
+
+table {
+  width: 100%;
+}
+
+.severity-field {
+  box-sizing: content-box;
+}
+
+.warn {
+  background-color: rgba($c-red, 0.5);
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.page-dialer {
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-right: 10px;
+    &:last-child {
+      margin-right: none;
+    }
+  }
+
+  > button {
+    padding: 0px;
+    height: 25px;
+    width: 25px;
+    background-image: url('/assets/arrow.svg');
+    background-size: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: none;
+
+    &:first-child {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.btn-delete {
+  position: absolute;
+}
+
+.entry-line {
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(white, 0.05);
+  }
+  &.selected {
+    background-color: rgba(white, 0.15);
+  }
+}
+
+.btn-delete-entries {
+  padding: 3px 10px;
+  background-color: $c-red;
+  display: flex;
+  align-items: center;
+
+  > img {
+    margin-right: 10px;
+  }
+
+  @media screen and (max-width: 490px) {
+    > img {
+      margin-right: 0;
+    }
+    > span {
+      display: none;
+    }
+  }
+}

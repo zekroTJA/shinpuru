@@ -1,0 +1,68 @@
+@import '../../../sass/vars';
+@import '../../../sass/mixins';
+
+.navbar {
+  position: fixed;
+  align-content: start;
+  top: 90px;
+  left: 25px;
+  width: $guild-settings-nav-width;
+  padding: 0px;
+  z-index: 10;
+
+  > .items {
+    width: 100%;
+    background-color: $c-nqblack;
+    border-radius: 10px;
+    overflow: hidden;
+
+    > .item {
+      display: flex;
+      width: 100%;
+      padding: 8px 10px;
+      align-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      text-transform: capitalize;
+      border-radius: 10px;
+
+      @include transition25;
+
+      > img {
+        width: 25px;
+        height: 25px;
+        margin-right: 10px;
+      }
+
+      &:hover {
+        background-color: rgba(black, 0.3);
+      }
+    }
+  }
+
+  @media screen and (max-width: 750px) {
+    top: unset;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    justify-content: center;
+    display: flex;
+
+    > .items {
+      width: fit-content;
+      display: flex;
+      > .item {
+        width: fit-content;
+        > img {
+          margin-right: 0;
+        }
+        > span {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.active {
+  background-color: rgba($c-blurple, 0.5) !important;
+}

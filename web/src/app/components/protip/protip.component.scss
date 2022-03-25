@@ -1,0 +1,41 @@
+@import '../../../sass/vars';
+
+.container {
+  position: fixed;
+  z-index: 100;
+  width: 500px;
+  max-width: 70vw;
+  padding: 15px 20px;
+  background-color: darken($c-cyan, 20);
+  border-radius: 10px;
+  box-shadow: 0px 8px 25px 10px rgba(black, 0.35);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  > .header {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+
+    > .btn-close {
+      height: 23px;
+      width: 23px;
+      opacity: 0.8;
+      transition: all 0.25s ease;
+      background-size: contain;
+      background-position: center;
+      background-image: url('/assets/close.svg');
+      margin-left: auto;
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

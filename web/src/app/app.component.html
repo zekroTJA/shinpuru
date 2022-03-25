@@ -1,0 +1,27 @@
+<app-header id="header"></app-header>
+<div
+  *ngIf="isSearch"
+  id="search-bar-container"
+  (click)="onSearchBgClick($event)"
+>
+  <app-global-search (navigate)="onSearchNavigate($event)"></app-global-search>
+</div>
+<div class="transition" [class.blur]="isSearch">
+  <div id="toasts-container">
+    <app-toast
+      *ngFor="let t of toasts.toasts"
+      [heading]="t.heading"
+      [color]="t.type"
+      [delay]="t.delay"
+      [closable]="t.closable"
+      (hidden)="toasts.remove(t)"
+    >
+      {{ t.text }}
+    </app-toast>
+  </div>
+  <div id="router-outlet">
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

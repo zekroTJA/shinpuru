@@ -1,0 +1,26 @@
+<div class="login-container">
+  <section class="discord">
+    <div>
+      <p>Either log in with your Discord Account via OAuth2</p>
+      <div class="mt-4">
+        <button (click)="onDiscordLogin()">
+          <img src="assets/dc-logo-blurple.svg" />
+          <span>Login with Discord</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div>
+      <p>Or DM the following Code to shinpuru on Discord</p>
+      <div class="mt-4">
+        <app-hider [value]="code"></app-hider>
+      </div>
+      <p class="mt-5 hint">
+        Alternatively, you can also use the
+        <span class="embedded">/login</span> command.
+      </p>
+    </div>
+  </section>
+</div>

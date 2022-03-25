@@ -1,0 +1,59 @@
+label,
+input {
+  display: block;
+}
+
+.small {
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+table,
+tbody,
+tr,
+th,
+td {
+  border: solid 1px #6c757d;
+}
+
+a {
+  color: cyan !important;
+  text-decoration: underline !important;
+}
+
+.heading {
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+}
+
+th,
+td {
+  padding: 5px 10px;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.sec-btn {
+  background-color: rgba(black, 0.25);
+  outline: none;
+  padding: 2px 10px;
+}
+
+.refresh {
+  &:focus > img {
+    animation: rotate 1s ease;
+  }
+}
+
+.jl-btn {
+  display: flex;
+  align-items: center;
+}

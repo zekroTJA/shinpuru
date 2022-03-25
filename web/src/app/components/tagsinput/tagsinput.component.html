@@ -1,0 +1,28 @@
+<div class="">
+  <div class="input-control">
+    <a
+      *ngFor="let tag of value"
+      class="tag"
+      [class.invalid]="invalidFilter(tag)"
+      (click)="onRemove(tag)"
+    >
+      {{ formatter(tag) }}
+      <img src="/assets/close.svg" />
+    </a>
+    <input
+      type="text"
+      [placeholder]="placeholder"
+      [(ngModel)]="inputTxt"
+      (input)="onInput($event)"
+    />
+  </div>
+  <div class="suggested-tags">
+    <a
+      *ngFor="let tag of suggested"
+      class="tag"
+      [class.invalid]="invalidFilter(tag)"
+      (click)="onAdd(tag)"
+      >{{ formatter(tag) }}</a
+    >
+  </div>
+</div>

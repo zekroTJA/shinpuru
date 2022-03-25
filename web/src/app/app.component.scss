@@ -1,0 +1,41 @@
+#toasts-container {
+  display: block;
+  position: fixed;
+  width: 50vw;
+  max-width: 300px;
+  z-index: 5;
+  top: 35px + 50px;
+  right: 20px;
+}
+
+#router-outlet {
+  margin-top: 50px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+
+  .content {
+    max-width: 950px;
+    width: 100%;
+  }
+}
+
+#search-bar-container {
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0 0 0 / 50%);
+}
+
+.transition {
+  transition: all 0.2s ease;
+}
+
+.blur {
+  filter: blur(20px);
+}

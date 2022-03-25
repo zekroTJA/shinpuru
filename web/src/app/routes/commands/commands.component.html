@@ -1,0 +1,112 @@
+<!-- @format -->
+
+<div class="search-bar">
+  <img width="24" src="/assets/search.svg" />
+  <input type="text" (input)="onSearchBarChange($event); lastSelected = null" />
+</div>
+
+<button class="back-top" (click)="onScrollToTop(); lastSelected = null">
+  <img width="24" src="/assets/arrow.svg" />
+</button>
+
+<div class="group-tile-container">
+  <div *ngFor="let kv of groupMap | keyValue" class="group-tile">
+    <h5 class="capitalize">{{ kv.key | lowercase }}</h5>
+    <div>
+      <a
+        *ngFor="let c of kv.value | commandSort"
+        [class.selected]="lastSelected === c.name"
+        (click)="scrollTo('#' + c.name); lastSelected = c.name"
+        >{{ c.name }}</a
+      >
+    </div>
+  </div>
+</div>
+
+<div *ngFor="let kv of groupMap | keyValue" class="mt-4">
+  <h3 class="group-header capitalize">{{ kv.key | lowercase }}</h3>
+  <div
+    *ngFor="let c of kv.value | commandSort"
+    class="command-tile"
+    [id]="c.name"
+  >
+    <div class="flex-center">
+      <h5>{{ c.name }}</h5>
+      <p class="embedded ml-2">{{ c.domain }}</p>
+      <p class="embedded ml-2">v{{ c.version }}</p>
+      <span
+        *ngIf="c.dm_capable"
+        class="dmc-badge"
+        [ngbTooltip]="dmcToolTipContent"
+        >DMC</span
+      >
+    </div>
+    <div class="mt-4 details">
+      <h6>Description</h6>
+      <span>{{ c.description }}</span>
+    </div>
+    <div *ngIf="c.subdomains?.length > 0" class="mt-4 details">
+      <h6>Sub Domains</h6>
+      <ul>
+        <li *ngFor="let sp of c.subdomains">
+          {{ getCommandSubPermTerm(c, sp) }}
+        </li>
+      </ul>
+    </div>
+    <div *ngIf="hasSubCommands(c)" class="mt-4 details">
+      <h6>Sub Commands</h6>
+      <div *ngFor="let opt of c.options" class="sub-command mt-3">
+        <p>
+          <strong>{{ opt.name }}</strong>
+        </p>
+        <p>
+          <i>{{ opt.description }}</i>
+        </p>
+        <table *ngIf="opt.options?.length > 0">
+          <tbody>
+            <tr>
+              <th>Argument</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+            <tr *ngFor="let subOpt of opt.options">
+              <td>{{ subOpt.name }}</td>
+              <td>{{ subOpt | commandOptionType }}</td>
+              <td>{{ subOpt.required ? 'yes' : 'no' }}</td>
+              <td>{{ subOpt.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      *ngIf="!hasSubCommands(c) && c.options?.length > 0"
+      class="mt-4 details"
+    >
+      <h6>Arguments</h6>
+      <table>
+        <tbody>
+          <tr>
+            <th>Argument</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr *ngFor="let opt of c.options">
+            <td>{{ opt.name }}</td>
+            <td>{{ opt | commandOptionType }}</td>
+            <td>{{ opt.required ? 'yes' : 'no' }}</td>
+            <td>{{ opt.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #dmcToolTipContent>
+  <strong>D</strong>irect <strong>M</strong>essage
+  <strong>C</strong>apable<br />
+  This command can be used in a direct message channel to shinpuru.
+</ng-template>

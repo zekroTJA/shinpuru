@@ -1,0 +1,16 @@
+<div class="inpt-container">
+    <input 
+        type="text" 
+        [value]="value" 
+        (input)="onInput($event)" 
+        (keyup.arrowup)="onPreselect(-1)"
+        (keyup.arrowdown)="onPreselect(1)"
+        (keyup.enter)="onSelect(selectedIndex)"
+    >
+    <div class="selection">
+        <span *ngFor="let s of displaySelection; index as i"
+            (click)="onSelect(s)"
+            [class.selected]="i === selectedIndex"
+        >{{ s }}</span>
+    </div>
+</div>
