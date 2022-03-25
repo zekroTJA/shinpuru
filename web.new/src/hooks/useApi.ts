@@ -9,28 +9,33 @@ export const useApi = () => {
   const nav = useNavigate();
   const { pushNotification } = useNotifications();
 
-  async function fetch<T>(req: (c: Client) => Promise<T>): Promise<T> {
+  async function fetch<T>(
+    req: (c: Client) => Promise<T>,
+    silenceErrors: boolean = false,
+  ): Promise<T> {
     try {
       return await req(APIClient);
     } catch (e) {
-      if (e instanceof APIError) {
-        if (e.code === 401) {
-          nav('/start');
-        } else if (e.code !== 410) {
+      if (!silenceErrors) {
+        if (e instanceof APIError) {
+          if (e.code === 401) {
+            nav('/start');
+          } else {
+            pushNotification({
+              type: NotificationType.ERROR,
+              delay: 8000,
+              heading: 'API Error',
+              message: `${e.message} (${e.code})`,
+            });
+          }
+        } else {
           pushNotification({
             type: NotificationType.ERROR,
             delay: 8000,
-            heading: 'API Error',
-            message: `${e.message} (${e.code})`,
+            heading: 'Error',
+            message: `Unknown Request Error: ${e}`,
           });
         }
-      } else {
-        pushNotification({
-          type: NotificationType.ERROR,
-          delay: 8000,
-          heading: 'Error',
-          message: `Unknown Request Error: ${e}`,
-        });
       }
       throw e;
     }

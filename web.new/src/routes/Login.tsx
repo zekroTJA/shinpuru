@@ -103,7 +103,7 @@ const LoginRoute: React.FC<Props> = () => {
     const code = getCryptoRandomString(16);
     setPushCode(code);
     try {
-      await fetch((c) => c.auth.pushCode(code));
+      await fetch((c) => c.auth.pushCode(code), true);
       nav('/db');
       return false;
     } catch {}
