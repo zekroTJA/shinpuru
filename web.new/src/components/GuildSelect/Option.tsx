@@ -11,6 +11,12 @@ const StyledDiv = styled.div`
   align-items: center;
   gap: 0.5em;
 
+  > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   > img,
   svg {
     height: 1.2em;

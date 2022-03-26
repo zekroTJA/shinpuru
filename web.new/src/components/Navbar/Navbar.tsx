@@ -43,11 +43,11 @@ const StyledNav = styled.nav`
   display: flex;
   flex-direction: column;
   background-color: ${(p) => p.theme.background2};
-  margin: 1em;
-  padding: 1em;
+  margin: 1rem;
+  padding: 1rem;
   border-radius: 12px;
-  width: 25vw;
-  max-width: 15em;
+  width: 30vw;
+  max-width: 15rem;
 
   @media (orientation: portrait) {
     width: fit-content;
