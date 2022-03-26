@@ -44,7 +44,6 @@ export const useStore = create<Store>((set, get) => ({
   selectedGuild: undefined,
   setSelectedGuild: (selectedGuild) => {
     set({ selectedGuild });
-    console.log('SET SELECTED GUILD', selectedGuild?.id);
     if (!!selectedGuild) LocalStorageUtil.set('shnp.selectedguild', selectedGuild.id);
   },
 

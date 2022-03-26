@@ -27,10 +27,6 @@ export const DashboardRoute: React.FC<Props> = () => {
 
   useEffect(() => {
     if (loc.pathname.replaceAll('/', '') === 'db' && !!guilds && guilds.length !== 0 && !guildid) {
-      console.log(
-        guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')),
-        LocalStorageUtil.get<string>('shnp.selectedguild'),
-      );
       const guild =
         guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')) ??
         guilds[0];

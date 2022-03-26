@@ -72,7 +72,6 @@ const NotificationContainer = styled(Container)<NotificationMeta>`
 `;
 
 export const NotificationTile: React.FC<Props> = ({ n, onHide }) => {
-  // console.log(n.hidden);
   return (
     <NotificationContainer {...n}>
       <div>
