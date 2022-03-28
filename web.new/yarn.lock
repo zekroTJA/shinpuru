@@ -2997,6 +2997,11 @@ builtin-modules@^3.1.0:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.2.0.tgz#45d5db99e7ee5e6bc4f362e008bf917ab5049887"
   integrity sha512-lGzLKcioL90C7wMczpkY0n/oART3MbBa8R9OFGE1rJxoVI86u4WAGfEk8Wjv10eKSyTHVGkSo3bvBylCEtk7LA==
 
+byte-formatter@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/byte-formatter/-/byte-formatter-1.0.1.tgz#52f88e93ca6f48fe2c7ee9621407ad2bce4e6e69"
+  integrity sha512-kP4cpHm7z8LaUS0idtbx+7DqZkBtD6sT5Tg+xei1vH2YeP7qiqASi3tHMkGWhuqw7GD+d4TRMfrfhZhi8mHH9A==
+
 bytes@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"

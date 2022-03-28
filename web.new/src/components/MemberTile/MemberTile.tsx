@@ -6,10 +6,10 @@ import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Clickable } from '../styleParts';
 
-interface Props {
+type Props = {
   member: Member;
   onClick?: (member: Member) => void;
-}
+};
 
 const StyledContainer = styled(Container)`
   ${Clickable()}

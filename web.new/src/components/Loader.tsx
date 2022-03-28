@@ -1,12 +1,12 @@
 import Color from 'color';
 import styled, { keyframes } from 'styled-components';
 
-interface Props {
+type Props = {
   width?: string;
   height?: string;
   borderRadius?: string;
   margin?: string;
-}
+};
 
 const LoaderKF = keyframes`
   from {

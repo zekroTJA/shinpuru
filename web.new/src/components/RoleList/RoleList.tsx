@@ -3,10 +3,10 @@ import { Role } from '../../lib/shinpuru-ts/src';
 import { Flex } from '../Flex';
 import { Tag } from '../Tag';
 
-interface Props {
+type Props = {
   roleids: string[];
   guildroles: Role[];
-}
+};
 
 const RolesContainer = styled(Flex)`
   flex-wrap: wrap;

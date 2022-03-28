@@ -1,7 +1,15 @@
 import styled from 'styled-components';
 import { LinearGradient } from './styleParts';
 
-export type ButtonVariant = 'default' | 'red' | 'green' | 'blue' | 'yellow' | 'orange' | 'gray';
+export type ButtonVariant =
+  | 'default'
+  | 'red'
+  | 'green'
+  | 'blue'
+  | 'yellow'
+  | 'orange'
+  | 'gray'
+  | 'pink';
 
 type Props = {
   variant?: ButtonVariant;
@@ -33,6 +41,8 @@ export const Button = styled.button<Props>`
         return LinearGradient(p.theme.orange);
       case 'gray':
         return LinearGradient(p.theme.background3);
+      case 'pink':
+        return LinearGradient(p.theme.pink);
       default:
         return LinearGradient(p.theme.accent);
     }

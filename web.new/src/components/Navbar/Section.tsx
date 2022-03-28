@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { Heading } from '../Heading';
 
-interface Props {
+type Props = {
   title: string;
-}
+};
 
 const StyledSection = styled.section`
   margin-top: 2em;

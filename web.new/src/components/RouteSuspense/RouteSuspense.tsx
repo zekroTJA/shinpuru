@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-interface Props {}
+type Props = {};
 
 export const RouteSuspense: React.FC<Props> = ({ children }) => {
   // TODO: Use better and fancier fallback

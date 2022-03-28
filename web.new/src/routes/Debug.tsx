@@ -9,7 +9,7 @@ import { useModal } from '../hooks/useModal';
 import { useNotifications } from '../hooks/useNotifications';
 import { randomFrom, randomNumber } from '../util/rand';
 
-interface Props {}
+type Props = {};
 
 const DebugContainer = styled.div`
   > section {

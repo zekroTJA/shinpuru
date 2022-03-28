@@ -6,10 +6,10 @@ import { Heading } from '../Heading';
 import { LinearGradient } from '../styleParts';
 import { Notification, NotificationMeta, NotificationType } from './models';
 
-interface Props {
+type Props = {
   n: Notification;
   onHide: () => void;
-}
+};
 
 const AnimateInKF = keyframes`
   from {

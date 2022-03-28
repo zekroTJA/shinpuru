@@ -6,8 +6,9 @@ import { ModalHeader } from './ModalHeader';
 
 const BACKGROUND_ID = ':modal-background';
 
-type Show = {
+export type ControlProps = {
   show?: boolean;
+  onClose?: () => void;
 };
 
 type Content = {
@@ -15,13 +16,9 @@ type Content = {
   controls?: JSX.Element | JSX.Element[];
 };
 
-type Props = Show &
-  Content &
-  React.HTMLAttributes<HTMLDivElement> & {
-    onClose?: () => void;
-  };
+type Props = ControlProps & Content & React.HTMLAttributes<HTMLDivElement>;
 
-const ModalOutlet = styled.div<Show>`
+const ModalOutlet = styled.div<ControlProps>`
   z-index: 100;
   position: fixed;
   top: 0;
@@ -36,7 +33,7 @@ const ModalOutlet = styled.div<Show>`
   justify-content: center;
 `;
 
-const ModalContainer = styled(Container)<Show>`
+const ModalContainer = styled(Container)<ControlProps>`
   position: relative;
   opacity: ${(p) => (p.show ? '1' : '0')};
   transform: scale(${(p) => (p.show ? '1' : '0.9')});

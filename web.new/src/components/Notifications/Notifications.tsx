@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNotifications } from '../../hooks/useNotifications';
 import { NotificationTile } from './Notification';
 
-interface Props {}
+type Props = {};
 
 const NotificationsContainer = styled.div`
   position: fixed;
@@ -20,11 +20,7 @@ export const Notifications: React.FC<Props> = () => {
   return (
     <NotificationsContainer>
       {notifications.map((n) => (
-        <NotificationTile
-          key={uid(n)}
-          n={n}
-          onHide={() => hideNotification(n)}
-        />
+        <NotificationTile key={uid(n)} n={n} onHide={() => hideNotification(n)} />
       ))}
     </NotificationsContainer>
   );

@@ -5,7 +5,7 @@ import { Navbar } from '../components/Navbar';
 import { useGuilds } from '../hooks/useGuilds';
 import LocalStorageUtil from '../util/localstorage';
 
-interface Props {}
+type Props = {};
 
 const RouteContainer = styled.div`
   display: flex;

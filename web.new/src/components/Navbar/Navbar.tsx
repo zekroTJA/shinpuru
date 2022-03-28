@@ -13,7 +13,7 @@ import { Heading } from '../Heading';
 import { Entry } from './Entry';
 import { Section } from './Section';
 
-interface Props {}
+type Props = {};
 
 const Brand = styled.div`
   display: flex;

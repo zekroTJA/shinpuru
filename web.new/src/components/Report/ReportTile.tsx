@@ -41,7 +41,7 @@ const TypeHead = styled.div<{ type: number }>`
       case ReportType.BAN:
         return LinearGradient(p.theme.red);
       case ReportType.MUTE:
-        return LinearGradient(p.theme.purple);
+        return LinearGradient(p.theme.pink);
       default:
         return LinearGradient(p.theme.orange);
     }
@@ -104,19 +104,13 @@ export const ReportTile: React.FC<Props> = ({
     <ReportTileContainer {...props}>
       <TypeHead type={report.type}>{report.type_name}</TypeHead>
       <ReportUsers>
-        <ReportUser
-          fallbackId={report.executor_id}
-          user={report.executor}
-          isEcecutor
-        />
+        <ReportUser fallbackId={report.executor_id} user={report.executor} isEcecutor />
         <ReportUser fallbackId={report.victim_id} user={report.victim} />
       </ReportUsers>
       <Section>
         <Heading>{t('report.reason')}</Heading>
         <span>{report.message}</span>
-        {report.attachment_url && (
-          <img src={report.attachment_url} alt="Report Attachment" />
-        )}
+        {report.attachment_url && <img src={report.attachment_url} alt="Report Attachment" />}
       </Section>
       <hr />
       <Footer>

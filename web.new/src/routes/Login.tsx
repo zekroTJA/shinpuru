@@ -12,7 +12,7 @@ import { useApi } from '../hooks/useApi';
 import { LOGIN_ROUTE } from '../services/api';
 import { getCryptoRandomString } from '../util/crypto';
 
-interface Props {}
+type Props = {};
 
 const OuterContainer = styled.div`
   display: flex;

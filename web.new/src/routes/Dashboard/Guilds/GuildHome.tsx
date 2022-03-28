@@ -5,7 +5,7 @@ import { ColorTile } from '../../../components/ColorTile';
 import { useApi } from '../../../hooks/useApi';
 import { Guild } from '../../../lib/shinpuru-ts/src';
 
-interface Props {}
+type Props = {};
 
 const StyledDiv = styled.div`
   display: flex;
@@ -32,9 +32,7 @@ export const GuildHome: React.FC<Props> = () => {
   const _fetch = async () => {
     setIsLoading(true);
     setGuild(await fetch((c) => c.guilds.guild(guildid!)));
-    setReportsCount(
-      (await fetch((c) => c.guilds.reportsCount(guildid!))).count
-    );
+    setReportsCount((await fetch((c) => c.guilds.reportsCount(guildid!))).count);
     setIsLoading(false);
   };
 
@@ -42,9 +40,7 @@ export const GuildHome: React.FC<Props> = () => {
     <>
       {(!isLoading && (
         <StyledDiv>
-          <ColorTile color={theme.blurple}>
-            {guild?.member_count} Members
-          </ColorTile>
+          <ColorTile color={theme.blurple}>{guild?.member_count} Members</ColorTile>
           <ColorTile color={theme.red}>{reportsCount} Reports</ColorTile>
         </StyledDiv>
       )) || <Loading />}

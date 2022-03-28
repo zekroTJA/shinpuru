@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import styled from 'styled-components';
 import { Button } from '../components/Button';
 
-interface Props {}
+type Props = {};
 
 const StartContainer = styled.div`
   display: flex;

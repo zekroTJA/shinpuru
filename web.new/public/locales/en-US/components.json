@@ -42,5 +42,13 @@
   },
   "memberreportlist": {
     "noreports": "This user has a white vest! 👌"
+  },
+  "modalcreatereport": {
+    "reason": "Reason",
+    "attachment": "Attachment",
+    "controls": {
+      "cancel": "Cancel",
+      "execute": "Execute {{action}}"
+    }
   }
 }

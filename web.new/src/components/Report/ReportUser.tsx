@@ -5,11 +5,11 @@ import { FlatUser } from '../../lib/shinpuru-ts/src';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 
-interface Props {
+type Props = {
   fallbackId: string;
   user: FlatUser;
   isEcecutor?: boolean;
-}
+};
 
 const ReportUserContainer = styled(Container)`
   display: flex;

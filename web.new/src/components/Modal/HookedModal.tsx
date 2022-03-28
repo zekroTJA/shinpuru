@@ -3,7 +3,7 @@ import { useStore } from '../../services/store';
 import { Button } from '../Button';
 import { Modal } from './Modal';
 
-interface Props {}
+type Props = {};
 
 export const HookedModal: React.FC<Props> = () => {
   const [modal, setModal] = useStore((s) => [s.modal, s.setModal]);

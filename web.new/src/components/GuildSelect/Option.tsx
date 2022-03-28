@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { DiscordImage } from '../DiscordImage';
 
-interface Props {
+type Props = {
   guild: Guild;
-}
+};
 
 const StyledDiv = styled.div`
   display: flex;

@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import styled, { useTheme } from 'styled-components';
 import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
 import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
+import { Button } from '../../../components/Button';
 import { Container } from '../../../components/Container';
 import { DiscordImage } from '../../../components/DiscordImage';
 import { Embed } from '../../../components/Embed';
@@ -12,6 +13,7 @@ import { Heading } from '../../../components/Heading';
 import { Hint } from '../../../components/Hint';
 import { KarmaTile } from '../../../components/KarmaTile';
 import { Loader } from '../../../components/Loader';
+import { ModalCreateReport, ReportActionType } from '../../../components/Modals/ModalCreateReport';
 import { ModalRevokeReport } from '../../../components/Modals/ModalRevokeReport';
 import { NotificationType } from '../../../components/Notifications';
 import { PermsSimpleList } from '../../../components/Permissions';
@@ -28,7 +30,7 @@ import { Report } from '../../../lib/shinpuru-ts/src';
 import { formatDate } from '../../../util/date';
 import { memberName } from '../../../util/users';
 
-interface Props {}
+type Props = {};
 
 const MemberContainer = styled.div``;
 
@@ -109,7 +111,14 @@ const MemberRoute: React.FC<Props> = () => {
   const [reports, setReports] = useState<Report[]>();
   const { isAllowed } = usePerms(guild?.id);
 
+  const [reportModalType, setReportModalType] = useState<ReportActionType>('report');
+  const [showReportModal, setShowReportModal] = useState(false);
   const [revokeReport, setRevokeReport] = useState<Report>();
+
+  const _report = (type: ReportActionType) => {
+    setReportModalType(type);
+    setShowReportModal(true);
+  };
 
   const _revokeReport = (rep: Report) => {
     setRevokeReport(rep);
@@ -153,6 +162,12 @@ const MemberRoute: React.FC<Props> = () => {
 
   return member ? (
     <MemberContainer>
+      <ModalCreateReport
+        show={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        type={reportModalType}
+        member={member!}
+      />
       <ModalRevokeReport
         report={revokeReport}
         onConfirm={_revokeReportConfirm}
@@ -218,6 +233,31 @@ const MemberRoute: React.FC<Props> = () => {
         <Section hide={member.user.bot}>
           <Heading>{t('permissions.heading')}</Heading>
           <PermsSimpleList perms={perms} />
+        </Section>
+        <Section hide={member.user.bot || !isAllowed('sp.guild.mod.')} fw>
+          <Heading>{t('moderation.heading')}</Heading>
+          <Flex gap="1em">
+            {isAllowed('sp.guild.mod.report') && (
+              <Button onClick={() => _report('report')} variant="blue">
+                {t('moderation.report')}
+              </Button>
+            )}
+            {isAllowed('sp.guild.mod.kick') && (
+              <Button onClick={() => _report('kick')} variant="orange">
+                {t('moderation.kick')}
+              </Button>
+            )}
+            {isAllowed('sp.guild.mod.ban') && (
+              <Button onClick={() => _report('ban')} variant="red">
+                {t('moderation.ban')}
+              </Button>
+            )}
+            {isAllowed('sp.guild.mod.mute') && (
+              <Button onClick={() => _report('mute')} variant="pink">
+                {t('moderation.mute')}
+              </Button>
+            )}
+          </Flex>
         </Section>
         <Section hide={member.user.bot} fw>
           <Heading>{t('reports.heading')}</Heading>

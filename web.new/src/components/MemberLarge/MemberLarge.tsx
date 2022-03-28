@@ -8,11 +8,11 @@ import { Flex } from '../Flex';
 import { RoleList } from '../RoleList';
 import { Clickable } from '../styleParts';
 
-interface Props {
+type Props = {
   member?: Member;
   guild?: Guild;
   onClick?: (member: Member) => void;
-}
+};
 
 const StyledContainer = styled(Container)`
   ${Clickable(1.01)}
@@ -58,11 +58,7 @@ const Header = styled(Flex)`
   }
 `;
 
-export const MemberLarge: React.FC<Props> = ({
-  member,
-  guild,
-  onClick = () => {},
-}) => {
+export const MemberLarge: React.FC<Props> = ({ member, guild, onClick = () => {} }) => {
   return !!member && !!guild ? (
     <StyledContainer onClick={() => onClick(member)}>
       <DiscordImage src={member.avatar_url} />

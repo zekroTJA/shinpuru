@@ -4,9 +4,9 @@ import { Loader } from '../Loader';
 import { PermTile } from './PermTile';
 import { isAllowed, isDisallowed } from './util';
 
-interface Props {
+type Props = {
   perms?: string[];
-}
+};
 
 const PermsContainer = styled.div`
   display: flex;

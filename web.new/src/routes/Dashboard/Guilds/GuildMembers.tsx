@@ -13,7 +13,7 @@ import { useMembers } from '../../../hooks/useMembers';
 import { useSelfMember } from '../../../hooks/useSelfMember';
 import { Member } from '../../../lib/shinpuru-ts/src';
 
-interface Props {}
+type Props = {};
 
 const MembersSection = styled.div`
   margin-top: 1em;

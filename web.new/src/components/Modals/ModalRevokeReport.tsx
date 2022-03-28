@@ -3,20 +3,19 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Report } from '../../lib/shinpuru-ts/src';
 import { Button } from '../Button';
-import { Modal } from '../Modal/Modal';
+import { ControlProps, Modal } from '../Modal';
 import { TextArea } from '../TextArea';
 
-interface Props {
+type Props = ControlProps & {
   report?: Report;
-  onClose: () => void;
   onConfirm: (report: Report, reason: string) => void;
-}
+};
 
 const StyledTextArea = styled(TextArea)`
   background-color: ${(p) => p.theme.background3};
 `;
 
-export const ModalRevokeReport: React.FC<Props> = ({ report, onClose, onConfirm }) => {
+export const ModalRevokeReport: React.FC<Props> = ({ report, onClose = () => {}, onConfirm }) => {
   const { t } = useTranslation('components');
   const [reason, setReason] = useState('');
 

@@ -5,11 +5,11 @@ import { Report } from '../../lib/shinpuru-ts/src';
 import { Loader } from '../Loader';
 import { ReportTile } from './ReportTile';
 
-interface Props {
+type Props = {
   reports?: Report[];
   revokeAllowed?: boolean;
   onRevoke?: (rep: Report) => void;
-}
+};
 
 const ReportsContainer = styled.div`
   display: flex;

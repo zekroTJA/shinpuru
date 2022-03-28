@@ -5,7 +5,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Button } from '../Button';
 import { Modal } from '../Modal/Modal';
 
-interface Props {}
+type Props = {};
 
 export const ModalBetaGreeter: React.FC<Props> = () => {
   const { t } = useTranslation('components');
