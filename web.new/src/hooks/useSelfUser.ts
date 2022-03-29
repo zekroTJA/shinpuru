@@ -7,11 +7,12 @@ export const useSelfUser = () => {
   const fetch = useApi();
 
   useEffect(() => {
-    if (selfUser) return;
+    if (selfUser.value || selfUser.isFetching) return;
+    setSelfUser({ isFetching: true });
     fetch((c) => c.etc.me())
-      .then((me) => setSelfUser(me))
+      .then((me) => setSelfUser({ value: me, isFetching: false }))
       .catch();
   }, []);
 
-  return selfUser;
+  return selfUser.value;
 };

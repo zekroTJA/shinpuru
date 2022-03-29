@@ -5,12 +5,17 @@ import { Guild, User } from '../lib/shinpuru-ts/src';
 import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
 
+export type FetchLocked<T> = {
+  value: T | undefined;
+  isFetching: boolean;
+};
+
 export interface Store {
   theme: AppTheme;
   setTheme: (v: AppTheme) => void;
 
-  selfUser?: User;
-  setSelfUser: (selfUser: User) => void;
+  selfUser: FetchLocked<User>;
+  setSelfUser: (selfUser: Partial<FetchLocked<User>>) => void;
 
   guilds?: Guild[];
   setGuilds: (guilds: Guild[]) => void;
@@ -35,8 +40,9 @@ export const useStore = create<Store>((set, get) => ({
     LocalStorageUtil.set('shnp.theme', theme);
   },
 
-  selfUser: undefined,
-  setSelfUser: (selfUser: User) => set({ selfUser }),
+  selfUser: { value: undefined, isFetching: false },
+  setSelfUser: (selfUser: Partial<FetchLocked<User>>) =>
+    set({ selfUser: { ...get().selfUser, ...selfUser } }),
 
   guilds: undefined,
   setGuilds: (guilds) => set({ guilds }),

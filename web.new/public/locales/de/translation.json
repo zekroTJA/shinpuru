@@ -1,1 +1,8 @@
-{}
+{
+  "errors": {
+    "reports": {
+      "disallowed-attachment-type": "Dieser Dateityp ist nicht erlaubt.",
+      "file-too-big": "Diese Datei ist zu groß."
+    }
+  }
+}

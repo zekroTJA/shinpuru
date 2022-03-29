@@ -9,7 +9,9 @@
         "home": "Home",
         "members": "Members"
       }
-    }
+    },
+    "logout": "Logout",
+    "user-settings": "User Settings"
   },
   "sincedate": {
     "since": "<1>{{dateSince}}</1> ago"
