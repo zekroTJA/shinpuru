@@ -42,5 +42,27 @@
   },
   "memberreportlist": {
     "noreports": "Dieser Nutzer hat eine weiße Weste! 👌"
+  },
+  "modalcreatereport": {
+    "reason": "Begründung",
+    "timeout": "Ablaufzeit",
+    "attachment": "Anhang",
+    "controls": {
+      "cancel": "Abbrechen",
+      "execute": "{{action}} ausführen"
+    },
+    "errors": {
+      "attachment-convert-failed": "Das konvertieren des Anhangs zu Base64 ist fehlgeschlagen."
+    },
+    "successful": "Die Meldung wurde erfolgreich ausgeführt."
+  },
+  "durationpicker": {
+    "days": "Tage",
+    "hours": "Stunden",
+    "minutes": "Minuten",
+    "seconds": "Sekunden"
+  },
+  "filedrop": {
+    "info": "Öffnen Sie eine Datei mit einem Klick oder ziehen Sie die Datei in das Feld. Es ist sogar möglich die Datei direkt aus der Zwischenablage einzufügen!"
   }
 }
