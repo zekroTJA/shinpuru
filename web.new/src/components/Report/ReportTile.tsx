@@ -99,7 +99,7 @@ export const ReportTile: React.FC<Props> = ({
   onRevoke = () => {},
   ...props
 }) => {
-  const { t } = useTranslation('components', { keyPrefix: 'report.' });
+  const { t } = useTranslation('components', { keyPrefix: 'report' });
   return (
     <ReportTileContainer {...props}>
       <TypeHead type={report.type}>{report.type_name}</TypeHead>

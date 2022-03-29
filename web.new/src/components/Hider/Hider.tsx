@@ -52,7 +52,7 @@ const Hint = styled.p`
 `;
 
 export const Hider: React.FC<Props> = ({ content, ...props }) => {
-  const { t } = useTranslation('components', { keyPrefix: 'hider.' });
+  const { t } = useTranslation('components', { keyPrefix: 'hider' });
   const [isHover, setIsHover] = useState(false);
   const [showCopyHint, setShowCopyHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

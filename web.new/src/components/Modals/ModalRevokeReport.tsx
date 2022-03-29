@@ -16,7 +16,7 @@ const StyledTextArea = styled(TextArea)`
 `;
 
 export const ModalRevokeReport: React.FC<Props> = ({ report, onClose = () => {}, onConfirm }) => {
-  const { t } = useTranslation('components', { keyPrefix: 'modalrevokereport.' });
+  const { t } = useTranslation('components', { keyPrefix: 'modalrevokereport' });
   const [reason, setReason] = useState('');
 
   const _onClose = () => {

@@ -8,7 +8,7 @@ import { Modal } from '../Modal/Modal';
 type Props = {};
 
 export const ModalBetaGreeter: React.FC<Props> = () => {
-  const { t } = useTranslation('components', { keyPrefix: 'modalbetagreeter.' });
+  const { t } = useTranslation('components', { keyPrefix: 'modalbetagreeter' });
   const [show, setShow] = useState(false);
   const [dismissed, setDismissed] = useLocalStorage('shnp.betagreeter.dismissed');
 
