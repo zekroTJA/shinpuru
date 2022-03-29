@@ -4,8 +4,10 @@ import styled from 'styled-components';
 import { useApi } from '../../hooks/useApi';
 import { useNotifications } from '../../hooks/useNotifications';
 import { Member, Report, ReportRequest, ReportType } from '../../lib/shinpuru-ts/src';
+import { parseToDateString } from '../../util/date';
 import { readToBase64 } from '../../util/files';
 import { Button } from '../Button';
+import { DurationPicker } from '../DurationPicker';
 import { Filedrop } from '../Filedrop';
 import { Heading } from '../Heading';
 import { Modal } from '../Modal';
@@ -13,7 +15,7 @@ import { ControlProps } from '../Modal/Modal';
 import { NotificationType } from '../Notifications';
 import { TextArea } from '../TextArea';
 
-const ALLOWED_ATTACHMENT_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const ALLOWED_ATTACHMENT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
 export type ReportActionType = 'report' | 'kick' | 'ban' | 'mute';
 
@@ -56,11 +58,13 @@ export const ModalCreateReport: React.FC<Props> = ({
   const { pushNotification } = useNotifications();
   const [reason, setReason] = useState('');
   const [attachment, setAttachment] = useState<File>();
+  const [timeout, setTimeout] = useState(203535);
 
   useEffect(() => {
     if (show) {
       setReason('');
       setAttachment(undefined);
+      setTimeout(0);
     }
   }, [show]);
 
@@ -85,6 +89,10 @@ export const ModalCreateReport: React.FC<Props> = ({
           type: NotificationType.ERROR,
         });
       }
+    }
+
+    if (timeout > 0) {
+      rep.timeout = parseToDateString(new Date(Date.now() + timeout * 1000));
     }
 
     let req;
@@ -139,6 +147,12 @@ export const ModalCreateReport: React.FC<Props> = ({
           <Heading>{t('components:modalcreatereport.reason')}</Heading>
           <StyledTextArea value={reason} onInput={(e) => setReason(e.currentTarget.value)} />
         </section>
+        {(type === 'ban' || type === 'mute') && (
+          <section>
+            <Heading>{t('components:modalcreatereport.timeout')}</Heading>
+            <DurationPicker value={timeout} onDurationInput={(v) => setTimeout(v)} />
+          </section>
+        )}
         <section>
           <Heading>{t('components:modalcreatereport.attachment')}</Heading>
           <Filedrop file={attachment} onFileInput={_setAttachment} />

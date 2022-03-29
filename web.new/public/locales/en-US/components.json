@@ -45,6 +45,7 @@
   },
   "modalcreatereport": {
     "reason": "Reason",
+    "timeout": "Timeout",
     "attachment": "Attachment",
     "controls": {
       "cancel": "Cancel",
@@ -54,5 +55,11 @@
       "attachment-convert-failed": "Failed converting attachmeht to Base64"
     },
     "successful": "Report action has been executed successfully."
+  },
+  "durationpicker": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
   }
 }
