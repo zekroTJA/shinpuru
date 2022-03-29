@@ -61,5 +61,8 @@
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds"
+  },
+  "filedrop": {
+    "info": "Open a file by clicking or ba drag and drop. You can even simply paste from your clipboard as well!"
   }
 }
