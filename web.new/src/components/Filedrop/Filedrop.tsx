@@ -19,14 +19,22 @@ const Container = styled.div`
   cursor: pointer;
 `;
 
-const FiledropContainer = styled(Container)<{ isError: boolean }>`
+const FiledropContainer = styled(Container)<{ isError: boolean; isDragging: boolean }>`
   border: dashed 2px currentColor;
   flex-direction: column;
+  transition: all 0.25s ease;
 
   ${(p) =>
     p.isError
       ? css`
           color: ${p.theme.red};
+        `
+      : ''}
+
+  ${(p) =>
+    p.isDragging
+      ? css`
+          color: ${p.theme.green};
         `
       : ''}
 `;
@@ -52,12 +60,25 @@ const FileContainer = styled(Container)`
 export const Filedrop: React.FC<Props> = ({ file, onFileInput = () => true }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>();
+  const [dragging, setDragging] = useState(false);
 
   const _fileInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
     _setFile((e.currentTarget.files ?? [])[0]);
 
+  const _onDragOver: React.DragEventHandler<HTMLDivElement> = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    setDragging(true);
+  };
+
+  const _onDragEnd: React.DragEventHandler<HTMLDivElement> = (e) => {
+    setDragging(false);
+  };
+
   const _onDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
+    setDragging(false);
     _setFile((e.dataTransfer.files ?? [])[0]);
   };
 
@@ -73,10 +94,15 @@ export const Filedrop: React.FC<Props> = ({ file, onFileInput = () => true }) =>
 
   useEffect(() => {
     setError(undefined);
+    setDragging(false);
   }, [file]);
 
   return (
-    <div onClick={() => fileInputRef.current?.click()} onDrop={_onDrop}>
+    <div
+      onClick={() => fileInputRef.current?.click()}
+      onDrop={_onDrop}
+      onDragOver={_onDragOver}
+      onDragExit={_onDragEnd}>
       {(file && !error && (
         <FileContainer>
           <FileIcon />
@@ -86,7 +112,7 @@ export const Filedrop: React.FC<Props> = ({ file, onFileInput = () => true }) =>
           </div>
         </FileContainer>
       )) || (
-        <FiledropContainer isError={!!error}>
+        <FiledropContainer isError={!!error} isDragging={dragging}>
           <AddFileIcon />
           {error && <span>{error}</span>}
         </FiledropContainer>
