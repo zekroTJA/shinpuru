@@ -143,6 +143,7 @@ export interface ReasonRequest {
   reason: string;
   attachment?: string;
   timeout?: string;
+  attachment_data?: string;
 }
 
 export interface ReportRequest extends ReasonRequest {

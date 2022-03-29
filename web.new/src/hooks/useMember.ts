@@ -3,13 +3,11 @@ import { Member } from '../lib/shinpuru-ts/src';
 import { GuildMemberClient } from '../lib/shinpuru-ts/src/bindings';
 import { useApi } from './useApi';
 
-type MemberRequester = <T>(
-  req: (c: GuildMemberClient) => Promise<T>
-) => Promise<T>;
+type MemberRequester = <T>(req: (c: GuildMemberClient) => Promise<T>) => Promise<T>;
 
 export const useMember = (
   guildid?: string,
-  memberid?: string
+  memberid?: string,
 ): [Member | undefined, MemberRequester] => {
   const fetch = useApi();
   const [member, setMember] = useState<Member>();

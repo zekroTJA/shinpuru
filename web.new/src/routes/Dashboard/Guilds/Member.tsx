@@ -146,6 +146,10 @@ const MemberRoute: React.FC<Props> = () => {
       .catch();
   };
 
+  const _onReportSubmitted = (rep: Report) => {
+    setReports([rep, ...(reports ?? [])]);
+  };
+
   useEffect(() => {
     memberReq((c) => c.permissions())
       .then((res) => setPerms(res.permissions))
@@ -164,9 +168,10 @@ const MemberRoute: React.FC<Props> = () => {
     <MemberContainer>
       <ModalCreateReport
         show={showReportModal}
-        onClose={() => setShowReportModal(false)}
         type={reportModalType}
-        member={member!}
+        member={member}
+        onClose={() => setShowReportModal(false)}
+        onSubmitted={_onReportSubmitted}
       />
       <ModalRevokeReport
         report={revokeReport}

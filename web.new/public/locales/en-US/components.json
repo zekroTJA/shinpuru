@@ -49,6 +49,10 @@
     "controls": {
       "cancel": "Cancel",
       "execute": "Execute {{action}}"
-    }
+    },
+    "errors": {
+      "attachment-convert-failed": "Failed converting attachmeht to Base64"
+    },
+    "successful": "Report action has been executed successfully."
   }
 }
