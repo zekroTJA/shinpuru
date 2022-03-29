@@ -8,7 +8,7 @@ import { Modal } from '../Modal/Modal';
 type Props = {};
 
 export const ModalBetaGreeter: React.FC<Props> = () => {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation('components', { keyPrefix: 'modalbetagreeter.' });
   const [show, setShow] = useState(false);
   const [dismissed, setDismissed] = useLocalStorage('shnp.betagreeter.dismissed');
 
@@ -29,16 +29,16 @@ export const ModalBetaGreeter: React.FC<Props> = () => {
   return (
     <Modal
       show={show}
-      heading={t('modalbetagreeter.heading')}
+      heading={t('heading')}
       controls={
         <>
           <Button variant="gray" onClick={_backToStable}>
-            {t('modalbetagreeter.controls.back')}
+            {t('controls.back')}
           </Button>
-          <Button onClick={_dismiss}>{t('modalbetagreeter.controls.accept')}</Button>
+          <Button onClick={_dismiss}>{t('controls.accept')}</Button>
         </>
       }>
-      <ReactMarkdown children={t('modalbetagreeter.message')} />
+      <ReactMarkdown children={t('message')} />
     </Modal>
   );
 };

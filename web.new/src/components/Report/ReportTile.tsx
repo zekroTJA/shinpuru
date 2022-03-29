@@ -99,7 +99,7 @@ export const ReportTile: React.FC<Props> = ({
   onRevoke = () => {},
   ...props
 }) => {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation('components', { keyPrefix: 'report.' });
   return (
     <ReportTileContainer {...props}>
       <TypeHead type={report.type}>{report.type_name}</TypeHead>
@@ -108,7 +108,7 @@ export const ReportTile: React.FC<Props> = ({
         <ReportUser fallbackId={report.victim_id} user={report.victim} />
       </ReportUsers>
       <Section>
-        <Heading>{t('report.reason')}</Heading>
+        <Heading>{t('reason')}</Heading>
         <span>{report.message}</span>
         {report.attachment_url && <img src={report.attachment_url} alt="Report Attachment" />}
       </Section>
@@ -122,7 +122,7 @@ export const ReportTile: React.FC<Props> = ({
         {revokeAllowed && (
           <>
             <Spacer />
-            <LinkButton onClick={onRevoke}>{t('report.revoke')}</LinkButton>
+            <LinkButton onClick={onRevoke}>{t('revoke')}</LinkButton>
           </>
         )}
       </Footer>

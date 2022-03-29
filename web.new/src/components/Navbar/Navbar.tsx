@@ -71,7 +71,7 @@ const StyledNav = styled.nav`
 `;
 
 export const Navbar: React.FC<Props> = () => {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation('components', { keyPrefix: 'navbar.' });
   const nav = useNavigate();
   const { guildid } = useParams();
   const guilds = useGuilds();
@@ -92,7 +92,7 @@ export const Navbar: React.FC<Props> = () => {
         <img src={SPIcon} alt="shinpuru Heading" />
         <img src={SPBrand} alt="shinpuru Heading" />
       </Brand>
-      <Section title={t('navbar.section.guilds.title')}>
+      <Section title={t('section.guilds.title')}>
         <StyledGuildSelect
           guilds={guilds ?? []}
           value={selectedGuild}
@@ -101,7 +101,7 @@ export const Navbar: React.FC<Props> = () => {
         <EntryContainer>
           <StyledEntry path={`guilds/${selectedGuild?.id}/members`}>
             <UsersIcon />
-            <span>{t('navbar.section.guilds.members')}</span>
+            <span>{t('section.guilds.members')}</span>
           </StyledEntry>
         </EntryContainer>
       </Section>

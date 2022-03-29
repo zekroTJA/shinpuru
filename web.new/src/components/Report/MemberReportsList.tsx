@@ -22,10 +22,10 @@ export const MemberReportsList: React.FC<Props> = ({
   revokeAllowed,
   onRevoke = () => {},
 }) => {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation('components', { keyPrefix: 'memberreportlist.' });
   return !!reports ? (
     <ReportsContainer>
-      {(reports.length === 0 && <i>{t('memberreportlist.noreports')}</i>) ||
+      {(reports.length === 0 && <i>{t('noreports')}</i>) ||
         reports.map((r) => (
           <ReportTile
             report={r}

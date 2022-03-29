@@ -16,7 +16,7 @@ const StyledTextArea = styled(TextArea)`
 `;
 
 export const ModalRevokeReport: React.FC<Props> = ({ report, onClose = () => {}, onConfirm }) => {
-  const { t } = useTranslation('components');
+  const { t } = useTranslation('components', { keyPrefix: 'modalrevokereport.' });
   const [reason, setReason] = useState('');
 
   const _onClose = () => {
@@ -34,18 +34,18 @@ export const ModalRevokeReport: React.FC<Props> = ({ report, onClose = () => {},
     <Modal
       show={!!report}
       onClose={_onClose}
-      heading={t('modalrevokereport.heading')}
+      heading={t('heading')}
       controls={
         <>
           <Button disabled={!reason} onClick={_onConfirm}>
-            {t('modalrevokereport.controls.revoke')}
+            {t('controls.revoke')}
           </Button>
           <Button variant="gray" onClick={_onClose}>
-            {t('modalrevokereport.controls.cancel')}
+            {t('controls.cancel')}
           </Button>
         </>
       }>
-      <p>{t(`modalrevokereport.description.${report?.type_name?.toLowerCase()}`)}</p>
+      <p>{t(`description.${report?.type_name?.toLowerCase()}`)}</p>
       <StyledTextArea value={reason} onInput={(e) => setReason(e.currentTarget.value)} />
     </Modal>
   );
