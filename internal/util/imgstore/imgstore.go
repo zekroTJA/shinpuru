@@ -26,6 +26,10 @@ type Image struct {
 	Size     int
 }
 
+func (img *Image) GenerateID() {
+	img.ID = snowflakenodes.NodeImages.Generate()
+}
+
 // DownloadFromURL tries to GET an image from the
 // passed resource URL, downloading it and returning
 // the metadata and data of the image as well as
@@ -51,7 +55,7 @@ func DownloadFromURL(url string) (img *Image, err error) {
 		return nil, fmt.Errorf("empty body received")
 	}
 
-	img.ID = snowflakenodes.NodeImages.Generate()
+	img.GenerateID()
 
 	return img, nil
 }

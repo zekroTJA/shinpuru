@@ -175,9 +175,10 @@ type PermissionsUpdate struct {
 // ReasonRequest is a request model wrapping a
 // Reason and Attachment URL.
 type ReasonRequest struct {
-	Reason     string     `json:"reason"`
-	Attachment string     `json:"attachment"`
-	Timeout    *time.Time `json:"timeout"`
+	Reason         string     `json:"reason"`
+	Timeout        *time.Time `json:"timeout"`
+	Attachment     string     `json:"attachment"`
+	AttachmentData string     `json:"attachment_data"`
 }
 
 // ReportRequest extends ReasonRequest by
