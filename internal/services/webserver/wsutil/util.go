@@ -120,6 +120,6 @@ func ParseBase64Data(b64Data string) (mime string, data []byte, err error) {
 		dataS = split[1]
 	}
 
-	data, err = base64.RawStdEncoding.DecodeString(dataS)
+	data, err = base64.StdEncoding.DecodeString(dataS)
 	return
 }
