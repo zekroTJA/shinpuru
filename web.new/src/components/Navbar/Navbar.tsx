@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
-// import SPBrand from '../../assets/sp-brand.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
+import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { useApi } from '../../hooks/useApi';
 import { useGuilds } from '../../hooks/useGuilds';
@@ -42,14 +42,19 @@ const Brand = styled.div`
 `;
 
 const EntryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+  overflow-y: auto;
+  height: 100%;
+  gap: 1em;
+`;
+
+const StyledEntry = styled(Entry)``;
+
+const StyledGuildSelect = styled(GuildSelect)`
   margin-top: 1em;
 `;
-
-const StyledEntry = styled(Entry)`
-  height: 100%;
-`;
-
-const StyledGuildSelect = styled(GuildSelect)``;
 
 const SelfContainer = styled.div`
   display: flex;
@@ -58,10 +63,23 @@ const SelfContainer = styled.div`
   background-color: ${(p) => p.theme.background3};
   border-radius: 8px;
   padding: 0.5em;
+  margin-top: 1em;
 
   > img {
     width: 2em;
     height: 2em;
+  }
+
+  > span {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    > svg {
+      width: 0.5em;
+      height: 0.5em;
+      margin: 0 1em 0 auto;
+    }
   }
 `;
 
@@ -82,7 +100,7 @@ const StyledNav = styled.nav`
   @media (orientation: portrait) {
     width: fit-content;
 
-    ${Brand} > img:last-child {
+    ${Brand} > svg {
       display: none;
     }
 
@@ -130,23 +148,24 @@ export const Navbar: React.FC<Props> = () => {
     <StyledNav>
       <Brand>
         <img src={SPIcon} alt="shinpuru Heading" />
-        {/* <img src={SPBrand} alt="shinpuru Heading" /> */}
         <SPBrand />
       </Brand>
-      <Section title={t('section.guilds.title')}>
-        <StyledGuildSelect
-          guilds={guilds ?? []}
-          value={selectedGuild}
-          onElementSelect={_onGuildSelect}
-        />
-        <EntryContainer>
+
+      <StyledGuildSelect
+        guilds={guilds ?? []}
+        value={selectedGuild}
+        onElementSelect={_onGuildSelect}
+      />
+
+      <EntryContainer>
+        <Section title={t('section.guilds.title')}>
           <StyledEntry path={`guilds/${selectedGuild?.id}/members`}>
             <UsersIcon />
             <span>{t('section.guilds.members')}</span>
           </StyledEntry>
-        </EntryContainer>
-      </Section>
-      {/* <Section title={t('navbar.section.users')}></Section> */}
+        </Section>
+      </EntryContainer>
+
       <StyledHoverplate
         hoverContent={
           <Flex gap="1em">
@@ -160,7 +179,8 @@ export const Navbar: React.FC<Props> = () => {
           <SelfContainer>
             <DiscordImage src={self?.avatar_url} round />
             <span>
-              {self?.username}#{self?.discriminator}
+              {self?.username}
+              <TriangleIcon />
             </span>
           </SelfContainer>
         )) || <Loader width="100%" height="2em" borderRadius="8px" />}

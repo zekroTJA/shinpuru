@@ -6,8 +6,6 @@ type Props = {
 };
 
 const StyledSection = styled.section`
-  margin-top: 2em;
-
   > ${Heading} {
     font-size: 0.7em;
   }
