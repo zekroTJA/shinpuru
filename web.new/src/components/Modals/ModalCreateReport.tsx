@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import styled from 'styled-components';
 import { useApi } from '../../hooks/useApi';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -55,6 +56,7 @@ export const ModalCreateReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const fetch = useApi();
+  const nav = useNavigate();
   const { pushNotification } = useNotifications();
   const [reason, setReason] = useState('');
   const [attachment, setAttachment] = useState<File>();
@@ -96,15 +98,18 @@ export const ModalCreateReport: React.FC<Props> = ({
     }
 
     let req;
+    let goBack = false;
     switch (type) {
       case 'report':
         rep.type = ReportType.WARN;
         req = fetch((c) => c.guilds.member(member.guild_id, member.user.id).report(rep));
         break;
       case 'kick':
+        goBack = true;
         req = fetch((c) => c.guilds.member(member.guild_id, member.user.id).kick(rep));
         break;
       case 'ban':
+        goBack = true;
         req = fetch((c) => c.guilds.member(member.guild_id, member.user.id).ban(rep));
         break;
       case 'mute':
@@ -116,6 +121,7 @@ export const ModalCreateReport: React.FC<Props> = ({
       const res = await req;
       onSubmitted(res);
       onClose();
+      if (goBack) nav(-1);
       pushNotification({
         message: t('components:modalcreatereport.successful'),
         type: NotificationType.SUCCESS,
