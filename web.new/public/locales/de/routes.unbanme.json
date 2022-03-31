@@ -1,1 +1,11 @@
-{}
+{
+  "notloggedin": "Sie müsse nsich einloggen um Entbannungsanträge stellen zu können.",
+  "login": "Einloggen",
+  "applicableguilds": "Anwendbare Guilds",
+  "nobannedguilds": "Sie sind auf keiner Guild gebannt welche von shinpuru verwaltet wird.",
+  "noopenguilds": "Sie haben bereits einen Entbannungsantrag an alle Guilds gesendet, auf denen sie gebannt sind.",
+  "requestqueue": "Offene Entbannungsanträge",
+  "notifications": {
+    "sent": "Ihr Entbannungsantrag wurde erfolgreich versendet. Bitte seien Sie etwas geduldig bis ein Admin den Antrag bearbeitet."
+  }
+}

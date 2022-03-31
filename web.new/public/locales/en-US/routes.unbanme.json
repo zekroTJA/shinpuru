@@ -4,8 +4,8 @@
   "applicableguilds": "Applicable Guilds",
   "nobannedguilds": "You are not banned on any guilds managed by shinpuru.",
   "noopenguilds": "You've already sent an unban request to all guilds you are banned on.",
-  "requestqueue": "Request Queue",
+  "requestqueue": "Open Requests",
   "notifications": {
-    "sent": "You unban request has successfully been sent. Now, please be patient until an admin processes your"
+    "sent": "You unban request has successfully been sent. Now, please be patient until an admin processes your request."
   }
 }

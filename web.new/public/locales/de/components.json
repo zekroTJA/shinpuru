@@ -71,5 +71,27 @@
   },
   "filedrop": {
     "info": "Öffnen Sie eine Datei mit einem Klick oder ziehen Sie die Datei in das Feld. Es ist sogar möglich die Datei direkt aus der Zwischenablage einzufügen!"
+  },
+  "modalunbanrequest": {
+    "heading": "Entbannungsantrag Erstellen",
+    "sub": "Erstelle einen Entbannungsantrag für die Guild <1>{{guildname}}</1>.",
+    "description": "Bitte beschreibe detailliert wieso du auf der Guild entbannt werden solltest.",
+    "controls": {
+      "cancel": "Abbrechen",
+      "send": "Absenden"
+    }
+  },
+  "unbanrequesttile": {
+    "state": {
+      "pending": "Wird Bearbeitet",
+      "declined": "Abgelehnt",
+      "accepted": "Angenommen"
+    },
+    "requestermessage": "Nachricht des Antragstellers",
+    "decisionreason": "Grund für die Entscheidung",
+    "actions": {
+      "accept": "Annehmen",
+      "decline": "Ablehnen"
+    }
   }
 }
