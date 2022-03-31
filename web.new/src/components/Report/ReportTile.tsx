@@ -1,13 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
+import { ReactComponent as TargetIcon } from '../../assets/target.svg';
 import { Report, ReportType } from '../../lib/shinpuru-ts/src';
 import { formatDate } from '../../util/date';
 import { Container } from '../Container';
 import { Embed } from '../Embed';
 import { Heading } from '../Heading';
 import { LinkButton } from '../LinkButton';
+import { UserTileSmall } from '../UserTileSmall';
 import { LinearGradient } from '../styleParts';
-import { ReportUser } from './ReportUser';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   report: Report;
@@ -104,8 +106,12 @@ export const ReportTile: React.FC<Props> = ({
     <ReportTileContainer {...props}>
       <TypeHead type={report.type}>{report.type_name}</TypeHead>
       <ReportUsers>
-        <ReportUser fallbackId={report.executor_id} user={report.executor} isEcecutor />
-        <ReportUser fallbackId={report.victim_id} user={report.victim} />
+        <UserTileSmall
+          fallbackId={report.executor_id}
+          user={report.executor}
+          icon={<HammerIcon />}
+        />
+        <UserTileSmall fallbackId={report.victim_id} user={report.victim} icon={<TargetIcon />} />
       </ReportUsers>
       <Section>
         <Heading>{t('reason')}</Heading>

@@ -13,6 +13,8 @@ import { StartRoute } from './routes/Start';
 const LoginRoute = React.lazy(() => import('./routes/Login'));
 const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
 const MemberRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Member'));
+const GuildModlogRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildModlog'));
+const UnbanmeRoute = React.lazy(() => import('./routes/Unbanme'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -42,6 +44,15 @@ export const App: React.FC = () => {
           <Routes>
             <Route path="start" element={<StartRoute />} />
             <Route path="login" element={<LoginRoute />} />
+            <Route
+              path="unbanme"
+              element={
+                <RouteSuspense>
+                  <UnbanmeRoute />
+                </RouteSuspense>
+              }
+            />
+
             <Route path="db" element={<DashboardRoute />}>
               <Route
                 path="guilds/:guildid/members"
@@ -59,8 +70,17 @@ export const App: React.FC = () => {
                   </RouteSuspense>
                 }
               />
+              <Route
+                path="guilds/:guildid/modlog"
+                element={
+                  <RouteSuspense>
+                    <GuildModlogRoute />
+                  </RouteSuspense>
+                }
+              />
               {import.meta.env.DEV && <Route path="debug" element={<DebugRoute />} />}
             </Route>
+
             <Route path="*" element={<Navigate to="db" />} />
           </Routes>
         </Router>

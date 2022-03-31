@@ -1,2 +1,2 @@
 export * from './ReportTile';
-export * from './MemberReportsList';
+export * from './ReportsList';

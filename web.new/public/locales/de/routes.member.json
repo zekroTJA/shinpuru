@@ -22,12 +22,7 @@
     "mute": "Chat Mute (Timeout)"
   },
   "reports": {
-    "heading": "Meldungen"
-  },
-  "notifications": {
-    "reportrevoked": {
-      "heading": "Meldung widerrufen",
-      "message": "Meldung wurde erfolgreich widerrufen."
-    }
+    "heading": "Meldungen",
+    "noreports": "Dieser Nutzer hat eine weiße Weste! 👌"
   }
 }

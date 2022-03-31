@@ -7,4 +7,5 @@ export const Embed = styled.span`
   padding: 0.2em 0.4em;
   border-radius: 3px;
   background-color: rgba(0 0 0 / 10%);
+  width: fit-content;
 `;

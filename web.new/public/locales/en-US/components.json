@@ -6,8 +6,8 @@
     "section": {
       "guilds": {
         "title": "Guild",
-        "home": "Home",
-        "members": "Members"
+        "members": "Members",
+        "modlog": "Modlog"
       }
     },
     "logout": "Logout",
@@ -42,8 +42,13 @@
       "accept": "Accept and continue in the beta page"
     }
   },
-  "memberreportlist": {
-    "noreports": "This user has a white vest! 👌"
+  "reportlist": {
+    "notifications": {
+      "reportrevoked": {
+        "heading": "Report Revoked",
+        "message": "Report has been revoked successfully."
+      }
+    }
   },
   "modalcreatereport": {
     "reason": "Reason",
@@ -66,5 +71,27 @@
   },
   "filedrop": {
     "info": "Open a file by clicking or via drag and drop. You can even simply paste from your clipboard as well!"
+  },
+  "modalunbanrequest": {
+    "heading": "Request an unban",
+    "sub": "Create an unban request for guild <1>{{guildname}}</1>.",
+    "description": "Please describe below as detailed as possible why you should be unbanned from the guild.",
+    "controls": {
+      "cancel": "Cancel",
+      "send": "Send"
+    }
+  },
+  "unbanrequesttile": {
+    "state": {
+      "pending": "Pending",
+      "declined": "Rejected",
+      "accepted": "Accepted"
+    },
+    "requestermessage": "Requester Message",
+    "decisionreason": "Decision Reason",
+    "actions": {
+      "accept": "Accept",
+      "decline": "Reject"
+    }
   }
 }

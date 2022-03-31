@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
+import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
@@ -162,6 +163,10 @@ export const Navbar: React.FC<Props> = () => {
           <StyledEntry path={`guilds/${selectedGuild?.id}/members`}>
             <UsersIcon />
             <span>{t('section.guilds.members')}</span>
+          </StyledEntry>
+          <StyledEntry path={`guilds/${selectedGuild?.id}/modlog`}>
+            <HammerIcon />
+            <span>{t('section.guilds.modlog')}</span>
           </StyledEntry>
         </Section>
       </EntryContainer>

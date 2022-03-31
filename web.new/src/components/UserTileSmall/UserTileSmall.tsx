@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
-import { ReactComponent as HammerTarget } from '../../assets/target.svg';
 import { FlatUser } from '../../lib/shinpuru-ts/src';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
@@ -8,10 +6,11 @@ import { DiscordImage } from '../DiscordImage';
 type Props = {
   fallbackId: string;
   user: FlatUser;
-  isEcecutor?: boolean;
+  icon?: JSX.Element;
+  hideAvatar?: boolean;
 };
 
-const ReportUserContainer = styled(Container)`
+const UserContainer = styled(Container)`
   display: flex;
   padding: 0.8em;
   align-items: center;
@@ -30,12 +29,12 @@ const ReportUserContainer = styled(Container)`
   }
 `;
 
-export const ReportUser: React.FC<Props> = ({ fallbackId, user, isEcecutor }) => {
+export const UserTileSmall: React.FC<Props> = ({ fallbackId, user, icon, hideAvatar }) => {
   return (
-    <ReportUserContainer>
-      {isEcecutor ? <HammerIcon /> : <HammerTarget />}
-      <DiscordImage src={user?.avatar_url} round />
+    <UserContainer>
+      {icon}
+      {hideAvatar || <DiscordImage src={user?.avatar_url} round />}
       <span>{user ? `${user.username}#${user.discriminator}` : <i>{fallbackId}</i>}</span>
-    </ReportUserContainer>
+    </UserContainer>
   );
 };

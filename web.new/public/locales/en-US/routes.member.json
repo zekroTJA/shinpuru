@@ -22,12 +22,7 @@
     "mute": "Chat Mute (Timeout)"
   },
   "reports": {
-    "heading": "Reports"
-  },
-  "notifications": {
-    "reportrevoked": {
-      "heading": "Report Revoked",
-      "message": "Report has been revoked successfully."
-    }
+    "heading": "Reports",
+    "noreports": "This user has a white vest! 👌"
   }
 }

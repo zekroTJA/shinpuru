@@ -15,6 +15,7 @@ import { Modal } from '../Modal';
 import { ControlProps } from '../Modal/Modal';
 import { NotificationType } from '../Notifications';
 import { TextArea } from '../TextArea';
+import { ModalContainer, ModalTextArea } from './modalParts';
 
 const ALLOWED_ATTACHMENT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
@@ -25,20 +26,6 @@ type Props = ControlProps & {
   member: Member;
   onSubmitted?: (report: Report) => void;
 };
-
-const StyledTextArea = styled(TextArea)`
-  background-color: ${(p) => p.theme.background3};
-  min-width: 100%;
-  max-width: 100%;
-`;
-
-const ModalContainer = styled.div`
-  width: 30em;
-  max-width: 80vw;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5em;
-`;
 
 const ACTION_TEXT = {
   kick: 'routes.member:moderation.kick',
@@ -151,7 +138,7 @@ export const ModalCreateReport: React.FC<Props> = ({
       <ModalContainer>
         <section>
           <Heading>{t('components:modalcreatereport.reason')}</Heading>
-          <StyledTextArea value={reason} onInput={(e) => setReason(e.currentTarget.value)} />
+          <ModalTextArea value={reason} onInput={(e) => setReason(e.currentTarget.value)} />
         </section>
         {(type === 'ban' || type === 'mute') && (
           <section>

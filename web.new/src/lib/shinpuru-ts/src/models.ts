@@ -312,6 +312,9 @@ export interface UnbanRequest {
   processed: Date;
   processed_message: string;
   created: Date;
+
+  creator: FlatUser;
+  processor: FlatUser;
 }
 
 export interface UserSettingsOTA {

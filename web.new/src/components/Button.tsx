@@ -26,6 +26,7 @@ export const Button = styled.button<Props>`
   align-items: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  justify-content: center;
 
   ${(p) => {
     switch (p.variant ?? 'default') {

@@ -6,8 +6,8 @@
     "section": {
       "guilds": {
         "title": "Guilds",
-        "home": "Home",
-        "members": "Members"
+        "members": "Members",
+        "modlog": "Modlog"
       }
     },
     "logout": "Logout",
@@ -42,8 +42,13 @@
       "accept": "Akzeptieren und fortfahren auf der Beta-Version"
     }
   },
-  "memberreportlist": {
-    "noreports": "Dieser Nutzer hat eine weiße Weste! 👌"
+  "reportlist": {
+    "notifications": {
+      "reportrevoked": {
+        "heading": "Meldung widerrufen",
+        "message": "Meldung wurde erfolgreich widerrufen."
+      }
+    }
   },
   "modalcreatereport": {
     "reason": "Begründung",
