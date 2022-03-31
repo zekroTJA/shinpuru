@@ -414,6 +414,13 @@ type UpdateInfoResponse struct {
 	IsOld      bool                `json:"isold"`
 }
 
+type RichUnbanRequest struct {
+	*sharedmodels.UnbanRequest
+
+	Creator   *FlatUser `json:"creator"`
+	Processor *FlatUser `json:"processor"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.

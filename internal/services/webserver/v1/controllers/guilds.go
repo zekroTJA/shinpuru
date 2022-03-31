@@ -26,6 +26,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/sop"
 )
 
 type GuildsController struct {
@@ -492,7 +493,7 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "The ID of the guild."
-// @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListReponse"
+// @Success 200 {array} models.RichUnbanRequest "Wrapped in models.ListReponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
 // @Router /guilds/{id}/unbanrequests [get]
@@ -507,11 +508,22 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 		requests = make([]*sharedmodels.UnbanRequest, 0)
 	}
 
-	for _, r := range requests {
-		r.Hydrate()
-	}
+	res := sop.Map[*sharedmodels.UnbanRequest](sop.Slice(requests),
+		func(r *sharedmodels.UnbanRequest, i int) *models.RichUnbanRequest {
+			r.Hydrate()
+			rub := &models.RichUnbanRequest{
+				UnbanRequest: r,
+			}
+			if creator, _ := c.state.User(rub.UserID); creator != nil {
+				rub.Processor = models.FlatUserFromUser(creator)
+			}
+			if proc, _ := c.state.User(rub.ProcessedBy); proc != nil {
+				rub.Processor = models.FlatUserFromUser(proc)
+			}
+			return rub
+		})
 
-	return ctx.JSON(models.NewListResponse(requests))
+	return ctx.JSON(models.NewListResponse(res.Unwrap()))
 }
 
 // @Summary Get Guild Unbanrequests Count
@@ -562,7 +574,7 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "The ID of the guild."
 // @Param requestid path string true "The ID of the unbanrequest."
-// @Success 200 {object} sharedmodels.UnbanRequest
+// @Success 200 {object} models.RichUnbanRequest
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
 // @Router /guilds/{id}/unbanrequests/{requestid} [get]
@@ -578,7 +590,18 @@ func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
-	return ctx.JSON(request.Hydrate())
+	request.Hydrate()
+	rub := &models.RichUnbanRequest{
+		UnbanRequest: request,
+	}
+	if creator, _ := c.state.User(rub.UserID); creator != nil {
+		rub.Processor = models.FlatUserFromUser(creator)
+	}
+	if proc, _ := c.state.User(rub.ProcessedBy); proc != nil {
+		rub.Processor = models.FlatUserFromUser(proc)
+	}
+
+	return ctx.JSON(rub)
 }
 
 // @Summary Process Guild Unbanrequest
@@ -588,7 +611,7 @@ func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "The ID of the guild."
 // @Param requestid path string true "The ID of the unbanrequest."
-// @Success 200 {object} sharedmodels.UnbanRequest
+// @Success 200 {object} models.RichUnbanRequest
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
 // @Router /guilds/{id}/unbanrequests/{requestid} [post]
@@ -633,7 +656,18 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(request.Hydrate())
+	request.Hydrate()
+	rub := &models.RichUnbanRequest{
+		UnbanRequest: request,
+	}
+	if creator, _ := c.state.User(rub.UserID); creator != nil {
+		rub.Processor = models.FlatUserFromUser(creator)
+	}
+	if proc, _ := c.state.User(rub.ProcessedBy); proc != nil {
+		rub.Processor = models.FlatUserFromUser(proc)
+	}
+
+	return ctx.JSON(rub)
 }
 
 // ---------------------------------------------------------------------------

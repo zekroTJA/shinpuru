@@ -2448,7 +2448,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.UnbanRequest"
+                                "$ref": "#/definitions/models.RichUnbanRequest"
                             }
                         }
                     },
@@ -2550,7 +2550,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UnbanRequest"
+                            "$ref": "#/definitions/models.RichUnbanRequest"
                         }
                     },
                     "401": {
@@ -2599,7 +2599,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UnbanRequest"
+                            "$ref": "#/definitions/models.RichUnbanRequest"
                         }
                     },
                     "401": {
@@ -3821,7 +3821,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.UnbanRequest"
+                                "$ref": "#/definitions/models.RichUnbanRequest"
                             }
                         }
                     },
@@ -3866,7 +3866,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UnbanRequest"
+                            "$ref": "#/definitions/models.RichUnbanRequest"
                         }
                     },
                     "400": {
@@ -4270,6 +4270,29 @@
                 }
             }
         },
+        "/util/updateinfo": {
+            "get": {
+                "description": "Returns update information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Utilities"
+                ],
+                "summary": "Update Information",
+                "responses": {
+                    "200": {
+                        "description": "Update info response",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/verification/sitekey": {
             "get": {
                 "description": "Returns the sitekey for the captcha",
@@ -4346,7 +4369,6 @@
                     "type": "boolean"
                 },
                 "channel_types": {
-                    "description": "NOTE: This feature was on the API, but at some point developers decided to remove it.\nSo I commented it, until it will be officially on the docs.\nDefault     bool                              `json:\"default\"`",
                     "type": "array",
                     "items": {
                         "description": "The type of the channel.",
@@ -4361,6 +4383,14 @@
                 },
                 "description": {
                     "type": "string"
+                },
+                "max_value": {
+                    "description": "Maximum value of number/integer option.",
+                    "type": "number"
+                },
+                "min_value": {
+                    "description": "Minimal value of number/integer option.",
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -4419,6 +4449,14 @@
                     "description": "The timestamp of the last pinned message in the channel.\nnil if the channel has no pinned messages.",
                     "type": "string"
                 },
+                "member_count": {
+                    "description": "An approximate count of users in a thread, stops counting at 50",
+                    "type": "integer"
+                },
+                "message_count": {
+                    "description": "An approximate count of messages in a thread, stops counting at 50",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "The name of the channel.",
                     "type": "string"
@@ -4428,11 +4466,11 @@
                     "type": "boolean"
                 },
                 "owner_id": {
-                    "description": "ID of the DM creator Zeroed if guild channel",
+                    "description": "ID of the creator of the group DM or thread",
                     "type": "string"
                 },
                 "parent_id": {
-                    "description": "The ID of the parent channel, if the channel is under a category",
+                    "description": "The ID of the parent channel, if the channel is under a category. For threads - id of the channel thread was created in.",
                     "type": "string"
                 },
                 "permission_overwrites": {
@@ -4447,7 +4485,7 @@
                     "type": "integer"
                 },
                 "rate_limit_per_user": {
-                    "description": "Amount of seconds a user has to wait before sending another message (0-21600)\nbots, as well as users with the permission manage_messages or manage_channel, are unaffected",
+                    "description": "Amount of seconds a user has to wait before sending another message or creating another thread (0-21600)\nbots, as well as users with the permission manage_messages or manage_channel, are unaffected",
                     "type": "integer"
                 },
                 "recipients": {
@@ -4456,6 +4494,14 @@
                     "items": {
                         "$ref": "#/definitions/discordgo.User"
                     }
+                },
+                "thread_member": {
+                    "description": "Thread member object for the current user, if they have joined the thread, only included on certain API endpoints",
+                    "$ref": "#/definitions/discordgo.ThreadMember"
+                },
+                "thread_metadata": {
+                    "description": "Thread-specific fields not needed by other channels",
+                    "$ref": "#/definitions/discordgo.ThreadMetadata"
                 },
                 "topic": {
                     "description": "The topic of the channel.",
@@ -4506,6 +4552,10 @@
         "discordgo.Member": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "description": "The hash of the avatar for the guild member, if any.",
+                    "type": "string"
+                },
                 "communication_disabled_until": {
                     "description": "The time at which the member's timeout will expire.\nTime in the past or nil if the user is not timed out.",
                     "type": "string"
@@ -4609,6 +4659,10 @@
                     "description": "The ID of the message.",
                     "type": "string"
                 },
+                "interaction": {
+                    "description": "Is sent when the message is a response to an Interaction, without an existing message.\nThis means responses to message component interactions do not include this property,\ninstead including a MessageReference, as components exist on preexisting messages.",
+                    "$ref": "#/definitions/discordgo.MessageInteraction"
+                },
                 "member": {
                     "description": "Member properties for this message's author,\ncontains only partial information",
                     "$ref": "#/definitions/discordgo.Member"
@@ -4653,12 +4707,20 @@
                         "$ref": "#/definitions/discordgo.MessageReactions"
                     }
                 },
+                "referenced_message": {
+                    "description": "The message associated with the message_reference\nNOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).\nIf the message is a reply but the referenced_message field is not present,\nthe backend did not attempt to fetch the message that was being replied to, so its state is unknown.\nIf the field exists but is null, the referenced message was deleted.",
+                    "$ref": "#/definitions/discordgo.Message"
+                },
                 "sticker_items": {
                     "description": "An array of Sticker objects, if any were sent.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/discordgo.Sticker"
                     }
+                },
+                "thread": {
+                    "description": "The thread that was started from this message, includes thread member object",
+                    "$ref": "#/definitions/discordgo.Channel"
                 },
                 "timestamp": {
                     "description": "The time at which the messsage was sent.\nCAUTION: this field may be removed in a\nfuture API version; it is safer to calculate\nthe creation time via the ID.",
@@ -4712,6 +4774,9 @@
         "discordgo.MessageAttachment": {
             "type": "object",
             "properties": {
+                "content_type": {
+                    "type": "string"
+                },
                 "ephemeral": {
                     "type": "boolean"
                 },
@@ -4889,6 +4954,27 @@
                 }
             }
         },
+        "discordgo.MessageInteraction": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "member": {
+                    "description": "Member is only present when the interaction is from a guild.",
+                    "$ref": "#/definitions/discordgo.Member"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
         "discordgo.MessageReactions": {
             "type": "object",
             "properties": {
@@ -5012,11 +5098,65 @@
                 }
             }
         },
+        "discordgo.ThreadMember": {
+            "type": "object",
+            "properties": {
+                "flags": {
+                    "description": "Any user-thread settings, currently only used for notifications",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "The id of the thread",
+                    "type": "string"
+                },
+                "join_timestamp": {
+                    "description": "The time the current user last joined the thread",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "The id of the user",
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.ThreadMetadata": {
+            "type": "object",
+            "properties": {
+                "archive_timestamp": {
+                    "description": "Timestamp when the thread's archive status was last changed, used for calculating recent activity",
+                    "type": "string"
+                },
+                "archived": {
+                    "description": "Whether the thread is archived",
+                    "type": "boolean"
+                },
+                "auto_archive_duration": {
+                    "description": "Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080",
+                    "type": "integer"
+                },
+                "invitable": {
+                    "description": "Whether non-moderators can add other non-moderators to a thread; only available on private threads",
+                    "type": "boolean"
+                },
+                "locked": {
+                    "description": "Whether the thread is locked; when a thread is locked, only users with MANAGE_THREADS can unarchive it",
+                    "type": "boolean"
+                }
+            }
+        },
         "discordgo.User": {
             "type": "object",
             "properties": {
+                "accent_color": {
+                    "description": "User's banner color, encoded as an integer representation of hexadecimal color code",
+                    "type": "integer"
+                },
                 "avatar": {
                     "description": "The hash of the user's avatar. Use Session.UserAvatar\nto retrieve the avatar itself.",
+                    "type": "string"
+                },
+                "banner": {
+                    "description": "The hash of the user's banner image.",
                     "type": "string"
                 },
                 "bot": {
@@ -5594,6 +5734,10 @@
         "models.Member": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "description": "The hash of the avatar for the guild member, if any.",
+                    "type": "string"
+                },
                 "avatar_url": {
                     "type": "string"
                 },
@@ -5719,6 +5863,9 @@
                 "attachment": {
                     "type": "string"
                 },
+                "attachment_data": {
+                    "type": "string"
+                },
                 "reason": {
                     "type": "string"
                 },
@@ -5774,6 +5921,9 @@
                 "attachment": {
                     "type": "string"
                 },
+                "attachment_data": {
+                    "type": "string"
+                },
                 "reason": {
                     "type": "string"
                 },
@@ -5782,6 +5932,47 @@
                 },
                 "type": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.RichUnbanRequest": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "creator": {
+                    "$ref": "#/definitions/models.FlatUser"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "processed": {
+                    "type": "string"
+                },
+                "processed_by": {
+                    "type": "string"
+                },
+                "processed_message": {
+                    "type": "string"
+                },
+                "processor": {
+                    "$ref": "#/definitions/models.FlatUser"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "user_tag": {
+                    "type": "string"
                 }
             }
         },
@@ -5985,14 +6176,42 @@
                 }
             }
         },
+        "models.UpdateInfoResponse": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "$ref": "#/definitions/versioncheck.Semver"
+                },
+                "current_str": {
+                    "type": "string"
+                },
+                "isold": {
+                    "type": "boolean"
+                },
+                "latest": {
+                    "$ref": "#/definitions/versioncheck.Semver"
+                },
+                "latest_str": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
+                "accent_color": {
+                    "description": "User's banner color, encoded as an integer representation of hexadecimal color code",
+                    "type": "integer"
+                },
                 "avatar": {
                     "description": "The hash of the user's avatar. Use Session.UserAvatar\nto retrieve the avatar itself.",
                     "type": "string"
                 },
                 "avatar_url": {
+                    "type": "string"
+                },
+                "banner": {
+                    "description": "The hash of the user's banner image.",
                     "type": "string"
                 },
                 "bot": {
@@ -6110,6 +6329,23 @@
                 },
                 "term": {
                     "type": "string"
+                }
+            }
+        },
+        "versioncheck.Semver": {
+            "type": "object",
+            "properties": {
+                "attachment": {
+                    "type": "string"
+                },
+                "major": {
+                    "type": "integer"
+                },
+                "minor": {
+                    "type": "integer"
+                },
+                "patch": {
+                    "type": "integer"
                 }
             }
         }
