@@ -69,6 +69,11 @@ const ReportUsers = styled.div`
   justify-content: space-between;
   margin-top: 1.5em;
   gap: 1.5em;
+  flex-wrap: wrap;
+
+  @media (max-width: 50em) {
+    flex-direction: column;
+  }
 `;
 
 const Footer = styled(Section)`

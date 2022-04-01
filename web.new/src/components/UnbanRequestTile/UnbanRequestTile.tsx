@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as PrayIcon } from '../../assets/pray.svg';
 import { UnbanRequest, UnbanRequestState } from '../../lib/shinpuru-ts/src';
+import { formatDate } from '../../util/date';
 import { Button } from '../Button';
 import { Container } from '../Container';
-import { Flex } from '../Flex';
+import { Embed } from '../Embed';
 import { Heading } from '../Heading';
 import { UserTileSmall } from '../UserTileSmall';
 import { LinearGradient } from '../styleParts';
@@ -28,11 +29,14 @@ const RequestContainer = styled(Container)`
 `;
 
 const StatusBar = styled.div<{ state: UnbanRequestState }>`
-  width: 100%;
-  border-radius: 12px;
-  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.2ch;
   text-transform: uppercase;
+  width: 100%;
+  text-align: center;
   padding: 0.4em;
+  border-radius: 8px;
+  color: ${(p) => p.theme.background2};
 
   ${(p) => {
     switch (p.state) {
@@ -51,6 +55,10 @@ const ContentContainer = styled.div`
   flex-direction: column;
   padding: 1em;
   gap: 1em;
+
+  ${Heading} {
+    font-size: 0.8rem;
+  }
 `;
 
 const Controls = styled.div`
@@ -60,6 +68,43 @@ const Controls = styled.div`
   > * {
     width: 100%;
   }
+`;
+
+const UserConatienr = styled.div`
+  display: flex;
+  gap: 1.5em;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  @media (max-width: 50em) {
+    flex-direction: column;
+  }
+`;
+
+const Footer = styled.section`
+  display: flex;
+  align-items: center;
+  border-top: solid 2px rgb(128, 128, 128);
+  padding-top: 0.8em;
+
+  font-size: 0.8rem;
+
+  ${Embed} {
+    font-size: 0.8em;
+  }
+
+  > a {
+    text-decoration: underline;
+    color: ${(p) => p.theme.accent};
+    cursor: pointer;
+  }
+`;
+
+const Spacer = styled.div`
+  height: 1em;
+  width: 1px;
+  background-color: ${(p) => p.theme.text};
+  margin: 0 0.5em;
 `;
 
 export const UnbanRequestTile: React.FC<Props> = ({
@@ -73,7 +118,7 @@ export const UnbanRequestTile: React.FC<Props> = ({
     <RequestContainer>
       <StatusBar state={request.status}>{t(`state.${STATUS[request.status]}`)}</StatusBar>
       <ContentContainer>
-        <Flex gap="1em">
+        <UserConatienr>
           <UserTileSmall fallbackId={request.user_id} user={request.creator} icon={<PrayIcon />} />
           {request.processor && (
             <UserTileSmall
@@ -82,7 +127,7 @@ export const UnbanRequestTile: React.FC<Props> = ({
               icon={<HammerIcon />}
             />
           )}
-        </Flex>
+        </UserConatienr>
         <section>
           <Heading>{t('requestermessage')}</Heading>
           <span>{request.message}</span>
@@ -93,7 +138,7 @@ export const UnbanRequestTile: React.FC<Props> = ({
             <span>{request.message}</span>
           </section>
         )}
-        {showControls && (
+        {showControls && request.status === UnbanRequestState.PENDING && (
           <Controls>
             <Button variant="green" onClick={() => onProcess(true)}>
               {t('actions.accept')}
@@ -103,6 +148,13 @@ export const UnbanRequestTile: React.FC<Props> = ({
             </Button>
           </Controls>
         )}
+        <Footer>
+          <span>
+            ID: <Embed>{request.id}</Embed>
+          </span>
+          <Spacer />
+          <span>{formatDate(request.created)}</span>
+        </Footer>
       </ContentContainer>
     </RequestContainer>
   );

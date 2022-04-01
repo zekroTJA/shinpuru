@@ -276,11 +276,7 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/unbanrequests/${requestId}`);
   }
 
-  respondUnbanrequest(
-    id: string,
-    requestId: string,
-    request: UnbanRequest,
-  ): Promise<ListResponse<UnbanRequest>> {
+  respondUnbanrequest(id: string, requestId: string, request: UnbanRequest): Promise<UnbanRequest> {
     return this.req('POST', `${id}/unbanrequests/${requestId}`, request);
   }
 

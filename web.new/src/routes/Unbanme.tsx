@@ -15,7 +15,7 @@ import { useApi } from '../hooks/useApi';
 import { useEffectAsync } from '../hooks/useEffectAsync';
 import { setInitRedirect } from '../hooks/useInitRedirect';
 import { useNotifications } from '../hooks/useNotifications';
-import { Guild, UnbanRequest } from '../lib/shinpuru-ts/src';
+import { Guild, UnbanRequest, UnbanRequestState } from '../lib/shinpuru-ts/src';
 import { APIError } from '../lib/shinpuru-ts/src/errors';
 
 type Props = {};
@@ -62,7 +62,12 @@ const UnbanmeRoute: React.FC<Props> = () => {
     setQueue(queue.data);
 
     const g = await fetch((c) => c.unbanrequests.guilds());
-    setBannedGuilds(g.data.filter((g) => !queue.data.find((r) => r.guild_id === g.id)));
+    setBannedGuilds(
+      g.data.filter(
+        (g) =>
+          !queue.data.find((r) => r.guild_id === g.id && r.status === UnbanRequestState.PENDING),
+      ),
+    );
   }, []);
 
   const _onLogin = () => {
@@ -131,12 +136,12 @@ const UnbanmeRoute: React.FC<Props> = () => {
           </section>
 
           {queue.length > 0 && (
-            <section>
+            <Flex direction="column" gap="1em">
               <Heading>{t('requestqueue')}</Heading>
               {queue.map((r) => (
                 <UnbanRequestTile request={r} key={r.id} />
               ))}
-            </section>
+            </Flex>
           )}
         </Flex>
       )}

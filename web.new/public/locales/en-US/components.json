@@ -93,5 +93,26 @@
       "accept": "Accept",
       "decline": "Reject"
     }
+  },
+  "modalprocessunbanrequest": {
+    "title": {
+      "accept": "Accept Unban Request",
+      "decline": "Reject Unban Request"
+    },
+    "reason": "Reason",
+    "reports": "Recent Reports of the Requester",
+    "description": {
+      "accept": "Accept unban request of user {{username}} ({{userid}}).",
+      "decline": "Reject unban request of user {{username}} ({{userid}})."
+    },
+    "controls": {
+      "accept": "Accept",
+      "decline": "Reject",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "accept": "Unban request has sucessfully been acceped and the member is now unbanned.",
+      "decline": "Unban request has successfully been rejected and the member remains banned."
+    }
   }
 }
