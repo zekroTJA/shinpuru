@@ -93,5 +93,26 @@
       "accept": "Annehmen",
       "decline": "Ablehnen"
     }
+  },
+  "modalprocessunbanrequest": {
+    "title": {
+      "accept": "Entbannungsantrag akzeptieren",
+      "decline": "Entbannungsantrag ablehnen"
+    },
+    "reason": "Begründung",
+    "reports": "Letzte Meldungen des Nutzers",
+    "description": {
+      "accept": "Akzeptiere den Entbannungsantrag von {{username}} ({{userid}}).",
+      "decline": "Lehne den Entbannungsantrag von {{username}} ({{userid}}) ab."
+    },
+    "controls": {
+      "accept": "Akzeptieren",
+      "decline": "Ablehnen",
+      "cancel": "Abbrechen"
+    },
+    "notifications": {
+      "accept": "Der Entbannungsantrag wurde erfolgreich akzeptiert und der Nutzer ist jetzt entbannt.",
+      "decline": "Der Entbannungsantrag wurde erfolgreich abgelehnt und der Nutzer bleibt gebannt."
+    }
   }
 }
