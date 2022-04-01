@@ -515,7 +515,7 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 				UnbanRequest: r,
 			}
 			if creator, _ := c.state.User(rub.UserID); creator != nil {
-				rub.Processor = models.FlatUserFromUser(creator)
+				rub.Creator = models.FlatUserFromUser(creator)
 			}
 			if proc, _ := c.state.User(rub.ProcessedBy); proc != nil {
 				rub.Processor = models.FlatUserFromUser(proc)
