@@ -38,7 +38,7 @@ In total, **34** different wonderful people contributed a sum of **77** issues a
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `1` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `1` |
 |  [kindh0623](https://github.com/kindh0623) | [#348](https://github.com/zekroTJA/shinpuru/issues/348) |  | `1` |
-|  [davidphayanouvong](https://github.com/davidphayanouvong) | [#360](https://github.com/zekroTJA/shinpuru/issues/360) |  | `1` |
+|  [davidphay](https://github.com/davidphay) | [#360](https://github.com/zekroTJA/shinpuru/issues/360) |  | `1` |
 |  [AnimeWolfX](https://github.com/AnimeWolfX) | [#371](https://github.com/zekroTJA/shinpuru/issues/371) |  | `1` |
 
 
