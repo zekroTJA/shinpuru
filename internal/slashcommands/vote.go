@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekrotja/ken"
 )
 
@@ -175,7 +176,7 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 
 	var expires time.Time
 	if expiresV, ok := ctx.Options().GetByNameOptional("timeout"); ok {
-		expiresDuration, err := time.ParseDuration(expiresV.StringValue())
+		expiresDuration, err := timeutil.ParseDuration(expiresV.StringValue())
 		if err != nil {
 			return ctx.FollowUpError(
 				"Invalid duration format. Please take a look "+
@@ -264,7 +265,7 @@ func (c *Vote) list(ctx *ken.SubCommandCtx) (err error) {
 func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	expireDuration, err := time.ParseDuration(ctx.Options().GetByName("timeout").StringValue())
+	expireDuration, err := timeutil.ParseDuration(ctx.Options().GetByName("timeout").StringValue())
 	if err != nil {
 		return ctx.FollowUpError(
 			"Invalid duration format. Please take a look "+
