@@ -20,6 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
 RUN corepack enable \
   && npm install --global corepack
 
+# Install Angular CLI
+RUN yarn global add @angular/cli --prefix /usr/local
+
 # Install Taskfile
 RUN env GOBIN=/bin go install github.com/go-task/task/v3/cmd/task@latest
 
