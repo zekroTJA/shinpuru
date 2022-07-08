@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useApi } from './useApi';
 import { useSelfUser } from './useSelfUser';
 
+const allowedCache: { [key: string]: Promise<string[]> } = {};
+
 export const usePerms = (guildid?: string) => {
   const fetch = useApi();
   const selfUser = useSelfUser();
@@ -9,14 +11,29 @@ export const usePerms = (guildid?: string) => {
 
   useEffect(() => {
     if (!!selfUser && !!guildid) {
-      fetch((c) => c.guilds.member(guildid, selfUser.id).permissionsAllowed())
-        .then((res) => setAllowedPerms(res.data))
-        .catch();
+      if (allowedCache[guildid] === undefined) {
+        allowedCache[guildid] = fetch((c) =>
+          c.guilds.member(guildid, selfUser.id).permissionsAllowed(),
+        )
+          .then((res) => {
+            allowedCache[guildid] = Promise.resolve(res.data);
+            return res.data;
+          })
+          .catch();
+      }
+
+      allowedCache[guildid].then(setAllowedPerms);
     }
   }, [selfUser, guildid]);
 
-  const isAllowed = (pattern: string) =>
-    !!allowedPerms?.find((a) => a.includes(pattern));
+  const isAllowed = (pattern: string) => {
+    if (pattern.includes('*')) {
+      const rx = new RegExp(pattern.replaceAll('*', '.*'));
+      return !!allowedPerms?.find((a) => rx.test(a));
+    }
+
+    return !!allowedPerms?.find((a) => a.includes(pattern));
+  };
 
   return { allowedPerms, isAllowed };
 };

@@ -19,7 +19,6 @@ const LoaderKF = keyframes`
 
 export const Loader = styled.div<Props>`
   width: ${(p) => p.width};
-  min-width: ${(p) => p.width};
   height: ${(p) => p.height};
   min-height: ${(p) => p.height};
   border-radius: ${(p) => p.borderRadius};

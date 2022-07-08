@@ -8,6 +8,11 @@
         "title": "Guilds",
         "members": "Members",
         "modlog": "Modlog"
+      },
+      "guildsettings": {
+        "title": "Guild Einstellungen",
+        "general": "General",
+        "backup": "Backups"
       }
     },
     "logout": "Logout",

@@ -2,13 +2,16 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
+import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
+import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { useApi } from '../../hooks/useApi';
 import { useGuilds } from '../../hooks/useGuilds';
+import { usePerms } from '../../hooks/usePerms';
 import { useSelfUser } from '../../hooks/useSelfUser';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { useStore } from '../../services/store';
@@ -106,13 +109,17 @@ const StyledNav = styled.nav`
     }
 
     ${StyledEntry}, ${SelfContainer} {
+      justify-content: center;
       span {
         display: none;
       }
     }
 
-    ${StyledGuildSelect} > div > div > span {
-      display: none;
+    ${StyledGuildSelect} > div > div {
+      justify-content: center;
+      > span {
+        display: none;
+      }
     }
 
     ${Heading} {
@@ -128,6 +135,7 @@ export const Navbar: React.FC<Props> = () => {
   const { guildid } = useParams();
   const guilds = useGuilds();
   const self = useSelfUser();
+  const { isAllowed } = usePerms(guildid);
   const [selectedGuild, setSelectedGuild] = useStore((s) => [s.selectedGuild, s.setSelectedGuild]);
 
   useEffect(() => {
@@ -169,6 +177,19 @@ export const Navbar: React.FC<Props> = () => {
             <span>{t('section.guilds.modlog')}</span>
           </StyledEntry>
         </Section>
+
+        {isAllowed('sp.guild.config.*') && (
+          <Section title={t('section.guildsettings.title')}>
+            <StyledEntry path={`guilds/${selectedGuild?.id}/settings/general`}>
+              <SettingsIcon />
+              <span>{t('section.guildsettings.general')}</span>
+            </StyledEntry>
+            <StyledEntry path={`guilds/${selectedGuild?.id}/settings/backups`}>
+              <BackupIcon />
+              <span>{t('section.guildsettings.backup')}</span>
+            </StyledEntry>
+          </Section>
+        )}
       </EntryContainer>
 
       <StyledHoverplate

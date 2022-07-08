@@ -6,6 +6,7 @@ export type Props<T extends unknown> = React.HTMLAttributes<HTMLDivElement> & {
   options: Element<T>[];
   value?: Element<T>;
   onElementSelect?: (v: Element<T>) => void;
+  placeholder?: string;
 };
 
 export type Element<T> = {
@@ -73,6 +74,10 @@ const SelectContainer = styled.div`
   }
 `;
 
+const Placeholder = styled.span`
+  opacity: 0.5;
+`;
+
 const stopPropagation = <T extends Event>(e: T, handler: (e: T) => void) => {
   e.stopPropagation();
   e.preventDefault();
@@ -83,6 +88,7 @@ export const Select = <T extends unknown>({
   options,
   value,
   onElementSelect = () => {},
+  placeholder,
   ...props
 }: Props<T>) => {
   const [select, setSelect] = useState(false);
@@ -113,7 +119,9 @@ export const Select = <T extends unknown>({
 
   return (
     <SelectContainer {...props}>
-      <ValueContainer onClick={_onSelectionClick}>{value?.display}</ValueContainer>
+      <ValueContainer onClick={_onSelectionClick}>
+        {(value && value.display) || <Placeholder>{placeholder ?? <>&nbsp;</>}</Placeholder>}
+      </ValueContainer>
       <OptionsList show={select}>{_options}</OptionsList>
       <OptionsModal show={select} onClose={() => setSelect(false)}>
         {_options}
