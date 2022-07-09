@@ -1,5 +1,6 @@
 import Color from 'color';
 import { useState } from 'react';
+import { uid } from 'react-uid';
 import styled, { css } from 'styled-components';
 import { ReactComponent as RemoveIcon } from '../../assets/close.svg';
 
@@ -98,7 +99,11 @@ export const TagsInput = <T extends unknown>({
   const _selectables = options
     .filter((o) => !selected.find((s) => s.id === o.id))
     .filter((o) => !!o.keywords.find((kw) => kw.toLowerCase().includes(valLower)))
-    .map((s) => <span onClick={() => _onSelect(s)}>{s.display}</span>);
+    .map((s) => (
+      <span key={uid(s)} onClick={() => _onSelect(s)}>
+        {s.display}
+      </span>
+    ));
 
   const _selected = selected.map((s) => (
     <span>

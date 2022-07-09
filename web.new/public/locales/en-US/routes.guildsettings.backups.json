@@ -1,0 +1,12 @@
+{
+  "toggle": "Enable automatic guild backups",
+  "apply": "Apply",
+
+  "notifications": {
+    "enabled": "Guild backups are now enabled.",
+    "disabled": "Guild backups are now disabled."
+  },
+
+  "settings": "Settings",
+  "backups": "Backups"
+}

@@ -1,6 +1,5 @@
 import { format, formatDistance } from 'date-fns';
 import { enUS, de } from 'date-fns/locale';
-import { padNumber } from './utils';
 
 const LANG_MAP: { [key: string]: Locale } = {
   'en-US': enUS,

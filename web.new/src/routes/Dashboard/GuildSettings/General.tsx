@@ -7,6 +7,7 @@ import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
 import { Loader } from '../../../components/Loader';
+import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { NotificationType } from '../../../components/Notifications';
 import { Element, Select } from '../../../components/Select';
 import { TagElement, TagsInput } from '../../../components/TagsInput/TagsInput';
@@ -256,7 +257,7 @@ const GeneralRoute: React.FC<Props> = () => {
     ) ?? [];
 
   return (
-    <>
+    <MaxWidthContainer>
       {(guild && allowedPerms && (
         <Container>
           {isAllowed('sp.guild.config.autorole') && (
@@ -414,7 +415,7 @@ const GeneralRoute: React.FC<Props> = () => {
           </Flex>
         </>
       )}
-    </>
+    </MaxWidthContainer>
   );
 };
 

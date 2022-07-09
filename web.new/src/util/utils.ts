@@ -61,3 +61,7 @@ export function padNumber(n: number, minLen: number, padChar = '0'): string {
 export function prefixNumner(n: number): string {
   return (n < 0 ? '-' : '+') + n.toString();
 }
+
+export function range(n: number, start: number = 0): number[] {
+  return new Array<number>(n).fill(0).map((_, i) => i + start);
+}

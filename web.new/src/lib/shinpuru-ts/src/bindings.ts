@@ -424,8 +424,10 @@ export class GuildBackupsClient extends SubClient {
     return this.req('POST', `${id}/download`);
   }
 
-  downloadUrl(id: string, otaToken: string): string {
-    return `${this._client.clientEndpoint}/${this.sub}/${id}/download?ota_token=${otaToken}`;
+  downloadUrl(id: string, otaToken: string): Promise<string> {
+    return Promise.resolve(
+      `${this._client.clientEndpoint}/${this.sub}/${id}/download?ota_token=${otaToken}`,
+    );
   }
 
   toggle(enabled: boolean): Promise<CodeResponse> {

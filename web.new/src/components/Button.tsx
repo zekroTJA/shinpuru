@@ -13,6 +13,7 @@ export type ButtonVariant =
 
 type Props = {
   variant?: ButtonVariant;
+  nvp?: boolean;
 };
 
 export const Button = styled.button<Props>`
@@ -20,7 +21,7 @@ export const Button = styled.button<Props>`
   font-family: 'Roboto', sans-serif;
   color: ${(p) => p.theme.text};
   border: none;
-  padding: 0.8em 1em;
+  padding: ${(p) => (p.nvp ? '0' : '0.8em')} 1em;
   border-radius: 3px;
   display: flex;
   align-items: center;
