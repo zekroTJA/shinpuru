@@ -3,47 +3,15 @@
 <!-- > **Attention**  
 > This is a hotfix patch. If you want to see the changelog for release 1.30.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.30.0). -->
 
-# Interactive Setup
+# New Web Interface Beta
 
-Recently, a lot of questions about the setup of shinpuru received me. shinpuru has a lot of configuration values and ways to configure it, so I decided to create a small tool where you can enter all your settings and credentials and which creates a pre-configured `docker-compose.yml` which you can simply use to set up shinpuru on your server. 
+Currently, I am in the process of re-implementing the whole web interface of shinpuru. If you want to know why and how far it already has been processed yet, please take a look at issue #370. With this release, you can check out the new interface by going to the `/beta` route in the web interface. But please, keep in mind that this is a very early state of development. A lot of features are still missing or only partly implemented and the user experience might be impaired.
 
-https://user-images.githubusercontent.com/16734205/158845896-50eb4869-fa2a-42f0-887c-0b946ddcecd0.mp4
+![](https://user-images.githubusercontent.com/16734205/178149927-2b100aa8-f33e-403c-8b38-2d2d4afdca18.gif)
 
-Simply download the tool from the releases below, execute it in your terminal, enter your settings and credentials and then you will have a ready to go Docker Compose set up to be deployed to your server.
+# Duration UX Improvements
 
-# Report QoL Changes
-
-Previosuly, you were able to report, kick and ban users using the `type` parameter of the report command. On the one side, this is highly unintuitive because people more likely expect a ban and kick command for each action separately. Also, this is very inconsistent with the `mute` command, which is actually also just a report type with extra actions like banning an kicking as well at it has its own command.
-
-So, with report you can now only create, list and revoke reports and banning as well as kicking members is done with both separate commands `ban` and `kick`.
-
-This change also results in some changes to the permissions.
-- `sp.guild.mod.report.kick` is now `sp.guild.mod.kick`
-- `sp.guild.mod.report.ban` is now `sp.guild.mod.ban`
-
-# Starboard Changes [#369 <small>*nice*</small>]
-
-When posing message with links to images or videos, these are extracted from the message and put into the embed itself when voted into the starboard.
-
-Also, videos are now properly displayed in the web interface. And yes, autoplay is disabled and the volume is muted by default. 😉
-
-![](https://user-images.githubusercontent.com/16734205/158994685-eae81863-77c0-4e82-b05e-a01b273a1577.gif)
-
-# Minor Changes
-
-- The guild log order in the web inetrface is now descending starting with the latest entries. This is way more intuitive and easier to look for recent issues. [#366]
-
-- shinpuru now reads a `.env` file in the directory of the executable and applies it to the environment vaiables.
-
-# Bug Fixes
-
-- Fixed a bug which results in a `nil` author on a message retrieved from the cache which lead to a panic when voting such a message into the starboard. [#366]
-
-- Not available or deleted starboard channels are now properly cleared from the settings when voting messages into it.
-
-# Code Base
-
-So that go 1.18 has now officially being released, you can now compile shinpuru with the latest version of the Go toolchain instead of using a pre-release build.
+All duration parsing of commands has now been exchanged from the [default Go Implementation](https://pkg.go.dev/time#ParseDuration) to a [custom implementation](https://github.com/zekroTJA/shinpuru/blob/dev/pkg/timeutil/timeutil.go#L49-L117) which allows more time units like days (`d`) or weeks (`w`). Also, it makes the parsing more flexible. For example, you can use spaces between units (example `1d 3h`) or you can even subtract values (example `1d-2h` == `22h`). This affects all commands which take a duration parameter like `/ban` or `/mute`.
 
 # Docker
 
