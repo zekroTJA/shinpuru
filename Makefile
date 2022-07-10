@@ -15,9 +15,9 @@ GOLINT 	      = golint
 GREP   	      = grep
 NPM    	      = npm
 PRETTIER      = prettier
-NG       	  = npx ng
+YARN					= yarn
 DOCKERCOMPOSE = docker-compose
-SWAGGO		  = swag
+SWAGGO		    = swag
 SWAGGER2MD    = swagger-markdown
 ###############################################
 
@@ -99,7 +99,7 @@ cleanup:
 PHONY += fe
 fe:
 	cd $(CURDIR)/web && \
-		$(NG) build --configuration production
+		$(YARN) run build
 
 PHONY += copyfe
 copyfe:
@@ -107,8 +107,7 @@ copyfe:
 
 PHONY += runfe
 runfe:
-	cd ./web && \
-		$(NG) serve --port=8081
+	cd ./web && $(YARN) start
 
 PHONY += prettify
 prettify:

@@ -1,0 +1,32 @@
+name: Web CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "*"
+    paths:
+      - "web.new/**"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+    paths:
+      - "web.new/**"
+
+jobs:
+  lint:
+    name: Lint Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v2
+      - name: Check out Code
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        working-directory: 'web.new'
+        run: yarn
+      - name: ESLint
+        working-directory: 'web.new'
+        run: yarn lint

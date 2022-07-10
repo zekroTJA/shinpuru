@@ -44,9 +44,13 @@ type Error struct {
 
 // ListResponse wraps a list response object
 // with the list as Data and N as len(Data).
-type ListResponse struct {
-	N    int         `json:"n"`
-	Data interface{} `json:"data"`
+type ListResponse[T any] struct {
+	N    int `json:"n"`
+	Data []T `json:"data"`
+}
+
+func NewListResponse[T any](data []T) ListResponse[T] {
+	return ListResponse[T]{len(data), data}
 }
 
 // User extends a discordgo.User as reponse
@@ -171,9 +175,10 @@ type PermissionsUpdate struct {
 // ReasonRequest is a request model wrapping a
 // Reason and Attachment URL.
 type ReasonRequest struct {
-	Reason     string     `json:"reason"`
-	Attachment string     `json:"attachment"`
-	Timeout    *time.Time `json:"timeout"`
+	Reason         string     `json:"reason"`
+	Timeout        *time.Time `json:"timeout"`
+	Attachment     string     `json:"attachment"`
+	AttachmentData string     `json:"attachment_data"`
 }
 
 // ReportRequest extends ReasonRequest by
@@ -407,6 +412,13 @@ type UpdateInfoResponse struct {
 	Latest     versioncheck.Semver `json:"latest"`
 	LatestStr  string              `json:"latest_str"`
 	IsOld      bool                `json:"isold"`
+}
+
+type RichUnbanRequest struct {
+	*sharedmodels.UnbanRequest
+
+	Creator   *FlatUser `json:"creator"`
+	Processor *FlatUser `json:"processor"`
 }
 
 // Validate returns true, when the ReasonRequest is valid.

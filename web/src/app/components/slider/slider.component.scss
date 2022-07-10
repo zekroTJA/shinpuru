@@ -29,8 +29,8 @@ $bar-height: $nob-size + $bar-padding;
 
 .nob {
   position: relative;
-  top: -$nob-size - ($bar-padding / 2);
-  left: $bar-padding / 2;
+  top: -$nob-size - calc($bar-padding / 2);
+  left: calc($bar-padding / 2);
   width: $nob-size;
   height: $nob-size;
   border-radius: 100%;
@@ -39,9 +39,10 @@ $bar-height: $nob-size + $bar-padding;
 }
 
 .nobactive {
-  left: $bar-width - $nob-size - ($bar-padding / 2);
+  left: $bar-width - $nob-size - calc($bar-padding / 2);
 }
 
 .baractive {
   background-color: $c-blurple;
 }
+

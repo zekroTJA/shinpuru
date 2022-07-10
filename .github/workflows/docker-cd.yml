@@ -62,7 +62,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: zekro.de
-          port: 2201
+          port: 22
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |

@@ -1,0 +1,11 @@
+{
+  "discord": {
+    "title": "Loggen Sie ich entweder über Ihren Discord Account via OAuth2 ein",
+    "action": "Via Discord einloggen",
+    "subline": "Wir speichern weder Ihre E-Mail-Addresse noch irgend etwas anderes und wir verifizieren nur Ihre Discord ID."
+  },
+  "alternative": {
+    "title": "Oder schicke den folgenden Code via Direktnachricht an shinpuru",
+    "subline": "Alternativ können Sie auch den <1>/login</1> Command benutzen."
+  }
+}

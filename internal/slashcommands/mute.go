@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -173,7 +174,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 			"Please enter a valid timeout.", "").
 			Error
 	}
-	expire, err := time.ParseDuration(expireV.StringValue())
+	expire, err := timeutil.ParseDuration(expireV.StringValue())
 	if err != nil {
 		return ctx.FollowUpError(
 			fmt.Sprintf("Invalid expire value:\n```\n%s```", err.Error()), "").Error

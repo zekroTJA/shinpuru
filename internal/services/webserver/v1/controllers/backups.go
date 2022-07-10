@@ -58,7 +58,7 @@ func (c *GuildBackupsController) getBackups(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(backupEntries), Data: backupEntries})
+	return ctx.JSON(models.NewListResponse(backupEntries))
 }
 
 // @Summary Obtain Backup Download OTA Key

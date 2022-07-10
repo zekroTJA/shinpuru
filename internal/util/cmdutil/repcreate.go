@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekrotja/ken"
 )
 
@@ -54,7 +55,7 @@ func CmdReport(ctx ken.Context, typ models.ReportType) (err error) {
 	}
 
 	if expire != "" {
-		exp, err := time.ParseDuration(expire)
+		exp, err := timeutil.ParseDuration(expire)
 		if err != nil {
 			err = ctx.FollowUpError(
 				fmt.Sprintf("Invalid duration:\n```\n%s```", err.Error()), "").Error

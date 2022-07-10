@@ -15,10 +15,6 @@ definitions:
         description: 'NOTE: mutually exclusive with Choices.'
         type: boolean
       channel_types:
-        description: |-
-          NOTE: This feature was on the API, but at some point developers decided to remove it.
-          So I commented it, until it will be officially on the docs.
-          Default     bool                              `json:"default"`
         items:
           description: The type of the channel.
           type: integer
@@ -29,6 +25,12 @@ definitions:
         type: array
       description:
         type: string
+      max_value:
+        description: Maximum value of number/integer option.
+        type: number
+      min_value:
+        description: Minimal value of number/integer option.
+        type: number
       name:
         type: string
       options:
@@ -44,8 +46,7 @@ definitions:
     properties:
       name:
         type: string
-      value:
-        type: object
+      value: {}
     type: object
   discordgo.Channel:
     properties:
@@ -77,6 +78,14 @@ definitions:
           The timestamp of the last pinned message in the channel.
           nil if the channel has no pinned messages.
         type: string
+      member_count:
+        description: An approximate count of users in a thread, stops counting at
+          50
+        type: integer
+      message_count:
+        description: An approximate count of messages in a thread, stops counting
+          at 50
+        type: integer
       name:
         description: The name of the channel.
         type: string
@@ -84,10 +93,11 @@ definitions:
         description: Whether the channel is marked as NSFW.
         type: boolean
       owner_id:
-        description: ID of the DM creator Zeroed if guild channel
+        description: ID of the creator of the group DM or thread
         type: string
       parent_id:
-        description: The ID of the parent channel, if the channel is under a category
+        description: The ID of the parent channel, if the channel is under a category.
+          For threads - id of the channel thread was created in.
         type: string
       permission_overwrites:
         description: A list of permission overwrites present for the channel.
@@ -99,7 +109,7 @@ definitions:
         type: integer
       rate_limit_per_user:
         description: |-
-          Amount of seconds a user has to wait before sending another message (0-21600)
+          Amount of seconds a user has to wait before sending another message or creating another thread (0-21600)
           bots, as well as users with the permission manage_messages or manage_channel, are unaffected
         type: integer
       recipients:
@@ -107,6 +117,13 @@ definitions:
         items:
           $ref: '#/definitions/discordgo.User'
         type: array
+      thread_member:
+        $ref: '#/definitions/discordgo.ThreadMember'
+        description: Thread member object for the current user, if they have joined
+          the thread, only included on certain API endpoints
+      thread_metadata:
+        $ref: '#/definitions/discordgo.ThreadMetadata'
+        description: Thread-specific fields not needed by other channels
       topic:
         description: The topic of the channel.
         type: string
@@ -140,6 +157,9 @@ definitions:
     type: object
   discordgo.Member:
     properties:
+      avatar:
+        description: The hash of the avatar for the guild member, if any.
+        type: string
       communication_disabled_until:
         description: |-
           The time at which the member's timeout will expire.
@@ -226,6 +246,12 @@ definitions:
       id:
         description: The ID of the message.
         type: string
+      interaction:
+        $ref: '#/definitions/discordgo.MessageInteraction'
+        description: |-
+          Is sent when the message is a response to an Interaction, without an existing message.
+          This means responses to message component interactions do not include this property,
+          instead including a MessageReference, as components exist on preexisting messages.
       member:
         $ref: '#/definitions/discordgo.Member'
         description: |-
@@ -268,6 +294,23 @@ definitions:
         items:
           $ref: '#/definitions/discordgo.MessageReactions'
         type: array
+      referenced_message:
+        $ref: '#/definitions/discordgo.Message'
+        description: |-
+          The message associated with the message_reference
+          NOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).
+          If the message is a reply but the referenced_message field is not present,
+          the backend did not attempt to fetch the message that was being replied to, so its state is unknown.
+          If the field exists but is null, the referenced message was deleted.
+      sticker_items:
+        description: An array of Sticker objects, if any were sent.
+        items:
+          $ref: '#/definitions/discordgo.Sticker'
+        type: array
+      thread:
+        $ref: '#/definitions/discordgo.Channel'
+        description: The thread that was started from this message, includes thread
+          member object
       timestamp:
         description: |-
           The time at which the messsage was sent.
@@ -307,6 +350,8 @@ definitions:
     type: object
   discordgo.MessageAttachment:
     properties:
+      content_type:
+        type: string
       ephemeral:
         type: boolean
       filename:
@@ -422,6 +467,20 @@ definitions:
       width:
         type: integer
     type: object
+  discordgo.MessageInteraction:
+    properties:
+      id:
+        type: string
+      member:
+        $ref: '#/definitions/discordgo.Member'
+        description: Member is only present when the interaction is from a guild.
+      name:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/discordgo.User'
+    type: object
   discordgo.MessageReactions:
     properties:
       count:
@@ -486,12 +545,81 @@ definitions:
         description: The position of this role in the guild's role hierarchy.
         type: integer
     type: object
+  discordgo.Sticker:
+    properties:
+      available:
+        type: boolean
+      description:
+        type: string
+      format_type:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      pack_id:
+        type: string
+      sort_value:
+        type: integer
+      tags:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/discordgo.User'
+    type: object
+  discordgo.ThreadMember:
+    properties:
+      flags:
+        description: Any user-thread settings, currently only used for notifications
+        type: integer
+      id:
+        description: The id of the thread
+        type: string
+      join_timestamp:
+        description: The time the current user last joined the thread
+        type: string
+      user_id:
+        description: The id of the user
+        type: string
+    type: object
+  discordgo.ThreadMetadata:
+    properties:
+      archive_timestamp:
+        description: Timestamp when the thread's archive status was last changed,
+          used for calculating recent activity
+        type: string
+      archived:
+        description: Whether the thread is archived
+        type: boolean
+      auto_archive_duration:
+        description: 'Duration in minutes to automatically archive the thread after
+          recent activity, can be set to: 60, 1440, 4320, 10080'
+        type: integer
+      invitable:
+        description: Whether non-moderators can add other non-moderators to a thread;
+          only available on private threads
+        type: boolean
+      locked:
+        description: Whether the thread is locked; when a thread is locked, only users
+          with MANAGE_THREADS can unarchive it
+        type: boolean
+    type: object
   discordgo.User:
     properties:
+      accent_color:
+        description: User's banner color, encoded as an integer representation of
+          hexadecimal color code
+        type: integer
       avatar:
         description: |-
           The hash of the user's avatar. Use Session.UserAvatar
           to retrieve the avatar itself.
+        type: string
+      banner:
+        description: The hash of the user's banner image.
         type: string
       bot:
         description: Whether the user is a bot.
@@ -884,6 +1012,9 @@ definitions:
     type: object
   models.Member:
     properties:
+      avatar:
+        description: The hash of the avatar for the guild member, if any.
+        type: string
       avatar_url:
         type: string
       chat_muted:
@@ -973,6 +1104,8 @@ definitions:
     properties:
       attachment:
         type: string
+      attachment_data:
+        type: string
       reason:
         type: string
       timeout:
@@ -1009,12 +1142,41 @@ definitions:
     properties:
       attachment:
         type: string
+      attachment_data:
+        type: string
       reason:
         type: string
       timeout:
         type: string
       type:
         type: integer
+    type: object
+  models.RichUnbanRequest:
+    properties:
+      created:
+        type: string
+      creator:
+        $ref: '#/definitions/models.FlatUser'
+      guild_id:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      processed:
+        type: string
+      processed_by:
+        type: string
+      processed_message:
+        type: string
+      processor:
+        $ref: '#/definitions/models.FlatUser'
+      status:
+        type: integer
+      user_id:
+        type: string
+      user_tag:
+        type: string
     type: object
   models.SearchResult:
     properties:
@@ -1147,14 +1309,34 @@ definitions:
       user_tag:
         type: string
     type: object
+  models.UpdateInfoResponse:
+    properties:
+      current:
+        $ref: '#/definitions/versioncheck.Semver'
+      current_str:
+        type: string
+      isold:
+        type: boolean
+      latest:
+        $ref: '#/definitions/versioncheck.Semver'
+      latest_str:
+        type: string
+    type: object
   models.User:
     properties:
+      accent_color:
+        description: User's banner color, encoded as an integer representation of
+          hexadecimal color code
+        type: integer
       avatar:
         description: |-
           The hash of the user's avatar. Use Session.UserAvatar
           to retrieve the avatar itself.
         type: string
       avatar_url:
+        type: string
+      banner:
+        description: The hash of the user's banner image.
         type: string
       bot:
         description: Whether the user is a bot.
@@ -1248,6 +1430,17 @@ definitions:
         type: boolean
       term:
         type: string
+    type: object
+  versioncheck.Semver:
+    properties:
+      attachment:
+        type: string
+      major:
+        type: integer
+      minor:
+        type: integer
+      patch:
+        type: integer
     type: object
 info:
   contact: {}
@@ -2401,7 +2594,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2439,7 +2632,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/antiraid:
     get:
       consumes:
@@ -2468,7 +2661,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Antiraid Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2506,7 +2699,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Antiraid Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/antiraid/action:
     post:
       consumes:
@@ -2545,7 +2738,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Guild Antiraid Bulk Action
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/api:
     get:
       consumes:
@@ -2574,7 +2767,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings API State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2608,7 +2801,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings API State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/codeexec:
     get:
       consumes:
@@ -2637,7 +2830,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Code Exec State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2671,7 +2864,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings Code Exec State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/flushguilddata:
     post:
       consumes:
@@ -2710,7 +2903,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Flush Guild Data
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma:
     get:
       consumes:
@@ -2739,7 +2932,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Karma Settings
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2777,7 +2970,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Karma Settings
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/blocklist:
     get:
       consumes:
@@ -2808,7 +3001,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Karma Blocklist
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/blocklist/{memberid}:
     delete:
       consumes:
@@ -2846,7 +3039,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Remove Guild Karma Blocklist Entry
       tags:
-      - Guilds
+      - Guild Settings
     put:
       consumes:
       - application/json
@@ -2883,7 +3076,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Add Guild Karma Blocklist Entry
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/rules:
     get:
       consumes:
@@ -2914,7 +3107,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Karma Rules
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -2952,7 +3145,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Create Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/karma/rules/{ruleid}:
     delete:
       consumes:
@@ -2990,7 +3183,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Remove Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3033,7 +3226,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Settings Karma
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs:
     delete:
       consumes:
@@ -3066,7 +3259,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Delete Guild Log Entries
       tags:
-      - Guilds
+      - Guild Settings
     get:
       consumes:
       - application/json
@@ -3098,7 +3291,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Log Count
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs/{entryid}:
     delete:
       consumes:
@@ -3136,7 +3329,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Delete Guild Log Entries
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/logs/state:
     get:
       consumes:
@@ -3165,7 +3358,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Log State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3203,7 +3396,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Update Guild Settings Log State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/settings/verification:
     get:
       consumes:
@@ -3232,7 +3425,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Get Guild Settings Verification State
       tags:
-      - Guilds
+      - Guild Settings
     post:
       consumes:
       - application/json
@@ -3266,7 +3459,7 @@ paths:
             $ref: '#/definitions/models.Error'
       summary: Set Guild Settings Verification State
       tags:
-      - Guilds
+      - Guild Settings
   /guilds/{id}/starboard:
     get:
       consumes:
@@ -3316,7 +3509,7 @@ paths:
           description: Wrapped in models.ListReponse
           schema:
             items:
-              $ref: '#/definitions/models.UnbanRequest'
+              $ref: '#/definitions/models.RichUnbanRequest'
             type: array
         "401":
           description: Unauthorized
@@ -3351,7 +3544,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UnbanRequest'
+            $ref: '#/definitions/models.RichUnbanRequest'
         "401":
           description: Unauthorized
           schema:
@@ -3384,7 +3577,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UnbanRequest'
+            $ref: '#/definitions/models.RichUnbanRequest'
         "401":
           description: Unauthorized
           schema:
@@ -3800,7 +3993,7 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.UnbanRequest'
+              $ref: '#/definitions/models.RichUnbanRequest'
             type: array
         "401":
           description: Unauthorized
@@ -3830,7 +4023,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UnbanRequest'
+            $ref: '#/definitions/models.RichUnbanRequest'
         "400":
           description: Bad Request
           schema:
@@ -4098,6 +4291,21 @@ paths:
       summary: Slash Command List
       tags:
       - Utilities
+  /util/updateinfo:
+    get:
+      consumes:
+      - application/json
+      description: Returns update information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Update info response
+          schema:
+            $ref: '#/definitions/models.UpdateInfoResponse'
+      summary: Update Information
+      tags:
+      - Utilities
   /verification/sitekey:
     get:
       consumes:
@@ -4154,6 +4362,8 @@ tags:
   name: Reports
 - description: Guild specific endpoints.
   name: Guilds
+- description: Guild specific settings endpoints.
+  name: Guild Settings
 - description: Guild backup endpoints.
   name: Guild Backups
 - description: Unban requests endpoints.

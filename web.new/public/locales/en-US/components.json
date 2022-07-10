@@ -1,0 +1,124 @@
+{
+  "hider": {
+    "placeholder": "Hover to show"
+  },
+  "navbar": {
+    "section": {
+      "guilds": {
+        "title": "Guild",
+        "members": "Members",
+        "modlog": "Modlog"
+      },
+      "guildsettings": {
+        "title": "Guild Settings",
+        "general": "General",
+        "backup": "Backups",
+        "antiraid": "Antiraid"
+      }
+    },
+    "logout": "Logout",
+    "user-settings": "User Settings"
+  },
+  "sincedate": {
+    "since": "<1>{{dateSince}}</1> ago"
+  },
+  "report": {
+    "reason": "Reason",
+    "revoke": "Revoke"
+  },
+  "modalrevokereport": {
+    "heading": "Revoke Report",
+    "description": {
+      "kick": "Please enter a reason to revoke this kick report.",
+      "ban": "Please enter a reason to revoke this ban report. This will also unban the user from the guild.",
+      "mute": "Please enter a reason to revoke this mute report. This will also unmute the member.",
+      "warn": "Please enter a reason to revoke this report.",
+      "ad": "Please enter a reason to revoke this report."
+    },
+    "controls": {
+      "cancel": "Cancel",
+      "revoke": "Revoke"
+    }
+  },
+  "modalbetagreeter": {
+    "heading": "Beta Version",
+    "message": "This is a very early preview version of the reworked web interface of shinpuru which gives you the opportunity to test and play around with the early versions as they are in development.\n\nIf you discover any bugs or if you have suggestions how to improve things, feel absolutely free to either create an [**issue**](https://github.com/zekroTJA/shinpuru/issues/new/choose) or to contact me directly via my [Discord Guild](https://dc.zekro.de).\n\nPlease only continue using the beta version though if you are okay with the following things:\n1. Only a small subset of functionality is implemented in the beta version.\n2. Implemented features will be buggy, incomplete or impaire the user experience.\n3. Unexpected behaviour might impaire crucial security or moderation settings.",
+    "controls": {
+      "back": "Bring me back to the stable page",
+      "accept": "Accept and continue in the beta page"
+    }
+  },
+  "reportlist": {
+    "notifications": {
+      "reportrevoked": {
+        "heading": "Report Revoked",
+        "message": "Report has been revoked successfully."
+      }
+    }
+  },
+  "modalcreatereport": {
+    "reason": "Reason",
+    "timeout": "Timeout",
+    "attachment": "Attachment",
+    "controls": {
+      "cancel": "Cancel",
+      "execute": "Execute {{action}}"
+    },
+    "errors": {
+      "attachment-convert-failed": "Failed converting attachmeht to Base64."
+    },
+    "successful": "Report action has been executed successfully."
+  },
+  "durationpicker": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "filedrop": {
+    "info": "Open a file by clicking or via drag and drop. You can even simply paste from your clipboard as well!"
+  },
+  "modalunbanrequest": {
+    "heading": "Request an unban",
+    "sub": "Create an unban request for guild <1>{{guildname}}</1>.",
+    "description": "Please describe below as detailed as possible why you should be unbanned from the guild.",
+    "controls": {
+      "cancel": "Cancel",
+      "send": "Send"
+    }
+  },
+  "unbanrequesttile": {
+    "state": {
+      "pending": "Pending",
+      "declined": "Rejected",
+      "accepted": "Accepted"
+    },
+    "requestermessage": "Requester Message",
+    "decisionreason": "Decision Reason",
+    "actions": {
+      "accept": "Accept",
+      "decline": "Reject"
+    }
+  },
+  "modalprocessunbanrequest": {
+    "title": {
+      "accept": "Accept Unban Request",
+      "decline": "Reject Unban Request"
+    },
+    "reason": "Reason",
+    "reports": "Recent Reports of the Requester",
+    "description": {
+      "accept": "Accept unban request of user {{username}} ({{userid}}).",
+      "decline": "Reject unban request of user {{username}} ({{userid}})."
+    },
+    "controls": {
+      "accept": "Accept",
+      "decline": "Reject",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "accept": "Unban request has sucessfully been acceped and the member is now unbanned.",
+      "decline": "Unban request has successfully been rejected and the member remains banned."
+    }
+  }
+}

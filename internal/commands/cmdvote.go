@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekroTJA/shireikan"
 )
 
@@ -79,7 +80,7 @@ func (c *CmdVote) Exec(ctx shireikan.Context) error {
 					DeleteAfter(8 * time.Second).Error()
 			}
 
-			expireDuration, err := time.ParseDuration(args.Get(1).AsString())
+			expireDuration, err := timeutil.ParseDuration(args.Get(1).AsString())
 			if err != nil {
 				return util.SendEmbedError(ctx.GetSession(), ctx.GetChannel().ID,
 					"Invalid duration format. Please take a look "+

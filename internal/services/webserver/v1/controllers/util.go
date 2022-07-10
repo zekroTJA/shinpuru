@@ -146,7 +146,7 @@ func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
 		cmdInfos[i] = cmdInfo
 	}
 
-	list := &models.ListResponse{N: len(cmdInfos), Data: cmdInfos}
+	list := models.NewListResponse(cmdInfos)
 
 	return ctx.JSON(list)
 }
@@ -166,7 +166,7 @@ func (c *UtilController) getSlashCommands(ctx *fiber.Ctx) error {
 		res[i] = models.GetSlashCommandInfoFromCommand(ci)
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
+	return ctx.JSON(models.NewListResponse(res))
 }
 
 // @Summary Update Information

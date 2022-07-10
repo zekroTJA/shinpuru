@@ -71,7 +71,7 @@ func (c *CmdBan) Exec(ctx shireikan.Context) error {
 
 	repMsgS := ctx.GetArgs()[1:]
 
-	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
+	timeout, err := timeutil.ParseDuration(repMsgS[len(repMsgS)-1])
 	if err == nil && timeout > 0 {
 		repMsgS = repMsgS[:len(repMsgS)-1]
 	}

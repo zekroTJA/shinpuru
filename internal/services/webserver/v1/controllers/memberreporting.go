@@ -77,17 +77,8 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if repReq.Attachment != "" {
-		img, err := imgstore.DownloadFromURL(repReq.Attachment)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, err.Error())
-		}
-		err = c.st.PutObject(static.StorageBucketImages, img.ID.String(),
-			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-		if err != nil {
-			return err
-		}
-		repReq.Attachment = img.ID.String()
+	if err = c.uploadAttachment(repReq.ReasonRequest); err != nil {
+		return
 	}
 
 	rep, err := c.repSvc.PushReport(&sharedmodels.Report{
@@ -138,17 +129,8 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if req.Attachment != "" {
-		img, err := imgstore.DownloadFromURL(req.Attachment)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, err.Error())
-		}
-		err = c.st.PutObject(static.StorageBucketImages, img.ID.String(),
-			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-		if err != nil {
-			return err
-		}
-		req.Attachment = img.ID.String()
+	if err = c.uploadAttachment(req); err != nil {
+		return
 	}
 
 	rep, err := c.repSvc.PushKick(&sharedmodels.Report{
@@ -207,17 +189,8 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if req.Attachment != "" {
-		img, err := imgstore.DownloadFromURL(req.Attachment)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, err.Error())
-		}
-		err = c.st.PutObject(static.StorageBucketImages, img.ID.String(),
-			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-		if err != nil {
-			return err
-		}
-		req.Attachment = img.ID.String()
+	if err = c.uploadAttachment(req); err != nil {
+		return
 	}
 
 	rep, err := c.repSvc.PushBan(&sharedmodels.Report{
@@ -273,17 +246,8 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	if req.Attachment != "" {
-		img, err := imgstore.DownloadFromURL(req.Attachment)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, err.Error())
-		}
-		err = c.st.PutObject(static.StorageBucketImages, img.ID.String(),
-			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
-		if err != nil {
-			return err
-		}
-		req.Attachment = img.ID.String()
+	if err = c.uploadAttachment(req); err != nil {
+		return
 	}
 
 	if req.Timeout == nil {
@@ -353,4 +317,38 @@ func (c *MemberReportingController) postUnmute(ctx *fiber.Ctx) (err error) {
 	}
 
 	return ctx.JSON(models.Ok)
+}
+
+// --- HELPERS ---
+
+func (c *MemberReportingController) uploadAttachment(repReq *models.ReasonRequest) (err error) {
+	var img *imgstore.Image
+	if repReq.AttachmentData != "" {
+		img = new(imgstore.Image)
+		img.MimeType, img.Data, err = wsutil.ParseBase64Data(repReq.AttachmentData)
+		if err != nil {
+			return
+		}
+		if img.MimeType != "image/jpeg" && img.MimeType != "image/jpg" && img.MimeType != "image/png" && img.MimeType != "image/gif" {
+			return fiber.NewError(fiber.StatusBadRequest, "invalid or unset mime type")
+		}
+		img.Size = len(img.Data)
+		img.GenerateID()
+	} else if repReq.Attachment != "" {
+		img, err = imgstore.DownloadFromURL(repReq.Attachment)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+	}
+
+	if img != nil {
+		err = c.st.PutObject(static.StorageBucketImages, img.ID.String(),
+			bytes.NewReader(img.Data), int64(img.Size), img.MimeType)
+		if err != nil {
+			return
+		}
+		repReq.Attachment = img.ID.String()
+	}
+
+	return
 }

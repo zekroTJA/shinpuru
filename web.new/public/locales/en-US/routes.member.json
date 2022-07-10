@@ -1,0 +1,28 @@
+{
+  "isbot": "This member is a bot account.",
+  "isyou": "Hey, this is you! 👀",
+  "info": {
+    "heading": "General User Information",
+    "guild-joined": "Joined Guild",
+    "account-created": "Account Created"
+  },
+  "karma": {
+    "heading": "Karma",
+    "guild": "Guild",
+    "total": "Total"
+  },
+  "permissions": {
+    "heading": "Permissions"
+  },
+  "moderation": {
+    "heading": "Moderation",
+    "report": "Report",
+    "kick": "Kick",
+    "ban": "Ban",
+    "mute": "Chat Mute (Timeout)"
+  },
+  "reports": {
+    "heading": "Reports",
+    "noreports": "This user has a white vest! 👌"
+  }
+}

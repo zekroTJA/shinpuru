@@ -1,0 +1,41 @@
+{
+  "reset": "Reset",
+  "save": "Save Settings",
+
+  "heading": "General Guild Settings",
+
+  "notifications": {
+    "saved": "Settings saved."
+  },
+
+  "autoroles": {
+    "title": "Autoroles",
+    "placeholder": "Role name ..."
+  },
+  "modlog": {
+    "title": "Mod Log",
+    "channel_label": "Channel",
+    "channel_placeholder": "Please select a channel ..."
+  },
+  "voicelog": {
+    "title": "Voice Log",
+    "channel_label": "Channel",
+    "channel_placeholder": "Please select a channel ..."
+  },
+  "joinmessage": {
+    "title": "New Member Greeting",
+    "channel_label": "Channel",
+    "channel_placeholder": "Please select a channel ...",
+    "message_label": "Greeting message",
+    "message_hint": "<1>[user]</1> will be replaced with the users name and <1>[ment]</1> will be replaced with the users mention.",
+    "message_placeholder": "Welcome to the server, [user]!"
+  },
+  "leavemessage": {
+    "title": "Member Leave Announcement",
+    "channel_label": "Channel",
+    "channel_placeholder": "Please select a channel ...",
+    "message_label": "Announcement message",
+    "message_hint": "<1>[user]</1> will be replaced with the users name and <1>[ment]</1> will be replaced with the users mention.",
+    "message_placeholder": "[user] has left the guild."
+  }
+}

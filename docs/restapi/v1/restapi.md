@@ -48,7 +48,7 @@ Logout
 
 ##### Description
 
-Revokes the currently used access token and clears the refresh token.
+Reovkes the currently used access token and clears the refresh token.
 
 ##### Responses
 
@@ -1217,7 +1217,7 @@ Returns the list of the guild unban requests.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListReponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
+| 200 | Wrapped in models.ListReponse | [ [models.RichUnbanRequest](#modelsrichunbanrequest) ] |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -1269,7 +1269,7 @@ Returns a single guild unban request by ID.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -1293,7 +1293,7 @@ Process a guild unban request.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -1913,7 +1913,7 @@ Returns a list of unban requests created by the authenticated user.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
+| 200 | Wrapped in models.ListResponse | [ [models.RichUnbanRequest](#modelsrichunbanrequest) ] |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
 
@@ -1936,7 +1936,7 @@ Create an unban reuqest.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UnbanRequest](#modelsunbanrequest) |
+| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
 | 400 | Bad Request | [models.Error](#modelserror) |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 | 404 | Not Found | [models.Error](#modelserror) |
@@ -2157,6 +2157,23 @@ Returns a list of registered slash commands and their description.
 | ---- | ----------- | ------ |
 | 200 | Wrapped in models.ListResponse | [ [models.SlashCommandInfo](#modelsslashcommandinfo) ] |
 
+### /util/updateinfo
+
+#### GET
+##### Summary
+
+Update Information
+
+##### Description
+
+Returns update information.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Update info response | [models.UpdateInfoResponse](#modelsupdateinforesponse) |
+
 ### /verification/sitekey
 
 #### GET
@@ -2207,9 +2224,11 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | autocomplete | boolean | NOTE: mutually exclusive with Choices. | No |
-| channel_types | [ integer ] | NOTE: This feature was on the API, but at some point developers decided to remove it. So I commented it, until it will be officially on the docs. Default     bool                              `json:"default"` | No |
+| channel_types | [ integer ] |  | No |
 | choices | [ [discordgo.ApplicationCommandOptionChoice](#discordgoapplicationcommandoptionchoice) ] |  | No |
 | description | string |  | No |
+| max_value | number | Maximum value of number/integer option. | No |
+| min_value | number | Minimal value of number/integer option. | No |
 | name | string |  | No |
 | options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
 | required | boolean |  | No |
@@ -2220,7 +2239,7 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
-| value | object |  | No |
+| value |  |  | No |
 
 #### discordgo.Channel
 
@@ -2233,14 +2252,18 @@ Verify a returned verification token.
 | id | string | The ID of the channel. | No |
 | last_message_id | string | The ID of the last message sent in the channel. This is not guaranteed to be an ID of a valid message. | No |
 | last_pin_timestamp | string | The timestamp of the last pinned message in the channel. nil if the channel has no pinned messages. | No |
+| member_count | integer | An approximate count of users in a thread, stops counting at 50 | No |
+| message_count | integer | An approximate count of messages in a thread, stops counting at 50 | No |
 | name | string | The name of the channel. | No |
 | nsfw | boolean | Whether the channel is marked as NSFW. | No |
-| owner_id | string | ID of the DM creator Zeroed if guild channel | No |
-| parent_id | string | The ID of the parent channel, if the channel is under a category | No |
+| owner_id | string | ID of the creator of the group DM or thread | No |
+| parent_id | string | The ID of the parent channel, if the channel is under a category. For threads - id of the channel thread was created in. | No |
 | permission_overwrites | [ [discordgo.PermissionOverwrite](#discordgopermissionoverwrite) ] | A list of permission overwrites present for the channel. | No |
 | position | integer | The position of the channel, used for sorting in client. | No |
-| rate_limit_per_user | integer | Amount of seconds a user has to wait before sending another message (0-21600) bots, as well as users with the permission manage_messages or manage_channel, are unaffected | No |
+| rate_limit_per_user | integer | Amount of seconds a user has to wait before sending another message or creating another thread (0-21600) bots, as well as users with the permission manage_messages or manage_channel, are unaffected | No |
 | recipients | [ [discordgo.User](#discordgouser) ] | The recipients of the channel. This is only populated in DM channels. | No |
+| thread_member | [discordgo.ThreadMember](#discordgothreadmember) | Thread member object for the current user, if they have joined the thread, only included on certain API endpoints | No |
+| thread_metadata | [discordgo.ThreadMetadata](#discordgothreadmetadata) | Thread-specific fields not needed by other channels | No |
 | topic | string | The topic of the channel. | No |
 | type | integer | The type of the channel. | No |
 | user_limit | integer | The user limit of the voice channel. | No |
@@ -2262,6 +2285,7 @@ Verify a returned verification token.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| avatar | string | The hash of the avatar for the guild member, if any. | No |
 | communication_disabled_until | string | The time at which the member's timeout will expire. Time in the past or nil if the user is not timed out. | No |
 | deaf | boolean | Whether the member is deafened at a guild level. | No |
 | guild_id | string | The guild ID on which the member exists. | No |
@@ -2289,6 +2313,7 @@ Verify a returned verification token.
 | flags | integer | The flags of the message, which describe extra features of a message. This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the flag. | No |
 | guild_id | string | The ID of the guild in which the message was sent. | No |
 | id | string | The ID of the message. | No |
+| interaction | [discordgo.MessageInteraction](#discordgomessageinteraction) | Is sent when the message is a response to an Interaction, without an existing message. This means responses to message component interactions do not include this property, instead including a MessageReference, as components exist on preexisting messages. | No |
 | member | [discordgo.Member](#discordgomember) | Member properties for this message's author, contains only partial information | No |
 | mention_channels | [ [discordgo.Channel](#discordgochannel) ] | Channels specifically mentioned in this message Not all channel mentions in a message will appear in mention_channels. Only textual channels that are visible to everyone in a lurkable guild will ever be included. Only crossposted messages (via Channel Following) currently include mention_channels at all. If no mentions in the message meet these requirements, this field will not be sent. | No |
 | mention_everyone | boolean | Whether the message mentions everyone. | No |
@@ -2297,6 +2322,9 @@ Verify a returned verification token.
 | message_reference | [discordgo.MessageReference](#discordgomessagereference) | MessageReference contains reference data sent with crossposted or reply messages. This does not contain the reference *to* this message; this is for when *this* message references another. To generate a reference to this message, use (*Message).Reference(). | No |
 | pinned | boolean | Whether the message is pinned or not. | No |
 | reactions | [ [discordgo.MessageReactions](#discordgomessagereactions) ] | A list of reactions to the message. | No |
+| referenced_message | [discordgo.Message](#discordgomessage) | The message associated with the message_reference NOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE). If the message is a reply but the referenced_message field is not present, the backend did not attempt to fetch the message that was being replied to, so its state is unknown. If the field exists but is null, the referenced message was deleted. | No |
+| sticker_items | [ [discordgo.Sticker](#discordgosticker) ] | An array of Sticker objects, if any were sent. | No |
+| thread | [discordgo.Channel](#discordgochannel) | The thread that was started from this message, includes thread member object | No |
 | timestamp | string | The time at which the messsage was sent. CAUTION: this field may be removed in a future API version; it is safer to calculate the creation time via the ID. | No |
 | tts | boolean | Whether the message is text-to-speech. | No |
 | type | integer | The type of the message. | No |
@@ -2323,6 +2351,7 @@ Verify a returned verification token.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| content_type | string |  | No |
 | ephemeral | boolean |  | No |
 | filename | string |  | No |
 | height | integer |  | No |
@@ -2408,6 +2437,16 @@ Verify a returned verification token.
 | url | string |  | No |
 | width | integer |  | No |
 
+#### discordgo.MessageInteraction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | string |  | No |
+| member | [discordgo.Member](#discordgomember) | Member is only present when the interaction is from a guild. | No |
+| name | string |  | No |
+| type | integer |  | No |
+| user | [discordgo.User](#discordgouser) |  | No |
+
 #### discordgo.MessageReactions
 
 | Name | Type | Description | Required |
@@ -2446,11 +2485,48 @@ Verify a returned verification token.
 | permissions | string | The permissions of the role on the guild (doesn't include channel overrides). This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the permission.<br>_Example:_ `"0"` | No |
 | position | integer | The position of this role in the guild's role hierarchy. | No |
 
+#### discordgo.Sticker
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| available | boolean |  | No |
+| description | string |  | No |
+| format_type | integer |  | No |
+| guild_id | string |  | No |
+| id | string |  | No |
+| name | string |  | No |
+| pack_id | string |  | No |
+| sort_value | integer |  | No |
+| tags | string |  | No |
+| type | integer |  | No |
+| user | [discordgo.User](#discordgouser) |  | No |
+
+#### discordgo.ThreadMember
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| flags | integer | Any user-thread settings, currently only used for notifications | No |
+| id | string | The id of the thread | No |
+| join_timestamp | string | The time the current user last joined the thread | No |
+| user_id | string | The id of the user | No |
+
+#### discordgo.ThreadMetadata
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| archive_timestamp | string | Timestamp when the thread's archive status was last changed, used for calculating recent activity | No |
+| archived | boolean | Whether the thread is archived | No |
+| auto_archive_duration | integer | Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 | No |
+| invitable | boolean | Whether non-moderators can add other non-moderators to a thread; only available on private threads | No |
+| locked | boolean | Whether the thread is locked; when a thread is locked, only users with MANAGE_THREADS can unarchive it | No |
+
 #### discordgo.User
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| accent_color | integer | User's banner color, encoded as an integer representation of hexadecimal color code | No |
 | avatar | string | The hash of the user's avatar. Use Session.UserAvatar to retrieve the avatar itself. | No |
+| banner | string | The hash of the user's banner image. | No |
 | bot | boolean | Whether the user is a bot. | No |
 | discriminator | string | The discriminator of the user (4 numbers after name). | No |
 | email | string | The email of the user. This is only present when the application possesses the email scope for the user. | No |
@@ -2715,6 +2791,7 @@ Verify a returned verification token.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| avatar | string | The hash of the avatar for the guild member, if any. | No |
 | avatar_url | string |  | No |
 | chat_muted | boolean |  | No |
 | communication_disabled_until | string | The time at which the member's timeout will expire. Time in the past or nil if the user is not timed out. | No |
@@ -2765,6 +2842,7 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | attachment | string |  | No |
+| attachment_data | string |  | No |
 | reason | string |  | No |
 | timeout | string |  | No |
 
@@ -2790,9 +2868,27 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | attachment | string |  | No |
+| attachment_data | string |  | No |
 | reason | string |  | No |
 | timeout | string |  | No |
 | type | integer |  | No |
+
+#### models.RichUnbanRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| created | string |  | No |
+| creator | [models.FlatUser](#modelsflatuser) |  | No |
+| guild_id | string |  | No |
+| id | integer |  | No |
+| message | string |  | No |
+| processed | string |  | No |
+| processed_by | string |  | No |
+| processed_message | string |  | No |
+| processor | [models.FlatUser](#modelsflatuser) |  | No |
+| status | integer |  | No |
+| user_id | string |  | No |
+| user_tag | string |  | No |
 
 #### models.SearchResult
 
@@ -2879,12 +2975,24 @@ Verify a returned verification token.
 | user_id | string |  | No |
 | user_tag | string |  | No |
 
+#### models.UpdateInfoResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| current | [versioncheck.Semver](#versionchecksemver) |  | No |
+| current_str | string |  | No |
+| isold | boolean |  | No |
+| latest | [versioncheck.Semver](#versionchecksemver) |  | No |
+| latest_str | string |  | No |
+
 #### models.User
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| accent_color | integer | User's banner color, encoded as an integer representation of hexadecimal color code | No |
 | avatar | string | The hash of the user's avatar. Use Session.UserAvatar to retrieve the avatar itself. | No |
 | avatar_url | string |  | No |
+| banner | string | The hash of the user's banner image. | No |
 | bot | boolean | Whether the user is a bot. | No |
 | bot_owner | boolean |  | No |
 | captcha_verified | boolean |  | No |
@@ -2936,3 +3044,12 @@ Verify a returned verification token.
 | description | string |  | No |
 | explicit | boolean |  | No |
 | term | string |  | No |
+
+#### versioncheck.Semver
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| attachment | string |  | No |
+| major | integer |  | No |
+| minor | integer |  | No |
+| patch | integer |  | No |

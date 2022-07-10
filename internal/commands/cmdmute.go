@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
+	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
 
@@ -110,7 +111,7 @@ func (c *CmdMute) muteUnmute(ctx shireikan.Context) error {
 			DeleteAfter(8 * time.Second).Error()
 	}
 
-	timeout, err := time.ParseDuration(repMsgS[len(repMsgS)-1])
+	timeout, err := timeutil.ParseDuration(repMsgS[len(repMsgS)-1])
 	if err == nil && timeout > 0 {
 		repMsgS = repMsgS[:len(repMsgS)-1]
 	}

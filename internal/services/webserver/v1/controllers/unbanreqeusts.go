@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/sop"
 )
 
 type UnbanrequestsController struct {
@@ -36,7 +37,7 @@ func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Rou
 // @Tags Unban Requests
 // @Accept json
 // @Produce json
-// @Success 200 {array} sharedmodels.UnbanRequest "Wrapped in models.ListResponse"
+// @Success 200 {array} models.RichUnbanRequest "Wrapped in models.ListResponse"
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
 // @Router /unbanrequests [get]
@@ -51,11 +52,25 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 		requests = make([]*sharedmodels.UnbanRequest, 0)
 	}
 
-	for _, r := range requests {
-		r.Hydrate()
+	self, err := c.st.User(uid)
+	if err != nil {
+		return err
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(requests), Data: requests})
+	res := sop.Map[*sharedmodels.UnbanRequest](sop.Slice(requests),
+		func(r *sharedmodels.UnbanRequest, i int) *models.RichUnbanRequest {
+			r.Hydrate()
+			rub := &models.RichUnbanRequest{
+				UnbanRequest: r,
+				Creator:      models.FlatUserFromUser(self),
+			}
+			if proc, _ := c.st.User(rub.ProcessedBy); proc != nil {
+				rub.Processor = models.FlatUserFromUser(proc)
+			}
+			return rub
+		})
+
+	return ctx.JSON(models.NewListResponse(res.Unwrap()))
 }
 
 // @Summary Create Unban Requests
@@ -64,7 +79,7 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param payload body sharedmodels.UnbanRequest true "The unban request payload."
-// @Success 200 {object} sharedmodels.UnbanRequest
+// @Success 200 {object} models.RichUnbanRequest
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
@@ -120,7 +135,12 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(finalReq.Hydrate())
+	finalReq.Hydrate()
+
+	return ctx.JSON(models.RichUnbanRequest{
+		UnbanRequest: finalReq,
+		Creator:      models.FlatUserFromUser(user),
+	})
 }
 
 // @Summary Get Banned Guilds
@@ -140,7 +160,7 @@ func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(guildsArr), Data: guildsArr})
+	return ctx.JSON(models.NewListResponse(guildsArr))
 }
 
 // --- HELPERS ------------

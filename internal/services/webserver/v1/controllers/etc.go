@@ -13,7 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
-	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	apiModels "github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -46,7 +46,7 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 // @Tags Etc
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.User
+// @Success 200 {object} apiModels.User
 // @Router /me [get]
 func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
@@ -63,7 +63,7 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 
 	created, _ := discordutil.GetDiscordSnowflakeCreationTime(user.ID)
 
-	res := &models.User{
+	res := &apiModels.User{
 		User:            user,
 		AvatarURL:       user.AvatarURL(""),
 		CreatedAt:       created,
@@ -79,7 +79,7 @@ func (c *EtcController) getMe(ctx *fiber.Ctx) error {
 // @Tags Etc
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SystemInfo
+// @Success 200 {object} apiModels.SystemInfo
 // @Router /sysinfo [get]
 func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 	buildTS, _ := strconv.Atoi(embedded.AppDate)
@@ -100,7 +100,7 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	res := &models.SystemInfo{
+	res := &apiModels.SystemInfo{
 		Version:    embedded.AppVersion,
 		CommitHash: embedded.AppCommit,
 		BuildDate:  buildDate,

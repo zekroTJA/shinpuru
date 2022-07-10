@@ -1,0 +1,28 @@
+{
+  "isbot": "Dieser Nutzer ist ein Bot-Account.",
+  "isyou": "Hey, das sind Sie! 👀",
+  "info": {
+    "heading": "Generelle Nutzerinformationen",
+    "guild-joined": "Guild beigetreten",
+    "account-created": "Account erstellt"
+  },
+  "karma": {
+    "heading": "Karma",
+    "guild": "Guild",
+    "total": "Total"
+  },
+  "permissions": {
+    "heading": "Berechtigungen"
+  },
+  "moderation": {
+    "heading": "Moderation",
+    "report": "Report",
+    "kick": "Kick",
+    "ban": "Ban",
+    "mute": "Chat Mute (Timeout)"
+  },
+  "reports": {
+    "heading": "Meldungen",
+    "noreports": "Dieser Nutzer hat eine weiße Weste! 👌"
+  }
+}

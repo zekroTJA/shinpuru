@@ -387,7 +387,7 @@ func (c *GuildsSettingsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx
 
 	memberList = memberList[:i]
 
-	return ctx.JSON(&models.ListResponse{N: len(memberList), Data: memberList})
+	return ctx.JSON(models.NewListResponse(memberList))
 }
 
 // @Summary Add Guild Karma Blocklist Entry
@@ -630,7 +630,7 @@ func (c *GuildsSettingsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) er
 		return err
 	}
 
-	return ctx.JSON(models.ListResponse{N: len(rules), Data: rules})
+	return ctx.JSON(models.NewListResponse(rules))
 }
 
 // @Summary Create Guild Settings Karma
@@ -807,7 +807,7 @@ func (c *GuildsSettingsController) getGuildSettingsLogs(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.JSON(&models.ListResponse{N: len(res), Data: res})
+	return ctx.JSON(models.NewListResponse(res))
 }
 
 // @Summary Get Guild Log Count

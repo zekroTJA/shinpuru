@@ -1,6 +1,7 @@
 package wsutil
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -98,5 +99,27 @@ func GetFS() (f http.FileSystem, err error) {
 	}
 	logrus.Info("WS :: using embedded web files")
 	f = http.FS(fsys)
+	return
+}
+
+func ParseBase64Data(b64Data string) (mime string, data []byte, err error) {
+	split := strings.SplitN(b64Data, ",", 2)
+
+	var dataS string
+	if len(split) == 1 {
+		dataS = split[0]
+	} else {
+		mime = split[0]
+		if strings.HasPrefix(mime, "data:") {
+			mime = mime[5:]
+		}
+		if i := strings.IndexRune(mime, ';'); i != -1 {
+			mime = mime[:i]
+		}
+		fmt.Println(mime)
+		dataS = split[1]
+	}
+
+	data, err = base64.StdEncoding.DecodeString(dataS)
 	return
 }

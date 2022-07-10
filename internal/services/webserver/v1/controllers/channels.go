@@ -69,7 +69,7 @@ func (c *ChannelController) getChannels(ctx *fiber.Ctx) (err error) {
 		}
 	}
 
-	return ctx.JSON(models.ListResponse{N: len(chans), Data: chans})
+	return ctx.JSON(models.NewListResponse(chans))
 }
 
 // @Summary Send Embed Message
