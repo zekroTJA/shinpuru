@@ -17,6 +17,7 @@ const GuildModlogRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Guil
 const UnbanmeRoute = React.lazy(() => import('./routes/Unbanme'));
 const GuildGeneralRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/General'));
 const GuildBackupsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Backup'));
+const GuildAntiraidRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Antiraid'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -93,6 +94,14 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildBackupsRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/antiraid"
+                element={
+                  <RouteSuspense>
+                    <GuildAntiraidRoute />
                   </RouteSuspense>
                 }
               />

@@ -2,6 +2,8 @@
   "toggle": "Enable automatic guild backups",
   "apply": "Apply",
 
+  "heading": "Guild Backups",
+
   "notifications": {
     "enabled": "Guild backups are now enabled.",
     "disabled": "Guild backups are now disabled."

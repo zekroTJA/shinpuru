@@ -112,6 +112,7 @@ const BackupRoute: React.FC<Props> = ({}) => {
 
   return (
     <MaxWidthContainer>
+      <h1>{t('heading')}</h1>
       <h2>{t('settings')}</h2>
       <ControlContainer>
         {(guild && (

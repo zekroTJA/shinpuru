@@ -12,7 +12,8 @@
       "guildsettings": {
         "title": "Guild Einstellungen",
         "general": "General",
-        "backup": "Backups"
+        "backup": "Backups",
+        "antiraid": "Antiraid"
       }
     },
     "logout": "Logout",

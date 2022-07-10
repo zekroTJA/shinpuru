@@ -10,6 +10,7 @@ import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { NotificationType } from '../../../components/Notifications';
 import { Element, Select } from '../../../components/Select';
+import { Small } from '../../../components/Small';
 import { TagElement, TagsInput } from '../../../components/TagsInput/TagsInput';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
@@ -100,12 +101,6 @@ const Section = styled.section`
   > label {
     margin: 1em 0 0.5em 0;
     display: block;
-  }
-
-  > small {
-    display: block;
-    margin-bottom: 0.5em;
-    opacity: 0.75;
   }
 
   > div {
@@ -258,6 +253,7 @@ const GeneralRoute: React.FC<Props> = () => {
 
   return (
     <MaxWidthContainer>
+      <h1>{t('heading')}</h1>
       {(guild && allowedPerms && (
         <Container>
           {isAllowed('sp.guild.config.autorole') && (
@@ -325,12 +321,12 @@ const GeneralRoute: React.FC<Props> = () => {
                   </Button>
                 </div>
                 <label>{t('joinmessage.message_label')}</label>
-                <small>
+                <Small>
                   <Trans ns="routes.guildsettings.general" i18nKey="joinmessage.message_hint">
                     <Embed>[user]</Embed>
                     <Embed>[ment]</Embed>
                   </Trans>
-                </small>
+                </Small>
                 <div>
                   <Input
                     value={settings.joinmessagetext}
@@ -360,12 +356,12 @@ const GeneralRoute: React.FC<Props> = () => {
                   </Button>
                 </div>
                 <label>{t('leavemessage.message_label')}</label>
-                <small>
+                <Small>
                   <Trans ns="routes.guildsettings.general" i18nKey="leavemessage.message_hint">
                     <Embed>[user]</Embed>
                     <Embed>[ment]</Embed>
                   </Trans>
-                </small>
+                </Small>
                 <div>
                   <Input
                     value={settings.leavemessagetext}

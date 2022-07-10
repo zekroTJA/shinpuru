@@ -2,6 +2,8 @@
   "reset": "Reset",
   "save": "Save Settings",
 
+  "heading": "General Guild Settings",
+
   "notifications": {
     "saved": "Settings saved."
   },

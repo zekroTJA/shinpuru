@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
+import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
 import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
@@ -187,6 +188,10 @@ export const Navbar: React.FC<Props> = () => {
             <StyledEntry path={`guilds/${selectedGuild?.id}/settings/backups`}>
               <BackupIcon />
               <span>{t('section.guildsettings.backup')}</span>
+            </StyledEntry>
+            <StyledEntry path={`guilds/${selectedGuild?.id}/settings/antiraid`}>
+              <AntiraidIcon />
+              <span>{t('section.guildsettings.antiraid')}</span>
             </StyledEntry>
           </Section>
         )}
