@@ -1,5 +1,5 @@
 import Color from 'color';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { uid } from 'react-uid';
 import styled, { css } from 'styled-components';
 import { ReactComponent as RemoveIcon } from '../../assets/close.svg';
@@ -46,6 +46,7 @@ const Selected = styled(Selectables)`
 `;
 
 const TagsInputContainer = styled.div<{ focussed: boolean }>`
+  display: block !important;
   width: 100%;
   border-radius: 5px;
   background-color: ${(p) => p.theme.background2};
@@ -61,19 +62,18 @@ const TagsInputContainer = styled.div<{ focussed: boolean }>`
     `}
 
   transition: all 0.25s ease;
+`;
 
-  > div {
-    display: flex;
+const InputContainer = styled.div`
+  display: flex;
 
-    > input {
-      width: 12ch;
-      background-color: transparent;
-      border: none;
-      padding: 0.5em;
-      outline: none;
-      color: ${(p) => p.theme.text};
-      font-size: 1rem;
-    }
+  input {
+    width: 15ch;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: ${(p) => p.theme.text};
+    font-size: 1rem;
   }
 `;
 
@@ -85,6 +85,7 @@ export const TagsInput = <T extends unknown>({
 }: Props<T>) => {
   const [val, setVal] = useState('');
   const [focussed, setFocussed] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const _onSelect = (e: TagElement<T>) => {
     setVal('');
@@ -113,17 +114,20 @@ export const TagsInput = <T extends unknown>({
   ));
 
   return (
-    <TagsInputContainer focussed={focussed}>
-      <div>
-        {_selected?.length > 0 && <Selected>{_selected}</Selected>}
-        <input
-          onFocus={() => setFocussed(true)}
-          onBlur={() => setFocussed(false)}
-          value={val}
-          onInput={(e) => setVal(e.currentTarget.value)}
-          placeholder={placeholder}
-        />
-      </div>
+    <TagsInputContainer focussed={focussed} onClick={() => inputRef.current?.focus()}>
+      <InputContainer>
+        <Selected>
+          {_selected}{' '}
+          <input
+            ref={inputRef}
+            onFocus={() => setFocussed(true)}
+            onBlur={() => setFocussed(false)}
+            value={val}
+            onInput={(e) => setVal(e.currentTarget.value)}
+            placeholder={placeholder}
+          />
+        </Selected>
+      </InputContainer>
       {valLower && <Selectables>{_selectables}</Selectables>}
     </TagsInputContainer>
   );
