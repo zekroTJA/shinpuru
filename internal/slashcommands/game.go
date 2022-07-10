@@ -44,10 +44,10 @@ func (c *Presence) Options() []*discordgo.ApplicationCommandOption {
 			Name:        "status",
 			Description: "The presence status.",
 			Choices: []*discordgo.ApplicationCommandOptionChoice{
-				{string(presence.StatusOnline), presence.StatusOnline},
-				{string(presence.StatusIdle), presence.StatusIdle},
-				{string(presence.StatusDnD), presence.StatusDnD},
-				{string(presence.StatusInvisible), presence.StatusInvisible},
+				{Name: string(presence.StatusOnline), Value: presence.StatusOnline},
+				{Name: string(presence.StatusIdle), Value: presence.StatusIdle},
+				{Name: string(presence.StatusDnD), Value: presence.StatusDnD},
+				{Name: string(presence.StatusInvisible), Value: presence.StatusInvisible},
 			},
 		},
 	}

@@ -30,7 +30,7 @@ func CheckForUpdate() (isOld bool, current, latest versioncheck.Semver) {
 func mustCurrSemver() *versioncheck.Semver {
 	curr, err := versioncheck.ParseSemver(embedded.AppVersion)
 	if err != nil {
-		logrus.WithError(err).Error("VERSIONCHECK :: Failed parsing current version - versioncheck skipped")
+		logrus.WithError(err).WithField("retrieved", embedded.AppVersion).Error("VERSIONCHECK :: Failed parsing current version - versioncheck skipped")
 		return nil
 	}
 	return &curr

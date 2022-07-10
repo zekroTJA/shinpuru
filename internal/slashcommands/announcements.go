@@ -49,8 +49,8 @@ func (c *Announcements) Options() []*discordgo.ApplicationCommandOption {
 			Description: "The announcement type.",
 			Required:    true,
 			Choices: []*discordgo.ApplicationCommandOptionChoice{
-				{announcementTypeJoin, announcementTypeJoin},
-				{announcementTypeLeave, announcementTypeLeave},
+				{Name: announcementTypeJoin, Value: announcementTypeJoin},
+				{Name: announcementTypeLeave, Value: announcementTypeLeave},
 			},
 		},
 	}

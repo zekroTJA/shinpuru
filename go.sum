@@ -120,8 +120,9 @@ github.com/bugsnag/bugsnag-go v0.0.0-20141110184014-b1d153021fcd/go.mod h1:2oa8n
 github.com/bugsnag/osext v0.0.0-20130617224835-0dd3f918b21b/go.mod h1:obH5gd0BsqsP2LwDJ9aOkm/6J86V6lyAXCoQWGw3K50=
 github.com/bugsnag/panicwrap v0.0.0-20151223152923-e2c28503fcd0/go.mod h1:D/8v3kj0zr8ZAKg1AQ6crr+5VwKN5eIywRkfhyM/+dE=
 github.com/bwmarrin/discordgo v0.23.2/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
-github.com/bwmarrin/discordgo v0.24.0 h1:Gw4MYxqHdvhO99A3nXnSLy97z5pmIKHZVJ1JY5ZDPqY=
 github.com/bwmarrin/discordgo v0.24.0/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
+github.com/bwmarrin/discordgo v0.25.0 h1:NXhdfHRNxtwso6FPdzW2i3uBvvU7UIQTghmV2T4nqAs=
+github.com/bwmarrin/discordgo v0.25.0/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/bwmarrin/snowflake v0.3.0 h1:xm67bEhkKh6ij1790JB83OujPR5CzNe8QuQqAgISZN0=
 github.com/bwmarrin/snowflake v0.3.0/go.mod h1:NdZxfVWX+oR6y2K0o6qAYv6gIOP9rjG0/E9WsDpxqwE=
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
@@ -405,6 +406,7 @@ github.com/golang/mock v1.4.0/go.mod h1:UOMv5ysSaYNkG+OFQykRIcU/QvvxJf3p21QfJ2Bt
 github.com/golang/mock v1.4.1/go.mod h1:UOMv5ysSaYNkG+OFQykRIcU/QvvxJf3p21QfJ2Bt3cw=
 github.com/golang/mock v1.4.3/go.mod h1:UOMv5ysSaYNkG+OFQykRIcU/QvvxJf3p21QfJ2Bt3cw=
 github.com/golang/mock v1.4.4/go.mod h1:l3mdAwkq5BuhzHwde/uurv3sEJeZMXNpwsxVWU71h+4=
+github.com/golang/mock v1.6.0 h1:ErTB+efbowRARo13NNdxyJji2egdxLGQhRaY+DUumQc=
 github.com/golang/mock v1.6.0/go.mod h1:p6yTPP+5HYm5mzsMV8JkE6ZKdX+/wYM6Hr+LicevLPs=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
@@ -885,6 +887,8 @@ github.com/zekroTJA/colorname v1.0.0 h1:aH/qlromaCPuToRcEmEU8nT83/agLbOxerdFkEZp
 github.com/zekroTJA/colorname v1.0.0/go.mod h1:2vFf/kmKIvS8kj3+jHOEJIJbFy/btXw2U++TiyRmuDc=
 github.com/zekroTJA/ratelimit v1.0.0 h1:n8Zhu1+E1m6FrxqKx7B/4kDQGGU2uC4ILaGA5MJH4ac=
 github.com/zekroTJA/ratelimit v1.0.0/go.mod h1:vMj8LMv+KSN8vQASf1Y7f5Lxz12XTMXFhNVghnzOIgI=
+github.com/zekroTJA/ratelimit v1.1.0 h1:6VCcsA0WEXD5cBIzPy2S5RTLA6hOhIavYw++SWJ2oWM=
+github.com/zekroTJA/ratelimit v1.1.0/go.mod h1:vMj8LMv+KSN8vQASf1Y7f5Lxz12XTMXFhNVghnzOIgI=
 github.com/zekroTJA/shireikan v0.7.0 h1:tjsitvaj81Ioeq/EcSIp1aIHkrIH7K5f0Ml4tD8jdIM=
 github.com/zekroTJA/shireikan v0.7.0/go.mod h1:W9mFLVTrq+mdfLCRqsg9qg8Dd569FxhAeHva4tEzl5s=
 github.com/zekroTJA/timedmap v1.4.0 h1:NIkLScX6kMzkzFP7kCIkkgKYdooAJ1itkMbJODX2WPU=
@@ -892,8 +896,10 @@ github.com/zekroTJA/timedmap v1.4.0/go.mod h1:Go4uPxMN1Wjl5IgO6HYD1tM9IQhkYEVqcr
 github.com/zekrotja/dgrs v0.3.1/go.mod h1:I73ryIMJJXCQxBHyBdRALG+0+mIEXF008EF7A/fYV4I=
 github.com/zekrotja/dgrs v0.5.3 h1:3UKZM8tKk1dK+BMrbbM81g9GckuMqgxfi0Ui6eHyFac=
 github.com/zekrotja/dgrs v0.5.3/go.mod h1:U/yu4FMN2z5DnGO0ov869vXLCHGFquYt89Bou2W+NJ4=
-github.com/zekrotja/ken v0.13.0 h1:JOGwhfBv7xEir35+FLp627rhaSJUN5HLXKTvyUenAHs=
-github.com/zekrotja/ken v0.13.0/go.mod h1:HLNM5sf0saf8UFQx+wm02V7W38g70JlvToL1JHIotbg=
+github.com/zekrotja/dgrs v0.5.4 h1:B375U+bDR4LsAjU8dk4ZFCz2iyU8hKiz1FAnGeGzo5w=
+github.com/zekrotja/dgrs v0.5.4/go.mod h1:U/yu4FMN2z5DnGO0ov869vXLCHGFquYt89Bou2W+NJ4=
+github.com/zekrotja/ken v0.14.0 h1:u2kjq+iEHSCi4/xiKFgIB+j9tF7xeXIrZy1W3SgOGak=
+github.com/zekrotja/ken v0.14.0/go.mod h1:rhvyc1OEQMGArEekhZVn1bOX5Y95U7mlrDycGJ4xLos=
 github.com/zekrotja/sop v0.3.1 h1:zJ0kk5w1y7aWZjaVwV2QZzfV868sHI6rQntLTFfsv3k=
 github.com/zekrotja/sop v0.3.1/go.mod h1:GKiPMHHdPpoKb+C48M6SXqoQmC2c2fEtUznHNxhDnrQ=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=

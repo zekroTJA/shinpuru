@@ -57,8 +57,8 @@ func (c *Snowflake) Options() []*discordgo.ApplicationCommandOption {
 			Name:        "type",
 			Description: "The type of snowflake (will be determindes if not specified).",
 			Choices: []*discordgo.ApplicationCommandOptionChoice{
-				{"discord", snowflakeTypeDiscord},
-				{"shinpuru", snowflakeTypeShinpuru},
+				{Name: "discord", Value: snowflakeTypeDiscord},
+				{Name: "shinpuru", Value: snowflakeTypeShinpuru},
 			},
 		},
 	}

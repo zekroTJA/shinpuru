@@ -3,7 +3,7 @@ module github.com/zekroTJA/shinpuru
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.24.0
+	github.com/bwmarrin/discordgo v0.25.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/esimov/stackblur-go v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.0
@@ -31,11 +31,11 @@ require (
 	github.com/valyala/fasthttp v1.34.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
-	github.com/zekroTJA/ratelimit v1.0.0
+	github.com/zekroTJA/ratelimit v1.1.0
 	github.com/zekroTJA/shireikan v0.7.0
 	github.com/zekroTJA/timedmap v1.4.0
-	github.com/zekrotja/dgrs v0.5.3
-	github.com/zekrotja/ken v0.13.0
+	github.com/zekrotja/dgrs v0.5.4
+	github.com/zekrotja/ken v0.14.0
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867
 	golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf
@@ -57,6 +57,7 @@ require (
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
