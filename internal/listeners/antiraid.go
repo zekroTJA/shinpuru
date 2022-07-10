@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,9 +32,10 @@ type guildState struct {
 type ListenerAntiraid struct {
 	db database.Database
 	gl guildlog.Logger
-	st *dgrs.State
+	st dgrs.IState
 	vs verification.Provider
 
+	mtx         sync.Mutex
 	guildStates map[string]*guildState
 	triggers    *timedmap.TimedMap
 }
@@ -44,7 +46,7 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		guildStates: make(map[string]*guildState),
 		triggers:    timedmap.New(arTriggerCleanupDuration),
 		gl:          container.Get(static.DiGuildLog).(guildlog.Logger).Section("antiraid"),
-		st:          container.Get(static.DiState).(*dgrs.State),
+		st:          container.Get(static.DiState).(dgrs.IState),
 		vs:          container.Get(static.DiVerification).(verification.Provider),
 	}
 }
@@ -54,13 +56,19 @@ func (l *ListenerAntiraid) addToJoinlog(e *discordgo.GuildMemberAdd) {
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed getting creation date from user snowflake")
 		l.gl.Errorf(e.GuildID, "Failed getting creation date from user snowflake (%s): %s", e.User.ID, err.Error())
-	} else if err = l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String(), creation); err != nil {
+		return
+	}
+
+	if err = l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String(), creation); err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
 		l.gl.Errorf(e.GuildID, "Failed adding user to joinlist (%s): %s", e.User.ID, err.Error())
 	}
 }
 
-func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
+func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo.GuildMemberAdd) {
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+
 	if v, ok := l.triggers.GetValue(e.GuildID).(time.Time); ok {
 		if time.Since(v) < antiraid.TriggerRecordLifetime {
 			l.addToJoinlog(e)
@@ -79,6 +87,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 	limitDur := time.Duration(limit) * time.Second
 
 	state, ok := l.guildStates[e.GuildID]
+
 	if !ok || state == nil {
 		state = &guildState{
 			rl: ratelimit.NewLimiter(limitDur, burst),
@@ -119,7 +128,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s *discordgo.Session, e *discordgo.G
 		"Following guild you are admin on is currently being raided!\n\n"+
 			"**%s (`%s`)**\n\n"+
 			"Because an atypical burst of members joined the guild, "+
-			"the guilds verification level was raised to `verry high` and all admins "+
+			"the guilds verification level was raised to `very high` and all admins "+
 			"were informed.\n\n"+
 			"Also, all joining users from now are saved in a log list for the following "+
 			"24 hours. This log is saved for 48 hours toal.", guild.Name, e.GuildID)

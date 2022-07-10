@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -96,7 +97,7 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	session.AddHandler(listeners.NewListenerChannelCreate(container).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(container).Handler)
 	session.AddHandler(listeners.NewListenerKarma(container).Handler)
-	session.AddHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd)
+	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd))
 	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 	session.AddHandler(listeners.NewListenerDMSync(container).Handler)
 
