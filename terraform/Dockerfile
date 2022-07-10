@@ -25,5 +25,6 @@ RUN yarn global add @angular/cli --prefix /usr/local
 
 # Install Taskfile
 RUN env GOBIN=/bin go install github.com/go-task/task/v3/cmd/task@latest
+RUN env GOBIN=/bin go install github.com/vektra/mockery/v2@latest
 
 USER coder
