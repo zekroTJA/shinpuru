@@ -3,7 +3,6 @@ package permissions
 import (
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 
@@ -29,7 +28,7 @@ type Permissions struct {
 	st  *dgrs.State
 }
 
-var _ ken.MiddlewareBefore = (*Permissions)(nil)
+var _ Provider = (*Permissions)(nil)
 
 // NewPermissions returns a new PermissionsMiddleware
 // instance with the passed database and config instances.
@@ -75,7 +74,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 	return
 }
 
-func (pmw *Permissions) HandleWs(s *discordgo.Session, required string) fiber.Handler {
+func (pmw *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Handler {
 	if !stringutil.ContainsAny(required, static.AdditionalPermissions) {
 		static.AdditionalPermissions = append(static.AdditionalPermissions, required)
 	}
@@ -105,7 +104,7 @@ func (pmw *Permissions) HandleWs(s *discordgo.Session, required string) fiber.Ha
 // permissions array is returned as well as the override,
 // which is true when the specified user is the bot owner,
 // guild owner or an admin of the guild.
-func (m *Permissions) GetPermissions(s *discordgo.Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
+func (m *Permissions) GetPermissions(s discordutil.ISession, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
 	if guildID != "" {
 		perm, err = m.GetMemberPermission(s, guildID, userID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
@@ -156,7 +155,7 @@ func (m *Permissions) GetPermissions(s *discordgo.Session, guildID, userID strin
 // on the specified guild and returns true, if the passed dn matches the
 // fetched permissions array. Also, the override status is returned as
 // well as errors occured during permissions fetching.
-func (m *Permissions) CheckPermissions(s *discordgo.Session, guildID, userID, dn string) (bool, bool, error) {
+func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID, userID, dn string) (bool, bool, error) {
 	perms, overrideExplicits, err := m.GetPermissions(s, guildID, userID)
 	if err != nil {
 		return false, false, err
@@ -167,7 +166,7 @@ func (m *Permissions) CheckPermissions(s *discordgo.Session, guildID, userID, dn
 
 // GetMemberPermissions returns a PermissionsArray based on the passed
 // members roles permissions rulesets for the given guild.
-func (m *Permissions) GetMemberPermission(s *discordgo.Session, guildID string, memberID string) (permissions.PermissionArray, error) {
+func (m *Permissions) GetMemberPermission(s discordutil.ISession, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.db.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err

@@ -103,8 +103,8 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
-	session.AddHandler(listenerInviteBlock.HandlerMessageSend)
-	session.AddHandler(listenerInviteBlock.HandlerMessageEdit)
+	session.AddHandler(discordutil.WrapHandler(listenerInviteBlock.HandlerMessageSend))
+	session.AddHandler(discordutil.WrapHandler(listenerInviteBlock.HandlerMessageEdit))
 
 	session.AddHandler(listenerJDoodle.HandlerMessageCreate)
 	session.AddHandler(listenerJDoodle.HandlerMessageUpdate)

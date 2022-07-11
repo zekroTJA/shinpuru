@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 // SortRoles sorts a given array of discordgo.Role
@@ -33,7 +34,7 @@ func SortRoles(r []*discordgo.Role, reversed bool) {
 // sorted ascending order by position.
 // If any error occurs, the error is returned as well.
 // If reversed, the order is descending.
-func GetSortedMemberRoles(s *discordgo.Session, guildID, memberID string, reversed bool, includeEveryone bool) ([]*discordgo.Role, error) {
+func GetSortedMemberRoles(s discordutil.ISession, guildID, memberID string, reversed bool, includeEveryone bool) ([]*discordgo.Role, error) {
 	member, err := s.GuildMember(guildID, memberID)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func GetSortedMemberRoles(s *discordgo.Session, guildID, memberID string, revers
 // order by position.
 // If any error occurs, the error is returned as well.
 // If reversed, the order is descending.
-func GetSortedGuildRoles(s *discordgo.Session, guildID string, reversed bool) ([]*discordgo.Role, error) {
+func GetSortedGuildRoles(s discordutil.ISession, guildID string, reversed bool) ([]*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildID)
 	if err != nil {
 		return nil, err

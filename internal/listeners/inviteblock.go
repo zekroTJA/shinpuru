@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 
 	"github.com/bwmarrin/discordgo"
@@ -24,26 +25,26 @@ var (
 type ListenerInviteBlock struct {
 	db  database.Database
 	gl  guildlog.Logger
-	pmw *permissions.Permissions
+	pmw permissions.Provider
 }
 
 func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
 	return &ListenerInviteBlock{
 		db:  container.Get(static.DiDatabase).(database.Database),
 		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("inviteblock"),
-		pmw: container.Get(static.DiPermissions).(*permissions.Permissions),
+		pmw: container.Get(static.DiPermissions).(permissions.Provider),
 	}
 }
 
-func (l *ListenerInviteBlock) HandlerMessageSend(s *discordgo.Session, e *discordgo.MessageCreate) {
+func (l *ListenerInviteBlock) HandlerMessageSend(s discordutil.ISession, e *discordgo.MessageCreate) {
 	l.invokeCheck(s, e.Message)
 }
 
-func (l *ListenerInviteBlock) HandlerMessageEdit(s *discordgo.Session, e *discordgo.MessageUpdate) {
+func (l *ListenerInviteBlock) HandlerMessageEdit(s discordutil.ISession, e *discordgo.MessageUpdate) {
 	l.invokeCheck(s, e.Message)
 }
 
-func (l *ListenerInviteBlock) invokeCheck(s *discordgo.Session, msg *discordgo.Message) {
+func (l *ListenerInviteBlock) invokeCheck(s discordutil.ISession, msg *discordgo.Message) {
 	cont := msg.Content
 
 	ok, matches := l.checkForInviteLink(cont)
@@ -100,7 +101,7 @@ func (l *ListenerInviteBlock) followLinkDeep(link string, maxDepth, depth int) (
 	return ok, matches, nil
 }
 
-func (l *ListenerInviteBlock) detected(s *discordgo.Session, e *discordgo.Message, matches [][]string) error {
+func (l *ListenerInviteBlock) detected(s discordutil.ISession, e *discordgo.Message, matches [][]string) error {
 	enabled, err := l.db.GetGuildInviteBlock(e.GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return nil
