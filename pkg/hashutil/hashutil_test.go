@@ -27,7 +27,11 @@ func TestHashCompare(t *testing.T) {
 
 	// Lets flip some runes in the hash to make it invalid
 	_hash := []byte(hash)
-	_hash[10]++
+	if _hash[10] == 'a' {
+		_hash[10] = 'b'
+	} else {
+		_hash[10] = 'a'
+	}
 	hash = string(_hash)
 
 	ok, err = Compare(token, hash)
