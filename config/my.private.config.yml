@@ -23,14 +23,14 @@ permissions:
 database:
   type: mysql
   mysql:
-    host: "<your db host>"
-    user: "shinpuruDev"
-    database: shinpuruDev
-    password: "<your db user password>"
+    host: "localhost:3306"
+    user: "root"
+    database: "shinpuru"
+    password: "dev"
 
 cache:
   redis:
-    addr: "<your redis host>"
+    addr: "localhost:6379"
     type: 0
   cachedatabase: true
 
@@ -39,9 +39,9 @@ storage:
   file:
     location: ./data
   # minio:
-  #   endpoint: "<your minio endpoint>"
-  #   accesskey: "<your minio access key>"
-  #   accesssecret: "<your minio access secret>"
+  #   endpoint: "localhost:9000"
+  #   accesskey: "dev-access-key"
+  #   accesssecret: "dev-secret-key"
   #   secure: true
 
 logging:

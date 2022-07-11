@@ -1,0 +1,83 @@
+configVersionPleaseDoNotChange: 6
+
+discord:
+  token: "<your discord token>"
+  generalprefix: ";;"
+  ownerid: "<your discord user id>"
+  clientid: "<your bots client id>"
+  clientsecret: "<your bots client secret>"
+  disabledcommands:
+  # globalcommandratelimit:
+  #   burst: 1
+  #   limitseconds: 10
+
+permissions:
+  defaultuserrules:
+  - +sp.etc.*
+  - +sp.chat.*
+  defaultadminrules:
+  - +sp.guild.*
+  - +sp.etc.*
+  - +sp.chat.*
+
+database:
+  type: mysql
+  mysql:
+    host: "mysql:3306"
+    user: root
+    database: shinpuru
+    password: dev
+
+cache:
+  redis:
+    addr: "redis:6379"
+    type: 0
+  cachedatabase: true
+
+storage:
+  type: minio
+  # file:
+  #   location: ./data
+  minio:
+    endpoint: "minio:9000"
+    accesskey: "yuri69"
+    accesssecret: "yuri69_secret_key"
+    secure: false
+
+logging:
+  commandlogging: true
+  loglevel: 5
+
+twitchapp:
+  clientid: ""
+  clientsecret: ""
+
+webserver:
+  enabled: true
+  addr: :8080
+  apitokenkey: "12345678901234567890123456789012"
+  tls:
+    enabled: false
+  publicaddr: http://localhost:8080
+  debugpublicaddr: http://localhost:8081
+  ratelimit:
+    enabled: false
+    burst: 50
+    limitseconds: 3
+  captcha:
+    sitekey: "20000000-ffff-ffff-ffff-000000000002"
+    secretkey: "0x0000000000000000000000000000000000000000"
+
+# metrics:
+#   enable: true
+#   addr: ":9091"
+
+privacy:
+  noticeurl: test
+  contact:
+    - title: test
+      value: test
+
+schedules:
+  # Guild backup schedule
+  # guildbackups:        '0 * * * * *'
