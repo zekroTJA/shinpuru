@@ -65,7 +65,7 @@ func (emb *EmbedMessage) EditRaw(newEmb *discordgo.MessageEmbed) *EmbedMessage {
 // If color == 0, static.ColorEmbedDefault will be set as color.
 //
 // Occured errors are set to the internal error.
-func SendEmbed(s *discordgo.Session, chanID, content string, title string, color int) *EmbedMessage {
+func SendEmbed(s discordutil.ISession, chanID, content string, title string, color int) *EmbedMessage {
 	emb := &discordgo.MessageEmbed{
 		Description: content,
 		Color:       color,

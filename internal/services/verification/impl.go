@@ -13,13 +13,14 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 )
 
 const timeout = 48 * time.Hour
 
 type impl struct {
-	s   *discordgo.Session
+	s   discordutil.ISession
 	db  database.Database
 	cfg config.Provider
 	gl  guildlog.Logger
@@ -29,7 +30,7 @@ var _ Provider = (*impl)(nil)
 
 func New(ctn di.Container) Provider {
 	return &impl{
-		s:   ctn.Get(static.DiDiscordSession).(*discordgo.Session),
+		s:   ctn.Get(static.DiDiscordSession).(discordutil.ISession),
 		db:  ctn.Get(static.DiDatabase).(database.Database),
 		cfg: ctn.Get(static.DiConfig).(config.Provider),
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("verification"),
@@ -39,6 +40,7 @@ func New(ctn di.Container) Provider {
 func (p *impl) GetEnabled(guildID string) (ok bool, err error) {
 	ok, err = p.db.GetGuildVerificationRequired(guildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		ok = false
 		return
 	}
 	return
@@ -154,7 +156,7 @@ func (p *impl) purgeQeueue(guildID, userID string) (err error) {
 }
 
 func (p *impl) sendDM(
-	s *discordgo.Session,
+	s discordutil.ISession,
 	userID, content, title string,
 	fallback func(content, title string),
 ) {
@@ -174,7 +176,7 @@ func (p *impl) sendDM(
 	}
 }
 
-func (p *impl) sendToJoinMsgChan(s *discordgo.Session, guildID, userID, content, title string) {
+func (p *impl) sendToJoinMsgChan(s discordutil.ISession, guildID, userID, content, title string) {
 	chanID, _, err := p.db.GetGuildJoinMsg(guildID)
 	if err != nil {
 		return
