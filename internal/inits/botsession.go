@@ -96,7 +96,7 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	session.AddHandler(listeners.NewListenerVote(container).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(container).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(container).Handler)
-	session.AddHandler(listeners.NewListenerKarma(container).Handler)
+	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerKarma(container).Handler))
 	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd))
 	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 	session.AddHandler(listeners.NewListenerDMSync(container).Handler)

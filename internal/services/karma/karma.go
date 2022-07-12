@@ -23,6 +23,8 @@ type Service struct {
 	st *dgrs.State
 }
 
+var _ Provider = (*Service)(nil)
+
 // NewKarmaService initializes a new Service
 // instance.
 func NewKarmaService(container di.Container) (k *Service) {
