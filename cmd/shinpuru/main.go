@@ -154,9 +154,9 @@ func main() {
 
 	// Initialize life cycle timer
 	diBuilder.Add(di.Def{
-		Name: static.DiLifecycleTimer,
+		Name: static.DiScheduler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitLTCTimer(ctn), nil
+			return inits.InitScheduler(ctn), nil
 		},
 	})
 

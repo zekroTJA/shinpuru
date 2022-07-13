@@ -5,7 +5,7 @@ const (
 	DiConfig                    = "config"
 	DiDatabase                  = "database"
 	DiObjectStorage             = "objectstorage"
-	DiLifecycleTimer            = "lifecycletimer"
+	DiScheduler                 = "scheduler"
 	DiPermissions               = "permissions"
 	DiGhostpingIgnoreMiddleware = "ghostpingignoremiddleware"
 	DiTwitchNotifyWorker        = "twitchnotifyworker"

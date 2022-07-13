@@ -10,16 +10,18 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
-	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/scheduler"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
+	"github.com/zekrotja/dgrs"
 )
 
-func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
+func InitScheduler(container di.Container) scheduler.Provider {
 	cfg := container.Get(static.DiConfig).(config.Provider)
 	db := container.Get(static.DiDatabase).(database.Database)
 	gb := container.Get(static.DiBackupHandler).(*backup.GuildBackups)
@@ -29,12 +31,13 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 	vs := container.Get(static.DiVerification).(verification.Provider)
 	bd := container.Get(static.DiBirthday).(*birthday.BirthdayService)
 	s := container.Get(static.DiDiscordSession).(*discordgo.Session)
+	st := container.Get(static.DiState).(dgrs.IState)
 
 	shardID, shardTotal := discordutil.GetShardOfSession(s)
 
-	lct := &lctimer.CronLifeCycleTimer{C: cron.New(cron.WithSeconds())}
+	sched := &scheduler.CronScheduler{C: cron.New(cron.WithSeconds())}
 
-	lctSchedule(lct, "refresh token cleanup",
+	schedule(sched, "refresh token cleanup",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -50,7 +53,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			}
 		})
 
-	lctSchedule(lct, "guild backup",
+	schedule(sched, "guild backup",
 		func() string {
 			return cfg.Config().Schedules.GuildBackups
 		},
@@ -58,7 +61,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			go gb.BackupAllGuilds()
 		})
 
-	lctSchedule(lct, "twitch notify",
+	schedule(sched, "twitch notify",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -74,7 +77,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			}
 		})
 
-	lctSchedule(lct, "report expiration",
+	schedule(sched, "report expiration",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -94,7 +97,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			})
 		})
 
-	lctSchedule(lct, "verification kick routine",
+	schedule(sched, "verification kick routine",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -102,7 +105,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			return cfg.Config().Schedules.VerificationKick
 		}, vs.KickRoutine)
 
-	lctSchedule(lct, "antiraid joinlog flush",
+	schedule(sched, "antiraid joinlog flush",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -110,24 +113,41 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 			return "@every 1h"
 		}, antiraid.FlushExpired(db, gl))
 
-	lctSchedule(lct, "birthday notifications",
+	schedule(sched, "birthday notifications",
 		func() string {
 			return "0 0 * * * *"
 		}, func() {
 			bd.Schedule()
 		})
 
-	return lct
+	schedule(sched, "guild membercount refresh",
+		staticSpec("@every 24h"),
+		func() {
+			err := util.UpdateGuildMemberStats(st, s)
+			if err != nil {
+				logrus.WithError(err).Error("Failed refreshing guild member stats")
+			} else {
+				logrus.Debug("Refreshed guild member stats")
+			}
+		})
+
+	return sched
 }
 
-func lctSchedule(lct lctimer.LifeCycleTimer, name string, specGetter func() string, job func()) {
+func schedule(sched scheduler.Provider, name string, specGetter func() string, job func()) {
 	spec := specGetter()
 	if spec == "" {
 		return
 	}
-	_, err := lct.Schedule(spec, job)
+	_, err := sched.Schedule(spec, job)
 	if err != nil {
 		logrus.WithError(err).WithField("name", name).Fatalf("LCT :: failed scheduling job")
 	}
 	logrus.WithField("name", name).WithField("spec", spec).Info("LCT :: scheduled job")
+}
+
+func staticSpec(v string) func() string {
+	return func() string {
+		return v
+	}
 }
