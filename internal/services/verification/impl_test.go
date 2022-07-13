@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -92,10 +93,13 @@ func TestSetEnabled(t *testing.T) {
 				{GuildID: "guild-id", UserID: "user-0"},
 				{GuildID: "guild-id", UserID: "user-1"},
 				{GuildID: "guild-id", UserID: "user-2"},
+				{GuildID: "guild-id", UserID: "user-left"},
 			}, nil)
 		m.db.On("RemoveVerificationQueue", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
 			Return(true, nil)
 
+		m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), "user-left", mock.Anything).
+			Return(&discordgo.RESTError{Message: &discordgo.APIErrorMessage{Code: discordgo.ErrCodeUnknownMember}})
 		m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
 			Run(func(args mock.Arguments) {
 				// This needs to be checked separately because
@@ -121,4 +125,5 @@ func TestSetEnabled(t *testing.T) {
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-0")
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-1")
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-2")
+	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-left")
 }

@@ -148,7 +148,11 @@ func (p *impl) purgeQeueue(guildID, userID string) (err error) {
 		ok, err := p.db.RemoveVerificationQueue(e.GuildID, e.UserID)
 		mErr.Append(err)
 		if ok {
-			mErr.Append(p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil))
+			err = p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil)
+			if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+				err = nil
+			}
+			mErr.Append(err)
 		}
 	}
 
