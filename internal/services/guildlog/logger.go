@@ -28,6 +28,7 @@ func New(container di.Container) Logger {
 func (l *loggerImpl) Section(module string) Logger {
 	return &loggerImpl{
 		db:     l.db,
+		tp:     l.tp,
 		module: module,
 	}
 }
