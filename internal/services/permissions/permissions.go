@@ -19,9 +19,6 @@ import (
 
 // Permissions is a command handler middleware
 // processing permissions for command execution.
-//
-// Implements the shireikan.Middleware interface and
-// exposes functions to check permissions.
 type Permissions struct {
 	db  database.Database
 	cfg config.Provider

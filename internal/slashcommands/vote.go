@@ -186,7 +186,7 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 		expires = time.Now().Add(expiresDuration)
 	}
 
-	ivote := &vote.Vote{
+	ivote := vote.Vote{
 		ID:            ctx.Event.ID,
 		MsgID:         "",
 		CreatorID:     ctx.User().ID,
@@ -277,12 +277,12 @@ func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
 		if v.GuildID == ctx.Event.GuildID && v.ID == id {
-			ivote = v
+			ivote = &v
 		}
 	}
 
 	ivote.SetExpire(ctx.Session, expireDuration)
-	if err = db.AddUpdateVote(ivote); err != nil {
+	if err = db.AddUpdateVote(*ivote); err != nil {
 		return err
 	}
 
@@ -306,7 +306,7 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 		var i int
 		for _, v := range vote.VotesRunning {
 			if v.GuildID == ctx.Event.GuildID && v.CreatorID == ctx.User().ID {
-				go func(vC *vote.Vote) {
+				go func(vC vote.Vote) {
 					db.DeleteVote(vC.ID)
 					vC.Close(ctx.Session, state)
 				}(v)
@@ -321,7 +321,7 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
 		if v.GuildID == ctx.Event.GuildID && v.ID == id {
-			ivote = v
+			ivote = &v
 			break
 		}
 	}

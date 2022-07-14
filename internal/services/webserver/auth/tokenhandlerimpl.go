@@ -202,7 +202,7 @@ func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, e
 		return
 	}
 
-	tokenEntry := &models.APITokenEntry{
+	tokenEntry := models.APITokenEntry{
 		Salt:    salt,
 		Created: now,
 		Expires: expires,

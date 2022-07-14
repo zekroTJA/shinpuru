@@ -49,7 +49,7 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 	if requests == nil {
-		requests = make([]*sharedmodels.UnbanRequest, 0)
+		requests = make([]sharedmodels.UnbanRequest, 0)
 	}
 
 	self, err := c.st.User(uid)
@@ -57,10 +57,10 @@ func (c *UnbanrequestsController) getUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	res := sop.Map[*sharedmodels.UnbanRequest](sop.Slice(requests),
-		func(r *sharedmodels.UnbanRequest, i int) *models.RichUnbanRequest {
+	res := sop.Map[sharedmodels.UnbanRequest](sop.Slice(requests),
+		func(r sharedmodels.UnbanRequest, i int) models.RichUnbanRequest {
 			r.Hydrate()
-			rub := &models.RichUnbanRequest{
+			rub := models.RichUnbanRequest{
 				UnbanRequest: r,
 				Creator:      models.FlatUserFromUser(self),
 			}
@@ -122,7 +122,7 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 		}
 	}
 
-	finalReq := &sharedmodels.UnbanRequest{
+	finalReq := sharedmodels.UnbanRequest{
 		ID:      snowflakenodes.NodeUnbanRequests.Generate(),
 		UserID:  uid,
 		GuildID: req.GuildID,

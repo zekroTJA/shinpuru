@@ -160,7 +160,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 		}
 	}
 
-	rep := &models.Report{
+	rep := models.Report{
 		GuildID:       ctx.Event.GuildID,
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
@@ -212,7 +212,7 @@ func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
 	muteReports, err := db.GetReportsFiltered(ctx.Event.GuildID, "",
 		int(models.TypeMute), 0, 1000)
 
-	muteReportsMap := make(map[string]*models.Report)
+	muteReportsMap := make(map[string]models.Report)
 	for _, r := range muteReports {
 		muteReportsMap[r.VictimID] = r
 	}

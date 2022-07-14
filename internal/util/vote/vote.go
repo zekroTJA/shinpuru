@@ -28,7 +28,7 @@ const (
 
 // VotesRunning maps running vote IDs to
 // their vote instances.
-var VotesRunning = map[string]*Vote{}
+var VotesRunning = map[string]Vote{}
 
 // VoteEmotes contains the emotes used to tick a vote.
 var VoteEmotes = strings.Fields("\u0031\u20E3 \u0032\u20E3 \u0033\u20E3 \u0034\u20E3 \u0035\u20E3 \u0036\u20E3 \u0037\u20E3 \u0038\u20E3 \u0039\u20E3 \u0030\u20E3")
@@ -58,17 +58,17 @@ type Tick struct {
 // Unmarshal tries to deserialize a raw data string
 // to a Vote object. Errors occured during
 // deserialization are returned as well.
-func Unmarshal(data string) (*Vote, error) {
+func Unmarshal(data string) (Vote, error) {
 	rawData, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return nil, err
+		return Vote{}, err
 	}
 
 	var res Vote
 	buffer := bytes.NewBuffer(rawData)
 	gobdec := gob.NewDecoder(buffer)
 	err = gobdec.Decode(&res)
-	return &res, err
+	return res, err
 }
 
 // Marshal serializes the vote to a raw data string.

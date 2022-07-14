@@ -53,7 +53,7 @@ func (l *loggerImpl) log(severity models.GuildLogSeverity, guildID, message stri
 		return
 	}
 
-	err = l.db.AddGuildLogEntry(&models.GuildLogEntry{
+	err = l.db.AddGuildLogEntry(models.GuildLogEntry{
 		ID:        snowflakenodes.NodeGuildLog.Generate(),
 		GuildID:   guildID,
 		Module:    module,

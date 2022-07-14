@@ -161,7 +161,7 @@ func (c *Twitchnotify) add(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	err = db.SetTwitchNotify(&twitchnotify.DBEntry{
+	err = db.SetTwitchNotify(twitchnotify.DBEntry{
 		ChannelID:    channelID,
 		GuildID:      ctx.Event.GuildID,
 		TwitchUserID: twitchuser.ID,
@@ -198,7 +198,7 @@ func (c *Twitchnotify) remove(ctx *ken.SubCommandCtx) (err error) {
 	var notify *twitchnotify.DBEntry
 	for _, not := range nots {
 		if not.GuildID == ctx.Event.GuildID {
-			notify = not
+			notify = &not
 		}
 	}
 

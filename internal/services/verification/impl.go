@@ -73,7 +73,7 @@ func (p *impl) EnqueueVerification(guildID, userID string) (err error) {
 		return
 	}
 
-	err = p.db.AddVerificationQueue(&models.VerificationQueueEntry{
+	err = p.db.AddVerificationQueue(models.VerificationQueueEntry{
 		GuildID:   guildID,
 		UserID:    userID,
 		Timestamp: time.Now(),

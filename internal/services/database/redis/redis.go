@@ -418,7 +418,7 @@ func (r *RedisMiddleware) SetSetting(setting, value string) error {
 	return r.Database.SetSetting(setting, value)
 }
 
-func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
+func (m *RedisMiddleware) SetAPIToken(token models.APITokenEntry) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, token.UserID)
 
 	data, err := json.Marshal(token)
@@ -433,7 +433,7 @@ func (m *RedisMiddleware) SetAPIToken(token *models.APITokenEntry) (err error) {
 	return m.Database.SetAPIToken(token)
 }
 
-func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, err error) {
+func (m *RedisMiddleware) GetAPIToken(userID string) (t models.APITokenEntry, err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
 
 	resStr, err := m.client.Get(context.Background(), key).Result()
@@ -452,8 +452,7 @@ func (m *RedisMiddleware) GetAPIToken(userID string) (t *models.APITokenEntry, e
 		return
 	}
 
-	t = new(models.APITokenEntry)
-	err = json.Unmarshal([]byte(resStr), t)
+	err = json.Unmarshal([]byte(resStr), &t)
 
 	return
 }
@@ -655,10 +654,9 @@ func (m *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 	return m.Database.SetUserOTAEnabled(userID, enabled)
 }
 
-func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config *models.StarboardConfig, err error) {
+func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config models.StarboardConfig, err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, guildID)
 
-	config = new(models.StarboardConfig)
 	var configB []byte
 	err = m.client.Get(context.Background(), key).Scan(&configB)
 	if err == redis.Nil {
@@ -676,11 +674,11 @@ func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config *models.Sta
 		return
 	}
 
-	err = json.Unmarshal(configB, config)
+	err = json.Unmarshal(configB, &config)
 	return
 }
 
-func (m *RedisMiddleware) SetStarboardConfig(config *models.StarboardConfig) (err error) {
+func (m *RedisMiddleware) SetStarboardConfig(config models.StarboardConfig) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, config.GuildID)
 	configB, err := json.Marshal(config)
 	if err != nil {
@@ -710,7 +708,7 @@ func (r *RedisMiddleware) SetGuildLogDisable(guildID string, enabled bool) error
 	return r.Database.SetGuildLogDisable(guildID, enabled)
 }
 
-func (m *RedisMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPISettings) (err error) {
+func (m *RedisMiddleware) SetGuildAPI(guildID string, settings models.GuildAPISettings) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
 
 	data, err := json.Marshal(settings)
@@ -725,7 +723,7 @@ func (m *RedisMiddleware) SetGuildAPI(guildID string, settings *models.GuildAPIS
 	return m.Database.SetGuildAPI(guildID, settings)
 }
 
-func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPISettings, err error) {
+func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings models.GuildAPISettings, err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
 
 	resStr, err := m.client.Get(context.Background(), key).Result()
@@ -744,8 +742,7 @@ func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings *models.GuildAPI
 		return
 	}
 
-	settings = new(models.GuildAPISettings)
-	err = json.Unmarshal([]byte(resStr), settings)
+	err = json.Unmarshal([]byte(resStr), &settings)
 
 	return
 }

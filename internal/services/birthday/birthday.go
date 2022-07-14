@@ -54,15 +54,15 @@ func (b *BirthdayService) Schedule() (err error) {
 	shardId, shardTotal := discordutil.GetShardOfSession(b.session)
 	if shardTotal > 1 {
 		bdays = sop.Slice(bdays).
-			Filter(func(v *models.Birthday, _ int) bool {
+			Filter(func(v models.Birthday, _ int) bool {
 				id, err := discordutil.GetShardOfGuild(v.GuildID, shardTotal)
 				return err == nil && id == shardId
 			}).
 			Unwrap()
 	}
 
-	bdayMap := sop.GroupE[*models.Birthday](
-		sop.Slice(bdays), func(v *models.Birthday, i int) (string, *models.Birthday) {
+	bdayMap := sop.GroupE[models.Birthday](
+		sop.Slice(bdays), func(v models.Birthday, i int) (string, models.Birthday) {
 			return v.GuildID, v
 		},
 	)
@@ -104,7 +104,7 @@ func (b *BirthdayService) Schedule() (err error) {
 			continue
 		}
 
-		gbds.Each(func(v *models.Birthday, i int) {
+		gbds.Each(func(v models.Birthday, i int) {
 			memb, err := b.st.Member(v.GuildID, v.UserID)
 			if memb == nil || memb.User == nil {
 				if err == nil || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
@@ -123,7 +123,7 @@ func (b *BirthdayService) Schedule() (err error) {
 	return
 }
 
-func (b *BirthdayService) sendMessage(memb *discordgo.Member, chanID string, bd *models.Birthday) (err error) {
+func (b *BirthdayService) sendMessage(memb *discordgo.Member, chanID string, bd models.Birthday) (err error) {
 	age := ""
 	if bd.ShowYear {
 		age = suffix(time.Now().Year()-bd.Date.Year()) + " "
@@ -178,9 +178,9 @@ func (b *BirthdayService) randomGif() (img *giphy.Image) {
 	return
 }
 
-func isTodayFilter() func(v *models.Birthday, i int) bool {
+func isTodayFilter() func(v models.Birthday, i int) bool {
 	now := time.Now().UTC()
-	return func(v *models.Birthday, i int) bool {
+	return func(v models.Birthday, i int) bool {
 		m1, d1, h1 := format(now)
 		m2, d2, h2 := format(v.Date)
 		return m1 == m2 && d1 == d2 && h1 == h2

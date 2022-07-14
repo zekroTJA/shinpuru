@@ -13,23 +13,20 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/colors"
 	"github.com/zekroTJA/shinpuru/pkg/etag"
-	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
 
 type UtilController struct {
-	session          *discordgo.Session
-	cfg              config.Provider
-	legacyCmdHandler shireikan.Handler
-	cmdHandler       *ken.Ken
-	st               *dgrs.State
+	session    *discordgo.Session
+	cfg        config.Provider
+	cmdHandler *ken.Ken
+	st         *dgrs.State
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
-	c.legacyCmdHandler = container.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 
@@ -135,18 +132,13 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 // @Tags Utilities
 // @Accept json
 // @Produce json
+// @Deprecated
 // @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"
 // @Router /util/commands [get]
+//
+// TODO: Remove
 func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
-	cmdInstances := c.legacyCmdHandler.GetCommandInstances()
-	cmdInfos := make([]*models.CommandInfo, len(cmdInstances))
-
-	for i, c := range cmdInstances {
-		cmdInfo := models.GetCommandInfoFromCommand(c)
-		cmdInfos[i] = cmdInfo
-	}
-
-	list := models.NewListResponse(cmdInfos)
+	list := models.NewListResponse([]string{})
 
 	return ctx.JSON(list)
 }

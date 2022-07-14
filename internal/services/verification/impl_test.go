@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/mocks"
 )
@@ -126,4 +127,67 @@ func TestSetEnabled(t *testing.T) {
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-1")
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-2")
 	m.db.AssertCalled(t, "RemoveVerificationQueue", "guild-id", "user-left")
+}
+
+func TestIsVerified(t *testing.T) {
+	m := getVerificationMock(func(m verificationMock) {
+		m.db.On("GetUserVerified", "user-error").
+			Return(false, errors.New("test error"))
+		m.db.On("GetUserVerified", "user-notlisted").
+			Return(false, database.ErrDatabaseNotFound)
+		m.db.On("GetUserVerified", "user-nonverified").
+			Return(false, nil)
+		m.db.On("GetUserVerified", "user-verified").
+			Return(true, nil)
+	})
+
+	p := New(m.ct)
+
+	ok, err := p.IsVerified("user-error")
+	assert.EqualError(t, err, "test error")
+	assert.False(t, ok)
+
+	ok, err = p.IsVerified("user-notlisted")
+	assert.Nil(t, err)
+	assert.False(t, ok)
+
+	ok, err = p.IsVerified("user-nonverified")
+	assert.Nil(t, err)
+	assert.False(t, ok)
+
+	ok, err = p.IsVerified("user-verified")
+	assert.Nil(t, err)
+	assert.True(t, ok)
+}
+
+func TestEnqueueVerification(t *testing.T) {
+	cfg := &models.Config{}
+	cfg.WebServer.PublicAddr = "publicaddr"
+
+	m := getVerificationMock(func(m verificationMock) {
+		m.db.On("GetUserVerified", "user-nonverified").
+			Return(false, nil)
+		m.db.On("GetUserVerified", "user-verified").
+			Return(true, nil)
+		m.db.On("AddVerificationQueue", mock.Anything).
+			Return(nil)
+		m.db.On("GetGuildJoinMsg", mock.AnythingOfType("string")).
+			Return("joinmsg-chan", nil)
+
+		m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+			Return(nil)
+		m.s.On("UserChannelCreate", mock.AnythingOfType("string")).
+			Return(&discordgo.Channel{ID: "channel-id"}, nil)
+		m.s.On("ChannelMessageSendEmbed", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageEmbed")).
+			Return(nil, nil)
+		m.s.On("ChannelMessageSendComplex", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageSend")).
+			Return(nil, nil)
+
+		m.cfg.On("Config").Return(cfg)
+	})
+
+	p := New(m.ct)
+	err := p.EnqueueVerification("guild-id", "user-nonverified")
+	assert.Nil(t, err)
+	// m.db.AssertCalled()
 }

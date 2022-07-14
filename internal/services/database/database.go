@@ -85,8 +85,8 @@ type Database interface {
 	GetGuildLogDisable(guildID string) (bool, error)
 	SetGuildLogDisable(guildID string, enabled bool) error
 
-	GetGuildAPI(guildID string) (*models.GuildAPISettings, error)
-	SetGuildAPI(guildID string, settings *models.GuildAPISettings) error
+	GetGuildAPI(guildID string) (models.GuildAPISettings, error)
+	SetGuildAPI(guildID string, settings models.GuildAPISettings) error
 
 	GetGuildVerificationRequired(guildID string) (bool, error)
 	SetGuildVerificationRequired(guildID string, enable bool) error
@@ -116,38 +116,38 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// REPORTS
 
-	AddReport(rep *models.Report) error
+	AddReport(rep models.Report) error
 	DeleteReport(id snowflake.ID) error
-	GetReport(id snowflake.ID) (*models.Report, error)
-	GetReportsGuild(guildID string, offset, limit int) ([]*models.Report, error)
-	GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]*models.Report, error)
+	GetReport(id snowflake.ID) (models.Report, error)
+	GetReportsGuild(guildID string, offset, limit int) ([]models.Report, error)
+	GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]models.Report, error)
 	GetReportsGuildCount(guildID string) (int, error)
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
-	GetExpiredReports() ([]*models.Report, error)
+	GetExpiredReports() ([]models.Report, error)
 	ExpireReports(id ...string) (err error)
 
 	//////////////////////////////////////////////////////
 	//// UNBAN REQUESTS
 
-	GetGuildUnbanRequests(guildID string) ([]*models.UnbanRequest, error)
-	GetGuildUserUnbanRequests(userID, guildID string) ([]*models.UnbanRequest, error)
-	GetUnbanRequest(id string) (*models.UnbanRequest, error)
-	AddUnbanRequest(request *models.UnbanRequest) error
-	UpdateUnbanRequest(request *models.UnbanRequest) error
+	GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest, error)
+	GetGuildUserUnbanRequests(userID, guildID string) ([]models.UnbanRequest, error)
+	GetUnbanRequest(id string) (models.UnbanRequest, error)
+	AddUnbanRequest(request models.UnbanRequest) error
+	UpdateUnbanRequest(request models.UnbanRequest) error
 
 	//////////////////////////////////////////////////////
 	//// VOTES
 
-	GetVotes() (map[string]*vote.Vote, error)
-	AddUpdateVote(votes *vote.Vote) error
+	GetVotes() (map[string]vote.Vote, error)
+	AddUpdateVote(votes vote.Vote) error
 	DeleteVote(voteID string) error
 
 	//////////////////////////////////////////////////////
 	//// TWITCHNOTIFY
 
-	GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error)
-	GetTwitchNotify(twitchUserID, guildID string) (*twitchnotify.DBEntry, error)
-	SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error
+	GetAllTwitchNotifies(twitchUserID string) ([]twitchnotify.DBEntry, error)
+	GetTwitchNotify(twitchUserID, guildID string) (twitchnotify.DBEntry, error)
+	SetTwitchNotify(twitchNotify twitchnotify.DBEntry) error
 	DeleteTwitchNotify(twitchUserID, guildID string) error
 
 	//////////////////////////////////////////////////////
@@ -155,24 +155,24 @@ type Database interface {
 
 	AddBackup(guildID, fileID string) error
 	DeleteBackup(guildID, fileID string) error
-	GetBackups(guildID string) ([]*backupmodels.Entry, error)
+	GetBackups(guildID string) ([]backupmodels.Entry, error)
 	GetGuilds() ([]string, error)
 
 	//////////////////////////////////////////////////////
 	//// TAGS
 
-	AddTag(tag *tag.Tag) error
-	EditTag(tag *tag.Tag) error
-	GetTagByID(id snowflake.ID) (*tag.Tag, error)
-	GetTagByIdent(ident string, guildID string) (*tag.Tag, error)
-	GetGuildTags(guildID string) ([]*tag.Tag, error)
+	AddTag(tag tag.Tag) error
+	EditTag(tag tag.Tag) error
+	GetTagByID(id snowflake.ID) (tag.Tag, error)
+	GetTagByIdent(ident string, guildID string) (tag.Tag, error)
+	GetGuildTags(guildID string) ([]tag.Tag, error)
 	DeleteTag(id snowflake.ID) error
 
 	//////////////////////////////////////////////////////
 	//// API TOKEN
 
-	SetAPIToken(token *models.APITokenEntry) error
-	GetAPIToken(userID string) (*models.APITokenEntry, error)
+	SetAPIToken(token models.APITokenEntry) error
+	GetAPIToken(userID string) (models.APITokenEntry, error)
 	DeleteAPIToken(userID string) error
 
 	//////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ type Database interface {
 
 	GetKarma(userID, guildID string) (int, error)
 	GetKarmaSum(userID string) (int, error)
-	GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error)
+	GetKarmaGuild(guildID string, limit int) ([]models.GuildKarma, error)
 	SetKarma(userID, guildID string, val int) error
 	UpdateKarma(userID, guildID string, diff int) error
 
@@ -201,9 +201,9 @@ type Database interface {
 	AddKarmaBlockList(guildID, userID string) error
 	RemoveKarmaBlockList(guildID, userID string) error
 
-	GetKarmaRules(guildID string) ([]*models.KarmaRule, error)
+	GetKarmaRules(guildID string) ([]models.KarmaRule, error)
 	CheckKarmaRule(guildID, checksum string) (ok bool, err error)
-	AddOrUpdateKarmaRule(rule *models.KarmaRule) error
+	AddOrUpdateKarmaRule(rule models.KarmaRule) error
 	RemoveKarmaRule(guildID string, id snowflake.ID) error
 
 	//////////////////////////////////////////////////////
@@ -230,26 +230,26 @@ type Database interface {
 	GetAntiraidVerification(guildID string) (bool, error)
 
 	AddToAntiraidJoinList(guildID, userID, userTag string, accountCreated time.Time) error
-	GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error)
+	GetAntiraidJoinList(guildID string) ([]models.JoinLogEntry, error)
 	FlushAntiraidJoinList(guildID string) error
 	RemoveAntiraidJoinList(guildID, userID string) error
 
 	//////////////////////////////////////////////////////
 	//// STARBOARD
 
-	SetStarboardConfig(config *models.StarboardConfig) error
-	GetStarboardConfig(guildID string) (*models.StarboardConfig, error)
-	SetStarboardEntry(e *models.StarboardEntry) (err error)
+	SetStarboardConfig(config models.StarboardConfig) error
+	GetStarboardConfig(guildID string) (models.StarboardConfig, error)
+	SetStarboardEntry(e models.StarboardEntry) (err error)
 	RemoveStarboardEntry(msgID string) error
-	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]*models.StarboardEntry, error)
-	GetStarboardEntry(messageID string) (*models.StarboardEntry, error)
+	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]models.StarboardEntry, error)
+	GetStarboardEntry(messageID string) (models.StarboardEntry, error)
 
 	//////////////////////////////////////////////////////
 	//// GUILDLOG
 
-	GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity, ascending bool) ([]*models.GuildLogEntry, error)
+	GetGuildLogEntries(guildID string, offset, limit int, severity models.GuildLogSeverity, ascending bool) ([]models.GuildLogEntry, error)
 	GetGuildLogEntriesCount(guildID string, severity models.GuildLogSeverity) (int, error)
-	AddGuildLogEntry(entry *models.GuildLogEntry) error
+	AddGuildLogEntry(entry models.GuildLogEntry) error
 	DeleteLogEntry(guildID string, id snowflake.ID) error
 	DeleteLogEntries(guildID string) error
 
@@ -261,16 +261,16 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// VERIFICATION QUEUE
 
-	GetVerificationQueue(guildID, userID string) ([]*models.VerificationQueueEntry, error)
+	GetVerificationQueue(guildID, userID string) ([]models.VerificationQueueEntry, error)
 	FlushVerificationQueue(guildID string) error
-	AddVerificationQueue(e *models.VerificationQueueEntry) error
+	AddVerificationQueue(e models.VerificationQueueEntry) error
 	RemoveVerificationQueue(guildID, userID string) (bool, error)
 
 	//////////////////////////////////////////////////////
 	//// BIRTHDAYS
 
-	GetBirthdays(guildID string) ([]*models.Birthday, error)
-	SetBirthday(m *models.Birthday) error
+	GetBirthdays(guildID string) ([]models.Birthday, error)
+	SetBirthday(m models.Birthday) error
 	DeleteBirthday(guildID, userID string) error
 }
 

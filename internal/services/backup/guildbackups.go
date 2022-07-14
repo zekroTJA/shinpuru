@@ -208,7 +208,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		var lastEntry *backupmodels.Entry
 		for _, b := range cBackups {
 			if lastEntry == nil || b.Timestamp.Before(lastEntry.Timestamp) {
-				lastEntry = b
+				lastEntry = &b
 			}
 		}
 

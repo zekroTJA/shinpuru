@@ -45,7 +45,7 @@ func CmdReport(ctx ken.Context, typ models.ReportType) (err error) {
 		}
 	}
 
-	rep := &models.Report{
+	rep := models.Report{
 		GuildID:       ctx.GetEvent().GuildID,
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
