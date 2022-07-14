@@ -3,9 +3,11 @@ package report
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
@@ -14,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -25,10 +28,10 @@ var (
 )
 
 type ReportService struct {
-	s   *discordgo.Session
+	s   discordutil.ISession
 	db  database.Database
 	cfg config.Provider
-	st  *dgrs.State
+	st  dgrs.IState
 	tp  timeprovider.Provider
 }
 
@@ -37,14 +40,21 @@ type ReportError struct {
 	models.Report
 }
 
-func New(container di.Container) *ReportService {
+func New(container di.Container) (t *ReportService, err error) {
+	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
+	for i, t := range models.ReportTypes {
+		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
+			return nil, err
+		}
+	}
+
 	return &ReportService{
-		s:   container.Get(static.DiDiscordSession).(*discordgo.Session),
+		s:   container.Get(static.DiDiscordSession).(discordutil.ISession),
 		db:  container.Get(static.DiDatabase).(database.Database),
 		cfg: container.Get(static.DiConfig).(config.Provider),
-		st:  container.Get(static.DiState).(*dgrs.State),
+		st:  container.Get(static.DiState).(dgrs.IState),
 		tp:  container.Get(static.DiTimeProvider).(timeprovider.Provider),
-	}
+	}, nil
 }
 
 // PushReport creates a new Report object with the given executorID,
@@ -62,12 +72,12 @@ func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 		return models.Report{}, err
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil && modlogChan != "" {
 		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
 	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
-	if err == nil {
+	if err == nil && dmChan != nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 

@@ -303,7 +303,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiReport,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return report.New(ctn), nil
+			return report.New(ctn)
 		},
 	})
 
