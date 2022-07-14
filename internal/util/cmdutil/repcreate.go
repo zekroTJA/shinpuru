@@ -19,7 +19,7 @@ import (
 
 func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
-	repSvc := ctx.Get(static.DiReport).(*report.ReportService)
+	repSvc := ctx.Get(static.DiReport).(report.Provider)
 
 	victim := ctx.Options().GetByName("user").UserValue(ctx)
 	reason := ctx.Options().GetByName("reason").StringValue()

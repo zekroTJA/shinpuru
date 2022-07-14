@@ -295,8 +295,10 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 }
 
 func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
-	wsPublicAddr string, db database.Database,
-	s *discordgo.Session) (emb *discordgo.MessageEmbed, err error) {
+	wsPublicAddr string,
+	db database.Database,
+	s discordutil.ISession,
+) (emb *discordgo.MessageEmbed, err error) {
 
 	if err = db.DeleteReport(rep.ID); err != nil {
 		return
