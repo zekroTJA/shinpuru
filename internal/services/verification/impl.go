@@ -1,6 +1,7 @@
 package verification
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -24,6 +26,7 @@ type impl struct {
 	db  database.Database
 	cfg config.Provider
 	gl  guildlog.Logger
+	tp  timeprovider.Provider
 }
 
 var _ Provider = (*impl)(nil)
@@ -34,6 +37,7 @@ func New(ctn di.Container) Provider {
 		db:  ctn.Get(static.DiDatabase).(database.Database),
 		cfg: ctn.Get(static.DiConfig).(config.Provider),
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("verification"),
+		tp:  ctn.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -67,23 +71,31 @@ func (p *impl) IsVerified(userID string) (ok bool, err error) {
 	return
 }
 
-func (p *impl) EnqueueVerification(guildID, userID string) (err error) {
-	verified, err := p.IsVerified(userID)
+func (p *impl) EnqueueVerification(member discordgo.Member) (err error) {
+	if member.User == nil {
+		return errors.New("Member.User is nil")
+	}
+
+	if member.User.Bot {
+		return nil
+	}
+
+	verified, err := p.IsVerified(member.User.ID)
 	if err != nil || verified {
 		return
 	}
 
 	err = p.db.AddVerificationQueue(models.VerificationQueueEntry{
-		GuildID:   guildID,
-		UserID:    userID,
-		Timestamp: time.Now(),
+		GuildID:   member.GuildID,
+		UserID:    member.User.ID,
+		Timestamp: p.tp.Now(),
 	})
 	if err != nil {
 		return
 	}
 
-	timeout := time.Now().Add(timeout)
-	err = p.s.GuildMemberTimeout(guildID, userID, &timeout)
+	timeout := p.tp.Now().Add(timeout)
+	err = p.s.GuildMemberTimeout(member.GuildID, member.User.ID, &timeout)
 	if err != nil {
 		return
 	}
@@ -93,8 +105,8 @@ func (p *impl) EnqueueVerification(guildID, userID string) (err error) {
 			"Please go to the [**verification page**](%s/verify) and complete the captcha to verify your account.",
 		p.cfg.Config().WebServer.PublicAddr,
 	)
-	p.sendDM(p.s, userID, msg, "User Verification", func(content, title string) {
-		p.sendToJoinMsgChan(p.s, guildID, userID, content, title)
+	p.sendDM(p.s, member.User.ID, msg, "User Verification", func(content, title string) {
+		p.sendToJoinMsgChan(p.s, member.GuildID, member.User.ID, content, title)
 	})
 
 	return
@@ -116,20 +128,28 @@ func (p *impl) KickRoutine() {
 		return
 	}
 
-	now := time.Now()
+	now := p.tp.Now()
 	for _, e := range queue {
 		if now.Before(e.Timestamp.Add(timeout)) {
 			continue
 		}
 
+		var unknownMember bool
 		if err = p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil); err != nil {
-			logrus.WithError(err).Error("Failed removing member timeout")
-			p.gl.Errorf(e.GuildID, "Failed removing member timeout: %s", err.Error())
+			unknownMember = discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember)
+			if !unknownMember {
+				logrus.WithError(err).Error("Failed removing member timeout")
+				p.gl.Errorf(e.GuildID, "Failed removing member timeout: %s", err.Error())
+			}
 		}
-		if err = p.s.GuildMemberDelete(e.GuildID, e.UserID); err != nil {
-			logrus.WithError(err).Error("Failed kicking member")
-			p.gl.Errorf(e.GuildID, "Failed kicking member: %s", err.Error())
+
+		if !unknownMember {
+			if err = p.s.GuildMemberDelete(e.GuildID, e.UserID); err != nil {
+				logrus.WithError(err).Error("Failed kicking member")
+				p.gl.Errorf(e.GuildID, "Failed kicking member: %s", err.Error())
+			}
 		}
+
 		if _, err = p.db.RemoveVerificationQueue(e.GuildID, e.UserID); err != nil {
 			logrus.WithError(err).Error("Failed removing member from verification queue")
 			p.gl.Errorf(e.GuildID, "Failed removing member from verification queue: %s", err.Error())
