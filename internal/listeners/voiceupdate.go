@@ -11,6 +11,7 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -20,6 +21,7 @@ type ListenerVoiceUpdate struct {
 	db database.Database
 	gl guildlog.Logger
 	st *dgrs.State
+	tp timeprovider.Provider
 }
 
 func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
@@ -27,6 +29,7 @@ func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 		db: container.Get(static.DiDatabase).(database.Database),
 		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("voicelog"),
 		st: container.Get(static.DiState).(*dgrs.State),
+		tp: container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -42,7 +45,7 @@ func (l *ListenerVoiceUpdate) sendVLCMessage(s *discordgo.Session, channelID, us
 			Name:    user.Username + "#" + user.Discriminator,
 			IconURL: user.AvatarURL("16x16"),
 		},
-		Timestamp: time.Now().Format(time.RFC3339),
+		Timestamp: l.tp.Now().Format(time.RFC3339),
 	})
 }
 

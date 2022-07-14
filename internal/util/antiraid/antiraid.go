@@ -1,15 +1,14 @@
 package antiraid
 
 import (
-	"time"
-
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 )
 
-func FlushExpired(db database.Database, gl guildlog.Logger) func() {
+func FlushExpired(db database.Database, gl guildlog.Logger, tp timeprovider.Provider) func() {
 	gl = gl.Section("antiraid")
 	return func() {
 		list, err := db.GetAntiraidJoinList("")
@@ -18,7 +17,7 @@ func FlushExpired(db database.Database, gl guildlog.Logger) func() {
 			return
 		}
 
-		now := time.Now()
+		now := tp.Now()
 		var clearedGuilds []string
 		for _, e := range list {
 			if stringutil.ContainsAny(e.GuildID, clearedGuilds) {

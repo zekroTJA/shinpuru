@@ -29,7 +29,7 @@ func (l *ListenerVerifications) HandlerMemberAdd(s *discordgo.Session, e *discor
 		return
 	}
 
-	err := l.vs.EnqueueVerification(e.GuildID, e.User.ID)
+	err := l.vs.EnqueueVerification(*e.Member)
 	if err != nil {
 		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed enqueueing user to verification queue")
 		l.gl.Errorf(e.GuildID, "Failed enqueueing user to verification queue: %s", err.Error())

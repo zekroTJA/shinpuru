@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/scheduler"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -22,6 +23,7 @@ type ListenerReady struct {
 	gl    guildlog.Logger
 	sched scheduler.Provider
 	st    *dgrs.State
+	tp    timeprovider.Provider
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
@@ -30,6 +32,7 @@ func NewListenerReady(container di.Container) *ListenerReady {
 		gl:    container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
 		sched: container.Get(static.DiScheduler).(scheduler.Provider),
 		st:    container.Get(static.DiState).(*dgrs.State),
+		tp:    container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -59,7 +62,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 	} else {
 		vote.VotesRunning = votes
 		_, err = l.sched.Schedule("*/10 * * * * *", func() {
-			now := time.Now()
+			now := l.tp.Now()
 			for _, v := range vote.VotesRunning {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
 					v.Close(s, vote.VoteStateExpired)

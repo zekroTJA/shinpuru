@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -14,11 +13,13 @@ import (
 type TokenController struct {
 	db    database.Database
 	apith auth.APITokenHandler
+	tp    timeprovider.Provider
 }
 
 func (c *TokenController) Setup(container di.Container, router fiber.Router) {
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.apith = container.Get(static.DiAuthAPITokenHandler).(auth.APITokenHandler)
+	c.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	router.Get("", c.getToken)
 	router.Post("", c.postToken)
@@ -71,7 +72,7 @@ func (c *TokenController) postToken(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(&models.APITokenResponse{
-		Created: time.Now(),
+		Created: c.tp.Now(),
 		Expires: expires,
 		Token:   token,
 	})

@@ -30,4 +30,5 @@ const (
 	DiState                   = "dgstate"
 	DiVerification            = "verification"
 	DiBirthday                = "birthday"
+	DiTimeProvider            = "timeprovider"
 )

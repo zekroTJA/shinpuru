@@ -42,11 +42,11 @@ func (_m *Database) AddBackup(guildID string, fileID string) error {
 }
 
 // AddGuildLogEntry provides a mock function with given fields: entry
-func (_m *Database) AddGuildLogEntry(entry *models.GuildLogEntry) error {
+func (_m *Database) AddGuildLogEntry(entry models.GuildLogEntry) error {
 	ret := _m.Called(entry)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.GuildLogEntry) error); ok {
+	if rf, ok := ret.Get(0).(func(models.GuildLogEntry) error); ok {
 		r0 = rf(entry)
 	} else {
 		r0 = ret.Error(0)
@@ -70,11 +70,11 @@ func (_m *Database) AddKarmaBlockList(guildID string, userID string) error {
 }
 
 // AddOrUpdateKarmaRule provides a mock function with given fields: rule
-func (_m *Database) AddOrUpdateKarmaRule(rule *models.KarmaRule) error {
+func (_m *Database) AddOrUpdateKarmaRule(rule models.KarmaRule) error {
 	ret := _m.Called(rule)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.KarmaRule) error); ok {
+	if rf, ok := ret.Get(0).(func(models.KarmaRule) error); ok {
 		r0 = rf(rule)
 	} else {
 		r0 = ret.Error(0)
@@ -84,11 +84,11 @@ func (_m *Database) AddOrUpdateKarmaRule(rule *models.KarmaRule) error {
 }
 
 // AddReport provides a mock function with given fields: rep
-func (_m *Database) AddReport(rep *models.Report) error {
+func (_m *Database) AddReport(rep models.Report) error {
 	ret := _m.Called(rep)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Report) error); ok {
+	if rf, ok := ret.Get(0).(func(models.Report) error); ok {
 		r0 = rf(rep)
 	} else {
 		r0 = ret.Error(0)
@@ -98,11 +98,11 @@ func (_m *Database) AddReport(rep *models.Report) error {
 }
 
 // AddTag provides a mock function with given fields: _a0
-func (_m *Database) AddTag(_a0 *tag.Tag) error {
+func (_m *Database) AddTag(_a0 tag.Tag) error {
 	ret := _m.Called(_a0)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*tag.Tag) error); ok {
+	if rf, ok := ret.Get(0).(func(tag.Tag) error); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Error(0)
@@ -126,11 +126,11 @@ func (_m *Database) AddToAntiraidJoinList(guildID string, userID string, userTag
 }
 
 // AddUnbanRequest provides a mock function with given fields: request
-func (_m *Database) AddUnbanRequest(request *models.UnbanRequest) error {
+func (_m *Database) AddUnbanRequest(request models.UnbanRequest) error {
 	ret := _m.Called(request)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.UnbanRequest) error); ok {
+	if rf, ok := ret.Get(0).(func(models.UnbanRequest) error); ok {
 		r0 = rf(request)
 	} else {
 		r0 = ret.Error(0)
@@ -140,11 +140,11 @@ func (_m *Database) AddUnbanRequest(request *models.UnbanRequest) error {
 }
 
 // AddUpdateVote provides a mock function with given fields: votes
-func (_m *Database) AddUpdateVote(votes *vote.Vote) error {
+func (_m *Database) AddUpdateVote(votes vote.Vote) error {
 	ret := _m.Called(votes)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*vote.Vote) error); ok {
+	if rf, ok := ret.Get(0).(func(vote.Vote) error); ok {
 		r0 = rf(votes)
 	} else {
 		r0 = ret.Error(0)
@@ -154,11 +154,11 @@ func (_m *Database) AddUpdateVote(votes *vote.Vote) error {
 }
 
 // AddVerificationQueue provides a mock function with given fields: e
-func (_m *Database) AddVerificationQueue(e *models.VerificationQueueEntry) error {
+func (_m *Database) AddVerificationQueue(e models.VerificationQueueEntry) error {
 	ret := _m.Called(e)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.VerificationQueueEntry) error); ok {
+	if rf, ok := ret.Get(0).(func(models.VerificationQueueEntry) error); ok {
 		r0 = rf(e)
 	} else {
 		r0 = ret.Error(0)
@@ -371,11 +371,11 @@ func (_m *Database) DeleteVote(voteID string) error {
 }
 
 // EditTag provides a mock function with given fields: _a0
-func (_m *Database) EditTag(_a0 *tag.Tag) error {
+func (_m *Database) EditTag(_a0 tag.Tag) error {
 	ret := _m.Called(_a0)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*tag.Tag) error); ok {
+	if rf, ok := ret.Get(0).(func(tag.Tag) error); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Error(0)
@@ -470,16 +470,14 @@ func (_m *Database) FlushVerificationQueue(guildID string) error {
 }
 
 // GetAPIToken provides a mock function with given fields: userID
-func (_m *Database) GetAPIToken(userID string) (*models.APITokenEntry, error) {
+func (_m *Database) GetAPIToken(userID string) (models.APITokenEntry, error) {
 	ret := _m.Called(userID)
 
-	var r0 *models.APITokenEntry
-	if rf, ok := ret.Get(0).(func(string) *models.APITokenEntry); ok {
+	var r0 models.APITokenEntry
+	if rf, ok := ret.Get(0).(func(string) models.APITokenEntry); ok {
 		r0 = rf(userID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.APITokenEntry)
-		}
+		r0 = ret.Get(0).(models.APITokenEntry)
 	}
 
 	var r1 error
@@ -493,15 +491,15 @@ func (_m *Database) GetAPIToken(userID string) (*models.APITokenEntry, error) {
 }
 
 // GetAllTwitchNotifies provides a mock function with given fields: twitchUserID
-func (_m *Database) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
+func (_m *Database) GetAllTwitchNotifies(twitchUserID string) ([]twitchnotify.DBEntry, error) {
 	ret := _m.Called(twitchUserID)
 
-	var r0 []*twitchnotify.DBEntry
-	if rf, ok := ret.Get(0).(func(string) []*twitchnotify.DBEntry); ok {
+	var r0 []twitchnotify.DBEntry
+	if rf, ok := ret.Get(0).(func(string) []twitchnotify.DBEntry); ok {
 		r0 = rf(twitchUserID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*twitchnotify.DBEntry)
+			r0 = ret.Get(0).([]twitchnotify.DBEntry)
 		}
 	}
 
@@ -537,15 +535,15 @@ func (_m *Database) GetAntiraidBurst(guildID string) (int, error) {
 }
 
 // GetAntiraidJoinList provides a mock function with given fields: guildID
-func (_m *Database) GetAntiraidJoinList(guildID string) ([]*models.JoinLogEntry, error) {
+func (_m *Database) GetAntiraidJoinList(guildID string) ([]models.JoinLogEntry, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*models.JoinLogEntry
-	if rf, ok := ret.Get(0).(func(string) []*models.JoinLogEntry); ok {
+	var r0 []models.JoinLogEntry
+	if rf, ok := ret.Get(0).(func(string) []models.JoinLogEntry); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.JoinLogEntry)
+			r0 = ret.Get(0).([]models.JoinLogEntry)
 		}
 	}
 
@@ -623,15 +621,15 @@ func (_m *Database) GetAntiraidVerification(guildID string) (bool, error) {
 }
 
 // GetBackups provides a mock function with given fields: guildID
-func (_m *Database) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
+func (_m *Database) GetBackups(guildID string) ([]backupmodels.Entry, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*backupmodels.Entry
-	if rf, ok := ret.Get(0).(func(string) []*backupmodels.Entry); ok {
+	var r0 []backupmodels.Entry
+	if rf, ok := ret.Get(0).(func(string) []backupmodels.Entry); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*backupmodels.Entry)
+			r0 = ret.Get(0).([]backupmodels.Entry)
 		}
 	}
 
@@ -646,15 +644,15 @@ func (_m *Database) GetBackups(guildID string) ([]*backupmodels.Entry, error) {
 }
 
 // GetBirthdays provides a mock function with given fields: guildID
-func (_m *Database) GetBirthdays(guildID string) ([]*models.Birthday, error) {
+func (_m *Database) GetBirthdays(guildID string) ([]models.Birthday, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*models.Birthday
-	if rf, ok := ret.Get(0).(func(string) []*models.Birthday); ok {
+	var r0 []models.Birthday
+	if rf, ok := ret.Get(0).(func(string) []models.Birthday); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.Birthday)
+			r0 = ret.Get(0).([]models.Birthday)
 		}
 	}
 
@@ -669,15 +667,15 @@ func (_m *Database) GetBirthdays(guildID string) ([]*models.Birthday, error) {
 }
 
 // GetExpiredReports provides a mock function with given fields:
-func (_m *Database) GetExpiredReports() ([]*models.Report, error) {
+func (_m *Database) GetExpiredReports() ([]models.Report, error) {
 	ret := _m.Called()
 
-	var r0 []*models.Report
-	if rf, ok := ret.Get(0).(func() []*models.Report); ok {
+	var r0 []models.Report
+	if rf, ok := ret.Get(0).(func() []models.Report); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.Report)
+			r0 = ret.Get(0).([]models.Report)
 		}
 	}
 
@@ -692,16 +690,14 @@ func (_m *Database) GetExpiredReports() ([]*models.Report, error) {
 }
 
 // GetGuildAPI provides a mock function with given fields: guildID
-func (_m *Database) GetGuildAPI(guildID string) (*models.GuildAPISettings, error) {
+func (_m *Database) GetGuildAPI(guildID string) (models.GuildAPISettings, error) {
 	ret := _m.Called(guildID)
 
-	var r0 *models.GuildAPISettings
-	if rf, ok := ret.Get(0).(func(string) *models.GuildAPISettings); ok {
+	var r0 models.GuildAPISettings
+	if rf, ok := ret.Get(0).(func(string) models.GuildAPISettings); ok {
 		r0 = rf(guildID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.GuildAPISettings)
-		}
+		r0 = ret.Get(0).(models.GuildAPISettings)
 	}
 
 	var r1 error
@@ -985,15 +981,15 @@ func (_m *Database) GetGuildLogDisable(guildID string) (bool, error) {
 }
 
 // GetGuildLogEntries provides a mock function with given fields: guildID, offset, limit, severity, ascending
-func (_m *Database) GetGuildLogEntries(guildID string, offset int, limit int, severity models.GuildLogSeverity, ascending bool) ([]*models.GuildLogEntry, error) {
+func (_m *Database) GetGuildLogEntries(guildID string, offset int, limit int, severity models.GuildLogSeverity, ascending bool) ([]models.GuildLogEntry, error) {
 	ret := _m.Called(guildID, offset, limit, severity, ascending)
 
-	var r0 []*models.GuildLogEntry
-	if rf, ok := ret.Get(0).(func(string, int, int, models.GuildLogSeverity, bool) []*models.GuildLogEntry); ok {
+	var r0 []models.GuildLogEntry
+	if rf, ok := ret.Get(0).(func(string, int, int, models.GuildLogSeverity, bool) []models.GuildLogEntry); ok {
 		r0 = rf(guildID, offset, limit, severity, ascending)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.GuildLogEntry)
+			r0 = ret.Get(0).([]models.GuildLogEntry)
 		}
 	}
 
@@ -1115,15 +1111,15 @@ func (_m *Database) GetGuildPrefix(guildID string) (string, error) {
 }
 
 // GetGuildTags provides a mock function with given fields: guildID
-func (_m *Database) GetGuildTags(guildID string) ([]*tag.Tag, error) {
+func (_m *Database) GetGuildTags(guildID string) ([]tag.Tag, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*tag.Tag
-	if rf, ok := ret.Get(0).(func(string) []*tag.Tag); ok {
+	var r0 []tag.Tag
+	if rf, ok := ret.Get(0).(func(string) []tag.Tag); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*tag.Tag)
+			r0 = ret.Get(0).([]tag.Tag)
 		}
 	}
 
@@ -1138,15 +1134,15 @@ func (_m *Database) GetGuildTags(guildID string) ([]*tag.Tag, error) {
 }
 
 // GetGuildUnbanRequests provides a mock function with given fields: guildID
-func (_m *Database) GetGuildUnbanRequests(guildID string) ([]*models.UnbanRequest, error) {
+func (_m *Database) GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*models.UnbanRequest
-	if rf, ok := ret.Get(0).(func(string) []*models.UnbanRequest); ok {
+	var r0 []models.UnbanRequest
+	if rf, ok := ret.Get(0).(func(string) []models.UnbanRequest); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.UnbanRequest)
+			r0 = ret.Get(0).([]models.UnbanRequest)
 		}
 	}
 
@@ -1161,15 +1157,15 @@ func (_m *Database) GetGuildUnbanRequests(guildID string) ([]*models.UnbanReques
 }
 
 // GetGuildUserUnbanRequests provides a mock function with given fields: userID, guildID
-func (_m *Database) GetGuildUserUnbanRequests(userID string, guildID string) ([]*models.UnbanRequest, error) {
+func (_m *Database) GetGuildUserUnbanRequests(userID string, guildID string) ([]models.UnbanRequest, error) {
 	ret := _m.Called(userID, guildID)
 
-	var r0 []*models.UnbanRequest
-	if rf, ok := ret.Get(0).(func(string, string) []*models.UnbanRequest); ok {
+	var r0 []models.UnbanRequest
+	if rf, ok := ret.Get(0).(func(string, string) []models.UnbanRequest); ok {
 		r0 = rf(userID, guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.UnbanRequest)
+			r0 = ret.Get(0).([]models.UnbanRequest)
 		}
 	}
 
@@ -1344,15 +1340,15 @@ func (_m *Database) GetKarmaEmotes(guildID string) (string, string, error) {
 }
 
 // GetKarmaGuild provides a mock function with given fields: guildID, limit
-func (_m *Database) GetKarmaGuild(guildID string, limit int) ([]*models.GuildKarma, error) {
+func (_m *Database) GetKarmaGuild(guildID string, limit int) ([]models.GuildKarma, error) {
 	ret := _m.Called(guildID, limit)
 
-	var r0 []*models.GuildKarma
-	if rf, ok := ret.Get(0).(func(string, int) []*models.GuildKarma); ok {
+	var r0 []models.GuildKarma
+	if rf, ok := ret.Get(0).(func(string, int) []models.GuildKarma); ok {
 		r0 = rf(guildID, limit)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.GuildKarma)
+			r0 = ret.Get(0).([]models.GuildKarma)
 		}
 	}
 
@@ -1388,15 +1384,15 @@ func (_m *Database) GetKarmaPenalty(guildID string) (bool, error) {
 }
 
 // GetKarmaRules provides a mock function with given fields: guildID
-func (_m *Database) GetKarmaRules(guildID string) ([]*models.KarmaRule, error) {
+func (_m *Database) GetKarmaRules(guildID string) ([]models.KarmaRule, error) {
 	ret := _m.Called(guildID)
 
-	var r0 []*models.KarmaRule
-	if rf, ok := ret.Get(0).(func(string) []*models.KarmaRule); ok {
+	var r0 []models.KarmaRule
+	if rf, ok := ret.Get(0).(func(string) []models.KarmaRule); ok {
 		r0 = rf(guildID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.KarmaRule)
+			r0 = ret.Get(0).([]models.KarmaRule)
 		}
 	}
 
@@ -1532,16 +1528,14 @@ func (_m *Database) GetLockChannels(guildID string) ([]string, error) {
 }
 
 // GetReport provides a mock function with given fields: id
-func (_m *Database) GetReport(id snowflake.ID) (*models.Report, error) {
+func (_m *Database) GetReport(id snowflake.ID) (models.Report, error) {
 	ret := _m.Called(id)
 
-	var r0 *models.Report
-	if rf, ok := ret.Get(0).(func(snowflake.ID) *models.Report); ok {
+	var r0 models.Report
+	if rf, ok := ret.Get(0).(func(snowflake.ID) models.Report); ok {
 		r0 = rf(id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Report)
-		}
+		r0 = ret.Get(0).(models.Report)
 	}
 
 	var r1 error
@@ -1555,15 +1549,15 @@ func (_m *Database) GetReport(id snowflake.ID) (*models.Report, error) {
 }
 
 // GetReportsFiltered provides a mock function with given fields: guildID, memberID, repType, offset, limit
-func (_m *Database) GetReportsFiltered(guildID string, memberID string, repType int, offset int, limit int) ([]*models.Report, error) {
+func (_m *Database) GetReportsFiltered(guildID string, memberID string, repType int, offset int, limit int) ([]models.Report, error) {
 	ret := _m.Called(guildID, memberID, repType, offset, limit)
 
-	var r0 []*models.Report
-	if rf, ok := ret.Get(0).(func(string, string, int, int, int) []*models.Report); ok {
+	var r0 []models.Report
+	if rf, ok := ret.Get(0).(func(string, string, int, int, int) []models.Report); ok {
 		r0 = rf(guildID, memberID, repType, offset, limit)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.Report)
+			r0 = ret.Get(0).([]models.Report)
 		}
 	}
 
@@ -1599,15 +1593,15 @@ func (_m *Database) GetReportsFilteredCount(guildID string, memberID string, rep
 }
 
 // GetReportsGuild provides a mock function with given fields: guildID, offset, limit
-func (_m *Database) GetReportsGuild(guildID string, offset int, limit int) ([]*models.Report, error) {
+func (_m *Database) GetReportsGuild(guildID string, offset int, limit int) ([]models.Report, error) {
 	ret := _m.Called(guildID, offset, limit)
 
-	var r0 []*models.Report
-	if rf, ok := ret.Get(0).(func(string, int, int) []*models.Report); ok {
+	var r0 []models.Report
+	if rf, ok := ret.Get(0).(func(string, int, int) []models.Report); ok {
 		r0 = rf(guildID, offset, limit)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.Report)
+			r0 = ret.Get(0).([]models.Report)
 		}
 	}
 
@@ -1664,16 +1658,14 @@ func (_m *Database) GetSetting(setting string) (string, error) {
 }
 
 // GetStarboardConfig provides a mock function with given fields: guildID
-func (_m *Database) GetStarboardConfig(guildID string) (*models.StarboardConfig, error) {
+func (_m *Database) GetStarboardConfig(guildID string) (models.StarboardConfig, error) {
 	ret := _m.Called(guildID)
 
-	var r0 *models.StarboardConfig
-	if rf, ok := ret.Get(0).(func(string) *models.StarboardConfig); ok {
+	var r0 models.StarboardConfig
+	if rf, ok := ret.Get(0).(func(string) models.StarboardConfig); ok {
 		r0 = rf(guildID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.StarboardConfig)
-		}
+		r0 = ret.Get(0).(models.StarboardConfig)
 	}
 
 	var r1 error
@@ -1687,15 +1679,15 @@ func (_m *Database) GetStarboardConfig(guildID string) (*models.StarboardConfig,
 }
 
 // GetStarboardEntries provides a mock function with given fields: guildID, sortBy, limit, offset
-func (_m *Database) GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit int, offset int) ([]*models.StarboardEntry, error) {
+func (_m *Database) GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit int, offset int) ([]models.StarboardEntry, error) {
 	ret := _m.Called(guildID, sortBy, limit, offset)
 
-	var r0 []*models.StarboardEntry
-	if rf, ok := ret.Get(0).(func(string, models.StarboardSortBy, int, int) []*models.StarboardEntry); ok {
+	var r0 []models.StarboardEntry
+	if rf, ok := ret.Get(0).(func(string, models.StarboardSortBy, int, int) []models.StarboardEntry); ok {
 		r0 = rf(guildID, sortBy, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.StarboardEntry)
+			r0 = ret.Get(0).([]models.StarboardEntry)
 		}
 	}
 
@@ -1710,16 +1702,14 @@ func (_m *Database) GetStarboardEntries(guildID string, sortBy models.StarboardS
 }
 
 // GetStarboardEntry provides a mock function with given fields: messageID
-func (_m *Database) GetStarboardEntry(messageID string) (*models.StarboardEntry, error) {
+func (_m *Database) GetStarboardEntry(messageID string) (models.StarboardEntry, error) {
 	ret := _m.Called(messageID)
 
-	var r0 *models.StarboardEntry
-	if rf, ok := ret.Get(0).(func(string) *models.StarboardEntry); ok {
+	var r0 models.StarboardEntry
+	if rf, ok := ret.Get(0).(func(string) models.StarboardEntry); ok {
 		r0 = rf(messageID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.StarboardEntry)
-		}
+		r0 = ret.Get(0).(models.StarboardEntry)
 	}
 
 	var r1 error
@@ -1733,16 +1723,14 @@ func (_m *Database) GetStarboardEntry(messageID string) (*models.StarboardEntry,
 }
 
 // GetTagByID provides a mock function with given fields: id
-func (_m *Database) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
+func (_m *Database) GetTagByID(id snowflake.ID) (tag.Tag, error) {
 	ret := _m.Called(id)
 
-	var r0 *tag.Tag
-	if rf, ok := ret.Get(0).(func(snowflake.ID) *tag.Tag); ok {
+	var r0 tag.Tag
+	if rf, ok := ret.Get(0).(func(snowflake.ID) tag.Tag); ok {
 		r0 = rf(id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*tag.Tag)
-		}
+		r0 = ret.Get(0).(tag.Tag)
 	}
 
 	var r1 error
@@ -1756,16 +1744,14 @@ func (_m *Database) GetTagByID(id snowflake.ID) (*tag.Tag, error) {
 }
 
 // GetTagByIdent provides a mock function with given fields: ident, guildID
-func (_m *Database) GetTagByIdent(ident string, guildID string) (*tag.Tag, error) {
+func (_m *Database) GetTagByIdent(ident string, guildID string) (tag.Tag, error) {
 	ret := _m.Called(ident, guildID)
 
-	var r0 *tag.Tag
-	if rf, ok := ret.Get(0).(func(string, string) *tag.Tag); ok {
+	var r0 tag.Tag
+	if rf, ok := ret.Get(0).(func(string, string) tag.Tag); ok {
 		r0 = rf(ident, guildID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*tag.Tag)
-		}
+		r0 = ret.Get(0).(tag.Tag)
 	}
 
 	var r1 error
@@ -1779,16 +1765,14 @@ func (_m *Database) GetTagByIdent(ident string, guildID string) (*tag.Tag, error
 }
 
 // GetTwitchNotify provides a mock function with given fields: twitchUserID, guildID
-func (_m *Database) GetTwitchNotify(twitchUserID string, guildID string) (*twitchnotify.DBEntry, error) {
+func (_m *Database) GetTwitchNotify(twitchUserID string, guildID string) (twitchnotify.DBEntry, error) {
 	ret := _m.Called(twitchUserID, guildID)
 
-	var r0 *twitchnotify.DBEntry
-	if rf, ok := ret.Get(0).(func(string, string) *twitchnotify.DBEntry); ok {
+	var r0 twitchnotify.DBEntry
+	if rf, ok := ret.Get(0).(func(string, string) twitchnotify.DBEntry); ok {
 		r0 = rf(twitchUserID, guildID)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*twitchnotify.DBEntry)
-		}
+		r0 = ret.Get(0).(twitchnotify.DBEntry)
 	}
 
 	var r1 error
@@ -1802,16 +1786,14 @@ func (_m *Database) GetTwitchNotify(twitchUserID string, guildID string) (*twitc
 }
 
 // GetUnbanRequest provides a mock function with given fields: id
-func (_m *Database) GetUnbanRequest(id string) (*models.UnbanRequest, error) {
+func (_m *Database) GetUnbanRequest(id string) (models.UnbanRequest, error) {
 	ret := _m.Called(id)
 
-	var r0 *models.UnbanRequest
-	if rf, ok := ret.Get(0).(func(string) *models.UnbanRequest); ok {
+	var r0 models.UnbanRequest
+	if rf, ok := ret.Get(0).(func(string) models.UnbanRequest); ok {
 		r0 = rf(id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.UnbanRequest)
-		}
+		r0 = ret.Get(0).(models.UnbanRequest)
 	}
 
 	var r1 error
@@ -1916,15 +1898,15 @@ func (_m *Database) GetUserVerified(userID string) (bool, error) {
 }
 
 // GetVerificationQueue provides a mock function with given fields: guildID, userID
-func (_m *Database) GetVerificationQueue(guildID string, userID string) ([]*models.VerificationQueueEntry, error) {
+func (_m *Database) GetVerificationQueue(guildID string, userID string) ([]models.VerificationQueueEntry, error) {
 	ret := _m.Called(guildID, userID)
 
-	var r0 []*models.VerificationQueueEntry
-	if rf, ok := ret.Get(0).(func(string, string) []*models.VerificationQueueEntry); ok {
+	var r0 []models.VerificationQueueEntry
+	if rf, ok := ret.Get(0).(func(string, string) []models.VerificationQueueEntry); ok {
 		r0 = rf(guildID, userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*models.VerificationQueueEntry)
+			r0 = ret.Get(0).([]models.VerificationQueueEntry)
 		}
 	}
 
@@ -1939,15 +1921,15 @@ func (_m *Database) GetVerificationQueue(guildID string, userID string) ([]*mode
 }
 
 // GetVotes provides a mock function with given fields:
-func (_m *Database) GetVotes() (map[string]*vote.Vote, error) {
+func (_m *Database) GetVotes() (map[string]vote.Vote, error) {
 	ret := _m.Called()
 
-	var r0 map[string]*vote.Vote
-	if rf, ok := ret.Get(0).(func() map[string]*vote.Vote); ok {
+	var r0 map[string]vote.Vote
+	if rf, ok := ret.Get(0).(func() map[string]vote.Vote); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]*vote.Vote)
+			r0 = ret.Get(0).(map[string]vote.Vote)
 		}
 	}
 
@@ -2109,11 +2091,11 @@ func (_m *Database) RevokeUserRefreshToken(userID string) error {
 }
 
 // SetAPIToken provides a mock function with given fields: token
-func (_m *Database) SetAPIToken(token *models.APITokenEntry) error {
+func (_m *Database) SetAPIToken(token models.APITokenEntry) error {
 	ret := _m.Called(token)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.APITokenEntry) error); ok {
+	if rf, ok := ret.Get(0).(func(models.APITokenEntry) error); ok {
 		r0 = rf(token)
 	} else {
 		r0 = ret.Error(0)
@@ -2179,11 +2161,11 @@ func (_m *Database) SetAntiraidVerification(guildID string, state bool) error {
 }
 
 // SetBirthday provides a mock function with given fields: m
-func (_m *Database) SetBirthday(m *models.Birthday) error {
+func (_m *Database) SetBirthday(m models.Birthday) error {
 	ret := _m.Called(m)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Birthday) error); ok {
+	if rf, ok := ret.Get(0).(func(models.Birthday) error); ok {
 		r0 = rf(m)
 	} else {
 		r0 = ret.Error(0)
@@ -2193,11 +2175,11 @@ func (_m *Database) SetBirthday(m *models.Birthday) error {
 }
 
 // SetGuildAPI provides a mock function with given fields: guildID, settings
-func (_m *Database) SetGuildAPI(guildID string, settings *models.GuildAPISettings) error {
+func (_m *Database) SetGuildAPI(guildID string, settings models.GuildAPISettings) error {
 	ret := _m.Called(guildID, settings)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, *models.GuildAPISettings) error); ok {
+	if rf, ok := ret.Get(0).(func(string, models.GuildAPISettings) error); ok {
 		r0 = rf(guildID, settings)
 	} else {
 		r0 = ret.Error(0)
@@ -2571,11 +2553,11 @@ func (_m *Database) SetSetting(setting string, value string) error {
 }
 
 // SetStarboardConfig provides a mock function with given fields: config
-func (_m *Database) SetStarboardConfig(config *models.StarboardConfig) error {
+func (_m *Database) SetStarboardConfig(config models.StarboardConfig) error {
 	ret := _m.Called(config)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.StarboardConfig) error); ok {
+	if rf, ok := ret.Get(0).(func(models.StarboardConfig) error); ok {
 		r0 = rf(config)
 	} else {
 		r0 = ret.Error(0)
@@ -2585,11 +2567,11 @@ func (_m *Database) SetStarboardConfig(config *models.StarboardConfig) error {
 }
 
 // SetStarboardEntry provides a mock function with given fields: e
-func (_m *Database) SetStarboardEntry(e *models.StarboardEntry) error {
+func (_m *Database) SetStarboardEntry(e models.StarboardEntry) error {
 	ret := _m.Called(e)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.StarboardEntry) error); ok {
+	if rf, ok := ret.Get(0).(func(models.StarboardEntry) error); ok {
 		r0 = rf(e)
 	} else {
 		r0 = ret.Error(0)
@@ -2599,11 +2581,11 @@ func (_m *Database) SetStarboardEntry(e *models.StarboardEntry) error {
 }
 
 // SetTwitchNotify provides a mock function with given fields: twitchNotify
-func (_m *Database) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
+func (_m *Database) SetTwitchNotify(twitchNotify twitchnotify.DBEntry) error {
 	ret := _m.Called(twitchNotify)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*twitchnotify.DBEntry) error); ok {
+	if rf, ok := ret.Get(0).(func(twitchnotify.DBEntry) error); ok {
 		r0 = rf(twitchNotify)
 	} else {
 		r0 = ret.Error(0)
@@ -2683,11 +2665,11 @@ func (_m *Database) UpdateKarma(userID string, guildID string, diff int) error {
 }
 
 // UpdateUnbanRequest provides a mock function with given fields: request
-func (_m *Database) UpdateUnbanRequest(request *models.UnbanRequest) error {
+func (_m *Database) UpdateUnbanRequest(request models.UnbanRequest) error {
 	ret := _m.Called(request)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.UnbanRequest) error); ok {
+	if rf, ok := ret.Get(0).(func(models.UnbanRequest) error); ok {
 		r0 = rf(request)
 	} else {
 		r0 = ret.Error(0)

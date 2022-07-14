@@ -3,11 +3,11 @@ package slashcommands
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
@@ -226,7 +226,9 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 		return err
 	}
 
-	now := time.Now()
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
+	now := tp.Now()
 	tg = tag.Tag{
 		Content:   content,
 		Created:   now,

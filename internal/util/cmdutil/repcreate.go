@@ -3,13 +3,13 @@ package cmdutil
 import (
 	"bytes"
 	"fmt"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
@@ -17,7 +17,7 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-func CmdReport(ctx ken.Context, typ models.ReportType) (err error) {
+func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
 	repSvc := ctx.Get(static.DiReport).(*report.ReportService)
 
@@ -61,7 +61,7 @@ func CmdReport(ctx ken.Context, typ models.ReportType) (err error) {
 				fmt.Sprintf("Invalid duration:\n```\n%s```", err.Error()), "").Error
 			return err
 		}
-		expT := time.Now().Add(exp)
+		expT := tp.Now().Add(exp)
 		rep.Timeout = &expT
 	}
 

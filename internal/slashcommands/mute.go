@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/timeutil"
@@ -104,6 +105,8 @@ func (c *Mute) Run(ctx *ken.Ctx) (err error) {
 func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 	victim := ctx.Options().GetByName("user").UserValue(ctx.Ctx)
 
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
 	var reason string
 	if reasonV, ok := ctx.Options().GetByNameOptional("reason"); ok {
 		reason = reasonV.StringValue()
@@ -179,7 +182,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 		return ctx.FollowUpError(
 			fmt.Sprintf("Invalid expire value:\n```\n%s```", err.Error()), "").Error
 	}
-	expireTime := time.Now().Add(expire)
+	expireTime := tp.Now().Add(expire)
 	rep.Timeout = &expireTime
 
 	rep, err = repSvc.PushMute(rep)

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strings"
-	"time"
 
 	_ "crypto/sha512"
 
@@ -18,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
@@ -39,6 +39,7 @@ type GuildsController struct {
 	state   *dgrs.State
 	vs      verification.Provider
 	cef     codeexec.Factory
+	tp      timeprovider.Provider
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -51,6 +52,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.state = container.Get(static.DiState).(*dgrs.State)
 	c.vs = container.Get(static.DiVerification).(verification.Provider)
 	c.cef = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
+	c.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -643,7 +645,7 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	}
 	request.ProcessedBy = uid
 	request.Status = rUpdate.Status
-	request.Processed = time.Now()
+	request.Processed = c.tp.Now()
 	request.ProcessedMessage = rUpdate.ProcessedMessage
 
 	if err = c.db.UpdateUnbanRequest(request); err != nil {

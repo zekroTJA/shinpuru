@@ -2,12 +2,12 @@ package guildlog
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
@@ -15,11 +15,13 @@ import (
 type loggerImpl struct {
 	db     database.Database
 	module string
+	tp     timeprovider.Provider
 }
 
 func New(container di.Container) Logger {
 	return &loggerImpl{
 		db: container.Get(static.DiDatabase).(database.Database),
+		tp: container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -59,7 +61,7 @@ func (l *loggerImpl) log(severity models.GuildLogSeverity, guildID, message stri
 		Module:    module,
 		Message:   message,
 		Severity:  severity,
-		Timestamp: time.Now(),
+		Timestamp: l.tp.Now(),
 	})
 
 	return

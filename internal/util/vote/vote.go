@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 
@@ -264,8 +265,8 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) (err error) {
 }
 
 // SetExpire sets the expiration for a vote.
-func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration) error {
-	v.Expires = time.Now().Add(d)
+func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration, tp timeprovider.Provider) error {
+	v.Expires = tp.Now().Add(d)
 
 	emb, err := v.AsEmbed(s)
 	if err != nil {

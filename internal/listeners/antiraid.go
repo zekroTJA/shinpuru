@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -34,6 +35,7 @@ type ListenerAntiraid struct {
 	gl guildlog.Logger
 	st dgrs.IState
 	vs verification.Provider
+	tp timeprovider.Provider
 
 	mtx         sync.Mutex
 	guildStates map[string]*guildState
@@ -48,6 +50,7 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		gl:          container.Get(static.DiGuildLog).(guildlog.Logger).Section("antiraid"),
 		st:          container.Get(static.DiState).(dgrs.IState),
 		vs:          container.Get(static.DiVerification).(verification.Provider),
+		tp:          container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -151,7 +154,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 		return
 	}
 
-	l.triggers.Set(e.GuildID, time.Now(), antiraid.TriggerLifetime, func(v interface{}) {
+	l.triggers.Set(e.GuildID, l.tp.Now(), antiraid.TriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
 			l.gl.Errorf(e.GuildID, "Failed flushing joinlist: %s", err.Error())

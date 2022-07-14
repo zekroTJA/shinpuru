@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
@@ -28,6 +29,7 @@ type ReportService struct {
 	db  database.Database
 	cfg config.Provider
 	st  *dgrs.State
+	tp  timeprovider.Provider
 }
 
 type ReportError struct {
@@ -41,6 +43,7 @@ func New(container di.Container) *ReportService {
 		db:  container.Get(static.DiDatabase).(database.Database),
 		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(*dgrs.State),
+		tp:  container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -117,7 +120,7 @@ func (r *ReportService) PushBan(rep models.Report) (models.Report, error) {
 	const typ = 1
 	rep.Type = typ
 
-	if err := checkTimeout(rep.Timeout); err != nil {
+	if err := checkTimeout(r.tp.Now(), rep.Timeout); err != nil {
 		return models.Report{}, err
 	}
 
@@ -164,7 +167,7 @@ func (r *ReportService) PushMute(rep models.Report) (models.Report, error) {
 	const typ = 2
 	rep.Type = typ
 
-	if err := checkTimeout(rep.Timeout); err != nil {
+	if err := checkTimeout(r.tp.Now(), rep.Timeout); err != nil {
 		return models.Report{}, err
 	}
 
@@ -374,8 +377,8 @@ func (r *ReportService) revokeReportOnExpiration(rep models.Report) (err error) 
 	return
 }
 
-func checkTimeout(t *time.Time) (err error) {
-	if t != nil && t.Before(time.Now()) {
+func checkTimeout(now time.Time, t *time.Time) (err error) {
+	if t != nil && t.Before(now) {
 		err = errors.New("timeout must be in the future")
 	}
 	return

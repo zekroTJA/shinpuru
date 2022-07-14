@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -81,6 +82,8 @@ func (c *Snowflake) Run(ctx *ken.Ctx) (err error) {
 		return
 	}
 
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
 	sfStr := ctx.Options().GetByName("snowflake").StringValue()
 	sfId, err := snowflake.ParseString(sfStr)
 	if err != nil {
@@ -98,7 +101,7 @@ func (c *Snowflake) Run(ctx *ken.Ctx) (err error) {
 	}
 
 	if typ == -1 {
-		if math.Abs(float64(time.Now().Year()-sfAsDc.Time.Year())) > 10 {
+		if math.Abs(float64(tp.Now().Year()-sfAsDc.Time.Year())) > 10 {
 			typ = snowflakeTypeShinpuru
 		} else {
 			typ = snowflakeTypeDiscord

@@ -9,6 +9,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	_ "github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models" // Import for API documentation
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -21,6 +22,7 @@ type OTAController struct {
 	db           database.Database
 	ota          onetimeauth.OneTimeAuth
 	oauthHandler auth.RequestHandler
+	tp           timeprovider.Provider
 }
 
 func (c *OTAController) Setup(container di.Container, router fiber.Router) {
@@ -29,6 +31,7 @@ func (c *OTAController) Setup(container di.Container, router fiber.Router) {
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.ota = container.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 	c.oauthHandler = container.Get(static.DiOAuthHandler).(auth.RequestHandler)
+	c.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	router.Get("", c.getOta)
 }
@@ -71,7 +74,7 @@ func (c *OTAController) getOta(ctx *fiber.Ctx) error {
 				"\n**Details:**\nIP Address: ||`%s`||\nUser Agent: `%s`\n\n"+
 				"If this was not you, consider disabling OTA [**here**](%s/usersettings).",
 				ipaddr, useragent, c.cfg.Config().WebServer.PublicAddr),
-			Timestamp: time.Now().Format(time.RFC3339),
+			Timestamp: c.tp.Now().Format(time.RFC3339),
 		}
 		c.session.ChannelMessageSendEmbed(ch.ID, emb)
 	}

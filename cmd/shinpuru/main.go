@@ -26,6 +26,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -84,6 +85,14 @@ func main() {
 
 	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
+
+	// Initialize time provider
+	diBuilder.Add(di.Def{
+		Name: static.DiTimeProvider,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return timeprovider.Time{}, nil
+		},
+	})
 
 	// Initialize config
 	diBuilder.Add(di.Def{

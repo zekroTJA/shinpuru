@@ -11,6 +11,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/mocks"
 )
@@ -21,6 +22,7 @@ type antiraidHandlerMock struct {
 	logger  *mocks.Logger
 	state   *mocks.IState
 	vs      *mocks.VerificationProvider
+	tp      timeprovider.Provider
 
 	ct di.Container
 
@@ -35,6 +37,7 @@ func getAntiraidHandlerMock(prep ...func(t antiraidHandlerMock)) antiraidHandler
 	t.logger = &mocks.Logger{}
 	t.state = &mocks.IState{}
 	t.vs = &mocks.VerificationProvider{}
+	t.tp = timeprovider.Time{}
 
 	if len(prep) != 0 {
 		prep[0](t)
@@ -93,6 +96,10 @@ func getAntiraidHandlerMock(prep ...func(t antiraidHandlerMock)) antiraidHandler
 	ct.Add(di.Def{
 		Name:  static.DiVerification,
 		Build: func(ctn di.Container) (interface{}, error) { return t.vs, nil },
+	})
+	ct.Add(di.Def{
+		Name:  static.DiTimeProvider,
+		Build: func(ctn di.Container) (interface{}, error) { return t.tp, nil },
 	})
 
 	t.ct = ct.Build()

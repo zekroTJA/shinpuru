@@ -1,11 +1,10 @@
 package auth
 
 import (
-	"time"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -18,6 +17,7 @@ type RefreshTokenRequestHandler struct {
 	session             *discordgo.Session
 	accessTokenHandler  AccessTokenHandler
 	refreshTokenHandler RefreshTokenHandler
+	tp                  timeprovider.Provider
 }
 
 func NewRefreshTokenRequestHandler(container di.Container) *RefreshTokenRequestHandler {
@@ -25,6 +25,7 @@ func NewRefreshTokenRequestHandler(container di.Container) *RefreshTokenRequestH
 		session:             container.Get(static.DiDiscordSession).(*discordgo.Session),
 		accessTokenHandler:  container.Get(static.DiAuthAccessTokenHandler).(AccessTokenHandler),
 		refreshTokenHandler: container.Get(static.DiAuthRefreshTokenHandler).(RefreshTokenHandler),
+		tp:                  container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -44,7 +45,7 @@ func (h *RefreshTokenRequestHandler) BindRefreshToken(ctx *fiber.Ctx, uid string
 		return err
 	}
 
-	expires := time.Now().Add(static.AuthSessionExpiration)
+	expires := h.tp.Now().Add(static.AuthSessionExpiration)
 	ctx.Cookie(&fiber.Cookie{
 		Name:     static.RefreshTokenCookieName,
 		Value:    refreshToken,

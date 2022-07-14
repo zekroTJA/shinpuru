@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/scheduler"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/antiraid"
@@ -32,6 +33,7 @@ func InitScheduler(container di.Container) scheduler.Provider {
 	bd := container.Get(static.DiBirthday).(*birthday.BirthdayService)
 	s := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	st := container.Get(static.DiState).(dgrs.IState)
+	tp := container.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	shardID, shardTotal := discordutil.GetShardOfSession(s)
 
@@ -111,7 +113,7 @@ func InitScheduler(container di.Container) scheduler.Provider {
 				return ""
 			}
 			return "@every 1h"
-		}, antiraid.FlushExpired(db, gl))
+		}, antiraid.FlushExpired(db, gl, tp))
 
 	schedule(sched, "birthday notifications",
 		func() string {
