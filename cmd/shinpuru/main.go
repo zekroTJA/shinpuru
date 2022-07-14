@@ -17,7 +17,6 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -36,7 +35,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/argp"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
-	"github.com/zekroTJA/shireikan"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -176,14 +174,6 @@ func main() {
 		},
 	})
 
-	// Initialize ghost ping ignore command handler middleware
-	diBuilder.Add(di.Def{
-		Name: static.DiGhostpingIgnoreMiddleware,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return middleware.NewGhostPingIgnoreMiddleware(), nil
-		},
-	})
-
 	// Initialize discord bot session and shutdown routine
 	diBuilder.Add(di.Def{
 		Name: static.DiDiscordSession,
@@ -261,14 +251,6 @@ func main() {
 		Name: static.DiBackupHandler,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return backup.New(ctn), nil
-		},
-	})
-
-	// Initialize legacy command handler
-	diBuilder.Add(di.Def{
-		Name: static.DiLegacyCommandHandler,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitLegacyCommandHandler(ctn), nil
 		},
 	})
 
@@ -403,16 +385,6 @@ func main() {
 	// handlers
 	releaseShard := inits.InitDiscordBotSession(ctn)
 	defer releaseShard()
-
-	// This is currently the really hacky workaround
-	// to bypass the di.Container when trying to get
-	// the Command legacyHandler instance inside a command
-	// context, because the legacyHandler can not resolve
-	// itself on build, so it is bypassed here using
-	// shireikans object map. Maybe I find a better
-	// solution for that at some time.
-	legacyHandler := ctn.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
-	legacyHandler.SetObject(static.DiLegacyCommandHandler, legacyHandler)
 
 	// Get Web WebServer instance to start web
 	// server listener

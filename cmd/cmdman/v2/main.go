@@ -14,7 +14,6 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/inits"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
@@ -92,7 +91,6 @@ func main() {
 	})
 
 	diBuilder.Set(static.DiPermissions, &permissions.Permissions{})
-	diBuilder.Set(static.DiGhostpingIgnoreMiddleware, &middleware.GhostPingIgnoreMiddleware{})
 
 	ctn := diBuilder.Build()
 

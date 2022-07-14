@@ -7,7 +7,6 @@ import (
 
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -27,7 +26,6 @@ type ListenerGhostPing struct {
 	gl              guildlog.Logger
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
-	gpim            *middleware.GhostPingIgnoreMiddleware
 	st              *dgrs.State
 }
 
@@ -35,7 +33,6 @@ func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
 	return &ListenerGhostPing{
 		db:       container.Get(static.DiDatabase).(database.Database),
 		gl:       container.Get(static.DiGuildLog).(guildlog.Logger).Section("ghostping"),
-		gpim:     container.Get(static.DiGhostpingIgnoreMiddleware).(*middleware.GhostPingIgnoreMiddleware),
 		st:       container.Get(static.DiState).(*dgrs.State),
 		msgCache: timedmap.New(gpTick),
 	}
@@ -63,10 +60,6 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 	rx := regexp.MustCompile(`(@here)|(@everyone)`)
 
 	l.msgCache.Set(e.ID, e.Message, gpDelay)
-
-	if l.gpim.ContainsAndRemove(e.ID) {
-		return
-	}
 
 	v := l.msgCache.GetValue(e.ID)
 	if v == nil {
