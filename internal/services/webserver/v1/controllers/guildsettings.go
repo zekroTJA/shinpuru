@@ -648,7 +648,7 @@ func (c *GuildsSettingsController) getGuildSettingsKarmaRules(ctx *fiber.Ctx) er
 func (c *GuildsSettingsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
 
-	rule := new(sharedmodels.KarmaRule)
+	var rule sharedmodels.KarmaRule
 	if err := ctx.BodyParser(rule); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
@@ -701,7 +701,7 @@ func (c *GuildsSettingsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) 
 	guildID := ctx.Params("guildid")
 	id := ctx.Params("id")
 
-	rule := new(sharedmodels.KarmaRule)
+	var rule sharedmodels.KarmaRule
 	if err := ctx.BodyParser(rule); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
@@ -1042,7 +1042,7 @@ func (c *GuildsSettingsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err err
 		state.TokenHash, err = hasher.Hash(state.NewToken)
 	}
 
-	if err = c.db.SetGuildAPI(guildID, &state.GuildAPISettings); err != nil {
+	if err = c.db.SetGuildAPI(guildID, state.GuildAPISettings); err != nil {
 		return
 	}
 

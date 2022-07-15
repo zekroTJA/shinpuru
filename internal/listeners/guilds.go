@@ -7,6 +7,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
@@ -15,6 +16,7 @@ import (
 type ListenerGuilds struct {
 	cfg config.Provider
 	st  *dgrs.State
+	tp  timeprovider.Provider
 
 	lockUntil *time.Time
 }
@@ -23,11 +25,12 @@ func NewListenerGuildAdd(container di.Container) *ListenerGuilds {
 	return &ListenerGuilds{
 		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(*dgrs.State),
+		tp:  container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
 func (l *ListenerGuilds) HandlerReady(s *discordgo.Session, e *discordgo.Ready) {
-	now := time.Now().Add(10 * time.Second)
+	now := l.tp.Now().Add(10 * time.Second)
 	l.lockUntil = &now
 }
 
@@ -37,7 +40,7 @@ func (l *ListenerGuilds) HandlerCreate(s *discordgo.Session, e *discordgo.GuildC
 		return
 	}
 
-	if l.lockUntil == nil || time.Now().Before(*l.lockUntil) {
+	if l.lockUntil == nil || l.tp.Now().Before(*l.lockUntil) {
 		return
 	}
 

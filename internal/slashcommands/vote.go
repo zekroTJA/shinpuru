@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/vote"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -151,6 +152,7 @@ func (c *Vote) Run(ctx *ken.Ctx) (err error) {
 
 func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
+	tp, _ := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	body := ctx.Options().GetByName("body").StringValue()
 	choises := ctx.Options().GetByName("choises").StringValue()
@@ -183,10 +185,10 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 					"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.", "").
 				Error
 		}
-		expires = time.Now().Add(expiresDuration)
+		expires = tp.Now().Add(expiresDuration)
 	}
 
-	ivote := &vote.Vote{
+	ivote := vote.Vote{
 		ID:            ctx.Event.ID,
 		MsgID:         "",
 		CreatorID:     ctx.User().ID,
@@ -277,12 +279,14 @@ func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
 		if v.GuildID == ctx.Event.GuildID && v.ID == id {
-			ivote = v
+			ivote = &v
 		}
 	}
 
-	ivote.SetExpire(ctx.Session, expireDuration)
-	if err = db.AddUpdateVote(ivote); err != nil {
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
+	ivote.SetExpire(ctx.Session, expireDuration, tp)
+	if err = db.AddUpdateVote(*ivote); err != nil {
 		return err
 	}
 
@@ -306,7 +310,7 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 		var i int
 		for _, v := range vote.VotesRunning {
 			if v.GuildID == ctx.Event.GuildID && v.CreatorID == ctx.User().ID {
-				go func(vC *vote.Vote) {
+				go func(vC vote.Vote) {
 					db.DeleteVote(vC.ID)
 					vC.Close(ctx.Session, state)
 				}(v)
@@ -321,7 +325,7 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
 		if v.GuildID == ctx.Event.GuildID && v.ID == id {
-			ivote = v
+			ivote = &v
 			break
 		}
 	}

@@ -3,7 +3,7 @@ module github.com/zekroTJA/shinpuru
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.24.0
+	github.com/bwmarrin/discordgo v0.25.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/esimov/stackblur-go v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.0
@@ -23,19 +23,17 @@ require (
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/ranna-go/ranna v0.3.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/sahilm/fuzzy v0.1.0
 	github.com/sarulabs/di/v2 v2.4.2
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	github.com/traefik/paerser v0.1.5
 	github.com/valyala/fasthttp v1.34.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
-	github.com/zekroTJA/ratelimit v1.0.0
-	github.com/zekroTJA/shireikan v0.7.0
+	github.com/zekroTJA/ratelimit v1.1.0
 	github.com/zekroTJA/timedmap v1.4.0
-	github.com/zekrotja/dgrs v0.5.3
-	github.com/zekrotja/ken v0.13.0
+	github.com/zekrotja/dgrs v0.5.5
+	github.com/zekrotja/ken v0.14.0
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867
 	golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf
@@ -61,7 +59,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
@@ -69,7 +66,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/stretchr/objx v0.3.0 // indirect
+	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
@@ -79,5 +76,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

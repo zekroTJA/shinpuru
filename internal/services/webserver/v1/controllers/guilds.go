@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strings"
-	"time"
 
 	_ "crypto/sha512"
 
@@ -18,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
@@ -39,6 +39,7 @@ type GuildsController struct {
 	state   *dgrs.State
 	vs      verification.Provider
 	cef     codeexec.Factory
+	tp      timeprovider.Provider
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -51,6 +52,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.state = container.Get(static.DiState).(*dgrs.State)
 	c.vs = container.Get(static.DiVerification).(verification.Provider)
 	c.cef = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
+	c.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -199,7 +201,7 @@ func (c *GuildsController) getGuildAntiraidJoinlog(ctx *fiber.Ctx) error {
 	}
 
 	if joinlog == nil {
-		joinlog = make([]*sharedmodels.JoinLogEntry, 0)
+		joinlog = make([]sharedmodels.JoinLogEntry, 0)
 	}
 
 	return ctx.JSON(models.NewListResponse(joinlog))
@@ -322,16 +324,16 @@ func (c *GuildsController) getReports(ctx *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
-	var reps []*sharedmodels.Report
+	var reps []sharedmodels.Report
 
 	reps, err = c.db.GetReportsGuild(guildID, offset, limit)
 	if err != nil {
 		return err
 	}
 
-	resReps := make([]*models.Report, 0)
+	resReps := make([]models.Report, 0)
 	if reps != nil {
-		resReps = make([]*models.Report, len(reps))
+		resReps = make([]models.Report, len(reps))
 		for i, r := range reps {
 			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
 			user, err := c.state.User(r.VictimID)
@@ -505,11 +507,11 @@ func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 	if requests == nil {
-		requests = make([]*sharedmodels.UnbanRequest, 0)
+		requests = make([]sharedmodels.UnbanRequest, 0)
 	}
 
-	res := sop.Map[*sharedmodels.UnbanRequest](sop.Slice(requests),
-		func(r *sharedmodels.UnbanRequest, i int) *models.RichUnbanRequest {
+	res := sop.Map[sharedmodels.UnbanRequest](sop.Slice(requests),
+		func(r sharedmodels.UnbanRequest, i int) *models.RichUnbanRequest {
 			r.Hydrate()
 			rub := &models.RichUnbanRequest{
 				UnbanRequest: r,
@@ -551,7 +553,7 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 		return err
 	}
 	if requests == nil {
-		requests = make([]*sharedmodels.UnbanRequest, 0)
+		requests = make([]sharedmodels.UnbanRequest, 0)
 	}
 
 	count := len(requests)
@@ -586,7 +588,7 @@ func (c *GuildsController) getGuildUnbanrequest(ctx *fiber.Ctx) error {
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
-	if request == nil || request.GuildID != guildID {
+	if request.GuildID != guildID {
 		return fiber.ErrNotFound
 	}
 
@@ -630,7 +632,7 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
-	if request == nil || request.GuildID != guildID {
+	if request.GuildID != guildID {
 		return fiber.ErrNotFound
 	}
 
@@ -643,7 +645,7 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	}
 	request.ProcessedBy = uid
 	request.Status = rUpdate.Status
-	request.Processed = time.Now()
+	request.Processed = c.tp.Now()
 	request.ProcessedMessage = rUpdate.ProcessedMessage
 
 	if err = c.db.UpdateUnbanRequest(request); err != nil {

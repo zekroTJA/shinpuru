@@ -195,7 +195,7 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	err = db.SetBirthday(&models.Birthday{
+	err = db.SetBirthday(models.Birthday{
 		GuildID:  ctx.Event.GuildID,
 		UserID:   ctx.User().ID,
 		Date:     date,

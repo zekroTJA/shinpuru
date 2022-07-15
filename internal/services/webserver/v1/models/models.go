@@ -17,7 +17,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/versioncheck"
-	"github.com/zekroTJA/shireikan"
 	"github.com/zekrotja/ken"
 )
 
@@ -143,7 +142,7 @@ type PermissionsResponse struct {
 // Report extends models.Report by TypeName
 // and Created time.
 type Report struct {
-	*sharedmodels.Report
+	sharedmodels.Report
 
 	TypeName string    `json:"type_name"`
 	Created  time.Time `json:"created"`
@@ -279,19 +278,6 @@ type GuildKarmaEntry struct {
 	Value  int     `json:"value"`
 }
 
-// CommandInfo wraps a shireikan.Command object
-// containing all information of a command
-// instance.
-type CommandInfo struct {
-	Invokes            []string                  `json:"invokes"`
-	Description        string                    `json:"description"`
-	Help               string                    `json:"help"`
-	Group              string                    `json:"group"`
-	DomainName         string                    `json:"domain_name"`
-	SubPermissionRules []shireikan.SubPermission `json:"sub_permission_rules"`
-	IsExecutableInDM   bool                      `json:"is_executable_in_dm"`
-}
-
 // SlashCommandInfo wraps a slash command object
 // containing all information of a slash command
 // instance.
@@ -337,7 +323,7 @@ type UsersettingsPrivacy struct {
 // as response model containing hydrated information
 // of the author.
 type StarboardEntryResponse struct {
-	*sharedmodels.StarboardEntry
+	sharedmodels.StarboardEntry
 
 	MessageURL     string `json:"message_url"`
 	AuthorUsername string `json:"author_username"`
@@ -415,7 +401,7 @@ type UpdateInfoResponse struct {
 }
 
 type RichUnbanRequest struct {
-	*sharedmodels.UnbanRequest
+	sharedmodels.UnbanRequest
 
 	Creator   *FlatUser `json:"creator"`
 	Processor *FlatUser `json:"processor"`
@@ -497,7 +483,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 			return
 		}
 
-		var backupEntries []*backupmodels.Entry
+		var backupEntries []backupmodels.Entry
 		backupEntries, err = db.GetBackups(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return
@@ -553,25 +539,13 @@ func MemberFromMember(m *discordgo.Member) *Member {
 // ReportFromReport returns a Report from the passed
 // models.Report r and publicAddr to generate an
 // attachment URL.
-func ReportFromReport(r *sharedmodels.Report, publicAddr string) *Report {
+func ReportFromReport(r sharedmodels.Report, publicAddr string) Report {
 	rtype := sharedmodels.ReportTypes[r.Type]
 	r.AttachmentURL = imgstore.GetLink(r.AttachmentURL, publicAddr)
-	return &Report{
+	return Report{
 		Report:   r,
 		TypeName: rtype,
 		Created:  r.GetTimestamp(),
-	}
-}
-
-func GetCommandInfoFromCommand(cmd shireikan.Command) *CommandInfo {
-	return &CommandInfo{
-		Invokes:            cmd.GetInvokes(),
-		Description:        cmd.GetDescription(),
-		DomainName:         cmd.GetDomainName(),
-		Group:              cmd.GetGroup(),
-		Help:               cmd.GetHelp(),
-		IsExecutableInDM:   cmd.IsExecutableInDMChannels(),
-		SubPermissionRules: cmd.GetSubPermissionRules(),
 	}
 }
 

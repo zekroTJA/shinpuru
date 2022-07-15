@@ -10,7 +10,8 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
-	"github.com/zekroTJA/shinpuru/internal/services/lctimer"
+	"github.com/zekroTJA/shinpuru/internal/services/scheduler"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/presence"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -18,18 +19,20 @@ import (
 )
 
 type ListenerReady struct {
-	db  database.Database
-	gl  guildlog.Logger
-	lct lctimer.LifeCycleTimer
-	st  *dgrs.State
+	db    database.Database
+	gl    guildlog.Logger
+	sched scheduler.Provider
+	st    *dgrs.State
+	tp    timeprovider.Provider
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
 	return &ListenerReady{
-		db:  container.Get(static.DiDatabase).(database.Database),
-		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
-		lct: container.Get(static.DiLifecycleTimer).(lctimer.LifeCycleTimer),
-		st:  container.Get(static.DiState).(*dgrs.State),
+		db:    container.Get(static.DiDatabase).(database.Database),
+		gl:    container.Get(static.DiGuildLog).(guildlog.Logger).Section("ready"),
+		sched: container.Get(static.DiScheduler).(scheduler.Provider),
+		st:    container.Get(static.DiState).(*dgrs.State),
+		tp:    container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -43,7 +46,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 
 	s.UpdateGameStatus(0, static.StdMotd)
 
-	l.lct.Start()
+	l.sched.Start()
 
 	rawPresence, err := l.db.GetSetting(static.SettingPresence)
 	if err == nil {
@@ -58,8 +61,8 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 		logrus.WithError(err).Error("Failed getting votes from DB")
 	} else {
 		vote.VotesRunning = votes
-		_, err = l.lct.Schedule("*/10 * * * * *", func() {
-			now := time.Now()
+		_, err = l.sched.Schedule("*/10 * * * * *", func() {
+			now := l.tp.Now()
 			for _, v := range vote.VotesRunning {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
 					v.Close(s, vote.VoteStateExpired)

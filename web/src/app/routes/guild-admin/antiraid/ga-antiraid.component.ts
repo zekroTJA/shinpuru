@@ -74,9 +74,18 @@ export class GuildAdminAntiraidComponent implements OnInit {
     } catch {}
   }
 
-  public onDownloadJoinlog() {
+  public async onDownloadJoinlog() {
+    const joinLog = await this.api
+      .getGuildAntiraidJoinlog(this.guildID)
+      .toPromise();
+
     const element = document.createElement('a');
-    element.setAttribute('href', this.api.rcGuildAntiraidJoinlog(this.guildID));
+    element.setAttribute(
+      'href',
+      `data:application/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(joinLog, undefined, 2)
+      )}`
+    );
     element.setAttribute('download', 'joinlog_export');
 
     element.style.display = 'none';

@@ -17,7 +17,6 @@ import (
 
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
-	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -27,6 +26,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -36,7 +36,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/argp"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
-	"github.com/zekroTJA/shireikan"
 
 	"github.com/zekroTJA/shinpuru/pkg/angularservice"
 )
@@ -86,6 +85,14 @@ func main() {
 
 	// Initialize dependency injection builder
 	diBuilder, _ := di.NewBuilder()
+
+	// Initialize time provider
+	diBuilder.Add(di.Def{
+		Name: static.DiTimeProvider,
+		Build: func(ctn di.Container) (interface{}, error) {
+			return timeprovider.Time{}, nil
+		},
+	})
 
 	// Initialize config
 	diBuilder.Add(di.Def{
@@ -154,9 +161,9 @@ func main() {
 
 	// Initialize life cycle timer
 	diBuilder.Add(di.Def{
-		Name: static.DiLifecycleTimer,
+		Name: static.DiScheduler,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitLTCTimer(ctn), nil
+			return inits.InitScheduler(ctn), nil
 		},
 	})
 
@@ -173,14 +180,6 @@ func main() {
 		Name: static.DiPermissions,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return permissions.NewPermissions(ctn), nil
-		},
-	})
-
-	// Initialize ghost ping ignore command handler middleware
-	diBuilder.Add(di.Def{
-		Name: static.DiGhostpingIgnoreMiddleware,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return middleware.NewGhostPingIgnoreMiddleware(), nil
 		},
 	})
 
@@ -264,14 +263,6 @@ func main() {
 		},
 	})
 
-	// Initialize legacy command handler
-	diBuilder.Add(di.Def{
-		Name: static.DiLegacyCommandHandler,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return inits.InitLegacyCommandHandler(ctn), nil
-		},
-	})
-
 	// Initialize command handler
 	diBuilder.Add(di.Def{
 		Name: static.DiCommandHandler,
@@ -312,7 +303,7 @@ func main() {
 	diBuilder.Add(di.Def{
 		Name: static.DiReport,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return report.New(ctn), nil
+			return report.New(ctn)
 		},
 	})
 
@@ -403,16 +394,6 @@ func main() {
 	// handlers
 	releaseShard := inits.InitDiscordBotSession(ctn)
 	defer releaseShard()
-
-	// This is currently the really hacky workaround
-	// to bypass the di.Container when trying to get
-	// the Command legacyHandler instance inside a command
-	// context, because the legacyHandler can not resolve
-	// itself on build, so it is bypassed here using
-	// shireikans object map. Maybe I find a better
-	// solution for that at some time.
-	legacyHandler := ctn.Get(static.DiLegacyCommandHandler).(shireikan.Handler)
-	legacyHandler.SetObject(static.DiLegacyCommandHandler, legacyHandler)
 
 	// Get Web WebServer instance to start web
 	// server listener

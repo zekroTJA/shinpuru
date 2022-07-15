@@ -3,16 +3,20 @@ package report
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -24,24 +28,33 @@ var (
 )
 
 type ReportService struct {
-	s   *discordgo.Session
+	s   discordutil.ISession
 	db  database.Database
 	cfg config.Provider
-	st  *dgrs.State
+	st  dgrs.IState
+	tp  timeprovider.Provider
 }
 
 type ReportError struct {
 	error
-	*models.Report
+	models.Report
 }
 
-func New(container di.Container) *ReportService {
+func New(container di.Container) (t *ReportService, err error) {
+	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
+	for i, t := range models.ReportTypes {
+		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
+			return nil, err
+		}
+	}
+
 	return &ReportService{
-		s:   container.Get(static.DiDiscordSession).(*discordgo.Session),
+		s:   container.Get(static.DiDiscordSession).(discordutil.ISession),
 		db:  container.Get(static.DiDatabase).(database.Database),
 		cfg: container.Get(static.DiConfig).(config.Provider),
-		st:  container.Get(static.DiState).(*dgrs.State),
-	}
+		st:  container.Get(static.DiState).(dgrs.IState),
+		tp:  container.Get(static.DiTimeProvider).(timeprovider.Provider),
+	}, nil
 }
 
 // PushReport creates a new Report object with the given executorID,
@@ -49,22 +62,22 @@ func New(container di.Container) *ReportService {
 // using the passed db databse rpovider and an embed is created with the attachment
 // url assembled with publicAddr as image endpoint root. This embed is then sent to
 // the specified mod log channel for this guild, if existent.
-func (r *ReportService) PushReport(rep *models.Report) (*models.Report, error) {
+func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 	repID := snowflakenodes.NodesReport[rep.Type].Generate()
 
 	rep.ID = repID
 
 	err := r.db.AddReport(rep)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil && modlogChan != "" {
 		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
 	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
-	if err == nil {
+	if err == nil && dmChan != nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
@@ -74,37 +87,41 @@ func (r *ReportService) PushReport(rep *models.Report) (*models.Report, error) {
 // PushKick is shorthand for PushReport as member kick action and also
 // kicks the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
+func (r *ReportService) PushKick(rep models.Report) (models.Report, error) {
 	const typ = 0
 	rep.ID = typ
 
 	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
+	if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+		return models.Report{}, errors.New("This user is no more a member of this guild.")
+	}
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return nil, ErrRoleDiff
+	isAdmin := discordutil.IsAdmin(guild, executor)
+	if !isAdmin && roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		return models.Report{}, ErrRoleDiff
 	}
 
 	rep, err = r.PushReport(rep)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	if err = r.s.GuildMemberDeleteWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg)); err != nil {
 		r.db.DeleteReport(rep.ID)
-		return nil, err
+		return models.Report{}, err
 	}
 
 	return rep, nil
@@ -113,46 +130,51 @@ func (r *ReportService) PushKick(rep *models.Report) (*models.Report, error) {
 // PushBan is shorthand for PushReport as member ban action and also
 // bans the member from the guild with the given reason and case ID
 // for the audit log.
-func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
+func (r *ReportService) PushBan(rep models.Report) (models.Report, error) {
 	const typ = 1
 	rep.Type = typ
 
-	if err := checkTimeout(rep.Timeout); err != nil {
-		return nil, err
+	if err := checkTimeout(r.tp.Now(), rep.Timeout); err != nil {
+		return models.Report{}, err
 	}
 
 	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	var victim *discordgo.Member
 	if !rep.Anonymous {
 		victim, err = r.st.Member(rep.GuildID, rep.VictimID)
+		if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+			rep.Anonymous = true
+			err = nil
+		}
 		if err != nil {
-			return nil, err
+			return models.Report{}, err
 		}
 	}
 
 	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	if !rep.Anonymous {
-		if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-			return nil, ErrRoleDiff
+		isAdmin := discordutil.IsAdmin(guild, executor)
+		if !isAdmin && roleutil.PositionDiff(victim, executor, guild) >= 0 {
+			return models.Report{}, ErrRoleDiff
 		}
 	}
 
 	rep, err = r.PushReport(rep)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	if err = r.s.GuildBanCreateWithReason(rep.GuildID, rep.VictimID, fmt.Sprintf(`[CASE %s] %s`, rep.ID, rep.Msg), 7); err != nil {
 		r.db.DeleteReport(rep.ID)
-		return nil, err
+		return models.Report{}, err
 	}
 
 	return rep, nil
@@ -160,31 +182,31 @@ func (r *ReportService) PushBan(rep *models.Report) (*models.Report, error) {
 
 // PushMute is shorthand for PushReport as member mute action and also
 // adds the mute role to the specified victim.
-func (r *ReportService) PushMute(rep *models.Report) (*models.Report, error) {
+func (r *ReportService) PushMute(rep models.Report) (models.Report, error) {
 	const typ = 2
 	rep.Type = typ
 
-	if err := checkTimeout(rep.Timeout); err != nil {
-		return nil, err
+	if err := checkTimeout(r.tp.Now(), rep.Timeout); err != nil {
+		return models.Report{}, err
 	}
 
 	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	executor, err := r.st.Member(rep.GuildID, rep.ExecutorID)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
-		return nil, ErrRoleDiff
+		return models.Report{}, ErrRoleDiff
 	}
 
 	if rep.Msg == "" {
@@ -193,13 +215,13 @@ func (r *ReportService) PushMute(rep *models.Report) (*models.Report, error) {
 
 	rep, err = r.PushReport(rep)
 	if err != nil {
-		return nil, err
+		return models.Report{}, err
 	}
 
 	err = r.s.GuildMemberTimeout(rep.GuildID, rep.VictimID, rep.Timeout)
 	if err != nil {
 		r.db.DeleteReport(rep.ID)
-		return nil, err
+		return models.Report{}, err
 	}
 
 	return rep, nil
@@ -281,9 +303,11 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 	return
 }
 
-func (r *ReportService) RevokeReport(rep *models.Report, executorID, reason,
-	wsPublicAddr string, db database.Database,
-	s *discordgo.Session) (emb *discordgo.MessageEmbed, err error) {
+func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
+	wsPublicAddr string,
+	db database.Database,
+	s discordutil.ISession,
+) (emb *discordgo.MessageEmbed, err error) {
 
 	if err = db.DeleteReport(rep.ID); err != nil {
 		return
@@ -364,7 +388,7 @@ func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
 	return
 }
 
-func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error) {
+func (r *ReportService) revokeReportOnExpiration(rep models.Report) (err error) {
 	switch rep.Type {
 	case models.TypeBan:
 		err = r.s.GuildBanDelete(rep.GuildID, rep.VictimID)
@@ -374,8 +398,8 @@ func (r *ReportService) revokeReportOnExpiration(rep *models.Report) (err error)
 	return
 }
 
-func checkTimeout(t *time.Time) (err error) {
-	if t != nil && t.Before(time.Now()) {
+func checkTimeout(now time.Time, t *time.Time) (err error) {
+	if t != nil && t.Before(now) {
 		err = errors.New("timeout must be in the future")
 	}
 	return

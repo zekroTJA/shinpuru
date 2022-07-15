@@ -12,6 +12,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -35,6 +36,7 @@ type GuildBackups struct {
 	gl      guildlog.Logger
 	st      storage.Storage
 	state   *dgrs.State
+	tp      timeprovider.Provider
 }
 
 // asyncWriteStatus writes the passed status to the
@@ -76,6 +78,7 @@ func New(container di.Container) *GuildBackups {
 	bck.st = container.Get(static.DiObjectStorage).(storage.Storage)
 	bck.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	bck.state = container.Get(static.DiState).(*dgrs.State)
+	bck.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 	return bck
 }
 
@@ -119,7 +122,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 	}
 
 	backup := new(backupmodels.Object)
-	backup.Timestamp = time.Now()
+	backup.Timestamp = bck.tp.Now()
 
 	backup.Guild = &backupmodels.Guild{
 		AfkChannelID:                g.AfkChannelID,
@@ -208,7 +211,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 		var lastEntry *backupmodels.Entry
 		for _, b := range cBackups {
 			if lastEntry == nil || b.Timestamp.Before(lastEntry.Timestamp) {
-				lastEntry = b
+				lastEntry = &b
 			}
 		}
 

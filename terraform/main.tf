@@ -188,7 +188,7 @@ resource "docker_container" "minio" {
     "MINIO_ACCESS_KEY=yuri69",
     "MINIO_SECRET_KEY=yuri69_secret_key",
   ]
-  command = ["server", "/data"]
+  command = ["server", "/data", "--console-address", ":9001"]
 }
 
 resource "docker_container" "redis" {

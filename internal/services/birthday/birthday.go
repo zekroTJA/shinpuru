@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/giphy"
@@ -27,6 +28,7 @@ type BirthdayService struct {
 	st      *dgrs.State
 	session *discordgo.Session
 	gl      guildlog.Logger
+	tp      timeprovider.Provider
 }
 
 func New(ctn di.Container) *BirthdayService {
@@ -35,6 +37,7 @@ func New(ctn di.Container) *BirthdayService {
 		st:      ctn.Get(static.DiState).(*dgrs.State),
 		session: ctn.Get(static.DiDiscordSession).(*discordgo.Session),
 		gl:      ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("birthday"),
+		tp:      ctn.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 
 	cfg := ctn.Get(static.DiConfig).(config.Provider)
@@ -54,15 +57,15 @@ func (b *BirthdayService) Schedule() (err error) {
 	shardId, shardTotal := discordutil.GetShardOfSession(b.session)
 	if shardTotal > 1 {
 		bdays = sop.Slice(bdays).
-			Filter(func(v *models.Birthday, _ int) bool {
+			Filter(func(v models.Birthday, _ int) bool {
 				id, err := discordutil.GetShardOfGuild(v.GuildID, shardTotal)
 				return err == nil && id == shardId
 			}).
 			Unwrap()
 	}
 
-	bdayMap := sop.GroupE[*models.Birthday](
-		sop.Slice(bdays), func(v *models.Birthday, i int) (string, *models.Birthday) {
+	bdayMap := sop.GroupE[models.Birthday](
+		sop.Slice(bdays), func(v models.Birthday, i int) (string, models.Birthday) {
 			return v.GuildID, v
 		},
 	)
@@ -82,7 +85,7 @@ func (b *BirthdayService) Schedule() (err error) {
 			continue
 		}
 
-		gbds = gbds.Filter(isTodayFilter())
+		gbds = gbds.Filter(isTodayFilter(b.tp.Now))
 		if gbds.Len() == 0 {
 			continue
 		}
@@ -104,7 +107,7 @@ func (b *BirthdayService) Schedule() (err error) {
 			continue
 		}
 
-		gbds.Each(func(v *models.Birthday, i int) {
+		gbds.Each(func(v models.Birthday, i int) {
 			memb, err := b.st.Member(v.GuildID, v.UserID)
 			if memb == nil || memb.User == nil {
 				if err == nil || discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
@@ -123,10 +126,10 @@ func (b *BirthdayService) Schedule() (err error) {
 	return
 }
 
-func (b *BirthdayService) sendMessage(memb *discordgo.Member, chanID string, bd *models.Birthday) (err error) {
+func (b *BirthdayService) sendMessage(memb *discordgo.Member, chanID string, bd models.Birthday) (err error) {
 	age := ""
 	if bd.ShowYear {
-		age = suffix(time.Now().Year()-bd.Date.Year()) + " "
+		age = suffix(b.tp.Now().Year()-bd.Date.Year()) + " "
 	}
 
 	userMention := memb.Mention() + "'"
@@ -178,10 +181,9 @@ func (b *BirthdayService) randomGif() (img *giphy.Image) {
 	return
 }
 
-func isTodayFilter() func(v *models.Birthday, i int) bool {
-	now := time.Now().UTC()
-	return func(v *models.Birthday, i int) bool {
-		m1, d1, h1 := format(now)
+func isTodayFilter(now func() time.Time) func(v models.Birthday, i int) bool {
+	return func(v models.Birthday, i int) bool {
+		m1, d1, h1 := format(now().UTC())
 		m2, d2, h2 := format(v.Date)
 		return m1 == m2 && d1 == d2 && h1 == h2
 	}

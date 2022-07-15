@@ -4,11 +4,11 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -79,6 +79,8 @@ func (c *Info) Run(ctx *ken.Ctx) (err error) {
 			fmt.Sprintf("- %s: [%s](%s)\n", c.Title, c.Value, c.URL))
 	}
 
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: "Info",
@@ -125,7 +127,7 @@ func (c *Info) Run(ctx *ken.Ctx) (err error) {
 			},
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("© 2018-%s zekro Development (Ringo Hoffmann)", time.Now().Format("2006")),
+			Text: fmt.Sprintf("© 2018-%s zekro Development (Ringo Hoffmann)", tp.Now().Format("2006")),
 		},
 	}
 

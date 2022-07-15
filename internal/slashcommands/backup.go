@@ -210,12 +210,12 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 				fmt.Sprintf("There are only %d (index 0 to %d) backups you can chose from.",
 					len(backups), len(backups)-1), "").Error
 		}
-		backup = backups[i]
+		backup = &backups[i]
 	} else {
 		sf := snowflake.ParseInt64(i).String()
 		for _, b := range backups {
 			if b.FileID == sf {
-				backup = b
+				backup = &b
 			}
 		}
 	}
@@ -286,7 +286,7 @@ func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
 
 // --- HELPERS ---
 
-func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]*backupmodels.Entry, string, error) {
+func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	backups, err := db.GetBackups(ctx.Event.GuildID)

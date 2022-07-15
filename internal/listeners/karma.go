@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/karma"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
 )
@@ -41,8 +42,8 @@ const (
 type ListenerKarma struct {
 	db    database.Database
 	gl    guildlog.Logger
-	karma *karma.Service
-	st    *dgrs.State
+	karma karma.Provider
+	st    dgrs.IState
 
 	cache       *timedmap.TimedMap
 	msgsApplied timedmap.Section
@@ -54,8 +55,8 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 	return &ListenerKarma{
 		db:    container.Get(static.DiDatabase).(database.Database),
 		gl:    container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma"),
-		karma: container.Get(static.DiKarma).(*karma.Service),
-		st:    container.Get(static.DiState).(*dgrs.State),
+		karma: container.Get(static.DiKarma).(karma.Provider),
+		st:    container.Get(static.DiState).(dgrs.IState),
 
 		cache: cache,
 
@@ -66,7 +67,7 @@ func NewListenerKarma(container di.Container) *ListenerKarma {
 	}
 }
 
-func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReactionAdd) {
+func (l *ListenerKarma) Handler(s discordutil.ISession, e *discordgo.MessageReactionAdd) {
 	self, err := l.st.SelfUser()
 	if err != nil {
 		return
@@ -139,16 +140,6 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 		return
 	}
 
-	// Take a karma token from the users rate limiter
-	if !l.rateLimiterTake(e.UserID, e.GuildID) {
-		ch, err := s.UserChannelCreate(e.UserID)
-		if err == nil {
-			util.SendEmbedError(s, ch.ID,
-				"You are currently ran out of karma tokens. Please try again later.")
-		}
-		return
-	}
-
 	// Get the hydradet message object where the reaction
 	// was added to
 	msg, err := l.st.Message(e.ChannelID, e.MessageID)
@@ -164,6 +155,27 @@ func (l *ListenerKarma) Handler(s *discordgo.Session, e *discordgo.MessageReacti
 	// message was created by the user created the react.
 	// If this is true, return
 	if msg.Author.Bot || msg.Author.ID == e.UserID {
+		return
+	}
+
+	// Check if the receiving user is karma blocklisted
+	isBlacklisted, err = l.karma.IsBlockListed(e.GuildID, msg.Author.ID)
+	if err != nil {
+		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed checking blocklist")
+		l.gl.Errorf(e.GuildID, "Failed getting blocklist: %s", err.Error())
+		return
+	}
+	if isBlacklisted {
+		return
+	}
+
+	// Take a karma token from the users rate limiter
+	if !l.rateLimiterTake(e.UserID, e.GuildID) {
+		ch, err := s.UserChannelCreate(e.UserID)
+		if err == nil {
+			util.SendEmbedError(s, ch.ID,
+				"You are currently ran out of karma tokens. Please try again later.")
+		}
 		return
 	}
 

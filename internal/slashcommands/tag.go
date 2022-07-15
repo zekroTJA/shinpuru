@@ -3,11 +3,11 @@ package slashcommands
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
@@ -173,11 +173,8 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 	content := ctx.Options().GetByName("content").StringValue()
 
 	tg, err := db.GetTagByIdent(ident, ctx.Event.GuildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return
-	}
 
-	if tg != nil {
+	if database.IsErrDatabaseNotFound(err) {
 		if tg.CreatorID != ctx.User().ID {
 			ok, err := pmw.CheckSubPerm(ctx.Ctx, "edit", true,
 				"A tag with the same nam (created by another user) already exists and you do not have the permission to edit it.")
@@ -219,14 +216,20 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
+	if err != nil {
+		return
+	}
+
 	ok, err := pmw.CheckSubPerm(ctx.Ctx, "create", true,
 		"You do not have the permission to create tags.")
 	if !ok {
 		return err
 	}
 
-	now := time.Now()
-	tg = &tag.Tag{
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
+	now := tp.Now()
+	tg = tag.Tag{
 		Content:   content,
 		Created:   now,
 		CreatorID: ctx.User().ID,

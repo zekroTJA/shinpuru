@@ -81,7 +81,7 @@ func (c *MemberReportingController) postReport(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	rep, err := c.repSvc.PushReport(&sharedmodels.Report{
+	rep, err := c.repSvc.PushReport(sharedmodels.Report{
 		GuildID:       guildID,
 		ExecutorID:    uid,
 		VictimID:      memberID,
@@ -133,7 +133,7 @@ func (c *MemberReportingController) postKick(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	rep, err := c.repSvc.PushKick(&sharedmodels.Report{
+	rep, err := c.repSvc.PushKick(sharedmodels.Report{
 		GuildID:       guildID,
 		ExecutorID:    uid,
 		VictimID:      memberID,
@@ -193,7 +193,7 @@ func (c *MemberReportingController) postBan(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	rep, err := c.repSvc.PushBan(&sharedmodels.Report{
+	rep, err := c.repSvc.PushBan(sharedmodels.Report{
 		GuildID:       guildID,
 		ExecutorID:    uid,
 		VictimID:      memberID,
@@ -254,7 +254,7 @@ func (c *MemberReportingController) postMute(ctx *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusBadRequest, "You must pass a valid mute timeout duration")
 	}
 
-	rep, err := c.repSvc.PushMute(&sharedmodels.Report{
+	rep, err := c.repSvc.PushMute(sharedmodels.Report{
 		GuildID:       guildID,
 		ExecutorID:    uid,
 		VictimID:      memberID,

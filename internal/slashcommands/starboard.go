@@ -127,7 +127,7 @@ func (c *Starboard) disable(ctx *ken.SubCommandCtx) (err error) {
 	return c.setConfig(ctx, starboardConfig, false)
 }
 
-func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig *models.StarboardConfig, err error) {
+func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig models.StarboardConfig, err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	starboardConfig, err = db.GetStarboardConfig(ctx.Event.GuildID)
@@ -135,8 +135,8 @@ func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig *models.S
 		return
 	}
 
-	if database.IsErrDatabaseNotFound(err) || starboardConfig == nil {
-		starboardConfig = &models.StarboardConfig{
+	if database.IsErrDatabaseNotFound(err) {
+		starboardConfig = models.StarboardConfig{
 			Threshold: 5,
 			EmojiID:   "⭐",
 			KarmaGain: 3,
@@ -149,7 +149,7 @@ func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig *models.S
 
 func (c *Starboard) setConfig(
 	ctx *ken.SubCommandCtx,
-	cfg *models.StarboardConfig,
+	cfg models.StarboardConfig,
 	outputError bool,
 ) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)

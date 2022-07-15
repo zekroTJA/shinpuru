@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/cmdutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -171,7 +172,9 @@ func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	return cmdutil.CmdReport(ctx, typ)
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
+	return cmdutil.CmdReport(ctx, typ, tp)
 }
 
 func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {

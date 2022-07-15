@@ -3,11 +3,11 @@ package listeners
 import (
 	"fmt"
 	"sync/atomic"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
@@ -18,6 +18,7 @@ import (
 type ListenerBotMention struct {
 	config config.Provider
 	st     *dgrs.State
+	tp     timeprovider.Provider
 
 	idLen int32
 }
@@ -26,6 +27,7 @@ func NewListenerBotMention(container di.Container) *ListenerBotMention {
 	return &ListenerBotMention{
 		config: container.Get(static.DiConfig).(config.Provider),
 		st:     container.Get(static.DiState).(*dgrs.State),
+		tp:     container.Get(static.DiTimeProvider).(timeprovider.Provider),
 		idLen:  0,
 	}
 }
@@ -63,7 +65,7 @@ func (l *ListenerBotMention) Listener(s *discordgo.Session, e *discordgo.Message
 		WithColor(static.ColorEmbedDefault).
 		WithThumbnail(self.AvatarURL("64x64"), "", 64, 64).
 		WithDescription(fmt.Sprintf("shinpuru Discord Bot v.%s (%s)", embedded.AppVersion, embedded.AppCommit[:6])).
-		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", time.Now().Year()), "", "").
+		WithFooter(fmt.Sprintf("© %d Ringo Hoffmann (zekro Development)", l.tp.Now().Year()), "", "").
 		AddField("Help",
 			"Type `/help` in the chat to get a list of available commands.\n"+
 				"You can also use `/help <commandInvoke>` to get more details about a command.\n"+

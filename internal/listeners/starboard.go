@@ -157,13 +157,13 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 	censorMedia := msgChannel.NSFW && !starboardChannel.NSFW
 
 	var giveKarma bool
-	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil || starboardEntry.Deleted {
+	if database.IsErrDatabaseNotFound(err) || starboardEntry.Deleted {
 		giveKarma = database.IsErrDatabaseNotFound(err) && !starboardEntry.Deleted
 
 		if censorMedia {
 			newAttachments := make([]*discordgo.MessageAttachment, len(msg.Attachments))
 			i := 0
-			if starboardEntry != nil && len(starboardEntry.MediaURLs) > 0 {
+			if len(starboardEntry.MediaURLs) > 0 {
 				for i, murl := range starboardEntry.MediaURLs {
 					newAttachments[i] = &discordgo.MessageAttachment{
 						URL: murl,
@@ -196,7 +196,7 @@ func (l *ListenerStarboard) ListenerReactionAdd(s *discordgo.Session, e *discord
 			return
 		}
 
-		starboardEntry = &models.StarboardEntry{
+		starboardEntry = models.StarboardEntry{
 			MessageID:   msg.ID,
 			StarboardID: sbMsg.ID,
 			GuildID:     e.GuildID,
@@ -297,7 +297,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 		return
 	}
 
-	if database.IsErrDatabaseNotFound(err) || starboardEntry == nil {
+	if database.IsErrDatabaseNotFound(err) {
 		return
 	} else {
 		ok, score := l.hitsThreshhold(msg, starboardConfig)
@@ -326,7 +326,7 @@ func (l *ListenerStarboard) ListenerReactionRemove(s *discordgo.Session, e *disc
 	}
 }
 
-func (l *ListenerStarboard) hitsThreshhold(msg *discordgo.Message, starboardConfig *models.StarboardConfig) (ok bool, count int) {
+func (l *ListenerStarboard) hitsThreshhold(msg *discordgo.Message, starboardConfig models.StarboardConfig) (ok bool, count int) {
 	for _, r := range msg.Reactions {
 		count = r.Count
 		ok = r.Emoji.Name == starboardConfig.EmojiID && count >= starboardConfig.Threshold

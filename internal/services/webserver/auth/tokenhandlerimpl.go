@@ -11,6 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/random"
@@ -21,6 +22,7 @@ import (
 type DatabaseRefreshTokenHandler struct {
 	db      database.Database
 	session *discordgo.Session
+	tp      timeprovider.Provider
 }
 
 // NewDatabaseRefreshTokenHandler returns a new instance
@@ -29,6 +31,7 @@ func NewDatabaseRefreshTokenHandler(container di.Container) *DatabaseRefreshToke
 	return &DatabaseRefreshTokenHandler{
 		db:      container.Get(static.DiDatabase).(database.Database),
 		session: container.Get(static.DiDiscordSession).(*discordgo.Session),
+		tp:      container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 }
 
@@ -38,7 +41,7 @@ func (rth *DatabaseRefreshTokenHandler) GetRefreshToken(ident string) (token str
 		return
 	}
 
-	err = rth.db.SetUserRefreshToken(ident, token, time.Now().Add(static.AuthSessionExpiration))
+	err = rth.db.SetUserRefreshToken(ident, token, rth.tp.Now().Add(static.AuthSessionExpiration))
 	return
 }
 
@@ -48,7 +51,7 @@ func (rth *DatabaseRefreshTokenHandler) ValidateRefreshToken(token string) (iden
 		return
 	}
 
-	if time.Now().After(expires) {
+	if rth.tp.Now().After(expires) {
 		err = errors.New("expired")
 	}
 
@@ -78,6 +81,7 @@ var (
 type JWTAccessTokenHandler struct {
 	sessionExpiration time.Duration
 	sessionSecret     []byte
+	tp                timeprovider.Provider
 }
 
 // NewJWTAccessTokenHandler returns a new instance
@@ -91,12 +95,13 @@ func NewJWTAccessTokenHandler(container di.Container) (ath *JWTAccessTokenHandle
 	ath = &JWTAccessTokenHandler{
 		sessionExpiration: time.Duration(cfg.LifetimeSeconds) * time.Second,
 		sessionSecret:     []byte(cfg.Secret),
+		tp:                container.Get(static.DiTimeProvider).(timeprovider.Provider),
 	}
 	return
 }
 
 func (ath *JWTAccessTokenHandler) GetAccessToken(ident string) (token string, expires time.Time, err error) {
-	now := time.Now()
+	now := ath.tp.Now()
 	expires = now.Add(ath.sessionExpiration)
 
 	claims := jwt.StandardClaims{}
@@ -164,6 +169,7 @@ type DatabaseAPITokenHandler struct {
 	db      database.Database
 	session *discordgo.Session
 	secret  []byte
+	tp      timeprovider.Provider
 }
 
 // NewDatabaseAPITokenHandler returns a new instance
@@ -175,12 +181,13 @@ func NewDatabaseAPITokenHandler(container di.Container) (*DatabaseAPITokenHandle
 	return &DatabaseAPITokenHandler{
 		db:      container.Get(static.DiDatabase).(database.Database),
 		session: container.Get(static.DiDiscordSession).(*discordgo.Session),
+		tp:      container.Get(static.DiTimeProvider).(timeprovider.Provider),
 		secret:  secret,
 	}, nil
 }
 
 func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, expires time.Time, err error) {
-	now := time.Now()
+	now := apith.tp.Now()
 	expires = now.Add(static.ApiTokenExpiration)
 
 	salt, err := random.GetRandBase64Str(16)
@@ -202,7 +209,7 @@ func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, e
 		return
 	}
 
-	tokenEntry := &models.APITokenEntry{
+	tokenEntry := models.APITokenEntry{
 		Salt:    salt,
 		Created: now,
 		Expires: expires,
@@ -246,7 +253,7 @@ func (apith *DatabaseAPITokenHandler) ValidateAPIToken(token string) (ident stri
 	}
 
 	tokenEntry.Hits++
-	tokenEntry.LastAccess = time.Now()
+	tokenEntry.LastAccess = apith.tp.Now()
 	apith.db.SetAPIToken(tokenEntry)
 
 	return claims.Subject, nil

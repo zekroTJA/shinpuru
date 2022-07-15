@@ -5,6 +5,7 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/controllers"
+	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
@@ -77,6 +78,10 @@ func (r *Router) SetContainer(container di.Container) {
 // @BasePath /api/v1
 func (r *Router) Route(router fiber.Router) {
 	authMw := r.container.Get(static.DiAuthMiddleware).(auth.Middleware)
+
+	if !embedded.IsRelease() {
+		new(controllers.DebugController).Setup(r.container, router.Group("debug"))
+	}
 
 	new(controllers.EtcController).Setup(r.container, router)
 	new(controllers.UtilController).Setup(r.container, router.Group("/util"))

@@ -138,6 +138,10 @@ The Angular web app is built like a typical Angular application with reusable co
 
 ## Preparing a Development Environment
 
+There are two main ways to set up a development environment for shinpuru.
+
+### 1) Local
+
 First of all, create a fork of this repository.  
 ![](https://i.imgur.com/V0uP5lu.png)
 
@@ -146,13 +150,43 @@ Then, clone the repository to your PC either using HTTPS, SSH or the Git CLI.
 
 Of course, you need to download and install the **Go compiler toolchain**. Please follow [**these**](https://golang.org/doc/install) instructions to do so.
 
-Also, you need some sort of a C compiler like `gcc`. If you are using linux, just [install C build tools](https://www.ubuntupit.com/how-to-install-and-use-gcc-compiler-on-linux-system/) using your package manager. When you are using windows, you can download and install [TDM-GCC](https://sourceforge.net/projects/tdm-gcc/).
-
-Also, to compile the web frontend, you need to install NodeJS and NPM. Please follow [**these**](https://nodejs.org/en/) instructions to do so.
+Also, to compile the web frontend, you need to install NodeJS. Please follow [**these**](https://nodejs.org/en/) instructions to do so. Also, you need to install Yarn which is used as package manager for the web app. Therefore, just follow [**these**](https://yarnpkg.com/getting-started/install) instructions.
 
 This repository also provides a [`Makefile`](https://github.com/zekroTJA/shinpuru/blob/master/Makefile) with a lot of useful recipies for development. Just enter `make help` to get a quick overview over all make recipes.
 
 > Read [this](https://www.cyberciti.biz/faq/howto-installing-gnu-c-compiler-development-environment-on-ubuntu/) to install GNU Make on Linux and [this](http://gnuwin32.sourceforge.net/packages/make.htm) to install it on Windows.
+
+Now - if not already done - install Docker and Docker Compose on your system. [**Here**](https://docs.docker.com/get-docker/) you can find a detailed explaination on how to do so on your type of system.
+
+After that, you can simply start up all services required via Docker Compose.
+```
+$ docker-compose -f docker-compose.dev.yml up -d
+```
+
+Now, copy the development config template from `config/my.private.config.yml` to `config/private.config.yml` and enter your Discord Credentials for your development bot application.
+
+Finally, start the development instance with Make.
+```
+$ make run
+```
+
+### 2) Remote via Coder
+
+Alternatively, a Terraform Template for [Coder](https://coder.com) is also provided. If you have a Coder instance, just upload the template and create a workspace based on it.
+```
+$ coder template create -d terraform shinpuru && \
+  coder create --template="shinpuru" shinpuru
+```
+
+All required services are automatically set up in your workspace. You just need to copy the config template from `config/coder.private.config.yml` to `config/private.config.yml`, enter your Discord bot application credentials and then, run the dev instance with Make.
+```
+$ make run
+```
+
+Now, install the `Remote - SSH` (`ms-vscode-remote.remote-ssh`) extension in VSCode and connect to your workspace instance. [**Here**](https://coder.com/docs/coder-oss/latest/ides) you can read how to do so.
+
+You might need to add some port worwardings to access PhpMyAdmin or the Minio Console.
+![](https://user-images.githubusercontent.com/16734205/178223553-ee9fe6e3-bc87-4d77-9098-2740cad006bf.png)
 
 ## Where To Start?
 

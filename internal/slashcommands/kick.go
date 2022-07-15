@@ -4,7 +4,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/cmdutil"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/ken"
 )
 
@@ -65,5 +67,8 @@ func (c *Kick) Run(ctx *ken.Ctx) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
-	return cmdutil.CmdReport(ctx, models.TypeKick)
+
+	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
+
+	return cmdutil.CmdReport(ctx, models.TypeKick, tp)
 }

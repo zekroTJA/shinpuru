@@ -2,7 +2,6 @@ package inits
 
 import (
 	"math/rand"
-	"strings"
 	"sync/atomic"
 	"time"
 
@@ -11,11 +10,11 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
-	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 )
 
@@ -26,13 +25,6 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	err := snowflakenodes.Setup()
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed setting up snowflake nodes")
-	}
-
-	snowflakenodes.NodesReport = make([]*snowflake.Node, len(models.ReportTypes))
-	for i, t := range models.ReportTypes {
-		if snowflakenodes.NodesReport[i], err = snowflakenodes.RegisterNode(i, "report."+strings.ToLower(t)); err != nil {
-			logrus.WithError(err).Fatal("Failed setting up snowflake nodes")
-		}
 	}
 
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
@@ -95,15 +87,15 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	session.AddHandler(listeners.NewListenerVote(container).Handler)
 	session.AddHandler(listeners.NewListenerChannelCreate(container).Handler)
 	session.AddHandler(listeners.NewListenerVoiceUpdate(container).Handler)
-	session.AddHandler(listeners.NewListenerKarma(container).Handler)
-	session.AddHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd)
+	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerKarma(container).Handler))
+	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd))
 	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 	session.AddHandler(listeners.NewListenerDMSync(container).Handler)
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)
-	session.AddHandler(listenerInviteBlock.HandlerMessageSend)
-	session.AddHandler(listenerInviteBlock.HandlerMessageEdit)
+	session.AddHandler(discordutil.WrapHandler(listenerInviteBlock.HandlerMessageSend))
+	session.AddHandler(discordutil.WrapHandler(listenerInviteBlock.HandlerMessageEdit))
 
 	session.AddHandler(listenerJDoodle.HandlerMessageCreate)
 	session.AddHandler(listenerJDoodle.HandlerMessageUpdate)

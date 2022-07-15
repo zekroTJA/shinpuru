@@ -5,7 +5,8 @@ on:
     branches:
       - '*'
     paths:
-      - "pkg/**"
+      - "**.go"
+      - ".github/workflows/**"
 
 jobs:
   tests:
@@ -27,4 +28,4 @@ jobs:
 
       - name: Run tests
         run: |
-          go test -v -cover github.com/zekroTJA/shinpuru/pkg/...
+          go test -v -cover github.com/zekroTJA/shinpuru/...

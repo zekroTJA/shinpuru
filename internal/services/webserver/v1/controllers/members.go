@@ -308,9 +308,9 @@ func (c *GuildMembersController) getReports(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	resReps := make([]*models.Report, 0)
+	resReps := make([]models.Report, 0)
 	if reps != nil {
-		resReps = make([]*models.Report, len(reps))
+		resReps = make([]models.Report, len(reps))
 		for i, r := range reps {
 			resReps[i] = models.ReportFromReport(r, c.cfg.Config().WebServer.PublicAddr)
 			user, err := c.st.User(r.VictimID)
@@ -376,7 +376,7 @@ func (c *GuildMembersController) getMemberUnbanrequests(ctx *fiber.Ctx) (err err
 		return err
 	}
 	if requests == nil {
-		requests = make([]*sharedmodels.UnbanRequest, 0)
+		requests = make([]sharedmodels.UnbanRequest, 0)
 	}
 
 	for _, r := range requests {
@@ -412,7 +412,7 @@ func (c *GuildMembersController) getMemberUnbanrequestsCount(ctx *fiber.Ctx) (er
 		return err
 	}
 	if requests == nil {
-		requests = make([]*sharedmodels.UnbanRequest, 0)
+		requests = make([]sharedmodels.UnbanRequest, 0)
 	}
 
 	count := len(requests)
