@@ -3,6 +3,7 @@ package report
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -13,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/internal/util/testutil"
 	"github.com/zekroTJA/shinpuru/mocks"
 )
 
@@ -30,6 +32,14 @@ type reportMock struct {
 	ct di.Container
 }
 
+func (m *reportMock) Reset() {
+	m.s.Calls = nil
+	m.db.Calls = nil
+	m.cfg.Calls = nil
+	m.st.Calls = nil
+	m.tp.Calls = nil
+}
+
 func getReportMock(prep ...func(m reportMock)) reportMock {
 	var t reportMock
 
@@ -44,6 +54,7 @@ func getReportMock(prep ...func(m reportMock)) reportMock {
 	}
 
 	t.cfg.On("Config").Return(&models.Config{})
+	t.tp.On("Now").Return(time.Time{})
 
 	ct, _ := di.NewBuilder()
 	ct.Add(
@@ -210,4 +221,276 @@ func TestPushReport(t *testing.T) {
 	m.s.AssertCalled(t, "ChannelMessageSendEmbed", "channel-modlog", mock.Anything)
 	m.s.AssertCalled(t, "UserChannelCreate", "victim-nodm-2")
 	m.s.AssertNotCalled(t, "ChannelMessageSendEmbed", "channel-id", mock.Anything)
+}
+
+func TestPushBan(t *testing.T) {
+	m := getReportMock(func(m reportMock) {
+		m.db.On("AddReport", mock.AnythingOfType("models.Report")).
+			Return(nil)
+		m.db.On("GetGuildModLog", mock.AnythingOfType("string")).
+			Return("channel-modlog", nil)
+		m.db.On("DeleteReport", mock.Anything).Return(nil)
+
+		m.s.On("UserChannelCreate", mock.AnythingOfType("string")).
+			Return(&discordgo.Channel{
+				ID: "channel-id",
+			}, nil)
+		m.s.On("ChannelMessageSendEmbed", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageEmbed")).
+			Return(nil, nil)
+
+		m.st.On("Guild", mock.AnythingOfType("string"), mock.AnythingOfType("bool")).
+			Return(&discordgo.Guild{
+				ID: "guild-id",
+				Roles: []*discordgo.Role{
+					{ID: "role-admin", Position: 0, Permissions: 0x8},
+					{ID: "role-0", Position: 0},
+					{ID: "role-1", Position: 1},
+				},
+			}, nil)
+	})
+
+	s, err := New(m.ct)
+	assert.Nil(t, err)
+
+	// ----- Positive Test -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep := models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err := s.PushBan(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeBan)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Negative Test: Victim and Reporter have same role -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushBan(rep)
+	assert.NotNil(t, err)
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Negative Test: Victim has higer role than executor -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushBan(rep)
+	assert.NotNil(t, err)
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Positive Test: Victim has higer role than executor but executor is Admin -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushBan(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeBan)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Positive Test: Anonymous Report -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+		Anonymous:  true,
+	}
+	res, err = s.PushBan(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeBan)
+	assert.True(t, res.Anonymous)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	rep.Anonymous = res.Anonymous
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Positive Test: Implicitely Anonymous Report (See issue #378) -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(nil, testutil.DiscordRestError(discordgo.ErrCodeUnknownMember))
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushBan(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeBan)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	rep.Anonymous = res.Anonymous
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
 }

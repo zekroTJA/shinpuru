@@ -97,6 +97,9 @@ func (r *ReportService) PushKick(rep models.Report) (models.Report, error) {
 	}
 
 	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
+	if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+		return models.Report{}, errors.New("This user is no more a member of this guild.")
+	}
 	if err != nil {
 		return models.Report{}, err
 	}
@@ -106,7 +109,8 @@ func (r *ReportService) PushKick(rep models.Report) (models.Report, error) {
 		return models.Report{}, err
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+	isAdmin := discordutil.IsAdmin(guild, executor)
+	if !isAdmin && roleutil.PositionDiff(victim, executor, guild) >= 0 {
 		return models.Report{}, ErrRoleDiff
 	}
 
@@ -142,6 +146,10 @@ func (r *ReportService) PushBan(rep models.Report) (models.Report, error) {
 	var victim *discordgo.Member
 	if !rep.Anonymous {
 		victim, err = r.st.Member(rep.GuildID, rep.VictimID)
+		if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+			rep.Anonymous = true
+			err = nil
+		}
 		if err != nil {
 			return models.Report{}, err
 		}
@@ -153,7 +161,8 @@ func (r *ReportService) PushBan(rep models.Report) (models.Report, error) {
 	}
 
 	if !rep.Anonymous {
-		if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		isAdmin := discordutil.IsAdmin(guild, executor)
+		if !isAdmin && roleutil.PositionDiff(victim, executor, guild) >= 0 {
 			return models.Report{}, ErrRoleDiff
 		}
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/internal/util/testutil"
 	"github.com/zekroTJA/shinpuru/mocks"
 )
 
@@ -109,7 +110,7 @@ func TestSetEnabled(t *testing.T) {
 			Return(true, nil)
 
 		m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), "user-left", mock.Anything).
-			Return(&discordgo.RESTError{Message: &discordgo.APIErrorMessage{Code: discordgo.ErrCodeUnknownMember}})
+			Return(testutil.DiscordRestError(discordgo.ErrCodeUnknownMember))
 		m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
 			Run(func(args mock.Arguments) {
 				// This needs to be checked separately because
