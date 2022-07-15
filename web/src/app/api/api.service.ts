@@ -253,6 +253,9 @@ export class APIService {
       return of(null);
     }
 
+    if (err.status === 0 && err.statusText === 'Unknown Error')
+      return throwError(err);
+
     const msg = err?.error?.error ?? err.message;
     this.toasts.push(msg, 'Request Error', 'error', 10000);
     return throwError(err);
