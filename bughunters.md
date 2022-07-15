@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **34** different wonderful people contributed a sum of **78** issues and **19** pull requests (with 1212 added and 151 deleted lines of code in 70 different files)! 🎉
+In total, **34** different wonderful people contributed a sum of **79** issues and **19** pull requests (with 1212 added and 151 deleted lines of code in 70 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -25,12 +25,12 @@ In total, **34** different wonderful people contributed a sum of **78** issues a
 |  [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 |  [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309) |  | `2` |
 |  [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
+|  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378) |  | `2` |
 |  [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
 |  [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90) |  | `1` |
 |  [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `1` |
 |  [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128) |  | `1` |
 |  [Barrer0](https://github.com/Barrer0) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `1` |
-|  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201) |  | `1` |
 |  [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234) |  | `1` |
 |  [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `1` |
 |  [PushkarOP](https://github.com/PushkarOP) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `1` |
