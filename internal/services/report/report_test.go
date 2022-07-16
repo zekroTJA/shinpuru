@@ -223,6 +223,222 @@ func TestPushReport(t *testing.T) {
 	m.s.AssertNotCalled(t, "ChannelMessageSendEmbed", "channel-id", mock.Anything)
 }
 
+func TestPushKick(t *testing.T) {
+	m := getReportMock(func(m reportMock) {
+		m.db.On("AddReport", mock.AnythingOfType("models.Report")).
+			Return(nil)
+		m.db.On("GetGuildModLog", mock.AnythingOfType("string")).
+			Return("channel-modlog", nil)
+		m.db.On("DeleteReport", mock.Anything).Return(nil)
+
+		m.s.On("UserChannelCreate", mock.AnythingOfType("string")).
+			Return(&discordgo.Channel{
+				ID: "channel-id",
+			}, nil)
+		m.s.On("ChannelMessageSendEmbed", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageEmbed")).
+			Return(nil, nil)
+
+		m.st.On("Guild", mock.AnythingOfType("string"), mock.AnythingOfType("bool")).
+			Return(&discordgo.Guild{
+				ID: "guild-id",
+				Roles: []*discordgo.Role{
+					{ID: "role-admin", Position: 0, Permissions: 0x8},
+					{ID: "role-0", Position: 0},
+					{ID: "role-1", Position: 1},
+				},
+			}, nil)
+	})
+
+	s, err := New(m.ct)
+	assert.Nil(t, err)
+
+	// ----- Positive Test -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildMemberDeleteWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+		Once().
+		Return(nil)
+
+	rep := models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err := s.PushKick(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeKick)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
+
+	// ----- Negative Test: Victim and Reporter have same role -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushKick(rep)
+	assert.NotNil(t, err)
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
+
+	// ----- Negative Test: Victim has higer role than executor -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushKick(rep)
+	assert.NotNil(t, err)
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
+
+	// ----- Positive Test: Victim has higer role than executor but executor is Admin -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildMemberDeleteWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushKick(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeKick)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
+
+	// ----- Negative Test: Victim has left -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(nil, testutil.DiscordRestError(discordgo.ErrCodeUnknownMember))
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushKick(rep)
+	assert.NotNil(t, err)
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
+}
+
 func TestPushBan(t *testing.T) {
 	m := getReportMock(func(m reportMock) {
 		m.db.On("AddReport", mock.AnythingOfType("models.Report")).
@@ -316,10 +532,6 @@ func TestPushBan(t *testing.T) {
 			Roles: []string{"role-1"},
 		}, nil)
 
-	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
-		Once().
-		Return(nil)
-
 	rep = models.Report{
 		ID:         snowflake.ParseInt64(1),
 		Type:       69,
@@ -354,10 +566,6 @@ func TestPushBan(t *testing.T) {
 			},
 			Roles: []string{"role-0"},
 		}, nil)
-
-	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
-		Once().
-		Return(nil)
 
 	rep = models.Report{
 		ID:         snowflake.ParseInt64(1),
@@ -493,4 +701,46 @@ func TestPushBan(t *testing.T) {
 	assert.Equal(t, rep, res)
 	m.db.AssertCalled(t, "AddReport", rep)
 	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Negative Test: Ban Process Failed -----
+
+	m.Reset()
+
+	m.db.On("DeleteReport").Once().Return(nil)
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(errors.New("test error"))
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushBan(rep)
+	assert.EqualError(t, err, "test error")
+	m.db.AssertCalled(t, "AddReport", mock.Anything)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+	m.db.AssertCalled(t, "DeleteReport", mock.Anything)
 }

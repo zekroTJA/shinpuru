@@ -89,7 +89,7 @@ func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 // for the audit log.
 func (r *ReportService) PushKick(rep models.Report) (models.Report, error) {
 	const typ = 0
-	rep.ID = typ
+	rep.Type = typ
 
 	guild, err := r.st.Guild(rep.GuildID, true)
 	if err != nil {
