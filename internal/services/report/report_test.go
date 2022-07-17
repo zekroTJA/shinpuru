@@ -325,7 +325,7 @@ func TestPushKick(t *testing.T) {
 		Msg:        "Some reason",
 	}
 	res, err = s.PushKick(rep)
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
 	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
 	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
 
@@ -360,7 +360,7 @@ func TestPushKick(t *testing.T) {
 		Msg:        "Some reason",
 	}
 	res, err = s.PushKick(rep)
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
 	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
 	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
 
@@ -414,16 +414,16 @@ func TestPushKick(t *testing.T) {
 
 	m.st.On("Member", "guild-id", "victim-id").
 		Once().
+		Return(nil, testutil.DiscordRestError(discordgo.ErrCodeUnknownMember))
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
 		Return(&discordgo.Member{
 			User: &discordgo.User{
 				ID: "victim-id",
 			},
 			Roles: []string{"role-1"},
 		}, nil)
-
-	m.st.On("Member", "guild-id", "executor-id").
-		Once().
-		Return(nil, testutil.DiscordRestError(discordgo.ErrCodeUnknownMember))
 
 	rep = models.Report{
 		ID:         snowflake.ParseInt64(1),
@@ -434,7 +434,7 @@ func TestPushKick(t *testing.T) {
 		Msg:        "Some reason",
 	}
 	res, err = s.PushKick(rep)
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, ErrMemberHasLeft.Error())
 	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
 	m.s.AssertNotCalled(t, "GuildMemberDeleteWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"))
 }
@@ -510,6 +510,69 @@ func TestPushBan(t *testing.T) {
 	m.db.AssertCalled(t, "AddReport", rep)
 	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
 
+	// ----- Positive Test with Timeout -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildBanCreateWithReason", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil)
+
+	timeout := time.Time{}.Add(24 * time.Hour)
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+		Timeout:    &timeout,
+	}
+	res, err = s.PushBan(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeBan)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
+	// ----- Negative Test: Invalid Timeout -----
+
+	m.Reset()
+
+	timeout = time.Time{}.Add(-24 * time.Hour)
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+		Timeout:    &timeout,
+	}
+	res, err = s.PushBan(rep)
+	assert.EqualError(t, err, ErrInvalidTimeout.Error())
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
+
 	// ----- Negative Test: Victim and Reporter have same role -----
 
 	m.Reset()
@@ -541,7 +604,7 @@ func TestPushBan(t *testing.T) {
 		Msg:        "Some reason",
 	}
 	res, err = s.PushBan(rep)
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
 	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
 	m.s.AssertNotCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
 
@@ -576,7 +639,7 @@ func TestPushBan(t *testing.T) {
 		Msg:        "Some reason",
 	}
 	res, err = s.PushBan(rep)
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
 	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
 	m.s.AssertNotCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
 

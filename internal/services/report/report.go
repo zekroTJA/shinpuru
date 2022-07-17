@@ -24,7 +24,9 @@ import (
 )
 
 var (
-	ErrRoleDiff = errors.New("You can only ban or kick members with lower permissions than yours.")
+	ErrRoleDiff       = errors.New("You can only ban or kick members with lower permissions than yours.")
+	ErrMemberHasLeft  = errors.New("This user is no more a member of this guild.")
+	ErrInvalidTimeout = errors.New("timeout must be in the future")
 )
 
 type ReportService struct {
@@ -98,7 +100,7 @@ func (r *ReportService) PushKick(rep models.Report) (models.Report, error) {
 
 	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
 	if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
-		return models.Report{}, errors.New("This user is no more a member of this guild.")
+		return models.Report{}, ErrMemberHasLeft
 	}
 	if err != nil {
 		return models.Report{}, err
@@ -162,7 +164,8 @@ func (r *ReportService) PushBan(rep models.Report) (models.Report, error) {
 
 	if !rep.Anonymous {
 		isAdmin := discordutil.IsAdmin(guild, executor)
-		if !isAdmin && roleutil.PositionDiff(victim, executor, guild) >= 0 {
+		diff := roleutil.PositionDiff(victim, executor, guild)
+		if !isAdmin && diff >= 0 {
 			return models.Report{}, ErrRoleDiff
 		}
 	}
@@ -196,6 +199,9 @@ func (r *ReportService) PushMute(rep models.Report) (models.Report, error) {
 	}
 
 	victim, err := r.st.Member(rep.GuildID, rep.VictimID)
+	if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember) {
+		return models.Report{}, ErrMemberHasLeft
+	}
 	if err != nil {
 		return models.Report{}, err
 	}
@@ -400,7 +406,7 @@ func (r *ReportService) revokeReportOnExpiration(rep models.Report) (err error) 
 
 func checkTimeout(now time.Time, t *time.Time) (err error) {
 	if t != nil && t.Before(now) {
-		err = errors.New("timeout must be in the future")
+		err = ErrInvalidTimeout
 	}
 	return
 }
