@@ -93,6 +93,10 @@ func GetSortedGuildRoles(s discordutil.ISession, guildID string, reversed bool) 
 // the specified guild g by subtracting
 // m1MaxPos - m2MaxPos.
 func PositionDiff(m1 *discordgo.Member, m2 *discordgo.Member, g *discordgo.Guild) int {
+	if len(g.Roles) == 0 || len(m1.Roles) == 0 && len(m2.Roles) == 0 {
+		return 0
+	}
+
 	m1MaxPos, m2MaxPos := -1, -1
 	rolePositions := make(map[string]int)
 
