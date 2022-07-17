@@ -28,12 +28,4 @@ jobs:
 
       - name: Run tests
         run: |
-          go test -v -timeout 300s -covermode atomic -coverprofile=covprofile ./...
-
-      - name: Upload Coverage Report
-        env:
-          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GO111MODULE: off
-        run: |
-          go get github.com/mattn/goveralls
-          goveralls -coverprofile=covprofile -service=github
+          go test -v -timeout 300s -cover ./...
