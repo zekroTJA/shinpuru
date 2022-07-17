@@ -5,8 +5,8 @@ on:
     branches:
       - master
       - dev
-    paths-ignore:
-      - '**.md'
+    paths:
+      - 'internal/slashcommands/**'
 
 jobs:
   wiki-generate:
