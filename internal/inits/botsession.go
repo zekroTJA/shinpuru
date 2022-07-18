@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
@@ -21,7 +20,6 @@ import (
 func InitDiscordBotSession(container di.Container) (release func()) {
 	release = func() {}
 
-	snowflake.Epoch = static.DefEpoche
 	err := snowflakenodes.Setup()
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed setting up snowflake nodes")

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
 	"github.com/sirupsen/logrus"
@@ -46,6 +47,7 @@ const (
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
+	snowflake.Epoch = static.DefEpoche
 }
 
 //////////////////////////////////////////////////////////////////////

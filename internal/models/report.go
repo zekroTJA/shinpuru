@@ -72,7 +72,7 @@ type Report struct {
 // report was generated from the reports ID
 // snowflake.
 func (r *Report) GetTimestamp() time.Time {
-	return time.Unix(r.ID.Time()/1000, 0)
+	return time.UnixMilli(r.ID.Time())
 }
 
 // AsEmbed creates a discordgo.Embed from the
@@ -103,10 +103,13 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 				Value: r.Msg,
 			},
 		},
-		Timestamp: r.GetTimestamp().Format(time.RFC3339),
 		Image: &discordgo.MessageEmbedImage{
 			URL: imgstore.GetLink(r.AttachmentURL, publicAddr),
 		},
+	}
+
+	if r.ID != 0 {
+		emb.Timestamp = r.GetTimestamp().UTC().Format(time.RFC3339)
 	}
 
 	if r.Timeout != nil {
