@@ -9,8 +9,11 @@ export const SinceDate: React.FC<Props> = ({ date }) => {
   const { i18n } = useTranslation();
   const dateSince = formatSince(date, i18n.language);
   return (
-    <Trans i18nKey="sincedate.since" ns="components">
-      <span>{{ dateSince }}</span>
-    </Trans>
+    <Trans
+      i18nKey="sincedate.since"
+      ns="components"
+      values={{ dateSince }}
+      components={{ '1': <span /> }}
+    />
   );
 };

@@ -8,5 +8,5 @@ type Props<T> = {
 const StyledDiv = styled.div``;
 
 export const Option = <T extends unknown>({ value }: Props<T>) => {
-  return <StyledDiv key={value.id}>{value}</StyledDiv>;
+  return <StyledDiv key={value.id}>{value.display}</StyledDiv>;
 };

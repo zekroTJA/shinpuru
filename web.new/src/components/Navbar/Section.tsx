@@ -1,7 +1,8 @@
+import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { Heading } from '../Heading';
 
-type Props = {
+type Props = PropsWithChildren & {
   title: string;
 };
 

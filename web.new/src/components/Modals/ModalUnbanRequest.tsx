@@ -50,9 +50,12 @@ export const ModalUnbanRequest: React.FC<Props> = ({
       }>
       <ModalContainer>
         <span>
-          <Trans ns="components" i18nKey="modalunbanrequest.sub">
-            . <strong>{{ guildname: guild?.name }}</strong>
-          </Trans>
+          <Trans
+            ns="components"
+            i18nKey="modalunbanrequest.sub"
+            values={{ guildname: guild?.name }}
+            components={{ '1': <strong /> }}
+          />
         </span>
         <span>{t('description')}</span>
         <ModalTextArea value={message} onInput={(e) => setMessage(e.currentTarget.value)} />
