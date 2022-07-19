@@ -12,7 +12,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.29.0
-	github.com/golang-jwt/jwt/v4 v4.4.0
+	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
 	github.com/makeworld-the-better-one/go-isemoji v1.3.0

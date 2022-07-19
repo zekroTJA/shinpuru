@@ -21,7 +21,7 @@ import (
 )
 
 func main() {
-	  fmt.Println(bytecount.Format(123456789))
+    fmt.Println(bytecount.Format(123456789))
     // -> "117.738 MiB"
 }
 ```
