@@ -649,7 +649,7 @@ func (c *GuildsSettingsController) createGuildSettingsKrameRule(ctx *fiber.Ctx) 
 	guildID := ctx.Params("guildid")
 
 	var rule sharedmodels.KarmaRule
-	if err := ctx.BodyParser(rule); err != nil {
+	if err := ctx.BodyParser(&rule); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
@@ -702,7 +702,7 @@ func (c *GuildsSettingsController) updateGuildSettingsKrameRule(ctx *fiber.Ctx) 
 	id := ctx.Params("id")
 
 	var rule sharedmodels.KarmaRule
-	if err := ctx.BodyParser(rule); err != nil {
+	if err := ctx.BodyParser(&rule); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
