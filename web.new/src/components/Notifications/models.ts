@@ -14,5 +14,5 @@ export type NotificationMeta = {
 
 export type Notification = NotificationMeta & {
   heading?: string;
-  message: string;
+  message: string | JSX.Element;
 };

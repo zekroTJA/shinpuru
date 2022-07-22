@@ -14,6 +14,7 @@ export type ButtonVariant =
 type Props = {
   variant?: ButtonVariant;
   nvp?: boolean;
+  margin?: string;
 };
 
 export const Button = styled.button<Props>`
@@ -24,10 +25,12 @@ export const Button = styled.button<Props>`
   padding: ${(p) => (p.nvp ? '0' : '0.8em')} 1em;
   border-radius: 3px;
   display: flex;
+  gap: 0.8em;
   align-items: center;
   cursor: pointer;
   transition: transform 0.2s ease;
   justify-content: center;
+  margin: ${(p) => p.margin};
 
   ${(p) => {
     switch (p.variant ?? 'default') {
@@ -49,10 +52,6 @@ export const Button = styled.button<Props>`
         return LinearGradient(p.theme.accent);
     }
   }}
-
-  > svg {
-    margin-right: 0.8em;
-  }
 
   &:disabled {
     opacity: 0.5;

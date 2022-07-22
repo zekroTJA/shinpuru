@@ -19,7 +19,7 @@ const SwitchContainer = styled.div<{ enabled: boolean }>`
   }
 
   > div {
-    width: 4em;
+    min-width: 4em;
     height: 2em;
     border-radius: 1em;
     background-color: ${(p) => (p.enabled ? p.theme.accent : p.theme.background3)};
@@ -35,7 +35,6 @@ const SwitchContainer = styled.div<{ enabled: boolean }>`
 
       transition: ${(p) => (p.enabled ? 'margin-left' : 'margin-right')} 0.3s ease 0.15s,
         ${(p) => (p.enabled ? 'margin-right' : 'margin-left')} 0.3s ease;
-      /* transition-delay: 1s; */
     }
   }
 `;

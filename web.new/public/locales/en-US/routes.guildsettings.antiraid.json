@@ -1,7 +1,40 @@
 {
   "heading": "Antiraid Settings",
-
+  "notifications": {
+    "saved": "Settings saved.",
+    "kicked": "{{count}} users have been kicked!",
+    "banned": "{{count}} users have been banned!"
+  },
   "explaination": "lorem ipsum",
-
-  "enable": "Enable antiraid system"
+  "enable": "Enable antiraid system",
+  "save": "Save Settings",
+  "regeneration": {
+    "label": "Regeneration Duration",
+    "explaination": "lorem ipsum"
+  },
+  "burst": {
+    "label": "Burst Amount",
+    "explaination": "lorem ipsum"
+  },
+  "verification": {
+    "label": "User Verification",
+    "explaination": "lorem ipsum",
+    "switch_label": "Enable Verification"
+  },
+  "log": {
+    "controls": {
+      "download": "Download",
+      "refresh": "Refresh",
+      "clear": "Clear",
+      "kick": "Kick",
+      "ban": "Ban"
+    },
+    "entries": {
+      "id": "User ID",
+      "tag": "User Tag",
+      "created": "Account created",
+      "joined": "Joined at"
+    },
+    "empty": "No one is on this list at the moment. 👻"
+  }
 }

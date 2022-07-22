@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
 import { Button } from '../../../components/Button';
+import { Controls } from '../../../components/Controls';
 import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
@@ -117,13 +118,6 @@ const Section = styled.section`
       padding-bottom: 0;
       padding-top: 0;
     }
-  }
-`;
-
-const Controls = styled.div`
-  margin-top: 2em;
-  > * {
-    width: 100%;
   }
 `;
 
