@@ -211,7 +211,9 @@ func (r *ReportService) PushMute(rep models.Report) (models.Report, error) {
 		return models.Report{}, err
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+	isAdmin := discordutil.IsAdmin(guild, executor)
+	diff := roleutil.PositionDiff(victim, executor, guild)
+	if !isAdmin && diff >= 0 {
 		return models.Report{}, ErrRoleDiff
 	}
 
@@ -251,7 +253,9 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 		return nil, err
 	}
 
-	if roleutil.PositionDiff(victim, executor, guild) >= 0 {
+	isAdmin := discordutil.IsAdmin(guild, executor)
+	diff := roleutil.PositionDiff(victim, executor, guild)
+	if !isAdmin && diff >= 0 {
 		return nil, ErrRoleDiff
 	}
 
