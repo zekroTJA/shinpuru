@@ -1,6 +1,9 @@
 package testutil
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+	"github.com/stretchr/testify/mock"
+)
 
 func DiscordRestError(code int) error {
 	return &discordgo.RESTError{
@@ -8,4 +11,10 @@ func DiscordRestError(code int) error {
 			Code: code,
 		},
 	}
+}
+
+func Nil[T any]() any {
+	return mock.MatchedBy(func(v *T) bool {
+		return v == nil
+	})
 }

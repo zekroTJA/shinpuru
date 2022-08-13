@@ -807,3 +807,408 @@ func TestPushBan(t *testing.T) {
 	m.s.AssertCalled(t, "GuildBanCreateWithReason", "guild-id", "victim-id", mock.AnythingOfType("string"), mock.AnythingOfType("int"))
 	m.db.AssertCalled(t, "DeleteReport", mock.Anything)
 }
+
+func TestPushMute(t *testing.T) {
+	m := getReportMock(func(m reportMock) {
+		m.db.On("AddReport", mock.AnythingOfType("models.Report")).
+			Return(nil)
+		m.db.On("GetGuildModLog", mock.AnythingOfType("string")).
+			Return("channel-modlog", nil)
+		m.db.On("DeleteReport", mock.Anything).Return(nil)
+
+		m.s.On("UserChannelCreate", mock.AnythingOfType("string")).
+			Return(&discordgo.Channel{
+				ID: "channel-id",
+			}, nil)
+		m.s.On("ChannelMessageSendEmbed", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageEmbed")).
+			Return(nil, nil)
+
+		m.st.On("Guild", mock.AnythingOfType("string"), mock.AnythingOfType("bool")).
+			Return(&discordgo.Guild{
+				ID: "guild-id",
+				Roles: []*discordgo.Role{
+					{ID: "role-admin", Position: 0, Permissions: 0x8},
+					{ID: "role-0", Position: 0},
+					{ID: "role-1", Position: 1},
+				},
+			}, nil)
+	})
+
+	s, err := New(m.ct)
+	assert.Nil(t, err)
+
+	// ----- Positive Test -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	rep := models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err := s.PushMute(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeMute)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", mock.AnythingOfType("*time.Time"))
+
+	// ----- Negative Test: Invalid Timeout -----
+
+	m.Reset()
+
+	timeout := time.Time{}.Add(-24 * time.Hour)
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+		Timeout:    &timeout,
+	}
+	res, err = s.PushMute(rep)
+	assert.EqualError(t, err, ErrInvalidTimeout.Error())
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", mock.AnythingOfType("*time.Time"))
+
+	// ----- Negative Test: Victim and Reporter have same role -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushMute(rep)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", mock.AnythingOfType("*time.Time"))
+
+	// ----- Negative Test: Victim has higer role than executor -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushMute(rep)
+	assert.EqualError(t, err, ErrRoleDiff.Error())
+	m.db.AssertNotCalled(t, "AddReport", mock.Anything)
+	m.s.AssertNotCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", mock.AnythingOfType("*time.Time"))
+
+	// ----- Positive Test: Victim has higer role than executor but executor is Admin -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "Some reason",
+	}
+	res, err = s.PushMute(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeMute)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", mock.AnythingOfType("*time.Time"))
+
+	// ----- Positive Test: No Reason -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	rep = models.Report{
+		ID:         snowflake.ParseInt64(1),
+		Type:       69,
+		VictimID:   "victim-id",
+		ExecutorID: "executor-id",
+		GuildID:    "guild-id",
+		Msg:        "",
+	}
+	res, err = s.PushMute(rep)
+	assert.Nil(t, err)
+	assert.NotEqual(t, rep.ID, res.ID)
+	assert.Equal(t, res.Type, models.TypeMute)
+	rep.ID = res.ID
+	rep.Type = res.Type
+	rep.Msg = "no reason specified"
+	assert.Equal(t, rep, res)
+	m.db.AssertCalled(t, "AddReport", rep)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", testutil.Nil[time.Time]())
+}
+
+func TestRevokeMute(t *testing.T) {
+	m := getReportMock(func(m reportMock) {
+		m.db.On("GetGuildModLog", mock.AnythingOfType("string")).
+			Return("channel-modlog", nil)
+		m.db.On("DeleteReport", mock.Anything).Return(nil)
+
+		m.s.On("UserChannelCreate", mock.AnythingOfType("string")).
+			Return(&discordgo.Channel{
+				ID: "channel-id",
+			}, nil)
+		m.s.On("ChannelMessageSendEmbed", mock.AnythingOfType("string"), mock.AnythingOfType("*discordgo.MessageEmbed")).
+			Return(nil, nil)
+
+		m.st.On("Guild", mock.AnythingOfType("string"), mock.AnythingOfType("bool")).
+			Return(&discordgo.Guild{
+				ID: "guild-id",
+				Roles: []*discordgo.Role{
+					{ID: "role-admin", Position: 0, Permissions: 0x8},
+					{ID: "role-0", Position: 0},
+					{ID: "role-1", Position: 1},
+				},
+			}, nil)
+	})
+
+	// ----- Positive Test -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+		Once().
+		Return([]models.Report{
+			{
+				ID:      snowflake.ParseInt64(123),
+				Timeout: &time.Time{},
+			},
+		}, nil)
+
+	m.db.On("ExpireReports", mock.AnythingOfType("string")).
+		Once().
+		Return(nil)
+
+	s, err := New(m.ct)
+	assert.Nil(t, err)
+
+	emb, err := s.RevokeMute("guild-id", "executor-id", "victim-id", "")
+	assert.Nil(t, err)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", testutil.Nil[time.Time]())
+	m.s.AssertCalled(t, "ChannelMessageSendEmbed", "channel-modlog", emb)
+	m.db.AssertCalled(t, "ExpireReports", "123")
+
+	// ----- Positive Test: Admin -----
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-admin"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+		Once().
+		Return([]models.Report{
+			{
+				ID:      snowflake.ParseInt64(123),
+				Timeout: &time.Time{},
+			},
+		}, nil)
+
+	m.db.On("ExpireReports", mock.AnythingOfType("string")).
+		Once().
+		Return(nil)
+
+	s, err = New(m.ct)
+	assert.Nil(t, err)
+
+	emb, err = s.RevokeMute("guild-id", "executor-id", "victim-id", "")
+	assert.Nil(t, err)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", testutil.Nil[time.Time]())
+	m.s.AssertCalled(t, "ChannelMessageSendEmbed", "channel-modlog", emb)
+	m.db.AssertCalled(t, "ExpireReports", "123")
+
+	// ----- Positive Test: No prior Reports -----
+
+	m.Reset()
+
+	m.st.On("Member", "guild-id", "victim-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "victim-id",
+			},
+			Roles: []string{"role-0"},
+		}, nil)
+
+	m.st.On("Member", "guild-id", "executor-id").
+		Once().
+		Return(&discordgo.Member{
+			User: &discordgo.User{
+				ID: "executor-id",
+			},
+			Roles: []string{"role-1"},
+		}, nil)
+
+	m.s.On("GuildMemberTimeout", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*time.Time")).
+		Once().
+		Return(nil)
+
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+		Once().
+		Return(nil, nil)
+
+	s, err = New(m.ct)
+	assert.Nil(t, err)
+
+	_, err = s.RevokeMute("guild-id", "executor-id", "victim-id", "")
+	assert.Nil(t, err)
+	m.s.AssertCalled(t, "GuildMemberTimeout", "guild-id", "victim-id", testutil.Nil[time.Time]())
+	m.db.AssertNotCalled(t, "ExpireReports", "123")
+}
