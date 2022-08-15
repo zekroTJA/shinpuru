@@ -13,7 +13,6 @@ TMPBIN       = "./bin/tmp/$(APPNAME)"
 GO     	      = go
 GOLINT 	      = golint
 GREP   	      = grep
-NPM    	      = npm
 PRETTIER      = prettier
 YARN					= yarn
 DOCKERCOMPOSE = docker-compose
@@ -63,7 +62,7 @@ PHONY += deps
 deps:
 	$(GO) mod tidy
 	cd ./web && \
-		$(NPM) install
+		$(YARN) install
 
 $(BIN):
 	$(GO) build  \
