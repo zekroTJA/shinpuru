@@ -7,7 +7,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekrotja/ken"
 )
 
@@ -85,19 +85,19 @@ func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
 
 	if !ok {
 		acceptMsg := &acceptmsg.AcceptMessage{
-			Session: ctx.Session,
+			Ken: ctx.GetKen(),
 			Embed: &discordgo.MessageEmbed{
 				Color:       static.ColorEmbedDefault,
 				Description: "Do you want to set this channel as modlog channel?",
 			},
 			UserID:         ctx.User().ID,
 			DeleteMsgAfter: true,
-			AcceptFunc: func(msg *discordgo.Message) (err error) {
+			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
 				err = db.SetGuildModLog(ctx.Event.GuildID, ctx.Event.ChannelID)
 				if err != nil {
 					return
 				}
-				err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+				err = cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Set this channel as modlog channel.",
 				}).Error
 				return

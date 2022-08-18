@@ -11,7 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/internal/util/tag"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -197,16 +197,19 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 			),
 		}
 		_, err = acceptmsg.New().
-			WithSession(ctx.Session).
+			WithKen(ctx.GetKen()).
 			WithEmbed(emb).
 			LockOnUser(ctx.User().ID).
 			DeleteAfterAnswer().
-			DoOnAccept(func(_ *discordgo.Message) (err error) {
+			DoOnAccept(func(cctx ken.ComponentContext) (err error) {
+				if err = cctx.Defer(); err != nil {
+					return
+				}
 				tg.Content = content
 				if err = db.EditTag(tg); err != nil {
 					return
 				}
-				return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+				return cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: fmt.Sprintf(
 						"Tag has been updated.\nUse the command `/tag show %s` to use the tag.",
 						tg.Ident),

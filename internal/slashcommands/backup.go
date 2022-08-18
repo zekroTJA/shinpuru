@@ -13,9 +13,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/logmsg"
 	"github.com/zekrotja/ken"
 )
@@ -187,6 +186,7 @@ func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 
 func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
+	bck := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
 
 	i := ctx.Options().Get(0).IntValue()
 	if err != nil {
@@ -227,7 +227,7 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	accMsg := &acceptmsg.AcceptMessage{
-		Session:        ctx.Session,
+		Ken:            ctx.GetKen(),
 		DeleteMsgAfter: true,
 		UserID:         ctx.User().ID,
 		Embed: &discordgo.MessageEmbed{
@@ -236,13 +236,11 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 				"By pressing :white_check_mark:, the structure of this guild will be **reset** to the selected backup:\n\n"+
 				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
 		},
-		DeclineFunc: func(m *discordgo.Message) (err error) {
-			err = util.SendEmbedError(ctx.Session, ctx.Event.ChannelID, "Canceled.").
-				DeleteAfter(6 * time.Second).Error()
-			return
+		DeclineFunc: func(cctx ken.ComponentContext) error {
+			return cctx.RespondError("Canceled.", "")
 		},
-		AcceptFunc: func(m *discordgo.Message) (err error) {
-			return c.proceedRestore(ctx.Ctx, backup.FileID)
+		AcceptFunc: func(cctx ken.ComponentContext) error {
+			return c.proceedRestore(cctx, bck, backup.FileID)
 		},
 	}
 
@@ -253,12 +251,15 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 }
 
 func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
+	db := ctx.Get(static.DiDatabase).(database.Database)
+	st := ctx.Get(static.DiObjectStorage).(storage.Storage)
+
 	if err = ctx.Defer(); err != nil {
 		return
 	}
 
 	am, err := acceptmsg.New().
-		WithSession(ctx.Session).
+		WithKen(ctx.GetKen()).
 		WithEmbed(&discordgo.MessageEmbed{
 			Color: static.ColorEmbedOrange,
 			Description: ":warning:  **WARNING**  :warning:\n\n" +
@@ -266,13 +267,11 @@ func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
 		}).
 		LockOnUser(ctx.User().ID).
 		DeleteAfterAnswer().
-		DoOnDecline(func(_ *discordgo.Message) (err error) {
-			err = util.SendEmbedError(ctx.Session, ctx.Event.ChannelID, "Canceled.").
-				DeleteAfter(6 * time.Second).Error()
-			return
+		DoOnDecline(func(cctx ken.ComponentContext) error {
+			return cctx.RespondError("Canceled.", "")
 		}).
-		DoOnAccept(func(_ *discordgo.Message) (err error) {
-			c.purgeBackups(ctx.Ctx)
+		DoOnAccept(func(cctx ken.ComponentContext) (err error) {
+			c.purgeBackups(cctx, db, st)
 			return
 		}).
 		AsFollowUp(ctx.Ctx)
@@ -317,52 +316,60 @@ func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, err
 	return backups, strBackupAll, nil
 }
 
-func (c *Backup) proceedRestore(ctx *ken.Ctx, fileID string) (err error) {
+func (c *Backup) proceedRestore(ctx ken.ComponentContext, bck *backup.GuildBackups, fileID string) (err error) {
+	if err = ctx.Defer(); err != nil {
+		return err
+	}
+
 	statusChan := make(chan string)
 	errorsChan := make(chan error)
 
-	statusMsg, err := logmsg.New(ctx.Session, ctx.Event.ChannelID, &discordgo.MessageEmbed{
-		Title: "Backup Restoration Status",
-		Color: static.ColorEmbedGray,
-	}, statusChan, errorsChan, "initializing backup restoring...")
+	statusMsg, err := logmsg.NewWithSender(
+		ctx.GetSession(),
+		func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
+			fum := ctx.FollowUpEmbed(emb)
+			return fum.Message, fum.Error
+		},
+		&discordgo.MessageEmbed{
+			Title: "Backup Restoration Status",
+			Color: static.ColorEmbedGray,
+		},
+		statusChan,
+		errorsChan,
+		"initializing backup restoring...")
 	if err != nil {
 		return
 	}
 	defer statusMsg.Close("✔️ Backup restoration finished!")
 
-	bck, _ := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
-
-	err = bck.RestoreBackup(ctx.Event.GuildID, fileID, statusChan, errorsChan)
+	err = bck.RestoreBackup(ctx.GetEvent().GuildID, fileID, statusChan, errorsChan)
 
 	return
 }
 
-func (c *Backup) purgeBackups(ctx *ken.Ctx) {
-	db, _ := ctx.Get(static.DiDatabase).(database.Database)
+func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st storage.Storage) {
+	if err := ctx.Defer(); err != nil {
+		return
+	}
 
-	backups, err := db.GetBackups(ctx.Event.GuildID)
+	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil {
-		util.SendEmbedError(ctx.Session, ctx.Event.GuildID,
-			fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error())).
-			DeleteAfter(15 * time.Second).Error()
+		ctx.FollowUpError(fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error()), "")
 		return
 	}
 
 	var lnBackups = len(backups)
 	if lnBackups < 1 {
-		util.SendEmbedError(ctx.Session, ctx.Event.GuildID,
-			"There are no backups saved to be purged.").
-			DeleteAfter(8 * time.Second).Error()
+		ctx.FollowUpError("There are no backups saved to be purged.", "")
 		return
 	}
 
 	var success int
 	for _, backup := range backups {
-		if err = db.DeleteBackup(ctx.Event.GuildID, backup.FileID); err != nil {
+		if err = db.DeleteBackup(ctx.GetEvent().GuildID, backup.FileID); err != nil {
 			continue
 		}
 
-		st, _ := ctx.Get(static.DiObjectStorage).(storage.Storage)
 		if err = st.DeleteObject(static.StorageBucketBackups, backup.FileID); err != nil {
 			continue
 		}
@@ -370,16 +377,15 @@ func (c *Backup) purgeBackups(ctx *ken.Ctx) {
 	}
 
 	if success < lnBackups {
-		util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-			fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
-				success, lnBackups, lnBackups-success)).
-			DeleteAfter(8 * time.Second).Error()
+		ctx.FollowUpError(fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
+			success, lnBackups, lnBackups-success), "")
 		return
 	}
 
-	util.SendEmbed(ctx.Session, ctx.Event.ChannelID,
-		fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
-			success, lnBackups), "", static.ColorEmbedGreen).
-		DeleteAfter(8 * time.Second).Error()
+	ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
+			success, lnBackups),
+		Color: static.ColorEmbedGreen,
+	})
 	return
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
 	"github.com/zekrotja/ken"
 )
@@ -163,18 +163,19 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 		}
 
 		amsg, err := acceptmsg.New().
-			WithSession(ctx.Session).
+			WithKen(ctx.GetKen()).
 			WithContent(
 				fmt.Sprintf("Do you really want to delete all %d messages to message %s?", len(msgIds), deleteAfterMsg.ID)).
 			LockOnUser(ctx.User().ID).
 			DeleteAfterAnswer().
-			DoOnAccept(func(m *discordgo.Message) (err error) {
+			DoOnAccept(func(cctx ken.ComponentContext) (err error) {
 				if err = ctx.Session.ChannelMessagesBulkDelete(ctx.Event.ChannelID, msgIds); err != nil {
 					return
 				}
-				return util.SendEmbed(ctx.Session, ctx.Event.ChannelID,
-					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
-					DeleteAfter(6 * time.Second).Error()
+				return cctx.RespondEmbed(&discordgo.MessageEmbed{
+					Description: fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")),
+					Color:       static.ColorEmbedUpdated,
+				})
 			}).
 			AsFollowUp(ctx.Ctx)
 		if err != nil {
@@ -191,18 +192,19 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 
 	if len(msgIds) > 0 {
 		amsg, err := acceptmsg.New().
-			WithSession(ctx.Session).
+			WithKen(ctx.GetKen()).
 			WithContent(
 				fmt.Sprintf("Do you really want to delete all %d selected messages?", len(msgIds))).
 			LockOnUser(ctx.User().ID).
 			DeleteAfterAnswer().
-			DoOnAccept(func(m *discordgo.Message) (err error) {
+			DoOnAccept(func(cctx ken.ComponentContext) (err error) {
 				if err = ctx.Session.ChannelMessagesBulkDelete(ctx.Event.ChannelID, msgIds); err != nil {
 					return
 				}
-				return util.SendEmbed(ctx.Session, ctx.Event.ChannelID,
-					fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")), "", static.ColorEmbedUpdated).
-					DeleteAfter(6 * time.Second).Error()
+				return cctx.RespondEmbed(&discordgo.MessageEmbed{
+					Description: fmt.Sprintf("Deleted %d %s.", len(msgIds), util.Pluralize(len(msgIds), "message")),
+					Color:       static.ColorEmbedUpdated,
+				})
 			}).
 			AsFollowUp(ctx.Ctx)
 		if err != nil {

@@ -106,7 +106,7 @@ func (c *Help) cmdHelp(ctx *ken.Ctx, webAddr, name string) (err error) {
 	name = strings.ToLower(name)
 
 	var info *ken.CommandInfo
-	for _, info = range ctx.Ken.GetCommandInfo() {
+	for _, info = range ctx.GetKen().GetCommandInfo() {
 		if info.ApplicationCommand.Name == name {
 			break
 		}

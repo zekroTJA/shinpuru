@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
@@ -12,7 +11,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/imgstore"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/timeutil"
 	"github.com/zekrotja/ken"
 )
@@ -71,10 +70,14 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 
 	acceptMsg := acceptmsg.AcceptMessage{
 		Embed:          emb,
-		Session:        ctx.GetSession(),
+		Ken:            ctx.GetKen(),
 		UserID:         ctx.User().ID,
 		DeleteMsgAfter: true,
-		AcceptFunc: func(msg *discordgo.Message) (err error) {
+		AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+			if err = cctx.Defer(); err != nil {
+				return
+			}
+
 			switch typ {
 			case models.TypeKick:
 				rep, err = repSvc.PushKick(rep)
@@ -88,9 +91,8 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 				return
 			}
 
-			_, err = ctx.GetSession().ChannelMessageSendEmbed(
-				ctx.GetEvent().ChannelID, rep.AsEmbed(cfg.Config().WebServer.PublicAddr))
-			return
+			return cctx.FollowUpEmbed(
+				rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).Error
 		},
 	}
 

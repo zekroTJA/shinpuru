@@ -2,7 +2,6 @@ package slashcommands
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -12,10 +11,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/cmdutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekrotja/ken"
 )
 
@@ -221,15 +219,17 @@ func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
 				rep.AsEmbedField(cfg.Config().WebServer.PublicAddr),
 			},
 		},
-		Session:        ctx.Session,
+		Ken:            ctx.GetKen(),
 		DeleteMsgAfter: true,
 		UserID:         ctx.User().ID,
-		DeclineFunc: func(m *discordgo.Message) (err error) {
-			return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-				"Canceled.").
-				DeleteAfter(8 * time.Second).Error()
+		DeclineFunc: func(cctx ken.ComponentContext) (err error) {
+			return cctx.RespondError("Canceled.", "")
 		},
-		AcceptFunc: func(m *discordgo.Message) (err error) {
+		AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+			if err = cctx.Defer(); err != nil {
+				return err
+			}
+
 			emb, err := repSvc.RevokeReport(
 				rep,
 				ctx.User().ID,
@@ -242,8 +242,7 @@ func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
 				return
 			}
 
-			_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, emb)
-			return
+			return cctx.FollowUpEmbed(emb).Error
 		},
 	}
 

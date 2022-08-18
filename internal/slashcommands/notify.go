@@ -7,7 +7,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
@@ -168,7 +168,7 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 		"`ment` command or toggling it manually in the discord settings.*"
 	if notifyRoleExists {
 		am := &acceptmsg.AcceptMessage{
-			Session:        ctx.Session,
+			Ken:            ctx.GetKen(),
 			UserID:         ctx.User().ID,
 			DeleteMsgAfter: true,
 			Embed: &discordgo.MessageEmbed{
@@ -177,7 +177,7 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 					"Do you want to overwrite this setting? This will also **delete** the role <@&%s>.",
 					notifyRoleID, notifyRoleID),
 			},
-			AcceptFunc: func(m *discordgo.Message) (err error) {
+			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
 				role, err := c.setupRole(ctx)
 				if err != nil {
 					return
@@ -186,16 +186,14 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 				if err != nil {
 					return
 				}
-				err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+				return cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID),
 				}).Error
-				return
 			},
-			DeclineFunc: func(m *discordgo.Message) (err error) {
-				err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+			DeclineFunc: func(cctx ken.ComponentContext) (err error) {
+				return cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Canceled",
 				}).Error
-				return
 			},
 		}
 
@@ -223,13 +221,11 @@ func (c *Notify) setupRole(ctx *ken.SubCommandCtx) (role *discordgo.Role, err er
 	if roleV, ok := ctx.Options().GetByNameOptional("role"); ok {
 		role = roleV.RoleValue(ctx.Ctx)
 	} else {
-		role, err = ctx.Session.GuildRoleCreate(ctx.Event.GuildID)
+		role, err = ctx.Session.GuildRoleCreate(ctx.Event.GuildID, &discordgo.RoleParams{
+			Name: roleName,
+		})
 		if err != nil {
 			return
-		}
-		role, err = ctx.Session.GuildRoleEdit(ctx.Event.GuildID, role.ID, roleName, 0, false, 0, false)
-		if err != nil {
-			return nil, err
 		}
 	}
 

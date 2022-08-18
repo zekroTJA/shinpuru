@@ -26,6 +26,19 @@ func New(
 	cErr <-chan error,
 	initMsg string,
 ) (lm *LogMessage, err error) {
+	return NewWithSender(s, func(e *discordgo.MessageEmbed) (*discordgo.Message, error) {
+		return s.ChannelMessageSendEmbed(channelId, e)
+	}, emb, cMsgs, cErr, initMsg)
+}
+
+func NewWithSender(
+	s *discordgo.Session,
+	sender func(emb *discordgo.MessageEmbed) (*discordgo.Message, error),
+	emb *discordgo.MessageEmbed,
+	cMsgs <-chan string,
+	cErr <-chan error,
+	initMsg string,
+) (lm *LogMessage, err error) {
 	lm = &LogMessage{
 		session: s,
 		content: voidbuffer.New[string](20),
@@ -38,7 +51,7 @@ func New(
 	lm.content.Push("ℹ️ " + initMsg)
 
 	lm.updateEmbed()
-	lm.Message, err = s.ChannelMessageSendEmbed(channelId, emb)
+	lm.Message, err = sender(emb)
 	if err != nil {
 		return
 	}
