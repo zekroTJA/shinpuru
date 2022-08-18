@@ -133,6 +133,15 @@ apidocs:
 	rm $(APIDOCS_OUTDIR)/docs.go
 	$(SWAGGER2MD) -i $(APIDOCS_OUTDIR)/swagger.json -o $(APIDOCS_OUTDIR)/restapi.md
 
+geninterfaces:
+	ls -1t `go env GOPATH`/pkg/mod/github.com/bwmarrin | head -n 1
+	schnittstelle \
+		-root `go env GOPATH`/pkg/mod/github.com/bwmarrin/`ls -1t `go env GOPATH`/pkg/mod/github.com/bwmarrin | head -n 1` \
+		-out pkg/discordutil/isession.go \
+		-struct Session \
+		-interface ISession \
+		-package discordutil
+
 PHONY += help
 help:
 	@echo "Available targets:"

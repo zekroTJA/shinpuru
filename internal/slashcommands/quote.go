@@ -237,8 +237,8 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 		}).Error
 	} else {
 		err = fum.Edit(&discordgo.WebhookEdit{
-			Content: comment,
-			Embeds:  []*discordgo.MessageEmbed{emb},
+			Content: &comment,
+			Embeds:  &[]*discordgo.MessageEmbed{emb},
 		})
 	}
 

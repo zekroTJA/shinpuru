@@ -246,7 +246,7 @@ func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	err = fum.Edit(&discordgo.WebhookEdit{
-		Embeds: []*discordgo.MessageEmbed{emb},
+		Embeds: &[]*discordgo.MessageEmbed{emb},
 	})
 	return
 }
