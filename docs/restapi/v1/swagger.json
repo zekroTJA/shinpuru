@@ -3304,7 +3304,7 @@
                 "summary": "OTA Login",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -4195,32 +4195,6 @@
                 }
             }
         },
-        "/util/commands": {
-            "get": {
-                "description": "Returns a list of registered commands and their description.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Utilities"
-                ],
-                "summary": "Command List",
-                "responses": {
-                    "200": {
-                        "description": "Wrapped in models.ListResponse",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CommandInfo"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/util/landingpageinfo": {
             "get": {
                 "description": "Returns general information for the landing page like the local invite parameters.",
@@ -4384,9 +4358,23 @@
                 "description": {
                     "type": "string"
                 },
+                "description_localizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "max_length": {
+                    "description": "Maximum length of string option.",
+                    "type": "integer"
+                },
                 "max_value": {
                     "description": "Maximum value of number/integer option.",
                     "type": "number"
+                },
+                "min_length": {
+                    "description": "Minimum length of string option.",
+                    "type": "integer"
                 },
                 "min_value": {
                     "description": "Minimal value of number/integer option.",
@@ -4394,6 +4382,12 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "name_localizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "options": {
                     "type": "array",
@@ -4414,6 +4408,12 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "name_localizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "value": {}
             }
@@ -5280,38 +5280,6 @@
             "properties": {
                 "sitekey": {
                     "type": "string"
-                }
-            }
-        },
-        "models.CommandInfo": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "domain_name": {
-                    "type": "string"
-                },
-                "group": {
-                    "type": "string"
-                },
-                "help": {
-                    "type": "string"
-                },
-                "invokes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "is_executable_in_dm": {
-                    "type": "boolean"
-                },
-                "sub_permission_rules": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/shireikan.SubPermission"
-                    }
                 }
             }
         },
@@ -6314,20 +6282,6 @@
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "shireikan.SubPermission": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "explicit": {
-                    "type": "boolean"
-                },
-                "term": {
                     "type": "string"
                 }
             }

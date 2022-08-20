@@ -1624,7 +1624,7 @@ Logs in the current browser session by using the passed pre-obtained OTA token.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  |  |
+| 200 | OK |  |
 | 401 | Unauthorized | [models.Error](#modelserror) |
 
 ### /privacyinfo
@@ -2106,23 +2106,6 @@ Produces a square image of the given color and size.
 | ---- | ----------- | ------ |
 | 200 | OK | file |
 
-### /util/commands
-
-#### GET
-##### Summary
-
-Command List
-
-##### Description
-
-Returns a list of registered commands and their description.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.CommandInfo](#modelscommandinfo) ] |
-
 ### /util/landingpageinfo
 
 #### GET
@@ -2227,9 +2210,13 @@ Verify a returned verification token.
 | channel_types | [ integer ] |  | No |
 | choices | [ [discordgo.ApplicationCommandOptionChoice](#discordgoapplicationcommandoptionchoice) ] |  | No |
 | description | string |  | No |
+| description_localizations | object |  | No |
+| max_length | integer | Maximum length of string option. | No |
 | max_value | number | Maximum value of number/integer option. | No |
+| min_length | integer | Minimum length of string option. | No |
 | min_value | number | Minimal value of number/integer option. | No |
 | name | string |  | No |
+| name_localizations | object |  | No |
 | options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
 | required | boolean |  | No |
 | type | integer |  | No |
@@ -2239,6 +2226,7 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
+| name_localizations | object |  | No |
 | value |  |  | No |
 
 #### discordgo.Channel
@@ -2579,18 +2567,6 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sitekey | string |  | No |
-
-#### models.CommandInfo
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| description | string |  | No |
-| domain_name | string |  | No |
-| group | string |  | No |
-| help | string |  | No |
-| invokes | [ string ] |  | No |
-| is_executable_in_dm | boolean |  | No |
-| sub_permission_rules | [ [shireikan.SubPermission](#shireikansubpermission) ] |  | No |
 
 #### models.Contact
 
@@ -3036,14 +3012,6 @@ Verify a returned verification token.
 | ---- | ---- | ----------- | -------- |
 | game | string |  | No |
 | status | string |  | No |
-
-#### shireikan.SubPermission
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| description | string |  | No |
-| explicit | boolean |  | No |
-| term | string |  | No |
 
 #### versioncheck.Semver
 
