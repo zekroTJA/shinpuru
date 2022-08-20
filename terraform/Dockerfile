@@ -23,8 +23,11 @@ RUN corepack enable \
 # Install Angular CLI
 RUN yarn global add @angular/cli --prefix /usr/local
 
-# Install Taskfile and Mockery
+# Install Tools
 RUN env GOBIN=/bin go install github.com/go-task/task/v3/cmd/task@latest
 RUN env GOBIN=/bin go install github.com/vektra/mockery/v2@latest
+RUN env GOBIN=/bin go install github.com/swaggo/swag/cmd/swag@latest
+RUN env GOBIN=/bin go install github.com/zekrotja/schnittstelle/cmd/schnittstelle@latest
+RUN npm install -g swagger-markdown
 
 USER coder
