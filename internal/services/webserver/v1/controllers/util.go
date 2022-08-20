@@ -32,7 +32,7 @@ func (c *UtilController) Setup(container di.Container, router fiber.Router) {
 
 	router.Get("/landingpageinfo", c.getLandingPageInfo)
 	router.Get("/color/:hexcode", c.getColor)
-	router.Get("/commands", c.getCommands)
+	router.Get("/commands", c.getSlashCommands)
 	router.Get("/slashcommands", c.getSlashCommands)
 	router.Get("/updateinfo", c.getUpdateInfo)
 }
@@ -125,22 +125,6 @@ func (c *UtilController) getColor(ctx *fiber.Ctx) error {
 	ctx.Set("Cache-Control", "public, max-age=31536000, immutable")
 	ctx.Set("ETag", etag)
 	return ctx.Send(data)
-}
-
-// @Summary Command List
-// @Description Returns a list of registered commands and their description.
-// @Tags Utilities
-// @Accept json
-// @Produce json
-// @Deprecated
-// @Success 200 {array} models.CommandInfo "Wrapped in models.ListResponse"
-// @Router /util/commands [get]
-//
-// TODO: Remove
-func (c *UtilController) getCommands(ctx *fiber.Ctx) error {
-	list := models.NewListResponse([]string{})
-
-	return ctx.JSON(list)
 }
 
 // @Summary Slash Command List
