@@ -2,7 +2,10 @@
 // execute multiple delayed functions one after one.
 package timerstack
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // Action is the function being executed.
 // If the function returns false, the timer
@@ -19,13 +22,16 @@ type timer struct {
 type TimerStack struct {
 	stack []*timer
 
+	mtx       sync.Mutex
 	currTimer *time.Timer
 	stopNext  bool
 }
 
 // New returns a new empty TimerStack.
 func New() *TimerStack {
-	return &TimerStack{make([]*timer, 0), nil, false}
+	return &TimerStack{
+		stack: make([]*timer, 0),
+	}
 }
 
 // After adds a new timer to the stack which is executed
@@ -52,6 +58,9 @@ func (ts *TimerStack) RunBlocking() {
 
 // Stop stops the timer stack execution.
 func (ts *TimerStack) Stop() {
+	ts.mtx.Lock()
+	defer ts.mtx.Unlock()
+
 	if ts.currTimer == nil {
 		return
 	}
