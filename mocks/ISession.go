@@ -1162,6 +1162,43 @@ func (_m *ISession) ChannelTyping(channelID string) error {
 	return r0
 }
 
+// ChannelVoiceJoin provides a mock function with given fields: gID, cID, mute, deaf
+func (_m *ISession) ChannelVoiceJoin(gID string, cID string, mute bool, deaf bool) (*discordgo.VoiceConnection, error) {
+	ret := _m.Called(gID, cID, mute, deaf)
+
+	var r0 *discordgo.VoiceConnection
+	if rf, ok := ret.Get(0).(func(string, string, bool, bool) *discordgo.VoiceConnection); ok {
+		r0 = rf(gID, cID, mute, deaf)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.VoiceConnection)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, bool, bool) error); ok {
+		r1 = rf(gID, cID, mute, deaf)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ChannelVoiceJoinManual provides a mock function with given fields: gID, cID, mute, deaf
+func (_m *ISession) ChannelVoiceJoinManual(gID string, cID string, mute bool, deaf bool) error {
+	ret := _m.Called(gID, cID, mute, deaf)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, bool, bool) error); ok {
+		r0 = rf(gID, cID, mute, deaf)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ChannelWebhooks provides a mock function with given fields: channelID
 func (_m *ISession) ChannelWebhooks(channelID string) ([]*discordgo.Webhook, error) {
 	ret := _m.Called(channelID)
@@ -1183,6 +1220,34 @@ func (_m *ISession) ChannelWebhooks(channelID string) ([]*discordgo.Webhook, err
 	}
 
 	return r0, r1
+}
+
+// Close provides a mock function with given fields:
+func (_m *ISession) Close() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CloseWithCode provides a mock function with given fields: closeCode
+func (_m *ISession) CloseWithCode(closeCode int) error {
+	ret := _m.Called(closeCode)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(closeCode)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // FollowupMessageCreate provides a mock function with given fields: interaction, wait, data
@@ -2649,6 +2714,20 @@ func (_m *ISession) GuildWithCounts(guildID string) (*discordgo.Guild, error) {
 	return r0, r1
 }
 
+// HeartbeatLatency provides a mock function with given fields:
+func (_m *ISession) HeartbeatLatency() time.Duration {
+	ret := _m.Called()
+
+	var r0 time.Duration
+	if rf, ok := ret.Get(0).(func() time.Duration); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(time.Duration)
+	}
+
+	return r0
+}
+
 // InteractionRespond provides a mock function with given fields: interaction, resp
 func (_m *ISession) InteractionRespond(interaction *discordgo.Interaction, resp *discordgo.InteractionResponse) error {
 	ret := _m.Called(interaction, resp)
@@ -2963,6 +3042,20 @@ func (_m *ISession) MessageThreadStartComplex(channelID string, messageID string
 	return r0, r1
 }
 
+// Open provides a mock function with given fields:
+func (_m *ISession) Open() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Request provides a mock function with given fields: method, urlStr, data
 func (_m *ISession) Request(method string, urlStr string, data interface{}) ([]byte, error) {
 	ret := _m.Called(method, urlStr, data)
@@ -2984,6 +3077,62 @@ func (_m *ISession) Request(method string, urlStr string, data interface{}) ([]b
 	}
 
 	return r0, r1
+}
+
+// RequestGuildMembers provides a mock function with given fields: guildID, query, limit, nonce, presences
+func (_m *ISession) RequestGuildMembers(guildID string, query string, limit int, nonce string, presences bool) error {
+	ret := _m.Called(guildID, query, limit, nonce, presences)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, int, string, bool) error); ok {
+		r0 = rf(guildID, query, limit, nonce, presences)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RequestGuildMembersBatch provides a mock function with given fields: guildIDs, query, limit, nonce, presences
+func (_m *ISession) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error {
+	ret := _m.Called(guildIDs, query, limit, nonce, presences)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]string, string, int, string, bool) error); ok {
+		r0 = rf(guildIDs, query, limit, nonce, presences)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RequestGuildMembersBatchList provides a mock function with given fields: guildIDs, userIDs, limit, nonce, presences
+func (_m *ISession) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error {
+	ret := _m.Called(guildIDs, userIDs, limit, nonce, presences)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]string, []string, int, string, bool) error); ok {
+		r0 = rf(guildIDs, userIDs, limit, nonce, presences)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RequestGuildMembersList provides a mock function with given fields: guildID, userIDs, limit, nonce, presences
+func (_m *ISession) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error {
+	ret := _m.Called(guildID, userIDs, limit, nonce, presences)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, []string, int, string, bool) error); ok {
+		r0 = rf(guildID, userIDs, limit, nonce, presences)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // RequestWithBucketID provides a mock function with given fields: method, urlStr, data, bucketID
@@ -3353,6 +3502,62 @@ func (_m *ISession) ThreadsPrivateJoinedArchived(channelID string, before *time.
 	}
 
 	return r0, r1
+}
+
+// UpdateGameStatus provides a mock function with given fields: idle, name
+func (_m *ISession) UpdateGameStatus(idle int, name string) error {
+	ret := _m.Called(idle, name)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, string) error); ok {
+		r0 = rf(idle, name)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateListeningStatus provides a mock function with given fields: name
+func (_m *ISession) UpdateListeningStatus(name string) error {
+	ret := _m.Called(name)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(name)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateStatusComplex provides a mock function with given fields: usd
+func (_m *ISession) UpdateStatusComplex(usd discordgo.UpdateStatusData) error {
+	ret := _m.Called(usd)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(discordgo.UpdateStatusData) error); ok {
+		r0 = rf(usd)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateStreamingStatus provides a mock function with given fields: idle, name, url
+func (_m *ISession) UpdateStreamingStatus(idle int, name string, url string) error {
+	ret := _m.Called(idle, name, url)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, string, string) error); ok {
+		r0 = rf(idle, name, url)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // User provides a mock function with given fields: userID

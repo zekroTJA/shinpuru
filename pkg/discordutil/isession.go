@@ -64,7 +64,11 @@ type ISession interface {
 	ChannelPermissionDelete(channelID, targetID string) (err error)
 	ChannelPermissionSet(channelID, targetID string, targetType PermissionOverwriteType, allow, deny int64) (err error)
 	ChannelTyping(channelID string) (err error)
+	ChannelVoiceJoin(gID, cID string, mute, deaf bool) (voice *VoiceConnection, err error)
+	ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) (err error)
 	ChannelWebhooks(channelID string) (st []*Webhook, err error)
+	Close() error
+	CloseWithCode(closeCode int) (err error)
 	FollowupMessageCreate(interaction *Interaction, wait bool, data *WebhookParams) (*Message, error)
 	FollowupMessageDelete(interaction *Interaction, messageID string) error
 	FollowupMessageEdit(interaction *Interaction, messageID string, data *WebhookEdit) (*Message, error)
@@ -139,6 +143,7 @@ type ISession interface {
 	GuildThreadsActive(guildID string) (threads *ThreadsList, err error)
 	GuildWebhooks(guildID string) (st []*Webhook, err error)
 	GuildWithCounts(guildID string) (st *Guild, err error)
+	HeartbeatLatency() time.Duration
 	InteractionRespond(interaction *Interaction, resp *InteractionResponse) error
 	InteractionResponse(interaction *Interaction) (*Message, error)
 	InteractionResponseDelete(interaction *Interaction) error
@@ -155,7 +160,12 @@ type ISession interface {
 	MessageReactionsRemoveEmoji(channelID, messageID, emojiID string) error
 	MessageThreadStart(channelID, messageID string, name string, archiveDuration int) (ch *Channel, err error)
 	MessageThreadStartComplex(channelID, messageID string, data *ThreadStart) (ch *Channel, err error)
+	Open() error
 	Request(method, urlStr string, data interface{}) (response []byte, err error)
+	RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error
+	RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) (err error)
+	RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) (err error)
+	RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error
 	RequestWithBucketID(method, urlStr string, data interface{}, bucketID string) (response []byte, err error)
 	RequestWithLockedBucket(method, urlStr, contentType string, b []byte, bucket *Bucket, sequence int) (response []byte, err error)
 	StageInstance(channelID string) (si *StageInstance, err error)
@@ -174,6 +184,10 @@ type ISession interface {
 	ThreadsArchived(channelID string, before *time.Time, limit int) (threads *ThreadsList, err error)
 	ThreadsPrivateArchived(channelID string, before *time.Time, limit int) (threads *ThreadsList, err error)
 	ThreadsPrivateJoinedArchived(channelID string, before *time.Time, limit int) (threads *ThreadsList, err error)
+	UpdateGameStatus(idle int, name string) (err error)
+	UpdateListeningStatus(name string) (err error)
+	UpdateStatusComplex(usd UpdateStatusData) (err error)
+	UpdateStreamingStatus(idle int, name string, url string) (err error)
 	User(userID string) (st *User, err error)
 	UserAvatar(userID string) (img image.Image, err error)
 	UserAvatarDecode(u *User) (img image.Image, err error)
