@@ -75,9 +75,23 @@ func main() {
 	flagProfile, _ := argp.String("-cpuprofile", "", "CPU profile output location.")
 	flagQuiet, _ := argp.Bool("-quiet", false, "Hide startup message.")
 	_, _ = argp.Bool("-docker", false, "Docker mode (deprecated)")
+	flagVersion, _ := argp.Bool("-v", false, "Show version information")
 
 	if flagHelp, _ := argp.Bool("-h", false, "Display help."); flagHelp {
 		fmt.Println("Usage:\n" + argp.Help())
+		return
+	}
+
+	if flagVersion {
+		fmt.Printf(
+			"shinpuru v%s\n"+
+				"Release: %t\n"+
+				"Commit: %s\n"+
+				"Build Date: %s\n",
+			embedded.AppVersion,
+			embedded.IsRelease(),
+			embedded.AppCommit,
+			embedded.AppDate)
 		return
 	}
 
