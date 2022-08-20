@@ -16,3 +16,5 @@ web/.angular/
 internal/util/embedded/webdist/*
 !internal/util/embedded/webdist/keep
 web_old/
+.task/
+release/
