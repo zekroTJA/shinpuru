@@ -241,12 +241,29 @@ tasks:
           mockery is not installed. Please install it using the following command.
 
           $ go install github.com/vektra/mockery/v2@latest
+    vars:
+      DGRS_VERSION:
+        sh: cat go.mod | grep github.com/zekrotja/dgrs | awk '{print $2}'
+      DGRS_PATH:
+        sh: echo $(go env GOPATH)/pkg/mod/github.com/zekrotja/dgrs@{{.DGRS_VERSION}}
+      KEN_VERSION:
+        sh: cat go.mod | grep github.com/zekrotja/ken | awk '{print $2}'
+      KEN_PATH:
+        sh: echo $(go env GOPATH)/pkg/mod/github.com/zekrotja/ken@{{.KEN_VERSION}}
     cmds:
-      - mockery -r
-          --dir pkg/discordutil
-          --name ISession
-          --structname ISession
-          --filename ISession.go
+      - mockery -r --dir pkg/discordutil --name ISession --structname ISession --filename ISession.go
+      - mockery -r --dir internal/services/config --name Provider --structname ConfigProvider --filename ConfigProvider.go
+      - mockery -r --dir internal/services/database --name Database --structname Database --filename Database.go
+      - mockery -r --dir {{.DGRS_PATH}} --name IState --structname IState --filename IState.go
+      - mockery -r --dir internal/services/karma --name Provider --structname KarmaProvider --filename KarmaProvider.go
+      - mockery -r --dir {{.KEN_PATH}} --name Context --structname KenContext --filename KenContext.go
+      - mockery -r --dir {{.KEN_PATH}} --name State --structname KenState --filename KenState.go
+      - mockery -r --dir internal/services/guildlog --name Logger --structname Logger --filename Logger.go
+      - mockery -r --dir internal/services/permissions --name Provider --structname PermissionsProvider --filename PermissionsProvider.go
+      - mockery -r --dir internal/services/report --name Provider --structname ReportProvider --filename ReportProvider.go
+      - mockery -r --dir internal/services/storage --name Storage --structname Storage --filename Storage.go
+      - mockery -r --dir internal/services/timeprovider --name Provider --structname TimeProvider --filename TimeProvider.go
+      - mockery -r --dir internal/services/verification --name Provider --structname VerificationProvider --filename VerificationProvider.go
 
   help:
     cmds:
