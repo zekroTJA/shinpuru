@@ -48,9 +48,17 @@ func (ts *TimerStack) After(d time.Duration, a Action) *TimerStack {
 // are executed or until the timer has been stoped.
 func (ts *TimerStack) RunBlocking() {
 	for _, t := range ts.stack {
+		ts.mtx.Lock()
 		ts.currTimer = time.NewTimer(t.delay)
+		ts.mtx.Unlock()
+
 		<-ts.currTimer.C
-		if !t.action() || ts.stopNext {
+
+		ts.mtx.Lock()
+		exit := !t.action() || ts.stopNext
+		ts.mtx.Unlock()
+
+		if exit {
 			break
 		}
 	}
