@@ -178,6 +178,9 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 					notifyRoleID, notifyRoleID),
 			},
 			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+				if err = cctx.Defer(); err != nil {
+					return
+				}
 				role, err := c.setupRole(ctx)
 				if err != nil {
 					return
@@ -191,9 +194,9 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 				}).Error
 			},
 			DeclineFunc: func(cctx ken.ComponentContext) (err error) {
-				return cctx.FollowUpEmbed(&discordgo.MessageEmbed{
+				return cctx.RespondEmbed(&discordgo.MessageEmbed{
 					Description: "Canceled",
-				}).Error
+				})
 			},
 		}
 

@@ -93,6 +93,9 @@ func (c *Modlog) set(ctx ken.SubCommandContext) (err error) {
 			UserID:         ctx.User().ID,
 			DeleteMsgAfter: true,
 			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+				if err = cctx.Defer(); err != nil {
+					return
+				}
 				err = db.SetGuildModLog(ctx.GetEvent().GuildID, ctx.GetEvent().ChannelID)
 				if err != nil {
 					return

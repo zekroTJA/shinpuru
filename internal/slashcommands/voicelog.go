@@ -132,7 +132,6 @@ func (c *Voicelog) set(ctx ken.SubCommandContext) (err error) {
 			DeleteMsgAfter: true,
 			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
 				if err = cctx.Defer(); err != nil {
-					fmt.Println(err)
 					return
 				}
 				err = db.SetGuildVoiceLog(ctx.GetEvent().GuildID, ctx.GetEvent().ChannelID)
