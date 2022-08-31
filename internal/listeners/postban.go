@@ -10,6 +10,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
+	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
@@ -21,6 +22,7 @@ type ListenerPostBan struct {
 	db  database.Database
 	gl  guildlog.Logger
 	rep report.Provider
+	pmw permissions.Provider
 }
 
 func NewListenerPostBan(ctn di.Container) ListenerPostBan {
@@ -29,6 +31,7 @@ func NewListenerPostBan(ctn di.Container) ListenerPostBan {
 		db:  ctn.Get(static.DiDatabase).(database.Database),
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("postban"),
 		rep: ctn.Get(static.DiReport).(report.Provider),
+		pmw: ctn.Get(static.DiPermissions).(permissions.Provider),
 	}
 }
 
@@ -87,6 +90,11 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 				Label:    "Create Report in shinpuru",
 				Style:    discordgo.PrimaryButton,
 			}, func(ctx ken.ComponentContext) bool {
+				ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.GetEvent().User.ID, "sp.guild.mod.report")
+				if !ok || err != nil {
+					return false
+				}
+
 				reasonId := xid.New().String()
 				attachmentId := xid.New().String()
 				cModal, err := ctx.OpenModal("Create Ban Report Entry", "", func(b ken.ComponentAssembler) {
@@ -138,7 +146,10 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 				CustomID: xid.New().String(),
 				Label:    "No further action",
 				Style:    discordgo.SecondaryButton,
-			}, func(ctx ken.ComponentContext) bool { return true })
+			}, func(ctx ken.ComponentContext) bool {
+				ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.GetEvent().User.ID, "sp.guild.mod.report")
+				return ok && err == nil
+			})
 		}, true).Build()
 	if err != nil {
 		t.error(e.GuildID, "failed appending message components to message", err)
