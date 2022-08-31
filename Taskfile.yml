@@ -226,15 +226,22 @@ tasks:
         sh: echo $(go env GOPATH)/pkg/mod/github.com/bwmarrin/discordgo@{{.DISCORDGO_VERSION}}
     cmds:
       - schnittstelle
-          -root {{.DISCORDGO_PATH}}
-          -struct Session
-          -interface ISession
-          -package discordutil
-          -out pkg/discordutil/isession.go
+          --root {{.DISCORDGO_PATH}}
+          --struct Session
+          --interface ISession
+          --package discordutil
+          --import 'image'
+          --import 'io'
+          --import 'time'
+          --import '. "github.com/bwmarrin/discordgo"'
+          --out pkg/discordutil/isession.go
+          --format
 
   refresh-mocks:
     desc:
       Refreshes the mock implementations in ./mock.
+    deps:
+      - refresh-interfaces
     preconditions:
       - sh: which mockery
         msg:
@@ -256,6 +263,7 @@ tasks:
       - mockery -r --dir internal/services/database --name Database --structname Database --filename Database.go
       - mockery -r --dir {{.DGRS_PATH}} --name IState --structname IState --filename IState.go
       - mockery -r --dir internal/services/karma --name Provider --structname KarmaProvider --filename KarmaProvider.go
+      - mockery -r --dir {{.KEN_PATH}} --name IKen --structname IKen --filename IKen.go
       - mockery -r --dir {{.KEN_PATH}} --name Context --structname KenContext --filename KenContext.go
       - mockery -r --dir {{.KEN_PATH}} --name State --structname KenState --filename KenState.go
       - mockery -r --dir internal/services/guildlog --name Logger --structname Logger --filename Logger.go
