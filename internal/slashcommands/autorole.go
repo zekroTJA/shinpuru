@@ -84,7 +84,7 @@ func (c *Autorole) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Autorole) Run(ctx *ken.Ctx) (err error) {
+func (c *Autorole) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -99,10 +99,10 @@ func (c *Autorole) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Autorole) show(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autorole) show(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
+	autoroles, err := db.GetGuildAutoRole(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -126,13 +126,13 @@ func (c *Autorole) show(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autorole) add(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autorole) add(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	role := ctx.Options().Get(0).
-		RoleValue(ctx.Ctx)
+		RoleValue(ctx)
 
-	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
+	autoroles, err := db.GetGuildAutoRole(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -142,7 +142,7 @@ func (c *Autorole) add(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	if err = db.SetGuildAutoRole(ctx.Event.GuildID, append(autoroles, role.ID)); err != nil {
+	if err = db.SetGuildAutoRole(ctx.GetEvent().GuildID, append(autoroles, role.ID)); err != nil {
 		return
 	}
 
@@ -154,13 +154,13 @@ func (c *Autorole) add(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autorole) remove(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autorole) remove(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	role := ctx.Options().Get(0).
-		RoleValue(ctx.Ctx)
+		RoleValue(ctx)
 
-	autoroles, err := db.GetGuildAutoRole(ctx.Event.GuildID)
+	autoroles, err := db.GetGuildAutoRole(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -171,7 +171,7 @@ func (c *Autorole) remove(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	autoroles = stringutil.Splice(autoroles, stringutil.IndexOf(role.ID, autoroles))
-	if err = db.SetGuildAutoRole(ctx.Event.GuildID, autoroles); err != nil {
+	if err = db.SetGuildAutoRole(ctx.GetEvent().GuildID, autoroles); err != nil {
 		return
 	}
 
@@ -183,10 +183,10 @@ func (c *Autorole) remove(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autorole) purge(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autorole) purge(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	if err = db.SetGuildAutoRole(ctx.Event.GuildID, []string{}); err != nil {
+	if err = db.SetGuildAutoRole(ctx.GetEvent().GuildID, []string{}); err != nil {
 		return
 	}
 

@@ -54,7 +54,7 @@ func (c *Stats) IsDmCapable() bool {
 	return true
 }
 
-func (c *Stats) Run(ctx *ken.Ctx) (err error) {
+func (c *Stats) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}

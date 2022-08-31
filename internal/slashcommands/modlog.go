@@ -65,7 +65,7 @@ func (c *Modlog) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Modlog) Run(ctx *ken.Ctx) (err error) {
+func (c *Modlog) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -78,7 +78,7 @@ func (c *Modlog) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Modlog) set(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	chV, ok := ctx.Options().GetByNameOptional("channel")
@@ -93,7 +93,7 @@ func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
 			UserID:         ctx.User().ID,
 			DeleteMsgAfter: true,
 			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
-				err = db.SetGuildModLog(ctx.Event.GuildID, ctx.Event.ChannelID)
+				err = db.SetGuildModLog(ctx.GetEvent().GuildID, ctx.GetEvent().ChannelID)
 				if err != nil {
 					return
 				}
@@ -104,15 +104,15 @@ func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
 			},
 		}
 
-		if _, err = acceptMsg.AsFollowUp(ctx.Ctx); err != nil {
+		if _, err = acceptMsg.AsFollowUp(ctx); err != nil {
 			return
 		}
 		return acceptMsg.Error()
 	}
 
-	ch := chV.ChannelValue(ctx.Ctx)
+	ch := chV.ChannelValue(ctx)
 
-	if err = db.SetGuildModLog(ctx.Event.GuildID, ch.ID); err != nil {
+	if err = db.SetGuildModLog(ctx.GetEvent().GuildID, ch.ID); err != nil {
 		return
 	}
 
@@ -123,10 +123,10 @@ func (c *Modlog) set(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Modlog) disable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Modlog) disable(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	if err = db.SetGuildModLog(ctx.Event.GuildID, ""); err != nil {
+	if err = db.SetGuildModLog(ctx.GetEvent().GuildID, ""); err != nil {
 		return
 	}
 

@@ -86,14 +86,14 @@ func (c *Chanstats) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Chanstats) Run(ctx *ken.Ctx) (err error) {
+func (c *Chanstats) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
 
 	mode := analysisMode(ctx.Options().GetByName("mode").StringValue())
 
-	channelID := ctx.Event.ChannelID
+	channelID := ctx.GetEvent().ChannelID
 	if channelV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := channelV.ChannelValue(ctx)
 		channelID = ch.ID
@@ -125,7 +125,7 @@ func (c *Chanstats) Run(ctx *ken.Ctx) (err error) {
 	// the request needs to be paginated.
 	for {
 		// Fetch channel messages.
-		msgs, err = ctx.Session.ChannelMessages(channelID, 100, lastMsgID, "", "")
+		msgs, err = ctx.GetSession().ChannelMessages(channelID, 100, lastMsgID, "", "")
 		if err != nil {
 			return
 		}
@@ -302,7 +302,7 @@ func (c *Chanstats) Run(ctx *ken.Ctx) (err error) {
 	}
 
 	// Send the rendered chart from buffer into the channel.
-	_, err = ctx.Session.ChannelFileSend(ctx.Event.ChannelID,
+	_, err = ctx.GetSession().ChannelFileSend(ctx.GetEvent().ChannelID,
 		"channel_stats_chart.png", buff)
 
 	return

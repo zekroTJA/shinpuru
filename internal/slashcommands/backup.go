@@ -95,7 +95,7 @@ func (c *Backup) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Backup) Run(ctx *ken.Ctx) (err error) {
+func (c *Backup) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -110,17 +110,17 @@ func (c *Backup) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Backup) state(ctx *ken.SubCommandCtx) (err error) {
+func (c *Backup) state(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	var (
 		state bool
 		emb   *discordgo.MessageEmbed
 	)
-	subOpts := ctx.Event.ApplicationCommandData().Options[0].Options
+	subOpts := ctx.GetEvent().ApplicationCommandData().Options[0].Options
 	if len(subOpts) > 0 {
 		state = subOpts[0].BoolValue()
-		if err = db.SetGuildBackup(ctx.Event.GuildID, state); err != nil {
+		if err = db.SetGuildBackup(ctx.GetEvent().GuildID, state); err != nil {
 			return
 		}
 		emb = &discordgo.MessageEmbed{
@@ -132,7 +132,7 @@ func (c *Backup) state(ctx *ken.SubCommandCtx) (err error) {
 			emb.Description = "The backup system is now **enabled**."
 		}
 	} else {
-		state, err = db.GetGuildBackup(ctx.Event.GuildID)
+		state, err = db.GetGuildBackup(ctx.GetEvent().GuildID)
 		if err != nil {
 			return
 		}
@@ -150,10 +150,10 @@ func (c *Backup) state(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Backup) list(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	status, err := db.GetGuildBackup(ctx.Event.GuildID)
+	status, err := db.GetGuildBackup(ctx.GetEvent().GuildID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -163,7 +163,7 @@ func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 		strStatus = ":white_check_mark:  Backups **enabled**"
 	}
 
-	_, strBackupAll, err := c.getBackupsList(ctx.Ctx)
+	_, strBackupAll, err := c.getBackupsList(ctx)
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
+func (c *Backup) restore(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	bck := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
 
@@ -199,7 +199,7 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 
 	var backup *backupmodels.Entry
 
-	backups, err := db.GetBackups(ctx.Event.GuildID)
+	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return
 	}
@@ -244,13 +244,13 @@ func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
 		},
 	}
 
-	if _, err = accMsg.AsFollowUp(ctx.Ctx); err != nil {
+	if _, err = accMsg.AsFollowUp(ctx); err != nil {
 		return err
 	}
 	return accMsg.Error()
 }
 
-func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
+func (c *Backup) purge(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiObjectStorage).(storage.Storage)
 
@@ -274,7 +274,7 @@ func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
 			c.purgeBackups(cctx, db, st)
 			return
 		}).
-		AsFollowUp(ctx.Ctx)
+		AsFollowUp(ctx)
 
 	if err != nil {
 		return err
@@ -285,10 +285,10 @@ func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
 
 // --- HELPERS ---
 
-func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, error) {
+func (c *Backup) getBackupsList(ctx ken.Context) ([]backupmodels.Entry, string, error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	backups, err := db.GetBackups(ctx.Event.GuildID)
+	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return nil, "", err
 	}

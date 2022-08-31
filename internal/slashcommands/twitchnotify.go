@@ -80,7 +80,7 @@ func (c *Twitchnotify) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Twitchnotify) Run(ctx *ken.Ctx) (err error) {
+func (c *Twitchnotify) Run(ctx ken.Context) (err error) {
 	tnw := ctx.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 	if tnw == nil {
 		return ctx.Respond(&discordgo.InteractionResponse{
@@ -109,7 +109,7 @@ func (c *Twitchnotify) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Twitchnotify) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Twitchnotify) list(ctx ken.SubCommandContext) (err error) {
 	tnw := ctx.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
@@ -121,7 +121,7 @@ func (c *Twitchnotify) list(ctx *ken.SubCommandCtx) (err error) {
 	var notsStr strings.Builder
 
 	for _, not := range nots {
-		if not.GuildID == ctx.Event.GuildID {
+		if not.GuildID == ctx.GetEvent().GuildID {
 			if tUser, err := tnw.GetUser(not.TwitchUserID, twitchnotify.IdentID); err == nil {
 				fmt.Fprintf(&notsStr, ":white_small_square:  **%s** in <#%s>\n",
 					tUser.DisplayName, not.ChannelID)
@@ -135,15 +135,15 @@ func (c *Twitchnotify) list(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Twitchnotify) add(ctx *ken.SubCommandCtx) (err error) {
+func (c *Twitchnotify) add(ctx ken.SubCommandContext) (err error) {
 	tnw := ctx.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	twitchname := ctx.Options().GetByName("twitchname").StringValue()
 
-	channelID := ctx.Event.ChannelID
+	channelID := ctx.GetEvent().ChannelID
 	if channelV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		ch := channelV.ChannelValue(ctx.Ctx)
+		ch := channelV.ChannelValue(ctx)
 		channelID = ch.ID
 	}
 
@@ -163,7 +163,7 @@ func (c *Twitchnotify) add(ctx *ken.SubCommandCtx) (err error) {
 
 	err = db.SetTwitchNotify(twitchnotify.DBEntry{
 		ChannelID:    channelID,
-		GuildID:      ctx.Event.GuildID,
+		GuildID:      ctx.GetEvent().GuildID,
 		TwitchUserID: twitchuser.ID,
 	})
 	if err != nil {
@@ -176,7 +176,7 @@ func (c *Twitchnotify) add(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Twitchnotify) remove(ctx *ken.SubCommandCtx) (err error) {
+func (c *Twitchnotify) remove(ctx ken.SubCommandContext) (err error) {
 	tnw := ctx.Get(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
@@ -197,7 +197,7 @@ func (c *Twitchnotify) remove(ctx *ken.SubCommandCtx) (err error) {
 
 	var notify *twitchnotify.DBEntry
 	for _, not := range nots {
-		if not.GuildID == ctx.Event.GuildID {
+		if not.GuildID == ctx.GetEvent().GuildID {
 			notify = &not
 		}
 	}

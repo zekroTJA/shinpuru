@@ -89,7 +89,7 @@ func (c *Mute) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Mute) Run(ctx *ken.Ctx) (err error) {
+func (c *Mute) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -102,8 +102,8 @@ func (c *Mute) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
-	victim := ctx.Options().GetByName("user").UserValue(ctx.Ctx)
+func (c *Mute) toggle(ctx ken.SubCommandContext) (err error) {
+	victim := ctx.Options().GetByName("user").UserValue(ctx)
 
 	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
 
@@ -122,7 +122,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 
 	// TODO: forcefetch is set to true because dgrs does not
 	//       track member timeout states at the moment.
-	member, err := st.Member(ctx.Event.GuildID, victim.ID, true)
+	member, err := st.Member(ctx.GetEvent().GuildID, victim.ID, true)
 	if err != nil {
 		return
 	}
@@ -132,7 +132,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 
 	if member.CommunicationDisabledUntil != nil {
 		emb, err := repSvc.RevokeMute(
-			ctx.Event.GuildID,
+			ctx.GetEvent().GuildID,
 			ctx.User().ID,
 			victim.ID,
 			reason)
@@ -164,7 +164,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	rep := models.Report{
-		GuildID:       ctx.Event.GuildID,
+		GuildID:       ctx.GetEvent().GuildID,
 		ExecutorID:    ctx.User().ID,
 		VictimID:      victim.ID,
 		Msg:           reason,
@@ -197,7 +197,7 @@ func (c *Mute) toggle(ctx *ken.SubCommandCtx) (err error) {
 	return err
 }
 
-func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Mute) list(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	emb := &discordgo.MessageEmbed{
@@ -212,7 +212,7 @@ func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
 		return err
 	}
 
-	muteReports, err := db.GetReportsFiltered(ctx.Event.GuildID, "",
+	muteReports, err := db.GetReportsFiltered(ctx.GetEvent().GuildID, "",
 		int(models.TypeMute), 0, 1000)
 
 	muteReportsMap := make(map[string]models.Report)
@@ -221,7 +221,7 @@ func (c *Mute) list(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	st := ctx.Get(static.DiState).(*dgrs.State)
-	membs, err := st.Members(ctx.Event.GuildID)
+	membs, err := st.Members(ctx.GetEvent().GuildID)
 	if err != nil {
 		return err
 	}

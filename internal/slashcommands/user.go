@@ -58,7 +58,7 @@ func (c *User) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *User) Run(ctx *ken.Ctx) (err error) {
+func (c *User) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -70,8 +70,8 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 
 	var user *discordgo.User
 
-	if resolved := ctx.Event.ApplicationCommandData().Resolved; resolved != nil {
-		for _, user = range ctx.Event.ApplicationCommandData().Resolved.Users {
+	if resolved := ctx.GetEvent().ApplicationCommandData().Resolved; resolved != nil {
+		for _, user = range ctx.GetEvent().ApplicationCommandData().Resolved.Users {
 			break
 		}
 	}
@@ -80,12 +80,12 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 		user = ctx.Options().GetByName("user").UserValue(ctx)
 	}
 
-	member, err := st.Member(ctx.Event.GuildID, user.ID, true)
+	member, err := st.Member(ctx.GetEvent().GuildID, user.ID, true)
 	if err != nil {
 		return
 	}
 
-	guild, err := st.Guild(ctx.Event.GuildID, true)
+	guild, err := st.Guild(ctx.GetEvent().GuildID, true)
 	if err != nil {
 		return
 	}
@@ -109,7 +109,7 @@ func (c *User) Run(ctx *ken.Ctx) (err error) {
 		return err
 	}
 
-	perms, _, err := pmw.GetPermissions(ctx.Session, guild.ID, member.User.ID)
+	perms, _, err := pmw.GetPermissions(ctx.GetSession(), guild.ID, member.User.ID)
 	if err != nil {
 		return err
 	}

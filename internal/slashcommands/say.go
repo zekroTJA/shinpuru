@@ -114,7 +114,7 @@ func (c *Say) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Say) Run(ctx *ken.Ctx) (err error) {
+func (c *Say) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -127,7 +127,7 @@ func (c *Say) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Say) embed(ctx *ken.SubCommandCtx) (err error) {
+func (c *Say) embed(ctx ken.SubCommandContext) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 	}
@@ -150,7 +150,7 @@ func (c *Say) embed(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Say) raw(ctx *ken.SubCommandCtx) (err error) {
+func (c *Say) raw(ctx ken.SubCommandContext) (err error) {
 	raw := ctx.Options().GetByName("json").StringValue()
 	var emb discordgo.MessageEmbed
 	if err = json.Unmarshal([]byte(raw), &emb); err != nil {
@@ -162,15 +162,15 @@ func (c *Say) raw(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (err error) {
+func (c *Say) sendMessage(ctx ken.SubCommandContext, emb *discordgo.MessageEmbed) (err error) {
 	emb.Author = &discordgo.MessageEmbedAuthor{
 		Name:    ctx.User().String(),
 		IconURL: ctx.User().AvatarURL("16x16"),
 	}
 
-	chanID := ctx.Event.ChannelID
+	chanID := ctx.GetEvent().ChannelID
 	if chanV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		ch := chanV.ChannelValue(ctx.Ctx)
+		ch := chanV.ChannelValue(ctx)
 		chanID = ch.ID
 	}
 
@@ -182,10 +182,10 @@ func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (
 	var msg *discordgo.Message
 	var status string
 	if messageID != "" {
-		msg, err = ctx.Session.ChannelMessageEditEmbed(chanID, messageID, emb)
+		msg, err = ctx.GetSession().ChannelMessageEditEmbed(chanID, messageID, emb)
 		status = "edited"
 	} else {
-		msg, err = ctx.Session.ChannelMessageSendEmbed(chanID, emb)
+		msg, err = ctx.GetSession().ChannelMessageSendEmbed(chanID, emb)
 		status = "sent"
 	}
 	if err != nil {
@@ -194,10 +194,10 @@ func (c *Say) sendMessage(ctx *ken.SubCommandCtx, emb *discordgo.MessageEmbed) (
 
 	fum := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Message has been %s. [Here](%s) you can find the message.",
-			status, discordutil.GetMessageLink(msg, ctx.Event.GuildID)),
+			status, discordutil.GetMessageLink(msg, ctx.GetEvent().GuildID)),
 	})
 
-	if chanID == ctx.Event.ChannelID {
+	if chanID == ctx.GetEvent().ChannelID {
 		fum.DeleteAfter(5 * time.Second)
 	}
 

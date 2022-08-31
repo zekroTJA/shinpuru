@@ -77,7 +77,7 @@ func (c *Snowflake) IsDmCapable() bool {
 	return true
 }
 
-func (c *Snowflake) Run(ctx *ken.Ctx) (err error) {
+func (c *Snowflake) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}

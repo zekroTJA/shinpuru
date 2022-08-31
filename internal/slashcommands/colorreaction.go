@@ -59,7 +59,7 @@ func (c *Colorreation) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Colorreation) Run(ctx *ken.Ctx) (err error) {
+func (c *Colorreation) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -70,7 +70,7 @@ func (c *Colorreation) Run(ctx *ken.Ctx) (err error) {
 	enableV, ok := ctx.Options().GetByNameOptional("enable")
 	if ok {
 		enable = enableV.BoolValue()
-		if err = db.SetGuildColorReaction(ctx.Event.GuildID, enable); err != nil {
+		if err = db.SetGuildColorReaction(ctx.GetEvent().GuildID, enable); err != nil {
 			return
 		}
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
@@ -79,7 +79,7 @@ func (c *Colorreation) Run(ctx *ken.Ctx) (err error) {
 			Color: intutil.FromBool(enable, static.ColorEmbedGreen, static.ColorEmbedOrange),
 		}).Error
 	} else {
-		enable, err = db.GetGuildColorReaction(ctx.Event.GuildID)
+		enable, err = db.GetGuildColorReaction(ctx.GetEvent().GuildID)
 		if err != nil {
 			return
 		}

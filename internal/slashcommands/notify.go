@@ -72,7 +72,7 @@ func (c *Notify) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Notify) Run(ctx *ken.Ctx) (err error) {
+func (c *Notify) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -85,11 +85,11 @@ func (c *Notify) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Notify) toggle(ctx *ken.SubCommandCtx) (err error) {
+func (c *Notify) toggle(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	notifyRoleID, err := db.GetGuildNotifyRole(ctx.Event.GuildID)
+	notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
 		return ctx.FollowUpError(
 			"No notify role  was set up for this guild.", "").Error
@@ -98,7 +98,7 @@ func (c *Notify) toggle(ctx *ken.SubCommandCtx) (err error) {
 		return err
 	}
 
-	roles, err := st.Roles(ctx.Event.GuildID, true)
+	roles, err := st.Roles(ctx.GetEvent().GuildID, true)
 	if err != nil {
 		return
 	}
@@ -115,19 +115,19 @@ func (c *Notify) toggle(ctx *ken.SubCommandCtx) (err error) {
 				"moderator aor admin about this to fix this. ;)", "").Error
 	}
 
-	member, err := st.Member(ctx.Event.GuildID, ctx.User().ID)
+	member, err := st.Member(ctx.GetEvent().GuildID, ctx.User().ID)
 	if err != nil {
 		return err
 	}
 
 	msgStr := "Removed notify role."
 	if stringutil.IndexOf(notifyRoleID, member.Roles) > -1 {
-		err = ctx.Session.GuildMemberRoleRemove(ctx.Event.GuildID, ctx.User().ID, notifyRoleID)
+		err = ctx.GetSession().GuildMemberRoleRemove(ctx.GetEvent().GuildID, ctx.User().ID, notifyRoleID)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = ctx.Session.GuildMemberRoleAdd(ctx.Event.GuildID, ctx.User().ID, notifyRoleID)
+		err = ctx.GetSession().GuildMemberRoleAdd(ctx.GetEvent().GuildID, ctx.User().ID, notifyRoleID)
 		if err != nil {
 			return err
 		}
@@ -139,12 +139,12 @@ func (c *Notify) toggle(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
+func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "setup", true)
+	ok, err := pmw.CheckSubPerm(ctx, "setup", true)
 	if err != nil {
 		return err
 	}
@@ -154,9 +154,9 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 			Error
 	}
 
-	roles, err := st.Roles(ctx.Event.GuildID)
+	roles, err := st.Roles(ctx.GetEvent().GuildID)
 	var notifyRoleExists bool
-	notifyRoleID, err := db.GetGuildNotifyRole(ctx.Event.GuildID)
+	notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetEvent().GuildID)
 	if err == nil {
 		for _, role := range roles {
 			if notifyRoleID == role.ID && !notifyRoleExists {
@@ -182,7 +182,7 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 				if err != nil {
 					return
 				}
-				err = ctx.Session.GuildRoleDelete(ctx.Event.GuildID, notifyRoleID)
+				err = ctx.GetSession().GuildRoleDelete(ctx.GetEvent().GuildID, notifyRoleID)
 				if err != nil {
 					return
 				}
@@ -197,7 +197,7 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 			},
 		}
 
-		if _, err := am.AsFollowUp(ctx.Ctx); err != nil {
+		if _, err := am.AsFollowUp(ctx); err != nil {
 			return err
 		}
 
@@ -214,14 +214,14 @@ func (c *Notify) setup(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Notify) setupRole(ctx *ken.SubCommandCtx) (role *discordgo.Role, err error) {
+func (c *Notify) setupRole(ctx ken.SubCommandContext) (role *discordgo.Role, err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	const roleName = "Notify"
 	if roleV, ok := ctx.Options().GetByNameOptional("role"); ok {
-		role = roleV.RoleValue(ctx.Ctx)
+		role = roleV.RoleValue(ctx)
 	} else {
-		role, err = ctx.Session.GuildRoleCreate(ctx.Event.GuildID, &discordgo.RoleParams{
+		role, err = ctx.GetSession().GuildRoleCreate(ctx.GetEvent().GuildID, &discordgo.RoleParams{
 			Name: roleName,
 		})
 		if err != nil {
@@ -229,6 +229,6 @@ func (c *Notify) setupRole(ctx *ken.SubCommandCtx) (role *discordgo.Role, err er
 		}
 	}
 
-	err = db.SetGuildNotifyRole(ctx.Event.GuildID, role.ID)
+	err = db.SetGuildNotifyRole(ctx.GetEvent().GuildID, role.ID)
 	return role, err
 }

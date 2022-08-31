@@ -61,7 +61,7 @@ func (c *Presence) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Presence) Run(ctx *ken.Ctx) (err error) {
+func (c *Presence) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -93,7 +93,7 @@ func (c *Presence) Run(ctx *ken.Ctx) (err error) {
 		return ctx.FollowUpError(err.Error(), "").Error
 	}
 
-	err = ctx.Session.UpdateStatusComplex(pre.ToUpdateStatusData())
+	err = ctx.GetSession().UpdateStatusComplex(pre.ToUpdateStatusData())
 	if err != nil {
 		return err
 	}

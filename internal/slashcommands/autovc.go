@@ -86,7 +86,7 @@ func (c *Autovc) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Autovc) Run(ctx *ken.Ctx) (err error) {
+func (c *Autovc) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -101,10 +101,10 @@ func (c *Autovc) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Autovc) show(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autovc) show(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	autovcs, err := db.GetGuildAutoVC(ctx.Event.GuildID)
+	autovcs, err := db.GetGuildAutoVC(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -128,13 +128,13 @@ func (c *Autovc) show(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autovc) add(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autovc) add(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	vc := ctx.Options().Get(0).
-		ChannelValue(ctx.Ctx)
+		ChannelValue(ctx)
 
-	autovcs, err := db.GetGuildAutoVC(ctx.Event.GuildID)
+	autovcs, err := db.GetGuildAutoVC(ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return
 	}
@@ -144,7 +144,7 @@ func (c *Autovc) add(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	if err = db.SetGuildAutoVC(ctx.Event.GuildID, append(autovcs, vc.ID)); err != nil {
+	if err = db.SetGuildAutoVC(ctx.GetEvent().GuildID, append(autovcs, vc.ID)); err != nil {
 		return
 	}
 
@@ -156,13 +156,13 @@ func (c *Autovc) add(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autovc) remove(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autovc) remove(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	vc := ctx.Options().Get(0).
-		ChannelValue(ctx.Ctx)
+		ChannelValue(ctx)
 
-	autovcs, err := db.GetGuildAutoVC(ctx.Event.GuildID)
+	autovcs, err := db.GetGuildAutoVC(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -173,7 +173,7 @@ func (c *Autovc) remove(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	autovcs = stringutil.Splice(autovcs, stringutil.IndexOf(vc.ID, autovcs))
-	if err = db.SetGuildAutoVC(ctx.Event.GuildID, autovcs); err != nil {
+	if err = db.SetGuildAutoVC(ctx.GetEvent().GuildID, autovcs); err != nil {
 		return
 	}
 
@@ -185,10 +185,10 @@ func (c *Autovc) remove(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Autovc) purge(ctx *ken.SubCommandCtx) (err error) {
+func (c *Autovc) purge(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	if err = db.SetGuildAutoVC(ctx.Event.GuildID, []string{}); err != nil {
+	if err = db.SetGuildAutoVC(ctx.GetEvent().GuildID, []string{}); err != nil {
 		return
 	}
 

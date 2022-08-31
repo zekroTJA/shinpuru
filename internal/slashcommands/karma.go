@@ -52,7 +52,7 @@ func (c *Karma) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Karma) Run(ctx *ken.Ctx) (err error) {
+func (c *Karma) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (c *Karma) Run(ctx *ken.Ctx) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	karma, err := db.GetKarma(ctx.User().ID, ctx.Event.GuildID)
+	karma, err := db.GetKarma(ctx.User().ID, ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -74,7 +74,7 @@ func (c *Karma) Run(ctx *ken.Ctx) (err error) {
 		return err
 	}
 
-	karmaList, err := db.GetKarmaGuild(ctx.Event.GuildID, 20)
+	karmaList, err := db.GetKarmaGuild(ctx.GetEvent().GuildID, 20)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -124,16 +124,16 @@ func (c *Karma) Run(ctx *ken.Ctx) (err error) {
 	return ctx.FollowUpEmbed(emb).Error
 }
 
-func (c *Karma) userKarma(ctx *ken.Ctx, user *discordgo.User) error {
+func (c *Karma) userKarma(ctx ken.Context, user *discordgo.User) error {
 	st := ctx.Get(static.DiState).(*dgrs.State)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	memb, err := st.Member(ctx.Event.GuildID, user.ID)
+	memb, err := st.Member(ctx.GetEvent().GuildID, user.ID)
 	if err != nil {
 		return err
 	}
 
-	guildKarma, err := db.GetKarma(memb.User.ID, ctx.Event.GuildID)
+	guildKarma, err := db.GetKarma(memb.User.ID, ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}

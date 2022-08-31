@@ -57,7 +57,7 @@ func (c *Inviteblock) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Inviteblock) Run(ctx *ken.Ctx) (err error) {
+func (c *Inviteblock) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -67,7 +67,7 @@ func (c *Inviteblock) Run(ctx *ken.Ctx) (err error) {
 	stateV, ok := ctx.Options().GetByNameOptional("enable")
 
 	if !ok {
-		status, err := db.GetGuildInviteBlock(ctx.Event.GuildID)
+		status, err := db.GetGuildInviteBlock(ctx.GetEvent().GuildID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
 			return err
 		}
@@ -95,7 +95,7 @@ func (c *Inviteblock) Run(ctx *ken.Ctx) (err error) {
 		color = static.ColorEmbedGreen
 	}
 
-	err = db.SetGuildInviteBlock(ctx.Event.GuildID, stateStr)
+	err = db.SetGuildInviteBlock(ctx.GetEvent().GuildID, stateStr)
 	if err != nil {
 		return err
 	}

@@ -85,13 +85,13 @@ func (c *Exec) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Exec) Run(ctx *ken.Ctx) (err error) {
+func (c *Exec) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
 
 	var ranEnable bool
-	err = ctx.HandleSubCommands(ken.SubCommandHandler{"enable", func(ctx *ken.SubCommandCtx) error {
+	err = ctx.HandleSubCommands(ken.SubCommandHandler{"enable", func(ctx ken.SubCommandContext) error {
 		ranEnable = true
 		return c.enable(ctx)
 	}})
@@ -119,13 +119,13 @@ func (c *Exec) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
-	dmChan, err := ctx.Session.UserChannelCreate(ctx.User().ID)
+func (c *Exec) setup(ctx ken.SubCommandContext) (err error) {
+	dmChan, err := ctx.GetSession().UserChannelCreate(ctx.User().ID)
 	if err != nil {
 		return err
 	}
 
-	err = util.SendEmbed(ctx.Session, dmChan.ID,
+	err = util.SendEmbed(ctx.GetSession(), dmChan.ID,
 		"We need a [jdoodle API](https://www.jdoodle.com/compiler-api) client ID and secret to enable code execution on this guild. These values will be \n"+
 			"saved as clear text in our database to pass it to the API, so please, be careful which data you want to use, also, if we secure our \n"+
 			"database as best as possible, we do not guarantee the safety of your data.\n\nPlease enter first your API **client ID** or enter `cancel` to return:", "", 0).
@@ -147,7 +147,7 @@ func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
 	var removeHandler func()
 	var state int
 	var clientId, clientSecret string
-	removeHandler = ctx.Session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
+	removeHandler = ctx.GetSession().AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 		st := ctx.Get(static.DiState).(*dgrs.State)
 		self, err := st.SelfUser()
 		if err != nil {
@@ -165,17 +165,17 @@ func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
 			case 0:
 				clientId = e.Content
 				if len(clientId) < apiIDLen {
-					util.SendEmbedError(ctx.Session, dmChan.ID,
+					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API clientID, please enter again or enter `cancel` to exit.")
 					return
 				}
 				state++
-				util.SendEmbed(ctx.Session, dmChan.ID, "Okay, now, please enter your API **secret** or enter `cancel` to exit:", "", 0)
+				util.SendEmbed(ctx.GetSession(), dmChan.ID, "Okay, now, please enter your API **secret** or enter `cancel` to exit:", "", 0)
 				return
 			case 1:
 				clientSecret = e.Content
 				if len(clientSecret) < apiKeyLen {
-					util.SendEmbedError(ctx.Session, dmChan.ID,
+					util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 						"Invalid API secret, please enter again or enter `cancel` to exit.")
 					return
 				}
@@ -183,23 +183,23 @@ func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
 
 			_, err := jdoodle.NewWrapper(clientId, clientSecret).CreditsSpent()
 			if err != nil {
-				util.SendEmbedError(ctx.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"Sorry, but it seems like your entered credentials are not correct. Please try again entering your **clientID** or exit with `cancel`:")
 				state = 0
 				return
 			}
 
 			db, _ := ctx.Get(static.DiDatabase).(database.Database)
-			err = db.SetGuildJdoodleKey(ctx.Event.GuildID, clientId+"#"+clientSecret)
+			err = db.SetGuildJdoodleKey(ctx.GetEvent().GuildID, clientId+"#"+clientSecret)
 			if err != nil {
-				util.SendEmbedError(ctx.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"An unexpected error occured while saving the key. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
 				return
 			}
 
-			err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, true)
+			err = db.SetGuildCodeExecEnabled(ctx.GetEvent().GuildID, true)
 			if err != nil {
-				util.SendEmbedError(ctx.Session, dmChan.ID,
+				util.SendEmbedError(ctx.GetSession(), dmChan.ID,
 					"An unexpected error occured while saving enabled state. Please contact the host of this bot about this: ```\n"+err.Error()+"\n```")
 				return
 			}
@@ -215,14 +215,14 @@ func (c *Exec) setup(ctx *ken.SubCommandCtx) (err error) {
 	return nil
 }
 
-func (c *Exec) reset(ctx *ken.SubCommandCtx) (err error) {
+func (c *Exec) reset(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
-	err = db.SetGuildJdoodleKey(ctx.Event.GuildID, "")
+	err = db.SetGuildJdoodleKey(ctx.GetEvent().GuildID, "")
 	if err != nil {
 		return err
 	}
 
-	err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, false)
+	err = db.SetGuildCodeExecEnabled(ctx.GetEvent().GuildID, false)
 	if err != nil {
 		return err
 	}
@@ -232,11 +232,11 @@ func (c *Exec) reset(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Exec) enable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Exec) enable(ctx ken.SubCommandContext) (err error) {
 	enabled := ctx.Options().GetByName("enabled").BoolValue()
 
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
-	err = db.SetGuildCodeExecEnabled(ctx.Event.GuildID, enabled)
+	err = db.SetGuildCodeExecEnabled(ctx.GetEvent().GuildID, enabled)
 	if err != nil {
 		return err
 	}
@@ -251,9 +251,9 @@ func (c *Exec) enable(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Exec) check(ctx *ken.SubCommandCtx) (err error) {
+func (c *Exec) check(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
-	key, err := db.GetGuildJdoodleKey(ctx.Event.GuildID)
+	key, err := db.GetGuildJdoodleKey(ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return ctx.FollowUpError(
 			"Code execution is not set up on this guild. Use `exec setup` to set up code execution.", "").Error

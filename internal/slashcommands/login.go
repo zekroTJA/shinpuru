@@ -56,7 +56,7 @@ func (c *Login) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Login) Run(ctx *ken.Ctx) (err error) {
+func (c *Login) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -66,14 +66,14 @@ func (c *Login) Run(ctx *ken.Ctx) (err error) {
 	ota := ctx.Get(static.DiOneTimeAuth).(onetimeauth.OneTimeAuth)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	ch, err := st.Channel(ctx.Event.ChannelID)
+	ch, err := st.Channel(ctx.GetEvent().ChannelID)
 	if err != nil {
 		return
 	}
 
 	isDM := ch.Type == discordgo.ChannelTypeDM
 	if !isDM {
-		if ch, err = ctx.Session.UserChannelCreate(ctx.User().ID); err != nil {
+		if ch, err = ctx.GetSession().UserChannelCreate(ctx.User().ID); err != nil {
 			return
 		}
 	}
@@ -113,9 +113,9 @@ func (c *Login) Run(ctx *ken.Ctx) (err error) {
 		}
 	} else {
 		var msg *discordgo.Message
-		msg, err = ctx.Session.ChannelMessageSendEmbed(ch.ID, emb)
+		msg, err = ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
 		fEdit = func(emb *discordgo.MessageEmbed) error {
-			_, e := ctx.Session.ChannelMessageEditEmbed(ch.ID, msg.ID, emb)
+			_, e := ctx.GetSession().ChannelMessageEditEmbed(ch.ID, msg.ID, emb)
 			return e
 		}
 		if err == nil {
@@ -140,7 +140,7 @@ func (c *Login) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Login) wrapDmError(ctx *ken.Ctx, err error) error {
+func (c *Login) wrapDmError(ctx ken.Context, err error) error {
 	if discordutil.IsCanNotOpenDmToUserError(err) {
 		return ctx.FollowUpError(
 			"You need to enable DMs from users of this guild so that a secret authentication link "+

@@ -52,7 +52,7 @@ func (c *Id) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Id) Run(ctx *ken.Ctx) (err error) {
+func (c *Id) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -64,18 +64,18 @@ func (c *Id) Run(ctx *ken.Ctx) (err error) {
 	var textChannel *discordgo.Channel
 	var voiceChannel *discordgo.Channel
 
-	if u, err := fetch.FetchMember(ctx.Session, ctx.Event.GuildID, resolvable); err == nil {
+	if u, err := fetch.FetchMember(ctx.GetSession(), ctx.GetEvent().GuildID, resolvable); err == nil {
 		user = u.User
 	}
-	if r, err := fetch.FetchRole(ctx.Session, ctx.Event.GuildID, resolvable); err == nil {
+	if r, err := fetch.FetchRole(ctx.GetSession(), ctx.GetEvent().GuildID, resolvable); err == nil {
 		role = r
 	}
-	if tc, err := fetch.FetchChannel(ctx.Session, ctx.Event.GuildID, resolvable, func(c *discordgo.Channel) bool {
+	if tc, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetEvent().GuildID, resolvable, func(c *discordgo.Channel) bool {
 		return c.Type == discordgo.ChannelTypeGuildText
 	}); err == nil {
 		textChannel = tc
 	}
-	if vc, err := fetch.FetchChannel(ctx.Session, ctx.Event.GuildID, resolvable, func(c *discordgo.Channel) bool {
+	if vc, err := fetch.FetchChannel(ctx.GetSession(), ctx.GetEvent().GuildID, resolvable, func(c *discordgo.Channel) bool {
 		return c.Type == discordgo.ChannelTypeGuildVoice
 	}); err == nil {
 		voiceChannel = vc
@@ -118,7 +118,7 @@ func (c *Id) Run(ctx *ken.Ctx) (err error) {
 	}
 	emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 		Name:  "Guild",
-		Value: fmt.Sprintf("```\n%s\n```", ctx.Event.GuildID),
+		Value: fmt.Sprintf("```\n%s\n```", ctx.GetEvent().GuildID),
 	})
 
 	return ctx.FollowUpEmbed(emb).Error

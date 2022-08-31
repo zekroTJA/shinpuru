@@ -63,7 +63,7 @@ func (c *Kick) SubDomains() []permissions.SubPermission {
 	return []permissions.SubPermission{}
 }
 
-func (c *Kick) Run(ctx *ken.Ctx) (err error) {
+func (c *Kick) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}

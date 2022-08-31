@@ -33,7 +33,7 @@ require (
 	github.com/zekroTJA/ratelimit v1.1.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.5.6
-	github.com/zekrotja/ken v0.16.1-0.20220818084810-79e1831fabcd
+	github.com/zekrotja/ken v0.17.0
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	golang.org/x/sys v0.0.0-20220817070843-5a390386f1f2
@@ -66,6 +66,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
+	github.com/rs/xid v1.4.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

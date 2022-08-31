@@ -78,7 +78,7 @@ func (c *Clear) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Clear) Run(ctx *ken.Ctx) (err error) {
+func (c *Clear) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -92,15 +92,15 @@ func (c *Clear) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Clear) last(ctx *ken.SubCommandCtx) (err error) {
-	msglist, err := ctx.Session.ChannelMessages(ctx.Event.ChannelID, 2, "", "", "")
+func (c *Clear) last(ctx ken.SubCommandContext) (err error) {
+	msglist, err := ctx.GetSession().ChannelMessages(ctx.GetEvent().ChannelID, 2, "", "", "")
 	if err != nil {
 		return err
 	}
 	return c.delete(ctx, msglist)
 }
 
-func (c *Clear) amount(ctx *ken.SubCommandCtx) (err error) {
+func (c *Clear) amount(ctx ken.SubCommandContext) (err error) {
 
 	amount := ctx.Options()[0].IntValue()
 	var user *discordgo.User
@@ -109,21 +109,21 @@ func (c *Clear) amount(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	if amount < 1 || amount > 99 {
-		return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
+		return util.SendEmbedError(ctx.GetSession(), ctx.GetEvent().ChannelID,
 			"Number of messages is invald and must be between *(including)* 1 and 100.").
 			DeleteAfter(8 * time.Second).Error()
 	}
 
 	var member *discordgo.Member
 	if user != nil {
-		member, err = fetch.FetchMember(ctx.Session, ctx.Event.GuildID, user.ID)
+		member, err = fetch.FetchMember(ctx.GetSession(), ctx.GetEvent().GuildID, user.ID)
 		if err != nil {
-			return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
+			return util.SendEmbedError(ctx.GetSession(), ctx.GetEvent().ChannelID,
 				"Sorry, but the member can not be found on this guild. :cry:").
 				DeleteAfter(8 * time.Second).Error()
 		}
 	}
-	msglistUnfiltered, err := ctx.Session.ChannelMessages(ctx.Event.ChannelID, int(amount), "", "", "")
+	msglistUnfiltered, err := ctx.GetSession().ChannelMessages(ctx.GetEvent().ChannelID, int(amount), "", "", "")
 	if err != nil {
 		return err
 	}
@@ -142,15 +142,15 @@ func (c *Clear) amount(ctx *ken.SubCommandCtx) (err error) {
 	return c.delete(ctx, msglist)
 }
 
-func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
-	msgs, err := ctx.Session.ChannelMessages(ctx.Event.ChannelID, 100, "", "", "")
+func (c *Clear) selected(ctx ken.SubCommandContext) (err error) {
+	msgs, err := ctx.GetSession().ChannelMessages(ctx.GetEvent().ChannelID, 100, "", "", "")
 	if err != nil {
 		return
 	}
 
 	var deleteAfterMsg *discordgo.Message
 	var deleteAfterIdx int
-	c.iterMsgsWithReactionFromUser(ctx.Session, msgs, "🔻", ctx.User().ID, func(m *discordgo.Message, i int) bool {
+	c.iterMsgsWithReactionFromUser(ctx.GetSession(), msgs, "🔻", ctx.User().ID, func(m *discordgo.Message, i int) bool {
 		deleteAfterMsg = m
 		deleteAfterIdx = i
 		return false
@@ -169,7 +169,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 			LockOnUser(ctx.User().ID).
 			DeleteAfterAnswer().
 			DoOnAccept(func(cctx ken.ComponentContext) (err error) {
-				if err = ctx.Session.ChannelMessagesBulkDelete(ctx.Event.ChannelID, msgIds); err != nil {
+				if err = ctx.GetSession().ChannelMessagesBulkDelete(ctx.GetEvent().ChannelID, msgIds); err != nil {
 					return
 				}
 				return cctx.RespondEmbed(&discordgo.MessageEmbed{
@@ -177,7 +177,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					Color:       static.ColorEmbedUpdated,
 				})
 			}).
-			AsFollowUp(ctx.Ctx)
+			AsFollowUp(ctx)
 		if err != nil {
 			return err
 		}
@@ -185,7 +185,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	msgIds := make([]string, 0, len(msgs))
-	c.iterMsgsWithReactionFromUser(ctx.Session, msgs, "❌", ctx.User().ID, func(m *discordgo.Message, i int) bool {
+	c.iterMsgsWithReactionFromUser(ctx.GetSession(), msgs, "❌", ctx.User().ID, func(m *discordgo.Message, i int) bool {
 		msgIds = append(msgIds, m.ID)
 		return true
 	})
@@ -198,7 +198,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 			LockOnUser(ctx.User().ID).
 			DeleteAfterAnswer().
 			DoOnAccept(func(cctx ken.ComponentContext) (err error) {
-				if err = ctx.Session.ChannelMessagesBulkDelete(ctx.Event.ChannelID, msgIds); err != nil {
+				if err = ctx.GetSession().ChannelMessagesBulkDelete(ctx.GetEvent().ChannelID, msgIds); err != nil {
 					return
 				}
 				return cctx.RespondEmbed(&discordgo.MessageEmbed{
@@ -206,14 +206,14 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 					Color:       static.ColorEmbedUpdated,
 				})
 			}).
-			AsFollowUp(ctx.Ctx)
+			AsFollowUp(ctx)
 		if err != nil {
 			return err
 		}
 		return amsg.Error()
 	}
 
-	return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
+	return util.SendEmbedError(ctx.GetSession(), ctx.GetEvent().ChannelID,
 		"No message was either selected by you with the 🔻 emote nor was any with the ❌ emote.\n\n"+
 			"**Explaination:**\n"+
 			"You can either select single messages to be deleted with the ❌ emote or select a message with the 🔻 emote "+
@@ -221,7 +221,7 @@ func (c *Clear) selected(ctx *ken.SubCommandCtx) (err error) {
 		DeleteAfter(12 * time.Second).Error()
 }
 
-func (c *Clear) delete(ctx *ken.SubCommandCtx, msglist []*discordgo.Message) (err error) {
+func (c *Clear) delete(ctx ken.SubCommandContext, msglist []*discordgo.Message) (err error) {
 	if err != nil {
 		return err
 	}
@@ -231,7 +231,7 @@ func (c *Clear) delete(ctx *ken.SubCommandCtx, msglist []*discordgo.Message) (er
 		msgs[i] = m.ID
 	}
 
-	err = ctx.Session.ChannelMessagesBulkDelete(ctx.Event.ChannelID, msgs)
+	err = ctx.GetSession().ChannelMessagesBulkDelete(ctx.GetEvent().ChannelID, msgs)
 	if err != nil {
 		return err
 	}

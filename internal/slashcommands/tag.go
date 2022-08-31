@@ -112,7 +112,7 @@ func (c *Tag) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Tag) Run(ctx *ken.Ctx) (err error) {
+func (c *Tag) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -127,13 +127,13 @@ func (c *Tag) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Tag) show(ctx *ken.SubCommandCtx) (err error) {
+func (c *Tag) show(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
 	ident := strings.ToLower(ctx.Options().GetByName("name").StringValue())
 
-	tg, err := db.GetTagByIdent(ident, ctx.Event.GuildID)
+	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return ctx.FollowUpError("Tag could not be found.", "").Error
 	}
@@ -144,11 +144,11 @@ func (c *Tag) show(ctx *ken.SubCommandCtx) (err error) {
 	return ctx.FollowUpEmbed(tg.AsEmbed(st)).Error
 }
 
-func (c *Tag) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	tags, err := db.GetGuildTags(ctx.Event.GuildID)
+	tags, err := db.GetGuildTags(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}
@@ -164,7 +164,7 @@ func (c *Tag) list(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Tag) set(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
@@ -172,11 +172,11 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 	ident := strings.ToLower(ctx.Options().GetByName("name").StringValue())
 	content := ctx.Options().GetByName("content").StringValue()
 
-	tg, err := db.GetTagByIdent(ident, ctx.Event.GuildID)
+	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
 
 	if database.IsErrDatabaseNotFound(err) {
 		if tg.CreatorID != ctx.User().ID {
-			ok, err := pmw.CheckSubPerm(ctx.Ctx, "edit", true,
+			ok, err := pmw.CheckSubPerm(ctx, "edit", true,
 				"A tag with the same nam (created by another user) already exists and you do not have the permission to edit it.")
 			if !ok {
 				return err
@@ -215,7 +215,7 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 						tg.Ident),
 				}).Error
 			}).
-			AsFollowUp(ctx.Ctx)
+			AsFollowUp(ctx)
 		return
 	}
 
@@ -223,7 +223,7 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 		return
 	}
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "create", true,
+	ok, err := pmw.CheckSubPerm(ctx, "create", true,
 		"You do not have the permission to create tags.")
 	if !ok {
 		return err
@@ -236,7 +236,7 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 		Content:   content,
 		Created:   now,
 		CreatorID: ctx.User().ID,
-		GuildID:   ctx.Event.GuildID,
+		GuildID:   ctx.GetEvent().GuildID,
 		ID:        snowflakenodes.NodeTags.Generate(),
 		Ident:     ident,
 		LastEdit:  now,
@@ -252,13 +252,13 @@ func (c *Tag) set(ctx *ken.SubCommandCtx) (err error) {
 	})
 }
 
-func (c *Tag) delete(ctx *ken.SubCommandCtx) (err error) {
+func (c *Tag) delete(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
 	ident := strings.ToLower(ctx.Options().GetByName("name").StringValue())
 
-	tg, err := db.GetTagByIdent(ident, ctx.Event.GuildID)
+	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return ctx.FollowUpError("Tag could not be found.", "").Error
 	}
@@ -267,7 +267,7 @@ func (c *Tag) delete(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	if tg.CreatorID != ctx.User().ID {
-		ok, err := pmw.CheckSubPerm(ctx.Ctx, "delete", true,
+		ok, err := pmw.CheckSubPerm(ctx, "delete", true,
 			"A tag with the same nam (created by another user) already exists and you do not have the permission to edit it.")
 		if !ok {
 			return err
