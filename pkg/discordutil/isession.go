@@ -1,11 +1,10 @@
 package discordutil
 
 import (
+	. "github.com/bwmarrin/discordgo"
 	"image"
 	"io"
 	"time"
-
-	. "github.com/bwmarrin/discordgo"
 )
 
 type ISession interface {
