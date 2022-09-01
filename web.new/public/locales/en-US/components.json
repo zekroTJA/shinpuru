@@ -13,7 +13,8 @@
         "title": "Guild Settings",
         "general": "General",
         "backup": "Backups",
-        "antiraid": "Antiraid"
+        "antiraid": "Antiraid",
+        "codeexec": "Code Execution"
       }
     },
     "logout": "Logout",
