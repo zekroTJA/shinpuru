@@ -33,7 +33,7 @@ require (
 	github.com/zekroTJA/ratelimit v1.1.0
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.5.6
-	github.com/zekrotja/ken v0.17.0
+	github.com/zekrotja/ken v0.17.1
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	golang.org/x/sys v0.0.0-20220817070843-5a390386f1f2

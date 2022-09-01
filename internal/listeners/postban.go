@@ -84,17 +84,16 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 	}
 
 	_, err = t.ken.Components().Add(msg.ID, msg.ChannelID).
+		Condition(func(ctx ken.ComponentContext) bool {
+			ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.User().ID, "sp.guild.mod.report")
+			return ok && err == nil
+		}).
 		AddActionsRow(func(b ken.ComponentAssembler) {
 			b.Add(discordgo.Button{
 				CustomID: xid.New().String(),
 				Label:    "Create Report in shinpuru",
 				Style:    discordgo.PrimaryButton,
 			}, func(ctx ken.ComponentContext) bool {
-				ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.GetEvent().User.ID, "sp.guild.mod.report")
-				if !ok || err != nil {
-					return false
-				}
-
 				reasonId := xid.New().String()
 				attachmentId := xid.New().String()
 				cModal, err := ctx.OpenModal("Create Ban Report Entry", "", func(b ken.ComponentAssembler) {
@@ -147,8 +146,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 				Label:    "No further action",
 				Style:    discordgo.SecondaryButton,
 			}, func(ctx ken.ComponentContext) bool {
-				ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.GetEvent().User.ID, "sp.guild.mod.report")
-				return ok && err == nil
+				return true
 			})
 		}, true).Build()
 	if err != nil {

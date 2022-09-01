@@ -138,7 +138,10 @@ func (c *Backup) Run(ctx ken.Context) (err error) {
 
 	cNext := make(chan string, 1)
 
-	builder := fum.AddComponents()
+	builder := fum.AddComponents().
+		Condition(func(cctx ken.ComponentContext) bool {
+			return cctx.User().ID == ctx.User().ID
+		})
 
 	if len(entries) != 0 {
 		options := make([]discordgo.SelectMenuOption, 0, len(entries))

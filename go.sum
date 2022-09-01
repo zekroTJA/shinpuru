@@ -933,6 +933,8 @@ github.com/zekrotja/ken v0.16.1-0.20220831090351-0b65cd40c988 h1:gvqXZcI8vjB6owK
 github.com/zekrotja/ken v0.16.1-0.20220831090351-0b65cd40c988/go.mod h1:gaK7grKejkResB4jH3KhCHB48lyiVJ/8W/drj/gs/nA=
 github.com/zekrotja/ken v0.17.0 h1:XQfHp6iIODaBPA3rv/pSjmCx99End8X8HbDySuQnbwg=
 github.com/zekrotja/ken v0.17.0/go.mod h1:gaK7grKejkResB4jH3KhCHB48lyiVJ/8W/drj/gs/nA=
+github.com/zekrotja/ken v0.17.1 h1:WxKr2WqXAGLl99LEkJhocNVCyzvnbpyNSzmaWdTJTNI=
+github.com/zekrotja/ken v0.17.1/go.mod h1:gaK7grKejkResB4jH3KhCHB48lyiVJ/8W/drj/gs/nA=
 github.com/zekrotja/sop v0.3.1 h1:zJ0kk5w1y7aWZjaVwV2QZzfV868sHI6rQntLTFfsv3k=
 github.com/zekrotja/sop v0.3.1/go.mod h1:GKiPMHHdPpoKb+C48M6SXqoQmC2c2fEtUznHNxhDnrQ=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
