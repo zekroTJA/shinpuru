@@ -34,10 +34,10 @@ tasks:
 
   embed-versions:
     cmds:
-      - printf "{{.TAG}}" | tee {{.EMBED_DIR}}/AppVersion.txt
-      - printf "{{.COMMIT}}" | tee {{.EMBED_DIR}}/AppCommit.txt
-      - printf "{{.DATE}}" | tee {{.EMBED_DIR}}/AppDate.txt
-      - printf "{{default "false" .RELEASE}}" | tee {{.EMBED_DIR}}/Release.txt
+      - printf "{{.TAG}}" | tee {{.EMBED_DIR}}/AppVersion.txt > /dev/null 2>&1
+      - printf "{{.COMMIT}}" | tee {{.EMBED_DIR}}/AppCommit.txt > /dev/null 2>&1
+      - printf "{{.DATE}}" | tee {{.EMBED_DIR}}/AppDate.txt > /dev/null 2>&1
+      - printf "{{default "false" .RELEASE}}" | tee {{.EMBED_DIR}}/Release.txt > /dev/null 2>&1
 
   cleanup-embeds:
     cmds:
