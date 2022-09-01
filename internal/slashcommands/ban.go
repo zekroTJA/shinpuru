@@ -68,7 +68,7 @@ func (c *Ban) SubDomains() []permissions.SubPermission {
 	return []permissions.SubPermission{}
 }
 
-func (c *Ban) Run(ctx *ken.Ctx) (err error) {
+func (c *Ban) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}

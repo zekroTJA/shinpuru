@@ -53,7 +53,7 @@ func (c *Mvall) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Mvall) Run(ctx *ken.Ctx) (err error) {
+func (c *Mvall) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -62,7 +62,7 @@ func (c *Mvall) Run(ctx *ken.Ctx) (err error) {
 
 	channel := ctx.Options().GetByName("channel").ChannelValue(ctx)
 
-	vs, err := st.VoiceState(ctx.Event.GuildID, ctx.User().ID)
+	vs, err := st.VoiceState(ctx.GetEvent().GuildID, ctx.User().ID)
 	if err != nil {
 		return
 	}
@@ -75,7 +75,7 @@ func (c *Mvall) Run(ctx *ken.Ctx) (err error) {
 			"You are already in the target voice channel.", "").Error
 	}
 
-	vss, err := st.VoiceStates(ctx.Event.GuildID)
+	vss, err := st.VoiceStates(ctx.GetEvent().GuildID)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (c *Mvall) Run(ctx *ken.Ctx) (err error) {
 	var i int
 	for _, vs := range vss {
 		if vs.ChannelID == vs.ChannelID {
-			err := ctx.Session.GuildMemberMove(ctx.Event.GuildID, vs.UserID, &channel.ID)
+			err := ctx.GetSession().GuildMemberMove(ctx.GetEvent().GuildID, vs.UserID, &channel.ID)
 			if err != nil {
 				return err
 			}

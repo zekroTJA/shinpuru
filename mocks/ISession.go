@@ -383,6 +383,112 @@ func (_m *ISession) Applications() ([]*discordgo.Application, error) {
 	return r0, r1
 }
 
+// AutoModerationRule provides a mock function with given fields: guildID, ruleID
+func (_m *ISession) AutoModerationRule(guildID string, ruleID string) (*discordgo.AutoModerationRule, error) {
+	ret := _m.Called(guildID, ruleID)
+
+	var r0 *discordgo.AutoModerationRule
+	if rf, ok := ret.Get(0).(func(string, string) *discordgo.AutoModerationRule); ok {
+		r0 = rf(guildID, ruleID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.AutoModerationRule)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(guildID, ruleID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AutoModerationRuleCreate provides a mock function with given fields: guildID, rule
+func (_m *ISession) AutoModerationRuleCreate(guildID string, rule *discordgo.AutoModerationRule) (*discordgo.AutoModerationRule, error) {
+	ret := _m.Called(guildID, rule)
+
+	var r0 *discordgo.AutoModerationRule
+	if rf, ok := ret.Get(0).(func(string, *discordgo.AutoModerationRule) *discordgo.AutoModerationRule); ok {
+		r0 = rf(guildID, rule)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.AutoModerationRule)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, *discordgo.AutoModerationRule) error); ok {
+		r1 = rf(guildID, rule)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AutoModerationRuleDelete provides a mock function with given fields: guildID, ruleID
+func (_m *ISession) AutoModerationRuleDelete(guildID string, ruleID string) error {
+	ret := _m.Called(guildID, ruleID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(guildID, ruleID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// AutoModerationRuleEdit provides a mock function with given fields: guildID, ruleID, rule
+func (_m *ISession) AutoModerationRuleEdit(guildID string, ruleID string, rule *discordgo.AutoModerationRule) (*discordgo.AutoModerationRule, error) {
+	ret := _m.Called(guildID, ruleID, rule)
+
+	var r0 *discordgo.AutoModerationRule
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.AutoModerationRule) *discordgo.AutoModerationRule); ok {
+		r0 = rf(guildID, ruleID, rule)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.AutoModerationRule)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.AutoModerationRule) error); ok {
+		r1 = rf(guildID, ruleID, rule)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AutoModerationRules provides a mock function with given fields: guildID
+func (_m *ISession) AutoModerationRules(guildID string) ([]*discordgo.AutoModerationRule, error) {
+	ret := _m.Called(guildID)
+
+	var r0 []*discordgo.AutoModerationRule
+	if rf, ok := ret.Get(0).(func(string) []*discordgo.AutoModerationRule); ok {
+		r0 = rf(guildID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*discordgo.AutoModerationRule)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(guildID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Channel provides a mock function with given fields: channelID
 func (_m *ISession) Channel(channelID string) (*discordgo.Channel, error) {
 	ret := _m.Called(channelID)
@@ -429,13 +535,13 @@ func (_m *ISession) ChannelDelete(channelID string) (*discordgo.Channel, error) 
 	return r0, r1
 }
 
-// ChannelEdit provides a mock function with given fields: channelID, name
-func (_m *ISession) ChannelEdit(channelID string, name string) (*discordgo.Channel, error) {
-	ret := _m.Called(channelID, name)
+// ChannelEdit provides a mock function with given fields: channelID, data
+func (_m *ISession) ChannelEdit(channelID string, data *discordgo.ChannelEdit) (*discordgo.Channel, error) {
+	ret := _m.Called(channelID, data)
 
 	var r0 *discordgo.Channel
-	if rf, ok := ret.Get(0).(func(string, string) *discordgo.Channel); ok {
-		r0 = rf(channelID, name)
+	if rf, ok := ret.Get(0).(func(string, *discordgo.ChannelEdit) *discordgo.Channel); ok {
+		r0 = rf(channelID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.Channel)
@@ -443,8 +549,8 @@ func (_m *ISession) ChannelEdit(channelID string, name string) (*discordgo.Chann
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(channelID, name)
+	if rf, ok := ret.Get(1).(func(string, *discordgo.ChannelEdit) error); ok {
+		r1 = rf(channelID, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -802,6 +908,29 @@ func (_m *ISession) ChannelMessageSendEmbed(channelID string, embed *discordgo.M
 	return r0, r1
 }
 
+// ChannelMessageSendEmbedReply provides a mock function with given fields: channelID, embed, reference
+func (_m *ISession) ChannelMessageSendEmbedReply(channelID string, embed *discordgo.MessageEmbed, reference *discordgo.MessageReference) (*discordgo.Message, error) {
+	ret := _m.Called(channelID, embed, reference)
+
+	var r0 *discordgo.Message
+	if rf, ok := ret.Get(0).(func(string, *discordgo.MessageEmbed, *discordgo.MessageReference) *discordgo.Message); ok {
+		r0 = rf(channelID, embed, reference)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.Message)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, *discordgo.MessageEmbed, *discordgo.MessageReference) error); ok {
+		r1 = rf(channelID, embed, reference)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ChannelMessageSendEmbeds provides a mock function with given fields: channelID, embeds
 func (_m *ISession) ChannelMessageSendEmbeds(channelID string, embeds []*discordgo.MessageEmbed) (*discordgo.Message, error) {
 	ret := _m.Called(channelID, embeds)
@@ -818,6 +947,29 @@ func (_m *ISession) ChannelMessageSendEmbeds(channelID string, embeds []*discord
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string, []*discordgo.MessageEmbed) error); ok {
 		r1 = rf(channelID, embeds)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ChannelMessageSendEmbedsReply provides a mock function with given fields: channelID, embeds, reference
+func (_m *ISession) ChannelMessageSendEmbedsReply(channelID string, embeds []*discordgo.MessageEmbed, reference *discordgo.MessageReference) (*discordgo.Message, error) {
+	ret := _m.Called(channelID, embeds, reference)
+
+	var r0 *discordgo.Message
+	if rf, ok := ret.Get(0).(func(string, []*discordgo.MessageEmbed, *discordgo.MessageReference) *discordgo.Message); ok {
+		r0 = rf(channelID, embeds, reference)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.Message)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, []*discordgo.MessageEmbed, *discordgo.MessageReference) error); ok {
+		r1 = rf(channelID, embeds, reference)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1512,11 +1664,11 @@ func (_m *ISession) GuildDelete(guildID string) (*discordgo.Guild, error) {
 }
 
 // GuildEdit provides a mock function with given fields: guildID, g
-func (_m *ISession) GuildEdit(guildID string, g discordgo.GuildParams) (*discordgo.Guild, error) {
+func (_m *ISession) GuildEdit(guildID string, g *discordgo.GuildParams) (*discordgo.Guild, error) {
 	ret := _m.Called(guildID, g)
 
 	var r0 *discordgo.Guild
-	if rf, ok := ret.Get(0).(func(string, discordgo.GuildParams) *discordgo.Guild); ok {
+	if rf, ok := ret.Get(0).(func(string, *discordgo.GuildParams) *discordgo.Guild); ok {
 		r0 = rf(guildID, g)
 	} else {
 		if ret.Get(0) != nil {
@@ -1525,7 +1677,7 @@ func (_m *ISession) GuildEdit(guildID string, g discordgo.GuildParams) (*discord
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, discordgo.GuildParams) error); ok {
+	if rf, ok := ret.Get(1).(func(string, *discordgo.GuildParams) error); ok {
 		r1 = rf(guildID, g)
 	} else {
 		r1 = ret.Error(1)
@@ -1557,13 +1709,13 @@ func (_m *ISession) GuildEmbed(guildID string) (*discordgo.GuildEmbed, error) {
 	return r0, r1
 }
 
-// GuildEmbedEdit provides a mock function with given fields: guildID, enabled, channelID
-func (_m *ISession) GuildEmbedEdit(guildID string, enabled bool, channelID string) error {
-	ret := _m.Called(guildID, enabled, channelID)
+// GuildEmbedEdit provides a mock function with given fields: guildID, data
+func (_m *ISession) GuildEmbedEdit(guildID string, data *discordgo.GuildEmbed) error {
+	ret := _m.Called(guildID, data)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, bool, string) error); ok {
-		r0 = rf(guildID, enabled, channelID)
+	if rf, ok := ret.Get(0).(func(string, *discordgo.GuildEmbed) error); ok {
+		r0 = rf(guildID, data)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -1594,13 +1746,13 @@ func (_m *ISession) GuildEmoji(guildID string, emojiID string) (*discordgo.Emoji
 	return r0, r1
 }
 
-// GuildEmojiCreate provides a mock function with given fields: guildID, name, _a2, roles
-func (_m *ISession) GuildEmojiCreate(guildID string, name string, _a2 string, roles []string) (*discordgo.Emoji, error) {
-	ret := _m.Called(guildID, name, _a2, roles)
+// GuildEmojiCreate provides a mock function with given fields: guildID, data
+func (_m *ISession) GuildEmojiCreate(guildID string, data *discordgo.EmojiParams) (*discordgo.Emoji, error) {
+	ret := _m.Called(guildID, data)
 
 	var r0 *discordgo.Emoji
-	if rf, ok := ret.Get(0).(func(string, string, string, []string) *discordgo.Emoji); ok {
-		r0 = rf(guildID, name, _a2, roles)
+	if rf, ok := ret.Get(0).(func(string, *discordgo.EmojiParams) *discordgo.Emoji); ok {
+		r0 = rf(guildID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.Emoji)
@@ -1608,8 +1760,8 @@ func (_m *ISession) GuildEmojiCreate(guildID string, name string, _a2 string, ro
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, string, []string) error); ok {
-		r1 = rf(guildID, name, _a2, roles)
+	if rf, ok := ret.Get(1).(func(string, *discordgo.EmojiParams) error); ok {
+		r1 = rf(guildID, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1631,13 +1783,13 @@ func (_m *ISession) GuildEmojiDelete(guildID string, emojiID string) error {
 	return r0
 }
 
-// GuildEmojiEdit provides a mock function with given fields: guildID, emojiID, name, roles
-func (_m *ISession) GuildEmojiEdit(guildID string, emojiID string, name string, roles []string) (*discordgo.Emoji, error) {
-	ret := _m.Called(guildID, emojiID, name, roles)
+// GuildEmojiEdit provides a mock function with given fields: guildID, emojiID, data
+func (_m *ISession) GuildEmojiEdit(guildID string, emojiID string, data *discordgo.EmojiParams) (*discordgo.Emoji, error) {
+	ret := _m.Called(guildID, emojiID, data)
 
 	var r0 *discordgo.Emoji
-	if rf, ok := ret.Get(0).(func(string, string, string, []string) *discordgo.Emoji); ok {
-		r0 = rf(guildID, emojiID, name, roles)
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.EmojiParams) *discordgo.Emoji); ok {
+		r0 = rf(guildID, emojiID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.Emoji)
@@ -1645,8 +1797,8 @@ func (_m *ISession) GuildEmojiEdit(guildID string, emojiID string, name string, 
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, string, []string) error); ok {
-		r1 = rf(guildID, emojiID, name, roles)
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.EmojiParams) error); ok {
+		r1 = rf(guildID, emojiID, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1825,13 +1977,13 @@ func (_m *ISession) GuildMember(guildID string, userID string) (*discordgo.Membe
 	return r0, r1
 }
 
-// GuildMemberAdd provides a mock function with given fields: accessToken, guildID, userID, nick, roles, mute, deaf
-func (_m *ISession) GuildMemberAdd(accessToken string, guildID string, userID string, nick string, roles []string, mute bool, deaf bool) error {
-	ret := _m.Called(accessToken, guildID, userID, nick, roles, mute, deaf)
+// GuildMemberAdd provides a mock function with given fields: guildID, userID, data
+func (_m *ISession) GuildMemberAdd(guildID string, userID string, data *discordgo.GuildMemberAddParams) error {
+	ret := _m.Called(guildID, userID, data)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, string, string, []string, bool, bool) error); ok {
-		r0 = rf(accessToken, guildID, userID, nick, roles, mute, deaf)
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.GuildMemberAddParams) error); ok {
+		r0 = rf(guildID, userID, data)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -1881,26 +2033,12 @@ func (_m *ISession) GuildMemberDeleteWithReason(guildID string, userID string, r
 	return r0
 }
 
-// GuildMemberEdit provides a mock function with given fields: guildID, userID, roles
-func (_m *ISession) GuildMemberEdit(guildID string, userID string, roles []string) error {
-	ret := _m.Called(guildID, userID, roles)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, []string) error); ok {
-		r0 = rf(guildID, userID, roles)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// GuildMemberEditComplex provides a mock function with given fields: guildID, userID, data
-func (_m *ISession) GuildMemberEditComplex(guildID string, userID string, data discordgo.GuildMemberParams) (*discordgo.Member, error) {
+// GuildMemberEdit provides a mock function with given fields: guildID, userID, data
+func (_m *ISession) GuildMemberEdit(guildID string, userID string, data *discordgo.GuildMemberParams) (*discordgo.Member, error) {
 	ret := _m.Called(guildID, userID, data)
 
 	var r0 *discordgo.Member
-	if rf, ok := ret.Get(0).(func(string, string, discordgo.GuildMemberParams) *discordgo.Member); ok {
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.GuildMemberParams) *discordgo.Member); ok {
 		r0 = rf(guildID, userID, data)
 	} else {
 		if ret.Get(0) != nil {
@@ -1909,7 +2047,30 @@ func (_m *ISession) GuildMemberEditComplex(guildID string, userID string, data d
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, discordgo.GuildMemberParams) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.GuildMemberParams) error); ok {
+		r1 = rf(guildID, userID, data)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GuildMemberEditComplex provides a mock function with given fields: guildID, userID, data
+func (_m *ISession) GuildMemberEditComplex(guildID string, userID string, data *discordgo.GuildMemberParams) (*discordgo.Member, error) {
+	ret := _m.Called(guildID, userID, data)
+
+	var r0 *discordgo.Member
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.GuildMemberParams) *discordgo.Member); ok {
+		r0 = rf(guildID, userID, data)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.Member)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.GuildMemberParams) error); ok {
 		r1 = rf(guildID, userID, data)
 	} else {
 		r1 = ret.Error(1)
@@ -2113,13 +2274,13 @@ func (_m *ISession) GuildPruneCount(guildID string, days uint32) (uint32, error)
 	return r0, r1
 }
 
-// GuildRoleCreate provides a mock function with given fields: guildID
-func (_m *ISession) GuildRoleCreate(guildID string) (*discordgo.Role, error) {
-	ret := _m.Called(guildID)
+// GuildRoleCreate provides a mock function with given fields: guildID, data
+func (_m *ISession) GuildRoleCreate(guildID string, data *discordgo.RoleParams) (*discordgo.Role, error) {
+	ret := _m.Called(guildID, data)
 
 	var r0 *discordgo.Role
-	if rf, ok := ret.Get(0).(func(string) *discordgo.Role); ok {
-		r0 = rf(guildID)
+	if rf, ok := ret.Get(0).(func(string, *discordgo.RoleParams) *discordgo.Role); ok {
+		r0 = rf(guildID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.Role)
@@ -2127,8 +2288,8 @@ func (_m *ISession) GuildRoleCreate(guildID string) (*discordgo.Role, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(guildID)
+	if rf, ok := ret.Get(1).(func(string, *discordgo.RoleParams) error); ok {
+		r1 = rf(guildID, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -2150,13 +2311,13 @@ func (_m *ISession) GuildRoleDelete(guildID string, roleID string) error {
 	return r0
 }
 
-// GuildRoleEdit provides a mock function with given fields: guildID, roleID, name, color, hoist, perm, mention
-func (_m *ISession) GuildRoleEdit(guildID string, roleID string, name string, color int, hoist bool, perm int64, mention bool) (*discordgo.Role, error) {
-	ret := _m.Called(guildID, roleID, name, color, hoist, perm, mention)
+// GuildRoleEdit provides a mock function with given fields: guildID, roleID, data
+func (_m *ISession) GuildRoleEdit(guildID string, roleID string, data *discordgo.RoleParams) (*discordgo.Role, error) {
+	ret := _m.Called(guildID, roleID, data)
 
 	var r0 *discordgo.Role
-	if rf, ok := ret.Get(0).(func(string, string, string, int, bool, int64, bool) *discordgo.Role); ok {
-		r0 = rf(guildID, roleID, name, color, hoist, perm, mention)
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.RoleParams) *discordgo.Role); ok {
+		r0 = rf(guildID, roleID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.Role)
@@ -2164,8 +2325,8 @@ func (_m *ISession) GuildRoleEdit(guildID string, roleID string, name string, co
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, string, int, bool, int64, bool) error); ok {
-		r1 = rf(guildID, roleID, name, color, hoist, perm, mention)
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.RoleParams) error); ok {
+		r1 = rf(guildID, roleID, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -2394,13 +2555,13 @@ func (_m *ISession) GuildTemplate(templateCode string) (*discordgo.GuildTemplate
 	return r0, r1
 }
 
-// GuildTemplateCreate provides a mock function with given fields: guildID, name, description
-func (_m *ISession) GuildTemplateCreate(guildID string, name string, description string) *discordgo.GuildTemplate {
-	ret := _m.Called(guildID, name, description)
+// GuildTemplateCreate provides a mock function with given fields: guildID, data
+func (_m *ISession) GuildTemplateCreate(guildID string, data *discordgo.GuildTemplateParams) *discordgo.GuildTemplate {
+	ret := _m.Called(guildID, data)
 
 	var r0 *discordgo.GuildTemplate
-	if rf, ok := ret.Get(0).(func(string, string, string) *discordgo.GuildTemplate); ok {
-		r0 = rf(guildID, name, description)
+	if rf, ok := ret.Get(0).(func(string, *discordgo.GuildTemplateParams) *discordgo.GuildTemplate); ok {
+		r0 = rf(guildID, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.GuildTemplate)
@@ -2424,13 +2585,13 @@ func (_m *ISession) GuildTemplateDelete(guildID string, templateCode string) err
 	return r0
 }
 
-// GuildTemplateEdit provides a mock function with given fields: guildID, templateCode, name, description
-func (_m *ISession) GuildTemplateEdit(guildID string, templateCode string, name string, description string) (*discordgo.GuildTemplate, error) {
-	ret := _m.Called(guildID, templateCode, name, description)
+// GuildTemplateEdit provides a mock function with given fields: guildID, templateCode, data
+func (_m *ISession) GuildTemplateEdit(guildID string, templateCode string, data *discordgo.GuildTemplateParams) (*discordgo.GuildTemplate, error) {
+	ret := _m.Called(guildID, templateCode, data)
 
 	var r0 *discordgo.GuildTemplate
-	if rf, ok := ret.Get(0).(func(string, string, string, string) *discordgo.GuildTemplate); ok {
-		r0 = rf(guildID, templateCode, name, description)
+	if rf, ok := ret.Get(0).(func(string, string, *discordgo.GuildTemplateParams) *discordgo.GuildTemplate); ok {
+		r0 = rf(guildID, templateCode, data)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.GuildTemplate)
@@ -2438,8 +2599,8 @@ func (_m *ISession) GuildTemplateEdit(guildID string, templateCode string, name 
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, string, string) error); ok {
-		r1 = rf(guildID, templateCode, name, description)
+	if rf, ok := ret.Get(1).(func(string, string, *discordgo.GuildTemplateParams) error); ok {
+		r1 = rf(guildID, templateCode, data)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -3528,6 +3689,29 @@ func (_m *ISession) UserConnections() ([]*discordgo.UserConnection, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UserGuildMember provides a mock function with given fields: guildID
+func (_m *ISession) UserGuildMember(guildID string) (*discordgo.Member, error) {
+	ret := _m.Called(guildID)
+
+	var r0 *discordgo.Member
+	if rf, ok := ret.Get(0).(func(string) *discordgo.Member); ok {
+		r0 = rf(guildID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discordgo.Member)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(guildID)
 	} else {
 		r1 = ret.Error(1)
 	}

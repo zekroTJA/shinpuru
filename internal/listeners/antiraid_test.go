@@ -183,4 +183,6 @@ func TestHandleMemberAdd_Threadsafety(t *testing.T) {
 
 	m.session.AssertNumberOfCalls(t, "ChannelMessageSendEmbed", 3)
 	m.db.AssertNumberOfCalls(t, "AddToAntiraidJoinList", runs-burst)
+
+	time.Sleep(5 * time.Second)
 }

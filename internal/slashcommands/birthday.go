@@ -109,7 +109,7 @@ func (c *Birthday) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Birthday) Run(ctx *ken.Ctx) (err error) {
+func (c *Birthday) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -124,18 +124,18 @@ func (c *Birthday) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Birthday) setChannel(ctx *ken.SubCommandCtx) (err error) {
+func (c *Birthday) setChannel(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "/sp.guild.settings.birthday", false,
+	ok, err := pmw.CheckSubPerm(ctx, "/sp.guild.settings.birthday", false,
 		"You are not permitted to edit the guild birthday channel.")
 	if !ok {
 		return
 	}
 
-	ch := ctx.Options().GetByName("channel").ChannelValue(ctx.Ctx)
-	err = db.SetGuildBirthdayChan(ctx.Event.GuildID, ch.ID)
+	ch := ctx.Options().GetByName("channel").ChannelValue(ctx)
+	err = db.SetGuildBirthdayChan(ctx.GetEvent().GuildID, ch.ID)
 	if err != nil {
 		return
 	}
@@ -149,17 +149,17 @@ func (c *Birthday) setChannel(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Birthday) unsetChannel(ctx *ken.SubCommandCtx) (err error) {
+func (c *Birthday) unsetChannel(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "/sp.guild.settings.birthday", false,
+	ok, err := pmw.CheckSubPerm(ctx, "/sp.guild.settings.birthday", false,
 		"You are not permitted to edit the guild birthday channel.")
 	if !ok {
 		return
 	}
 
-	err = db.SetGuildBirthdayChan(ctx.Event.GuildID, "")
+	err = db.SetGuildBirthdayChan(ctx.GetEvent().GuildID, "")
 	if err != nil {
 		return
 	}
@@ -171,7 +171,7 @@ func (c *Birthday) unsetChannel(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Birthday) set(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	dateStr := ctx.Options().GetByName("date").StringValue()
@@ -196,7 +196,7 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	err = db.SetBirthday(models.Birthday{
-		GuildID:  ctx.Event.GuildID,
+		GuildID:  ctx.GetEvent().GuildID,
 		UserID:   ctx.User().ID,
 		Date:     date,
 		ShowYear: showYear,
@@ -213,10 +213,10 @@ func (c *Birthday) set(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Birthday) remove(ctx *ken.SubCommandCtx) (err error) {
+func (c *Birthday) remove(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	err = db.DeleteBirthday(ctx.Event.GuildID, ctx.User().ID)
+	err = db.DeleteBirthday(ctx.GetEvent().GuildID, ctx.User().ID)
 	if err != nil {
 		return
 	}

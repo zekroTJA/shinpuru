@@ -59,7 +59,7 @@ func (c *Help) IsDmCapable() bool {
 	return true
 }
 
-func (c *Help) Run(ctx *ken.Ctx) (err error) {
+func (c *Help) Run(ctx ken.Context) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider).Config()
 
 	webAddr := cfg.WebServer.PublicAddr
@@ -102,11 +102,11 @@ func (c *Help) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Help) cmdHelp(ctx *ken.Ctx, webAddr, name string) (err error) {
+func (c *Help) cmdHelp(ctx ken.Context, webAddr, name string) (err error) {
 	name = strings.ToLower(name)
 
 	var info *ken.CommandInfo
-	for _, info = range ctx.Ken.GetCommandInfo() {
+	for _, info = range ctx.GetKen().GetCommandInfo() {
 		if info.ApplicationCommand.Name == name {
 			break
 		}

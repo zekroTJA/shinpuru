@@ -117,7 +117,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 	}
 
 	verificationLvl := discordgo.VerificationLevelVeryHigh
-	_, err := s.GuildEdit(e.GuildID, discordgo.GuildParams{
+	_, err := s.GuildEdit(e.GuildID, &discordgo.GuildParams{
 		VerificationLevel: &verificationLvl,
 	})
 

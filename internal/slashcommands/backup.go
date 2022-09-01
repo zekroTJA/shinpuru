@@ -7,15 +7,14 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/bwmarrin/snowflake"
+	"github.com/rs/xid"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/logmsg"
 	"github.com/zekrotja/ken"
 )
@@ -40,7 +39,7 @@ func (c *Backup) Description() string {
 }
 
 func (c *Backup) Version() string {
-	return "1.0.0"
+	return "2.0.0"
 }
 
 func (c *Backup) Type() discordgo.ApplicationCommandType {
@@ -49,42 +48,42 @@ func (c *Backup) Type() discordgo.ApplicationCommandType {
 
 func (c *Backup) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{
-		{
-			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "state",
-			Description: "Enable or disable the backup system.",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionBoolean,
-					Name:        "state",
-					Description: "Dispaly or set the backup state to enabled or disabled",
-					Required:    false,
-				},
-			},
-		},
-		{
-			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "list",
-			Description: "List all stored backups.",
-		},
-		{
-			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "restore",
-			Description: "Restore a backup.",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
-					Name:        "index",
-					Description: "The index of the backup to be restored.",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "purge",
-			Description: "Delete all stored backups.",
-		},
+		// {
+		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
+		// 	Name:        "state",
+		// 	Description: "Enable or disable the backup system.",
+		// 	Options: []*discordgo.ApplicationCommandOption{
+		// 		{
+		// 			Type:        discordgo.ApplicationCommandOptionBoolean,
+		// 			Name:        "state",
+		// 			Description: "Dispaly or set the backup state to enabled or disabled",
+		// 			Required:    false,
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
+		// 	Name:        "list",
+		// 	Description: "List all stored backups.",
+		// },
+		// {
+		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
+		// 	Name:        "restore",
+		// 	Description: "Restore a backup.",
+		// 	Options: []*discordgo.ApplicationCommandOption{
+		// 		{
+		// 			Type:        discordgo.ApplicationCommandOptionInteger,
+		// 			Name:        "index",
+		// 			Description: "The index of the backup to be restored.",
+		// 			Required:    true,
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
+		// 	Name:        "purge",
+		// 	Description: "Delete all stored backups.",
+		// },
 	}
 }
 
@@ -96,75 +95,25 @@ func (c *Backup) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Backup) Run(ctx *ken.Ctx) (err error) {
+func (c *Backup) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
 
-	err = ctx.HandleSubCommands(
-		ken.SubCommandHandler{"state", c.state},
-		ken.SubCommandHandler{"list", c.list},
-		ken.SubCommandHandler{"restore", c.restore},
-		ken.SubCommandHandler{"purge", c.purge},
-	)
-
-	return
-}
-
-func (c *Backup) state(ctx *ken.SubCommandCtx) (err error) {
-	db := ctx.Get(static.DiDatabase).(database.Database)
-
-	var (
-		state bool
-		emb   *discordgo.MessageEmbed
-	)
-	subOpts := ctx.Event.ApplicationCommandData().Options[0].Options
-	if len(subOpts) > 0 {
-		state = subOpts[0].BoolValue()
-		if err = db.SetGuildBackup(ctx.Event.GuildID, state); err != nil {
-			return
-		}
-		emb = &discordgo.MessageEmbed{
-			Color:       static.ColorEmbedOrange,
-			Description: "The backup system is now **disabled**.",
-		}
-		if state {
-			emb.Color = static.ColorEmbedGreen
-			emb.Description = "The backup system is now **enabled**."
-		}
-	} else {
-		state, err = db.GetGuildBackup(ctx.Event.GuildID)
-		if err != nil {
-			return
-		}
-		emb = &discordgo.MessageEmbed{
-			Color:       static.ColorEmbedOrange,
-			Description: "The backup system is currently **disabled**.",
-		}
-		if state {
-			emb.Color = static.ColorEmbedGreen
-			emb.Description = "The backup system is currently **enabled**."
-		}
-	}
-
-	err = ctx.FollowUpEmbed(emb).Error
-	return
-}
-
-func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
+	st, _ := ctx.Get(static.DiObjectStorage).(storage.Storage)
 
-	status, err := db.GetGuildBackup(ctx.Event.GuildID)
+	enabled, err := db.GetGuildBackup(ctx.GetEvent().GuildID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return err
 	}
 
 	strStatus := ":x:  Backups **disabled**"
-	if status {
+	if enabled {
 		strStatus = ":white_check_mark:  Backups **enabled**"
 	}
 
-	_, strBackupAll, err := c.getBackupsList(ctx.Ctx)
+	entries, strBackupAll, err := c.getBackupsList(ctx)
 	if err != nil {
 		return err
 	}
@@ -181,115 +130,174 @@ func (c *Backup) list(ctx *ken.SubCommandCtx) (err error) {
 		},
 	}
 
-	err = ctx.FollowUpEmbed(emb).Error
-	return
-}
+	var unreg func() error
+	fum := ctx.FollowUpEmbed(emb)
+	if fum.Error != nil {
+		return err
+	}
 
-func (c *Backup) restore(ctx *ken.SubCommandCtx) (err error) {
-	db := ctx.Get(static.DiDatabase).(database.Database)
+	cNext := make(chan string, 1)
 
-	i := ctx.Options().Get(0).IntValue()
+	builder := fum.AddComponents().
+		Condition(func(cctx ken.ComponentContext) bool {
+			return cctx.User().ID == ctx.User().ID
+		})
+
+	if len(entries) != 0 {
+		options := make([]discordgo.SelectMenuOption, 0, len(entries))
+		for i, entry := range entries {
+			options = append(options, discordgo.SelectMenuOption{
+				Label: fmt.Sprintf("%d - %s", i, entry.TimestampFormatted()),
+				Value: entry.FileID,
+			})
+		}
+
+		builder.AddActionsRow(func(b ken.ComponentAssembler) {
+			b.Add(discordgo.SelectMenu{
+				CustomID:    xid.New().String(),
+				Options:     options,
+				Placeholder: "Select backup for Restore",
+			}, func(ctx ken.ComponentContext) bool {
+				vals := ctx.GetData().Values
+				if len(vals) == 0 {
+					return false
+				}
+				cNext <- vals[0]
+				return true
+			})
+		})
+	}
+
+	builder.AddActionsRow(func(b ken.ComponentAssembler) {
+		if enabled {
+			b.Add(discordgo.Button{
+				CustomID: xid.New().String(),
+				Label:    "Disable Guild Backups",
+				Style:    discordgo.DangerButton,
+			}, func(ctx ken.ComponentContext) bool {
+				if ctx.Defer() != nil {
+					return false
+				}
+
+				err := db.SetGuildBackup(ctx.GetEvent().GuildID, false)
+				if err != nil {
+					return false
+				}
+
+				ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+					Description: "Guild backups are now disabled.",
+					Color:       static.ColorEmbedOrange,
+				})
+
+				cNext <- ""
+				return true
+			})
+		} else {
+			b.Add(discordgo.Button{
+				CustomID: xid.New().String(),
+				Label:    "Enable Guild Backups",
+				Style:    discordgo.SuccessButton,
+			}, func(ctx ken.ComponentContext) bool {
+				if ctx.Defer() != nil {
+					return false
+				}
+
+				err := db.SetGuildBackup(ctx.GetEvent().GuildID, true)
+				if err != nil {
+					return false
+				}
+
+				ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+					Description: "Guild backups are now enabled.",
+					Color:       static.ColorEmbedGreen,
+				})
+
+				cNext <- ""
+				return true
+			})
+		}
+
+		if len(entries) != 0 {
+			b.Add(discordgo.Button{
+				CustomID: xid.New().String(),
+				Label:    "Purge all Backups",
+				Style:    discordgo.DangerButton,
+			}, func(ctx ken.ComponentContext) bool {
+				c.purgeBackups(ctx, db, st)
+
+				cNext <- ""
+				return true
+			})
+		}
+
+		b.Add(discordgo.Button{
+			CustomID: xid.New().String(),
+			Label:    "Cancel",
+			Style:    discordgo.SecondaryButton,
+		}, func(ctx ken.ComponentContext) bool {
+			cNext <- ""
+			return true
+		})
+	})
+
+	unreg, err = builder.Build()
 	if err != nil {
 		return err
 	}
 
-	if i < 0 {
-		return ctx.FollowUpError("Index must be between 0 and 9 or a snowflake ID.", "").Error
+	id := <-cNext
+
+	unreg()
+	fum.Delete()
+
+	if id == "" {
+		return nil
 	}
 
-	var backup *backupmodels.Entry
-
-	backups, err := db.GetBackups(ctx.Event.GuildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return
-	}
-
-	if i < 10 {
-		if len(backups)-1 < int(i) {
-			return ctx.FollowUpError(
-				fmt.Sprintf("There are only %d (index 0 to %d) backups you can chose from.",
-					len(backups), len(backups)-1), "").Error
-		}
-		backup = &backups[i]
-	} else {
-		sf := snowflake.ParseInt64(i).String()
-		for _, b := range backups {
-			if b.FileID == sf {
-				backup = &b
-			}
+	var entry backupmodels.Entry
+	for _, entry = range entries {
+		if entry.FileID == id {
+			break
 		}
 	}
 
-	if backup == nil {
+	if entry.FileID == "" {
 		return ctx.FollowUpError(
-			fmt.Sprintf("Could not find any backup by this specifier: ```\n%d\n```", i), "").
-			Error
+			"Something went wrong. Please try again later.", "").Error
 	}
+
+	bck := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
 
 	accMsg := &acceptmsg.AcceptMessage{
-		Session:        ctx.Session,
+		Ken:            ctx.GetKen(),
 		DeleteMsgAfter: true,
 		UserID:         ctx.User().ID,
 		Embed: &discordgo.MessageEmbed{
 			Color: static.ColorEmbedOrange,
 			Description: fmt.Sprintf(":warning:  **WARNING**  :warning:\n\n"+
-				"By pressing :white_check_mark:, the structure of this guild will be **reset** to the selected backup:\n\n"+
-				"%s - (ID: `%s`)", backup.Timestamp.Format(timeFormat), backup.FileID),
+				"By pressing \"Accept\", the structure of this guild will be **reset** to the selected backup:\n\n"+
+				"%s - (ID: `%s`)", entry.TimestampFormatted(), entry.FileID),
 		},
-		DeclineFunc: func(m *discordgo.Message) (err error) {
-			err = util.SendEmbedError(ctx.Session, ctx.Event.ChannelID, "Canceled.").
-				DeleteAfter(6 * time.Second).Error()
-			return
+		DeclineFunc: func(cctx ken.ComponentContext) error {
+			return cctx.RespondError("Canceled.", "")
 		},
-		AcceptFunc: func(m *discordgo.Message) (err error) {
-			return c.proceedRestore(ctx.Ctx, backup.FileID)
+		AcceptFunc: func(cctx ken.ComponentContext) error {
+			return c.proceedRestore(cctx, bck, entry.FileID)
 		},
 	}
 
-	if _, err = accMsg.AsFollowUp(ctx.Ctx); err != nil {
+	if _, err = accMsg.AsFollowUp(ctx); err != nil {
 		return err
 	}
 	return accMsg.Error()
 }
 
-func (c *Backup) purge(ctx *ken.SubCommandCtx) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
-	am, err := acceptmsg.New().
-		WithSession(ctx.Session).
-		WithEmbed(&discordgo.MessageEmbed{
-			Color: static.ColorEmbedOrange,
-			Description: ":warning:  **WARNING**  :warning:\n\n" +
-				"Do you really want to **purge __all__ backups** for this guild?",
-		}).
-		LockOnUser(ctx.User().ID).
-		DeleteAfterAnswer().
-		DoOnDecline(func(_ *discordgo.Message) (err error) {
-			err = util.SendEmbedError(ctx.Session, ctx.Event.ChannelID, "Canceled.").
-				DeleteAfter(6 * time.Second).Error()
-			return
-		}).
-		DoOnAccept(func(_ *discordgo.Message) (err error) {
-			c.purgeBackups(ctx.Ctx)
-			return
-		}).
-		AsFollowUp(ctx.Ctx)
-
-	if err != nil {
-		return err
-	}
-
-	return am.Error()
-}
-
 // --- HELPERS ---
 
-func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, error) {
+func (c *Backup) getBackupsList(ctx ken.Context) ([]backupmodels.Entry, string, error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	backups, err := db.GetBackups(ctx.Event.GuildID)
+	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil && database.IsErrDatabaseNotFound(err) {
 		return nil, "", err
 	}
@@ -308,7 +316,7 @@ func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, err
 		strBackups := make([]string, len(backups))
 
 		for i, b := range backups {
-			strBackups[i] = fmt.Sprintf("`%d` - %s - (ID: `%s`)", i, b.Timestamp.Format(timeFormat), b.FileID)
+			strBackups[i] = b.StringIndexed(i)
 		}
 
 		strBackupAll = strings.Join(strBackups, "\n")
@@ -317,52 +325,60 @@ func (c *Backup) getBackupsList(ctx *ken.Ctx) ([]backupmodels.Entry, string, err
 	return backups, strBackupAll, nil
 }
 
-func (c *Backup) proceedRestore(ctx *ken.Ctx, fileID string) (err error) {
+func (c *Backup) proceedRestore(ctx ken.ComponentContext, bck *backup.GuildBackups, fileID string) (err error) {
+	if err = ctx.Defer(); err != nil {
+		return err
+	}
+
 	statusChan := make(chan string)
 	errorsChan := make(chan error)
 
-	statusMsg, err := logmsg.New(ctx.Session, ctx.Event.ChannelID, &discordgo.MessageEmbed{
-		Title: "Backup Restoration Status",
-		Color: static.ColorEmbedGray,
-	}, statusChan, errorsChan, "initializing backup restoring...")
+	statusMsg, err := logmsg.NewWithSender(
+		ctx.GetSession(),
+		func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
+			fum := ctx.FollowUpEmbed(emb)
+			return fum.Message, fum.Error
+		},
+		&discordgo.MessageEmbed{
+			Title: "Backup Restoration Status",
+			Color: static.ColorEmbedGray,
+		},
+		statusChan,
+		errorsChan,
+		"initializing backup restoring...")
 	if err != nil {
 		return
 	}
 	defer statusMsg.Close("✔️ Backup restoration finished!")
 
-	bck, _ := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
-
-	err = bck.RestoreBackup(ctx.Event.GuildID, fileID, statusChan, errorsChan)
+	err = bck.RestoreBackup(ctx.GetEvent().GuildID, fileID, statusChan, errorsChan)
 
 	return
 }
 
-func (c *Backup) purgeBackups(ctx *ken.Ctx) {
-	db, _ := ctx.Get(static.DiDatabase).(database.Database)
+func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st storage.Storage) {
+	if err := ctx.Defer(); err != nil {
+		return
+	}
 
-	backups, err := db.GetBackups(ctx.Event.GuildID)
+	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil {
-		util.SendEmbedError(ctx.Session, ctx.Event.GuildID,
-			fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error())).
-			DeleteAfter(15 * time.Second).Error()
+		ctx.FollowUpError(fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error()), "")
 		return
 	}
 
 	var lnBackups = len(backups)
 	if lnBackups < 1 {
-		util.SendEmbedError(ctx.Session, ctx.Event.GuildID,
-			"There are no backups saved to be purged.").
-			DeleteAfter(8 * time.Second).Error()
+		ctx.FollowUpError("There are no backups saved to be purged.", "")
 		return
 	}
 
 	var success int
 	for _, backup := range backups {
-		if err = db.DeleteBackup(ctx.Event.GuildID, backup.FileID); err != nil {
+		if err = db.DeleteBackup(ctx.GetEvent().GuildID, backup.FileID); err != nil {
 			continue
 		}
 
-		st, _ := ctx.Get(static.DiObjectStorage).(storage.Storage)
 		if err = st.DeleteObject(static.StorageBucketBackups, backup.FileID); err != nil {
 			continue
 		}
@@ -370,16 +386,15 @@ func (c *Backup) purgeBackups(ctx *ken.Ctx) {
 	}
 
 	if success < lnBackups {
-		util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-			fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
-				success, lnBackups, lnBackups-success)).
-			DeleteAfter(8 * time.Second).Error()
+		ctx.FollowUpError(fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
+			success, lnBackups, lnBackups-success), "")
 		return
 	}
 
-	util.SendEmbed(ctx.Session, ctx.Event.ChannelID,
-		fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
-			success, lnBackups), "", static.ColorEmbedGreen).
-		DeleteAfter(8 * time.Second).Error()
+	ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
+			success, lnBackups),
+		Color: static.ColorEmbedGreen,
+	})
 	return
 }

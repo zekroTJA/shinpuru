@@ -1,6 +1,7 @@
 package backupmodels
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,6 +12,19 @@ type Entry struct {
 	GuildID   string    `json:"guild_id"`
 	Timestamp time.Time `json:"timestamp"`
 	FileID    string    `json:"file_id"`
+}
+
+func (t Entry) String() string {
+	return fmt.Sprintf("`%s` - (ID: `%s`)",
+		t.TimestampFormatted(), t.FileID)
+}
+
+func (t Entry) StringIndexed(i int) string {
+	return fmt.Sprintf("%d - %s", i, t.String())
+}
+
+func (t Entry) TimestampFormatted() string {
+	return t.Timestamp.Format(time.RFC1123)
 }
 
 // Object wraps a backup structure with an unique

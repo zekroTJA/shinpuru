@@ -135,7 +135,7 @@ func (c *Vote) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Vote) Run(ctx *ken.Ctx) (err error) {
+func (c *Vote) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -150,7 +150,7 @@ func (c *Vote) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
+func (c *Vote) create(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 	tp, _ := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
 
@@ -189,11 +189,11 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	ivote := vote.Vote{
-		ID:            ctx.Event.ID,
+		ID:            ctx.GetEvent().ID,
 		MsgID:         "",
 		CreatorID:     ctx.User().ID,
-		GuildID:       ctx.Event.GuildID,
-		ChannelID:     ctx.Event.ChannelID,
+		GuildID:       ctx.GetEvent().GuildID,
+		ChannelID:     ctx.GetEvent().ChannelID,
 		Description:   body,
 		Possibilities: split,
 		ImageURL:      imgLink,
@@ -201,7 +201,7 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 		Ticks:         make(map[string]*vote.Tick),
 	}
 
-	emb, err := ivote.AsEmbed(ctx.Session)
+	emb, err := ivote.AsEmbed(ctx.GetSession())
 	if err != nil {
 		return err
 	}
@@ -210,12 +210,12 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 
 	var msg *discordgo.Message
 	if ok {
-		ch := chV.ChannelValue(ctx.Ctx)
-		msg, err = ctx.Session.ChannelMessageSendEmbed(ch.ID, emb)
+		ch := chV.ChannelValue(ctx)
+		msg, err = ctx.GetSession().ChannelMessageSendEmbed(ch.ID, emb)
 		if err != nil {
 			return
 		}
-		msgLink := discordutil.GetMessageLink(msg, ctx.Event.GuildID)
+		msgLink := discordutil.GetMessageLink(msg, ctx.GetEvent().GuildID)
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: fmt.Sprintf("[Vote](%s) created in channel <#%s>.", msgLink, ch.ID),
 		}).Error
@@ -232,7 +232,7 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	ivote.MsgID = msg.ID
-	err = ivote.AddReactions(ctx.Session)
+	err = ivote.AddReactions(ctx.GetSession())
 	if err != nil {
 		return err
 	}
@@ -246,14 +246,14 @@ func (c *Vote) create(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Vote) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Vote) list(ctx ken.SubCommandContext) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Description: "Your open votes on this guild:",
 		Color:       static.ColorEmbedDefault,
 		Fields:      make([]*discordgo.MessageEmbedField, 0),
 	}
 	for _, v := range vote.VotesRunning {
-		if v.GuildID == ctx.Event.GuildID && v.CreatorID == ctx.User().ID {
+		if v.GuildID == ctx.GetEvent().GuildID && v.CreatorID == ctx.User().ID {
 			emb.Fields = append(emb.Fields, v.AsField())
 		}
 	}
@@ -264,7 +264,7 @@ func (c *Vote) list(ctx *ken.SubCommandCtx) (err error) {
 	return err
 }
 
-func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
+func (c *Vote) expire(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	expireDuration, err := timeutil.ParseDuration(ctx.Options().GetByName("timeout").StringValue())
@@ -278,14 +278,14 @@ func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	id := ctx.Options().Get(0).StringValue()
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
-		if v.GuildID == ctx.Event.GuildID && v.ID == id {
+		if v.GuildID == ctx.GetEvent().GuildID && v.ID == id {
 			ivote = &v
 		}
 	}
 
 	tp := ctx.Get(static.DiTimeProvider).(timeprovider.Provider)
 
-	ivote.SetExpire(ctx.Session, expireDuration, tp)
+	ivote.SetExpire(ctx.GetSession(), expireDuration, tp)
 	if err = db.AddUpdateVote(*ivote); err != nil {
 		return err
 	}
@@ -295,7 +295,7 @@ func (c *Vote) expire(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
+func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	state := vote.VoteStateClosed
@@ -309,10 +309,10 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 	if strings.ToLower(id) == "all" {
 		var i int
 		for _, v := range vote.VotesRunning {
-			if v.GuildID == ctx.Event.GuildID && v.CreatorID == ctx.User().ID {
+			if v.GuildID == ctx.GetEvent().GuildID && v.CreatorID == ctx.User().ID {
 				go func(vC vote.Vote) {
 					db.DeleteVote(vC.ID)
-					vC.Close(ctx.Session, state)
+					vC.Close(ctx.GetSession(), state)
 				}(v)
 				i++
 			}
@@ -324,14 +324,14 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 
 	var ivote *vote.Vote
 	for _, v := range vote.VotesRunning {
-		if v.GuildID == ctx.Event.GuildID && v.ID == id {
+		if v.GuildID == ctx.GetEvent().GuildID && v.ID == id {
 			ivote = &v
 			break
 		}
 	}
 
 	pmw, _ := ctx.Get(static.DiPermissions).(*permissions.Permissions)
-	ok, override, err := pmw.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.User().ID, "!"+ctx.Command.(permissions.PermCommand).Domain()+".close")
+	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetEvent().GuildID, ctx.User().ID, "!"+ctx.GetCommand().(permissions.PermCommand).Domain()+".close")
 	if ivote.CreatorID != ctx.User().ID && !ok && !override {
 		return ctx.FollowUpError(
 			"You do not have the permission to close another ones votes.", "").
@@ -343,7 +343,7 @@ func (c *Vote) close(ctx *ken.SubCommandCtx) (err error) {
 		return err
 	}
 
-	if err = ivote.Close(ctx.Session, state); err != nil {
+	if err = ivote.Close(ctx.GetSession(), state); err != nil {
 		return
 	}
 

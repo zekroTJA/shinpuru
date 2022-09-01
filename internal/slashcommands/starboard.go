@@ -80,7 +80,7 @@ func (c *Starboard) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Starboard) Run(ctx *ken.Ctx) (err error) {
+func (c *Starboard) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -93,11 +93,11 @@ func (c *Starboard) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Starboard) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Starboard) set(ctx ken.SubCommandContext) (err error) {
 	starboardConfig, err := c.getConfig(ctx)
 
 	if v, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		ch := v.ChannelValue(ctx.Ctx)
+		ch := v.ChannelValue(ctx)
 		starboardConfig.ChannelID = ch.ID
 	}
 	if v, ok := ctx.Options().GetByNameOptional("threshold"); ok {
@@ -119,7 +119,7 @@ func (c *Starboard) set(ctx *ken.SubCommandCtx) (err error) {
 	return c.setConfig(ctx, starboardConfig, false)
 }
 
-func (c *Starboard) disable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Starboard) disable(ctx ken.SubCommandContext) (err error) {
 	starboardConfig, err := c.getConfig(ctx)
 
 	starboardConfig.ChannelID = ""
@@ -127,10 +127,10 @@ func (c *Starboard) disable(ctx *ken.SubCommandCtx) (err error) {
 	return c.setConfig(ctx, starboardConfig, false)
 }
 
-func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig models.StarboardConfig, err error) {
+func (c *Starboard) getConfig(ctx ken.SubCommandContext) (starboardConfig models.StarboardConfig, err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	starboardConfig, err = db.GetStarboardConfig(ctx.Event.GuildID)
+	starboardConfig, err = db.GetStarboardConfig(ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return
 	}
@@ -142,13 +142,13 @@ func (c *Starboard) getConfig(ctx *ken.SubCommandCtx) (starboardConfig models.St
 			KarmaGain: 3,
 		}
 	}
-	starboardConfig.GuildID = ctx.Event.GuildID
+	starboardConfig.GuildID = ctx.GetEvent().GuildID
 
 	return
 }
 
 func (c *Starboard) setConfig(
-	ctx *ken.SubCommandCtx,
+	ctx ken.SubCommandContext,
 	cfg models.StarboardConfig,
 	outputError bool,
 ) (err error) {

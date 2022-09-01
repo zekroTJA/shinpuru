@@ -63,7 +63,7 @@ func (c *Quote) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Quote) Run(ctx *ken.Ctx) (err error) {
+func (c *Quote) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -72,7 +72,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 	var ident, comment string
 
-	if resolved := ctx.Event.ApplicationCommandData().Resolved; resolved != nil {
+	if resolved := ctx.GetEvent().ApplicationCommandData().Resolved; resolved != nil {
 		for ident = range resolved.Messages {
 			break
 		}
@@ -103,7 +103,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 
 		msgSearchEmb := &discordgo.MessageEmbed{
 			Color:       static.ColorEmbedGray,
-			Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", ctx.Event.ChannelID),
+			Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", ctx.GetEvent().ChannelID),
 		}
 
 		fum = ctx.FollowUpEmbed(msgSearchEmb)
@@ -111,7 +111,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 			return fum.Error
 		}
 
-		chans, err := st.Channels(ctx.Event.GuildID, true)
+		chans, err := st.Channels(ctx.GetEvent().GuildID, true)
 		if err != nil {
 			return err
 		}
@@ -127,7 +127,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 		results := make(chan *discordgo.Message, loopLen)
 		timeout := make(chan bool, 1)
 		timeOuted := false
-		quoteMsg, _ = st.Message(ctx.Event.ChannelID, messageID)
+		quoteMsg, _ = st.Message(ctx.GetEvent().ChannelID, messageID)
 		if quoteMsg == nil {
 			msgSearchEmb.Description = ":hourglass_flowing_sand:  Searching for message in other channels..."
 			fum.EditEmbed(msgSearchEmb)
@@ -190,7 +190,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 	// (see #342). Therefore, refrech message from API when
 	// Author is nil. If Author is still nil, nah fuck it.
 	if quoteMsg.Author == nil {
-		quoteMsg, err = ctx.Session.ChannelMessage(quoteMsg.ChannelID, quoteMsg.ID)
+		quoteMsg, err = ctx.GetSession().ChannelMessage(quoteMsg.ChannelID, quoteMsg.ID)
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 			Name:    quoteMsg.Author.String(),
 		},
 		Description: quoteMsg.Content +
-			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg, ctx.Event.GuildID)),
+			fmt.Sprintf("\n\n*[jump to message](%s)*", discordutil.GetMessageLink(quoteMsg, ctx.GetEvent().GuildID)),
 		Footer: &discordgo.MessageEmbedFooter{
 			IconURL: ctx.User().AvatarURL("16"),
 			Text:    fmt.Sprintf("#%s - quoted by: %s", ch.Name, ctx.User().String()),
@@ -237,8 +237,8 @@ func (c *Quote) Run(ctx *ken.Ctx) (err error) {
 		}).Error
 	} else {
 		err = fum.Edit(&discordgo.WebhookEdit{
-			Content: comment,
-			Embeds:  []*discordgo.MessageEmbed{emb},
+			Content: &comment,
+			Embeds:  &[]*discordgo.MessageEmbed{emb},
 		})
 	}
 

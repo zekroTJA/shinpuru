@@ -59,7 +59,7 @@ func (c *Lock) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Lock) Run(ctx *ken.Ctx) (err error) {
+func (c *Lock) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -71,7 +71,7 @@ func (c *Lock) Run(ctx *ken.Ctx) (err error) {
 	if chV, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch = chV.ChannelValue(ctx)
 	} else {
-		ch, err = st.Channel(ctx.Event.ChannelID)
+		ch, err = st.Channel(ctx.GetEvent().ChannelID)
 		if err != nil {
 			return
 		}
@@ -87,7 +87,7 @@ func (c *Lock) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
+func (c *Lock) lock(target *discordgo.Channel, ctx ken.Context) error {
 	st := ctx.Get(static.DiState).(*dgrs.State)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
@@ -104,7 +104,7 @@ func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
 		return err
 	}
 
-	guildRoles, err := st.Roles(ctx.Event.GuildID)
+	guildRoles, err := st.Roles(ctx.GetEvent().GuildID)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
 		return guildRoles[i].Position < guildRoles[j].Position
 	})
 
-	memberRoles := ctx.Event.Member.Roles
+	memberRoles := ctx.GetEvent().Member.Roles
 
 	highest := 0
 	rolesMap := make(map[string]*discordgo.Role)
@@ -148,14 +148,14 @@ func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
 	for _, po := range target.PermissionOverwrites {
 		if po.Type == discordgo.PermissionOverwriteTypeRole {
 			if r, ok := rolesMap[po.ID]; ok && r.Position < highest {
-				if err = ctx.Session.ChannelPermissionSet(
+				if err = ctx.GetSession().ChannelPermissionSet(
 					target.ID, po.ID, discordgo.PermissionOverwriteTypeRole, po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 					return err
 				}
 			}
 		}
 		if po.Type == discordgo.PermissionOverwriteTypeMember && ctx.User().ID != po.ID && self.ID != po.ID {
-			if err = ctx.Session.ChannelPermissionSet(
+			if err = ctx.GetSession().ChannelPermissionSet(
 				target.ID, po.ID, discordgo.PermissionOverwriteTypeMember, po.Allow&allowMask, po.Deny|discordgo.PermissionSendMessages); err != nil {
 				return err
 			}
@@ -165,13 +165,13 @@ func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
 		}
 	}
 
-	if err = ctx.Session.ChannelPermissionSet(
+	if err = ctx.GetSession().ChannelPermissionSet(
 		target.ID, self.ID, discordgo.PermissionOverwriteTypeMember, discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
 		return err
 	}
 
 	if !hasSetEveryone {
-		if err = ctx.Session.ChannelPermissionSet(
+		if err = ctx.GetSession().ChannelPermissionSet(
 			target.ID, target.GuildID, discordgo.PermissionOverwriteTypeRole, 0, discordgo.PermissionSendMessages); err != nil {
 			return err
 		}
@@ -184,7 +184,7 @@ func (c *Lock) lock(target *discordgo.Channel, ctx *ken.Ctx) error {
 	return nil
 }
 
-func (c *Lock) unlock(target *discordgo.Channel, ctx *ken.Ctx, encodedPerms string) error {
+func (c *Lock) unlock(target *discordgo.Channel, ctx ken.Context, encodedPerms string) error {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	procMsg := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
@@ -202,7 +202,7 @@ func (c *Lock) unlock(target *discordgo.Channel, ctx *ken.Ctx, encodedPerms stri
 
 	failed := 0
 	for _, po := range permissionOverrides {
-		if err = ctx.Session.ChannelPermissionSet(target.ID, po.ID, po.Type, po.Allow, po.Deny); err != nil {
+		if err = ctx.GetSession().ChannelPermissionSet(target.ID, po.ID, po.Type, po.Allow, po.Deny); err != nil {
 			failed++
 		}
 	}

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
 import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
 import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
+import { ReactComponent as CodeIcon } from '../../assets/code.svg';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
@@ -185,14 +186,24 @@ export const Navbar: React.FC<Props> = () => {
               <SettingsIcon />
               <span>{t('section.guildsettings.general')}</span>
             </StyledEntry>
-            <StyledEntry path={`guilds/${selectedGuild?.id}/settings/backups`}>
-              <BackupIcon />
-              <span>{t('section.guildsettings.backup')}</span>
-            </StyledEntry>
-            <StyledEntry path={`guilds/${selectedGuild?.id}/settings/antiraid`}>
-              <AntiraidIcon />
-              <span>{t('section.guildsettings.antiraid')}</span>
-            </StyledEntry>
+            {isAllowed('sp.guild.admin.backup') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/backups`}>
+                <BackupIcon />
+                <span>{t('section.guildsettings.backup')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.antiraid') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/antiraid`}>
+                <AntiraidIcon />
+                <span>{t('section.guildsettings.antiraid')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.exec') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/codeexec`}>
+                <CodeIcon />
+                <span>{t('section.guildsettings.codeexec')}</span>
+              </StyledEntry>
+            )}
           </Section>
         )}
       </EntryContainer>

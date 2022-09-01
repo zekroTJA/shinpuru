@@ -232,7 +232,10 @@ func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Messag
 	dataUri := fmt.Sprintf("data:image/png;base64,%s", b64Data)
 
 	// Upload guild emote
-	emoji, err := s.GuildEmojiCreate(m.GuildID, hexClr, dataUri, nil)
+	emoji, err := s.GuildEmojiCreate(m.GuildID, &discordgo.EmojiParams{
+		Name:  hexClr,
+		Image: dataUri,
+	})
 	if err != nil {
 		logrus.WithError(err).Error("COLORLISTENER :: failed uploading emoji")
 		l.gl.Errorf(m.GuildID, "Failed uploading emoji: %s", err.Error())

@@ -1,0 +1,22 @@
+{
+  "heading": "Code Execution",
+  "explaination": "Lorem ipsum",
+  "enable": "Enable code execution",
+  "save": "Save settings",
+
+  "notifications": {
+    "saved": "Settings saved."
+  },
+
+  "jdoodle": {
+    "heading": "JDoodle Settings",
+    "explaination": "shinpuru is globally configured to use <1>JDoodle</1> as code execution engine. Because of that, credentials are provided on a per guild basis so that you can use your own plan for your guild. <2>Here</2> you can acquire your JDoodle API credentials. ",
+    "settingswarn": "Code execution is stil disabled until JDoodle credentials are provided.",
+    "clientid": "Client ID",
+    "clientsecret": "Client Secret"
+  },
+
+  "ranna": {
+    "explaination": "shinpuru is globally configured to use <1>ranna</1> as code execution engine. So nothing further has to be configured. 🥳"
+  }
+}

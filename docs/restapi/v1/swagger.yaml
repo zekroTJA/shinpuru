@@ -25,14 +25,28 @@ definitions:
         type: array
       description:
         type: string
+      description_localizations:
+        additionalProperties:
+          type: string
+        type: object
+      max_length:
+        description: Maximum length of string option.
+        type: integer
       max_value:
         description: Maximum value of number/integer option.
         type: number
+      min_length:
+        description: Minimum length of string option.
+        type: integer
       min_value:
         description: Minimal value of number/integer option.
         type: number
       name:
         type: string
+      name_localizations:
+        additionalProperties:
+          type: string
+        type: object
       options:
         items:
           $ref: '#/definitions/discordgo.ApplicationCommandOption'
@@ -46,6 +60,10 @@ definitions:
     properties:
       name:
         type: string
+      name_localizations:
+        additionalProperties:
+          type: string
+        type: object
       value: {}
     type: object
   discordgo.Channel:
@@ -717,27 +735,6 @@ definitions:
     properties:
       sitekey:
         type: string
-    type: object
-  models.CommandInfo:
-    properties:
-      description:
-        type: string
-      domain_name:
-        type: string
-      group:
-        type: string
-      help:
-        type: string
-      invokes:
-        items:
-          type: string
-        type: array
-      is_executable_in_dm:
-        type: boolean
-      sub_permission_rules:
-        items:
-          $ref: '#/definitions/shireikan.SubPermission'
-        type: array
     type: object
   models.Contact:
     properties:
@@ -1420,15 +1417,6 @@ definitions:
       game:
         type: string
       status:
-        type: string
-    type: object
-  shireikan.SubPermission:
-    properties:
-      description:
-        type: string
-      explicit:
-        type: boolean
-      term:
         type: string
     type: object
   versioncheck.Semver:
@@ -3647,7 +3635,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "401":
           description: Unauthorized
           schema:
@@ -4239,23 +4227,6 @@ paths:
           schema:
             type: file
       summary: Color Generator
-      tags:
-      - Utilities
-  /util/commands:
-    get:
-      consumes:
-      - application/json
-      description: Returns a list of registered commands and their description.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Wrapped in models.ListResponse
-          schema:
-            items:
-              $ref: '#/definitions/models.CommandInfo'
-            type: array
-      summary: Command List
       tags:
       - Utilities
   /util/landingpageinfo:

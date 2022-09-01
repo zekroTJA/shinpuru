@@ -113,7 +113,7 @@ func (c *Maintenance) IsDmCapable() bool {
 	return true
 }
 
-func (c *Maintenance) Run(ctx *ken.Ctx) (err error) {
+func (c *Maintenance) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -129,7 +129,7 @@ func (c *Maintenance) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Maintenance) flushState(ctx *ken.SubCommandCtx) (err error) {
+func (c *Maintenance) flushState(ctx ken.SubCommandContext) (err error) {
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
 	subkeys := ([]string)(nil)
@@ -145,8 +145,8 @@ func (c *Maintenance) flushState(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	if reconnectV, ok := ctx.Options().GetByNameOptional("reconnect"); ok && reconnectV.BoolValue() {
-		ctx.Session.Close()
-		ctx.Session.Open()
+		ctx.GetSession().Close()
+		ctx.GetSession().Open()
 	}
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
@@ -155,7 +155,7 @@ func (c *Maintenance) flushState(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Maintenance) kill(ctx *ken.SubCommandCtx) (err error) {
+func (c *Maintenance) kill(ctx ken.SubCommandContext) (err error) {
 	code := 1
 
 	if exitcodeV, ok := ctx.Options().GetByNameOptional("exitcode"); ok {
@@ -175,12 +175,12 @@ func (c *Maintenance) kill(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Maintenance) reconnect(ctx *ken.SubCommandCtx) (err error) {
-	if err = ctx.Session.Close(); err != nil {
+func (c *Maintenance) reconnect(ctx ken.SubCommandContext) (err error) {
+	if err = ctx.GetSession().Close(); err != nil {
 		return
 	}
 
-	ctx.Session.Open()
+	ctx.GetSession().Open()
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "✅ Successfully reconnected.",
@@ -188,7 +188,7 @@ func (c *Maintenance) reconnect(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Maintenance) reloadConfig(ctx *ken.SubCommandCtx) (err error) {
+func (c *Maintenance) reloadConfig(ctx ken.SubCommandContext) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
 
 	if err = cfg.Parse(); err != nil {
@@ -200,7 +200,7 @@ func (c *Maintenance) reloadConfig(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Maintenance) setConfigValue(ctx *ken.SubCommandCtx) (err error) {
+func (c *Maintenance) setConfigValue(ctx ken.SubCommandContext) (err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
 
 	field := ctx.Options().GetByName("field").StringValue()

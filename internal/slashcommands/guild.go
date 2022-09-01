@@ -52,7 +52,7 @@ func (c *Guild) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Guild) Run(ctx *ken.Ctx) (err error) {
+func (c *Guild) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -62,7 +62,7 @@ func (c *Guild) Run(ctx *ken.Ctx) (err error) {
 	st := ctx.Get(static.DiState).(*dgrs.State)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	g, err := st.Guild(ctx.Event.GuildID)
+	g, err := st.Guild(ctx.GetEvent().GuildID)
 	if err != nil {
 		return
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -100,7 +100,7 @@ func (c *Voicelog) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Voicelog) Run(ctx *ken.Ctx) (err error) {
+func (c *Voicelog) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -116,41 +116,45 @@ func (c *Voicelog) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Voicelog) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Voicelog) set(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	chV, ok := ctx.Options().GetByNameOptional("channel")
 
 	if !ok {
 		acceptMsg := &acceptmsg.AcceptMessage{
-			Session: ctx.Session,
+			Ken: ctx.GetKen(),
 			Embed: &discordgo.MessageEmbed{
 				Color:       static.ColorEmbedDefault,
 				Description: "Do you want to set this channel as voicelog channel?",
 			},
 			UserID:         ctx.User().ID,
 			DeleteMsgAfter: true,
-			AcceptFunc: func(msg *discordgo.Message) (err error) {
-				err = db.SetGuildVoiceLog(ctx.Event.GuildID, ctx.Event.ChannelID)
+			AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+				if err = cctx.Defer(); err != nil {
+					return
+				}
+				err = db.SetGuildVoiceLog(ctx.GetEvent().GuildID, ctx.GetEvent().ChannelID)
 				if err != nil {
 					return
 				}
-				err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+				err = cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Set this channel as voicelog channel.",
 				}).Error
+				fmt.Println(err)
 				return
 			},
 		}
 
-		if _, err = acceptMsg.AsFollowUp(ctx.Ctx); err != nil {
+		if _, err = acceptMsg.AsFollowUp(ctx); err != nil {
 			return
 		}
 		return acceptMsg.Error()
 	}
 
-	ch := chV.ChannelValue(ctx.Ctx)
+	ch := chV.ChannelValue(ctx)
 
-	if err = db.SetGuildVoiceLog(ctx.Event.GuildID, ch.ID); err != nil {
+	if err = db.SetGuildVoiceLog(ctx.GetEvent().GuildID, ch.ID); err != nil {
 		return
 	}
 
@@ -161,10 +165,10 @@ func (c *Voicelog) set(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Voicelog) disable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Voicelog) disable(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	if err = db.SetGuildVoiceLog(ctx.Event.GuildID, ""); err != nil {
+	if err = db.SetGuildVoiceLog(ctx.GetEvent().GuildID, ""); err != nil {
 		return
 	}
 
@@ -173,10 +177,10 @@ func (c *Voicelog) disable(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Voicelog) ignore(ctx *ken.SubCommandCtx) (err error) {
+func (c *Voicelog) ignore(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	ch := ctx.Options().GetByName("channel").ChannelValue(ctx.Ctx)
+	ch := ctx.Options().GetByName("channel").ChannelValue(ctx)
 
 	if err = db.SetGuildVoiceLogIngore(ch.GuildID, ch.ID); err != nil {
 		return err
@@ -187,10 +191,10 @@ func (c *Voicelog) ignore(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Voicelog) unignore(ctx *ken.SubCommandCtx) (err error) {
+func (c *Voicelog) unignore(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	ch := ctx.Options().GetByName("channel").ChannelValue(ctx.Ctx)
+	ch := ctx.Options().GetByName("channel").ChannelValue(ctx)
 
 	if err = db.RemoveGuildVoiceLogIgnore(ch.GuildID, ch.ID); err != nil {
 		return err
@@ -201,11 +205,11 @@ func (c *Voicelog) unignore(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Voicelog) ignorelist(ctx *ken.SubCommandCtx) (err error) {
+func (c *Voicelog) ignorelist(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
-	vcIDs, err := db.GetGuildVoiceLogIgnores(ctx.Event.GuildID)
+	vcIDs, err := db.GetGuildVoiceLogIgnores(ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}

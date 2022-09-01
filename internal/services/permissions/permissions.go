@@ -56,7 +56,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 		return
 	}
 
-	ok, _, err = m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.User().ID, cmd.Domain())
+	ok, _, err = m.CheckPermissions(ctx.GetSession(), ctx.GetEvent().GuildID, ctx.User().ID, cmd.Domain())
 
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return false, err
@@ -191,12 +191,12 @@ func (m *Permissions) GetMemberPermission(s discordutil.ISession, guildID string
 // CheckSubPerm takes a command context and checks is the given
 // subDN is permitted.
 func (m *Permissions) CheckSubPerm(
-	ctx *ken.Ctx,
+	ctx ken.Context,
 	subDN string,
 	explicit bool,
 	message ...string,
 ) (ok bool, err error) {
-	cmd, cok := ctx.Command.(PermCommand)
+	cmd, cok := ctx.GetCommand().(PermCommand)
 	if !cok {
 		return
 	}
@@ -216,7 +216,7 @@ func (m *Permissions) CheckSubPerm(
 		msg = message[0]
 	}
 
-	permOk, override, err := m.CheckPermissions(ctx.Session, ctx.Event.GuildID, ctx.User().ID, dn)
+	permOk, override, err := m.CheckPermissions(ctx.GetSession(), ctx.GetEvent().GuildID, ctx.User().ID, dn)
 	if err != nil {
 		return
 	}

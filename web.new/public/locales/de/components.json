@@ -6,14 +6,15 @@
     "section": {
       "guilds": {
         "title": "Guilds",
-        "members": "Members",
+        "members": "Mitglieder",
         "modlog": "Modlog"
       },
       "guildsettings": {
         "title": "Guild Einstellungen",
-        "general": "General",
+        "general": "Allgemein",
         "backup": "Backups",
-        "antiraid": "Antiraid"
+        "antiraid": "Antiraid",
+        "codeexec": "Code Ausführung"
       }
     },
     "logout": "Logout",

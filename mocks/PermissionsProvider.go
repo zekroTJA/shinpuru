@@ -68,7 +68,7 @@ func (_m *PermissionsProvider) CheckPermissions(s discordutil.ISession, guildID 
 }
 
 // CheckSubPerm provides a mock function with given fields: ctx, subDN, explicit, message
-func (_m *PermissionsProvider) CheckSubPerm(ctx *ken.Ctx, subDN string, explicit bool, message ...string) (bool, error) {
+func (_m *PermissionsProvider) CheckSubPerm(ctx ken.Context, subDN string, explicit bool, message ...string) (bool, error) {
 	_va := make([]interface{}, len(message))
 	for _i := range message {
 		_va[_i] = message[_i]
@@ -79,14 +79,14 @@ func (_m *PermissionsProvider) CheckSubPerm(ctx *ken.Ctx, subDN string, explicit
 	ret := _m.Called(_ca...)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(*ken.Ctx, string, bool, ...string) bool); ok {
+	if rf, ok := ret.Get(0).(func(ken.Context, string, bool, ...string) bool); ok {
 		r0 = rf(ctx, subDN, explicit, message...)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*ken.Ctx, string, bool, ...string) error); ok {
+	if rf, ok := ret.Get(1).(func(ken.Context, string, bool, ...string) error); ok {
 		r1 = rf(ctx, subDN, explicit, message...)
 	} else {
 		r1 = ret.Error(1)

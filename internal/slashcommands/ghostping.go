@@ -66,7 +66,7 @@ func (c *Ghostping) Options() []*discordgo.ApplicationCommandOption {
 	}
 }
 
-func (c *Ghostping) Help(ctx *ken.SubCommandCtx) (emb *discordgo.MessageEmbed, err error) {
+func (c *Ghostping) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbed, err error) {
 	emb = &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Description: "You can use patterns in the ghost ping message:\n" +
@@ -89,7 +89,7 @@ func (c *Ghostping) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Ghostping) Run(ctx *ken.Ctx) (err error) {
+func (c *Ghostping) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -103,9 +103,9 @@ func (c *Ghostping) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Ghostping) status(ctx *ken.SubCommandCtx) (err error) {
+func (c *Ghostping) status(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
-	gpMsg, err := db.GetGuildGhostpingMsg(ctx.Event.GuildID)
+	gpMsg, err := db.GetGuildGhostpingMsg(ctx.GetEvent().GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -124,12 +124,12 @@ func (c *Ghostping) status(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Ghostping) setup(ctx *ken.SubCommandCtx) (err error) {
+func (c *Ghostping) setup(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	message := ctx.Options().GetByName("message").StringValue()
 
-	if err = db.SetGuildGhostpingMsg(ctx.Event.GuildID, message); err != nil {
+	if err = db.SetGuildGhostpingMsg(ctx.GetEvent().GuildID, message); err != nil {
 		return
 	}
 
@@ -140,10 +140,10 @@ func (c *Ghostping) setup(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Ghostping) disable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Ghostping) disable(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
-	if err = db.SetGuildGhostpingMsg(ctx.Event.GuildID, ""); err != nil {
+	if err = db.SetGuildGhostpingMsg(ctx.GetEvent().GuildID, ""); err != nil {
 		return
 	}
 

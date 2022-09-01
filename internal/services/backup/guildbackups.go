@@ -269,7 +269,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	// EDIT GUILD
 	asyncWriteStatus(statusC, "editing guild")
 	_verificationLevel := discordgo.VerificationLevel(backup.Guild.VerificationLevel)
-	_, err = bck.session.GuildEdit(guildID, discordgo.GuildParams{
+	_, err = bck.session.GuildEdit(guildID, &discordgo.GuildParams{
 		Name:                        backup.Guild.Name,
 		AfkChannelID:                backup.Guild.AfkChannelID,
 		AfkTimeout:                  backup.Guild.AfkTimeout,
@@ -299,17 +299,17 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 			}
 		}
 		if rObj == nil {
-			rObj, err = bck.session.GuildRoleCreate(guildID)
+			rObj, err = bck.session.GuildRoleCreate(guildID, &discordgo.RoleParams{
+				Name:        r.Name,
+				Color:       &r.Color,
+				Hoist:       &r.Hoist,
+				Permissions: &r.Permissions,
+				Mentionable: &r.Mentionable,
+			})
 			if err != nil {
 				asyncWriteError(errorsC, err)
 				continue
 			}
-		}
-		_, err = bck.session.GuildRoleEdit(guildID, rObj.ID, r.Name, r.Color,
-			r.Hoist, r.Permissions, r.Mentionable)
-		if err != nil {
-			asyncWriteError(errorsC, err)
-			continue
 		}
 
 		ids[r.ID] = rObj.ID
@@ -397,7 +397,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 			_, err = bck.session.ChannelEditComplex(cObj.ID,
 				&discordgo.ChannelEdit{
 					Bitrate:              c.Bitrate,
-					NSFW:                 c.NSFW,
+					NSFW:                 &c.NSFW,
 					Name:                 c.Name,
 					ParentID:             ids[c.ParentID],
 					PermissionOverwrites: c.PermissionOverwrites,
@@ -443,7 +443,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 			_, err = bck.session.ChannelEditComplex(cObj.ID,
 				&discordgo.ChannelEdit{
 					Bitrate:              c.Bitrate,
-					NSFW:                 c.NSFW,
+					NSFW:                 &c.NSFW,
 					Name:                 c.Name,
 					ParentID:             ids[c.ParentID],
 					PermissionOverwrites: c.PermissionOverwrites,
@@ -481,7 +481,9 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 		}
 
 		if mObj != nil {
-			err = bck.session.GuildMemberEdit(guildID, m.ID, newRoles)
+			_, err = bck.session.GuildMemberEdit(guildID, m.ID, &discordgo.GuildMemberParams{
+				Roles: &newRoles,
+			})
 			if err != nil {
 				asyncWriteError(errorsC, err)
 				continue

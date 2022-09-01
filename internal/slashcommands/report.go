@@ -2,7 +2,6 @@ package slashcommands
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
@@ -12,10 +11,9 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/cmdutil"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/acceptmsg"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekrotja/ken"
 )
 
@@ -148,7 +146,7 @@ func (c *Report) SubDomains() []permissions.SubPermission {
 	}
 }
 
-func (c *Report) Run(ctx *ken.Ctx) (err error) {
+func (c *Report) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -162,12 +160,12 @@ func (c *Report) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
+func (c *Report) create(ctx ken.SubCommandContext) (err error) {
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
 	typ := models.ReportType(ctx.Options().GetByName("type").IntValue())
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "warn", false)
+	ok, err := pmw.CheckSubPerm(ctx, "warn", false)
 	if err != nil && ok {
 		return
 	}
@@ -177,13 +175,13 @@ func (c *Report) create(ctx *ken.SubCommandCtx) (err error) {
 	return cmdutil.CmdReport(ctx, typ, tp)
 }
 
-func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
+func (c *Report) revoke(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 	cfg, _ := ctx.Get(static.DiConfig).(config.Provider)
 	repSvc, _ := ctx.Get(static.DiReport).(*report.ReportService)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "revoke", false)
+	ok, err := pmw.CheckSubPerm(ctx, "revoke", false)
 	if err != nil && ok {
 		return
 	}
@@ -221,58 +219,59 @@ func (c *Report) revoke(ctx *ken.SubCommandCtx) (err error) {
 				rep.AsEmbedField(cfg.Config().WebServer.PublicAddr),
 			},
 		},
-		Session:        ctx.Session,
+		Ken:            ctx.GetKen(),
 		DeleteMsgAfter: true,
 		UserID:         ctx.User().ID,
-		DeclineFunc: func(m *discordgo.Message) (err error) {
-			return util.SendEmbedError(ctx.Session, ctx.Event.ChannelID,
-				"Canceled.").
-				DeleteAfter(8 * time.Second).Error()
+		DeclineFunc: func(cctx ken.ComponentContext) (err error) {
+			return cctx.RespondError("Canceled.", "")
 		},
-		AcceptFunc: func(m *discordgo.Message) (err error) {
+		AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+			if err = cctx.Defer(); err != nil {
+				return err
+			}
+
 			emb, err := repSvc.RevokeReport(
 				rep,
 				ctx.User().ID,
 				reason,
 				cfg.Config().WebServer.PublicAddr,
 				db,
-				ctx.Session)
+				ctx.GetSession())
 
 			if err != nil {
 				return
 			}
 
-			_, err = ctx.Session.ChannelMessageSendEmbed(ctx.Event.ChannelID, emb)
-			return
+			return cctx.FollowUpEmbed(emb).Error
 		},
 	}
 
-	if _, err = aceptMsg.AsFollowUp(ctx.Ctx); err != nil {
+	if _, err = aceptMsg.AsFollowUp(ctx); err != nil {
 		return err
 	}
 	return aceptMsg.Error()
 }
 
-func (c *Report) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Report) list(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 	cfg, _ := ctx.Get(static.DiConfig).(config.Provider)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
-	ok, err := pmw.CheckSubPerm(ctx.Ctx, "list", false)
+	ok, err := pmw.CheckSubPerm(ctx, "list", false)
 	if err != nil && ok {
 		return
 	}
 
-	victim := ctx.Options().GetByName("user").UserValue(ctx.Ctx)
+	victim := ctx.Options().GetByName("user").UserValue(ctx)
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
 		Title: fmt.Sprintf("Reports for %s#%s",
 			victim.Username, victim.Discriminator),
 		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
-			cfg.Config().WebServer.PublicAddr, ctx.Event.GuildID, victim.ID),
+			cfg.Config().WebServer.PublicAddr, ctx.GetEvent().GuildID, victim.ID),
 	}
-	reps, err := db.GetReportsFiltered(ctx.Event.GuildID, victim.ID, -1, 0, 1000)
+	reps, err := db.GetReportsFiltered(ctx.GetEvent().GuildID, victim.ID, -1, 0, 1000)
 	if err != nil {
 		return err
 	}

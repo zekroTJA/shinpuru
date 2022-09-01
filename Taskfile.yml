@@ -1,0 +1,282 @@
+version: '3'
+
+vars:
+  CONFIG_DIR: ./config
+  BIN_DIR: ./bin
+  RELEASE_DIR: ./release
+  TAG: $(git describe --tags --abbrev=0)
+  COMMIT: $(git rev-parse HEAD)
+  DATE: $(date +%s)
+  EMBED_DIR: ./internal/util/embedded
+  APIDOCS_OUTDIR: ./docs/restapi/v1
+
+tasks:
+  default:
+    deps: [release]
+
+  release:
+    desc:
+      Build release artifacts of the backend, web frontend and tools.
+    cmds:
+      - rm -rf {{.RELEASE_DIR}}
+      - task: embed-fe
+      - task: build-fe-new
+      - task: build-be
+        vars: { RELEASE: "true" }
+      - task: build-setup-tool
+      - mkdir {{.RELEASE_DIR}}
+      - cp {{.BIN_DIR}}/shinpuru{{exeExt}} {{.RELEASE_DIR}}
+      - mkdir {{.RELEASE_DIR}}/web
+      - cp -R web/dist {{.RELEASE_DIR}}/web
+      - mkdir {{.RELEASE_DIR}}/web.new
+      - cp -R web.new/dist {{.RELEASE_DIR}}/web.new
+      - cp {{.BIN_DIR}}/setup{{exeExt}} {{.RELEASE_DIR}}
+
+  embed-versions:
+    cmds:
+      - printf "{{.TAG}}" | tee {{.EMBED_DIR}}/AppVersion.txt > /dev/null 2>&1
+      - printf "{{.COMMIT}}" | tee {{.EMBED_DIR}}/AppCommit.txt > /dev/null 2>&1
+      - printf "{{.DATE}}" | tee {{.EMBED_DIR}}/AppDate.txt > /dev/null 2>&1
+      - printf "{{default "false" .RELEASE}}" | tee {{.EMBED_DIR}}/Release.txt > /dev/null 2>&1
+
+  cleanup-embeds:
+    cmds:
+      - git checkout
+          {{.EMBED_DIR}}/AppVersion.txt
+          {{.EMBED_DIR}}/AppCommit.txt
+          {{.EMBED_DIR}}/AppDate.txt
+          {{.EMBED_DIR}}/Release.txt
+
+  build-be:
+    desc:
+      Builds the backend binary.
+    sources:
+      - cmd/**
+      - internal/**
+      - pkg/**
+    cmds:
+      - task: embed-versions
+        vars: { RELEASE: "{{.RELEASE}}" }
+      - defer: { task: cleanup-embeds }
+      - go build
+          -v
+          -o {{.BIN_DIR}}/shinpuru{{exeExt}}
+          cmd/shinpuru/main.go
+
+  deps-fe:
+    dir: web
+    sources:
+      - package.json
+      - yarn.lock
+    cmds:
+      - yarn
+
+  build-fe:
+    desc:
+      Builds the frontend artifacts of the Angular web app.
+    deps:
+      - deps-fe
+    dir: web
+    sources:
+      - src/**
+    cmds:
+      - yarn run build
+
+  embed-fe:
+    deps:
+      - build-fe
+    cmds:
+      - cp -R web/dist/web/* {{.EMBED_DIR}}/webdist
+
+  deps-fe-new:
+    dir: web.new
+    sources:
+      - package.json
+      - yarn.lock
+    cmds:
+      - yarn
+
+  build-fe-new:
+    desc:
+      Builds the frontend artifacts of the new React web app.
+    dir: web.new
+    deps:
+      - deps-fe-new
+    sources:
+      - public/**
+      - src/**
+      - index.html
+      - "*.png"
+    cmds:
+      - yarn run build
+
+  init-dev:
+    desc:
+      Creates a new development config from {{.CONFIG_DIR}}/my.private.config.yml.
+    preconditions:
+      - sh: ls {{.CONFIG_DIR}}/private.config.yml && exit 1 || exit 0
+        msg: "{{.CONFIG_DIR}}/private.config.yml already exists"
+    cmds:
+      - cp {{.CONFIG_DIR}}/my.private.config.yml {{.CONFIG_DIR}}/private.config.yml
+      - cmd: echo Please go to {{.CONFIG_DIR}}/private.config.yml and enter your credentials!
+        silent: true
+
+  run:
+    desc:
+      Builds the backend binaries and runs them with the development configuration.
+    deps:
+      - build-be
+    preconditions:
+      - sh: ls config/private.config.yml
+        msg:
+          config/private.config.yml does not exist. Please run 'task init-dev' and
+          enter your credentials into the generated config file.
+    cmds:
+      - "{{.BIN_DIR}}/shinpuru
+          -c {{.CONFIG_DIR}}/private.config.yml
+          {{.CLI_ARGS}}"
+
+  run-fe:
+    desc:
+      Runs the Angular development server for the web app.
+    deps:
+      - deps-fe
+    dir: web
+    cmds:
+      - yarn start
+
+  run-fe-new:
+    desc:
+      Runs the vite development server for the new React web app.
+    deps:
+      - deps-fe-new
+    dir: web.new
+    cmds:
+      - yarn start
+
+  test:
+    desc:
+      Executes backend unit tests.
+    cmds:
+      - go test -race -v -cover ./...
+
+  apidocs:
+    desc:
+      Generates API documentation from the controller descriptions.
+    preconditions:
+      - sh: which swag
+        msg:
+          swag is not installed. Please install it using the following command.
+
+          $ go install github.com/swaggo/swag/cmd/swag@latest
+      - sh: which swagger-markdown
+        msg:
+          swagger-markdown is not installed. Please install it using the following command.
+
+          $ npm install -g swagger-markdown
+    cmds:
+      - swag init
+          -g ./internal/services/webserver/v1/router.go
+          -o {{.APIDOCS_OUTDIR}}
+          --parseDependency --parseDepth 2
+      - rm {{.APIDOCS_OUTDIR}}/docs.go
+      - swagger-markdown
+          -i {{.APIDOCS_OUTDIR}}/swagger.json
+          -o {{.APIDOCS_OUTDIR}}/restapi.md
+
+  build-setup-tool:
+    desc:
+      Builds the binary for the setup tool.
+    sources:
+      - cmd/**
+      - pkg/**
+      - internal/**
+    cmds:
+      - go build
+          -v
+          -o {{.BIN_DIR}}/setup{{exeExt}}
+          cmd/setup/main.go
+
+  build-cmdman-tool:
+    desc:
+      Builds the binary for the command manual (cmdman) tool.
+    sources:
+      - cmd/**
+      - pkg/**
+      - internal/**
+    cmds:
+      - go build
+          -v
+          -o {{.BIN_DIR}}/cmdman{{exeExt}}
+          cmd/cmdman/main.go
+
+  refresh-interfaces:
+    desc:
+      Refreshes the interfaces for libraries like Discordgo.
+    preconditions:
+      - sh: which schnittstelle
+        msg:
+          schnittstelle is not installed. Please install it using the following command.
+
+          $ go install github.com/zekrotja/schnittstelle/cmd/schnittstelle@latest
+    vars:
+      DISCORDGO_VERSION:
+        sh: cat go.mod | grep github.com/bwmarrin/discordgo | awk '{print $2}'
+      DISCORDGO_PATH:
+        sh: echo $(go env GOPATH)/pkg/mod/github.com/bwmarrin/discordgo@{{.DISCORDGO_VERSION}}
+    cmds:
+      - schnittstelle
+          --root {{.DISCORDGO_PATH}}
+          --struct Session
+          --interface ISession
+          --package discordutil
+          --import 'image'
+          --import 'io'
+          --import 'time'
+          --import '. "github.com/bwmarrin/discordgo"'
+          --out pkg/discordutil/isession.go
+          --format
+
+  refresh-mocks:
+    desc:
+      Refreshes the mock implementations in ./mock.
+    deps:
+      - refresh-interfaces
+    preconditions:
+      - sh: which mockery
+        msg:
+          mockery is not installed. Please install it using the following command.
+
+          $ go install github.com/vektra/mockery/v2@latest
+    vars:
+      DGRS_VERSION:
+        sh: cat go.mod | grep github.com/zekrotja/dgrs | awk '{print $2}'
+      DGRS_PATH:
+        sh: echo $(go env GOPATH)/pkg/mod/github.com/zekrotja/dgrs@{{.DGRS_VERSION}}
+      KEN_VERSION:
+        sh: cat go.mod | grep github.com/zekrotja/ken | awk '{print $2}'
+      KEN_PATH:
+        sh: echo $(go env GOPATH)/pkg/mod/github.com/zekrotja/ken@{{.KEN_VERSION}}
+    cmds:
+      - mockery -r --dir pkg/discordutil --name ISession --structname ISession --filename ISession.go
+      - mockery -r --dir internal/services/config --name Provider --structname ConfigProvider --filename ConfigProvider.go
+      - mockery -r --dir internal/services/database --name Database --structname Database --filename Database.go
+      - mockery -r --dir {{.DGRS_PATH}} --name IState --structname IState --filename IState.go
+      - mockery -r --dir internal/services/karma --name Provider --structname KarmaProvider --filename KarmaProvider.go
+      - mockery -r --dir {{.KEN_PATH}} --name IKen --structname IKen --filename IKen.go
+      - mockery -r --dir {{.KEN_PATH}} --name Context --structname KenContext --filename KenContext.go
+      - mockery -r --dir {{.KEN_PATH}} --name State --structname KenState --filename KenState.go
+      - mockery -r --dir internal/services/guildlog --name Logger --structname Logger --filename Logger.go
+      - mockery -r --dir internal/services/permissions --name Provider --structname PermissionsProvider --filename PermissionsProvider.go
+      - mockery -r --dir internal/services/report --name Provider --structname ReportProvider --filename ReportProvider.go
+      - mockery -r --dir internal/services/storage --name Storage --structname Storage --filename Storage.go
+      - mockery -r --dir internal/services/timeprovider --name Provider --structname TimeProvider --filename TimeProvider.go
+      - mockery -r --dir internal/services/verification --name Provider --structname VerificationProvider --filename VerificationProvider.go
+
+  help:
+    cmds:
+      - cmd: |
+          echo 'Use "task --list" to get a list of all available tasks with a short desciption of what they do.'
+          echo 'There are some more tasks used as dependencies for other tasks.'
+          echo 'You can view them with "task --list-all".'
+        silent: true

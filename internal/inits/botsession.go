@@ -89,6 +89,7 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerAntiraid(container).HandlerMemberAdd))
 	session.AddHandler(listeners.NewListenerBotMention(container).Listener)
 	session.AddHandler(listeners.NewListenerDMSync(container).Handler)
+	session.AddHandler(discordutil.WrapHandler(listeners.NewListenerPostBan(container).Handler))
 
 	session.AddHandler(listenerGhostPing.HandlerMessageCreate)
 	session.AddHandler(listenerGhostPing.HandlerMessageDelete)

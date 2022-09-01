@@ -116,7 +116,7 @@ func (c *Perms) Options() []*discordgo.ApplicationCommandOption {
 	}
 }
 
-func (c *Perms) Help(ctx *ken.SubCommandCtx) (emb *discordgo.MessageEmbed, err error) {
+func (c *Perms) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbed, err error) {
 	cfg := ctx.Get(static.DiConfig).(config.Provider)
 
 	desc := "If you don't know how the permissions system works, " +
@@ -144,7 +144,7 @@ func (c *Perms) SubDomains() []permService.SubPermission {
 	return nil
 }
 
-func (c *Perms) Run(ctx *ken.Ctx) (err error) {
+func (c *Perms) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -157,15 +157,15 @@ func (c *Perms) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Perms) list(ctx *ken.SubCommandCtx) (err error) {
+func (c *Perms) list(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
-	perms, err := db.GetGuildPermissions(ctx.Event.GuildID)
+	perms, err := db.GetGuildPermissions(ctx.GetEvent().GuildID)
 	if err != nil {
 		return err
 	}
 
-	sortedGuildRoles, err := roleutil.GetSortedGuildRoles(ctx.Session, ctx.Event.GuildID, true)
+	sortedGuildRoles, err := roleutil.GetSortedGuildRoles(ctx.GetSession(), ctx.GetEvent().GuildID, true)
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (c *Perms) list(ctx *ken.SubCommandCtx) (err error) {
 	}).Error
 }
 
-func (c *Perms) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Perms) set(ctx ken.SubCommandContext) (err error) {
 	db, _ := ctx.Get(static.DiDatabase).(database.Database)
 
 	mode := ctx.Options().GetByName("mode").StringValue()
@@ -194,16 +194,16 @@ func (c *Perms) set(ctx *ken.SubCommandCtx) (err error) {
 	dns = mode + dns
 
 	roles := []*discordgo.Role{
-		ctx.Options().GetByName("role").RoleValue(ctx.Ctx),
+		ctx.Options().GetByName("role").RoleValue(ctx),
 	}
 
 	for i := 1; i < 6; i++ {
 		if rV, ok := ctx.Options().GetByNameOptional(fmt.Sprintf("role%d", i)); ok {
-			roles = append(roles, rV.RoleValue(ctx.Ctx))
+			roles = append(roles, rV.RoleValue(ctx))
 		}
 	}
 
-	perms, err := db.GetGuildPermissions(ctx.Event.GuildID)
+	perms, err := db.GetGuildPermissions(ctx.GetEvent().GuildID)
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func (c *Perms) set(ctx *ken.SubCommandCtx) (err error) {
 		cPerm, changed := cPerm.Update(dns, false)
 
 		if changed {
-			err := db.SetGuildRolePermission(ctx.Event.GuildID, r.ID, cPerm)
+			err := db.SetGuildRolePermission(ctx.GetEvent().GuildID, r.ID, cPerm)
 			if err != nil {
 				return err
 			}

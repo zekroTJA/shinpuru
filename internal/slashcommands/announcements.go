@@ -91,7 +91,7 @@ func (c *Announcements) SubDomains() []permissions.SubPermission {
 	return nil
 }
 
-func (c *Announcements) Run(ctx *ken.Ctx) (err error) {
+func (c *Announcements) Run(ctx ken.Context) (err error) {
 	if err = ctx.Defer(); err != nil {
 		return
 	}
@@ -104,23 +104,23 @@ func (c *Announcements) Run(ctx *ken.Ctx) (err error) {
 	return
 }
 
-func (c *Announcements) set(ctx *ken.SubCommandCtx) (err error) {
+func (c *Announcements) set(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	typ := announcementType(ctx.Options().GetByName("type").StringValue())
 
 	var currChanID, currMsg string
 	if typ == announcementTypeJoin {
-		currChanID, currMsg, err = db.GetGuildJoinMsg(ctx.Event.GuildID)
+		currChanID, currMsg, err = db.GetGuildJoinMsg(ctx.GetEvent().GuildID)
 	} else if typ == announcementTypeLeave {
-		currChanID, currMsg, err = db.GetGuildLeaveMsg(ctx.Event.GuildID)
+		currChanID, currMsg, err = db.GetGuildLeaveMsg(ctx.GetEvent().GuildID)
 	}
 	if err != nil {
 		return
 	}
 
 	if chV, ok := ctx.Options().GetByNameOptional("channel"); ok {
-		ch := chV.ChannelValue(ctx.Ctx)
+		ch := chV.ChannelValue(ctx)
 		currChanID = ch.ID
 	}
 	if msgV, ok := ctx.Options().GetByNameOptional("message"); ok {
@@ -128,9 +128,9 @@ func (c *Announcements) set(ctx *ken.SubCommandCtx) (err error) {
 	}
 
 	if typ == announcementTypeJoin {
-		err = db.SetGuildJoinMsg(ctx.Event.GuildID, currChanID, currMsg)
+		err = db.SetGuildJoinMsg(ctx.GetEvent().GuildID, currChanID, currMsg)
 	} else if typ == announcementTypeLeave {
-		err = db.SetGuildLeaveMsg(ctx.Event.GuildID, currChanID, currMsg)
+		err = db.SetGuildLeaveMsg(ctx.GetEvent().GuildID, currChanID, currMsg)
 	}
 	if err != nil {
 		return
@@ -165,15 +165,15 @@ func (c *Announcements) set(ctx *ken.SubCommandCtx) (err error) {
 	return
 }
 
-func (c *Announcements) disable(ctx *ken.SubCommandCtx) (err error) {
+func (c *Announcements) disable(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 
 	typ := announcementType(ctx.Options().GetByName("type").StringValue())
 
 	if typ == announcementTypeJoin {
-		err = db.SetGuildJoinMsg(ctx.Event.GuildID, "", "")
+		err = db.SetGuildJoinMsg(ctx.GetEvent().GuildID, "", "")
 	} else if typ == announcementTypeLeave {
-		err = db.SetGuildLeaveMsg(ctx.Event.GuildID, "", "")
+		err = db.SetGuildLeaveMsg(ctx.GetEvent().GuildID, "", "")
 	}
 	if err != nil {
 		return

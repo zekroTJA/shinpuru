@@ -28,7 +28,6 @@ TAG        = $(shell git describe --tags)
 COMMIT     = $(shell git rev-parse HEAD)
 DATE       = $(shell date +%s)
 
-
 ifneq ($(GOOS),)
 	BIN := $(BIN)_$(GOOS)
 endif
@@ -53,18 +52,18 @@ endif
 
 
 PHONY = _make
-_make: deps fe copyfe build cleanup
+_make: _deprecation deps fe copyfe build cleanup
 
 PHONY += build
-build: $(BIN)
+build: _deprecation $(BIN)
 
 PHONY += deps
-deps:
+deps: _deprecation
 	$(GO) mod tidy
 	cd ./web && \
 		$(YARN) install
 
-$(BIN):
+$(BIN): _deprecation
 	$(GO) build  \
 		-v -o $@ -ldflags "\
 			-X $(PACKAGE)/$(LDPAKAGE).AppVersion=$(TAG) \
@@ -74,42 +73,42 @@ $(BIN):
 		$(CURDIR)/cmd/$(APPNAME)/*.go
 
 PHONY += test
-test:
+test: _deprecation
 	$(GO) test -race -v -cover ./...
 
 PHONY += lint
-lint:
+lint: _deprecation
 	$(GOLINT) ./... | $(GREP) -v vendor || true
 
 $(TMPBIN):
 	$(GO) build -race -v -o $@ $(CURDIR)/cmd/$(APPNAME)/*.go
 
 PHONY += run
-run: $(TMPBIN)
+run: _deprecation $(TMPBIN)
 	$(TMPBIN) -c $(CONFIG) -quiet
 
 PHONY += rundev
-rundev: $(TMPBIN)
+rundev: _deprecation $(TMPBIN)
 	$(TMPBIN) -devmode -c $(CONFIG) -quiet
 
 PHONY += cleanup
-cleanup:
+cleanup: _deprecation
 
 PHONY += fe
-fe:
+fe: _deprecation
 	cd $(CURDIR)/web && \
 		$(YARN) run build
 
 PHONY += copyfe
-copyfe:
+copyfe: _deprecation
 	cp -R web/dist/web/* internal/util/embedded/webdist
 
 PHONY += runfe
-runfe:
+runfe: _deprecation
 	cd ./web && $(YARN) start
 
 PHONY += prettify
-prettify:
+prettify: _deprecation
 	$(PRETTIER) \
 	    --config $(PRETTIER_CFG) \
 	    --write \
@@ -119,19 +118,36 @@ prettify:
 	    	$(CURDIR)/web/src/**/**/*.vue
 
 PHONY += devstack
-devstack:
+devstack: _deprecation
 	$(DOCKERCOMPOSE) -f docker-compose.dev.yml \
 		up -d
 
 PHONY += devstack
 APIDOCS_OUTDIR = "$(CURDIR)/docs/restapi/v1"
-apidocs:
+apidocs: _deprecation
 	$(SWAGGO) init \
 		-g $(CURDIR)/internal/services/webserver/v1/router.go \
 		-o $(APIDOCS_OUTDIR) \
 		--parseDependency --parseDepth 2
 	rm $(APIDOCS_OUTDIR)/docs.go
 	$(SWAGGER2MD) -i $(APIDOCS_OUTDIR)/swagger.json -o $(APIDOCS_OUTDIR)/restapi.md
+
+geninterfaces: _deprecation
+	ls -1t `go env GOPATH`/pkg/mod/github.com/bwmarrin | head -n 1
+	schnittstelle \
+		-root `go env GOPATH`/pkg/mod/github.com/bwmarrin/`ls -1t `go env GOPATH`/pkg/mod/github.com/bwmarrin | head -n 1` \
+		-out pkg/discordutil/isession.go \
+		-struct Session \
+		-interface ISession \
+		-package discordutil
+
+PHONY += _deprecation
+_deprecation:
+	@echo "+-------------------------------| WARNING |--------------------------------+"
+	@echo "| This makefile is deprecated and will be removed in upcoming updates!     |"
+	@echo "| Please install taskfile (taskfile.dev/installation) to use the Taskfile! |"
+	@echo "+--------------------------------------------------------------------------+"
+	sleep 3
 
 PHONY += help
 help:
