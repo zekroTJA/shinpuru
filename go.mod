@@ -3,7 +3,7 @@ module github.com/zekroTJA/shinpuru
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.26.0
+	github.com/bwmarrin/discordgo v0.26.1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/esimov/stackblur-go v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.1
@@ -11,7 +11,7 @@ require (
 	github.com/go-ping/ping v1.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gofiber/fiber/v2 v2.36.0
+	github.com/gofiber/fiber/v2 v2.37.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	github.com/kataras/hcaptcha v0.0.0-20200711031247-2927d4faf32f
@@ -23,20 +23,21 @@ require (
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/ranna-go/ranna v0.3.0
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/rs/xid v1.4.0
 	github.com/sarulabs/di/v2 v2.4.2
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.0
-	github.com/traefik/paerser v0.1.8
+	github.com/traefik/paerser v0.1.9
 	github.com/valyala/fasthttp v1.39.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/zekroTJA/colorname v1.0.0
-	github.com/zekroTJA/ratelimit v1.1.0
+	github.com/zekroTJA/ratelimit v1.1.1
 	github.com/zekroTJA/timedmap v1.4.0
 	github.com/zekrotja/dgrs v0.5.6
 	github.com/zekrotja/ken v0.17.1
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
-	golang.org/x/sys v0.0.0-20220817070843-5a390386f1f2
+	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -66,14 +67,13 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
-	github.com/rs/xid v1.4.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8 // indirect
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 // indirect
+	golang.org/x/exp v0.0.0-20220827204233-334a2380cb91 // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
+	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
