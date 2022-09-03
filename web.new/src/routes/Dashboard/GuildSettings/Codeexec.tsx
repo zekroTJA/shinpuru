@@ -1,7 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import { uid } from 'react-uid';
 import styled, { useTheme } from 'styled-components';
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
@@ -57,8 +56,8 @@ const MarginSmall = styled(Small)`
   margin-top: 1.5em;
 `;
 
-const CodeexecRoute: React.FC<Props> = ({}) => {
-  const { t } = useTranslation('routes.guildsettings.codeexec');
+const VerificationRoute: React.FC<Props> = ({}) => {
+  const { t } = useTranslation('routes.guildsettings.verification');
   const theme = useTheme();
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();
@@ -159,4 +158,4 @@ const CodeexecRoute: React.FC<Props> = ({}) => {
   );
 };
 
-export default CodeexecRoute;
+export default VerificationRoute;
