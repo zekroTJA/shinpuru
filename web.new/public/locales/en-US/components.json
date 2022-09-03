@@ -14,7 +14,12 @@
         "general": "General",
         "backup": "Backups",
         "antiraid": "Antiraid",
-        "codeexec": "Code Execution"
+        "codeexec": "Code Execution",
+        "verification": "Verification",
+        "karma": "Karma",
+        "logs": "Logs",
+        "data": "Data",
+        "api": "API"
       }
     },
     "logout": "Logout",

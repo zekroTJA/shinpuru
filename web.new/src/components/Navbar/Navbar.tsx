@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import styled from 'styled-components';
 import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
+import { ReactComponent as APIIcon } from '../../assets/api.svg';
 import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
 import { ReactComponent as CodeIcon } from '../../assets/code.svg';
+import { ReactComponent as DataIcon } from '../../assets/data.svg';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
+import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
+import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
+import { ReactComponent as VerificationIcon } from '../../assets/verification.svg';
 import { useApi } from '../../hooks/useApi';
 import { useGuilds } from '../../hooks/useGuilds';
 import { usePerms } from '../../hooks/usePerms';
@@ -202,6 +207,36 @@ export const Navbar: React.FC<Props> = () => {
               <StyledEntry path={`guilds/${selectedGuild?.id}/settings/codeexec`}>
                 <CodeIcon />
                 <span>{t('section.guildsettings.codeexec')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.verification') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/verification`}>
+                <VerificationIcon />
+                <span>{t('section.guildsettings.verification')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.karma') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/karma`}>
+                <KarmaIcon />
+                <span>{t('section.guildsettings.karma')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.logs') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/logs`}>
+                <LogsIcon />
+                <span>{t('section.guildsettings.logs')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.admin.flushdata') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/data`}>
+                <DataIcon />
+                <span>{t('section.guildsettings.data')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.config.api') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/api`}>
+                <APIIcon />
+                <span>{t('section.guildsettings.api')}</span>
               </StyledEntry>
             )}
           </Section>
