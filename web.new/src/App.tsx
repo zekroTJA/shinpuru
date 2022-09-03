@@ -19,6 +19,10 @@ const GuildGeneralRoute = React.lazy(() => import('./routes/Dashboard/GuildSetti
 const GuildBackupsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Backup'));
 const GuildAntiraidRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Antiraid'));
 const GuildCodeexecRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Codeexec'));
+const GuildVerificationRoute = React.lazy(
+  () => import('./routes/Dashboard/GuildSettings/Verification'),
+);
+const GuildKarmaRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Karma'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -111,6 +115,22 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildCodeexecRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/verification"
+                element={
+                  <RouteSuspense>
+                    <GuildVerificationRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/karma"
+                element={
+                  <RouteSuspense>
+                    <GuildKarmaRoute />
                   </RouteSuspense>
                 }
               />
