@@ -205,7 +205,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       <h1>{t('heading')}</h1>
       <Small>{t('explaination')}</Small>
 
-      <h2>Settings</h2>
+      <h2>{t('settings')}</h2>
       {(settings.state !== undefined && (
         <Switch
           enabled={settings.state}
@@ -215,6 +215,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       )) || <Loader width="20em" height="2em" />}
 
       <h3>{t('emotes.heading')}</h3>
+      <Small>{t('emotes.description')}</Small>
       <SplitContainer>
         <InputContainer>
           <label>{t('emotes.increase')}</label>
@@ -239,6 +240,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       </SplitContainer>
 
       <h3>{t('limit.heading')}</h3>
+      <Small>{t('limit.description')}</Small>
       <InputContainer>
         {(settings.state !== undefined && (
           <Input
@@ -251,6 +253,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       </InputContainer>
 
       <h3>{t('penalty.heading')}</h3>
+      <Small>{t('penalty.description')}</Small>
       <InputContainer>
         {(settings.state !== undefined && (
           <Switch
@@ -268,6 +271,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       </Controls>
 
       <h2>{t('rules.heading')}</h2>
+      <Small>{t('rules.description')}</Small>
       {(guild !== undefined && (
         <div>
           <KarmaRuleInput guild={guild!} onApply={(r) => _addKarmaRule(r)} />
@@ -283,6 +287,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       )) || <Loader width="20em" height="2em" />}
 
       <h2>{t('blocklist.heading')}</h2>
+      <Small>{t('blocklist.description')}</Small>
       <BlocklistInputContainer>
         <Input value={blocklistInput} onChange={(e) => setBlocklistInput(e.currentTarget.value)} />
         <Button disabled={!blocklistInput} onClick={() => _addBlocklist(blocklistInput)}>

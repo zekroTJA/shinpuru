@@ -1,6 +1,7 @@
 {
   "heading": "Karma",
   "explanation": "Lorem ipsum",
+  "settings": "Settings",
   "enable": "Enable karma system",
   "save": "Save settings",
 
@@ -14,25 +15,30 @@
 
   "emotes": {
     "heading": "Emotes",
+    "description": "The emotes a user can react to a message with to increase or decrease the authors karma.",
     "increase": "Increase karma",
     "decrease": "Decrease karma"
   },
 
   "limit": {
-    "heading": "Limit"
+    "heading": "Limit",
+    "description": "The amount of up and downvotes a user can perform per hour."
   },
 
   "penalty": {
     "heading": "Penalty",
+    "description": "When enabled, every karma decrease is paid with 1 karma point of the executors own karma account.",
     "switch": "Enable karma penalty"
   },
 
   "rules": {
-    "heading": "Rules"
+    "heading": "Rules",
+    "description": "Actions which will be performed when a user surpasses a specific karma level."
   },
 
   "blocklist": {
     "heading": "Block list",
+    "description": "Blocked members are neither able to give or remove karma of other members nor able to gain karma points from other users.",
     "addmember": "Add member",
     "table": {
       "id": "ID",
