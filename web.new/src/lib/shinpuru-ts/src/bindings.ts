@@ -354,7 +354,7 @@ export class GuildSettingsClient extends SubClient {
     return this.req('GET', 'karma/blocklist');
   }
 
-  addKarmaBlocklist(memberId: string): Promise<CodeResponse> {
+  addKarmaBlocklist(memberId: string): Promise<Member> {
     return this.req('PUT', `karma/blocklist/${memberId}`);
   }
 
@@ -366,7 +366,7 @@ export class GuildSettingsClient extends SubClient {
     return this.req('GET', 'karma/rules');
   }
 
-  addKarmaRules(rule: KarmaRule): Promise<ListResponse<KarmaRule>> {
+  addKarmaRule(rule: KarmaRule): Promise<KarmaRule> {
     return this.req('POST', 'karma/rules', rule);
   }
 

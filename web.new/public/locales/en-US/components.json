@@ -126,5 +126,19 @@
       "accept": "Unban request has sucessfully been acceped and the member is now unbanned.",
       "decline": "Unban request has successfully been rejected and the member remains banned."
     }
+  },
+  "karmarule": {
+    "text": "When a users karma <1/> <2/> points then <3/> <4/>.",
+    "trigger": {
+      "dropsbelow": "drops below",
+      "risesabove": "rises above"
+    },
+    "action": {
+      "togglerole": "toggle role",
+      "kick": "kick member",
+      "ban": "ban member",
+      "sendmessage": "send message"
+    },
+    "apply": "Apply rule"
   }
 }

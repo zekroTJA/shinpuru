@@ -10,6 +10,7 @@ import {
   UnbanRequestWrapper,
 } from '../../../components/Modals/ModalProcessUnbanRequest';
 import { ReportsList } from '../../../components/Report';
+import { SplitContainer } from '../../../components/SplitContainer';
 import { UnbanRequestTile } from '../../../components/UnbanRequestTile';
 import { useApi } from '../../../hooks/useApi';
 import { usePerms } from '../../../hooks/usePerms';
@@ -18,20 +19,6 @@ import { Report, UnbanRequest } from '../../../lib/shinpuru-ts/src';
 type Props = {};
 
 const StyledReprtList = styled(ReportsList)``;
-
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  gap: 1em;
-
-  > section {
-    width: 100%;
-  }
-
-  @media (orientation: portrait) {
-    flex-direction: column;
-  }
-`;
 
 const GuildModlogRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildmodlog');
@@ -73,7 +60,7 @@ const GuildModlogRoute: React.FC<Props> = () => {
   };
 
   return (
-    <Container>
+    <SplitContainer>
       <ModalProcessUnbanRequest
         show={showUnabnModal}
         request={selectedUnban}
@@ -116,7 +103,7 @@ const GuildModlogRoute: React.FC<Props> = () => {
           </Flex>
         </section>
       )}
-    </Container>
+    </SplitContainer>
   );
 };
 

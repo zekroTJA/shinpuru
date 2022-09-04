@@ -10,9 +10,10 @@ import { Input } from '../../../components/Input';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { NotificationType } from '../../../components/Notifications';
+import { RoleInput } from '../../../components/RoleInput';
 import { Element, Select } from '../../../components/Select';
 import { Small } from '../../../components/Small';
-import { TagElement, TagsInput } from '../../../components/TagsInput/TagsInput';
+import { TagElement } from '../../../components/TagsInput/TagsInput';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';
@@ -22,7 +23,7 @@ import { Channel, ChannelType, GuildSettings, Role } from '../../../lib/shinpuru
 type Props = {};
 
 type GuildSettingsVM = {
-  autoroles: TagElement<Role>[];
+  autoroles: Role[];
   modlogchannel?: Element<Channel>;
   voicelogchannel?: Element<Channel>;
   joinmessagechannel?: Element<Channel>;
@@ -35,7 +36,7 @@ const guildSettingsReducer = (
   state: GuildSettingsVM,
   [type, payload]:
     | ['set_state', Partial<GuildSettingsVM>]
-    | ['set_autoroles', TagElement<Role>[]]
+    | ['set_autoroles', Role[]]
     | [
         (
           | 'set_modlogchannel'
@@ -135,8 +136,7 @@ const GeneralRoute: React.FC<Props> = () => {
 
     const gs = {} as GuildSettings;
 
-    if (isAllowed('sp.guild.config.autorole'))
-      gs.autoroles = settings.autoroles.map((r) => r.value.id);
+    if (isAllowed('sp.guild.config.autorole')) gs.autoroles = settings.autoroles.map((r) => r.id);
 
     if (isAllowed('sp.guild.config.modlog'))
       gs.modlogchannel = settings.modlogchannel?.value.id ?? '__RESET__';
@@ -169,8 +169,7 @@ const GeneralRoute: React.FC<Props> = () => {
           'set_autoroles',
           (res.autoroles ?? [])
             .map((rid) => guild.roles!.find((r) => r.id === rid))
-            .filter((r) => !!r)
-            .map((r) => ({ id: r!.id, display: r!.name, keywords: [r!.id, r!.name], value: r! })),
+            .filter((r) => !!r) as Role[],
         ]);
 
         const modlogchannel = guild.channels!.find((c) => c.id === res.modlogchannel)!;
@@ -253,9 +252,9 @@ const GeneralRoute: React.FC<Props> = () => {
           {isAllowed('sp.guild.config.autorole') && (
             <Section>
               <h2>{t('autoroles.title')}</h2>
-              <TagsInput
-                options={roleTagOptions}
-                selected={settings.autoroles ?? []}
+              <RoleInput
+                guild={guild}
+                selected={settings.autoroles}
                 onChange={(v) => dispatchSettings(['set_autoroles', v])}
                 placeholder={t('autoroles.placeholder')}
               />

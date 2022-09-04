@@ -1,0 +1,44 @@
+{
+  "heading": "Karma",
+  "explanation": "Lorem ipsum",
+  "enable": "Enable karma system",
+  "save": "Save settings",
+
+  "notifications": {
+    "saved": "Settings saved.",
+    "ruleapplied": "Karma rule has been applied.",
+    "ruleremoved": "Karma rule has been removed.",
+    "blocklistadded": "Block list entry has been added.",
+    "blocklistremoved": "Block list entry has been removed."
+  },
+
+  "emotes": {
+    "heading": "Emotes",
+    "increase": "Increase karma",
+    "decrease": "Decrease karma"
+  },
+
+  "limit": {
+    "heading": "Limit"
+  },
+
+  "penalty": {
+    "heading": "Penalty",
+    "switch": "Enable karma penalty"
+  },
+
+  "rules": {
+    "heading": "Rules"
+  },
+
+  "blocklist": {
+    "heading": "Block list",
+    "addmember": "Add member",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "nick": "Nick",
+      "unblock": "Unblock"
+    }
+  }
+}
