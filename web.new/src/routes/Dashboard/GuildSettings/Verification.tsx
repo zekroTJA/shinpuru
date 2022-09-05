@@ -29,7 +29,7 @@ const settingsReducer = (
 };
 
 const CodeexecRoute: React.FC<Props> = ({}) => {
-  const { t } = useTranslation('routes.guildsettings.codeexec');
+  const { t } = useTranslation('routes.guildsettings.verification');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();
   const fetch = useApi();

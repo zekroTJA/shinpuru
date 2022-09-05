@@ -57,7 +57,7 @@ const MarginSmall = styled(Small)`
 `;
 
 const VerificationRoute: React.FC<Props> = ({}) => {
-  const { t } = useTranslation('routes.guildsettings.verification');
+  const { t } = useTranslation('routes.guildsettings.codeexec');
   const theme = useTheme();
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();
