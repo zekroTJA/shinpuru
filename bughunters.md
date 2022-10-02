@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **35** different wonderful people contributed a sum of **82** issues and **20** pull requests (with 1214 added and 153 deleted lines of code in 71 different files)! 🎉
+In total, **35** different wonderful people contributed a sum of **82** issues and **21** pull requests (with 1222 added and 160 deleted lines of code in 74 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -16,6 +16,7 @@ In total, **35** different wonderful people contributed a sum of **82** issues a
 |  [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180), [#270](https://github.com/zekroTJA/shinpuru/issues/270), [#284](https://github.com/zekroTJA/shinpuru/issues/284) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `6` |
 |  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346), [#353](https://github.com/zekroTJA/shinpuru/issues/353), [#354](https://github.com/zekroTJA/shinpuru/issues/354) | [#351](https://github.com/zekroTJA/shinpuru/pull/351) | `6` |
 |  [TomRomeo](https://github.com/TomRomeo) |  | [#357](https://github.com/zekroTJA/shinpuru/pull/357), [#358](https://github.com/zekroTJA/shinpuru/pull/358) | `6` |
+|  [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) | [#389](https://github.com/zekroTJA/shinpuru/pull/389) | `5` |
 |  [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `4` |
 |  [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195), [#219](https://github.com/zekroTJA/shinpuru/issues/219), [#241](https://github.com/zekroTJA/shinpuru/issues/241) |  | `4` |
 |  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `4` |
@@ -23,7 +24,6 @@ In total, **35** different wonderful people contributed a sum of **82** issues a
 |  [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309), [#387](https://github.com/zekroTJA/shinpuru/issues/387) |  | `3` |
 |  [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
 |  [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `3` |
-|  [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) |  | `2` |
 |  [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
 |  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378) |  | `2` |
 |  [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `1` |
