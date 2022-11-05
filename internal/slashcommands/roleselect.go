@@ -74,18 +74,6 @@ func (c *Roleselect) Run(ctx ken.Context) (err error) {
 
 	content := ctx.Options().GetByName("content").StringValue()
 
-	// var roleOptions []discordgo.SelectMenuOption
-	// for i := 0; i < nRoleOptions; i++ {
-	// 	r, ok := ctx.Options().GetByNameOptional(fmt.Sprintf("role%d", i+1))
-	// 	if ok {
-	// 		role := r.RoleValue(ctx)
-	// 		roleOptions = append(roleOptions, discordgo.SelectMenuOption{
-	// 			Label: role.Name,
-	// 			Value: role.ID,
-	// 		})
-	// 	}
-	// }
-
 	type roleButton struct {
 		Button *discordgo.Button
 		RoleID string
@@ -107,15 +95,32 @@ func (c *Roleselect) Run(ctx ken.Context) (err error) {
 		}
 	}
 
-	_, err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-		Description: content,
-	}).AddComponents().AddActionsRow(func(b ken.ComponentAssembler) {
-		for _, rb := range roleButtons {
-			b.Add(rb.Button, c.onRoleSelect(rb.RoleID))
-		}
-	}).Build()
+	nCols := len(roleButtons) / 5
+	if len(roleButtons)%5 > 0 {
+		nCols++
+	}
 
-	return
+	roleButtonsColumns := make([][]roleButton, nCols)
+	for i, rb := range roleButtons {
+		roleButtonsColumns[i/5] = append(roleButtonsColumns[i/5], rb)
+	}
+
+	fmt.Printf("%+v\n", roleButtonsColumns)
+	b := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: content,
+	}).AddComponents()
+
+	for _, rbs := range roleButtonsColumns {
+		b.AddActionsRow(func(b ken.ComponentAssembler) {
+			for _, rb := range rbs {
+				b.Add(rb.Button, c.onRoleSelect(rb.RoleID))
+			}
+		})
+	}
+
+	_, err = b.Build()
+
+	return err
 }
 
 func (c *Roleselect) onRoleSelect(roleID string) func(ctx ken.ComponentContext) bool {
