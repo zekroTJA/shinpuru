@@ -97,6 +97,20 @@ func (_m *Database) AddReport(rep models.Report) error {
 	return r0
 }
 
+// AddRoleSelects provides a mock function with given fields: v
+func (_m *Database) AddRoleSelects(v []models.RoleSelect) error {
+	ret := _m.Called(v)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]models.RoleSelect) error); ok {
+		r0 = rf(v)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // AddTag provides a mock function with given fields: _a0
 func (_m *Database) AddTag(_a0 tag.Tag) error {
 	ret := _m.Called(_a0)
@@ -1636,6 +1650,29 @@ func (_m *Database) GetReportsGuildCount(guildID string) (int, error) {
 	return r0, r1
 }
 
+// GetRoleSelects provides a mock function with given fields:
+func (_m *Database) GetRoleSelects() ([]models.RoleSelect, error) {
+	ret := _m.Called()
+
+	var r0 []models.RoleSelect
+	if rf, ok := ret.Get(0).(func() []models.RoleSelect); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.RoleSelect)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSetting provides a mock function with given fields: setting
 func (_m *Database) GetSetting(setting string) (string, error) {
 	ret := _m.Called(setting)
@@ -2034,6 +2071,20 @@ func (_m *Database) RemoveKarmaRule(guildID string, id snowflake.ID) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, snowflake.ID) error); ok {
 		r0 = rf(guildID, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RemoveRoleSelect provides a mock function with given fields: guildID, channelID, messageID
+func (_m *Database) RemoveRoleSelect(guildID string, channelID string, messageID string) error {
+	ret := _m.Called(guildID, channelID, messageID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, string) error); ok {
+		r0 = rf(guildID, channelID, messageID)
 	} else {
 		r0 = ret.Error(0)
 	}
