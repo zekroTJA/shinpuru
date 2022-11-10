@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/rs/xid"
+	"github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
-	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 )
@@ -109,11 +110,21 @@ func (c *Roleselect) create(ctx ken.SubCommandContext) error {
 
 	content := ctx.Options().GetByName("content").StringValue()
 
-	b := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+	fum := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: content,
-	}).AddComponents()
+	})
 
-	return c.attachRoleButtons(ctx, b)
+	b := fum.AddComponents()
+
+	roleIDs, err := c.attachRoleButtons(ctx, b)
+	if err != nil {
+		return err
+	}
+
+	roleSelects := mapRoleSelects(ctx.GetEvent().GuildID, fum.ChannelID, fum.ID, roleIDs)
+
+	db := ctx.Get(static.DiDatabase).(database.Database)
+	return db.AddRoleSelects(roleSelects)
 }
 
 func (c *Roleselect) attach(ctx ken.SubCommandContext) error {
@@ -136,7 +147,15 @@ func (c *Roleselect) attach(ctx ken.SubCommandContext) error {
 
 	b := ctx.GetKen().Components().Add(msg.ID, msg.ChannelID)
 
-	err = c.attachRoleButtons(ctx, b)
+	roleIDs, err := c.attachRoleButtons(ctx, b)
+	if err != nil {
+		return err
+	}
+
+	roleSelects := mapRoleSelects(ctx.GetEvent().GuildID, msg.ChannelID, msg.ID, roleIDs)
+
+	db := ctx.Get(static.DiDatabase).(database.Database)
+	err = db.AddRoleSelects(roleSelects)
 	if err != nil {
 		return err
 	}
@@ -146,82 +165,30 @@ func (c *Roleselect) attach(ctx ken.SubCommandContext) error {
 	}).DeleteAfter(6 * time.Second).Error
 }
 
-func (c *Roleselect) attachRoleButtons(ctx ken.SubCommandContext, b *ken.ComponentBuilder) error {
-	type roleButton struct {
-		Button *discordgo.Button
-		RoleID string
-	}
-
-	roleButtons := map[string]*discordgo.Button{}
+func (c *Roleselect) attachRoleButtons(
+	ctx ken.SubCommandContext,
+	b *ken.ComponentBuilder,
+) ([]string, error) {
+	roles := make([]*discordgo.Role, 0, nRoleOptions)
 	for i := 0; i < nRoleOptions; i++ {
 		r, ok := ctx.Options().GetByNameOptional(fmt.Sprintf("role%d", i+1))
 		if ok {
-			role := r.RoleValue(ctx)
-			roleButtons[role.ID] = &discordgo.Button{
-				Label:    role.Name,
-				Style:    discordgo.PrimaryButton,
-				CustomID: xid.New().String(),
-			}
+			roles = append(roles, r.RoleValue(ctx))
 		}
 	}
 
-	nCols := len(roleButtons) / 5
-	if len(roleButtons)%5 > 0 {
-		nCols++
-	}
-
-	roleButtonsColumns := make([][]roleButton, nCols)
-	i := 0
-	for id, b := range roleButtons {
-		roleButtonsColumns[i/5] = append(roleButtonsColumns[i/5], roleButton{
-			Button: b,
-			RoleID: id,
-		})
-		i++
-	}
-
-	for _, rbs := range roleButtonsColumns {
-		b.AddActionsRow(func(b ken.ComponentAssembler) {
-			for _, rb := range rbs {
-				b.Add(rb.Button, c.onRoleSelect(rb.RoleID))
-			}
-		})
-	}
-
-	_, err := b.Build()
-
-	return err
+	return util.AttachRoleSelectButtons(b, roles)
 }
 
-func (c *Roleselect) onRoleSelect(roleID string) func(ctx ken.ComponentContext) bool {
-	return func(ctx ken.ComponentContext) bool {
-		ctx.SetEphemeral(true)
-		ctx.Defer()
-
-		if stringutil.ContainsAny(roleID, ctx.GetEvent().Member.Roles) {
-			err := ctx.GetSession().GuildMemberRoleRemove(ctx.GetEvent().GuildID, ctx.User().ID, roleID)
-			if err != nil {
-				err = ctx.FollowUpError("Failed removing role.", "").DeleteAfter(10 * time.Second).Error
-				return err == nil
-			}
-			err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-				Color:       static.ColorEmbedGreen,
-				Description: fmt.Sprintf("Role <@&%s> has been removed.", roleID),
-			}).DeleteAfter(10 * time.Second).Error
-			return err == nil
-		}
-
-		err := ctx.GetSession().GuildMemberRoleAdd(ctx.GetEvent().GuildID, ctx.User().ID, roleID)
-		if err != nil {
-			err = ctx.FollowUpError("Failed adding role.", "").DeleteAfter(10 * time.Second).Error
-			return err == nil
-		}
-
-		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-			Color:       static.ColorEmbedGreen,
-			Description: fmt.Sprintf("Role <@&%s> has been added.", roleID),
-		}).DeleteAfter(10 * time.Second).Error
-
-		return err == nil
+func mapRoleSelects(guildID, channelID, msgID string, roleIDs []string) []models.RoleSelect {
+	roleSelects := make([]models.RoleSelect, 0, len(roleIDs))
+	for _, rid := range roleIDs {
+		roleSelects = append(roleSelects, models.RoleSelect{
+			GuildID:   guildID,
+			ChannelID: channelID,
+			MessageID: msgID,
+			RoleID:    rid,
+		})
 	}
+	return roleSelects
 }
