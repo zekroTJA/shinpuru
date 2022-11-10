@@ -19,6 +19,7 @@ body:
         - Functional Issue
         - Breaking Issue
         - Crash
+        - Tooling Issue
     validations:
       required: true
   - type: dropdown
