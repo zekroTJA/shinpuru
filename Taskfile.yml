@@ -50,10 +50,6 @@ tasks:
   build-be:
     desc:
       Builds the backend binary.
-    sources:
-      - cmd/**
-      - internal/**
-      - pkg/**
     cmds:
       - task: embed-versions
         vars: { RELEASE: "{{.RELEASE}}" }
