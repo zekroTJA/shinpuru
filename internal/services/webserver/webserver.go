@@ -37,10 +37,12 @@ func New(container di.Container) (ws *WebServer, err error) {
 	ws.cfg = container.Get(static.DiConfig).(config.Provider)
 
 	ws.app = fiber.New(fiber.Config{
+		AppName:               "shinpuru",
 		ErrorHandler:          ws.errorHandler,
 		ServerHeader:          fmt.Sprintf("shinpuru v%s", embedded.AppVersion),
 		DisableStartupMessage: true,
 		ProxyHeader:           "X-Forwarded-For",
+		ETag:                  true,
 	})
 
 	if !embedded.IsRelease() {

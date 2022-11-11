@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -8,7 +10,10 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 )
+
+var _ RequestHandler = (*RefreshTokenRequestHandler)(nil)
 
 // RefreshTokenRequestHandler implements RequestHandler for
 // the refresh-access token authentication
@@ -58,11 +63,17 @@ func (h *RefreshTokenRequestHandler) BindRefreshToken(ctx *fiber.Ctx, uid string
 	return nil
 }
 
-func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, uid string) error {
-	if err := h.BindRefreshToken(ctx, uid); err != nil {
+func (h *RefreshTokenRequestHandler) LoginSuccessHandler(ctx *fiber.Ctx, res discordoauth.SuccessResult) error {
+	if err := h.BindRefreshToken(ctx, res.UserID); err != nil {
 		return err
 	}
-	return ctx.Redirect("/", fiber.StatusTemporaryRedirect)
+
+	location := "/"
+	if redirect, ok := res.State["redirect"]; ok {
+		location += strings.TrimLeft(redirect, "/")
+	}
+
+	return ctx.Redirect(location, fiber.StatusTemporaryRedirect)
 }
 
 func (h *RefreshTokenRequestHandler) LogoutHandler(ctx *fiber.Ctx) error {

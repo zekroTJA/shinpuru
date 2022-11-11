@@ -50,10 +50,6 @@ tasks:
   build-be:
     desc:
       Builds the backend binary.
-    sources:
-      - cmd/**
-      - internal/**
-      - pkg/**
     cmds:
       - task: embed-versions
         vars: { RELEASE: "{{.RELEASE}}" }
@@ -108,7 +104,7 @@ tasks:
       - index.html
       - "*.png"
     cmds:
-      - yarn run build
+      - yarn run build --base=/beta/
 
   init-dev:
     desc:
@@ -152,7 +148,7 @@ tasks:
       - deps-fe-new
     dir: web.new
     cmds:
-      - yarn start
+      - yarn start --base=/beta/
 
   test:
     desc:

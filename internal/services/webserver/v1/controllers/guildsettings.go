@@ -397,7 +397,7 @@ func (c *GuildsSettingsController) getGuildSettingsKarmaBlocklist(ctx *fiber.Ctx
 // @Produce json
 // @Param id path string true "The ID of the guild."
 // @Param memberid path string true "The ID of the guild."
-// @Success 200 {object} models.Status
+// @Success 200 {object} models.Member
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
@@ -426,7 +426,7 @@ func (c *GuildsSettingsController) putGuildSettingsKarmaBlocklist(ctx *fiber.Ctx
 		return err
 	}
 
-	return ctx.JSON(models.Ok)
+	return ctx.JSON(memb)
 }
 
 // @Summary Remove Guild Karma Blocklist Entry

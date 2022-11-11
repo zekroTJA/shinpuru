@@ -18,7 +18,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 
 	"github.com/bwmarrin/snowflake"
-	_ "github.com/go-sql-driver/mysql"
+	mySqlDriver "github.com/go-sql-driver/mysql"
 )
 
 // MysqlMiddleware implements the Database interface for
@@ -407,6 +407,17 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`date` timestamp," +
 		"`showYear` int(1) NOT NULL DEFAULT '0'," +
 		"PRIMARY KEY (`iid`)" +
+		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `roleselect` (" +
+		"`guildID` varchar(25) NOT NULL," +
+		"`channelID` varchar(25) NOT NULL," +
+		"`messageID` varchar(25) NOT NULL," +
+		"`roleID` varchar(25) NOT NULL," +
+		"PRIMARY KEY (`guildID`, `channelID`, `messageID`, `roleID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
 		return
@@ -2253,6 +2264,61 @@ func (m *MysqlMiddleware) SetBirthday(bd models.Birthday) (err error) {
 func (m *MysqlMiddleware) DeleteBirthday(guildID, userID string) (err error) {
 	_, err = m.Db.Exec("DELETE FROM birthdays WHERE guildID = ? AND userID = ?",
 		guildID, userID)
+	return wrapNotFoundError(err)
+}
+
+func (m *MysqlMiddleware) AddRoleSelects(v []models.RoleSelect) error {
+	tx, err := m.Db.Begin()
+	if err != nil {
+		return err
+	}
+
+	for _, rs := range v {
+		_, err = m.Db.Exec(`
+			INSERT INTO roleselect (guildID, channelID, messageID, roleID)
+			VALUES (?, ?, ?, ?)
+		`, rs.GuildID, rs.ChannelID, rs.MessageID, rs.RoleID)
+		if err != nil {
+			if mErr, ok := err.(*mySqlDriver.MySQLError); ok && mErr.Number == 1062 {
+				continue
+			}
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+
+	return wrapNotFoundError(err)
+}
+
+func (m *MysqlMiddleware) GetRoleSelects() ([]models.RoleSelect, error) {
+	rows, err := m.Db.Query(`
+		SELECT guildID, channelID, messageID, roleID
+		FROM roleselect
+	`)
+	if err != nil {
+		return nil, wrapNotFoundError(err)
+	}
+
+	var rs []models.RoleSelect
+	for rows.Next() {
+		var r models.RoleSelect
+		err = rows.Scan(&r.GuildID, &r.ChannelID, &r.MessageID, &r.RoleID)
+		if err != nil {
+			return nil, err
+		}
+		rs = append(rs, r)
+	}
+
+	return rs, nil
+}
+
+func (m *MysqlMiddleware) RemoveRoleSelect(guildID, channelID, messageID string) error {
+	_, err := m.Db.Exec(`
+		DELETE FROM roleselect
+		WHERE guildID = ? AND channelID = ? AND messageID = ?
+	`, guildID, channelID, messageID)
 	return wrapNotFoundError(err)
 }
 

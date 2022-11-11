@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { HookedModal } from './components/Modal';
@@ -9,6 +9,7 @@ import { useStoredTheme } from './hooks/useStoredTheme';
 import { DashboardRoute } from './routes/Dashboard';
 import { DebugRoute } from './routes/Debug';
 import { StartRoute } from './routes/Start';
+import { stripSuffix } from './util/utils';
 
 const LoginRoute = React.lazy(() => import('./routes/Login'));
 const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
@@ -19,6 +20,10 @@ const GuildGeneralRoute = React.lazy(() => import('./routes/Dashboard/GuildSetti
 const GuildBackupsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Backup'));
 const GuildAntiraidRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Antiraid'));
 const GuildCodeexecRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Codeexec'));
+const GuildVerificationRoute = React.lazy(
+  () => import('./routes/Dashboard/GuildSettings/Verification'),
+);
+const GuildKarmaRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Karma'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -38,6 +43,15 @@ const AppContainer = styled.div`
 
 export const App: React.FC = () => {
   const { theme } = useStoredTheme();
+
+  useEffect(() => {
+    if (
+      import.meta.env.BASE_URL.length > 0 &&
+      window.location.pathname === stripSuffix(import.meta.env.BASE_URL, '/')
+    ) {
+      window.location.assign(import.meta.env.BASE_URL);
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -111,6 +125,22 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildCodeexecRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/verification"
+                element={
+                  <RouteSuspense>
+                    <GuildVerificationRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/karma"
+                element={
+                  <RouteSuspense>
+                    <GuildKarmaRoute />
                   </RouteSuspense>
                 }
               />

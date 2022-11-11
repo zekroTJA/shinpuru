@@ -176,10 +176,10 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 			Color: static.ColorEmbedOrange,
 			Title: "⚠ GUILD RAID ALERT",
 			Description: "Because an atypical burst of members joined the guild, " +
-				"the guilds verification level was raised to `verry high` and all admins " +
+				"the guilds verification level was raised to `very high` and all admins " +
 				"were informed.\n\n" +
 				"Also, all joining users from now are saved in a log list for the following " +
-				"24 hours. This log is saved for 48 hours toal.",
+				"24 hours. This log is saved for 48 hours total.",
 		})
 	}
 

@@ -9,3 +9,7 @@ export const Embed = styled.span`
   background-color: rgba(0 0 0 / 10%);
   width: fit-content;
 `;
+
+export const EmbedWrapper: React.FC<{ value: string | number | JSX.Element | undefined }> = ({
+  value,
+}) => <Embed>{value}</Embed>;

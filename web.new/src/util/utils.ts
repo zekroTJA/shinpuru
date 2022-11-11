@@ -65,3 +65,8 @@ export function prefixNumner(n: number): string {
 export function range(n: number, start: number = 0): number[] {
   return new Array<number>(n).fill(0).map((_, i) => i + start);
 }
+
+export function stripSuffix(v: string, suffix: string): string {
+  if (!v.endsWith(suffix)) return v;
+  return v.substring(0, v.length - suffix.length);
+}

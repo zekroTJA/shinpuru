@@ -1,0 +1,10 @@
+{
+  "heading": "User Verification",
+  "explanation": "Lorem ipsum",
+  "enable": "Enable user verification",
+  "save": "Save settings",
+
+  "notifications": {
+    "saved": "Settings saved."
+  }
+}

@@ -1,5 +1,5 @@
 import { Client } from './client';
-import { GuildLogEntry, User } from './models';
+import { GuildLogEntry, GuildSettingsVerification, User } from './models';
 import {
   AccessTokenModel,
   APIToken,
@@ -354,7 +354,7 @@ export class GuildSettingsClient extends SubClient {
     return this.req('GET', 'karma/blocklist');
   }
 
-  addKarmaBlocklist(memberId: string): Promise<CodeResponse> {
+  addKarmaBlocklist(memberId: string): Promise<Member> {
     return this.req('PUT', `karma/blocklist/${memberId}`);
   }
 
@@ -366,7 +366,7 @@ export class GuildSettingsClient extends SubClient {
     return this.req('GET', 'karma/rules');
   }
 
-  addKarmaRules(rule: KarmaRule): Promise<ListResponse<KarmaRule>> {
+  addKarmaRule(rule: KarmaRule): Promise<KarmaRule> {
     return this.req('POST', 'karma/rules', rule);
   }
 
@@ -402,12 +402,12 @@ export class GuildSettingsClient extends SubClient {
     return this.req('POST', 'logs/state', { state });
   }
 
-  verification(): Promise<State> {
+  verification(): Promise<GuildSettingsVerification> {
     return this.req('GET', 'verification');
   }
 
-  setVerification(state: boolean): Promise<State> {
-    return this.req('POST', 'verification', { state });
+  setVerification(state: GuildSettingsVerification): Promise<GuildSettingsVerification> {
+    return this.req('POST', 'verification', state);
   }
 }
 

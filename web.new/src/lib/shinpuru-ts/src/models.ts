@@ -341,12 +341,19 @@ export interface AccessTokenModel {
   expires: string;
 }
 
+export enum KarmaRuleTrigger {
+  BELOW = 0,
+  ABOVE = 1,
+}
+
+export type KarmaRuleAction = 'TOGGLE_ROLE' | 'KICK' | 'BAN' | 'SEND_MESSAGE';
+
 export interface KarmaRule {
   id: string;
   guildid: string;
-  trigger: number;
+  trigger: KarmaRuleTrigger;
   value: number;
-  action: string;
+  action: KarmaRuleAction;
   argument: string;
 }
 

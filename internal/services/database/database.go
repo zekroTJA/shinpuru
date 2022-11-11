@@ -272,6 +272,13 @@ type Database interface {
 	GetBirthdays(guildID string) ([]models.Birthday, error)
 	SetBirthday(m models.Birthday) error
 	DeleteBirthday(guildID, userID string) error
+
+	//////////////////////////////////////////////////////
+	//// ROLE SELECT
+
+	AddRoleSelects(v []models.RoleSelect) error
+	GetRoleSelects() ([]models.RoleSelect, error)
+	RemoveRoleSelect(guildID, channelID, messageID string) error
 }
 
 // IsErrDatabaseNotFound returns true if the passed err
