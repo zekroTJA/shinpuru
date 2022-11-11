@@ -20,8 +20,8 @@ const nRoleOptions = 10
 type Roleselect struct{}
 
 var (
-	_ ken.SlashCommand        = (*Say)(nil)
-	_ permissions.PermCommand = (*Say)(nil)
+	_ ken.SlashCommand        = (*Roleselect)(nil)
+	_ permissions.PermCommand = (*Roleselect)(nil)
 )
 
 func (c *Roleselect) Name() string {
