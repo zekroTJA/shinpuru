@@ -138,8 +138,12 @@ func groupCommandInfo(cmdInfo ken.CommandInfoList) (m map[string][]*ken.CommandI
 func groupNameFromDomain(domain string) (group string) {
 	domainSplit := strings.Split(domain, ".")
 	group = strings.Join(domainSplit[1:len(domainSplit)-1], " ")
-	group = strings.ToUpper(group)
-	return
+
+	if group == "" {
+		group = "uncategorized"
+	}
+
+	return strings.ToUpper(group)
 }
 
 func writeCommandList(document *strings.Builder, groups map[string][]*ken.CommandInfo) {
@@ -173,6 +177,8 @@ func writeCommandDetails(document *strings.Builder, cmd *ken.CommandInfo) {
 	}
 
 	domain := cmd.Implementations["Domain"][0].(string)
+
+	logrus.Infof("Writing command %s.%s", domain, cmd.ApplicationCommand.Name)
 
 	fmt.Fprintf(document, "### %s\n\n", cmd.ApplicationCommand.Name)
 	fmt.Fprintf(document, "%s\n\n", cmd.ApplicationCommand.Description)
@@ -236,7 +242,7 @@ func writeArguments(document *strings.Builder, options []*discordgo.ApplicationC
 			"|------|------|----------|-------------|---------|\n")
 	for _, opt := range options {
 		fmt.Fprintf(document,
-			"| %s | `%s` | `%t` | %s | %s |",
+			"| %s | `%s` | `%t` | %s | %s |\n",
 			opt.Name,
 			opt.Type.String(),
 			opt.Required,
