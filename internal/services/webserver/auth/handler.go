@@ -1,6 +1,9 @@
 package auth
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
+)
 
 // RequestHandler provides fiber endpoints and handlers
 // to authenticate users via an OAuth2 interface.
@@ -21,7 +24,7 @@ type RequestHandler interface {
 	//
 	// The function is getting passed the ident of
 	// the authenticated user.
-	LoginSuccessHandler(ctx *fiber.Ctx, ident string) error
+	LoginSuccessHandler(ctx *fiber.Ctx, res discordoauth.SuccessResult) error
 
 	// LogoutHandler is called when the user
 	// wants to log out.

@@ -13,6 +13,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	_ "github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models" // Import for API documentation
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 )
 
@@ -79,5 +80,7 @@ func (c *OTAController) getOta(ctx *fiber.Ctx) error {
 		c.session.ChannelMessageSendEmbed(ch.ID, emb)
 	}
 
-	return c.oauthHandler.LoginSuccessHandler(ctx, userID)
+	return c.oauthHandler.LoginSuccessHandler(ctx, discordoauth.SuccessResult{
+		UserID: userID,
+	})
 }

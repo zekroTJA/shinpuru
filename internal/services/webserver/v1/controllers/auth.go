@@ -67,12 +67,22 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 
 	c.pushcodeSubs = timedmap.New(10 * time.Second)
 
-	router.Get("/login", c.discordOAuth.HandlerInit)
+	router.Get("/login", c.getLogin)
 	router.Get("/oauthcallback", c.discordOAuth.HandlerCallback)
 	router.Post("/accesstoken", c.postAccessToken)
 	router.Post("/pushcode", c.pushCode)
 	router.Get("/check", c.authMw.Handle, c.getCheck)
 	router.Post("/logout", c.authMw.Handle, c.postLogout)
+}
+
+func (c *AuthController) getLogin(ctx *fiber.Ctx) error {
+	state := make(map[string]string)
+
+	if redirect := ctx.Query("redirect"); redirect != "" {
+		state["redirect"] = redirect
+	}
+
+	return c.discordOAuth.HandlerInitWithState(ctx, state)
 }
 
 // @Summary Access Token Exchange

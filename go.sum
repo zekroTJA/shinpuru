@@ -932,6 +932,8 @@ github.com/zekroTJA/timedmap v1.4.0 h1:NIkLScX6kMzkzFP7kCIkkgKYdooAJ1itkMbJODX2W
 github.com/zekroTJA/timedmap v1.4.0/go.mod h1:Go4uPxMN1Wjl5IgO6HYD1tM9IQhkYEVqcrrdsI4ljXo=
 github.com/zekrotja/dgrs v0.5.6 h1:8Eqj0Yn52BuIcIzOpsEqfm09Ywof6dTzxmqsoTq6fQ0=
 github.com/zekrotja/dgrs v0.5.6/go.mod h1:U/yu4FMN2z5DnGO0ov869vXLCHGFquYt89Bou2W+NJ4=
+github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9 h1:9l6wL2Ed+ViHVfC5GiwsI2XH6f+c5HnAdLPpPEcKESA=
+github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9/go.mod h1:/RiMK5BoO+YaH/yqSJ72AYLLOfV9m0rvjfdbfA7AYig=
 github.com/zekrotja/ken v0.17.1 h1:WxKr2WqXAGLl99LEkJhocNVCyzvnbpyNSzmaWdTJTNI=
 github.com/zekrotja/ken v0.17.1/go.mod h1:gaK7grKejkResB4jH3KhCHB48lyiVJ/8W/drj/gs/nA=
 github.com/zekrotja/sop v0.3.1 h1:zJ0kk5w1y7aWZjaVwV2QZzfV868sHI6rQntLTFfsv3k=
