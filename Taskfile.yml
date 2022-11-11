@@ -104,7 +104,7 @@ tasks:
       - index.html
       - "*.png"
     cmds:
-      - yarn run build
+      - yarn run build --base=/beta/
 
   init-dev:
     desc:
@@ -148,7 +148,7 @@ tasks:
       - deps-fe-new
     dir: web.new
     cmds:
-      - yarn start
+      - yarn start --base=/beta/
 
   test:
     desc:
