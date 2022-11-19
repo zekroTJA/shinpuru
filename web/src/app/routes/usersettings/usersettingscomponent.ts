@@ -43,9 +43,13 @@ export class UserSettingsComponent implements OnInit {
     private toasts: ToastService
   ) {}
 
-  public async ngOnInit() {
+  public ngOnInit() {
     this.fetch();
-    this.selfUser = await this.api.getSelfUser().toPromise();
+    console.debug('Fetching user ...');
+    this.api.getSelfUser().subscribe((user) => {
+      console.debug(user);
+      this.selfUser = user;
+    });
   }
 
   public resetToken() {

@@ -14,11 +14,13 @@ export class VerifyRouteComponent implements OnInit {
 
   constructor(private api: APIService, private toasts: ToastService) {}
 
-  async ngOnInit() {
-    this.selfUser = await this.api.getSelfUser().toPromise();
-    this.captchaSiteKey = (
-      await this.api.getVerificationSiteKey().toPromise()
-    ).sitekey;
+  ngOnInit() {
+    this.api.getSelfUser().subscribe((user) => {
+      this.selfUser = user;
+    });
+    this.api.getVerificationSiteKey().subscribe((siteKey) => {
+      this.captchaSiteKey = siteKey.sitekey;
+    });
   }
 
   async onCaptchaError(error: any) {
