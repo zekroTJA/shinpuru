@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/report"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/ken"
 )
 
@@ -71,7 +72,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 		GuildID:    e.GuildID,
 		ExecutorID: banEntry.UserID,
 		VictimID:   e.User.ID,
-		Msg:        banEntry.Reason,
+		Msg:        stringutil.EnsureNotEmpty(banEntry.Reason, "no further description"),
 		Anonymous:  true,
 	}
 
