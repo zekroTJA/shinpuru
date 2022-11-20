@@ -82,6 +82,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 	msg, err := s.ChannelMessageSendEmbed(modlogChan, emb)
 	if err != nil {
 		t.error(e.GuildID, "failed sending ban message", err)
+		return
 	}
 
 	_, err = t.ken.Components().Add(msg.ID, msg.ChannelID).
