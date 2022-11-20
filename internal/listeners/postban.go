@@ -50,6 +50,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 		int(discordgo.AuditLogActionMemberBanAdd), 10)
 	if err != nil {
 		t.error(e.GuildID, "failed getting guild audit log", err)
+		return
 	}
 
 	var banEntry *discordgo.AuditLogEntry
