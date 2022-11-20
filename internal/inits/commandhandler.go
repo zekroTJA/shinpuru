@@ -98,6 +98,13 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		return
 	}
 
+	if !embedded.IsRelease() {
+		err = k.RegisterCommands(new(slashcommands.Debug))
+		if err != nil {
+			return
+		}
+	}
+
 	err = k.RegisterMiddlewares(
 		middleware.NewDisableCommandsMiddleware(container),
 		perms,
