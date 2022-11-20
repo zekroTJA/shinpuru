@@ -16,5 +16,20 @@
       "module": "Module",
       "message": "Message"
     }
+  },
+
+  "notifications": {
+    "enabled": "Guild logging has been enabled.",
+    "disabled": "Guild logging has been disabled.",
+    "deleted": "All guild log entries have been deleted."
+  },
+
+  "deletemodal": {
+    "heading": "Delete all log entries",
+    "content": "Do you really want to delete all guild log entries? This action can not be undone!",
+    "controls": {
+      "delete": "Delete all log entries",
+      "cancel": "Cancel"
+    }
   }
 }
