@@ -31,6 +31,8 @@ export interface Role {
   color: number;
   position: number;
   permission: number;
+
+  _deleted: boolean;
 }
 
 export interface Member {

@@ -15,10 +15,18 @@ export const RoleInput: React.FC<Props> = ({ guild, selected, onChange, placehol
         ({ id: r.id, display: r.name, keywords: [r.id, r.name], value: r } as TagElement<Role>),
     ) ?? [];
 
+  const mapSelectedRole = (r: Role): TagElement<Role> => {
+    const rto = roleTagOptions.find((e) => e.id === r.id)!;
+    if (!rto) {
+      return { id: r.id, display: r.name, keywords: [], value: r };
+    }
+    return rto;
+  };
+
   return (
     <TagsInput
       options={roleTagOptions}
-      selected={(selected ?? []).map((r) => roleTagOptions.find((e) => e.id === r.id)!)}
+      selected={(selected ?? []).map(mapSelectedRole)}
       onChange={(v) => onChange(v.map((e) => e.value))}
       placeholder={placeholder}
     />

@@ -1,6 +1,6 @@
 {
   "heading": "Code Ausführung",
-  "explaination": "Lorem ipsum",
+  "explanation": "Lorem ipsum",
   "enable": "Code Ausführung einschalten",
   "save": "Einstellungen speichern",
 
@@ -10,13 +10,13 @@
 
   "jdoodle": {
     "heading": "JDoodle Einstellungen",
-    "explaination": "shinpuru is global eingestellt <1>JDoodle</1> als Code Ausführung Engine zu nutzen. Deswegen müssen die Zugangsdaten für jede Guild separat definiert werden sodass auch eigene Abonnements genutzt werden können. <2>Hier</2> können die Zugangsdaten eingesehen werden.",
+    "explanation": "shinpuru is global eingestellt <1>JDoodle</1> als Code Ausführung Engine zu nutzen. Deswegen müssen die Zugangsdaten für jede Guild separat definiert werden sodass auch eigene Abonnements genutzt werden können. <2>Hier</2> können die Zugangsdaten eingesehen werden.",
     "settingswarn": "Die Code Executon is ausgeschaltet solange keine JDoodle Zugangsdaten angegeben sind.",
     "clientid": "Client ID",
     "clientsecret": "Client Secret"
   },
 
   "ranna": {
-    "explaination": "shinpuru ist global eingestellt <1>ranna</1> als Code Execution Engine zu nutzen. So, nichts muss hier weiter eingestellt werden. 🥳"
+    "explanation": "shinpuru ist global eingestellt <1>ranna</1> als Code Execution Engine zu nutzen. So, nichts muss hier weiter eingestellt werden. 🥳"
   }
 }

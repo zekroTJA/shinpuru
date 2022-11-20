@@ -5,20 +5,20 @@
     "kicked": "{{count}} users have been kicked!",
     "banned": "{{count}} users have been banned!"
   },
-  "explaination": "lorem ipsum",
+  "explanation": "lorem ipsum",
   "enable": "Enable antiraid system",
   "save": "Save Settings",
   "regeneration": {
     "label": "Regeneration Duration",
-    "explaination": "lorem ipsum"
+    "explanation": "lorem ipsum"
   },
   "burst": {
     "label": "Burst Amount",
-    "explaination": "lorem ipsum"
+    "explanation": "lorem ipsum"
   },
   "verification": {
     "label": "User Verification",
-    "explaination": "lorem ipsum",
+    "explanation": "lorem ipsum",
     "switch_label": "Enable Verification"
   },
   "log": {

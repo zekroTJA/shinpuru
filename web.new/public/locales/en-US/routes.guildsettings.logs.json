@@ -1,0 +1,20 @@
+{
+  "heading": "Logs",
+  "explanation": "Events and errors occured on your guild.",
+
+  "enabled": {
+    "heading": "Enabled",
+    "enabled": "Enable Guild Logging"
+  },
+
+  "entries": {
+    "heading": "Entries",
+    "deleteall": "Delete all entries",
+    "table": {
+      "timestamp": "Timestamp",
+      "severity": "Severity",
+      "module": "Module",
+      "message": "Message"
+    }
+  }
+}

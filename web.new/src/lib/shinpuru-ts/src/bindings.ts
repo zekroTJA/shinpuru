@@ -382,8 +382,8 @@ export class GuildSettingsClient extends SubClient {
     return this.req('GET', `logs?limit=${limit}&offset=${offset}&severity=${severity}`);
   }
 
-  logsCount(): Promise<Count> {
-    return this.req('GET', 'logs/count');
+  logsCount(severity = -1): Promise<Count> {
+    return this.req('GET', `logs/count?severity=${severity}`);
   }
 
   flushLogs(): Promise<CodeResponse> {

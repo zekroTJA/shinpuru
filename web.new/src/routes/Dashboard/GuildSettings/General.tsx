@@ -13,7 +13,6 @@ import { NotificationType } from '../../../components/Notifications';
 import { RoleInput } from '../../../components/RoleInput';
 import { Element, Select } from '../../../components/Select';
 import { Small } from '../../../components/Small';
-import { TagElement } from '../../../components/TagsInput/TagsInput';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';
@@ -56,7 +55,6 @@ const guildSettingsReducer = (
         | 'reset_leavemessagetext',
       ],
 ) => {
-  console.log(type, payload);
   switch (type) {
     case 'set_state':
       return { ...state, ...payload };
@@ -161,16 +159,19 @@ const GeneralRoute: React.FC<Props> = () => {
       .catch();
   };
 
+  const mapAutoRoles = (rid: string): Partial<Role> => {
+    const r = guild!.roles!.find((r) => r.id === rid);
+    if (!r) {
+      return { id: rid, name: '<deleted role>', _deleted: true };
+    }
+    return r;
+  };
+
   useEffect(() => {
     if (!guild) return;
     fetch((c) => c.guilds.settings(guild.id).settings())
       .then((res) => {
-        dispatchSettings([
-          'set_autoroles',
-          (res.autoroles ?? [])
-            .map((rid) => guild.roles!.find((r) => r.id === rid))
-            .filter((r) => !!r) as Role[],
-        ]);
+        dispatchSettings(['set_autoroles', (res.autoroles ?? []).map(mapAutoRoles) as Role[]]);
 
         const modlogchannel = guild.channels!.find((c) => c.id === res.modlogchannel)!;
         if (modlogchannel)
@@ -237,12 +238,6 @@ const GeneralRoute: React.FC<Props> = () => {
           display: c.name,
         } as Element<Channel>),
     );
-
-  const roleTagOptions =
-    guild?.roles?.map(
-      (r) =>
-        ({ id: r.id, display: r.name, keywords: [r.id, r.name], value: r } as TagElement<Role>),
-    ) ?? [];
 
   return (
     <MaxWidthContainer>

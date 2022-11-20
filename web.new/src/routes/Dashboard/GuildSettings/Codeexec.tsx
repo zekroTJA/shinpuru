@@ -88,7 +88,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
   return (
     <MaxWidthContainer>
       <h1>{t('heading')}</h1>
-      <Small>{t('explaination')}</Small>
+      <Small>{t('explanation')}</Small>
 
       <h2>Settings</h2>
       {(settings.enabled !== undefined && (
