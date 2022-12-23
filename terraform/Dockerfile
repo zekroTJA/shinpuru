@@ -13,7 +13,7 @@ RUN sudo add-apt-repository ppa:longsleep/golang-backports \
   && apt install -y golang
 
 # Install NodeJS
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - \
   && sudo apt install -y nodejs
 
 # Install Corepack / Yarn
