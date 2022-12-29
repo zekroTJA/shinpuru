@@ -21,7 +21,9 @@ const (
 	snowflakeTypeShinpuru
 )
 
-type Snowflake struct{}
+type Snowflake struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Snowflake)(nil)

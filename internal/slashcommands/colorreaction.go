@@ -12,7 +12,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Colorreation struct{}
+type Colorreation struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Colorreation)(nil)

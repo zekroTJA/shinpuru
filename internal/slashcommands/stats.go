@@ -14,7 +14,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Stats struct{}
+type Stats struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Stats)(nil)

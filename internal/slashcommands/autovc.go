@@ -12,7 +12,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Autovc struct{}
+type Autovc struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Autovc)(nil)

@@ -12,7 +12,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Autorole struct{}
+type Autorole struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Autorole)(nil)

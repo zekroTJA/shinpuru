@@ -15,7 +15,9 @@ import (
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
 
-type Perms struct{}
+type Perms struct {
+	ken.EphemeralCommand
+}
 
 type permMode string
 

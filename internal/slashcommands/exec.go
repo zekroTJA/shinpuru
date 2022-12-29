@@ -21,7 +21,9 @@ const (
 	apiKeyLen = 64
 )
 
-type Exec struct{}
+type Exec struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Exec)(nil)

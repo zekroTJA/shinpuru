@@ -14,7 +14,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Maintenance struct{}
+type Maintenance struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Maintenance)(nil)

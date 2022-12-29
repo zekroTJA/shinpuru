@@ -73,10 +73,6 @@ func (c *Notify) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Notify) Run(ctx ken.Context) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
 	err = ctx.HandleSubCommands(
 		ken.SubCommandHandler{"toggle", c.toggle},
 		ken.SubCommandHandler{"setup", c.setup},
@@ -88,6 +84,11 @@ func (c *Notify) Run(ctx ken.Context) (err error) {
 func (c *Notify) toggle(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
+
+	ctx.SetEphemeral(true)
+	if err = ctx.Defer(); err != nil {
+		return
+	}
 
 	notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
@@ -143,6 +144,10 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
+
+	if err = ctx.Defer(); err != nil {
+		return
+	}
 
 	ok, err := pmw.CheckSubPerm(ctx, "setup", true)
 	if err != nil {

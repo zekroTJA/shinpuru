@@ -9,7 +9,9 @@ import (
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
 
-type Ghostping struct{}
+type Ghostping struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Ghostping)(nil)

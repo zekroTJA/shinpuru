@@ -19,7 +19,9 @@ import (
 //go:embed embed/cmd_info.md
 var infoMsg string
 
-type Info struct{}
+type Info struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Info)(nil)

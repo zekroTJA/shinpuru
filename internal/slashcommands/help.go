@@ -13,7 +13,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Help struct{}
+type Help struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Help)(nil)

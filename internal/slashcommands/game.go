@@ -9,7 +9,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Presence struct{}
+type Presence struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Presence)(nil)
@@ -21,7 +23,7 @@ func (c *Presence) Name() string {
 }
 
 func (c *Presence) Description() string {
-	return "Get information how to submit a bug report or feature request."
+	return "Set the 'now playing' state of the bot."
 }
 
 func (c *Presence) Version() string {

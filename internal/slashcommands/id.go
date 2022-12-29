@@ -10,7 +10,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Id struct{}
+type Id struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Id)(nil)

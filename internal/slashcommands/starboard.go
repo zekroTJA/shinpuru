@@ -11,7 +11,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Starboard struct{}
+type Starboard struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Starboard)(nil)

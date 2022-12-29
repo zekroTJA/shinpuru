@@ -17,7 +17,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Guild struct{}
+type Guild struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Guild)(nil)

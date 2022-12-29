@@ -11,7 +11,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Karma struct{}
+type Karma struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Karma)(nil)
