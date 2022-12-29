@@ -26,6 +26,7 @@ const GuildVerificationRoute = React.lazy(
 const GuildKarmaRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Karma'));
 const GuildLogsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Logs'));
 const GuildDataRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Data'));
+const GuildAPIRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/API'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -159,6 +160,14 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildDataRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/api"
+                element={
+                  <RouteSuspense>
+                    <GuildAPIRoute />
                   </RouteSuspense>
                 }
               />
