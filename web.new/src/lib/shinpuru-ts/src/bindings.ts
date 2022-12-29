@@ -338,8 +338,8 @@ export class GuildSettingsClient extends SubClient {
     return this.req('POST', 'codeexec', settings);
   }
 
-  flushData(): Promise<CodeResponse> {
-    return this.req('POST', 'flushguilddata');
+  flushData(leave_after: boolean, validation: string): Promise<CodeResponse> {
+    return this.req('POST', 'flushguilddata', { leave_after, validation });
   }
 
   karma(): Promise<KarmaSettings> {
