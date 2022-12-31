@@ -10,7 +10,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Kick struct{}
+type Kick struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Kick)(nil)

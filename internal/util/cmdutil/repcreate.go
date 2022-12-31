@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
@@ -75,6 +76,7 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 		UserID:         ctx.User().ID,
 		DeleteMsgAfter: true,
 		AcceptFunc: func(cctx ken.ComponentContext) (err error) {
+			cctx.SetEphemeral(ctx.GetEphemeral())
 			if err = cctx.Defer(); err != nil {
 				return
 			}
@@ -95,6 +97,16 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 			return cctx.FollowUpEmbed(
 				rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).
 				Send().Error
+		},
+		DeclineFunc: func(cctx ken.ComponentContext) error {
+			if !ctx.GetEphemeral() {
+				return nil
+			}
+
+			cctx.SetEphemeral(true)
+			return cctx.RespondEmbed(&discordgo.MessageEmbed{
+				Description: "Canceled.",
+			})
 		},
 	}
 

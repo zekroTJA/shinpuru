@@ -20,7 +20,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Mute struct{}
+type Mute struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Mute)(nil)

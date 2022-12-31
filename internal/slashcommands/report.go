@@ -17,7 +17,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Report struct{}
+type Report struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Report)(nil)

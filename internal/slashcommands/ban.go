@@ -10,7 +10,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Ban struct{}
+type Ban struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Ban)(nil)
