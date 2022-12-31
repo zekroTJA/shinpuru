@@ -56,5 +56,5 @@ func (c *Debug) Run(ctx ken.Context) (err error) {
 	gl.Warnf(ctx.GetEvent().GuildID, "Some warn message!")
 	gl.Fatalf(ctx.GetEvent().GuildID, "Some fatal message!")
 
-	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{Description: "Ok"}).Error
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{Description: "Ok"}).Send().Error
 }

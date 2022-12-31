@@ -124,11 +124,11 @@ func commandErrorHandler(err error, ctx *ken.Ctx) {
 	ctx.Defer()
 
 	if err == ken.ErrNotDMCapable {
-		ctx.FollowUpError("This command can not be used in DMs.", "")
+		ctx.FollowUpError("This command can not be used in DMs.", "").Send()
 		return
 	}
 
 	ctx.FollowUpError(
 		fmt.Sprintf("The command execution failed unexpectedly:\n```\n%s\n```", err.Error()),
-		"Command execution failed")
+		"Command execution failed").Send()
 }

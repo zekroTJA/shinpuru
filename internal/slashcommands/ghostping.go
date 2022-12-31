@@ -123,7 +123,7 @@ func (c *Ghostping) status(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: msg,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Ghostping) setup(ctx ken.SubCommandContext) (err error) {
@@ -139,7 +139,7 @@ func (c *Ghostping) setup(ctx ken.SubCommandContext) (err error) {
 		Description: "Ghostping is now set up with the following message.\n" +
 			"```\n" + message + "\n```\n" +
 			"If you want to disable Ghostping, use the `/ghostping disable` command.",
-	}).Error
+	}).Send().Error
 }
 
 func (c *Ghostping) disable(ctx ken.SubCommandContext) (err error) {
@@ -151,5 +151,5 @@ func (c *Ghostping) disable(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Ghostping is now disabled.",
-	}).Error
+	}).Send().Error
 }

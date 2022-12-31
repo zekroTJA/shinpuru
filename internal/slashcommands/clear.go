@@ -240,7 +240,7 @@ func (c *Clear) delete(ctx ken.SubCommandContext, msglist []*discordgo.Message) 
 		Description: fmt.Sprintf("Deleted %d %s.", len(msgs)-1, util.Pluralize(len(msgs)-1, "message")),
 		Title:       "",
 		Color:       static.ColorEmbedUpdated,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Clear) iterMsgsWithReactionFromUser(

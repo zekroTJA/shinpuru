@@ -102,7 +102,7 @@ func (c *Modlog) set(ctx ken.SubCommandContext) (err error) {
 				}
 				err = cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Set this channel as modlog channel.",
-				}).Error
+				}).Send().Error
 				return
 			},
 		}
@@ -121,7 +121,7 @@ func (c *Modlog) set(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Set channel <#%s> as modlog channel.", ch.ID),
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -135,5 +135,5 @@ func (c *Modlog) disable(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Modloging disabled.",
-	}).Error
+	}).Send().Error
 }

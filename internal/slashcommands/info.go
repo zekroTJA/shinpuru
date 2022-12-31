@@ -133,5 +133,5 @@ func (c *Info) Run(ctx ken.Context) (err error) {
 		},
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

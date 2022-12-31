@@ -140,7 +140,7 @@ func (c *Voicelog) set(ctx ken.SubCommandContext) (err error) {
 				}
 				err = cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Set this channel as voicelog channel.",
-				}).Error
+				}).Send().Error
 				fmt.Println(err)
 				return
 			},
@@ -160,7 +160,7 @@ func (c *Voicelog) set(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Set channel <#%s> as voicelog channel.", ch.ID),
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -174,7 +174,7 @@ func (c *Voicelog) disable(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Voiceloging disabled.",
-	}).Error
+	}).Send().Error
 }
 
 func (c *Voicelog) ignore(ctx ken.SubCommandContext) (err error) {
@@ -188,7 +188,7 @@ func (c *Voicelog) ignore(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Channel <#%s> is now on the ignore list.", ch.ID),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Voicelog) unignore(ctx ken.SubCommandContext) (err error) {
@@ -202,7 +202,7 @@ func (c *Voicelog) unignore(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Channel <#%s> was removed from the ignore list.", ch.ID),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Voicelog) ignorelist(ctx ken.SubCommandContext) (err error) {
@@ -226,5 +226,5 @@ func (c *Voicelog) ignorelist(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: strings.Join(vcs, "\n"),
 		Title:       "Ignored Voice Channels",
-	}).Error
+	}).Send().Error
 }

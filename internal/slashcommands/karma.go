@@ -123,7 +123,7 @@ func (c *Karma) Run(ctx ken.Context) (err error) {
 		},
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }
 
 func (c *Karma) userKarma(ctx ken.Context, user *discordgo.User) error {
@@ -148,5 +148,5 @@ func (c *Karma) userKarma(ctx ken.Context, user *discordgo.User) error {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Title:       memb.User.String() + "'s Karma Stats",
 		Description: fmt.Sprintf("Guild Karma: **`%d`**\nGlobal Karma: **`%d`**", guildKarma, globalKarma),
-	}).Error
+	}).Send().Error
 }

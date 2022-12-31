@@ -92,7 +92,7 @@ func (c *Presence) Run(ctx ken.Context) (err error) {
 	}
 
 	if err = pre.Validate(); err != nil {
-		return ctx.FollowUpError(err.Error(), "").Error
+		return ctx.FollowUpError(err.Error(), "").Send().Error
 	}
 
 	err = ctx.GetSession().UpdateStatusComplex(pre.ToUpdateStatusData())
@@ -107,5 +107,5 @@ func (c *Presence) Run(ctx ken.Context) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Presence updated.",
-	}).Error
+	}).Send().Error
 }

@@ -198,5 +198,5 @@ func (c *User) Run(ctx ken.Context) (err error) {
 		embed.Description = ":robot:  **This is a bot account**"
 	}
 
-	return ctx.FollowUpEmbed(embed).Error
+	return ctx.FollowUpEmbed(embed).Send().Error
 }

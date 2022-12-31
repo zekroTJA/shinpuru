@@ -112,7 +112,7 @@ func (c *Autorole) show(ctx ken.SubCommandContext) (err error) {
 	if len(autoroles) == 0 {
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: "Currently, no autoroles are defined.",
-		}).Error
+		}).Send().Error
 		return
 	}
 
@@ -123,7 +123,7 @@ func (c *Autorole) show(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Currently, following roles are set as autoroles:\n" + res.String(),
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -140,7 +140,7 @@ func (c *Autorole) add(ctx ken.SubCommandContext) (err error) {
 	}
 
 	if stringutil.ContainsAny(role.ID, autoroles) {
-		err = ctx.FollowUpError("The given autorole is already assigned.", "").Error
+		err = ctx.FollowUpError("The given autorole is already assigned.", "").Send().Error
 		return
 	}
 
@@ -151,7 +151,7 @@ func (c *Autorole) add(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "Role was successfully assigned as autorole.",
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -168,7 +168,7 @@ func (c *Autorole) remove(ctx ken.SubCommandContext) (err error) {
 	}
 
 	if !stringutil.ContainsAny(role.ID, autoroles) {
-		err = ctx.FollowUpError("The given role is not assigned as autorole.", "").Error
+		err = ctx.FollowUpError("The given role is not assigned as autorole.", "").Send().Error
 		return
 	}
 
@@ -180,7 +180,7 @@ func (c *Autorole) remove(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "Role was successfully removed as autorole.",
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -195,7 +195,7 @@ func (c *Autorole) purge(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "All autoroles were successfully removed.",
-	}).Error
+	}).Send().Error
 
 	return
 }

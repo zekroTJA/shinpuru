@@ -19,26 +19,30 @@ func OnRoleSelect(roleID string) func(ctx ken.ComponentContext) bool {
 		if stringutil.ContainsAny(roleID, ctx.GetEvent().Member.Roles) {
 			err := ctx.GetSession().GuildMemberRoleRemove(ctx.GetEvent().GuildID, ctx.User().ID, roleID)
 			if err != nil {
-				err = ctx.FollowUpError("Failed removing role.", "").DeleteAfter(10 * time.Second).Error
+				err = ctx.FollowUpError("Failed removing role.", "").
+					Send().
+					DeleteAfter(10 * time.Second).Error
 				return err == nil
 			}
 			err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 				Color:       static.ColorEmbedGreen,
 				Description: fmt.Sprintf("Role <@&%s> has been removed.", roleID),
-			}).DeleteAfter(10 * time.Second).Error
+			}).Send().DeleteAfter(10 * time.Second).Error
 			return err == nil
 		}
 
 		err := ctx.GetSession().GuildMemberRoleAdd(ctx.GetEvent().GuildID, ctx.User().ID, roleID)
 		if err != nil {
-			err = ctx.FollowUpError("Failed adding role.", "").DeleteAfter(10 * time.Second).Error
+			err = ctx.FollowUpError("Failed adding role.", "").
+				Send().
+				DeleteAfter(10 * time.Second).Error
 			return err == nil
 		}
 
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Color:       static.ColorEmbedGreen,
 			Description: fmt.Sprintf("Role <@&%s> has been added.", roleID),
-		}).DeleteAfter(10 * time.Second).Error
+		}).Send().DeleteAfter(10 * time.Second).Error
 
 		return err == nil
 	}

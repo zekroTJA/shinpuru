@@ -105,13 +105,15 @@ func (c *Chanstats) Run(ctx ken.Context) (err error) {
 	}
 	if limit < 1 || limit > hardMessageLimit {
 		err = ctx.FollowUpError(
-			fmt.Sprintf("Message limit must be in range [1, %d]", hardMessageLimit), "").Error
+			fmt.Sprintf("Message limit must be in range [1, %d]", hardMessageLimit), "").
+			Send().
+			Error
 		return
 	}
 
 	// Generate and send a status messgae which shows the current count
 	// of collected messages.
-	fum := ctx.FollowUpEmbed(c.getCollectedEmbed(0))
+	fum := ctx.FollowUpEmbed(c.getCollectedEmbed(0)).Send()
 	if err = fum.Error; err != nil {
 		return
 	}

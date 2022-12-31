@@ -156,7 +156,7 @@ func (c *Say) raw(ctx ken.SubCommandContext) (err error) {
 	if err = json.Unmarshal([]byte(raw), &emb); err != nil {
 		return ctx.FollowUpError(
 			fmt.Sprintf("Failed parsing JSON data:\n```\n%s\n```",
-				err.Error()), "").Error
+				err.Error()), "").Send().Error
 	}
 	err = c.sendMessage(ctx, &emb)
 	return
@@ -195,7 +195,7 @@ func (c *Say) sendMessage(ctx ken.SubCommandContext, emb *discordgo.MessageEmbed
 	fum := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Message has been %s. [Here](%s) you can find the message.",
 			status, discordutil.GetMessageLink(msg, ctx.GetEvent().GuildID)),
-	})
+	}).Send()
 
 	if chanID == ctx.GetEvent().ChannelID {
 		fum.DeleteAfter(5 * time.Second)

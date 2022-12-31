@@ -79,7 +79,7 @@ func (c *Colorreation) Run(ctx ken.Context) (err error) {
 			Description: fmt.Sprintf("Color reaction has been %s.",
 				stringutil.FromBool(enable, "enabled", "disabled")),
 			Color: intutil.FromBool(enable, static.ColorEmbedGreen, static.ColorEmbedOrange),
-		}).Error
+		}).Send().Error
 	} else {
 		enable, err = db.GetGuildColorReaction(ctx.GetEvent().GuildID)
 		if err != nil {
@@ -89,7 +89,7 @@ func (c *Colorreation) Run(ctx ken.Context) (err error) {
 			Description: fmt.Sprintf("Color reaction is currently %s.",
 				stringutil.FromBool(enable, "enabled", "disabled")),
 			Color: intutil.FromBool(enable, static.ColorEmbedGreen, static.ColorEmbedOrange),
-		}).Error
+		}).Send().Error
 	}
 
 	return

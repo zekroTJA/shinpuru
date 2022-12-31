@@ -105,7 +105,8 @@ func (c *Starboard) set(ctx ken.SubCommandContext) (err error) {
 	if v, ok := ctx.Options().GetByNameOptional("threshold"); ok {
 		starboardConfig.Threshold = int(v.IntValue())
 		if starboardConfig.Threshold < 0 {
-			return ctx.FollowUpError("Threshold value must be equal or larger than `0`.", "").Error
+			return ctx.FollowUpError("Threshold value must be equal or larger than `0`.", "").
+				Send().Error
 		}
 	}
 	if v, ok := ctx.Options().GetByNameOptional("emote"); ok {
@@ -114,7 +115,8 @@ func (c *Starboard) set(ctx ken.SubCommandContext) (err error) {
 	if v, ok := ctx.Options().GetByNameOptional("karma"); ok {
 		starboardConfig.KarmaGain = int(v.IntValue())
 		if starboardConfig.KarmaGain < 0 {
-			return ctx.FollowUpError("Threshold value must be equal or larger than `0`.", "").Error
+			return ctx.FollowUpError("Threshold value must be equal or larger than `0`.", "").
+				Send().Error
 		}
 	}
 
@@ -160,7 +162,7 @@ func (c *Starboard) setConfig(
 		if outputError {
 			return ctx.FollowUpError(
 				"Failed settings starboard config to database: ```"+err.Error()+"```", "").
-				Error
+				Send().Error
 		}
 		return err
 	}
@@ -174,5 +176,5 @@ func (c *Starboard) setConfig(
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: msg,
-	}).Error
+	}).Send().Error
 }

@@ -89,7 +89,8 @@ func (c *Login) Run(ctx ken.Context) (err error) {
 		enableLink := fmt.Sprintf("%s/usersettings", cfg.Config().WebServer.PublicAddr)
 		err = ctx.FollowUpError(
 			"One Time Authorization is disabled by default. If you want to use it, you need "+
-				"to enable it first in your [**user settings page**]("+enableLink+").", "").Error
+				"to enable it first in your [**user settings page**]("+enableLink+").", "").
+			Send().Error
 		return c.wrapDmError(ctx, err)
 	}
 
@@ -108,7 +109,7 @@ func (c *Login) Run(ctx ken.Context) (err error) {
 
 	var fEdit func(emb *discordgo.MessageEmbed) error
 	if isDM {
-		fum := ctx.FollowUpEmbed(emb)
+		fum := ctx.FollowUpEmbed(emb).Send()
 		err = fum.Error
 		fEdit = func(emb *discordgo.MessageEmbed) error {
 			return fum.EditEmbed(emb)
@@ -123,7 +124,7 @@ func (c *Login) Run(ctx ken.Context) (err error) {
 		if err == nil {
 			err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 				Description: "The login token has been sent you via DM.",
-			}).Error
+			}).Send().Error
 		}
 	}
 	if err != nil {
@@ -146,7 +147,7 @@ func (c *Login) wrapDmError(ctx ken.Context, err error) error {
 	if discordutil.IsCanNotOpenDmToUserError(err) {
 		return ctx.FollowUpError(
 			"You need to enable DMs from users of this guild so that a secret authentication link "+
-				"can be sent to you via DM.", "").Error
+				"can be sent to you via DM.", "").Send().Error
 	}
 	return err
 }

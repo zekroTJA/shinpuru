@@ -222,7 +222,7 @@ func (m *Permissions) CheckSubPerm(
 	}
 
 	if !permOk && (explicit && !override) {
-		err = ctx.FollowUpError(msg, "").Error
+		err = ctx.FollowUpError(msg, "").Send().Error
 		return
 	}
 

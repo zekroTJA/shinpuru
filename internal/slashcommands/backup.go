@@ -131,7 +131,7 @@ func (c *Backup) Run(ctx ken.Context) (err error) {
 	}
 
 	var unreg func() error
-	fum := ctx.FollowUpEmbed(emb)
+	fum := ctx.FollowUpEmbed(emb).Send()
 	if fum.Error != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func (c *Backup) Run(ctx ken.Context) (err error) {
 				ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Guild backups are now disabled.",
 					Color:       static.ColorEmbedOrange,
-				})
+				}).Send()
 
 				cNext <- ""
 				return true
@@ -210,7 +210,7 @@ func (c *Backup) Run(ctx ken.Context) (err error) {
 				ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Guild backups are now enabled.",
 					Color:       static.ColorEmbedGreen,
-				})
+				}).Send()
 
 				cNext <- ""
 				return true
@@ -263,7 +263,7 @@ func (c *Backup) Run(ctx ken.Context) (err error) {
 
 	if entry.FileID == "" {
 		return ctx.FollowUpError(
-			"Something went wrong. Please try again later.", "").Error
+			"Something went wrong. Please try again later.", "").Send().Error
 	}
 
 	bck := ctx.Get(static.DiBackupHandler).(*backup.GuildBackups)
@@ -336,7 +336,7 @@ func (c *Backup) proceedRestore(ctx ken.ComponentContext, bck *backup.GuildBacku
 	statusMsg, err := logmsg.NewWithSender(
 		ctx.GetSession(),
 		func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
-			fum := ctx.FollowUpEmbed(emb)
+			fum := ctx.FollowUpEmbed(emb).Send()
 			return fum.Message, fum.Error
 		},
 		&discordgo.MessageEmbed{
@@ -363,13 +363,15 @@ func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st
 
 	backups, err := db.GetBackups(ctx.GetEvent().GuildID)
 	if err != nil {
-		ctx.FollowUpError(fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error()), "")
+		ctx.FollowUpError(fmt.Sprintf("Failed getting backups: ```\n%s\n```", err.Error()), "").
+			Send()
 		return
 	}
 
 	var lnBackups = len(backups)
 	if lnBackups < 1 {
-		ctx.FollowUpError("There are no backups saved to be purged.", "")
+		ctx.FollowUpError("There are no backups saved to be purged.", "").
+			Send()
 		return
 	}
 
@@ -387,7 +389,7 @@ func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st
 
 	if success < lnBackups {
 		ctx.FollowUpError(fmt.Sprintf("Successfully purged `%d` of `%d` backups.\n`%d` backup purges failed.",
-			success, lnBackups, lnBackups-success), "")
+			success, lnBackups, lnBackups-success), "").Send()
 		return
 	}
 
@@ -395,6 +397,6 @@ func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st
 		Description: fmt.Sprintf("Successfully purged `%d` of `%d` backups.",
 			success, lnBackups),
 		Color: static.ColorEmbedGreen,
-	})
+	}).Send()
 	return
 }

@@ -108,5 +108,5 @@ func (c *Stats) Run(ctx ken.Context) (err error) {
 		},
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

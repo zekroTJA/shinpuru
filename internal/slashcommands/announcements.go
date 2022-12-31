@@ -143,7 +143,7 @@ func (c *Announcements) set(ctx ken.SubCommandContext) (err error) {
 					"%s messages are still disabled because no channel is set.",
 				typ, currMsg, stringutil.Capitalize(string(typ), false)),
 			Color: static.ColorEmbedOrange,
-		}).Error
+		}).Send().Error
 	} else if currMsg == "" {
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: fmt.Sprintf(
@@ -151,7 +151,7 @@ func (c *Announcements) set(ctx ken.SubCommandContext) (err error) {
 					"%s messages are still disabled because no message is set.",
 				typ, currMsg, stringutil.Capitalize(string(typ), false)),
 			Color: static.ColorEmbedOrange,
-		}).Error
+		}).Send().Error
 	} else {
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: fmt.Sprintf(
@@ -159,7 +159,7 @@ func (c *Announcements) set(ctx ken.SubCommandContext) (err error) {
 					"%s messages are now enabled.",
 				typ, currChanID, typ, currMsg, stringutil.Capitalize(string(typ), false)),
 			Color: static.ColorEmbedGreen,
-		}).Error
+		}).Send().Error
 	}
 
 	return
@@ -181,5 +181,5 @@ func (c *Announcements) disable(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("%s disabled.", stringutil.Capitalize(string(typ), false)),
-	}).Error
+	}).Send().Error
 }

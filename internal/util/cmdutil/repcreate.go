@@ -57,7 +57,8 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 		exp, err := timeutil.ParseDuration(expire)
 		if err != nil {
 			err = ctx.FollowUpError(
-				fmt.Sprintf("Invalid duration:\n```\n%s```", err.Error()), "").Error
+				fmt.Sprintf("Invalid duration:\n```\n%s```", err.Error()), "").
+				Send().Error
 			return err
 		}
 		expT := tp.Now().Add(exp)
@@ -92,7 +93,8 @@ func CmdReport(ctx ken.Context, typ models.ReportType, tp timeprovider.Provider)
 			}
 
 			return cctx.FollowUpEmbed(
-				rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).Error
+				rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).
+				Send().Error
 		},
 	}
 

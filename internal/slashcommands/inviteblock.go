@@ -84,7 +84,7 @@ func (c *Inviteblock) Run(ctx ken.Context) (err error) {
 			Description: fmt.Sprintf("Discord invite link blocking is currently **%s** on this guild.\n\n"+
 				"*You can enable or disable this with the command `/inviteblock enable True/False`*.", strStat),
 			Color: color,
-		}).Error
+		}).Send().Error
 	}
 
 	state := stateV.BoolValue()
@@ -105,5 +105,5 @@ func (c *Inviteblock) Run(ctx ken.Context) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: msg,
 		Color:       color,
-	}).Error
+	}).Send().Error
 }

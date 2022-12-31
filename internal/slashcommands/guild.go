@@ -169,7 +169,7 @@ func (c *Guild) Run(ctx ken.Context) (err error) {
 		WithFooter(fmt.Sprintf("issued by %s", ctx.User().String()), "", "").
 		Build()
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }
 
 func (c *Guild) wrapBool(b bool) string {

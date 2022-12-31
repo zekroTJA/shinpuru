@@ -112,7 +112,7 @@ func (c *Roleselect) create(ctx ken.SubCommandContext) error {
 
 	fum := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: content,
-	})
+	}).Send()
 
 	b := fum.AddComponents()
 
@@ -140,7 +140,8 @@ func (c *Roleselect) attach(ctx ken.SubCommandContext) error {
 	msg, err := st.Message(ctx.GetEvent().ChannelID, id)
 	if err != nil {
 		if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMessage) {
-			return ctx.FollowUpError("Message could not be found in this channel.", "").Error
+			return ctx.FollowUpError("Message could not be found in this channel.", "").
+				Send().Error
 		}
 		return err
 	}
@@ -162,7 +163,7 @@ func (c *Roleselect) attach(ctx ken.SubCommandContext) error {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Role buttons have been attached.",
-	}).DeleteAfter(6 * time.Second).Error
+	}).Send().DeleteAfter(6 * time.Second).Error
 }
 
 func (c *Roleselect) attachRoleButtons(
