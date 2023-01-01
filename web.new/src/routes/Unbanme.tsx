@@ -13,7 +13,6 @@ import { NotificationType } from '../components/Notifications';
 import { UnbanRequestTile } from '../components/UnbanRequestTile';
 import { useApi } from '../hooks/useApi';
 import { useEffectAsync } from '../hooks/useEffectAsync';
-import { setInitRedirect } from '../hooks/useInitRedirect';
 import { useNotifications } from '../hooks/useNotifications';
 import { Guild, UnbanRequest, UnbanRequestState } from '../lib/shinpuru-ts/src';
 import { APIError } from '../lib/shinpuru-ts/src/errors';
@@ -71,8 +70,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
   }, []);
 
   const _onLogin = () => {
-    setInitRedirect('/unbanme');
-    nav('/login');
+    nav({ pathname: '/login', search: 'redirect=unbanme' });
   };
 
   const _onSelectGuild = (guild: Guild) => {

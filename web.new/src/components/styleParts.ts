@@ -11,7 +11,7 @@ export const Clickable = (scaling = 1.03) => css`
 `;
 
 export const LinearGradient = (c1: string, c2?: string) => {
-  const _c2 = c2 ?? new Color(c1).darken(0.15).hex();
+  const _c2 = c2 ?? new Color(c1).darken(0.15).hexa();
   return css`
     background: linear-gradient(140deg, ${c1}, ${_c2});
   `;

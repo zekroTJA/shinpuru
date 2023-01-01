@@ -1,0 +1,11 @@
+{
+  "notloggedin": "You need to be logged in to verify your account.",
+  "login": "Login",
+  "needverify": "Please solve the captcha below to verify your account.",
+  "verified": "Your account has been verified. You are ready to go!",
+  "continue": "Continue to Dashboard",
+
+  "notifications": {
+    "verified": "Your account has been verified."
+  }
+}

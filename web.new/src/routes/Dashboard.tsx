@@ -3,7 +3,6 @@ import { Outlet, useNavigate, useParams, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { Navbar } from '../components/Navbar';
 import { useGuilds } from '../hooks/useGuilds';
-import { useInitRedirect } from '../hooks/useInitRedirect';
 import LocalStorageUtil from '../util/localstorage';
 
 type Props = {};
@@ -25,8 +24,6 @@ export const DashboardRoute: React.FC<Props> = () => {
   const { guildid } = useParams();
   const loc = useLocation();
   const nav = useNavigate();
-
-  useInitRedirect();
 
   useEffect(() => {
     console.log(loc.pathname.replaceAll('/', ''), guilds, guilds?.length, guildid);

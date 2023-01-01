@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "dependencies": {
+    "@hcaptcha/react-hcaptcha": "^1.4.4",
     "byte-formatter": "^1.0.1",
     "color": "^4.2.1",
     "date-fns": "^2.28.0",
