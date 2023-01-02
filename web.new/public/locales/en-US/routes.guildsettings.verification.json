@@ -1,6 +1,6 @@
 {
   "heading": "User Verification",
-  "explanation": "Lorem ipsum",
+  "explanation": "When enabled, all new users to your guild will be timeouted and will receive a message where they are called to verify their account in the web interface of shinpuru. This allows to circumvent most of the attacks where botted accounts do nasty stuff on your guild but it could also annoy users so that they will leave your guild.",
   "enable": "Enable user verification",
   "save": "Save settings",
 

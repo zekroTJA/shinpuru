@@ -1,6 +1,6 @@
 {
   "heading": "Code Execution",
-  "explanation": "Lorem ipsum",
+  "explanation": "When enabled, shinpuru detects code in messages (from code blocks) and adds reactions to the message so that the sender can execute the code. The code is then sent to a sandbox in which the code is run and the result is returned back to the chat in response to the message.",
   "enable": "Enable code execution",
   "save": "Save settings",
 
