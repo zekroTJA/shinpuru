@@ -74,7 +74,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
   useEffectAsync(async () => {
     try {
       // await fetch((c) => c.auth.check(), true);
-      setVerified((await fetch((c) => c.etc.me())).captcha_verified);
+      setVerified((await fetch((c) => c.etc.me(), true)).captcha_verified);
       setAuthorized(true);
     } catch (e) {
       if (e instanceof APIError && e.code === 401) {
