@@ -253,7 +253,12 @@ func (c *GuildMembersController) getMemberPermissionsAllowed(ctx *fiber.Ctx) (er
 			continue
 		}
 		for _, sub := range subs {
-			comb := fmt.Sprintf("%s.%s", domain, sub.Term)
+			var comb string
+			if strings.HasPrefix(sub.Term, "/") {
+				comb = sub.Term[1:]
+			} else {
+				comb = fmt.Sprintf("%s.%s", domain, sub.Term)
+			}
 			if perms.Check(comb) {
 				allowed.Push(comb)
 			}
