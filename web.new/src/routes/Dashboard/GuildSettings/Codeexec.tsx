@@ -104,7 +104,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
           <MarginSmall>
             <Trans
               ns="routes.guildsettings.codeexec"
-              i18nKey="ranna.explaination"
+              i18nKey="ranna.explanation"
               components={{
                 '1': <a href="https://app.ranna.zekro.de/">_</a>,
               }}
@@ -117,7 +117,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
           <Small>
             <Trans
               ns="routes.guildsettings.codeexec"
-              i18nKey="jdoodle.explaination"
+              i18nKey="jdoodle.explanation"
               components={{
                 '1': <a href="https://www.jdoodle.com/">_</a>,
                 '2': <a href="https://www.jdoodle.com/compiler-api/">_</a>,

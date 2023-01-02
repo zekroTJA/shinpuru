@@ -156,7 +156,7 @@ This repository also provides a [`Makefile`](https://github.com/zekroTJA/shinpur
 
 > Read [this](https://www.cyberciti.biz/faq/howto-installing-gnu-c-compiler-development-environment-on-ubuntu/) to install GNU Make on Linux and [this](http://gnuwin32.sourceforge.net/packages/make.htm) to install it on Windows.
 
-Now - if not already done - install Docker and Docker Compose on your system. [**Here**](https://docs.docker.com/get-docker/) you can find a detailed explaination on how to do so on your type of system.
+Now - if not already done - install Docker and Docker Compose on your system. [**Here**](https://docs.docker.com/get-docker/) you can find a detailed explanation on how to do so on your type of system.
 
 After that, you can simply start up all services required via Docker Compose.
 ```
