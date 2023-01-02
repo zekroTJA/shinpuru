@@ -20,7 +20,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Mute struct{}
+type Mute struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Mute)(nil)
@@ -115,7 +117,7 @@ func (c *Mute) toggle(ctx ken.SubCommandContext) (err error) {
 	if victim.ID == ctx.User().ID {
 		return ctx.FollowUpError(
 			"You can not mute yourself...", "").
-			Error
+			Send().Error
 	}
 
 	st := ctx.Get(static.DiState).(*dgrs.State)
@@ -140,13 +142,13 @@ func (c *Mute) toggle(ctx ken.SubCommandContext) (err error) {
 			return err
 		}
 
-		return ctx.FollowUpEmbed(emb).Error
+		return ctx.FollowUpEmbed(emb).Send().Error
 	}
 
 	if len(reason) == 0 {
 		return ctx.FollowUpError(
 			"Please enter a valid report description.", "").
-			Error
+			Send().Error
 	}
 
 	var attachment string
@@ -175,12 +177,13 @@ func (c *Mute) toggle(ctx ken.SubCommandContext) (err error) {
 	if !ok {
 		return ctx.FollowUpError(
 			"Please enter a valid timeout.", "").
-			Error
+			Send().Error
 	}
 	expire, err := timeutil.ParseDuration(expireV.StringValue())
 	if err != nil {
 		return ctx.FollowUpError(
-			fmt.Sprintf("Invalid expire value:\n```\n%s```", err.Error()), "").Error
+			fmt.Sprintf("Invalid expire value:\n```\n%s```", err.Error()), "").
+			Send().Error
 	}
 	expireTime := tp.Now().Add(expire)
 	rep.Timeout = &expireTime
@@ -189,9 +192,10 @@ func (c *Mute) toggle(ctx ken.SubCommandContext) (err error) {
 	if err != nil {
 		err = ctx.FollowUpError(
 			"Failed creating report: ```\n"+err.Error()+"\n```", "").
-			Error
+			Send().Error
 	} else {
-		err = ctx.FollowUpEmbed(rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).Error
+		err = ctx.FollowUpEmbed(rep.AsEmbed(cfg.Config().WebServer.PublicAddr)).
+			Send().Error
 	}
 
 	return err
@@ -206,7 +210,7 @@ func (c *Mute) list(ctx ken.SubCommandContext) (err error) {
 		Fields:      make([]*discordgo.MessageEmbedField, 0),
 	}
 
-	fum := ctx.FollowUpEmbed(emb)
+	fum := ctx.FollowUpEmbed(emb).Send()
 	err = fum.Error
 	if err != nil {
 		return err

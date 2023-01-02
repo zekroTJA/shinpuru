@@ -15,7 +15,9 @@ import (
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
 
-type Perms struct{}
+type Perms struct {
+	ken.EphemeralCommand
+}
 
 type permMode string
 
@@ -182,7 +184,7 @@ func (c *Perms) list(ctx ken.SubCommandContext) (err error) {
 		Description: msgstr + "\n*Guild owners does always have permissions over the domains `sp.guild`, `sp.chat` and `sp.etc` " +
 			"and the owner of the bot has everywhere permissions over `sp`.*",
 		Title: "Permission settings for this guild",
-	}).Error
+	}).Send().Error
 }
 
 func (c *Perms) set(ctx ken.SubCommandContext) (err error) {
@@ -235,5 +237,5 @@ func (c *Perms) set(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Set permission `%s` for role%s %s.",
 			dns, multipleRoles, strings.Join(rolesIds, ", ")),
-	}).Error
+	}).Send().Error
 }

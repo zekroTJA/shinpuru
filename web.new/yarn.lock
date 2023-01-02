@@ -1054,6 +1054,13 @@
   dependencies:
     regenerator-runtime "^0.13.10"
 
+"@babel/runtime@^7.17.9":
+  version "7.20.7"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.7.tgz#fcb41a5a70550e04a7b708037c7c32f7f356d8fd"
+  integrity sha512-UF0tvkUtxwAgZ5W/KrkHf0Rn0fdnLDU9ScxBrEVNUprE/MzirjK4MJUX1/BVDv00Sv8cljtukVK1aky++X1SjQ==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/template@^7.18.10", "@babel/template@^7.3.3":
   version "7.18.10"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.18.10.tgz#6f9134835970d1dbf0835c0d100c9f38de0c5e71"
@@ -1264,6 +1271,13 @@
     js-yaml "^4.1.0"
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
+
+"@hcaptcha/react-hcaptcha@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@hcaptcha/react-hcaptcha/-/react-hcaptcha-1.4.4.tgz#529c55369160995115735b5fe5453daef4670f04"
+  integrity sha512-Aen217LDnf5ywbPSwBG5CsoqBLIHIAS9lhj3zQjXJuO13doQ6/ubkCWNuY8jmwYLefoFt3V3MrZmCdKDaFoTuQ==
+  dependencies:
+    "@babel/runtime" "^7.17.9"
 
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
@@ -8499,6 +8513,11 @@ regenerator-runtime@^0.13.10, regenerator-runtime@^0.13.9:
   version "0.13.10"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.10.tgz#ed07b19616bcbec5da6274ebc75ae95634bfc2ee"
   integrity sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==
+
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regenerator-transform@^0.15.0:
   version "0.15.0"

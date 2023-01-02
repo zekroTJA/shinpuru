@@ -10,7 +10,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Mvall struct{}
+type Mvall struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Mvall)(nil)
@@ -68,11 +70,13 @@ func (c *Mvall) Run(ctx ken.Context) (err error) {
 	}
 	if vs == nil {
 		return ctx.FollowUpError(
-			"You need to be in a voice channel to use this command.", "").Error
+			"You need to be in a voice channel to use this command.", "").
+			Send().Error
 	}
 	if vs.ChannelID == channel.ID {
 		return ctx.FollowUpError(
-			"You are already in the target voice channel.", "").Error
+			"You are already in the target voice channel.", "").
+			Send().Error
 	}
 
 	vss, err := st.VoiceStates(ctx.GetEvent().GuildID)
@@ -94,5 +98,5 @@ func (c *Mvall) Run(ctx ken.Context) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Moved %d members to channel %s.",
 			i, channel.Name),
-	}).Error
+	}).Send().Error
 }

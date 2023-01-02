@@ -1,0 +1,15 @@
+{
+  "heading": "Data",
+  "explanation": "Here you can delete ALL data stored in shinpuru's database and object storage associated to this guild. This includes the following data sets:\n\n- **All Reports and associated image data**\n- **All backups and associated data**\n- **Karma Scores, Rules, Settings and Blocklist**\n- All starboard entries and configuration\n- All guild log entries\n- Guild Settings\n- Permission Specifications\n- Tags\n- Antiraid Settings and Joinlog\n- Unban Requests\n\n*This action can only be performed once every 24 hours.*",
+  "delete": "Delete all Guild Data permanently",
+  "remove": "Remove the bot from the Guild afterwards",
+
+  "modal": {
+    "heading": "Delete all Guild Data",
+    "content": "Please confirm that you want to delete <1>all</1> Guild data mentioned permanently by writing the name of the Guild below and press confirm."
+  },
+
+  "notifications": {
+    "success": "Guild settings have been flushed successfully."
+  }
+}

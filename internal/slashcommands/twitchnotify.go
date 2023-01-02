@@ -12,7 +12,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Twitchnotify struct{}
+type Twitchnotify struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Twitchnotify)(nil)
@@ -132,7 +134,7 @@ func (c *Twitchnotify) list(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Title:       "Watched Twitch Channels",
 		Description: notsStr.String(),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Twitchnotify) add(ctx ken.SubCommandContext) (err error) {
@@ -150,14 +152,16 @@ func (c *Twitchnotify) add(ctx ken.SubCommandContext) (err error) {
 	twitchuser, err := tnw.GetUser(twitchname, twitchnotify.IdentLogin)
 	if err != nil {
 		if err.Error() == "not found" {
-			return ctx.FollowUpError("Twitch user with this name could not be found.", "").Error
+			return ctx.FollowUpError("Twitch user with this name could not be found.", "").
+				Send().Error
 		}
 		return
 	}
 
 	err = tnw.AddUser(twitchuser)
 	if err != nil {
-		err = ctx.FollowUpError("Maximum count of registered Twitch accounts has been reached.", "").Error
+		err = ctx.FollowUpError("Maximum count of registered Twitch accounts has been reached.", "").
+			Send().Error
 		return
 	}
 
@@ -173,7 +177,7 @@ func (c *Twitchnotify) add(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("You will now get a notification in channel <#%s> when `%s` goes live on twitch!",
 			channelID, twitchuser.DisplayName),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Twitchnotify) remove(ctx ken.SubCommandContext) (err error) {
@@ -185,7 +189,8 @@ func (c *Twitchnotify) remove(ctx ken.SubCommandContext) (err error) {
 	twitchuser, err := tnw.GetUser(twitchname, twitchnotify.IdentLogin)
 	if err != nil {
 		if err.Error() == "not found" {
-			return ctx.FollowUpError("Twitch user with this name could not be found.", "").Error
+			return ctx.FollowUpError("Twitch user with this name could not be found.", "").
+				Send().Error
 		}
 		return
 	}
@@ -203,7 +208,8 @@ func (c *Twitchnotify) remove(ctx ken.SubCommandContext) (err error) {
 	}
 
 	if notify == nil {
-		return ctx.FollowUpError("Twitch user was nto set to be monitored on this guild.", "").Error
+		return ctx.FollowUpError("Twitch user was nto set to be monitored on this guild.", "").
+			Send().Error
 	}
 
 	err = db.DeleteTwitchNotify(notify.TwitchUserID, notify.GuildID)
@@ -214,5 +220,5 @@ func (c *Twitchnotify) remove(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Notifications for twitch user `%s` in channel <#%s> have been removed.",
 			twitchuser.DisplayName, notify.ChannelID),
-	}).Error
+	}).Send().Error
 }

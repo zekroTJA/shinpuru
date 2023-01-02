@@ -93,12 +93,12 @@ func (c *Quote) Run(ctx ken.Context) (err error) {
 		channelID := linkMatches[0][1]
 		quoteMsg, err = st.Message(channelID, messageID)
 		if err != nil {
-			return ctx.FollowUpError("Message could not be found.", "").Error
+			return ctx.FollowUpError("Message could not be found.", "").Send().Error
 		}
 	} else {
 		messageID := ident
 		if _, err = snowflake.ParseString(messageID); err != nil {
-			return ctx.FollowUpError("Invlid message ID or link.", "").Error
+			return ctx.FollowUpError("Invlid message ID or link.", "").Send().Error
 		}
 
 		msgSearchEmb := &discordgo.MessageEmbed{
@@ -106,7 +106,7 @@ func (c *Quote) Run(ctx ken.Context) (err error) {
 			Description: fmt.Sprintf(":hourglass_flowing_sand:  Searching for message in channel <#%s>...", ctx.GetEvent().ChannelID),
 		}
 
-		fum = ctx.FollowUpEmbed(msgSearchEmb)
+		fum = ctx.FollowUpEmbed(msgSearchEmb).Send()
 		if fum.Error != nil {
 			return fum.Error
 		}
@@ -234,7 +234,7 @@ func (c *Quote) Run(ctx ken.Context) (err error) {
 		err = ctx.FollowUp(true, &discordgo.WebhookParams{
 			Content: comment,
 			Embeds:  []*discordgo.MessageEmbed{emb},
-		}).Error
+		}).Send().Error
 	} else {
 		err = fum.Edit(&discordgo.WebhookEdit{
 			Content: &comment,

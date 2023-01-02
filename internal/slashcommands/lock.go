@@ -94,7 +94,7 @@ func (c *Lock) lock(target *discordgo.Channel, ctx ken.Context) error {
 	procMsg := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: ":clock4: Locking channel...",
 		Color:       static.ColorEmbedGray,
-	})
+	}).Send()
 	if procMsg.Error != nil {
 		return procMsg.Error
 	}
@@ -190,7 +190,7 @@ func (c *Lock) unlock(target *discordgo.Channel, ctx ken.Context, encodedPerms s
 	procMsg := ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: ":clock4: Locking channel...",
 		Color:       static.ColorEmbedGray,
-	})
+	}).Send()
 	if procMsg.Error != nil {
 		return procMsg.Error
 	}

@@ -17,7 +17,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Guild struct{}
+type Guild struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Guild)(nil)
@@ -167,7 +169,7 @@ func (c *Guild) Run(ctx ken.Context) (err error) {
 		WithFooter(fmt.Sprintf("issued by %s", ctx.User().String()), "", "").
 		Build()
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }
 
 func (c *Guild) wrapBool(b bool) string {

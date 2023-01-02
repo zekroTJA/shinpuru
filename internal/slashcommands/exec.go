@@ -21,7 +21,9 @@ const (
 	apiKeyLen = 64
 )
 
-type Exec struct{}
+type Exec struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Exec)(nil)
@@ -107,7 +109,7 @@ func (c *Exec) Run(ctx ken.Context) (err error) {
 		return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: "Code execution is supplied by [ranna](https://github.com/ranna-go) in this instance, so " +
 				"nothing is required to be set up. :wink:",
-		}).Error
+		}).Send().Error
 	}
 
 	err = ctx.HandleSubCommands(
@@ -134,7 +136,7 @@ func (c *Exec) setup(ctx ken.SubCommandContext) (err error) {
 		if strings.Contains(err.Error(), "Cannot send messages to this user") {
 			err = ctx.FollowUpError("In order to setup [jsdoodle's](https://www.jdoodle.com) API, we need to get your jsdoodle API client ID and secret. "+
 				"Because of security, we don't want that you send your credentials into a guilds chat, that would be done via DM.\n"+
-				"So, please enable DM's for this guild to proceed.", "").Error
+				"So, please enable DM's for this guild to proceed.", "").Send().Error
 		}
 		return
 	}
@@ -142,7 +144,7 @@ func (c *Exec) setup(ctx ken.SubCommandContext) (err error) {
 	ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Because you need to enter credentials, the setup is done in DM. " +
 			"Please take a look into your DMs. 😉",
-	})
+	}).Send()
 
 	var removeHandler func()
 	var state int
@@ -229,7 +231,7 @@ func (c *Exec) reset(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "API key was deleted from database and system was disabled.",
-	}).Error
+	}).Send().Error
 }
 
 func (c *Exec) enable(ctx ken.SubCommandContext) (err error) {
@@ -248,7 +250,7 @@ func (c *Exec) enable(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Code execution has been **%s** on this guild.", stateStr),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Exec) check(ctx ken.SubCommandContext) (err error) {
@@ -256,7 +258,9 @@ func (c *Exec) check(ctx ken.SubCommandContext) (err error) {
 	key, err := db.GetGuildJdoodleKey(ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
 		return ctx.FollowUpError(
-			"Code execution is not set up on this guild. Use `exec setup` to set up code execution.", "").Error
+			"Code execution is not set up on this guild. Use `exec setup` to set up code execution.", "").
+			Send().
+			Error
 	}
 	if err != nil {
 		return err
@@ -276,5 +280,5 @@ func (c *Exec) check(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Today, you've spent **%d** tokens on this guild.", res.Used),
 		Title:       "JDoodle API Token Statistics",
-	}).Error
+	}).Send().Error
 }

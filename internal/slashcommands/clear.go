@@ -215,7 +215,7 @@ func (c *Clear) selected(ctx ken.SubCommandContext) (err error) {
 
 	return util.SendEmbedError(ctx.GetSession(), ctx.GetEvent().ChannelID,
 		"No message was either selected by you with the 🔻 emote nor was any with the ❌ emote.\n\n"+
-			"**Explaination:**\n"+
+			"**Explanation:**\n"+
 			"You can either select single messages to be deleted with the ❌ emote or select a message with the 🔻 emote "+
 			"and this message plus all messages sent after this message will be deleted after entering the `clear selected` command.").
 		DeleteAfter(12 * time.Second).Error()
@@ -240,7 +240,7 @@ func (c *Clear) delete(ctx ken.SubCommandContext, msglist []*discordgo.Message) 
 		Description: fmt.Sprintf("Deleted %d %s.", len(msgs)-1, util.Pluralize(len(msgs)-1, "message")),
 		Title:       "",
 		Color:       static.ColorEmbedUpdated,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Clear) iterMsgsWithReactionFromUser(

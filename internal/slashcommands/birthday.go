@@ -144,7 +144,7 @@ func (c *Birthday) setChannel(ctx ken.SubCommandContext) (err error) {
 		Description: fmt.Sprintf(
 			"Birthday channel has been set to <#%s>.",
 			ch.ID),
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -166,7 +166,7 @@ func (c *Birthday) unsetChannel(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Birthday channel has been reset.",
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -184,11 +184,13 @@ func (c *Birthday) set(ctx ken.SubCommandContext) (err error) {
 				"The expected date format is `YYYY-MM-DD` or `MM-DD`. "+
 				"You can also use `/` or `.` as delimiters.\n\n"+
 				"You might also want to attach a timezone offset in the "+
-				"format of `[+-]TZ` (in hours offset of UTC).", "").Error
+				"format of `[+-]TZ` (in hours offset of UTC).", "").
+			Send().
+			Error
 	}
 	date, err := parseDate(matches[0], showYear)
 	if err == errYear {
-		err = ctx.FollowUpError(err.Error(), "").Error
+		err = ctx.FollowUpError(err.Error(), "").Send().Error
 		return
 	}
 	if err != nil {
@@ -208,7 +210,7 @@ func (c *Birthday) set(ctx ken.SubCommandContext) (err error) {
 	emb := &discordgo.MessageEmbed{
 		Description: "Your birthday has successfully been registered.",
 	}
-	err = ctx.FollowUpEmbed(emb).Error
+	err = ctx.FollowUpEmbed(emb).Send().Error
 
 	return
 }

@@ -205,7 +205,7 @@ if __name__ == "__main__":
         data += f'| {medal(i)} [{k}](https://github.com/{k}) | {", ".join(issues)} | {", ".join(prs)} | `{points}` |\n'
         i += 1
 
-    data += f'\n\n---\n*For explaination: A contributor gets `{POINTS_FOR_ISSUE}` point(s) for each ' \
+    data += f'\n\n---\n*For explanation: A contributor gets `{POINTS_FOR_ISSUE}` point(s) for each ' \
         f'created issue and `{POINTS_FOR_PR}` point(s) for each **merged** pull request.'
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:

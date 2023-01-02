@@ -3,16 +3,29 @@
 <!-- > **Attention**  
 > This is a hotfix patch. If you want to see the changelog for release 1.30.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.30.0). -->
 
+# Changes
+
+Most of the slash commands are now empehmeral. That means, that only you will see the response and call of the command in the chat.
+
+<img width="414" alt="image" src="https://user-images.githubusercontent.com/16734205/210225426-0c6ed18e-ba79-46b9-941a-78302687b09b.png">
+
+Therefore, also the `/login` command has been updated so that the response is directly sent to the chat. That is possible because only the sender can see the response. That makes the command available also to people who have disabled DMs from guild members.
+
+<img width="635" alt="image" src="https://user-images.githubusercontent.com/16734205/210226175-c36d7aae-726f-46f4-8680-983700eae5dd.png">
+
+
 # Bug Fixes
 
-- Fixed the endlessly loading account verification captcha. [#392]
-- Fixed a crash when shinpuru has no access on the guild audit log after detecting a ban (postban system).
-- Fixed a crash when shinpuru has no access on the guild mod log channel after detecting a ban (postban system).
-- Fixed a bug that not postban message is sent when no reason is specified to the ban.
+- Fixed a bug where the guild API token is reset when saving the guild API settings without a new token.
+- Fixed misrepresentation of absolute sub command permissions in the `permissions/allowed` endpoint. [#398]
+- Fixed some typos (and added some more).
 
 # Beta Web Interface
 
-- Guild Settings: Guild Log implemented
+- Added verification route.
+- Guild Settings: Added guild data removal route.
+- Guild Settings: Added guild API route.
+- Added some more (english) explanation texts.
 
 # Docker
 

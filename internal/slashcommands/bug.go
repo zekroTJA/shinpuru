@@ -7,7 +7,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Bug struct{}
+type Bug struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Bug)(nil)

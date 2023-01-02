@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as DiscordIcon } from '../assets/dc-logo-blurple.svg';
 import { Button } from '../components/Button';
@@ -9,7 +10,7 @@ import { Embed } from '../components/Embed';
 import { Hider } from '../components/Hider';
 import { LinearGradient } from '../components/styleParts';
 import { useApi } from '../hooks/useApi';
-import { LOGIN_ROUTE } from '../services/api';
+import { loginRoute } from '../services/api';
 import { getCryptoRandomString } from '../util/crypto';
 
 type Props = {};
@@ -94,17 +95,20 @@ const LoginRoute: React.FC<Props> = () => {
   const [pushCode, setPushCode] = useState('');
   const fetch = useApi();
   const nav = useNavigate();
+  const [params, _] = useSearchParams();
 
   useEffect(() => {
     _pushCodeLoop();
   }, []);
+
+  const redirect = params.get('redirect');
 
   const _generatePushCode = async () => {
     const code = getCryptoRandomString(16);
     setPushCode(code);
     try {
       await fetch((c) => c.auth.pushCode(code), true);
-      nav('/db');
+      nav('/' + redirect ?? 'db');
       return false;
     } catch {}
     return true;
@@ -114,11 +118,14 @@ const LoginRoute: React.FC<Props> = () => {
     while (await _generatePushCode());
   };
 
+  // TODO: remove beta redirect when going live
+  const _loginRoute = loginRoute(!!redirect ? `/beta/${redirect}/` : '/beta/');
+
   return (
     <OuterContainer>
       <TileDiscord>
         <p>{t('discord.title')}</p>
-        <a href={LOGIN_ROUTE}>
+        <a href={_loginRoute}>
           <DiscordButton>
             <DiscordIcon />
             {t('discord.action')}

@@ -73,10 +73,6 @@ func (c *Notify) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Notify) Run(ctx ken.Context) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
 	err = ctx.HandleSubCommands(
 		ken.SubCommandHandler{"toggle", c.toggle},
 		ken.SubCommandHandler{"setup", c.setup},
@@ -89,10 +85,15 @@ func (c *Notify) toggle(ctx ken.SubCommandContext) (err error) {
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
+	ctx.SetEphemeral(true)
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) || notifyRoleID == "" {
 		return ctx.FollowUpError(
-			"No notify role  was set up for this guild.", "").Error
+			"No notify role  was set up for this guild.", "").Send().Error
 	}
 	if err != nil {
 		return err
@@ -112,7 +113,7 @@ func (c *Notify) toggle(ctx ken.SubCommandContext) (err error) {
 	if !roleExists {
 		return ctx.FollowUpError(
 			"The set notify role does not exist on this guild anymore. Please notify a "+
-				"moderator aor admin about this to fix this. ;)", "").Error
+				"moderator aor admin about this to fix this. ;)", "").Send().Error
 	}
 
 	member, err := st.Member(ctx.GetEvent().GuildID, ctx.User().ID)
@@ -136,13 +137,17 @@ func (c *Notify) toggle(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: msgStr,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
+
+	if err = ctx.Defer(); err != nil {
+		return
+	}
 
 	ok, err := pmw.CheckSubPerm(ctx, "setup", true)
 	if err != nil {
@@ -151,7 +156,7 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	if !ok {
 		return ctx.FollowUpError(
 			"Sorry, but you do'nt have the permission to setup the notify role.", "").
-			Error
+			Send().Error
 	}
 
 	roles, err := st.Roles(ctx.GetEvent().GuildID)
@@ -191,7 +196,7 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 				}
 				return cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID),
-				}).Error
+				}).Send().Error
 			},
 			DeclineFunc: func(cctx ken.ComponentContext) (err error) {
 				return cctx.RespondEmbed(&discordgo.MessageEmbed{
@@ -213,7 +218,7 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	}
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Updated notify role to <@&%s>."+notifiableStr, role.ID),
-	}).Error
+	}).Send().Error
 	return
 }
 

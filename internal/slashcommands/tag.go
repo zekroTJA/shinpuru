@@ -135,13 +135,13 @@ func (c *Tag) show(ctx ken.SubCommandContext) (err error) {
 
 	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
-		return ctx.FollowUpError("Tag could not be found.", "").Error
+		return ctx.FollowUpError("Tag could not be found.", "").Send().Error
 	}
 	if err != nil {
 		return
 	}
 
-	return ctx.FollowUpEmbed(tg.AsEmbed(st)).Error
+	return ctx.FollowUpEmbed(tg.AsEmbed(st)).Send().Error
 }
 
 func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
@@ -161,7 +161,7 @@ func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Title:       "Registered Tags",
 		Description: strings.Join(tagsStr, "\n"),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Tag) set(ctx ken.SubCommandContext) (err error) {
@@ -213,7 +213,7 @@ func (c *Tag) set(ctx ken.SubCommandContext) (err error) {
 					Description: fmt.Sprintf(
 						"Tag has been updated.\nUse the command `/tag show %s` to use the tag.",
 						tg.Ident),
-				}).Error
+				}).Send().Error
 			}).
 			AsFollowUp(ctx)
 		return
@@ -260,7 +260,7 @@ func (c *Tag) delete(ctx ken.SubCommandContext) (err error) {
 
 	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
 	if database.IsErrDatabaseNotFound(err) {
-		return ctx.FollowUpError("Tag could not be found.", "").Error
+		return ctx.FollowUpError("Tag could not be found.", "").Send().Error
 	}
 	if err != nil {
 		return

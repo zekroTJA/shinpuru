@@ -21,7 +21,9 @@ const (
 	snowflakeTypeShinpuru
 )
 
-type Snowflake struct{}
+type Snowflake struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Snowflake)(nil)
@@ -116,7 +118,7 @@ func (c *Snowflake) Run(ctx ken.Context) (err error) {
 		emb = c.embSfSp(sfId)
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }
 
 func (c *Snowflake) embSfDc(sf *snowflakenodes.DiscordSnowflake) *discordgo.MessageEmbed {

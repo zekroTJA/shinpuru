@@ -16,6 +16,7 @@ const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Gui
 const MemberRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Member'));
 const GuildModlogRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildModlog'));
 const UnbanmeRoute = React.lazy(() => import('./routes/Unbanme'));
+const VerifyRoute = React.lazy(() => import('./routes/Verify'));
 const GuildGeneralRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/General'));
 const GuildBackupsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Backup'));
 const GuildAntiraidRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Antiraid'));
@@ -25,6 +26,8 @@ const GuildVerificationRoute = React.lazy(
 );
 const GuildKarmaRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Karma'));
 const GuildLogsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Logs'));
+const GuildDataRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Data'));
+const GuildAPIRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/API'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -68,6 +71,14 @@ export const App: React.FC = () => {
               element={
                 <RouteSuspense>
                   <UnbanmeRoute />
+                </RouteSuspense>
+              }
+            />
+            <Route
+              path="verify"
+              element={
+                <RouteSuspense>
+                  <VerifyRoute />
                 </RouteSuspense>
               }
             />
@@ -150,6 +161,22 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildLogsRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/data"
+                element={
+                  <RouteSuspense>
+                    <GuildDataRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/api"
+                element={
+                  <RouteSuspense>
+                    <GuildAPIRoute />
                   </RouteSuspense>
                 }
               />

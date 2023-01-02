@@ -160,13 +160,13 @@ func (c *Vote) create(ctx ken.SubCommandContext) (err error) {
 	if len(split) < 2 || len(split) > 10 {
 		return ctx.FollowUpError(
 			"Invalid arguments. Please use `help vote` go get help about how to use this command.", "").
-			Error
+			Send().Error
 	}
 	for i, e := range split {
 		if len(e) < 1 {
 			return ctx.FollowUpError(
 				"Possibilities can not be empty.", "").
-				Error
+				Send().Error
 		}
 		split[i] = strings.Trim(e, " \t")
 	}
@@ -183,7 +183,7 @@ func (c *Vote) create(ctx ken.SubCommandContext) (err error) {
 			return ctx.FollowUpError(
 				"Invalid duration format. Please take a look "+
 					"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.", "").
-				Error
+				Send().Error
 		}
 		expires = tp.Now().Add(expiresDuration)
 	}
@@ -218,12 +218,12 @@ func (c *Vote) create(ctx ken.SubCommandContext) (err error) {
 		msgLink := discordutil.GetMessageLink(msg, ctx.GetEvent().GuildID)
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: fmt.Sprintf("[Vote](%s) created in channel <#%s>.", msgLink, ch.ID),
-		}).Error
+		}).Send().Error
 		if err != nil {
 			return
 		}
 	} else {
-		fum := ctx.FollowUpEmbed(emb)
+		fum := ctx.FollowUpEmbed(emb).Send()
 		err = fum.Error
 		if err != nil {
 			return
@@ -260,7 +260,7 @@ func (c *Vote) list(ctx ken.SubCommandContext) (err error) {
 	if len(emb.Fields) == 0 {
 		emb.Description = "You don't have any open votes on this guild."
 	}
-	err = ctx.FollowUpEmbed(emb).Error
+	err = ctx.FollowUpEmbed(emb).Send().Error
 	return err
 }
 
@@ -272,7 +272,7 @@ func (c *Vote) expire(ctx ken.SubCommandContext) (err error) {
 		return ctx.FollowUpError(
 			"Invalid duration format. Please take a look "+
 				"[here](https://golang.org/pkg/time/#ParseDuration) how to format duration parameter.", "").
-			Error
+			Send().Error
 	}
 
 	id := ctx.Options().Get(0).StringValue()
@@ -292,7 +292,7 @@ func (c *Vote) expire(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: fmt.Sprintf("Vote will expire at %s.", ivote.Expires.Format("01/02 15:04 MST")),
-	}).Error
+	}).Send().Error
 }
 
 func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
@@ -319,7 +319,7 @@ func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
 		}
 		return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: fmt.Sprintf("Closed %d votes.", i),
-		}).Error
+		}).Send().Error
 	}
 
 	var ivote *vote.Vote
@@ -335,7 +335,7 @@ func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
 	if ivote.CreatorID != ctx.User().ID && !ok && !override {
 		return ctx.FollowUpError(
 			"You do not have the permission to close another ones votes.", "").
-			Error
+			Send().Error
 	}
 
 	err = db.DeleteVote(ivote.ID)
@@ -349,6 +349,6 @@ func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Vote closed.",
-	}).Error
+	}).Send().Error
 	return
 }

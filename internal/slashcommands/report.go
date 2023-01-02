@@ -17,7 +17,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Report struct{}
+type Report struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Report)(nil)
@@ -199,7 +201,7 @@ func (c *Report) revoke(ctx ken.SubCommandContext) (err error) {
 		if database.IsErrDatabaseNotFound(err) {
 			return ctx.FollowUpError(
 				fmt.Sprintf("Could not find any report with ID `%d`", id), "").
-				Error
+				Send().Error
 		}
 		return err
 	}
@@ -242,7 +244,7 @@ func (c *Report) revoke(ctx ken.SubCommandContext) (err error) {
 				return
 			}
 
-			return cctx.FollowUpEmbed(emb).Error
+			return cctx.FollowUpEmbed(emb).Send().Error
 		},
 	}
 
@@ -283,6 +285,6 @@ func (c *Report) list(ctx ken.SubCommandContext) (err error) {
 			emb.Fields = append(emb.Fields, r.AsEmbedField(cfg.Config().WebServer.PublicAddr))
 		}
 	}
-	err = ctx.FollowUpEmbed(emb).Error
+	err = ctx.FollowUpEmbed(emb).Send().Error
 	return
 }

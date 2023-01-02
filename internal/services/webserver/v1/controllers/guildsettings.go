@@ -1030,25 +1030,32 @@ func (c *GuildsSettingsController) getGuildSettingsAPI(ctx *fiber.Ctx) error {
 func (c *GuildsSettingsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err error) {
 	guildID := ctx.Params("guildid")
 
-	state := new(models.GuildAPISettingsRequest)
-	if err = ctx.BodyParser(state); err != nil {
+	state, err := c.db.GetGuildAPI(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	newState := new(models.GuildAPISettingsRequest)
+	if err = ctx.BodyParser(newState); err != nil {
 		return
 	}
 
-	if state.ResetToken {
-		state.TokenHash = ""
-	} else if state.NewToken != "" {
+	newState.TokenHash = state.TokenHash
+
+	if newState.ResetToken {
+		newState.TokenHash = ""
+	} else if newState.NewToken != "" {
 		hasher := hashutil.Hasher{HashFunc: crypto.SHA512, SaltSize: 128}
-		state.TokenHash, err = hasher.Hash(state.NewToken)
+		newState.TokenHash, err = hasher.Hash(newState.NewToken)
 	}
 
-	if err = c.db.SetGuildAPI(guildID, state.GuildAPISettings); err != nil {
+	if err = c.db.SetGuildAPI(guildID, newState.GuildAPISettings); err != nil {
 		return
 	}
 
-	state.Hydrate()
-	state.TokenHash = ""
-	return ctx.JSON(state.GuildAPISettings)
+	newState.Hydrate()
+	newState.TokenHash = ""
+	return ctx.JSON(newState.GuildAPISettings)
 }
 
 // @Summary Get Guild Settings Verification State

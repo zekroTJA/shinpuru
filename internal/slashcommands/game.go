@@ -9,7 +9,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Presence struct{}
+type Presence struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Presence)(nil)
@@ -21,7 +23,7 @@ func (c *Presence) Name() string {
 }
 
 func (c *Presence) Description() string {
-	return "Get information how to submit a bug report or feature request."
+	return "Set the 'now playing' state of the bot."
 }
 
 func (c *Presence) Version() string {
@@ -90,7 +92,7 @@ func (c *Presence) Run(ctx ken.Context) (err error) {
 	}
 
 	if err = pre.Validate(); err != nil {
-		return ctx.FollowUpError(err.Error(), "").Error
+		return ctx.FollowUpError(err.Error(), "").Send().Error
 	}
 
 	err = ctx.GetSession().UpdateStatusComplex(pre.ToUpdateStatusData())
@@ -105,5 +107,5 @@ func (c *Presence) Run(ctx ken.Context) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Presence updated.",
-	}).Error
+	}).Send().Error
 }

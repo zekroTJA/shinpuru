@@ -19,7 +19,9 @@ import (
 //go:embed embed/cmd_info.md
 var infoMsg string
 
-type Info struct{}
+type Info struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Info)(nil)
@@ -131,5 +133,5 @@ func (c *Info) Run(ctx ken.Context) (err error) {
 		},
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

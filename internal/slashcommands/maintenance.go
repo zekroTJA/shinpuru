@@ -14,7 +14,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Maintenance struct{}
+type Maintenance struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Maintenance)(nil)
@@ -152,7 +154,7 @@ func (c *Maintenance) flushState(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "✅ State cache flushed.",
 		Color:       static.ColorEmbedGreen,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Maintenance) kill(ctx ken.SubCommandContext) (err error) {
@@ -165,7 +167,7 @@ func (c *Maintenance) kill(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "👋 Bye.",
 		Color:       static.ColorEmbedOrange,
-	}).Error
+	}).Send().Error
 	if err != nil {
 		return
 	}
@@ -185,7 +187,7 @@ func (c *Maintenance) reconnect(ctx ken.SubCommandContext) (err error) {
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "✅ Successfully reconnected.",
 		Color:       static.ColorEmbedGreen,
-	}).Error
+	}).Send().Error
 }
 
 func (c *Maintenance) reloadConfig(ctx ken.SubCommandContext) (err error) {
@@ -197,7 +199,7 @@ func (c *Maintenance) reloadConfig(ctx ken.SubCommandContext) (err error) {
 
 	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Config has been reloaded.\n\nSome config changes will only take effect after a restart!",
-	}).Error
+	}).Send().Error
 }
 
 func (c *Maintenance) setConfigValue(ctx ken.SubCommandContext) (err error) {
@@ -221,5 +223,5 @@ func (c *Maintenance) setConfigValue(ctx ken.SubCommandContext) (err error) {
 		Description: fmt.Sprintf("Config value `%s` has been updated to `%s`.\n\n"+
 			"Keep in mind that not all config value changes will be effective.",
 			field, jsonvalue),
-	}).Error
+	}).Send().Error
 }

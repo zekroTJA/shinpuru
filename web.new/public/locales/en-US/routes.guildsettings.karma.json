@@ -1,6 +1,6 @@
 {
   "heading": "Karma",
-  "explanation": "Lorem ipsum",
+  "explanation": "This system allows users to \"upvote\" and \"downvote\" messages using the defined reactions. Each vote effects the karma points of the user which autored the message.",
   "settings": "Settings",
   "enable": "Enable karma system",
   "save": "Save settings",

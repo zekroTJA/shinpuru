@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/rs/xid"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/ken"
 )
@@ -47,6 +48,7 @@ type AcceptMessage struct {
 	cErr      chan error
 	timeout   time.Duration
 	activated bool
+	unreg     func() error
 }
 
 // New creates an empty instance of AcceptMessage.
@@ -130,14 +132,12 @@ func (am *AcceptMessage) WithDeclineButton(btn discordgo.Button) *AcceptMessage 
 
 type senderFunc func(emb *discordgo.MessageEmbed) (*discordgo.Message, error)
 
-// Send pushes the accept message into the specified
-// channel and sets up listener handlers for reactions.
-func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
+func (am *AcceptMessage) attachComponents(cb *ken.ComponentBuilder) error {
 	if am.Ken == nil {
-		return nil, errors.New("ken is not defined")
+		return errors.New("ken is not defined")
 	}
 	if am.Embed == nil {
-		return nil, errors.New("embed not defined")
+		return errors.New("embed not defined")
 	}
 
 	if am.timeout <= 0 {
@@ -164,12 +164,6 @@ func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
 	}
 
 	am.cErr = make(chan error, 1)
-
-	msg, err := sender(am.Embed)
-	if err != nil {
-		return nil, err
-	}
-	am.Message = msg
 
 	wrapHandler := func(h ActionHandler) func(ctx ken.ComponentContext) bool {
 		return func(ctx ken.ComponentContext) bool {
@@ -202,19 +196,14 @@ func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
 		}
 	}
 
-	am.AcceptButton.CustomID = msg.ID + "-" + "accept"
-	am.DeclineButton.CustomID = msg.ID + "-" + "decline"
+	id := xid.New().String()
+	am.AcceptButton.CustomID = id + "-" + "accept"
+	am.DeclineButton.CustomID = id + "-" + "decline"
 
-	unreg, err := am.Ken.Components().Add(msg.ID, msg.ChannelID).
-		AddActionsRow(func(b ken.ComponentAssembler) {
-			b.Add(*am.AcceptButton, wrapHandler(am.AcceptFunc))
-			b.Add(*am.DeclineButton, wrapHandler(am.DeclineFunc))
-		}, true).
-		Build()
-
-	if err != nil {
-		return nil, err
-	}
+	cb.AddActionsRow(func(b ken.ComponentAssembler) {
+		b.Add(*am.AcceptButton, wrapHandler(am.AcceptFunc))
+		b.Add(*am.DeclineButton, wrapHandler(am.DeclineFunc))
+	}, true)
 
 	go func() {
 		time.Sleep(am.timeout)
@@ -226,26 +215,46 @@ func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
 			return
 		}
 		am.cErr <- ErrTimeout
-		unreg()
+		if am.unreg != nil {
+			am.unreg()
+		}
 	}()
 
-	return am, nil
+	return nil
 }
 
 // Send pushes the accept message into the specified
 // channel and sets up listener handlers for reactions.
 func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
-	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
-		return am.Ken.Session().ChannelMessageSendEmbed(chanID, am.Embed)
-	})
+	msg, err := am.Ken.Session().ChannelMessageSendEmbed(chanID, am.Embed)
+	if err != nil {
+		return nil, err
+	}
+
+	cb := am.Ken.Components().Add(msg.ID, msg.ChannelID)
+	am.attachComponents(cb)
+	unreg, err := cb.Build()
+	if err != nil {
+		return nil, err
+	}
+
+	am.Message = msg
+	am.unreg = unreg
+	return am, nil
 }
 
 // AsFollowUp pushes the accept messages as follow up
 // message to the command context and sets up listener
 // handlers for reactions.
 func (am *AcceptMessage) AsFollowUp(ctx ken.Context) (*AcceptMessage, error) {
-	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
-		fum := ctx.FollowUpEmbed(am.Embed)
-		return fum.Message, fum.Error
-	})
+	fum := ctx.FollowUpEmbed(am.Embed).AddComponents(func(cb *ken.ComponentBuilder) {
+		am.attachComponents(cb)
+	}).Send()
+	if fum.HasError() {
+		return nil, fum.Error
+	}
+
+	am.unreg = fum.UnregisterComponentHandlers
+	am.Message = fum.Message
+	return am, nil
 }

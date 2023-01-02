@@ -14,7 +14,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Stats struct{}
+type Stats struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Stats)(nil)
@@ -106,5 +108,5 @@ func (c *Stats) Run(ctx ken.Context) (err error) {
 		},
 	}
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

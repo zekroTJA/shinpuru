@@ -12,7 +12,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Autovc struct{}
+type Autovc struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Autovc)(nil)
@@ -112,7 +114,7 @@ func (c *Autovc) show(ctx ken.SubCommandContext) (err error) {
 	if len(autovcs) == 0 {
 		err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 			Description: "Currently, no auto voicechannels are defined.",
-		}).Error
+		}).Send().Error
 		return
 	}
 
@@ -123,7 +125,7 @@ func (c *Autovc) show(ctx ken.SubCommandContext) (err error) {
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Description: "Currently, following channels are set as auto voicechannels:\n" + res.String(),
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -140,7 +142,7 @@ func (c *Autovc) add(ctx ken.SubCommandContext) (err error) {
 	}
 
 	if stringutil.ContainsAny(vc.ID, autovcs) {
-		err = ctx.FollowUpError("The given voicechannel is already assigned.", "").Error
+		err = ctx.FollowUpError("The given voicechannel is already assigned.", "").Send().Error
 		return
 	}
 
@@ -151,7 +153,7 @@ func (c *Autovc) add(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "Voicechannel was successfully assigned as auto voicechannel.",
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -168,7 +170,7 @@ func (c *Autovc) remove(ctx ken.SubCommandContext) (err error) {
 	}
 
 	if !stringutil.ContainsAny(vc.ID, autovcs) {
-		err = ctx.FollowUpError("The given voicechannel is not assigned as auto voicechannel.", "").Error
+		err = ctx.FollowUpError("The given voicechannel is not assigned as auto voicechannel.", "").Send().Error
 		return
 	}
 
@@ -180,7 +182,7 @@ func (c *Autovc) remove(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "Channel was successfully removed as autochannel.",
-	}).Error
+	}).Send().Error
 
 	return
 }
@@ -195,7 +197,7 @@ func (c *Autovc) purge(ctx ken.SubCommandContext) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
 		Color:       static.ColorEmbedGreen,
 		Description: "All auto voicechannels were successfully removed.",
-	}).Error
+	}).Send().Error
 
 	return
 }

@@ -215,7 +215,7 @@ const AntiraidRoute: React.FC<Props> = ({}) => {
 
       <InputContainer>
         <label>{t('regeneration.label')}</label>
-        <Small>{t('regeneration.explaination')}</Small>
+        <Small>{t('regeneration.explanation')}</Small>
         {(settings.regeneration_period !== undefined && (
           <Input
             type="number"
@@ -228,7 +228,7 @@ const AntiraidRoute: React.FC<Props> = ({}) => {
 
       <InputContainer>
         <label>{t('burst.label')}</label>
-        <Small>{t('burst.explaination')}</Small>
+        <Small>{t('burst.explanation')}</Small>
         {(settings.burst !== undefined && (
           <Input
             type="number"
@@ -241,7 +241,7 @@ const AntiraidRoute: React.FC<Props> = ({}) => {
 
       <InputContainer>
         <label>{t('verification.label')}</label>
-        <Small>{t('verification.explaination')}</Small>
+        <Small>{t('verification.explanation')}</Small>
         {(settings.verification !== undefined && (
           <Switch
             enabled={settings.verification}

@@ -204,7 +204,7 @@ func (am *AcceptMessage) Send(chanID string) (*AcceptMessage, error) {
 // handlers for reactions.
 func (am *AcceptMessage) AsFollowUp(ctx ken.Context) (*AcceptMessage, error) {
 	return am.send(func(emb *discordgo.MessageEmbed) (*discordgo.Message, error) {
-		fum := ctx.FollowUpEmbed(am.Embed)
+		fum := ctx.FollowUpEmbed(am.Embed).Send()
 		return fum.Message, fum.Error
 	})
 }

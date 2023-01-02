@@ -10,7 +10,9 @@ import (
 	"github.com/zekrotja/ken"
 )
 
-type Id struct{}
+type Id struct {
+	ken.EphemeralCommand
+}
 
 var (
 	_ ken.SlashCommand        = (*Id)(nil)
@@ -84,6 +86,7 @@ func (c *Id) Run(ctx ken.Context) (err error) {
 	if user == nil && role == nil && textChannel == nil && voiceChannel == nil {
 		return ctx.FollowUpError(
 			"Could not fetch any member, role or channel by this resolvable.", "").
+			Send().
 			Error
 	}
 
@@ -121,5 +124,5 @@ func (c *Id) Run(ctx ken.Context) (err error) {
 		Value: fmt.Sprintf("```\n%s\n```", ctx.GetEvent().GuildID),
 	})
 
-	return ctx.FollowUpEmbed(emb).Error
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

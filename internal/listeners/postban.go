@@ -138,7 +138,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 
 				ctxModal.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "The report has been created.",
-				}).DeleteAfter(8 * time.Second)
+				}).Send().DeleteAfter(8 * time.Second)
 				s.ChannelMessageDelete(msg.ChannelID, msg.ID)
 
 				return true
