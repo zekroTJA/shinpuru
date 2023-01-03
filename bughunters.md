@@ -44,4 +44,4 @@ In total, **35** different wonderful people contributed a sum of **82** issues a
 
 
 ---
-*For explaination: A contributor gets `1` point(s) for each created issue and `3` point(s) for each **merged** pull request.
+*For explanation: A contributor gets `1` point(s) for each created issue and `3` point(s) for each **merged** pull request.
