@@ -9,6 +9,8 @@ type Props = {
   value: string;
   setValue: (v: string) => void;
   selections: string[];
+  placeholder?: string;
+  isInvalid?: boolean;
 };
 
 const SelectableEntry = styled.span<{ selected: boolean }>`
@@ -49,6 +51,14 @@ const InputContainer = styled.div`
   position: relative;
 `;
 
+const StyledInput = styled(Input)<{ isInvalid: boolean }>`
+  ${(p) =>
+    p.isInvalid &&
+    css`
+      color: ${p.theme.red};
+    `}
+`;
+
 type State = {
   selectables: string[];
   showSelectables: boolean;
@@ -81,7 +91,13 @@ const stateReducer = (
   }
 };
 
-export const AutocompleteInput: React.FC<Props> = ({ value, setValue, selections }) => {
+export const AutocompleteInput: React.FC<Props> = ({
+  value,
+  setValue,
+  selections,
+  placeholder,
+  isInvalid,
+}) => {
   const [state, dispatchState] = useReducer(stateReducer, {
     selectables: [],
     showSelectables: false,
@@ -129,6 +145,7 @@ export const AutocompleteInput: React.FC<Props> = ({ value, setValue, selections
         break;
       case 'Enter':
         setValue(state.selectables[state.selected]);
+        dispatchState(['set_showSelectables', false]);
         break;
       case 'Escape':
         dispatchState(['set_showSelectables', false]);
@@ -140,12 +157,14 @@ export const AutocompleteInput: React.FC<Props> = ({ value, setValue, selections
 
   return (
     <InputContainer>
-      <Input
+      <StyledInput
+        isInvalid={isInvalid ?? false}
         value={value}
         onInput={(e) => setValue(e.currentTarget.value)}
         onFocus={onInputFocus}
         onBlur={onInputBlur}
         onKeyUp={onInputKeyUp}
+        placeholder={placeholder}
       />
       <SelectableContainer showSelectables={state.showSelectables}>
         {state.selectables.map((s, i) => (

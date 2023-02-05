@@ -143,6 +143,7 @@
     "apply": "Apply rule"
   },
   "permissionselector": {
-    "apply": "Apply"
+    "apply": "Apply",
+    "placeholder": "sp.guild.mod.*"
   }
 }

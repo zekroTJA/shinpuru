@@ -33,7 +33,12 @@ const PermissionsRoute: React.FC<Props> = ({}) => {
     // TODO: Maybe add new route to get all available permissions
     //       instead of depending on allowed permissions for current user.
     fetch((c) => c.guilds.member(guild.id, me.id).permissionsAllowed())
-      .then((r) => setAllowed(r.data))
+      .then((r) => {
+        const rules = r.data.filter(
+          (p) => p.startsWith('sp.guild.') || p.startsWith('sp.etc.') || p.startsWith('sp.chat.'),
+        );
+        setAllowed(rules);
+      })
       .catch();
   }, [guild, me]);
 
@@ -42,12 +47,7 @@ const PermissionsRoute: React.FC<Props> = ({}) => {
       <h1>{t('heading')}</h1>
       <Small>{t('explanation')}</Small>
       {guild && perms && allowed && (
-        <PermissionSelector
-          roles={guild.roles ?? []}
-          available={allowed}
-          perms={perms}
-          setPerms={setPerms}
-        />
+        <PermissionSelector guild={guild} available={allowed} perms={perms} setPerms={setPerms} />
       )}
     </MaxWidthContainer>
   );

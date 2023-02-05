@@ -465,6 +465,6 @@ export interface ErrorReponse extends CodeResponse {
   error: string;
 }
 
-export type PermissionsMap = Map<string, string[]>;
+export type PermissionsMap = { [key: string]: string[] };
 
 export type StarboardSortOrder = 'latest' | 'top';
