@@ -13,7 +13,7 @@ const RouteContainer = styled.div`
 `;
 
 const RouterOutlet = styled.main`
-  padding: 1em 1em 1em 0em;
+  padding: 1em;
   width: 100%;
   height: 100%;
   overflow-y: auto;

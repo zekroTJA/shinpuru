@@ -103,7 +103,7 @@ const StyledNav = styled.nav`
   display: flex;
   flex-direction: column;
   background-color: ${(p) => p.theme.background2};
-  margin: 1rem;
+  margin: 1rem 0 1rem 1rem;
   padding: 1rem;
   border-radius: 12px;
   width: 30vw;
