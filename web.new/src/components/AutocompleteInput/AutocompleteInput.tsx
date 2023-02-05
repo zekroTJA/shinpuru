@@ -46,6 +46,7 @@ const InputContainer = styled.div`
   > ${Input} {
     width: 100%;
   }
+  position: relative;
 `;
 
 type State = {

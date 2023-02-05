@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components';
 import { ReactComponent as DisallowIcon } from '../../assets/ban.svg';
 import { ReactComponent as AllowIcon } from '../../assets/check.svg';
 import { PermissionsMap, Role } from '../../lib/shinpuru-ts/src';
+import { AutocompleteInput } from '../AutocompleteInput';
+import { Button } from '../Button';
 import { Flex } from '../Flex';
 import { Switch } from '../Switch';
-import { AutocompleteInput } from './AutocompleteInput';
 
 type Props = {
   perms: PermissionsMap;
@@ -21,10 +23,15 @@ const StyledSwitch = styled(Switch)`
   }
 `;
 
+const StyledButton = styled(Button)`
+  padding: 0 0.8em;
+`;
+
 export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available }) => {
+  const theme = useTheme();
+  const { t } = useTranslation('components', { keyPrefix: 'permissionselector' });
   const [permission, setPermission] = useState('');
   const [allow, setAllow] = useState(false);
-  const theme = useTheme();
 
   return (
     <>
@@ -38,6 +45,7 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
           )}
         </StyledSwitch>
         <AutocompleteInput value={permission} setValue={setPermission} selections={available} />
+        <StyledButton>{t('apply')}</StyledButton>
       </Flex>
     </>
   );

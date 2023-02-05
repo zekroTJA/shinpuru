@@ -141,5 +141,8 @@
       "sendmessage": "send message"
     },
     "apply": "Apply rule"
+  },
+  "permissionselector": {
+    "apply": "Apply"
   }
 }
