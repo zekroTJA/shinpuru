@@ -12,6 +12,7 @@
       "guildsettings": {
         "title": "Guild Settings",
         "general": "General",
+        "permissions": "Permissions",
         "backup": "Backups",
         "antiraid": "Antiraid",
         "codeexec": "Code Execution",

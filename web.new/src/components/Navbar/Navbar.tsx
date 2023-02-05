@@ -9,6 +9,7 @@ import { ReactComponent as CodeIcon } from '../../assets/code.svg';
 import { ReactComponent as DataIcon } from '../../assets/data.svg';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
+import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
@@ -191,6 +192,12 @@ export const Navbar: React.FC<Props> = () => {
               <SettingsIcon />
               <span>{t('section.guildsettings.general')}</span>
             </StyledEntry>
+            {isAllowed('sp.guild.config.perms') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/permissions`}>
+                <PermissionsIcon />
+                <span>{t('section.guildsettings.permissions')}</span>
+              </StyledEntry>
+            )}
             {isAllowed('sp.guild.admin.backup') && (
               <StyledEntry path={`guilds/${selectedGuild?.id}/settings/backups`}>
                 <BackupIcon />
