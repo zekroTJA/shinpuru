@@ -144,6 +144,9 @@
   },
   "permissionselector": {
     "apply": "Apply",
-    "placeholder": "sp.guild.mod.*"
+    "placeholder": {
+      "roles": "Roles",
+      "perms": "sp.guild.mod.*"
+    }
   }
 }

@@ -83,7 +83,7 @@ const PermissionEntry = styled.div<{ isAdditive: boolean }>`
     cursor: pointer;
     padding: 0.75em 0.75em 0.75em calc(0.75em + 5px);
     border-radius: 0 8px 8px 0;
-    opacity: 0;
+    opacity: 0.2;
     position: relative;
     left: -10px;
     transition: all 0.2s ease;
@@ -149,7 +149,14 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
 
   return (
     <Flex direction="column" gap="1em">
-      {guild && <RoleInput guild={guild} selected={roles} onChange={setRoles} />}
+      {guild && (
+        <RoleInput
+          placeholder={t('placeholder.roles')}
+          guild={guild}
+          selected={roles}
+          onChange={setRoles}
+        />
+      )}
       <ControlContainer gap="1em">
         <StyledSwitch
           enabled={allow}
@@ -164,7 +171,7 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
           value={permission}
           setValue={setPermission}
           selections={available}
-          placeholder={t('placeholder')}
+          placeholder={t('placeholder.perms')}
         />
         <StyledButton
           disabled={roles.length === 0 || !permission || isInvalidPermission}
