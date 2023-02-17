@@ -1,15 +1,20 @@
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { uid } from 'react-uid';
-import styled, { useTheme } from 'styled-components';
-import { ReactComponent as DisallowIcon } from '../../assets/ban.svg';
-import { ReactComponent as AllowIcon } from '../../assets/check.svg';
 import { Guild, PermissionsMap, Role } from '../../lib/shinpuru-ts/src';
+import styled, { css, useTheme } from 'styled-components';
+import { useMemo, useState } from 'react';
+
+import { ReactComponent as AllowIcon } from '../../assets/check.svg';
 import { AutocompleteInput } from '../AutocompleteInput';
 import { Button } from '../Button';
+import Color from 'color';
+import { ReactComponent as DeleteIcon } from '../../assets/delete.svg';
+import { ReactComponent as DisallowIcon } from '../../assets/ban.svg';
 import { Flex } from '../Flex';
+import { LinearGradient } from '../styleParts';
 import { RoleInput } from '../RoleInput';
 import { Switch } from '../Switch';
+import { uid } from 'react-uid';
+import { useApi } from '../../hooks/useApi';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   perms: PermissionsMap;
@@ -17,6 +22,11 @@ type Props = {
   guild: Guild;
   available: string[];
 };
+
+const ControlContainer = styled(Flex)`
+  gap: 1em;
+  z-index: 5;
+`;
 
 const StyledSwitch = styled(Switch)`
   svg {
@@ -29,8 +39,65 @@ const StyledButton = styled(Button)`
   padding: 0 0.8em;
 `;
 
+const RoleContainer = styled.div<{ rColor: number }>`
+  padding: 1em;
+  border-radius: 12px;
+
+  ${(p) =>
+    css`
+      background: linear-gradient(
+        160deg,
+        ${Color(p.rColor).alpha(0.3).hexa()},
+        ${Color(p.rColor).alpha(0.05).hexa()}
+      );
+    `}
+
+  > h3 {
+    margin: 0 0 1em 0;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+`;
+
+const PermissionEntry = styled.div<{ isAdditive: boolean }>`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  > span {
+    padding: 0.5em;
+    width: fit-content;
+    border-radius: 8px;
+    z-index: 1;
+    ${(p) => LinearGradient(p.isAdditive ? p.theme.green : p.theme.red)}
+  }
+
+  > button {
+    border: none;
+    background-color: ${(p) => p.theme.background3};
+    color: ${(p) => p.theme.text};
+    cursor: pointer;
+    padding: 0.75em 0.75em 0.75em calc(0.75em + 5px);
+    border-radius: 0 8px 8px 0;
+    opacity: 0;
+    position: relative;
+    left: -10px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover > button {
+    opacity: 1;
+    left: -5px;
+  }
+`;
+
 export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available, guild }) => {
   const theme = useTheme();
+  const fetch = useApi();
   const { t } = useTranslation('components', { keyPrefix: 'permissionselector' });
   const [roles, setRoles] = useState<Role[]>([]);
   const [allow, setAllow] = useState(false);
@@ -52,10 +119,38 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
     [guild, perms],
   );
 
+  const applyRule = () => {
+    const sign = allow ? '+' : '-';
+
+    fetch((c) =>
+      c.guilds.applyPermission(guild.id, {
+        perm: sign + permission,
+        role_ids: roles.map((r) => r.id),
+      }),
+    )
+      .then(() => fetch((c) => c.guilds.permissions(guild.id)))
+      .then((r) => setPerms(r))
+      .catch();
+  };
+
+  const removeRule = (roleId: string, rule: string) => {
+    const sign = rule[0] === '+' ? '-' : '+';
+
+    fetch((c) =>
+      c.guilds.applyPermission(guild.id, {
+        perm: sign + rule.substring(1),
+        role_ids: [roleId],
+      }),
+    )
+      .then(() => fetch((c) => c.guilds.permissions(guild.id)))
+      .then((r) => setPerms(r))
+      .catch();
+  };
+
   return (
     <Flex direction="column" gap="1em">
       {guild && <RoleInput guild={guild} selected={roles} onChange={setRoles} />}
-      <Flex gap="1em">
+      <ControlContainer gap="1em">
         <StyledSwitch
           enabled={allow}
           onChange={setAllow}
@@ -71,17 +166,26 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
           selections={available}
           placeholder={t('placeholder')}
         />
-        <StyledButton disabled={roles.length === 0 || !permission || isInvalidPermission}>
+        <StyledButton
+          disabled={roles.length === 0 || !permission || isInvalidPermission}
+          onClick={applyRule}>
           {t('apply')}
         </StyledButton>
-      </Flex>
+      </ControlContainer>
       {permsKV.map(([role, perm]) => (
-        <div key={uid(role)}>
-          <span>{role.name}</span>
-          {perm.map((p) => (
-            <span>{p}</span>
-          ))}
-        </div>
+        <RoleContainer key={uid(role)} rColor={role.color}>
+          <h3>{role.name}</h3>
+          <div>
+            {perm.map((p) => (
+              <PermissionEntry key={uid(p)} isAdditive={p.startsWith('+')}>
+                <span>{p}</span>
+                <button onClick={() => removeRule(role.id, p)}>
+                  <DeleteIcon />
+                </button>
+              </PermissionEntry>
+            ))}
+          </div>
+        </RoleContainer>
       ))}
     </Flex>
   );

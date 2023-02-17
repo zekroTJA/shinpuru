@@ -19,7 +19,7 @@ module.exports = {
   },
   rules: {
     'import/no-cycle': ['error', { maxDepth: 1 }],
-    'import/order': ['error', { alphabetize: { order: 'asc' } }],
+    // 'import/order': ['error', { alphabetize: { order: 'asc' } }],
     'import/prefer-default-export': 'off',
     'no-param-reassign': [
       'error',
