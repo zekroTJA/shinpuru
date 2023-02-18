@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import styled from 'styled-components';
-import { useApi } from '../../hooks/useApi';
-import { useNotifications } from '../../hooks/useNotifications';
 import { Member, Report, ReportRequest, ReportType } from '../../lib/shinpuru-ts/src';
-import { parseToDateString } from '../../util/date';
-import { readToBase64 } from '../../util/files';
+import { ModalContainer, ModalTextArea } from './modalParts';
+import { Trans, useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+
 import { Button } from '../Button';
+import { ControlProps } from '../Modal/Modal';
 import { DurationPicker } from '../DurationPicker';
 import { Filedrop } from '../Filedrop';
 import { Heading } from '../Heading';
 import { Modal } from '../Modal';
-import { ControlProps } from '../Modal/Modal';
-import { NotificationType } from '../Notifications';
 import { TextArea } from '../TextArea';
-import { ModalContainer, ModalTextArea } from './modalParts';
+import { parseToDateString } from '../../util/date';
+import { readToBase64 } from '../../util/files';
+import styled from 'styled-components';
+import { useApi } from '../../hooks/useApi';
+import { useNavigate } from 'react-router';
+import { useNotifications } from '../../hooks/useNotifications';
 
 const ALLOWED_ATTACHMENT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
@@ -75,7 +75,7 @@ export const ModalCreateReport: React.FC<Props> = ({
       } catch (e) {
         pushNotification({
           message: t('components:modalcreatereport.errors.attachment-convert-failed'),
-          type: NotificationType.ERROR,
+          type: 'ERROR',
         });
       }
     }
@@ -111,7 +111,7 @@ export const ModalCreateReport: React.FC<Props> = ({
       if (goBack) nav(-1);
       pushNotification({
         message: t('components:modalcreatereport.successful'),
-        type: NotificationType.SUCCESS,
+        type: 'SUCCESS',
       });
     } catch (e) {}
   };

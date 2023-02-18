@@ -1,19 +1,19 @@
 import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
 import styled, { useTheme } from 'styled-components';
+
 import { Button } from '../../../components/Button';
+import { CodeExecSettings } from '../../../lib/shinpuru-ts/src';
 import { Controls } from '../../../components/Controls';
 import { Hint } from '../../../components/Hint';
 import { Input } from '../../../components/Input';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
 import { useApi } from '../../../hooks/useApi';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { CodeExecSettings } from '../../../lib/shinpuru-ts/src';
+import { useParams } from 'react-router';
 
 type Props = {};
 
@@ -71,7 +71,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();

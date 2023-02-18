@@ -1,22 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
-import { uid } from 'react-uid';
-import styled from 'styled-components';
-import { ReactComponent as DownloadIcon } from '../../../assets/download.svg';
+
 import { Button } from '../../../components/Button';
+import { ReactComponent as DownloadIcon } from '../../../assets/download.svg';
 import { Embed } from '../../../components/Embed';
+import { GuildBackup } from '../../../lib/shinpuru-ts/src';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
 import { Switch } from '../../../components/Switch';
 import { Tag } from '../../../components/Tag';
+import { formatDate } from '../../../util/date';
+import { range } from '../../../util/utils';
+import styled from 'styled-components';
+import { uid } from 'react-uid';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { GuildBackup } from '../../../lib/shinpuru-ts/src';
-import { formatDate } from '../../../util/date';
-import { range } from '../../../util/utils';
+import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -73,7 +73,7 @@ const BackupRoute: React.FC<Props> = ({}) => {
         currStateRef.current = enabled;
         pushNotification({
           message: t(enabled ? 'notifications.enabled' : 'notifications.disabled'),
-          type: enabled ? NotificationType.SUCCESS : NotificationType.WARNING,
+          type: enabled ? 'SUCCESS' : 'WARNING',
         });
       })
       .catch(() => setEnabled(currStateRef.current));

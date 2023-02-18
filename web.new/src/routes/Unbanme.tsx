@@ -1,21 +1,21 @@
-import { tr } from 'date-fns/locale';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { Guild, UnbanRequest, UnbanRequestState } from '../lib/shinpuru-ts/src';
+
+import { APIError } from '../lib/shinpuru-ts/src/errors';
 import { Button } from '../components/Button';
 import { Flex } from '../components/Flex';
 import { GuildTile } from '../components/GuiltTile';
 import { Heading } from '../components/Heading';
 import { Loader } from '../components/Loader';
 import { ModalUnbanRequest } from '../components/Modals/ModalUnbanRequest';
-import { NotificationType } from '../components/Notifications';
 import { UnbanRequestTile } from '../components/UnbanRequestTile';
+import styled from 'styled-components';
+import { tr } from 'date-fns/locale';
 import { useApi } from '../hooks/useApi';
 import { useEffectAsync } from '../hooks/useEffectAsync';
+import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../hooks/useNotifications';
-import { Guild, UnbanRequest, UnbanRequestState } from '../lib/shinpuru-ts/src';
-import { APIError } from '../lib/shinpuru-ts/src/errors';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -91,7 +91,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
         setQueue([r, ...queue]);
         pushNotification({
           message: t('notifications.sent'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();

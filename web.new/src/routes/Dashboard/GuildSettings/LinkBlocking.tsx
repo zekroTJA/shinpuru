@@ -4,7 +4,6 @@ import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
 import styled from 'styled-components';
@@ -48,7 +47,7 @@ const LinkBlockingRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: 'Settings have been saved.',
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();

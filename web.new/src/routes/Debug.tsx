@@ -1,13 +1,14 @@
+import { Element, Select } from '../components/Select';
+import { Notification, NotificationType } from '../components/Notifications';
+import { randomFrom, randomNumber } from '../util/rand';
 import { useRef, useState } from 'react';
-import styled from 'styled-components';
+
 import { Button } from '../components/Button';
 import { Heading } from '../components/Heading';
 import { Input } from '../components/Input';
-import { Notification, NotificationType } from '../components/Notifications';
-import { Element, Select } from '../components/Select';
+import styled from 'styled-components';
 import { useModal } from '../hooks/useModal';
 import { useNotifications } from '../hooks/useNotifications';
-import { randomFrom, randomNumber } from '../util/rand';
 
 type Props = {};
 
@@ -43,7 +44,7 @@ const getRandomNotification = (delay?: number) => {
     .fill(null)
     .map(() => randomFrom(randomWords))
     .join(' ');
-  const type = randomNumber(NotificationType.ERROR);
+  const type = ['INFO', 'WARN', 'ERROR', 'SUCCESS'][randomNumber(3, 0)];
   return {
     heading,
     message,
@@ -55,21 +56,21 @@ const getRandomNotification = (delay?: number) => {
 // This component will not be exported in the final
 // production build!
 export const DebugRoute: React.FC<Props> = () => {
-  const NOTIFICATION_OPTIONS = [
-    { id: 'INFO', display: 'INFO', value: NotificationType.INFO },
+  const NOTIFICATION_OPTIONS: Element<NotificationType>[] = [
+    { id: 'INFO', display: 'INFO', value: 'INFO' },
     {
       id: 'SUCCESS',
       display: 'SUCCESS',
-      value: NotificationType.SUCCESS,
+      value: 'SUCCESS',
     },
     {
       id: 'WARNING',
       display: 'WARNING',
-      value: NotificationType.WARNING,
+      value: 'WARNING',
     },
-    { id: 'ERROR', display: 'ERROR', value: NotificationType.ERROR },
+    { id: 'ERROR', display: 'ERROR', value: 'ERROR' as NotificationType },
   ];
-  const [notType, setNotType] = useState<Element<NotificationType>>(NOTIFICATION_OPTIONS[0]);
+  const [notType, setNotType] = useState(NOTIFICATION_OPTIONS[0]);
 
   const refInptTitle = useRef<HTMLInputElement>(null);
   const refInptContent = useRef<HTMLInputElement>(null);

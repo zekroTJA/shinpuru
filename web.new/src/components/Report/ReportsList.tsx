@@ -1,13 +1,12 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Loader } from '../Loader';
+import { ModalRevokeReport } from '../Modals/ModalRevokeReport';
+import { Report } from '../../lib/shinpuru-ts/src';
+import { ReportTile } from './ReportTile';
 import styled from 'styled-components';
 import { useApi } from '../../hooks/useApi';
 import { useNotifications } from '../../hooks/useNotifications';
-import { Report } from '../../lib/shinpuru-ts/src';
-import { Loader } from '../Loader';
-import { ModalRevokeReport } from '../Modals/ModalRevokeReport';
-import { NotificationType } from '../Notifications';
-import { ReportTile } from './ReportTile';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   reports?: Report[];
@@ -55,7 +54,7 @@ export const ReportsList: React.FC<Props> = ({
         pushNotification({
           heading: t('notifications.reportrevoked.heading'),
           message: t('notifications.reportrevoked.message'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();
