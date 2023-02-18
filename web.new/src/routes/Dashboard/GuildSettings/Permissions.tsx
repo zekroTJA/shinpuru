@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { Flex } from '../../../components/Flex';
+import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { PermissionSelector } from '../../../components/PermissionSelector';
 import { PermissionsMap } from '../../../lib/shinpuru-ts/src';
@@ -47,8 +49,19 @@ const PermissionsRoute: React.FC<Props> = ({}) => {
     <MaxWidthContainer>
       <h1>{t('heading')}</h1>
       <Small>{t('explanation')}</Small>
-      {guild && perms && allowed && (
+      {(guild && perms && allowed && (
         <PermissionSelector guild={guild} available={allowed} perms={perms} setPerms={setPerms} />
+      )) || (
+        <>
+          <Loader width="100%" height="2.8em" />
+          <Flex gap="1em">
+            <Loader width="100%" height="2.5em" margin="1em 0 0 0" />
+            <Loader width="5em" height="2.5em" margin="1em 0 0 0" />
+            <Loader width="5em" height="2.5em" margin="1em 0 0 0" />
+          </Flex>
+          <Loader width="100%" height="9em" margin="1em 0 0 0" />
+          <Loader width="100%" height="6em" margin="1em 0 0 0" />
+        </>
       )}
     </MaxWidthContainer>
   );
