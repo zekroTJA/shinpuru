@@ -10,12 +10,23 @@ export const useApi = () => {
 
   async function fetch<T>(
     req: (c: Client) => Promise<T>,
-    silenceErrors: boolean = false,
+    silenceErrors: boolean | number = false,
   ): Promise<T> {
     try {
       return await req(APIClient);
     } catch (e) {
-      if (!silenceErrors) {
+      const silenceErrorsFn = () => {
+        switch (typeof silenceErrors) {
+          case 'number':
+            return e instanceof APIError && e.code === silenceErrors;
+          case 'boolean':
+            return silenceErrors;
+          default:
+            return false;
+        }
+      };
+
+      if (!silenceErrorsFn()) {
         if (e instanceof APIError) {
           if (e.code === 401) {
             nav('/start');

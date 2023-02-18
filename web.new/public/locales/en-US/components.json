@@ -27,6 +27,14 @@
     "logout": "Logout",
     "user-settings": "User Settings"
   },
+  "navbar-usersettings": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "apitoken": "API Token"
+      }
+    }
+  },
   "sincedate": {
     "since": "<1>{{dateSince}}</1> ago"
   },

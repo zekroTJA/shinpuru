@@ -117,7 +117,7 @@ export class SearchClient extends SubClient {
 
 export class TokensClient extends SubClient {
   constructor(client: Client) {
-    super(client, 'tokens');
+    super(client, 'token');
   }
 
   delete(): Promise<CodeResponse> {

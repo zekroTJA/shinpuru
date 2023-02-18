@@ -36,6 +36,9 @@ const GuildLinkBlockingRoute = React.lazy(
   () => import('./routes/Dashboard/GuildSettings/LinkBlocking'),
 );
 
+const UserSettingsRoute = React.lazy(() => import('./routes/UserSettings'));
+const APITokenRoute = React.lazy(() => import('./routes/UserSettings/APIToken'));
+
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: ${(p) => p.theme.background};
@@ -204,6 +207,24 @@ export const App: React.FC = () => {
                 }
               />
               {import.meta.env.DEV && <Route path="debug" element={<DebugRoute />} />}
+            </Route>
+
+            <Route
+              path="usersettings"
+              element={
+                <RouteSuspense>
+                  <UserSettingsRoute />
+                </RouteSuspense>
+              }>
+              <Route
+                path="apitoken"
+                element={
+                  <RouteSuspense>
+                    <APITokenRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route path="" element={<Navigate to="apitoken" />} />
             </Route>
 
             <Route path="*" element={<Navigate to="db" />} />

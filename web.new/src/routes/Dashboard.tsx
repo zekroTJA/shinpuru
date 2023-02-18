@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { Outlet, useNavigate, useParams, useLocation } from 'react-router';
-import styled from 'styled-components';
-import { Navbar } from '../components/Navbar';
-import { useGuilds } from '../hooks/useGuilds';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+
 import LocalStorageUtil from '../util/localstorage';
+import { NavbarDashboard } from '../components/Navbar';
+import styled from 'styled-components';
+import { useEffect } from 'react';
+import { useGuilds } from '../hooks/useGuilds';
 
 type Props = {};
 
@@ -37,7 +38,7 @@ export const DashboardRoute: React.FC<Props> = () => {
 
   return (
     <RouteContainer>
-      <Navbar />
+      <NavbarDashboard />
       <RouterOutlet>
         <Outlet />
       </RouterOutlet>
