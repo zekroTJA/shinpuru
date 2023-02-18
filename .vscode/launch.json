@@ -13,6 +13,14 @@
       "preLaunchTask": "run-vite-server"
     },
     {
+      "type": "firefox",
+      "request": "launch",
+      "name": "Debug Webapp (New)",
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:8081",
+      "preLaunchTask": "run-vite-server-new"
+    },
+    {
       "name": "Debug Backend",
       "type": "go",
       "request": "launch",

@@ -1,37 +1,39 @@
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import styled from 'styled-components';
-import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
+
 import { ReactComponent as APIIcon } from '../../assets/api.svg';
+import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
 import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
+import { ReactComponent as BlockIcon } from '../../assets/block.svg';
+import { Button } from '../Button';
 import { ReactComponent as CodeIcon } from '../../assets/code.svg';
 import { ReactComponent as DataIcon } from '../../assets/data.svg';
+import { DiscordImage } from '../DiscordImage';
+import { Entry } from './Entry';
+import { Flex } from '../Flex';
+import { Guild } from '../../lib/shinpuru-ts/src';
+import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
+import { Heading } from '../Heading';
+import { Hoverplate } from '../Hoverplate';
 import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
-import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
+import { Loader } from '../Loader';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
-import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
+import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
+import { Section } from './Section';
+import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { ReactComponent as VerificationIcon } from '../../assets/verification.svg';
+import styled from 'styled-components';
 import { useApi } from '../../hooks/useApi';
+import { useEffect } from 'react';
 import { useGuilds } from '../../hooks/useGuilds';
 import { usePerms } from '../../hooks/usePerms';
 import { useSelfUser } from '../../hooks/useSelfUser';
-import { Guild } from '../../lib/shinpuru-ts/src';
 import { useStore } from '../../services/store';
-import { Button } from '../Button';
-import { DiscordImage } from '../DiscordImage';
-import { Flex } from '../Flex';
-import { GuildSelect } from '../GuildSelect';
-import { Heading } from '../Heading';
-import { Hoverplate } from '../Hoverplate';
-import { Loader } from '../Loader';
-import { Entry } from './Entry';
-import { Section } from './Section';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -208,6 +210,12 @@ export const Navbar: React.FC<Props> = () => {
               <StyledEntry path={`guilds/${selectedGuild?.id}/settings/antiraid`}>
                 <AntiraidIcon />
                 <span>{t('section.guildsettings.antiraid')}</span>
+              </StyledEntry>
+            )}
+            {isAllowed('sp.guild.mod.inviteblock') && (
+              <StyledEntry path={`guilds/${selectedGuild?.id}/settings/linkblocking`}>
+                <BlockIcon />
+                <span>{t('section.guildsettings.linkblocking')}</span>
               </StyledEntry>
             )}
             {isAllowed('sp.guild.config.exec') && (

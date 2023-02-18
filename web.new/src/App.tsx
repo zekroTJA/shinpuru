@@ -1,15 +1,16 @@
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
+
+import { DashboardRoute } from './routes/Dashboard';
+import { DebugRoute } from './routes/Debug';
 import { HookedModal } from './components/Modal';
 import { ModalBetaGreeter } from './components/Modals/ModalBetaGreeter';
 import { Notifications } from './components/Notifications';
 import { RouteSuspense } from './components/RouteSuspense';
-import { useStoredTheme } from './hooks/useStoredTheme';
-import { DashboardRoute } from './routes/Dashboard';
-import { DebugRoute } from './routes/Debug';
 import { StartRoute } from './routes/Start';
 import { stripSuffix } from './util/utils';
+import { useStoredTheme } from './hooks/useStoredTheme';
 
 const LoginRoute = React.lazy(() => import('./routes/Login'));
 const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
@@ -30,6 +31,9 @@ const GuildDataRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings
 const GuildAPIRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/API'));
 const GuildPermissionsRoute = React.lazy(
   () => import('./routes/Dashboard/GuildSettings/Permissions'),
+);
+const GuildLinkBlockingRoute = React.lazy(
+  () => import('./routes/Dashboard/GuildSettings/LinkBlocking'),
 );
 
 const GlobalStyle = createGlobalStyle`
@@ -188,6 +192,14 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildPermissionsRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/settings/linkblocking"
+                element={
+                  <RouteSuspense>
+                    <GuildLinkBlockingRoute />
                   </RouteSuspense>
                 }
               />

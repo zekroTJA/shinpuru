@@ -15,6 +15,7 @@
         "permissions": "Permissions",
         "backup": "Backups",
         "antiraid": "Antiraid",
+        "linkblocking": "Link Blocking",
         "codeexec": "Code Execution",
         "verification": "Verification",
         "karma": "Karma",
