@@ -48,12 +48,17 @@ const RoleContainer = styled.div<{ rColor: number }>`
       background: linear-gradient(
         160deg,
         ${Color(p.rColor).alpha(0.3).hexa()},
-        ${Color(p.rColor).alpha(0.05).hexa()}
+        ${Color(p.rColor).alpha(0.1).hexa()}
       );
     `}
 
   > h3 {
     margin: 0 0 1em 0;
+    color: ${(p) =>
+      Color(!p.rColor ? '#6c6c6c' : p.rColor)
+        .mix(Color(p.theme.text))
+        .mix(Color(p.theme.text))
+        .hexa()};
   }
 
   > div {
@@ -147,6 +152,8 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
       .catch();
   };
 
+  console.debug(permsKV);
+
   return (
     <Flex direction="column" gap="1em">
       {guild && (
@@ -158,6 +165,13 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
         />
       )}
       <ControlContainer gap="1em">
+        <AutocompleteInput
+          isInvalid={isInvalidPermission}
+          value={permission}
+          setValue={setPermission}
+          selections={available}
+          placeholder={t('placeholder.perms')}
+        />
         <StyledSwitch
           enabled={allow}
           onChange={setAllow}
@@ -166,13 +180,6 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
             <DisallowIcon style={{ color: theme.red }} />
           )}
         </StyledSwitch>
-        <AutocompleteInput
-          isInvalid={isInvalidPermission}
-          value={permission}
-          setValue={setPermission}
-          selections={available}
-          placeholder={t('placeholder.perms')}
-        />
         <StyledButton
           disabled={roles.length === 0 || !permission || isInvalidPermission}
           onClick={applyRule}>
