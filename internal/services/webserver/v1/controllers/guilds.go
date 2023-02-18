@@ -442,10 +442,16 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 	for _, roleID := range update.RoleIDs {
 		rperms, ok := perms[roleID]
 		if !ok {
-			rperms = make(permissions.PermissionArray, 0)
+			rperms = permissions.PermissionArray{}
 		}
 
-		rperms, changed := rperms.Update(update.Perm, false)
+		rperms, changed := rperms.Update(update.Perm, update.Override)
+
+		if len(rperms) == 0 {
+			delete(perms, roleID)
+		} else {
+			perms[roleID] = rperms
+		}
 
 		if changed {
 			if err = c.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
@@ -454,7 +460,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(models.Ok)
+	return ctx.JSON(perms)
 }
 
 // @Summary Toggle Guild Inviteblock Enable

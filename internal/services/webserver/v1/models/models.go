@@ -167,8 +167,9 @@ type GuildSettings struct {
 // PermissionsUpdate is the request model to
 // update a permissions array.
 type PermissionsUpdate struct {
-	Perm    string   `json:"perm"`
-	RoleIDs []string `json:"role_ids"`
+	Perm     string   `json:"perm"`
+	RoleIDs  []string `json:"role_ids"`
+	Override bool     `json:"override"`
 }
 
 // ReasonRequest is a request model wrapping a
