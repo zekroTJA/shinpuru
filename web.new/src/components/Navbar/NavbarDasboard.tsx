@@ -74,17 +74,19 @@ const SelfContainer = styled.div`
 `;
 
 const StyledNavbar = styled(Navbar)`
-  ${StyledEntry}, ${SelfContainer} {
-    justify-content: center;
-    span {
-      display: none;
+  @media (orientation: portrait) {
+    ${StyledEntry}, ${SelfContainer} {
+      justify-content: center;
+      span {
+        display: none;
+      }
     }
-  }
 
-  ${StyledGuildSelect} > div > div {
-    justify-content: center;
-    > span {
-      display: none;
+    ${StyledGuildSelect} > div > div {
+      justify-content: center;
+      > span {
+        display: none;
+      }
     }
   }
 `;

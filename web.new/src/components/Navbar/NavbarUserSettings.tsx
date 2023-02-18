@@ -46,24 +46,36 @@ const SelfContainer = styled.div`
   }
 `;
 
-const StyledNavbar = styled(Navbar)`
-  ${StyledEntry}, ${SelfContainer} {
-    justify-content: center;
-    span {
-      display: none;
-    }
-  }
+const BackButton = styled(Button)`
+  margin-top: auto;
+  border-radius: 8px;
 
-  ${StyledGuildSelect} > div > div {
-    justify-content: center;
-    > span {
-      display: none;
-    }
+  svg {
+    width: 1em;
+    height: 1em;
   }
 `;
 
-const BackButton = styled(Button)`
-  margin-top: auto;
+const StyledNavbar = styled(Navbar)`
+  @media (orientation: portrait) {
+    ${StyledEntry}, ${SelfContainer} {
+      justify-content: center;
+      span {
+        display: none;
+      }
+    }
+
+    ${StyledGuildSelect} > div > div {
+      justify-content: center;
+      > span {
+        display: none;
+      }
+    }
+
+    ${BackButton} > span {
+      display: none;
+    }
+  }
 `;
 
 export const NavbarUserSettings: React.FC<Props> = ({}) => {

@@ -1,4 +1,13 @@
 {
   "heading": "API Token",
-  "explanation": "Manage your personal API token. <1>Here</1> you can find the API documentation of shinpuru."
+  "explanation": "Manage your personal API token. <1>Here</1> you can find the API documentation of shinpuru.",
+  "generate": "Generate token",
+  "regenerate": "Re-generate token",
+  "reset": "Reset token",
+  "tokenwarning": "The token will be only shown after generation. After that, the token will not be shown again, so please store it somewhere safe.",
+  "tokeninfo": "One API token is avtive.<br />The token has been created at <b>{{created}}</b> and will expire at <b>{{expires}}</b>. The token has been used <b>{{hits}}</b> times.",
+  "notifications": {
+    "generated": "An API token has been generated.",
+    "reset": "The API token has been reset."
+  }
 }

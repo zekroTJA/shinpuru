@@ -48,9 +48,9 @@ const StyledNav = styled.nav`
   }
 `;
 
-export const Navbar: React.FC<Props> = ({ children }) => {
+export const Navbar: React.FC<Props> = ({ children, ...props }) => {
   return (
-    <StyledNav>
+    <StyledNav {...props}>
       <Brand>
         <img src={SPIcon} alt="shinpuru Heading" />
         <SPBrand />

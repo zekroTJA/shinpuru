@@ -46,7 +46,7 @@ const LinkBlockingRoute: React.FC<Props> = ({}) => {
     fetch((c) => c.guilds.setInviteBlock(guildid, state.enabled))
       .then(() =>
         pushNotification({
-          message: 'Settings have been saved.',
+          message: t('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
