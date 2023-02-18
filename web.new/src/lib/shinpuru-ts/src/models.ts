@@ -139,6 +139,7 @@ export interface GuildSettings {
 export interface PermissionsUpdate {
   perm: string;
   role_ids: string[];
+  override?: boolean;
 }
 
 export interface ReasonRequest {

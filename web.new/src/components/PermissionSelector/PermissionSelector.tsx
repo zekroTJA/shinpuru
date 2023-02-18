@@ -131,9 +131,9 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
       c.guilds.applyPermission(guild.id, {
         perm: sign + permission,
         role_ids: roles.map((r) => r.id),
+        override: true,
       }),
     )
-      .then(() => fetch((c) => c.guilds.permissions(guild.id)))
       .then((r) => setPerms(r))
       .catch();
   };
@@ -145,9 +145,9 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
       c.guilds.applyPermission(guild.id, {
         perm: sign + rule.substring(1),
         role_ids: [roleId],
+        override: false,
       }),
     )
-      .then(() => fetch((c) => c.guilds.permissions(guild.id)))
       .then((r) => setPerms(r))
       .catch();
   };

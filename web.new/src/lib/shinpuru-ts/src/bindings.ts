@@ -1,45 +1,46 @@
-import { Client } from './client';
-import { GuildLogEntry, GuildSettingsVerification, User } from './models';
 import {
-  AccessTokenModel,
   APIToken,
-  CodeResponse,
-  CommandInfo,
-  LandingPageInfo,
-  ListReponse as ListResponse,
-  PrivacyInfo,
-  SearchResult,
-  SystemInfo,
-  Guild,
-  InviteSettingsRequest,
-  InviteSettingsResponse,
-  JoinlogEntry,
-  PermissionResponse,
-  Presence,
-  ReasonRequest,
-  Report,
+  AccessTokenModel,
   AntiraidAction,
   AntiraidSettings,
+  Channel,
   CodeExecSettings,
+  CodeResponse,
+  CommandInfo,
   Count,
+  Guild,
   GuildBackup,
   GuildScoreboardEntry,
   GuildSettings,
   GuildSettingsApi,
   GuildStarboardEntry,
+  InviteSettingsRequest,
+  InviteSettingsResponse,
+  JoinlogEntry,
   KarmaRule,
   KarmaSettings,
+  LandingPageInfo,
+  ListReponse as ListResponse,
   Member,
+  MessageEmbed,
+  PermissionResponse,
   PermissionsMap,
   PermissionsUpdate,
+  Presence,
+  PrivacyInfo,
+  ReasonRequest,
+  Report,
+  ReportRequest,
+  SearchResult,
   StarboardSortOrder,
   State,
+  SystemInfo,
   UnbanRequest,
-  Channel,
-  MessageEmbed,
-  ReportRequest,
   VerificationSiteKey,
 } from './models';
+import { GuildLogEntry, GuildSettingsVerification, User } from './models';
+
+import { Client } from './client';
 import { SubClient } from './subclient';
 
 export class EtcClient extends SubClient {
@@ -239,7 +240,7 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/permissions`);
   }
 
-  applyPermission(id: string, update: PermissionsUpdate): Promise<CodeResponse> {
+  applyPermission(id: string, update: PermissionsUpdate): Promise<PermissionsMap> {
     return this.req('POST', `${id}/permissions`, update);
   }
 
