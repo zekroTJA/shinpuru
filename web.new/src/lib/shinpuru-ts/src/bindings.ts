@@ -267,8 +267,12 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/starboard?limit=${limit}&offset=${offset}&sort=${sort}`);
   }
 
-  unbanrequests(id: string): Promise<ListResponse<UnbanRequest>> {
-    return this.req('GET', `${id}/unbanrequests`);
+  unbanrequests(
+    id: string,
+    limit: number = 20,
+    offset: number = 0,
+  ): Promise<ListResponse<UnbanRequest>> {
+    return this.req('GET', `${id}/unbanrequests?limit=${limit}&offset=${offset}`);
   }
 
   unbanrequestsCount(id: string): Promise<Count> {
