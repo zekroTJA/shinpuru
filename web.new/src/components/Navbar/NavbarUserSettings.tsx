@@ -70,7 +70,7 @@ export const NavbarUserSettings: React.FC<Props> = ({}) => {
             <TicketIcon />
             <span>{t('section.default.ota')}</span>
           </StyledEntry>
-          <StyledEntry path={`/usersettings/privary`}>
+          <StyledEntry path={`/usersettings/privacy`}>
             <ShieldIcon />
             <span>{t('section.default.privacy')}</span>
           </StyledEntry>

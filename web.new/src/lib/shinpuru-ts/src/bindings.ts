@@ -523,4 +523,8 @@ export class UserSettingsClient extends SubClient {
   setPrivacy(state: UserSettingsPrivacy): Promise<CodeResponse> {
     return this.req('POST', 'privacy', state);
   }
+
+  flush(): Promise<CodeResponse> {
+    return this.req('POST', 'flush');
+  }
 }
