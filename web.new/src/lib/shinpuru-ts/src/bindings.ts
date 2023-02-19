@@ -36,6 +36,8 @@ import {
   State,
   SystemInfo,
   UnbanRequest,
+  UserSettingsOTA,
+  UserSettingsPrivacy,
   VerificationSiteKey,
 } from './models';
 import { GuildLogEntry, GuildSettingsVerification, User } from './models';
@@ -498,5 +500,27 @@ export class UsersClient extends SubClient {
 
   get(id: string): Promise<User> {
     return this.req('GET', id);
+  }
+}
+
+export class UserSettingsClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'usersettings');
+  }
+
+  ota(): Promise<UserSettingsOTA> {
+    return this.req('GET', 'ota');
+  }
+
+  setOta(state: UserSettingsOTA): Promise<CodeResponse> {
+    return this.req('POST', 'ota', state);
+  }
+
+  privacy(): Promise<UserSettingsPrivacy> {
+    return this.req('GET', 'privacy');
+  }
+
+  setPrivacy(state: UserSettingsPrivacy): Promise<CodeResponse> {
+    return this.req('POST', 'privacy', state);
   }
 }
