@@ -20,7 +20,7 @@ import {
   KarmaRule,
   KarmaSettings,
   LandingPageInfo,
-  ListReponse as ListResponse,
+  ListResponse,
   Member,
   MessageEmbed,
   PermissionResponse,

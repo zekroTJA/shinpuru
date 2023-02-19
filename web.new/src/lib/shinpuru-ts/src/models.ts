@@ -1,6 +1,6 @@
 /** @format */
 
-export interface ListReponse<T> {
+export interface ListResponse<T> {
   n: number;
   data: T[];
 }
