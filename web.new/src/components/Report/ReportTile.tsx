@@ -1,15 +1,16 @@
-import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
-import { ReactComponent as TargetIcon } from '../../assets/target.svg';
 import { Report, ReportType } from '../../lib/shinpuru-ts/src';
-import { formatDate } from '../../util/date';
+
 import { Container } from '../Container';
 import { Embed } from '../Embed';
+import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { Heading } from '../Heading';
-import { LinkButton } from '../LinkButton';
-import { UserTileSmall } from '../UserTileSmall';
 import { LinearGradient } from '../styleParts';
+import { LinkButton } from '../LinkButton';
+import { ReactComponent as TargetIcon } from '../../assets/target.svg';
+import { UserTileSmall } from '../UserTileSmall';
+import { formatDate } from '../../util/date';
+import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   report: Report;
@@ -69,9 +70,9 @@ const ReportUsers = styled.div`
   justify-content: space-between;
   margin-top: 1.5em;
   gap: 1.5em;
-  flex-wrap: wrap;
+  flex-direction: row;
 
-  @media (max-width: 50em) {
+  @media (max-width: 50em) or (orientation: portrait) {
     flex-direction: column;
   }
 `;
