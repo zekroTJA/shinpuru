@@ -61,6 +61,10 @@ export class EtcClient extends SubClient {
   sysinfo(): Promise<SystemInfo> {
     return this.req('GET', 'sysinfo');
   }
+
+  allpermissions(): Promise<ListResponse<string>> {
+    return this.req('GET', 'allpermissions');
+  }
 }
 
 export class UtilClient extends SubClient {

@@ -8,7 +8,6 @@ import { PermissionsMap } from '../../../lib/shinpuru-ts/src';
 import { Small } from '../../../components/Small';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
-import { useNotifications } from '../../../hooks/useNotifications';
 import { useParams } from 'react-router';
 import { useSelfUser } from '../../../hooks/useSelfUser';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,6 @@ type Props = {};
 
 const PermissionsRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.guildsettings.permissions');
-  const { pushNotification } = useNotifications();
   const { guildid } = useParams();
   const guild = useGuild(guildid);
   const fetch = useApi();
@@ -35,7 +33,7 @@ const PermissionsRoute: React.FC<Props> = ({}) => {
 
     // TODO: Maybe add new route to get all available permissions
     //       instead of depending on allowed permissions for current user.
-    fetch((c) => c.guilds.member(guild.id, me.id).permissionsAllowed())
+    fetch((c) => c.etc.allpermissions())
       .then((r) => {
         const rules = r.data.filter(
           (p) => p.startsWith('sp.guild.') || p.startsWith('sp.etc.') || p.startsWith('sp.chat.'),
