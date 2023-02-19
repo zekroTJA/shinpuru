@@ -507,8 +507,16 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 // @Router /guilds/{id}/unbanrequests [get]
 func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 20, 1, 100)
+	if err != nil {
+		return err
+	}
+	offset, err := wsutil.GetQueryInt(ctx, "offset", 0, 0, 0)
+	if err != nil {
+		return err
+	}
 
-	requests, err := c.db.GetGuildUnbanRequests(guildID)
+	requests, err := c.db.GetGuildUnbanRequests(guildID, limit, offset)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -554,22 +562,15 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	requests, err := c.db.GetGuildUnbanRequests(guildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err
-	}
-	if requests == nil {
-		requests = make([]sharedmodels.UnbanRequest, 0)
+	var stateFilterParam *sharedmodels.UnbanRequestState
+	if stateFilter > -1 {
+		filer := sharedmodels.UnbanRequestState(stateFilter)
+		stateFilterParam = &filer
 	}
 
-	count := len(requests)
-	if stateFilter > -1 {
-		count = 0
-		for _, r := range requests {
-			if int(r.Status) == stateFilter {
-				count++
-			}
-		}
+	count, err := c.db.GetGuildUnbanRequestsCount(guildID, stateFilterParam)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
 	}
 
 	return ctx.JSON(&models.Count{Count: count})

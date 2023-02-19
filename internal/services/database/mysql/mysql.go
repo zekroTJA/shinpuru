@@ -1534,11 +1534,13 @@ func (m *MysqlMiddleware) RemoveAntiraidJoinList(guildID, userID string) (err er
 	return
 }
 
-func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []models.UnbanRequest, err error) {
+func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset int) (r []models.UnbanRequest, err error) {
 	rows, err := m.Db.Query(
 		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
 		FROM unbanRequests
-		WHERE guildID = ?`, guildID)
+		WHERE guildID = ?
+		LIMIT ?
+		OFFSET ?`, guildID, limit, offset)
 	err = wrapNotFoundError(err)
 	if err != nil {
 		return
@@ -1557,6 +1559,19 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string) (r []models.Unba
 	}
 
 	return
+}
+
+func (m *MysqlMiddleware) GetGuildUnbanRequestsCount(guildID string, state *models.UnbanRequestState) (n int, err error) {
+	query := "SELECT COUNT(id) FROM unbanRequests WHERE guildID = ?"
+	params := []interface{}{guildID}
+	if state != nil {
+		query += " AND state = ?"
+		params = append(params, *state)
+	}
+	err = m.Db.QueryRow(
+		query,
+		params...).Scan(&n)
+	return n, err
 }
 
 func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []models.UnbanRequest, err error) {

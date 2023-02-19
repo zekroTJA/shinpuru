@@ -129,7 +129,8 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// UNBAN REQUESTS
 
-	GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest, error)
+	GetGuildUnbanRequests(guildID string, limit, offset int) ([]models.UnbanRequest, error)
+	GetGuildUnbanRequestsCount(guildID string, state *models.UnbanRequestState) (int, error)
 	GetGuildUserUnbanRequests(userID, guildID string) ([]models.UnbanRequest, error)
 	GetUnbanRequest(id string) (models.UnbanRequest, error)
 	AddUnbanRequest(request models.UnbanRequest) error
