@@ -31,7 +31,9 @@
     "back": "Back to Dashboard",
     "section": {
       "default": {
-        "apitoken": "API Token"
+        "apitoken": "API Token",
+        "ota": "OTA",
+        "privacy": "Privary"
       }
     }
   },

@@ -38,6 +38,7 @@ const GuildLinkBlockingRoute = React.lazy(
 
 const UserSettingsRoute = React.lazy(() => import('./routes/UserSettings'));
 const APITokenRoute = React.lazy(() => import('./routes/UserSettings/APIToken'));
+const OTARoute = React.lazy(() => import('./routes/UserSettings/OTA'));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -221,6 +222,14 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <APITokenRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="ota"
+                element={
+                  <RouteSuspense>
+                    <OTARoute />
                   </RouteSuspense>
                 }
               />
