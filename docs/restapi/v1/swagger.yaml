@@ -1785,6 +1785,23 @@ info:
   title: shinpuru main API
   version: "1.0"
 paths:
+  /allpermissions:
+    get:
+      consumes:
+      - application/json
+      description: Return a list of all available permissions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              type: string
+            type: array
+      summary: All Permissions
+      tags:
+      - Etc
   /auth/accesstoken:
     post:
       consumes:

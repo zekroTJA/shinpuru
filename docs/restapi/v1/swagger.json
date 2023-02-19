@@ -8,6 +8,32 @@
     },
     "basePath": "/api/v1",
     "paths": {
+        "/allpermissions": {
+            "get": {
+                "description": "Return a list of all available permissions.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Etc"
+                ],
+                "summary": "All Permissions",
+                "responses": {
+                    "200": {
+                        "description": "Wrapped in models.ListResponse",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/accesstoken": {
             "post": {
                 "description": "Exchanges the cookie-passed refresh token with a generated access token.",

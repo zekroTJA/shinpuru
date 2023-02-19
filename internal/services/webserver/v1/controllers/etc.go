@@ -19,14 +19,16 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/ken"
 )
 
 type EtcController struct {
-	session *discordgo.Session
-	cfg     config.Provider
-	authMw  auth.Middleware
-	st      *dgrs.State
-	db      database.Database
+	session    *discordgo.Session
+	cfg        config.Provider
+	authMw     auth.Middleware
+	st         *dgrs.State
+	db         database.Database
+	cmdHandler *ken.Ken
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
@@ -35,10 +37,12 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)
 	c.db = container.Get(static.DiDatabase).(database.Database)
+	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
 	router.Get("/privacyinfo", c.getPrivacyinfo)
+	router.Get("/allpermissions", c.getAllPermissions)
 }
 
 // @Summary Me
@@ -136,4 +140,16 @@ func (c *EtcController) getSysinfo(ctx *fiber.Ctx) error {
 // @Router /privacyinfo [get]
 func (c *EtcController) getPrivacyinfo(ctx *fiber.Ctx) error {
 	return ctx.JSON(c.cfg.Config().Privacy)
+}
+
+// @Summary All Permissions
+// @Description Return a list of all available permissions.
+// @Tags Etc
+// @Accept json
+// @Produce json
+// @Success 200 {array} string "Wrapped in models.ListResponse"
+// @Router /allpermissions [get]
+func (c *EtcController) getAllPermissions(ctx *fiber.Ctx) error {
+	all := util.GetAllPermissions(c.cmdHandler)
+	return ctx.JSON(apiModels.NewListResponse(all.Unwrap()))
 }
