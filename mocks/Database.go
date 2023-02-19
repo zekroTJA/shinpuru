@@ -1147,13 +1147,13 @@ func (_m *Database) GetGuildTags(guildID string) ([]tag.Tag, error) {
 	return r0, r1
 }
 
-// GetGuildUnbanRequests provides a mock function with given fields: guildID
-func (_m *Database) GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest, error) {
-	ret := _m.Called(guildID)
+// GetGuildUnbanRequests provides a mock function with given fields: guildID, limit, offset
+func (_m *Database) GetGuildUnbanRequests(guildID string, limit int, offset int) ([]models.UnbanRequest, error) {
+	ret := _m.Called(guildID, limit, offset)
 
 	var r0 []models.UnbanRequest
-	if rf, ok := ret.Get(0).(func(string) []models.UnbanRequest); ok {
-		r0 = rf(guildID)
+	if rf, ok := ret.Get(0).(func(string, int, int) []models.UnbanRequest); ok {
+		r0 = rf(guildID, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]models.UnbanRequest)
@@ -1161,8 +1161,29 @@ func (_m *Database) GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(guildID)
+	if rf, ok := ret.Get(1).(func(string, int, int) error); ok {
+		r1 = rf(guildID, limit, offset)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetGuildUnbanRequestsCount provides a mock function with given fields: guildID, state
+func (_m *Database) GetGuildUnbanRequestsCount(guildID string, state *models.UnbanRequestState) (int, error) {
+	ret := _m.Called(guildID, state)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(string, *models.UnbanRequestState) int); ok {
+		r0 = rf(guildID, state)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, *models.UnbanRequestState) error); ok {
+		r1 = rf(guildID, state)
 	} else {
 		r1 = ret.Error(1)
 	}
