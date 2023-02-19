@@ -62,7 +62,7 @@ const GuildModlogRoute: React.FC<Props> = () => {
       fetch((c) => c.guilds.unbanrequestsCount(guildid))
         .then((r) => (unbanTotalCountRef.current = r.count))
         .catch();
-      fetch((c) => c.guilds.unbanrequests(guildid))
+      fetch((c) => c.guilds.unbanrequests(guildid, REPORTS_LIMIT))
         .then((r) => setUnbanRequests(r.data))
         .catch();
     }
