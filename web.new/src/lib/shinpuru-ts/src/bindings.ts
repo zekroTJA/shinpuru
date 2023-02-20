@@ -271,6 +271,10 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/starboard?limit=${limit}&offset=${offset}&sort=${sort}`);
   }
 
+  starboardCount(id: string): Promise<Count> {
+    return this.req('GET', `${id}/starboard/count`);
+  }
+
   unbanrequests(
     id: string,
     limit: number = 20,

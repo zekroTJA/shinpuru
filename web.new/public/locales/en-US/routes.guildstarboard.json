@@ -1,0 +1,8 @@
+{
+  "heading": "Starboard",
+  "sort": {
+    "latest": "Latest first",
+    "top": "Top posts first"
+  },
+  "loadmore": "Load more ..."
+}

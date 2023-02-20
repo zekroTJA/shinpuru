@@ -13,11 +13,14 @@ import { stripSuffix } from './util/utils';
 import { useStoredTheme } from './hooks/useStoredTheme';
 
 const LoginRoute = React.lazy(() => import('./routes/Login'));
-const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
-const MemberRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Member'));
-const GuildModlogRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildModlog'));
 const UnbanmeRoute = React.lazy(() => import('./routes/Unbanme'));
 const VerifyRoute = React.lazy(() => import('./routes/Verify'));
+
+const GuildMembersRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildMembers'));
+const GuildStarboardRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Starboard'));
+const GuildKarmaboardRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Karma'));
+const MemberRoute = React.lazy(() => import('./routes/Dashboard/Guilds/Member'));
+const GuildModlogRoute = React.lazy(() => import('./routes/Dashboard/Guilds/GuildModlog'));
 const GuildGeneralRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/General'));
 const GuildBackupsRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Backup'));
 const GuildAntiraidRoute = React.lazy(() => import('./routes/Dashboard/GuildSettings/Antiraid'));
@@ -101,6 +104,22 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <GuildMembersRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/starboard"
+                element={
+                  <RouteSuspense>
+                    <GuildStarboardRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="guilds/:guildid/karma"
+                element={
+                  <RouteSuspense>
+                    <GuildKarmaboardRoute />
                   </RouteSuspense>
                 }
               />

@@ -7,6 +7,8 @@
       "guilds": {
         "title": "Guild",
         "members": "Members",
+        "starboard": "Starboard",
+        "karma": "Karma",
         "modlog": "Modlog"
       },
       "guildsettings": {

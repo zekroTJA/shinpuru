@@ -20,8 +20,10 @@ import { Loader } from '../Loader';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
 import { Navbar } from './Navbar';
 import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
+import { ReactComponent as ScoreboardIcon } from '../../assets/scoreboard.svg';
 import { Section } from './Section';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
+import { ReactComponent as StarboardIcon } from '../../assets/star.svg';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { ReactComponent as VerificationIcon } from '../../assets/verification.svg';
@@ -133,6 +135,14 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
           <StyledEntry path={`/db/guilds/${selectedGuild?.id}/members`}>
             <UsersIcon />
             <span>{t('section.guilds.members')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/db/guilds/${selectedGuild?.id}/starboard`}>
+            <StarboardIcon />
+            <span>{t('section.guilds.starboard')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/db/guilds/${selectedGuild?.id}/karma`}>
+            <ScoreboardIcon />
+            <span>{t('section.guilds.karma')}</span>
           </StyledEntry>
           <StyledEntry path={`/db/guilds/${selectedGuild?.id}/modlog`}>
             <HammerIcon />
