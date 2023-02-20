@@ -11,6 +11,7 @@ import { ReactComponent as RefreshIcon } from '../../../assets/refresh.svg';
 import { ReactComponent as StarIcon } from '../../../assets/star.svg';
 import { StarboardEntry } from '../../../components/StarboardEntry';
 import styled from 'styled-components';
+import { uid } from 'react-uid';
 import { useApi } from '../../../hooks/useApi';
 import { useParams } from 'react-router';
 
@@ -107,7 +108,7 @@ const StarboardRoute: React.FC<Props> = ({}) => {
         {(entries && (
           <>
             {entries.map((e) => (
-              <StarboardEntry entry={e} />
+              <StarboardEntry key={uid(e)} entry={e} />
             ))}
             {entries.length < totalCountRef.current && (
               <Button onClick={_loadMore}>{t('loadmore')}</Button>

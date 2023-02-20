@@ -2,6 +2,7 @@ import { GuildStarboardEntry } from '../../lib/shinpuru-ts/src';
 import { MediaTile } from './MediaTile';
 import { ReactComponent as StarIcon } from '../../assets/starfilled.svg';
 import styled from 'styled-components';
+import { uid } from 'react-uid';
 
 type Props = {
   entry: GuildStarboardEntry;
@@ -84,7 +85,7 @@ export const StarboardEntry: React.FC<Props> = ({ entry }) => {
         {entry.media_urls.length > 0 && (
           <ImageCotnainer>
             {entry.media_urls.map((e) => (
-              <MediaTile url={e} />
+              <MediaTile key={uid(e)} url={e} />
             ))}
           </ImageCotnainer>
         )}

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 type Props = {};
 
 const KarmaRoute: React.FC<Props> = ({}) => {
-  const { t } = useTranslation('routes.guildstarboard');
+  const { t } = useTranslation('routes.guildskarma');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();
   const fetch = useApi();
