@@ -4,5 +4,6 @@
     "latest": "Latest first",
     "top": "Top posts first"
   },
-  "loadmore": "Load more ..."
+  "loadmore": "Load more ...",
+  "empty": "Hm, nothing's going on here ...<br />Did you already set up the starboard? If not, use the <code>/starboard</code> command to do so."
 }

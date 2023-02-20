@@ -1,20 +1,22 @@
 import { GuildStarboardEntry, StarboardSortOrder } from '../../../lib/shinpuru-ts/src';
 import React, { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '../../../components/Button';
+import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
+import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { ReactComponent as RefreshIcon } from '../../../assets/refresh.svg';
+import { ReactComponent as StarIcon } from '../../../assets/star.svg';
 import { StarboardEntry } from '../../../components/StarboardEntry';
 import styled from 'styled-components';
 import { useApi } from '../../../hooks/useApi';
-import { useNotifications } from '../../../hooks/useNotifications';
 import { useParams } from 'react-router';
-import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 const Header = styled.div`
   display: flex;
@@ -35,9 +37,32 @@ const Header = styled.div`
   }
 `;
 
+const NoEntries = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+  margin-top: 2em;
+  font-weight: 300;
+  opacity: 0.5;
+  text-align: center;
+  line-height: 1.5em;
+
+  > span {
+    max-width: 30em;
+  }
+
+  > svg {
+    width: 10em;
+    height: 10em;
+    stroke-width: 0.5px;
+    opacity: 0.5;
+  }
+`;
+
 const StarboardRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.guildstarboard');
-  const { pushNotification } = useNotifications();
   const { guildid } = useParams();
   const fetch = useApi();
 
@@ -78,15 +103,36 @@ const StarboardRoute: React.FC<Props> = ({}) => {
           <RefreshIcon />
         </Button>
       </Header>
-      {entries && (
-        <Flex direction="column" gap="1em">
-          {entries.map((e) => (
-            <StarboardEntry entry={e} />
-          ))}
-          {entries.length < totalCountRef.current && (
-            <Button onClick={_loadMore}>{t('loadmore')}</Button>
-          )}
-        </Flex>
+      <Flex direction="column" gap="1em">
+        {(entries && (
+          <>
+            {entries.map((e) => (
+              <StarboardEntry entry={e} />
+            ))}
+            {entries.length < totalCountRef.current && (
+              <Button onClick={_loadMore}>{t('loadmore')}</Button>
+            )}
+          </>
+        )) || (
+          <>
+            <Loader width="100%" height="10em" />
+            <Loader width="100%" height="15em" />
+            <Loader width="100%" height="8em" />
+            <Loader width="100%" height="12em" />
+          </>
+        )}
+      </Flex>
+      {entries && entries.length === 0 && (
+        <NoEntries>
+          <StarIcon />
+          <span>
+            <Trans
+              ns="routes.guildstarboard"
+              i18nKey="empty"
+              components={{ code: <Embed />, br: <br /> }}
+            />
+          </span>
+        </NoEntries>
       )}
     </MaxWidthContainer>
   );
