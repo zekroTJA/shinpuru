@@ -1565,7 +1565,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequestsCount(guildID string, state *mode
 	query := "SELECT COUNT(id) FROM unbanRequests WHERE guildID = ?"
 	params := []interface{}{guildID}
 	if state != nil {
-		query += " AND state = ?"
+		query += " AND status = ?"
 		params = append(params, *state)
 	}
 	err = m.Db.QueryRow(
