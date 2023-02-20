@@ -243,6 +243,7 @@ type Database interface {
 	SetStarboardEntry(e models.StarboardEntry) (err error)
 	RemoveStarboardEntry(msgID string) error
 	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]models.StarboardEntry, error)
+	GetStarboardEntriesCount(guildID string) (int, error)
 	GetStarboardEntry(messageID string) (models.StarboardEntry, error)
 
 	//////////////////////////////////////////////////////

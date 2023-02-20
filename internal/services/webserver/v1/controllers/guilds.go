@@ -58,6 +58,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid", c.getGuild)
 	router.Get("/:guildid/scoreboard", c.getGuildScoreboard)
 	router.Get("/:guildid/starboard", c.getGuildStarboard)
+	router.Get("/:guildid/starboard/count", c.getGuildStarboardCount)
 	router.Get("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildAntiraidJoinlog)
 	router.Delete("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.deleteGuildAntiraidJoinlog)
 	router.Get("/:guildid/reports", c.getReports)
@@ -291,6 +292,27 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(models.NewListResponse(results[:i]))
+}
+
+// @Summary Get Guild Starboard Count
+// @Description Returns the count of starboard entries for the given guild.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} models.Count
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/starboard/count [get]
+func (c *GuildsController) getGuildStarboardCount(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	count, err := c.db.GetStarboardEntriesCount(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(models.Count{Count: count})
 }
 
 // @Summary Get Guild Modlog

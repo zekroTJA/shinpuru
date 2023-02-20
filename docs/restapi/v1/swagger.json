@@ -2460,6 +2460,50 @@
                 }
             }
         },
+        "/guilds/{id}/starboard/count": {
+            "get": {
+                "description": "Returns the count of starboard entries for the given guild.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Get Guild Starboard Count",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{id}/unbanrequests": {
             "get": {
                 "description": "Returns the list of the guild unban requests.",

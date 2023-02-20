@@ -1828,6 +1828,12 @@ func (m *MysqlMiddleware) GetStarboardEntries(
 	return
 }
 
+func (m *MysqlMiddleware) GetStarboardEntriesCount(guildID string) (n int, err error) {
+	err = m.Db.QueryRow(
+		"SELECT COUNT(messageID) FROM starboardEntries WHERE guildID = ?", guildID).Scan(&n)
+	return
+}
+
 func (m *MysqlMiddleware) GetStarboardEntry(messageID string) (e models.StarboardEntry, err error) {
 	var mediaURLencoded string
 	err = m.Db.QueryRow(

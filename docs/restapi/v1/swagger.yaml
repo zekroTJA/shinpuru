@@ -3865,6 +3865,35 @@ paths:
       summary: Get Guild Starboard
       tags:
       - Guilds
+  /guilds/{id}/starboard/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the count of starboard entries for the given guild.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
+      summary: Get Guild Starboard Count
+      tags:
+      - Guilds
   /guilds/{id}/unbanrequests:
     get:
       consumes:
