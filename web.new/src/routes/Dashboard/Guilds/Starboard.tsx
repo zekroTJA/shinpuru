@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '../../../components/Button';
 import { Embed } from '../../../components/Embed';
+import { EmptyPlaceholder } from '../../../components/EmptyPlaceholder';
 import { Flex } from '../../../components/Flex';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
@@ -35,30 +36,6 @@ const Header = styled.div`
   > ${Button} {
     padding: 0.5em;
     border-radius: 8px;
-  }
-`;
-
-const NoEntries = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2em;
-  margin-top: 2em;
-  font-weight: 300;
-  opacity: 0.5;
-  text-align: center;
-  line-height: 1.5em;
-
-  > span {
-    max-width: 30em;
-  }
-
-  > svg {
-    width: 10em;
-    height: 10em;
-    stroke-width: 0.5px;
-    opacity: 0.5;
   }
 `;
 
@@ -124,16 +101,13 @@ const StarboardRoute: React.FC<Props> = ({}) => {
         )}
       </Flex>
       {entries && entries.length === 0 && (
-        <NoEntries>
-          <StarIcon />
-          <span>
-            <Trans
-              ns="routes.guildstarboard"
-              i18nKey="empty"
-              components={{ code: <Embed />, br: <br /> }}
-            />
-          </span>
-        </NoEntries>
+        <EmptyPlaceholder icon={<StarIcon />}>
+          <Trans
+            ns="routes.guildstarboard"
+            i18nKey="empty"
+            components={{ code: <Embed />, br: <br /> }}
+          />
+        </EmptyPlaceholder>
       )}
     </MaxWidthContainer>
   );
