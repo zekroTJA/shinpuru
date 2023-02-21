@@ -11,6 +11,7 @@ import { DiscordImage } from '../DiscordImage';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
 import { Flex } from '../Flex';
+import { ReactComponent as GlobalSettingsIcon } from '../../assets/settings.svg';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
@@ -38,8 +39,30 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
-const StyledHoverplate = styled(Hoverplate)`
+const StyledHoverplate = styled(Hoverplate)``;
+
+const HoverplateContainer = styled.div`
   margin-top: auto;
+  gap: 0.5em;
+  display: flex;
+
+  > ${StyledHoverplate} {
+    width: 100%;
+  }
+
+  > ${Button} {
+    padding: 0.7em;
+    border-radius: 8px;
+
+    > svg {
+      width: 1.5em;
+      height: 1.5em;
+    }
+  }
+
+  @media (orientation: portrait) {
+    flex-direction: column;
+  }
 `;
 
 const StyledEntry = styled(Entry)``;
@@ -55,7 +78,6 @@ const SelfContainer = styled.div`
   background-color: ${(p) => p.theme.background3};
   border-radius: 8px;
   padding: 0.5em;
-  margin-top: 1em;
 
   > img {
     width: 2em;
@@ -220,25 +242,32 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
         )}
       </EntryContainer>
 
-      <StyledHoverplate
-        hoverContent={
-          <Flex gap="1em">
-            <Button variant="orange" onClick={_logout}>
-              {t('logout')}
-            </Button>
-            <Button onClick={_userSettings}>{t('user-settings')}</Button>
-          </Flex>
-        }>
-        {(self && (
-          <SelfContainer>
-            <DiscordImage src={self?.avatar_url} round />
-            <span>
-              {self?.username}
-              <TriangleIcon />
-            </span>
-          </SelfContainer>
-        )) || <Loader width="100%" height="2em" borderRadius="8px" />}
-      </StyledHoverplate>
+      <HoverplateContainer>
+        <StyledHoverplate
+          hoverContent={
+            <Flex gap="1em">
+              <Button variant="orange" onClick={_logout}>
+                {t('logout')}
+              </Button>
+              <Button onClick={_userSettings}>{t('user-settings')}</Button>
+            </Flex>
+          }>
+          {(self && (
+            <SelfContainer>
+              <DiscordImage src={self?.avatar_url} round />
+              <span>
+                {self?.username}
+                <TriangleIcon />
+              </span>
+            </SelfContainer>
+          )) || <Loader width="100%" height="2em" borderRadius="8px" />}
+        </StyledHoverplate>
+        {self?.bot_owner && (
+          <Button variant="gray" onClick={() => nav('/settings')}>
+            <GlobalSettingsIcon />
+          </Button>
+        )}
+      </HoverplateContainer>
     </StyledNavbar>
   );
 };

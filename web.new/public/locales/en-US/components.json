@@ -39,6 +39,14 @@
       }
     }
   },
+  "navbar-settings": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "presence": "Presence"
+      }
+    }
+  },
   "sincedate": {
     "since": "<1>{{dateSince}}</1> ago"
   },

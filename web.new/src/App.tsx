@@ -44,6 +44,9 @@ const APITokenRoute = React.lazy(() => import('./routes/UserSettings/APIToken'))
 const OTARoute = React.lazy(() => import('./routes/UserSettings/OTA'));
 const PrivacyRoute = React.lazy(() => import('./routes/UserSettings/Privacy'));
 
+const SettingsRoute = React.lazy(() => import('./routes/Settings'));
+const PresenceRoute = React.lazy(() => import('./routes/Settings/Presence'));
+
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: ${(p) => p.theme.background};
@@ -266,6 +269,24 @@ export const App: React.FC = () => {
                 }
               />
               <Route path="" element={<Navigate to="apitoken" />} />
+            </Route>
+
+            <Route
+              path="settings"
+              element={
+                <RouteSuspense>
+                  <SettingsRoute />
+                </RouteSuspense>
+              }>
+              <Route
+                path="presence"
+                element={
+                  <RouteSuspense>
+                    <PresenceRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route path="" element={<Navigate to="presence" />} />
             </Route>
 
             <Route path="*" element={<Navigate to="db" />} />

@@ -1,6 +1,6 @@
+import { NavbarSettings, NavbarUserSettings } from '../components/Navbar';
 import React, { useEffect } from 'react';
 
-import { NavbarUserSettings } from '../components/Navbar';
 import { Outlet } from 'react-router';
 import styled from 'styled-components';
 
@@ -18,12 +18,12 @@ const RouterOutlet = styled.main`
   overflow-y: auto;
 `;
 
-const UserSettingsRoute: React.FC<Props> = ({}) => {
+const SettingsRoute: React.FC<Props> = ({}) => {
   useEffect(() => {}, []);
 
   return (
     <RouteContainer>
-      <NavbarUserSettings />
+      <NavbarSettings />
       <RouterOutlet>
         <Outlet />
       </RouterOutlet>
@@ -31,4 +31,4 @@ const UserSettingsRoute: React.FC<Props> = ({}) => {
   );
 };
 
-export default UserSettingsRoute;
+export default SettingsRoute;
