@@ -16,8 +16,10 @@ import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { Hoverplate } from '../Hoverplate';
+import { ReactComponent as InfoIcon } from '../../assets/info.svg';
 import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
 import { Loader } from '../Loader';
+import { ReactComponent as LogoutIcon } from '../../assets/logout.svg';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
 import { Navbar } from './Navbar';
 import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
@@ -26,6 +28,7 @@ import { Section } from './Section';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as StarboardIcon } from '../../assets/star.svg';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
+import { ReactComponent as UserSettingsIcon } from '../../assets/tool.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { ReactComponent as VerificationIcon } from '../../assets/verification.svg';
 import styled from 'styled-components';
@@ -39,16 +42,23 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
-const StyledHoverplate = styled(Hoverplate)``;
+const StyledHoverplate = styled(Hoverplate)`
+  width: 100%;
+`;
 
-const HoverplateContainer = styled.div`
+const HoverplateContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 30vw;
+  max-width: 13rem;
+`;
+
+const BottomContainer = styled.div`
   margin-top: auto;
   gap: 0.5em;
   display: flex;
-
-  > ${StyledHoverplate} {
-    width: 100%;
-  }
+  padding-top: 1em;
 
   > ${Button} {
     padding: 0.7em;
@@ -97,6 +107,13 @@ const SelfContainer = styled.div`
   }
 `;
 
+const HoverplateButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+`;
+
 const StyledNavbar = styled(Navbar)`
   @media (orientation: portrait) {
     ${StyledEntry}, ${SelfContainer} {
@@ -138,10 +155,6 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
     fetch((c) => c.auth.logout())
       .then(() => nav('/start'))
       .catch();
-  };
-
-  const _userSettings = () => {
-    nav('/usersettings');
   };
 
   return (
@@ -242,15 +255,23 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
         )}
       </EntryContainer>
 
-      <HoverplateContainer>
+      <BottomContainer>
         <StyledHoverplate
           hoverContent={
-            <Flex gap="1em">
-              <Button variant="orange" onClick={_logout}>
-                {t('logout')}
-              </Button>
-              <Button onClick={_userSettings}>{t('user-settings')}</Button>
-            </Flex>
+            <HoverplateContent>
+              <HoverplateButton onClick={() => nav('/usersettings')}>
+                <UserSettingsIcon />
+                <span>{t('user-settings')}</span>
+              </HoverplateButton>
+              <HoverplateButton variant="blue" onClick={() => nav('/info')}>
+                <InfoIcon />
+                <span>{t('info')}</span>
+              </HoverplateButton>
+              <HoverplateButton variant="orange" onClick={_logout}>
+                <LogoutIcon />
+                <span>{t('logout')}</span>
+              </HoverplateButton>
+            </HoverplateContent>
           }>
           {(self && (
             <SelfContainer>
@@ -267,7 +288,7 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
             <GlobalSettingsIcon />
           </Button>
         )}
-      </HoverplateContainer>
+      </BottomContainer>
     </StyledNavbar>
   );
 };

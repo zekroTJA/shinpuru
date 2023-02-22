@@ -1,5 +1,6 @@
-import { useRef } from 'react';
 import styled, { css } from 'styled-components';
+
+import { useRef } from 'react';
 
 type Direction = 'top' | 'bottom';
 
@@ -16,7 +17,7 @@ const PlateContainer = styled.div<{ height?: number; direction: Direction }>`
   padding: 1em 1em 1em 1em;
   z-index: -1;
   border-radius: 12px;
-  box-shadow: 0 0.5em 1em 0 rgba(0 0 0 / 0.2);
+  box-shadow: 0 0.5em 2em 0 rgba(0 0 0 / 0.4);
 
   opacity: 0;
   pointer-events: none;

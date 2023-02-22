@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-
 import { NavbarUserSettings } from '../components/Navbar';
 import { Outlet } from 'react-router';
+import React from 'react';
 import styled from 'styled-components';
 
 type Props = {};
@@ -19,8 +18,6 @@ const RouterOutlet = styled.main`
 `;
 
 const UserSettingsRoute: React.FC<Props> = ({}) => {
-  useEffect(() => {}, []);
-
   return (
     <RouteContainer>
       <NavbarUserSettings />

@@ -56,8 +56,6 @@ export const NavbarUserSettings: React.FC<Props> = ({}) => {
   const { t } = useTranslation('components', { keyPrefix: 'navbar-usersettings' });
   const nav = useNavigate();
 
-  useEffect(() => {}, []);
-
   return (
     <StyledNavbar>
       <EntryContainer>

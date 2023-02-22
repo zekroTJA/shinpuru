@@ -27,6 +27,7 @@
       }
     },
     "logout": "Logout",
+    "info": "Info",
     "user-settings": "User Settings"
   },
   "navbar-usersettings": {
@@ -44,6 +45,16 @@
     "section": {
       "default": {
         "presence": "Presence"
+      }
+    }
+  },
+  "navbar-info": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "general": "General Info",
+        "commands": "Commands",
+        "system": "System Information"
       }
     }
   },
@@ -168,6 +179,21 @@
     "placeholder": {
       "roles": "Roles",
       "perms": "sp.guild.mod.*"
+    }
+  },
+  "commandtile": {
+    "description": "Description",
+    "subdomains": "Sub Domains",
+    "arguments": "Arguments",
+    "subcommands": "Sub Commands",
+    "dmcapable": "This command can be used in Direct Messages.",
+    "args": {
+      "argument": "Argument",
+      "type": "Type",
+      "required": "Required",
+      "description": "Description",
+      "yes": "Yes",
+      "no": "No"
     }
   }
 }

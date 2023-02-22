@@ -85,7 +85,7 @@ export class UtilClient extends SubClient {
   }
 
   slashcommands(): Promise<ListResponse<CommandInfo>> {
-    return this.req('GET', 'landingpageinfo');
+    return this.req('GET', 'slashcommands');
   }
 }
 

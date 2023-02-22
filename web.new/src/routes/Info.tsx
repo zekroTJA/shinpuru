@@ -1,3 +1,4 @@
+import { NavbarInfo } from '../components/Navbar/NavbarInfo';
 import { NavbarSettings } from '../components/Navbar';
 import { Outlet } from 'react-router';
 import React from 'react';
@@ -17,10 +18,10 @@ const RouterOutlet = styled.main`
   overflow-y: auto;
 `;
 
-const SettingsRoute: React.FC<Props> = ({}) => {
+const InfoRoute: React.FC<Props> = ({}) => {
   return (
     <RouteContainer>
-      <NavbarSettings />
+      <NavbarInfo />
       <RouterOutlet>
         <Outlet />
       </RouterOutlet>
@@ -28,4 +29,4 @@ const SettingsRoute: React.FC<Props> = ({}) => {
   );
 };
 
-export default SettingsRoute;
+export default InfoRoute;

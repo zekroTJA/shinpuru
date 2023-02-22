@@ -1,13 +1,14 @@
 import { ReactComponent as APITokenIcon } from '../../assets/key.svg';
 import { ReactComponent as BackIcon } from '../../assets/back.svg';
+import { ReactComponent as BookIcon } from '../../assets/book.svg';
 import { Button } from '../Button';
+import { ReactComponent as CommandsIcon } from '../../assets/command.svg';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
 import { GuildSelect } from '../GuildSelect';
 import { Navbar } from './Navbar';
-import { ReactComponent as PresenceIcon } from '../../assets/halfmoon.svg';
+import { ReactComponent as SystemIcon } from '../../assets/cpu.svg';
 import styled from 'styled-components';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -51,17 +52,25 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
-export const NavbarSettings: React.FC<Props> = ({}) => {
-  const { t } = useTranslation('components', { keyPrefix: 'navbar-settings' });
+export const NavbarInfo: React.FC<Props> = ({}) => {
+  const { t } = useTranslation('components', { keyPrefix: 'navbar-info' });
   const nav = useNavigate();
 
   return (
     <StyledNavbar>
       <EntryContainer>
         <div>
-          <StyledEntry path={`/settings/presence`}>
-            <PresenceIcon />
-            <span>{t('section.default.presence')}</span>
+          <StyledEntry path={`/info/general`}>
+            <BookIcon />
+            <span>{t('section.default.general')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/info/commands`}>
+            <CommandsIcon />
+            <span>{t('section.default.commands')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/info/system`}>
+            <SystemIcon />
+            <span>{t('section.default.system')}</span>
           </StyledEntry>
         </div>
       </EntryContainer>

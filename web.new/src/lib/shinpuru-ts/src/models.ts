@@ -153,9 +153,11 @@ export interface ReportRequest extends ReasonRequest {
   type: number;
 }
 
+export type Status = 'online' | 'dnd' | 'idle' | 'invisible';
+
 export interface Presence {
   game: string;
-  status: string;
+  status: Status;
 }
 
 export interface InviteSettingsRequest {

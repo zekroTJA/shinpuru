@@ -47,6 +47,11 @@ const PrivacyRoute = React.lazy(() => import('./routes/UserSettings/Privacy'));
 const SettingsRoute = React.lazy(() => import('./routes/Settings'));
 const PresenceRoute = React.lazy(() => import('./routes/Settings/Presence'));
 
+const InfoRoute = React.lazy(() => import('./routes/Info'));
+const GeneralInfoRoute = React.lazy(() => import('./routes/Info/General'));
+const CommandsRoute = React.lazy(() => import('./routes/Info/Commands'));
+const SystemRoute = React.lazy(() => import('./routes/Info/System'));
+
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: ${(p) => p.theme.background};
@@ -287,6 +292,40 @@ export const App: React.FC = () => {
                 }
               />
               <Route path="" element={<Navigate to="presence" />} />
+            </Route>
+
+            <Route
+              path="info"
+              element={
+                <RouteSuspense>
+                  <InfoRoute />
+                </RouteSuspense>
+              }>
+              <Route
+                path="general"
+                element={
+                  <RouteSuspense>
+                    <GeneralInfoRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="commands"
+                element={
+                  <RouteSuspense>
+                    <CommandsRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="system"
+                element={
+                  <RouteSuspense>
+                    <SystemRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route path="" element={<Navigate to="general" />} />
             </Route>
 
             <Route path="*" element={<Navigate to="db" />} />
