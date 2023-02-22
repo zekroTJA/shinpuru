@@ -1,5 +1,6 @@
-import { APIError } from './errors';
 import { AccessTokenModel, ErrorReponse } from './models';
+
+import { APIError } from './errors';
 import { replaceDoublePath } from './util';
 
 export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'PATCH' | 'OPTIONS';

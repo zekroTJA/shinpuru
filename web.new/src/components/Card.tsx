@@ -1,6 +1,6 @@
 import Color from 'color';
-import styled from 'styled-components';
 import { LinearGradient } from './styleParts';
+import styled from 'styled-components';
 
 type Props = {
   color?: string;

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 import styled, { useTheme } from 'styled-components';
+import { useEffect, useState } from 'react';
+
 import { ColorTile } from '../../../components/ColorTile';
-import { useApi } from '../../../hooks/useApi';
 import { Guild } from '../../../lib/shinpuru-ts/src';
+import { useApi } from '../../../hooks/useApi';
+import { useParams } from 'react-router';
 
 type Props = {};
 

@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { ReactComponent as ArrowIcon } from '../assets/back.svg';
 import { Button } from '../components/Button';
+import React from 'react';
 import styled from 'styled-components';
 
 type Props = {};

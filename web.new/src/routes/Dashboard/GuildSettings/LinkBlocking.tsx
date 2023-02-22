@@ -6,7 +6,6 @@ import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
-import styled from 'styled-components';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';

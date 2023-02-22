@@ -9,7 +9,6 @@ import { Loader } from '../components/Loader';
 import { ModalUnbanRequest } from '../components/Modals/ModalUnbanRequest';
 import { UnbanRequestTile } from '../components/UnbanRequestTile';
 import styled from 'styled-components';
-import { tr } from 'date-fns/locale';
 import { useApi } from '../hooks/useApi';
 import { useEffectAsync } from '../hooks/useEffectAsync';
 import { useNavigate } from 'react-router-dom';

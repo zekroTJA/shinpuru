@@ -1,8 +1,8 @@
-import styled from 'styled-components';
 import { Container } from '../Container';
 import { Heading } from '../Heading';
 import { ModalControls } from './ModalControls';
 import { ModalHeader } from './ModalHeader';
+import styled from 'styled-components';
 
 const BACKGROUND_ID = ':modal-background';
 

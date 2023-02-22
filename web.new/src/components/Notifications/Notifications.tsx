@@ -1,7 +1,7 @@
-import { uid } from 'react-uid';
-import styled from 'styled-components';
-import { useNotifications } from '../../hooks/useNotifications';
 import { NotificationTile } from './Notification';
+import styled from 'styled-components';
+import { uid } from 'react-uid';
+import { useNotifications } from '../../hooks/useNotifications';
 
 type Props = {};
 

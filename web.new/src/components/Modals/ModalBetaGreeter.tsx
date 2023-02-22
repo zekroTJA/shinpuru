@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+
 import { Button } from '../Button';
 import { Modal } from '../Modal/Modal';
+import ReactMarkdown from 'react-markdown';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 

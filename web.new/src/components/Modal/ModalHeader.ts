@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { Heading } from '../Heading';
+import styled from 'styled-components';
 
 export const ModalHeader = styled.header`
   display: flex;

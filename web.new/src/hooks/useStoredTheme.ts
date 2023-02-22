@@ -1,5 +1,6 @@
-import { useStore } from '../services/store';
 import { AppTheme, DarkTheme, LightTheme, Theme } from '../theme/theme';
+
+import { useStore } from '../services/store';
 
 export function useStoredTheme() {
   const appTheme = useStore((s) => s.theme);

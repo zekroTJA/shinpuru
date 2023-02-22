@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { TextAlignProps } from './props';
+import styled from 'styled-components';
 
 type Props = TextAlignProps & {};
 

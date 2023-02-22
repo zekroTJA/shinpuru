@@ -1,4 +1,3 @@
-import { ReactComponent as APITokenIcon } from '../../assets/key.svg';
 import { ReactComponent as BackIcon } from '../../assets/back.svg';
 import { Button } from '../Button';
 import { Entry } from './Entry';
@@ -7,7 +6,6 @@ import { GuildSelect } from '../GuildSelect';
 import { Navbar } from './Navbar';
 import { ReactComponent as PresenceIcon } from '../../assets/halfmoon.svg';
 import styled from 'styled-components';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 

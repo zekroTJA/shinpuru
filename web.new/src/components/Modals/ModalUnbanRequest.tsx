@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Guild } from '../../lib/shinpuru-ts/src';
-import { Button } from '../Button';
-import { Modal } from '../Modal';
-import { ControlProps } from '../Modal/Modal';
 import { ModalContainer, ModalTextArea } from './modalParts';
+import { Trans, useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+
+import { Button } from '../Button';
+import { ControlProps } from '../Modal/Modal';
+import { Guild } from '../../lib/shinpuru-ts/src';
+import { Modal } from '../Modal';
 
 type Props = ControlProps & {
   guild?: Guild;

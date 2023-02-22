@@ -1,4 +1,3 @@
-import { ReactComponent as APITokenIcon } from '../../assets/key.svg';
 import { ReactComponent as BackIcon } from '../../assets/back.svg';
 import { ReactComponent as BookIcon } from '../../assets/book.svg';
 import { Button } from '../Button';

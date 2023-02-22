@@ -1,8 +1,9 @@
-import Color from 'color';
-import { useRef, useState } from 'react';
-import { uid } from 'react-uid';
 import styled, { css } from 'styled-components';
+import { useRef, useState } from 'react';
+
+import Color from 'color';
 import { ReactComponent as RemoveIcon } from '../../assets/close.svg';
+import { uid } from 'react-uid';
 
 type Props<T> = {
   selected: TagElement<T>[];

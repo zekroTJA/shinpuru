@@ -1,6 +1,6 @@
-import styled from 'styled-components';
 import { Flex } from '../Flex';
 import { LinearGradient } from '../styleParts';
+import styled from 'styled-components';
 
 type HintProps = {
   color?: string;

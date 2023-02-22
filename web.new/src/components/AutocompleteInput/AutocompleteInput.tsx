@@ -1,9 +1,10 @@
+import styled, { css } from 'styled-components';
+import { useEffect, useReducer, useRef } from 'react';
+
 import Color from 'color';
 import Fuse from 'fuse.js';
-import { useEffect, useReducer, useRef } from 'react';
-import { uid } from 'react-uid';
-import styled, { css } from 'styled-components';
 import { Input } from '../Input';
+import { uid } from 'react-uid';
 
 type Props = {
   value: string;

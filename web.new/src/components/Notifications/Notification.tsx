@@ -1,4 +1,4 @@
-import { Notification, NotificationMeta, NotificationType } from './models';
+import { Notification, NotificationMeta } from './models';
 import styled, { Keyframes, css, keyframes } from 'styled-components';
 
 import { ANIMATION_DELAY } from '../../hooks/useNotifications';

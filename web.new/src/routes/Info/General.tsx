@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
 
 import { ReactComponent as APIIcon } from '../../assets/api.svg';
 import { ReactComponent as BookIcon } from '../../assets/book.svg';
 import { ReactComponent as BugIcon } from '../../assets/bug.svg';
 import { ReactComponent as CubeIcon } from '../../assets/dashed-cube.svg';
-import { ReactComponent as DeleteIcon } from '../../assets/delete.svg';
 import { Flex } from '../../components/Flex';
 import { ReactComponent as GithubIcon } from '../../assets/github.svg';
 import { ReactComponent as IDIcon } from '../../assets/id.svg';
@@ -19,7 +17,7 @@ import { range } from '../../util/utils';
 import styled from 'styled-components';
 import { uid } from 'react-uid';
 import { useApi } from '../../hooks/useApi';
-import { useNotifications } from '../../hooks/useNotifications';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 type Props = {};

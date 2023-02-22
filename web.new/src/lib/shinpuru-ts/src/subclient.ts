@@ -1,5 +1,6 @@
-import { Client } from './client';
 import { HttpHeadersMap, HttpMethod, IHttpClient } from './httpclient';
+
+import { Client } from './client';
 
 export class SubClient implements IHttpClient {
   constructor(private client: Client, protected sub: string) {}
@@ -8,7 +9,7 @@ export class SubClient implements IHttpClient {
     method: HttpMethod,
     path: string,
     body?: object,
-    appendHeaders?: HttpHeadersMap
+    appendHeaders?: HttpHeadersMap,
   ): Promise<TResp> {
     return this.client.req(method, `${this.sub}/${path}`, body, appendHeaders);
   }

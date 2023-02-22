@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { JoinlogEntry } from '../lib/shinpuru-ts/src';
-import { formatDate } from '../util/date';
 import { Embed } from './Embed';
+import { JoinlogEntry } from '../lib/shinpuru-ts/src';
 import { SinceDate } from './SinceDate';
+import { formatDate } from '../util/date';
+import styled from 'styled-components';
 
 const StyledTr = styled.tr<{ selected: boolean }>`
   cursor: pointer;

@@ -1,5 +1,4 @@
 import { NavbarInfo } from '../components/Navbar/NavbarInfo';
-import { NavbarSettings } from '../components/Navbar';
 import { Outlet } from 'react-router';
 import React from 'react';
 import styled from 'styled-components';

@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled, { keyframes } from 'styled-components';
+import { useRef, useState } from 'react';
+
+import { useTranslation } from 'react-i18next';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   content: string;

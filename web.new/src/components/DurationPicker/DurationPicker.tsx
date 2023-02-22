@@ -1,7 +1,7 @@
+import { Input } from '../Input';
+import styled from 'styled-components';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { Input } from '../Input';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   value?: number;

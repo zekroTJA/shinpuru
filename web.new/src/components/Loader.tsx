@@ -1,5 +1,6 @@
-import Color from 'color';
 import styled, { keyframes } from 'styled-components';
+
+import Color from 'color';
 
 type Props = {
   width?: string;

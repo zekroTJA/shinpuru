@@ -1,4 +1,5 @@
 import { Trans, useTranslation } from 'react-i18next';
+
 import { formatSince } from '../../util/date';
 
 type Props = {

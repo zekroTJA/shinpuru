@@ -1,11 +1,12 @@
-import { useMemo, useReducer } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Guild, KarmaRule, KarmaRuleAction, KarmaRuleTrigger } from '../../lib/shinpuru-ts/src';
+import { Trans, useTranslation } from 'react-i18next';
+import { getActionOptions, getRoleOptions, getTriggerOptions } from './shared';
+import { useMemo, useReducer } from 'react';
+
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { Select } from '../Select';
-import { getActionOptions, getRoleOptions, getTriggerOptions } from './shared';
+import styled from 'styled-components';
 
 type Props = {
   guild: Guild;

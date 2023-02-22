@@ -1,4 +1,5 @@
 import { Guild, KarmaRuleAction, KarmaRuleTrigger } from '../../lib/shinpuru-ts/src';
+
 import { Element } from '../Select';
 
 type TranslateFunc = (v: string) => string;

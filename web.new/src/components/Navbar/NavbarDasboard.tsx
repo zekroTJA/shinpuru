@@ -10,7 +10,6 @@ import { ReactComponent as DataIcon } from '../../assets/data.svg';
 import { DiscordImage } from '../DiscordImage';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
-import { Flex } from '../Flex';
 import { ReactComponent as GlobalSettingsIcon } from '../../assets/settings.svg';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';

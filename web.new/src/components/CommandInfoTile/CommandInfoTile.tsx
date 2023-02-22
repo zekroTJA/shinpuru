@@ -1,7 +1,6 @@
 import { CommandInfo, CommandOptionType } from '../../lib/shinpuru-ts/src';
 
 import { ArgsTable } from './ArgsTable';
-import Color from 'color';
 import { Embed } from '../Embed';
 import { Flex } from '../Flex';
 import { ReactComponent as MailIcon } from '../../assets/mail.svg';

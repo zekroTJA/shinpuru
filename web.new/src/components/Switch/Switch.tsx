@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
-import styled from 'styled-components';
 import { Styled } from '../props';
+import styled from 'styled-components';
 
 type Theme = {
   disabledColor: string;

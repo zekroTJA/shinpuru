@@ -1,9 +1,9 @@
-import styled from 'styled-components';
-import { Guild } from '../../lib/shinpuru-ts/src';
+import { Clickable } from '../styleParts';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Embed } from '../Embed';
-import { Clickable } from '../styleParts';
+import { Guild } from '../../lib/shinpuru-ts/src';
+import styled from 'styled-components';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   guild: Guild;

@@ -8,7 +8,6 @@ import { Navbar } from './Navbar';
 import { ReactComponent as ShieldIcon } from '../../assets/shield.svg';
 import { ReactComponent as TicketIcon } from '../../assets/ticket.svg';
 import styled from 'styled-components';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
