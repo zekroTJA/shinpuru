@@ -69,7 +69,7 @@ func (c *Guild) Run(ctx ken.Context) (err error) {
 		return
 	}
 
-	clr, err := colors.GetVibrantColorFromImageUrl(g.IconURL())
+	clr, err := colors.GetVibrantColorFromImageUrl(g.IconURL(""))
 	if err != nil {
 		clr = static.ColorEmbedDefault
 	}
@@ -153,7 +153,7 @@ func (c *Guild) Run(ctx ken.Context) (err error) {
 		c.wrapBool(backupsEnabled), c.wrapBool(inviteBlockEnabled != ""), c.wrapBool(antiraidEnabled))
 
 	emb := embedbuilder.New().
-		WithThumbnail(g.IconURL(), "", 100, 100).
+		WithThumbnail(g.IconURL(""), "", 100, 100).
 		WithColor(clr).
 		AddField("Name", g.Name).
 		AddField("ID", fmt.Sprintf("```\n%s\n```", g.ID)).

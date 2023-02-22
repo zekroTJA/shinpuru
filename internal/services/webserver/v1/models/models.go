@@ -465,7 +465,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		VerificationLevel:        g.VerificationLevel,
 
 		SelfMember: selfmm,
-		IconURL:    g.IconURL(),
+		IconURL:    g.IconURL(""),
 	}
 
 	if db != nil {
@@ -514,7 +514,7 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 		ID:          g.ID,
 		Name:        g.Name,
 		Icon:        g.Icon,
-		IconURL:     g.IconURL(),
+		IconURL:     g.IconURL(""),
 		Region:      g.Region,
 		OwnerID:     g.OwnerID,
 		JoinedAt:    g.JoinedAt,

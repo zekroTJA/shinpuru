@@ -1759,6 +1759,27 @@ func (_m *Database) GetStarboardEntries(guildID string, sortBy models.StarboardS
 	return r0, r1
 }
 
+// GetStarboardEntriesCount provides a mock function with given fields: guildID
+func (_m *Database) GetStarboardEntriesCount(guildID string) (int, error) {
+	ret := _m.Called(guildID)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(string) int); ok {
+		r0 = rf(guildID)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(guildID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetStarboardEntry provides a mock function with given fields: messageID
 func (_m *Database) GetStarboardEntry(messageID string) (models.StarboardEntry, error) {
 	ret := _m.Called(messageID)
