@@ -27,8 +27,9 @@ export const DashboardRoute: React.FC<Props> = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    console.log(loc.pathname.replaceAll('/', ''), guilds, guilds?.length, guildid);
-    if (loc.pathname.replaceAll('/', '') === 'db' && !!guilds && guilds.length !== 0 && !guildid) {
+    if (!guilds || guilds.length === 0) {
+      nav('/welcome');
+    } else if (loc.pathname.replaceAll('/', '') === 'db' && !guildid) {
       const guild =
         guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')) ??
         guilds[0];

@@ -6,6 +6,7 @@ import { DashboardRoute } from './routes/Dashboard';
 import { DebugRoute } from './routes/Debug';
 import { HookedModal } from './components/Modal';
 import { ModalBetaGreeter } from './components/Modals/ModalBetaGreeter';
+import NoGuildsRoute from './routes/NoGuilds';
 import { Notifications } from './components/Notifications';
 import { RouteSuspense } from './components/RouteSuspense';
 import { StartRoute } from './routes/Start';
@@ -106,6 +107,14 @@ export const App: React.FC = () => {
               element={
                 <RouteSuspense>
                   <VerifyRoute />
+                </RouteSuspense>
+              }
+            />
+            <Route
+              path="welcome"
+              element={
+                <RouteSuspense>
+                  <NoGuildsRoute />
                 </RouteSuspense>
               }
             />
