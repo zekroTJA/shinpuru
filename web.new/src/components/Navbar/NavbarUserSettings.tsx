@@ -4,6 +4,7 @@ import { Button } from '../Button';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
 import { GuildSelect } from '../GuildSelect';
+import { ReactComponent as LanguageIcon } from '../../assets/language.svg';
 import { Navbar } from './Navbar';
 import { ReactComponent as ShieldIcon } from '../../assets/shield.svg';
 import { ReactComponent as TicketIcon } from '../../assets/ticket.svg';
@@ -70,6 +71,10 @@ export const NavbarUserSettings: React.FC<Props> = ({}) => {
           <StyledEntry path={`/usersettings/privacy`}>
             <ShieldIcon />
             <span>{t('section.default.privacy')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/usersettings/language`}>
+            <LanguageIcon />
+            <span>{t('section.default.language')}</span>
           </StyledEntry>
         </div>
       </EntryContainer>

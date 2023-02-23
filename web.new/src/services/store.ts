@@ -19,7 +19,7 @@ export interface Store {
   setSelfUser: (selfUser: Partial<FetchLocked<User>>) => void;
 
   guilds?: Guild[];
-  setGuilds: (guilds: Guild[]) => void;
+  setGuilds: (guilds?: Guild[]) => void;
 
   selectedGuild?: Guild;
   setSelectedGuild: (selectedGuild: Guild) => void;

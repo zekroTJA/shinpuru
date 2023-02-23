@@ -8,7 +8,7 @@ export const useGuilds = () => {
 
   useEffect(() => {
     if (!guilds) {
-      setGuilds([]);
+      setGuilds(undefined);
       fetch((c) => c.guilds.list())
         .then((res) => {
           setGuilds(res.data);

@@ -27,7 +27,8 @@ export const DashboardRoute: React.FC<Props> = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    if (!guilds || guilds.length === 0) {
+    if (!guilds) {
+    } else if (guilds.length === 0) {
       nav('/welcome');
     } else if (loc.pathname.replaceAll('/', '') === 'db' && !guildid) {
       const guild =
@@ -35,7 +36,7 @@ export const DashboardRoute: React.FC<Props> = () => {
         guilds[0];
       nav(`guilds/${guild.id}/members`);
     }
-  }, [guilds, guildid]);
+  }, [guilds]);
 
   return (
     <RouteContainer>
