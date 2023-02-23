@@ -45,6 +45,7 @@ const APITokenRoute = React.lazy(() => import('./routes/UserSettings/APIToken'))
 const OTARoute = React.lazy(() => import('./routes/UserSettings/OTA'));
 const PrivacyRoute = React.lazy(() => import('./routes/UserSettings/Privacy'));
 const LanguageRoute = React.lazy(() => import('./routes/UserSettings/Language'));
+const ThemeRoute = React.lazy(() => import('./routes/UserSettings/Theme'));
 
 const SettingsRoute = React.lazy(() => import('./routes/Settings'));
 const PresenceRoute = React.lazy(() => import('./routes/Settings/Presence'));
@@ -288,6 +289,14 @@ export const App: React.FC = () => {
                 element={
                   <RouteSuspense>
                     <LanguageRoute />
+                  </RouteSuspense>
+                }
+              />
+              <Route
+                path="theme"
+                element={
+                  <RouteSuspense>
+                    <ThemeRoute />
                   </RouteSuspense>
                 }
               />

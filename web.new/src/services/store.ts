@@ -1,6 +1,6 @@
+import { AppTheme, getSystemTheme } from '../theme/theme';
 import { Guild, User } from '../lib/shinpuru-ts/src';
 
-import { AppTheme } from '../theme/theme';
 import LocalStorageUtil from '../util/localstorage';
 import { ModalState } from '../hooks/useModal';
 import { Notification } from '../components/Notifications';
@@ -32,10 +32,7 @@ export interface Store {
 }
 
 export const useStore = create<Store>((set, get) => ({
-  theme: LocalStorageUtil.get(
-    'shnp.theme',
-    window.matchMedia('(prefers-color-scheme: dark)').matches ? AppTheme.DARK : AppTheme.LIGHT,
-  )!,
+  theme: LocalStorageUtil.get('shnp.theme', getSystemTheme())!,
   setTheme: (theme) => {
     set({ theme });
     LocalStorageUtil.set('shnp.theme', theme);

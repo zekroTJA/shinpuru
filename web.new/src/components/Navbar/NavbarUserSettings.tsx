@@ -7,6 +7,7 @@ import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as LanguageIcon } from '../../assets/language.svg';
 import { Navbar } from './Navbar';
 import { ReactComponent as ShieldIcon } from '../../assets/shield.svg';
+import { ReactComponent as ThemeIcon } from '../../assets/brush.svg';
 import { ReactComponent as TicketIcon } from '../../assets/ticket.svg';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router';
@@ -75,6 +76,10 @@ export const NavbarUserSettings: React.FC<Props> = ({}) => {
           <StyledEntry path={`/usersettings/language`}>
             <LanguageIcon />
             <span>{t('section.default.language')}</span>
+          </StyledEntry>
+          <StyledEntry path={`/usersettings/theme`}>
+            <ThemeIcon />
+            <span>{t('section.default.theme')}</span>
           </StyledEntry>
         </div>
       </EntryContainer>

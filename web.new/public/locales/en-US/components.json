@@ -37,7 +37,8 @@
         "apitoken": "API Token",
         "ota": "OTA",
         "privacy": "Privacy",
-        "language": "Language"
+        "language": "Language",
+        "theme": "Theme"
       }
     }
   },
