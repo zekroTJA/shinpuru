@@ -15,6 +15,9 @@ export interface Store {
   theme: AppTheme;
   setTheme: (v: AppTheme) => void;
 
+  accentColor?: string;
+  setAccentColor: (v?: string) => void;
+
   selfUser: FetchLocked<User>;
   setSelfUser: (selfUser: Partial<FetchLocked<User>>) => void;
 
@@ -36,6 +39,13 @@ export const useStore = create<Store>((set, get) => ({
   setTheme: (theme) => {
     set({ theme });
     LocalStorageUtil.set('shnp.theme', theme);
+  },
+
+  accentColor: LocalStorageUtil.get('shnp.accentcolor'),
+  setAccentColor: (accentColor) => {
+    set({ accentColor });
+    if (accentColor === undefined) LocalStorageUtil.del('shnp.accentcolor');
+    else LocalStorageUtil.set('shnp.accentcolor', accentColor);
   },
 
   selfUser: { value: undefined, isFetching: false },

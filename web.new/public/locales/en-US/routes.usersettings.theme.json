@@ -6,5 +6,9 @@
     "light": "Flashbang",
     "dark": "Developer Mode",
     "system": "System"
+  },
+  "accent": {
+    "heading": "Accent Color",
+    "reset": "Reset"
   }
 }
