@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+import { ModalCreateReport, ReportActionType } from '../../../components/Modals/ModalCreateReport';
 import styled, { useTheme } from 'styled-components';
+import { useEffect, useState } from 'react';
+
 import { ReactComponent as BotIcon } from '../../../assets/bot.svg';
-import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
 import { Button } from '../../../components/Button';
 import { Container } from '../../../components/Container';
 import { DiscordImage } from '../../../components/DiscordImage';
@@ -11,20 +10,22 @@ import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
 import { Heading } from '../../../components/Heading';
 import { Hint } from '../../../components/Hint';
+import { ReactComponent as InfoIcon } from '../../../assets/info.svg';
 import { KarmaTile } from '../../../components/KarmaTile';
 import { Loader } from '../../../components/Loader';
-import { ModalCreateReport, ReportActionType } from '../../../components/Modals/ModalCreateReport';
 import { PermsSimpleList } from '../../../components/Permissions';
+import { Report } from '../../../lib/shinpuru-ts/src';
 import { ReportsList } from '../../../components/Report';
 import { RoleList } from '../../../components/RoleList';
 import { SinceDate } from '../../../components/SinceDate';
-import { useGuild } from '../../../hooks/useGuild';
-import { useMember } from '../../../hooks/useMember';
-import { usePerms } from '../../../hooks/usePerms';
-import { useSelfUser } from '../../../hooks/useSelfUser';
-import { Report } from '../../../lib/shinpuru-ts/src';
 import { formatDate } from '../../../util/date';
 import { memberName } from '../../../util/users';
+import { useGuild } from '../../../hooks/useGuild';
+import { useMember } from '../../../hooks/useMember';
+import { useParams } from 'react-router';
+import { usePerms } from '../../../hooks/usePerms';
+import { useSelfUser } from '../../../hooks/useSelfUser';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -37,8 +38,11 @@ const Header = styled.div`
 const HeaderName = styled(Flex)`
   margin-bottom: 1em;
 
-  > * {
-    margin: 0 0.5em 0 0;
+  gap: 1em;
+  align-items: center;
+
+  > h1 {
+    margin: 0;
   }
 `;
 

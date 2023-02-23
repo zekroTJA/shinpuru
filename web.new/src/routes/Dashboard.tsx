@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { Outlet, useNavigate, useParams, useLocation } from 'react-router';
-import styled from 'styled-components';
-import { Navbar } from '../components/Navbar';
-import { useGuilds } from '../hooks/useGuilds';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+
 import LocalStorageUtil from '../util/localstorage';
+import { NavbarDashboard } from '../components/Navbar';
+import styled from 'styled-components';
+import { useEffect } from 'react';
+import { useGuilds } from '../hooks/useGuilds';
 
 type Props = {};
 
@@ -13,7 +14,7 @@ const RouteContainer = styled.div`
 `;
 
 const RouterOutlet = styled.main`
-  padding: 1em 1em 1em 0em;
+  padding: 1em;
   width: 100%;
   height: 100%;
   overflow-y: auto;
@@ -26,18 +27,20 @@ export const DashboardRoute: React.FC<Props> = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    console.log(loc.pathname.replaceAll('/', ''), guilds, guilds?.length, guildid);
-    if (loc.pathname.replaceAll('/', '') === 'db' && !!guilds && guilds.length !== 0 && !guildid) {
+    if (!guilds) {
+    } else if (guilds.length === 0) {
+      nav('/welcome');
+    } else if (loc.pathname.replaceAll('/', '') === 'db' && !guildid) {
       const guild =
         guilds.find((g) => g.id === LocalStorageUtil.get<string>('shnp.selectedguild')) ??
         guilds[0];
       nav(`guilds/${guild.id}/members`);
     }
-  }, [guilds, guildid]);
+  }, [guilds]);
 
   return (
     <RouteContainer>
-      <Navbar />
+      <NavbarDashboard />
       <RouterOutlet>
         <Outlet />
       </RouterOutlet>

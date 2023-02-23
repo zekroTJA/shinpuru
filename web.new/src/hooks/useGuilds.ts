@@ -1,6 +1,6 @@
+import { useApi } from './useApi';
 import { useEffect } from 'react';
 import { useStore } from '../services/store';
-import { useApi } from './useApi';
 
 export const useGuilds = () => {
   const fetch = useApi();
@@ -8,7 +8,7 @@ export const useGuilds = () => {
 
   useEffect(() => {
     if (!guilds) {
-      setGuilds([]);
+      setGuilds(undefined);
       fetch((c) => c.guilds.list())
         .then((res) => {
           setGuilds(res.data);

@@ -1,12 +1,13 @@
-import styled from 'styled-components';
 import { Guild, Member } from '../../lib/shinpuru-ts/src';
-import { memberName } from '../../util/users';
+
+import { Clickable } from '../styleParts';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
 import { Embed } from '../Embed';
 import { Flex } from '../Flex';
 import { RoleList } from '../RoleList';
-import { Clickable } from '../styleParts';
+import { memberName } from '../../util/users';
+import styled from 'styled-components';
 
 type Props = {
   member?: Member;
@@ -49,13 +50,8 @@ const Header = styled(Flex)`
   }
 
   flex-wrap: wrap;
-
-  > * {
-    margin-right: 0.5em !important;
-    &:last-child {
-      margin-right: 0 !important;
-    }
-  }
+  gap: 1em;
+  align-items: center;
 `;
 
 export const MemberLarge: React.FC<Props> = ({ member, guild, onClick = () => {} }) => {

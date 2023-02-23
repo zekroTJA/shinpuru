@@ -1,0 +1,17 @@
+{
+  "documentation": "Documentation",
+  "about": "About",
+  "privacy": "Privacy",
+  "contact": "Contact Details",
+  "links": {
+    "wiki": "Wiki",
+    "permissions": "Permissions Guide",
+    "api": "REST API Docs",
+    "selfhosting": "Self Hosting",
+    "githubrepo": "GitHub Repository",
+    "issues": "Issue Tracker",
+    "bughunters": "Bug Hunters",
+    "privacynotice": "Privacy Notice",
+    "clearuserdata": "Clear your User Data"
+  }
+}

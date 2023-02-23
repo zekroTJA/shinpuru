@@ -1,18 +1,18 @@
-import HCaptcha from '@hcaptcha/react-hcaptcha';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import styled, { useTheme } from 'styled-components';
-import { ReactComponent as CheckIcon } from '../assets/check.svg';
-import { ReactComponent as VerificationIcon } from '../assets/verification.svg';
+
+import { APIError } from '../lib/shinpuru-ts/src/errors';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { ReactComponent as CheckIcon } from '../assets/check.svg';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { Loader } from '../components/Loader';
-import { NotificationType } from '../components/Notifications';
+import { ReactComponent as VerificationIcon } from '../assets/verification.svg';
 import { useApi } from '../hooks/useApi';
 import { useEffectAsync } from '../hooks/useEffectAsync';
+import { useNavigate } from 'react-router';
 import { useNotifications } from '../hooks/useNotifications';
-import { APIError } from '../lib/shinpuru-ts/src/errors';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -66,7 +66,7 @@ const VerificationRoute: React.FC<Props> = ({}) => {
     fetch((c) => c.verification.verify(token))
       .then(() => {
         setVerified(true);
-        pushNotification({ message: t('notifications.verified'), type: NotificationType.SUCCESS });
+        pushNotification({ message: t('notifications.verified'), type: 'SUCCESS' });
       })
       .catch();
   };

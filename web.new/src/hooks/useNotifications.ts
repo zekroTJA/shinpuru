@@ -1,15 +1,12 @@
 import { Notification } from '../components/Notifications';
-import { useStore } from '../services/store';
 import { randomNumber } from '../util/rand';
+import { useStore } from '../services/store';
 
 const DEFAULT_DELAY = 6000;
 export const ANIMATION_DELAY = 500;
 
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useStore((s) => [
-    s.notifications,
-    s.setNotifications,
-  ]);
+  const [notifications, setNotifications] = useStore((s) => [s.notifications, s.setNotifications]);
 
   const _push = (n: Notification) => {
     console.log('push notification', n);
@@ -32,16 +29,12 @@ export const useNotifications = () => {
     notification.uid = randomNumber(1000);
     _push(notification);
     if (notification.delay > 0) {
-      setTimeout(
-        () => _remove(notification),
-        notification.delay + ANIMATION_DELAY * 2
-      );
+      setTimeout(() => _remove(notification), notification.delay + ANIMATION_DELAY * 2);
     }
     return () => _remove(notification);
   };
 
-  const hideNotification = (notification: Notification) =>
-    _remove(notification);
+  const hideNotification = (notification: Notification) => _remove(notification);
 
   return { pushNotification, hideNotification, notifications };
 };

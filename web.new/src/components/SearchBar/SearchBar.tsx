@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { ReactComponent as SearchIcon } from '../../assets/search.svg';
 import { Input } from '../Input';
+import { ReactComponent as SearchIcon } from '../../assets/search.svg';
+import styled from 'styled-components';
 
 type Props = React.HTMLAttributes<HTMLInputElement> & {
   value?: string;

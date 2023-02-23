@@ -1,14 +1,5 @@
 basePath: /api/v1
 definitions:
-  backupmodels.Entry:
-    properties:
-      file_id:
-        type: string
-      guild_id:
-        type: string
-      timestamp:
-        type: string
-    type: object
   discordgo.ApplicationCommandOption:
     properties:
       autocomplete:
@@ -16,8 +7,7 @@ definitions:
         type: boolean
       channel_types:
         items:
-          description: The type of the channel.
-          type: integer
+          $ref: '#/definitions/discordgo.ChannelType'
         type: array
       choices:
         items:
@@ -54,7 +44,7 @@ definitions:
       required:
         type: boolean
       type:
-        type: integer
+        $ref: '#/definitions/discordgo.ApplicationCommandOptionType'
     type: object
   discordgo.ApplicationCommandOptionChoice:
     properties:
@@ -66,6 +56,32 @@ definitions:
         type: object
       value: {}
     type: object
+  discordgo.ApplicationCommandOptionType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    type: integer
+    x-enum-varnames:
+    - ApplicationCommandOptionSubCommand
+    - ApplicationCommandOptionSubCommandGroup
+    - ApplicationCommandOptionString
+    - ApplicationCommandOptionInteger
+    - ApplicationCommandOptionBoolean
+    - ApplicationCommandOptionUser
+    - ApplicationCommandOptionChannel
+    - ApplicationCommandOptionRole
+    - ApplicationCommandOptionMentionable
+    - ApplicationCommandOptionNumber
+    - ApplicationCommandOptionAttachment
   discordgo.Channel:
     properties:
       application_id:
@@ -136,22 +152,67 @@ definitions:
           $ref: '#/definitions/discordgo.User'
         type: array
       thread_member:
-        $ref: '#/definitions/discordgo.ThreadMember'
+        allOf:
+        - $ref: '#/definitions/discordgo.ThreadMember'
         description: Thread member object for the current user, if they have joined
           the thread, only included on certain API endpoints
       thread_metadata:
-        $ref: '#/definitions/discordgo.ThreadMetadata'
+        allOf:
+        - $ref: '#/definitions/discordgo.ThreadMetadata'
         description: Thread-specific fields not needed by other channels
       topic:
         description: The topic of the channel.
         type: string
       type:
+        allOf:
+        - $ref: '#/definitions/discordgo.ChannelType'
         description: The type of the channel.
-        type: integer
       user_limit:
         description: The user limit of the voice channel.
         type: integer
     type: object
+  discordgo.ChannelType:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 10
+    - 11
+    - 12
+    - 13
+    type: integer
+    x-enum-varnames:
+    - ChannelTypeGuildText
+    - ChannelTypeDM
+    - ChannelTypeGuildVoice
+    - ChannelTypeGroupDM
+    - ChannelTypeGuildCategory
+    - ChannelTypeGuildNews
+    - ChannelTypeGuildStore
+    - ChannelTypeGuildNewsThread
+    - ChannelTypeGuildPublicThread
+    - ChannelTypeGuildPrivateThread
+    - ChannelTypeGuildStageVoice
+  discordgo.EmbedType:
+    enum:
+    - rich
+    - image
+    - video
+    - gifv
+    - article
+    - link
+    type: string
+    x-enum-varnames:
+    - EmbedTypeRich
+    - EmbedTypeImage
+    - EmbedTypeVideo
+    - EmbedTypeGifv
+    - EmbedTypeArticle
+    - EmbedTypeLink
   discordgo.Emoji:
     properties:
       animated:
@@ -173,6 +234,20 @@ definitions:
       user:
         $ref: '#/definitions/discordgo.User'
     type: object
+  discordgo.InteractionType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-varnames:
+    - InteractionPing
+    - InteractionApplicationCommand
+    - InteractionMessageComponent
+    - InteractionApplicationCommandAutocomplete
+    - InteractionModalSubmit
   discordgo.Member:
     properties:
       avatar:
@@ -215,16 +290,19 @@ definitions:
           type: string
         type: array
       user:
-        $ref: '#/definitions/discordgo.User'
+        allOf:
+        - $ref: '#/definitions/discordgo.User'
         description: The underlying user on which the member is based.
     type: object
   discordgo.Message:
     properties:
       activity:
-        $ref: '#/definitions/discordgo.MessageActivity'
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageActivity'
         description: Is sent with Rich Presence-related chat embeds
       application:
-        $ref: '#/definitions/discordgo.MessageApplication'
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageApplication'
         description: Is sent with Rich Presence-related chat embeds
       attachments:
         description: A list of attachments present in the message.
@@ -232,7 +310,8 @@ definitions:
           $ref: '#/definitions/discordgo.MessageAttachment'
         type: array
       author:
-        $ref: '#/definitions/discordgo.User'
+        allOf:
+        - $ref: '#/definitions/discordgo.User'
         description: |-
           The author of the message. This is not guaranteed to be a
           valid user (webhook-sent messages do not possess a full author).
@@ -253,11 +332,12 @@ definitions:
           $ref: '#/definitions/discordgo.MessageEmbed'
         type: array
       flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageFlags'
         description: |-
           The flags of the message, which describe extra features of a message.
           This is a combination of bit masks; the presence of a certain permission can
           be checked by performing a bitwise AND between this int and the flag.
-        type: integer
       guild_id:
         description: The ID of the guild in which the message was sent.
         type: string
@@ -265,13 +345,15 @@ definitions:
         description: The ID of the message.
         type: string
       interaction:
-        $ref: '#/definitions/discordgo.MessageInteraction'
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageInteraction'
         description: |-
           Is sent when the message is a response to an Interaction, without an existing message.
           This means responses to message component interactions do not include this property,
           instead including a MessageReference, as components exist on preexisting messages.
       member:
-        $ref: '#/definitions/discordgo.Member'
+        allOf:
+        - $ref: '#/definitions/discordgo.Member'
         description: |-
           Member properties for this message's author,
           contains only partial information
@@ -299,7 +381,8 @@ definitions:
           $ref: '#/definitions/discordgo.User'
         type: array
       message_reference:
-        $ref: '#/definitions/discordgo.MessageReference'
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageReference'
         description: |-
           MessageReference contains reference data sent with crossposted or reply messages.
           This does not contain the reference *to* this message; this is for when *this* message references another.
@@ -313,7 +396,8 @@ definitions:
           $ref: '#/definitions/discordgo.MessageReactions'
         type: array
       referenced_message:
-        $ref: '#/definitions/discordgo.Message'
+        allOf:
+        - $ref: '#/definitions/discordgo.Message'
         description: |-
           The message associated with the message_reference
           NOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).
@@ -326,7 +410,8 @@ definitions:
           $ref: '#/definitions/discordgo.Sticker'
         type: array
       thread:
-        $ref: '#/definitions/discordgo.Channel'
+        allOf:
+        - $ref: '#/definitions/discordgo.Channel'
         description: The thread that was started from this message, includes thread
           member object
       timestamp:
@@ -340,8 +425,9 @@ definitions:
         description: Whether the message is text-to-speech.
         type: boolean
       type:
+        allOf:
+        - $ref: '#/definitions/discordgo.MessageType'
         description: The type of the message.
-        type: integer
       webhook_id:
         description: The webhook ID of the message, if it was generated by a webhook
         type: string
@@ -351,8 +437,20 @@ definitions:
       party_id:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/discordgo.MessageActivityType'
     type: object
+  discordgo.MessageActivityType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 5
+    type: integer
+    x-enum-varnames:
+    - MessageActivityTypeJoin
+    - MessageActivityTypeSpectate
+    - MessageActivityTypeListen
+    - MessageActivityTypeJoinRequest
   discordgo.MessageApplication:
     properties:
       cover_image:
@@ -412,7 +510,7 @@ definitions:
       title:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/discordgo.EmbedType'
       url:
         type: string
       video:
@@ -485,17 +583,42 @@ definitions:
       width:
         type: integer
     type: object
+  discordgo.MessageFlags:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 4
+    - 8
+    - 16
+    - 32
+    - 64
+    - 128
+    - 256
+    type: integer
+    x-enum-varnames:
+    - MessageFlagsCrossPosted
+    - MessageFlagsIsCrossPosted
+    - MessageFlagsSuppressEmbeds
+    - MessageFlagsSupressEmbeds
+    - MessageFlagsSourceMessageDeleted
+    - MessageFlagsUrgent
+    - MessageFlagsHasThread
+    - MessageFlagsEphemeral
+    - MessageFlagsLoading
+    - MessageFlagsFailedToMentionSomeRolesInThread
   discordgo.MessageInteraction:
     properties:
       id:
         type: string
       member:
-        $ref: '#/definitions/discordgo.Member'
+        allOf:
+        - $ref: '#/definitions/discordgo.Member'
         description: Member is only present when the interaction is from a guild.
       name:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/discordgo.InteractionType'
       user:
         $ref: '#/definitions/discordgo.User'
     type: object
@@ -517,6 +640,58 @@ definitions:
       message_id:
         type: string
     type: object
+  discordgo.MessageType:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 14
+    - 15
+    - 18
+    - 19
+    - 20
+    - 21
+    - 23
+    type: integer
+    x-enum-varnames:
+    - MessageTypeDefault
+    - MessageTypeRecipientAdd
+    - MessageTypeRecipientRemove
+    - MessageTypeCall
+    - MessageTypeChannelNameChange
+    - MessageTypeChannelIconChange
+    - MessageTypeChannelPinnedMessage
+    - MessageTypeGuildMemberJoin
+    - MessageTypeUserPremiumGuildSubscription
+    - MessageTypeUserPremiumGuildSubscriptionTierOne
+    - MessageTypeUserPremiumGuildSubscriptionTierTwo
+    - MessageTypeUserPremiumGuildSubscriptionTierThree
+    - MessageTypeChannelFollowAdd
+    - MessageTypeGuildDiscoveryDisqualified
+    - MessageTypeGuildDiscoveryRequalified
+    - MessageTypeThreadCreated
+    - MessageTypeReply
+    - MessageTypeChatInputCommand
+    - MessageTypeThreadStarterMessage
+    - MessageTypeContextMenuCommand
+  discordgo.MfaLevel:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - MfaLevelNone
+    - MfaLevelElevated
   discordgo.PermissionOverwrite:
     properties:
       allow:
@@ -528,8 +703,28 @@ definitions:
       id:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/discordgo.PermissionOverwriteType'
     type: object
+  discordgo.PermissionOverwriteType:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - PermissionOverwriteTypeRole
+    - PermissionOverwriteTypeMember
+  discordgo.PremiumTier:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-varnames:
+    - PremiumTierNone
+    - PremiumTier1
+    - PremiumTier2
+    - PremiumTier3
   discordgo.Role:
     properties:
       color:
@@ -570,7 +765,7 @@ definitions:
       description:
         type: string
       format_type:
-        type: integer
+        $ref: '#/definitions/discordgo.StickerFormat'
       guild_id:
         type: string
       id:
@@ -584,10 +779,28 @@ definitions:
       tags:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/discordgo.StickerType'
       user:
         $ref: '#/definitions/discordgo.User'
     type: object
+  discordgo.StickerFormat:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-varnames:
+    - StickerFormatTypePNG
+    - StickerFormatTypeAPNG
+    - StickerFormatTypeLottie
+  discordgo.StickerType:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - StickerTypeStandard
+    - StickerTypeGuild
   discordgo.ThreadMember:
     properties:
       flags:
@@ -670,11 +883,12 @@ definitions:
           Only available when the request is authorized via a Bearer token.
         type: integer
       public_flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.UserFlags'
         description: |-
           The public flags on a user's account.
           This is a combination of bit masks; the presence of a certain flag can
           be checked by performing a bitwise AND between this int and the flag.
-        type: integer
       system:
         description: Whether the user is an Official Discord System user (part of
           the urgent message system).
@@ -691,7 +905,230 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
-  models.APITokenResponse:
+  discordgo.UserFlags:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 64
+    - 128
+    - 256
+    - 512
+    - 1024
+    - 4096
+    - 16384
+    - 65536
+    - 131072
+    - 262144
+    type: integer
+    x-enum-varnames:
+    - UserFlagDiscordEmployee
+    - UserFlagDiscordPartner
+    - UserFlagHypeSquadEvents
+    - UserFlagBugHunterLevel1
+    - UserFlagHouseBravery
+    - UserFlagHouseBrilliance
+    - UserFlagHouseBalance
+    - UserFlagEarlySupporter
+    - UserFlagTeamUser
+    - UserFlagSystem
+    - UserFlagBugHunterLevel2
+    - UserFlagVerifiedBot
+    - UserFlagVerifiedBotDeveloper
+    - UserFlagDiscordCertifiedModerator
+  discordgo.VerificationLevel:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - VerificationLevelNone
+    - VerificationLevelLow
+    - VerificationLevelMedium
+    - VerificationLevelHigh
+    - VerificationLevelVeryHigh
+  github_com_zekroTJA_shinpuru_internal_models.Contact:
+    properties:
+      title:
+        type: string
+      url:
+        type: string
+      value:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings:
+    properties:
+      allowed_origins:
+        type: string
+      enabled:
+        type: boolean
+      protected:
+        type: boolean
+      token_hash:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.GuildLogEntry:
+    properties:
+      guildid:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      module:
+        type: string
+      severity:
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity'
+      timestamp:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity:
+    enum:
+    - -1
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - GLAll
+    - GLDebug
+    - GLInfo
+    - GLWarn
+    - GLError
+    - GLFatal
+  github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry:
+    properties:
+      account_created:
+        type: string
+      guild_id:
+        type: string
+      tag:
+        type: string
+      timestamp:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.KarmaAction:
+    enum:
+    - TOGGLE_ROLE
+    - KICK
+    - BAN
+    - SEND_MESSAGE
+    type: string
+    x-enum-varnames:
+    - KarmaActionToggleRole
+    - KarmaActionKick
+    - KarmaActionBan
+    - KarmaActionSendMessage
+  github_com_zekroTJA_shinpuru_internal_models.KarmaRule:
+    properties:
+      action:
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaAction'
+      argument:
+        type: string
+      guildid:
+        type: string
+      id:
+        type: integer
+      trigger:
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType'
+      value:
+        type: integer
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - KarmaTriggerBelow
+    - KarmaTriggerAbove
+    - karmaTriggerMax
+  github_com_zekroTJA_shinpuru_internal_models.Privacy:
+    properties:
+      contact:
+        items:
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.Contact'
+        type: array
+      noticeurl:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.ReportType:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 3
+    type: integer
+    x-enum-varnames:
+    - TypeKick
+    - TypeBan
+    - TypeMute
+    - TypeWarn
+    - TypeAd
+    - TypesReserved
+  github_com_zekroTJA_shinpuru_internal_models.UnbanRequest:
+    properties:
+      created:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      processed:
+        type: string
+      processed_by:
+        type: string
+      processed_message:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState'
+      user_id:
+        type: string
+      user_tag:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - UnbanRequestStatePending
+    - UnbanRequestStateDeclined
+    - UnbanRequestStateAccepted
+  github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry:
+    properties:
+      file_id:
+        type: string
+      guild_id:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission:
+    properties:
+      description:
+        type: string
+      explicit:
+        type: boolean
+      term:
+        type: string
+    type: object
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse:
     properties:
       created:
         type: string
@@ -704,14 +1141,14 @@ definitions:
       token:
         type: string
     type: object
-  models.AccessTokenResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse:
     properties:
       expires:
         type: string
       token:
         type: string
     type: object
-  models.AntiraidAction:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction:
     properties:
       ids:
         items:
@@ -720,7 +1157,7 @@ definitions:
       type:
         type: integer
     type: object
-  models.AntiraidSettings:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings:
     properties:
       burst:
         type: integer
@@ -731,31 +1168,22 @@ definitions:
       verification:
         type: boolean
     type: object
-  models.CaptchaSiteKey:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey:
     properties:
       sitekey:
         type: string
     type: object
-  models.Contact:
-    properties:
-      title:
-        type: string
-      url:
-        type: string
-      value:
-        type: string
-    type: object
-  models.Count:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count:
     properties:
       count:
         type: integer
     type: object
-  models.EnableStatus:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus:
     properties:
       enabled:
         type: boolean
     type: object
-  models.Error:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error:
     properties:
       code:
         type: integer
@@ -764,7 +1192,7 @@ definitions:
       error:
         type: string
     type: object
-  models.FlatUser:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser:
     properties:
       avatar_url:
         type: string
@@ -777,14 +1205,14 @@ definitions:
       username:
         type: string
     type: object
-  models.FlushGuildRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest:
     properties:
       leave_after:
         type: boolean
       validation:
         type: string
     type: object
-  models.Guild:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild:
     properties:
       afk_channel_id:
         type: string
@@ -815,7 +1243,7 @@ definitions:
       member_count:
         type: integer
       mfa_level:
-        type: integer
+        $ref: '#/definitions/discordgo.MfaLevel'
       name:
         type: string
       owner_id:
@@ -823,7 +1251,7 @@ definitions:
       premium_subscription_count:
         type: integer
       premium_tier:
-        type: integer
+        $ref: '#/definitions/discordgo.PremiumTier'
       region:
         type: string
       roles:
@@ -831,26 +1259,15 @@ definitions:
           $ref: '#/definitions/discordgo.Role'
         type: array
       self_member:
-        $ref: '#/definitions/models.Member'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
       splash:
         type: string
       unavailable:
         type: boolean
       verification_level:
-        type: integer
+        $ref: '#/definitions/discordgo.VerificationLevel'
     type: object
-  models.GuildAPISettings:
-    properties:
-      allowed_origins:
-        type: string
-      enabled:
-        type: boolean
-      protected:
-        type: boolean
-      token_hash:
-        type: string
-    type: object
-  models.GuildAPISettingsRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest:
     properties:
       allowed_origins:
         type: string
@@ -865,29 +1282,14 @@ definitions:
       token_hash:
         type: string
     type: object
-  models.GuildKarmaEntry:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry:
     properties:
       member:
-        $ref: '#/definitions/models.Member'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
       value:
         type: integer
     type: object
-  models.GuildLogEntry:
-    properties:
-      guildid:
-        type: string
-      id:
-        type: integer
-      message:
-        type: string
-      module:
-        type: string
-      severity:
-        type: integer
-      timestamp:
-        type: string
-    type: object
-  models.GuildReduced:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced:
     properties:
       icon:
         type: string
@@ -908,7 +1310,7 @@ definitions:
       region:
         type: string
     type: object
-  models.GuildSettings:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings:
     properties:
       autoroles:
         items:
@@ -935,7 +1337,7 @@ definitions:
       voicelogchannel:
         type: string
     type: object
-  models.InviteSettingsRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest:
     properties:
       guild_id:
         type: string
@@ -944,44 +1346,16 @@ definitions:
       message:
         type: string
     type: object
-  models.InviteSettingsResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse:
     properties:
       guild:
-        $ref: '#/definitions/models.Guild'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild'
       invite_url:
         type: string
       message:
         type: string
     type: object
-  models.JoinLogEntry:
-    properties:
-      account_created:
-        type: string
-      guild_id:
-        type: string
-      tag:
-        type: string
-      timestamp:
-        type: string
-      user_id:
-        type: string
-    type: object
-  models.KarmaRule:
-    properties:
-      action:
-        type: string
-      argument:
-        type: string
-      guildid:
-        type: string
-      id:
-        type: integer
-      trigger:
-        type: integer
-      value:
-        type: integer
-    type: object
-  models.KarmaSettings:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings:
     properties:
       emotes_decrease:
         items:
@@ -998,7 +1372,7 @@ definitions:
       tokens:
         type: integer
     type: object
-  models.LandingPageResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse:
     properties:
       localinvite:
         type: string
@@ -1007,7 +1381,7 @@ definitions:
       publicmaininvite:
         type: string
     type: object
-  models.Member:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member:
     properties:
       avatar:
         description: The hash of the avatar for the guild member, if any.
@@ -1063,24 +1437,27 @@ definitions:
           type: string
         type: array
       user:
-        $ref: '#/definitions/discordgo.User'
+        allOf:
+        - $ref: '#/definitions/discordgo.User'
         description: The underlying user on which the member is based.
     type: object
-  models.PermissionsMap:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap:
     additionalProperties:
       items:
         type: string
       type: array
     type: object
-  models.PermissionsResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse:
     properties:
       permissions:
         items:
           type: string
         type: array
     type: object
-  models.PermissionsUpdate:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate:
     properties:
+      override:
+        type: boolean
       perm:
         type: string
       role_ids:
@@ -1088,16 +1465,7 @@ definitions:
           type: string
         type: array
     type: object
-  models.Privacy:
-    properties:
-      contact:
-        items:
-          $ref: '#/definitions/models.Contact'
-        type: array
-      noticeurl:
-        type: string
-    type: object
-  models.ReasonRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest:
     properties:
       attachment:
         type: string
@@ -1108,14 +1476,14 @@ definitions:
       timeout:
         type: string
     type: object
-  models.Report:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report:
     properties:
       attachment_url:
         type: string
       created:
         type: string
       executor:
-        $ref: '#/definitions/models.FlatUser'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser'
       executor_id:
         type: string
       guild_id:
@@ -1127,15 +1495,15 @@ definitions:
       timeout:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.ReportType'
       type_name:
         type: string
       victim:
-        $ref: '#/definitions/models.FlatUser'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser'
       victim_id:
         type: string
     type: object
-  models.ReportRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest:
     properties:
       attachment:
         type: string
@@ -1146,14 +1514,14 @@ definitions:
       timeout:
         type: string
       type:
-        type: integer
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.ReportType'
     type: object
-  models.RichUnbanRequest:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest:
     properties:
       created:
         type: string
       creator:
-        $ref: '#/definitions/models.FlatUser'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser'
       guild_id:
         type: string
       id:
@@ -1167,26 +1535,26 @@ definitions:
       processed_message:
         type: string
       processor:
-        $ref: '#/definitions/models.FlatUser'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser'
       status:
-        type: integer
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState'
       user_id:
         type: string
       user_tag:
         type: string
     type: object
-  models.SearchResult:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult:
     properties:
       guilds:
         items:
-          $ref: '#/definitions/models.GuildReduced'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced'
         type: array
       members:
         items:
-          $ref: '#/definitions/models.Member'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
         type: array
     type: object
-  models.SlashCommandInfo:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo:
     properties:
       description:
         type: string
@@ -1204,12 +1572,12 @@ definitions:
         type: array
       subdomains:
         items:
-          $ref: '#/definitions/permissions.SubPermission'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission'
         type: array
       version:
         type: string
     type: object
-  models.StarboardEntryResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse:
     properties:
       author_avatar_url:
         type: string
@@ -1236,17 +1604,17 @@ definitions:
       starboard_id:
         type: string
     type: object
-  models.State:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State:
     properties:
       state:
         type: boolean
     type: object
-  models.Status:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status:
     properties:
       code:
         type: integer
     type: object
-  models.SystemInfo:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo:
     properties:
       arch:
         type: string
@@ -1283,43 +1651,20 @@ definitions:
       version:
         type: string
     type: object
-  models.UnbanRequest:
-    properties:
-      created:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      message:
-        type: string
-      processed:
-        type: string
-      processed_by:
-        type: string
-      processed_message:
-        type: string
-      status:
-        type: integer
-      user_id:
-        type: string
-      user_tag:
-        type: string
-    type: object
-  models.UpdateInfoResponse:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse:
     properties:
       current:
-        $ref: '#/definitions/versioncheck.Semver'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver'
       current_str:
         type: string
       isold:
         type: boolean
       latest:
-        $ref: '#/definitions/versioncheck.Semver'
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver'
       latest_str:
         type: string
     type: object
-  models.User:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User:
     properties:
       accent_color:
         description: User's banner color, encoded as an integer representation of
@@ -1372,11 +1717,12 @@ definitions:
           Only available when the request is authorized via a Bearer token.
         type: integer
       public_flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.UserFlags'
         description: |-
           The public flags on a user's account.
           This is a combination of bit masks; the presence of a certain flag can
           be checked by performing a bitwise AND between this int and the flag.
-        type: integer
       system:
         description: Whether the user is an Official Discord System user (part of
           the urgent message system).
@@ -1393,33 +1739,36 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
-  models.UsersettingsOTA:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA:
     properties:
       enabled:
         type: boolean
     type: object
-  models.UsersettingsPrivacy:
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy:
     properties:
       starboard_optout:
         type: boolean
     type: object
-  permissions.SubPermission:
-    properties:
-      description:
-        type: string
-      explicit:
-        type: boolean
-      term:
-        type: string
-    type: object
-  presence.Presence:
+  github_com_zekroTJA_shinpuru_internal_util_presence.Presence:
     properties:
       game:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Status'
     type: object
-  versioncheck.Semver:
+  github_com_zekroTJA_shinpuru_internal_util_presence.Status:
+    enum:
+    - online
+    - dnd
+    - idle
+    - invisible
+    type: string
+    x-enum-varnames:
+    - StatusOnline
+    - StatusDnD
+    - StatusIdle
+    - StatusInvisible
+  github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver:
     properties:
       attachment:
         type: string
@@ -1436,6 +1785,23 @@ info:
   title: shinpuru main API
   version: "1.0"
 paths:
+  /allpermissions:
+    get:
+      consumes:
+      - application/json
+      description: Return a list of all available permissions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              type: string
+            type: array
+      summary: All Permissions
+      tags:
+      - Etc
   /auth/accesstoken:
     post:
       consumes:
@@ -1448,11 +1814,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AccessTokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Access Token Exchange
       tags:
       - Authorization
@@ -1467,11 +1833,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Authorization Check
       tags:
       - Authorization
@@ -1487,7 +1853,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
       summary: Logout
       tags:
       - Authorization
@@ -1512,11 +1878,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Allowed Channels
       tags:
       - Channels
@@ -1552,11 +1918,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Send Embed Message
       tags:
       - Channels
@@ -1598,11 +1964,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Embed Message
       tags:
       - Channels
@@ -1619,12 +1985,12 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.GuildReduced'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: List Guilds
       tags:
       - Guilds
@@ -1645,15 +2011,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Guild'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild
       tags:
       - Guilds
@@ -1679,15 +2045,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Member'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member
       tags:
       - Members
@@ -1712,26 +2078,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.ReasonRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Report'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Create A Member Ban Report
       tags:
       - Member Reporting
@@ -1756,26 +2122,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.ReasonRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Report'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Create A Member Kick Report
       tags:
       - Member Reporting
@@ -1800,26 +2166,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.ReasonRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Unmute A Member
       tags:
       - Member Reporting
@@ -1845,15 +2211,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.PermissionsResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Permissions
       tags:
       - Members
@@ -1886,11 +2252,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Allowed Permissions
       tags:
       - Members
@@ -1928,20 +2294,20 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.Report'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Reports
       tags:
       - Members
@@ -1965,26 +2331,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.ReportRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Report'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Create A Member Report
       tags:
       - Member Reporting
@@ -2010,15 +2376,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Count'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Reports Count
       tags:
       - Members
@@ -2045,16 +2411,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.UnbanRequest'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequest'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Unban Requests
       tags:
       - Members
@@ -2075,21 +2441,30 @@ paths:
         name: memberid
         required: true
         type: string
+      - default: -1
+        description: Filter unban requests by state.
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: state
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Count'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member Unban Requests Count
       tags:
       - Members
@@ -2110,15 +2485,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Reset Antiraid Joinlog
       tags:
       - Guilds
@@ -2139,16 +2514,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.JoinLogEntry'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Antiraid Joinlog
       tags:
       - Guilds
@@ -2170,16 +2545,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/backupmodels.Entry'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Backups
       tags:
       - Guild Backups
@@ -2214,15 +2589,15 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Download Backup File
       tags:
       - Guild Backups
@@ -2247,15 +2622,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AccessTokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Obtain Backup Download OTA Key
       tags:
       - Guild Backups
@@ -2275,22 +2650,22 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.EnableStatus'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Toggle Guild Backup Enable
       tags:
       - Guild Backups
@@ -2310,26 +2685,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.EnableStatus'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Toggle Guild Inviteblock Enable
       tags:
       - Guilds
@@ -2362,20 +2737,20 @@ paths:
           description: Wraped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.Member'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Member List
       tags:
       - Members
@@ -2396,15 +2771,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.PermissionsMap'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Permission Settings
       tags:
       - Guilds
@@ -2423,26 +2798,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.PermissionsUpdate'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Apply Guild Permission Rule
       tags:
       - Guilds
@@ -2474,16 +2849,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.Report'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Modlog
       tags:
       - Guilds
@@ -2504,15 +2879,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Count'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Modlog Count
       tags:
       - Guilds
@@ -2541,16 +2916,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.GuildKarmaEntry'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Scoreboard
       tags:
       - Guilds
@@ -2571,15 +2946,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GuildSettings'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings
       tags:
       - Guild Settings
@@ -2598,26 +2973,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.GuildSettings'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings
       tags:
       - Guild Settings
@@ -2638,15 +3013,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AntiraidSettings'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Antiraid Settings
       tags:
       - Guild Settings
@@ -2665,26 +3040,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.AntiraidSettings'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Guild Antiraid Settings
       tags:
       - Guild Settings
@@ -2704,26 +3079,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.AntiraidAction'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Guild Antiraid Bulk Action
       tags:
       - Guild Settings
@@ -2744,15 +3119,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GuildAPISettings'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings API State
       tags:
       - Guild Settings
@@ -2771,22 +3146,22 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.GuildAPISettingsRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GuildAPISettings'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Set Guild Settings API State
       tags:
       - Guild Settings
@@ -2807,15 +3182,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.EnableStatus'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings Code Exec State
       tags:
       - Guild Settings
@@ -2834,22 +3209,22 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.EnableStatus'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.EnableStatus'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Set Guild Settings Code Exec State
       tags:
       - Guild Settings
@@ -2869,26 +3244,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.FlushGuildRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Flush Guild Data
       tags:
       - Guild Settings
@@ -2909,15 +3284,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.KarmaSettings'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Karma Settings
       tags:
       - Guild Settings
@@ -2936,26 +3311,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.KarmaSettings'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Guild Karma Settings
       tags:
       - Guild Settings
@@ -2977,16 +3352,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.Member'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Karma Blocklist
       tags:
       - Guild Settings
@@ -3012,19 +3387,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Remove Guild Karma Blocklist Entry
       tags:
       - Guild Settings
@@ -3049,19 +3424,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Add Guild Karma Blocklist Entry
       tags:
       - Guild Settings
@@ -3083,16 +3458,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.KarmaRule'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings Karma Rules
       tags:
       - Guild Settings
@@ -3111,26 +3486,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.KarmaRule'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.KarmaRule'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Create Guild Settings Karma
       tags:
       - Guild Settings
@@ -3156,19 +3531,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Remove Guild Settings Karma
       tags:
       - Guild Settings
@@ -3192,26 +3567,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.KarmaRule'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.KarmaRule'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Guild Settings Karma
       tags:
       - Guild Settings
@@ -3232,19 +3607,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Delete Guild Log Entries
       tags:
       - Guild Settings
@@ -3258,25 +3633,36 @@ paths:
         name: id
         required: true
         type: string
+      - description: Filter by log severity.
+        enum:
+        - -1
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        in: query
+        name: severity
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Count'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Log Count
       tags:
       - Guild Settings
@@ -3302,19 +3688,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Delete Guild Log Entries
       tags:
       - Guild Settings
@@ -3335,15 +3721,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings Log State
       tags:
       - Guild Settings
@@ -3362,26 +3748,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.State'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.State'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Guild Settings Log State
       tags:
       - Guild Settings
@@ -3402,15 +3788,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.EnableStatus'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Settings Verification State
       tags:
       - Guild Settings
@@ -3429,22 +3815,22 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.EnableStatus'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.EnableStatus'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Set Guild Settings Verification State
       tags:
       - Guild Settings
@@ -3466,17 +3852,46 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.StarboardEntryResponse'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Starboard
+      tags:
+      - Guilds
+  /guilds/{id}/starboard/count:
+    get:
+      consumes:
+      - application/json
+      description: Returns the count of starboard entries for the given guild.
+      parameters:
+      - description: The ID of the guild.
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
+      summary: Get Guild Starboard Count
       tags:
       - Guilds
   /guilds/{id}/unbanrequests:
@@ -3497,16 +3912,16 @@ paths:
           description: Wrapped in models.ListReponse
           schema:
             items:
-              $ref: '#/definitions/models.RichUnbanRequest'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Unbanrequests
       tags:
       - Guilds
@@ -3532,15 +3947,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RichUnbanRequest'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Single Guild Unbanrequest
       tags:
       - Guilds
@@ -3565,15 +3980,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RichUnbanRequest'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Process Guild Unbanrequest
       tags:
       - Guilds
@@ -3588,25 +4003,33 @@ paths:
         name: id
         required: true
         type: string
+      - description: Filter count by given state.
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: state
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Count'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Guild Unbanrequests Count
       tags:
       - Guilds
@@ -3621,7 +4044,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User'
       summary: Me
       tags:
       - Etc
@@ -3639,7 +4062,7 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: OTA Login
       tags:
       - OTA
@@ -3654,7 +4077,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Privacy'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.Privacy'
       summary: Privacy Information
       tags:
       - Etc
@@ -3675,7 +4098,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GuildReduced'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced'
       summary: Get Public Guild
       tags:
       - Public
@@ -3696,19 +4119,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Report'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Report
       tags:
       - Reports
@@ -3728,26 +4151,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.ReasonRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Report'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Revoke Report
       tags:
       - Reports
@@ -3775,15 +4198,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SearchResult'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Global Search
       tags:
       - Search
@@ -3799,15 +4222,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.InviteSettingsResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "409":
           description: Returned when no channel could be found to create invite for.
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get No Guild Invites Status
       tags:
       - Global Settings
@@ -3822,26 +4245,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.InviteSettingsRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APITokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "409":
           description: Returned when no channel could be found to create invite for.
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Set No Guild Invites Status
       tags:
       - Global Settings
@@ -3856,11 +4279,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/presence.Presence'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Presence'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Presence
       tags:
       - Global Settings
@@ -3874,22 +4297,22 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/presence.Presence'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Presence'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APITokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Is returned when no token was generated before.
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Set Presence
       tags:
       - Global Settings
@@ -3904,7 +4327,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SystemInfo'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo'
       summary: System Information
       tags:
       - Etc
@@ -3919,11 +4342,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: API Token Deletion
       tags:
       - Tokens
@@ -3938,15 +4361,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APITokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Is returned when no token was generated before.
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: API Token Info
       tags:
       - Tokens
@@ -3961,11 +4384,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APITokenResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: API Token Generation
       tags:
       - Tokens
@@ -3981,16 +4404,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.RichUnbanRequest'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Unban Requests
       tags:
       - Unban Requests
@@ -4004,26 +4427,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.UnbanRequest'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RichUnbanRequest'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Create Unban Requests
       tags:
       - Unban Requests
@@ -4040,16 +4463,16 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.GuildReduced'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced'
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Banned Guilds
       tags:
       - Unban Requests
@@ -4064,7 +4487,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User'
       summary: User
       tags:
       - Users
@@ -4079,15 +4502,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UsersettingsOTA'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: FLush all user data
       tags:
       - User Settings
@@ -4102,15 +4525,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UsersettingsOTA'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get OTA Usersettings State
       tags:
       - User Settings
@@ -4124,26 +4547,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.UsersettingsOTA'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UsersettingsOTA'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update OTA Usersettings State
       tags:
       - User Settings
@@ -4158,15 +4581,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UsersettingsPrivacy'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Get Privacy Usersettings
       tags:
       - User Settings
@@ -4180,26 +4603,26 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.UsersettingsPrivacy'
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UsersettingsPrivacy'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Update Privacy Usersettings
       tags:
       - User Settings
@@ -4241,7 +4664,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.LandingPageResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse'
       summary: Landing Page Info
       tags:
       - Utilities
@@ -4257,7 +4680,7 @@ paths:
           description: Wrapped in models.ListResponse
           schema:
             items:
-              $ref: '#/definitions/models.SlashCommandInfo'
+              $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo'
             type: array
       summary: Slash Command List
       tags:
@@ -4273,7 +4696,7 @@ paths:
         "200":
           description: Update info response
           schema:
-            $ref: '#/definitions/models.UpdateInfoResponse'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse'
       summary: Update Information
       tags:
       - Utilities
@@ -4288,7 +4711,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CaptchaSiteKey'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey'
       summary: Sitekey
       tags:
       - Verification
@@ -4303,11 +4726,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Status'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/models.Error'
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error'
       summary: Verify
       tags:
       - Verification

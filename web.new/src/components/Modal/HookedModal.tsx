@@ -1,7 +1,7 @@
-import { uid } from 'react-uid';
-import { useStore } from '../../services/store';
 import { Button } from '../Button';
 import { Modal } from './Modal';
+import { uid } from 'react-uid';
+import { useStore } from '../../services/store';
 
 type Props = {};
 

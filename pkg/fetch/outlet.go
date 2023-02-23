@@ -5,7 +5,7 @@ import (
 )
 
 type DataOutlet interface {
-	GuildRoles(guildID string) ([]*discordgo.Role, error)
-	GuildMembers(guildID string, after string, limit int) (st []*discordgo.Member, err error)
-	GuildChannels(guildID string) (st []*discordgo.Channel, err error)
+	GuildRoles(guildID string, options ...discordgo.RequestOption) ([]*discordgo.Role, error)
+	GuildMembers(guildID string, after string, limit int, options ...discordgo.RequestOption) (st []*discordgo.Member, err error)
+	GuildChannels(guildID string, options ...discordgo.RequestOption) (st []*discordgo.Channel, err error)
 }

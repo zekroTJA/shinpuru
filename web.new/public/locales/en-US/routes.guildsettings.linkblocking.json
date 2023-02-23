@@ -1,0 +1,9 @@
+{
+  "heading": "Link Blocking",
+  "explanation": "Delete messages in chats which contain disallowed links. Currently, this implementation only allowes blocking of invite links to other guilds.",
+  "toggle": "Enable invite link blocking",
+  "save": "Save settings",
+  "notifications": {
+    "saved": "Settings have been saved."
+  }
+}

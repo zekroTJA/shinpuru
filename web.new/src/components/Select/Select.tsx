@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+
 import { Modal } from '../Modal';
+import styled from 'styled-components';
 
 export type Props<T extends unknown> = React.HTMLAttributes<HTMLDivElement> & {
   options: Element<T>[];

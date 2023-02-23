@@ -1,9 +1,4 @@
-export enum NotificationType {
-  INFO,
-  SUCCESS,
-  WARNING,
-  ERROR,
-}
+export type NotificationType = 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
 
 export type NotificationMeta = {
   type?: NotificationType;

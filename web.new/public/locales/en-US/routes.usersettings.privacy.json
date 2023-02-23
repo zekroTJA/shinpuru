@@ -1,0 +1,29 @@
+{
+  "heading": "Personal Privacy Settings",
+  "explanation": "lorem ipsum",
+
+  "starboard": {
+    "heading": "Starboard",
+    "explanation": "The starboard allows users to vote high quality or funny messages into the \"starboard\", where all votes messages are presented with their vote count. This starboard is represented as channel on the guild as well as section in the web interface. Therefore, the message content needs to be stored in the database. If you don't want your messages to be presented in the starboard, here you can opt-out from it globally.",
+    "toggle": "Opt-out from starboard",
+    "save": "Save settings"
+  },
+
+  "purge": {
+    "heading": "Delete User Data",
+    "explanation": "Following, you are able to remove data linked to your Discord account ID in shinpurus database.\n\nThis does not apply to the following data:\n\n- Reports created against you.\n- Reports created by you are not removed but your ID will be anonymized.\n- Karma entries when your karma score is below 0.\n- Data temporarily stored in the cache.\n\nNot all settings and data will be removed immediately after flushing your data because some settings stored in the database are cached to improve performance.",
+    "purge": "Delete User Data",
+    "modal": {
+      "heading": "Confirm deletion of all your user data",
+      "explanation": "Do you really want to delete **all your user data in shinpuru permanently**?\n\n**This action is irreversable!**\n\nThe following information will be removed:\n- Starboard entries\n- API tokens\n- Refresh tokens\n- Tags created by you\n- Unban requests created or processed by you\n- Your user settings\n- Your verification state\n\nBecause of the removal of refresh tokens, you will be logged out after data removal.\n\nPlease enter your username below to continue.",
+      "placeholder": "Username",
+      "confirm": "Confirm deleting all your user data",
+      "cancel": "Cancel"
+    }
+  },
+
+  "notifications": {
+    "saved": "Settings have been saved.",
+    "purged": "Your user data has been removed. You are now logged out."
+  }
+}

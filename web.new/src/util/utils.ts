@@ -1,8 +1,4 @@
-/** @format */
-
 import { Member, Role } from '../lib/shinpuru-ts/src';
-
-/** @format */
 
 export function toHexClr(n: number, op = 1): string {
   if (!n) {

@@ -1,6 +1,6 @@
-import { useMatch } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useMatch } from 'react-router';
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   path: string;
@@ -30,7 +30,7 @@ const StyledDiv = styled.div<{ activated: boolean }>`
 `;
 
 export const Entry: React.FC<Props> = ({ path, children, ...props }) => {
-  const match = useMatch('db/' + path);
+  const match = useMatch(path);
   return (
     <StyledLink to={path}>
       <StyledDiv activated={!!match} {...props}>

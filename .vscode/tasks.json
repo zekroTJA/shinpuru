@@ -10,6 +10,16 @@
         "cwd": "web/"
       },
       "isBackground": true
+    },
+    {
+      "label": "run-vite-server-new",
+      "type": "shell",
+      "command": "yarn",
+      "args": ["start"],
+      "options": {
+        "cwd": "${workspaceFolder}/web.new/"
+      },
+      "isBackground": true
     }
   ]
 }

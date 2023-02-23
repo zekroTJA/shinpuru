@@ -129,7 +129,8 @@ type Database interface {
 	//////////////////////////////////////////////////////
 	//// UNBAN REQUESTS
 
-	GetGuildUnbanRequests(guildID string) ([]models.UnbanRequest, error)
+	GetGuildUnbanRequests(guildID string, limit, offset int) ([]models.UnbanRequest, error)
+	GetGuildUnbanRequestsCount(guildID string, state *models.UnbanRequestState) (int, error)
 	GetGuildUserUnbanRequests(userID, guildID string) ([]models.UnbanRequest, error)
 	GetUnbanRequest(id string) (models.UnbanRequest, error)
 	AddUnbanRequest(request models.UnbanRequest) error
@@ -242,6 +243,7 @@ type Database interface {
 	SetStarboardEntry(e models.StarboardEntry) (err error)
 	RemoveStarboardEntry(msgID string) error
 	GetStarboardEntries(guildID string, sortBy models.StarboardSortBy, limit, offset int) ([]models.StarboardEntry, error)
+	GetStarboardEntriesCount(guildID string) (int, error)
 	GetStarboardEntry(messageID string) (models.StarboardEntry, error)
 
 	//////////////////////////////////////////////////////

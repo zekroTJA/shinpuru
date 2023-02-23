@@ -1,26 +1,26 @@
+import { AntiraidActionType, AntiraidSettings, JoinlogEntry } from '../../../lib/shinpuru-ts/src';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
-import { uid } from 'react-uid';
-import styled from 'styled-components';
+
 import { ReactComponent as BanIcon } from '../../../assets/ban.svg';
-import { ReactComponent as DeleteIcon } from '../../../assets/delete.svg';
-import { ReactComponent as DownloadIcon } from '../../../assets/download.svg';
-import { ReactComponent as KickIcon } from '../../../assets/kick.svg';
-import { ReactComponent as RefreshIcon } from '../../../assets/refresh.svg';
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
+import { ReactComponent as DeleteIcon } from '../../../assets/delete.svg';
+import { ReactComponent as DownloadIcon } from '../../../assets/download.svg';
 import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
 import { JoinLogEntry } from '../../../components/JoinLogEntry';
+import { ReactComponent as KickIcon } from '../../../assets/kick.svg';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
+import { ReactComponent as RefreshIcon } from '../../../assets/refresh.svg';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
+import styled from 'styled-components';
+import { uid } from 'react-uid';
 import { useApi } from '../../../hooks/useApi';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { AntiraidActionType, AntiraidSettings, JoinlogEntry } from '../../../lib/shinpuru-ts/src';
+import { useParams } from 'react-router';
 
 type Props = {};
 
@@ -124,7 +124,7 @@ const AntiraidRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();
@@ -181,7 +181,7 @@ const AntiraidRoute: React.FC<Props> = ({}) => {
               values={{ count: selected.length }}
             />
           ),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
         setEntries(entries.filter((e) => !selected.includes(e.user_id)));
         setSelected([]);

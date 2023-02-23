@@ -1,0 +1,16 @@
+{
+  "heading": "Presence",
+  "explanation": "lorem ipsum",
+  "status": {
+    "label": "Status",
+    "online": "Online",
+    "dnd": "Do not disturb",
+    "idle": "Idle",
+    "invisible": "Invisible"
+  },
+  "game": "Game",
+  "save": "Apply settings",
+  "notifications": {
+    "saved": "Presence has been saved and applied."
+  }
+}

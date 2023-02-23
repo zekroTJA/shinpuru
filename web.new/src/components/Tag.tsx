@@ -1,5 +1,6 @@
-import Color from 'color';
 import styled, { css } from 'styled-components';
+
+import Color from 'color';
 
 type Props = {
   colors?: string | number;

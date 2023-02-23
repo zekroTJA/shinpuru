@@ -7,13 +7,17 @@
       "guilds": {
         "title": "Guild",
         "members": "Members",
+        "starboard": "Starboard",
+        "karma": "Karma",
         "modlog": "Modlog"
       },
       "guildsettings": {
         "title": "Guild Settings",
         "general": "General",
+        "permissions": "Permissions",
         "backup": "Backups",
         "antiraid": "Antiraid",
+        "linkblocking": "Link Blocking",
         "codeexec": "Code Execution",
         "verification": "Verification",
         "karma": "Karma",
@@ -23,7 +27,38 @@
       }
     },
     "logout": "Logout",
+    "info": "Info",
     "user-settings": "User Settings"
+  },
+  "navbar-usersettings": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "apitoken": "API Token",
+        "ota": "OTA",
+        "privacy": "Privacy",
+        "language": "Language",
+        "theme": "Theme"
+      }
+    }
+  },
+  "navbar-settings": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "presence": "Presence"
+      }
+    }
+  },
+  "navbar-info": {
+    "back": "Back to Dashboard",
+    "section": {
+      "default": {
+        "general": "General Info",
+        "commands": "Commands",
+        "system": "System Information"
+      }
+    }
   },
   "sincedate": {
     "since": "<1>{{dateSince}}</1> ago"
@@ -140,5 +175,27 @@
       "sendmessage": "send message"
     },
     "apply": "Apply rule"
+  },
+  "permissionselector": {
+    "apply": "Apply",
+    "placeholder": {
+      "roles": "Roles",
+      "perms": "sp.guild.mod.*"
+    }
+  },
+  "commandtile": {
+    "description": "Description",
+    "subdomains": "Sub Domains",
+    "arguments": "Arguments",
+    "subcommands": "Sub Commands",
+    "dmcapable": "This command can be used in Direct Messages.",
+    "args": {
+      "argument": "Argument",
+      "type": "Type",
+      "required": "Required",
+      "description": "Description",
+      "yes": "Yes",
+      "no": "No"
+    }
   }
 }

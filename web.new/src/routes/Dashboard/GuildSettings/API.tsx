@@ -1,23 +1,23 @@
 import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
 import styled, { css } from 'styled-components';
-import { ReactComponent as ShieldIcon } from '../../../assets/shield.svg';
-import { ReactComponent as WarnIcon } from '../../../assets/warning.svg';
+
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
 import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
+import { GuildSettingsApi } from '../../../lib/shinpuru-ts/src';
 import { Hint } from '../../../components/Hint';
 import { Input } from '../../../components/Input';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
+import { ReactComponent as ShieldIcon } from '../../../assets/shield.svg';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
+import { ReactComponent as WarnIcon } from '../../../assets/warning.svg';
 import { useApi } from '../../../hooks/useApi';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { GuildSettingsApi } from '../../../lib/shinpuru-ts/src';
+import { useParams } from 'react-router';
 
 type Props = {};
 
@@ -107,7 +107,7 @@ const APIRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();
@@ -123,7 +123,7 @@ const APIRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.reset'),
-          type: NotificationType.WARNING,
+          type: 'WARNING',
         }),
       )
       .catch();

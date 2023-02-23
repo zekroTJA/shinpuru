@@ -1,10 +1,11 @@
-import { byteFormatter } from 'byte-formatter';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled, { css } from 'styled-components';
+import { useEffect, useRef, useState } from 'react';
+
 import { ReactComponent as AddFileIcon } from '../../assets/addfile.svg';
 import { ReactComponent as ErrorFileIcon } from '../../assets/errorfile.svg';
 import { ReactComponent as FileIcon } from '../../assets/file.svg';
+import { byteFormatter } from 'byte-formatter';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   file?: File;

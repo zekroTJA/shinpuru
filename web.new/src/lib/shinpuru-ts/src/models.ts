@@ -1,6 +1,6 @@
 /** @format */
 
-export interface ListReponse<T> {
+export interface ListResponse<T> {
   n: number;
   data: T[];
 }
@@ -139,6 +139,7 @@ export interface GuildSettings {
 export interface PermissionsUpdate {
   perm: string;
   role_ids: string[];
+  override?: boolean;
 }
 
 export interface ReasonRequest {
@@ -152,9 +153,11 @@ export interface ReportRequest extends ReasonRequest {
   type: number;
 }
 
+export type Status = 'online' | 'dnd' | 'idle' | 'invisible';
+
 export interface Presence {
   game: string;
-  status: string;
+  status: Status;
 }
 
 export interface InviteSettingsRequest {
@@ -465,6 +468,6 @@ export interface ErrorReponse extends CodeResponse {
   error: string;
 }
 
-export type PermissionsMap = Map<string, string[]>;
+export type PermissionsMap = { [key: string]: string[] };
 
 export type StarboardSortOrder = 'latest' | 'top';

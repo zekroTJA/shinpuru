@@ -1,0 +1,14 @@
+{
+  "heading": "Theme",
+  "explanation": "Here you can customize the look of the web interface.",
+  "scheme": {
+    "heading": "Color Scheme",
+    "light": "Flashbang",
+    "dark": "Developer Mode",
+    "system": "System"
+  },
+  "accent": {
+    "heading": "Accent Color",
+    "reset": "Reset"
+  }
+}

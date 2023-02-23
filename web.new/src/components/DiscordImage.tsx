@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import DCLogoURL from '../assets/dc-logo.svg';
+import styled from 'styled-components';
 
 type ImgProps = {
   round?: boolean;

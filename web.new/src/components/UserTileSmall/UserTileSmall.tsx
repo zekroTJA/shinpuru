@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { FlatUser } from '../../lib/shinpuru-ts/src';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
+import { FlatUser } from '../../lib/shinpuru-ts/src';
+import styled from 'styled-components';
 
 type Props = {
   fallbackId: string;

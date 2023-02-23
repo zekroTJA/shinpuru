@@ -58,6 +58,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	router.Get("/:guildid", c.getGuild)
 	router.Get("/:guildid/scoreboard", c.getGuildScoreboard)
 	router.Get("/:guildid/starboard", c.getGuildStarboard)
+	router.Get("/:guildid/starboard/count", c.getGuildStarboardCount)
 	router.Get("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.getGuildAntiraidJoinlog)
 	router.Delete("/:guildid/antiraid/joinlog", c.pmw.HandleWs(c.session, "sp.guild.config.antiraid"), c.deleteGuildAntiraidJoinlog)
 	router.Get("/:guildid/reports", c.getReports)
@@ -293,6 +294,27 @@ func (c *GuildsController) getGuildStarboard(ctx *fiber.Ctx) error {
 	return ctx.JSON(models.NewListResponse(results[:i]))
 }
 
+// @Summary Get Guild Starboard Count
+// @Description Returns the count of starboard entries for the given guild.
+// @Tags Guilds
+// @Accept json
+// @Produce json
+// @Param id path string true "The ID of the guild."
+// @Success 200 {object} models.Count
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Router /guilds/{id}/starboard/count [get]
+func (c *GuildsController) getGuildStarboardCount(ctx *fiber.Ctx) error {
+	guildID := ctx.Params("guildid")
+
+	count, err := c.db.GetStarboardEntriesCount(guildID)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
+	return ctx.JSON(models.Count{Count: count})
+}
+
 // @Summary Get Guild Modlog
 // @Description Returns a list of guild modlog entries for the given guild.
 // @Tags Guilds
@@ -413,7 +435,7 @@ func (c *GuildsController) getGuildPermissions(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "The ID of the guild."
 // @Param payload body models.PermissionsUpdate true "The permission rule payload."
-// @Success 200 {object} models.Status
+// @Success 200 {object} models.PermissionsMap
 // @Failure 400 {object} models.Error
 // @Failure 401 {object} models.Error
 // @Failure 404 {object} models.Error
@@ -442,10 +464,16 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 	for _, roleID := range update.RoleIDs {
 		rperms, ok := perms[roleID]
 		if !ok {
-			rperms = make(permissions.PermissionArray, 0)
+			rperms = permissions.PermissionArray{}
 		}
 
-		rperms, changed := rperms.Update(update.Perm, false)
+		rperms, changed := rperms.Update(update.Perm, update.Override)
+
+		if len(rperms) == 0 {
+			delete(perms, roleID)
+		} else {
+			perms[roleID] = rperms
+		}
 
 		if changed {
 			if err = c.db.SetGuildRolePermission(guildID, roleID, rperms); err != nil {
@@ -454,7 +482,7 @@ func (c *GuildsController) postGuildPermissions(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(models.Ok)
+	return ctx.JSON(perms)
 }
 
 // @Summary Toggle Guild Inviteblock Enable
@@ -501,8 +529,16 @@ func (c *GuildsController) postGuildToggleInviteblock(ctx *fiber.Ctx) error {
 // @Router /guilds/{id}/unbanrequests [get]
 func (c *GuildsController) getGuildUnbanrequests(ctx *fiber.Ctx) error {
 	guildID := ctx.Params("guildid")
+	limit, err := wsutil.GetQueryInt(ctx, "limit", 20, 1, 100)
+	if err != nil {
+		return err
+	}
+	offset, err := wsutil.GetQueryInt(ctx, "offset", 0, 0, 0)
+	if err != nil {
+		return err
+	}
 
-	requests, err := c.db.GetGuildUnbanRequests(guildID)
+	requests, err := c.db.GetGuildUnbanRequests(guildID, limit, offset)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -548,22 +584,15 @@ func (c *GuildsController) getGuildUnbanrequestsCount(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	requests, err := c.db.GetGuildUnbanRequests(guildID)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		return err
-	}
-	if requests == nil {
-		requests = make([]sharedmodels.UnbanRequest, 0)
+	var stateFilterParam *sharedmodels.UnbanRequestState
+	if stateFilter > -1 {
+		filer := sharedmodels.UnbanRequestState(stateFilter)
+		stateFilterParam = &filer
 	}
 
-	count := len(requests)
-	if stateFilter > -1 {
-		count = 0
-		for _, r := range requests {
-			if int(r.Status) == stateFilter {
-				count++
-			}
-		}
+	count, err := c.db.GetGuildUnbanRequestsCount(guildID, stateFilterParam)
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
 	}
 
 	return ctx.JSON(&models.Count{Count: count})

@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { Role } from '../../lib/shinpuru-ts/src';
 import { Flex } from '../Flex';
+import { Role } from '../../lib/shinpuru-ts/src';
 import { Tag } from '../Tag';
+import styled from 'styled-components';
 
 type Props = {
   roleids: string[];

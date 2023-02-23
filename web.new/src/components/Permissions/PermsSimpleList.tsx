@@ -1,8 +1,9 @@
-import { uid } from 'react-uid';
-import styled from 'styled-components';
+import { isAllowed, isDisallowed } from './util';
+
 import { Loader } from '../Loader';
 import { PermTile } from './PermTile';
-import { isAllowed, isDisallowed } from './util';
+import styled from 'styled-components';
+import { uid } from 'react-uid';
 
 type Props = {
   perms?: string[];

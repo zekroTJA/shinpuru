@@ -8,10 +8,12 @@ import {
   SearchClient,
   TokensClient,
   UnbanRequestsClient,
+  UserSettingsClient,
   UsersClient,
   UtilClient,
   VerificationsClient,
 } from './bindings';
+
 import { HttpClient } from './httpclient';
 
 export class Client extends HttpClient {
@@ -27,6 +29,7 @@ export class Client extends HttpClient {
   channels = new ChannelsClient(this);
   verification = new VerificationsClient(this);
   users = new UsersClient(this);
+  usersettings = new UserSettingsClient(this);
 
   constructor(endpoint: string = '/api') {
     super(endpoint);

@@ -10,7 +10,7 @@ import { Input } from '../../../components/Input';
 import { KarmaRuleEntry, KarmaRuleInput } from '../../../components/KarmaRule';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
+
 import { Small } from '../../../components/Small';
 import { SplitContainer } from '../../../components/SplitContainer';
 import { Switch } from '../../../components/Switch';
@@ -120,7 +120,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();
@@ -133,7 +133,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
         dispatchRules(['add', res]);
         pushNotification({
           message: t('notifications.ruleapplied'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();
@@ -145,7 +145,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
       dispatchRules(['remove', r]);
       pushNotification({
         message: t('notifications.ruleremoved'),
-        type: NotificationType.SUCCESS,
+        type: 'SUCCESS',
       });
     });
   };
@@ -158,7 +158,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
         setBlocklistInput('');
         pushNotification({
           message: t('notifications.blocklistadded'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();
@@ -171,7 +171,7 @@ const KarmaRoute: React.FC<Props> = ({}) => {
         dispatchBlocklist(['remove', v]);
         pushNotification({
           message: t('notifications.blocklistremoved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();

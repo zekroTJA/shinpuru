@@ -8,6 +8,32 @@
     },
     "basePath": "/api/v1",
     "paths": {
+        "/allpermissions": {
+            "get": {
+                "description": "Return a list of all available permissions.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Etc"
+                ],
+                "summary": "All Permissions",
+                "responses": {
+                    "200": {
+                        "description": "Wrapped in models.ListResponse",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/accesstoken": {
             "post": {
                 "description": "Exchanges the cookie-passed refresh token with a generated access token.",
@@ -25,13 +51,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AccessTokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -54,13 +80,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -83,7 +109,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     }
                 }
@@ -121,13 +147,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -181,13 +207,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -248,13 +274,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -279,14 +305,14 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.GuildReduced"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -318,19 +344,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Guild"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -364,20 +390,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.JoinLogEntry"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -407,19 +433,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -453,20 +479,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/backupmodels.Entry"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -499,7 +525,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     }
                 ],
@@ -507,19 +533,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -571,19 +597,19 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -620,19 +646,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AccessTokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -665,7 +691,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     }
                 ],
@@ -673,25 +699,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -740,26 +766,26 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Member"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -791,19 +817,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.PermissionsMap"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -834,7 +860,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.PermissionsUpdate"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate"
                         }
                     }
                 ],
@@ -842,25 +868,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -908,20 +934,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Report"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -953,19 +979,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Count"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1008,20 +1034,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.GuildKarmaEntry"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1053,19 +1079,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GuildSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1096,7 +1122,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.GuildSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings"
                         }
                     }
                 ],
@@ -1104,25 +1130,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1154,19 +1180,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AntiraidSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1197,7 +1223,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AntiraidSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings"
                         }
                     }
                 ],
@@ -1205,25 +1231,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1256,7 +1282,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AntiraidAction"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction"
                         }
                     }
                 ],
@@ -1264,25 +1290,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1314,19 +1340,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GuildAPISettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1357,7 +1383,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.GuildAPISettingsRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest"
                         }
                     }
                 ],
@@ -1365,19 +1391,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GuildAPISettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1409,19 +1435,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1452,7 +1478,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     }
                 ],
@@ -1460,19 +1486,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1505,7 +1531,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.FlushGuildRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest"
                         }
                     }
                 ],
@@ -1513,25 +1539,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1563,19 +1589,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1606,7 +1632,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaSettings"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings"
                         }
                     }
                 ],
@@ -1614,25 +1640,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1666,20 +1692,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Member"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1718,25 +1744,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1773,25 +1799,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1825,20 +1851,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.KarmaRule"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1869,7 +1895,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaRule"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule"
                         }
                     }
                 ],
@@ -1877,25 +1903,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaRule"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1935,7 +1961,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaRule"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule"
                         }
                     }
                 ],
@@ -1943,25 +1969,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.KarmaRule"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaRule"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -1998,25 +2024,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2042,31 +2068,45 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            -1,
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "description": "Filter by log severity.",
+                        "name": "severity",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Count"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2096,25 +2136,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2146,19 +2186,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2189,7 +2229,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     }
                 ],
@@ -2197,25 +2237,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2254,25 +2294,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.State"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2304,19 +2344,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2347,7 +2387,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     }
                 ],
@@ -2355,19 +2395,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.EnableStatus"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2401,20 +2441,64 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.StarboardEntryResponse"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/guilds/{id}/starboard/count": {
+            "get": {
+                "description": "Returns the count of starboard entries for the given guild.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guilds"
+                ],
+                "summary": "Get Guild Starboard Count",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the guild.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2448,20 +2532,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.RichUnbanRequest"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2487,31 +2571,42 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "Filter count by given state.",
+                        "name": "state",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Count"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2550,19 +2645,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RichUnbanRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2599,19 +2694,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RichUnbanRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2650,19 +2745,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Member"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2702,7 +2797,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ReasonRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest"
                         }
                     }
                 ],
@@ -2710,25 +2805,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Report"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2768,7 +2863,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ReasonRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest"
                         }
                     }
                 ],
@@ -2776,25 +2871,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Report"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2834,7 +2929,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ReasonRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest"
                         }
                     }
                 ],
@@ -2842,25 +2937,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2899,19 +2994,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.PermissionsResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -2959,13 +3054,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3021,26 +3116,26 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Report"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3078,7 +3173,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ReportRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest"
                         }
                     }
                 ],
@@ -3086,25 +3181,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Report"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3143,19 +3238,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Count"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3196,20 +3291,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.UnbanRequest"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequest"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3242,25 +3337,37 @@
                         "name": "memberid",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "default": -1,
+                        "description": "Filter unban requests by state.",
+                        "name": "state",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Count"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3283,7 +3390,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User"
                         }
                     }
                 }
@@ -3309,7 +3416,7 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3332,7 +3439,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Privacy"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.Privacy"
                         }
                     }
                 }
@@ -3364,7 +3471,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GuildReduced"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced"
                         }
                     }
                 }
@@ -3396,25 +3503,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Report"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3447,7 +3554,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ReasonRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest"
                         }
                     }
                 ],
@@ -3455,25 +3562,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Report"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3514,19 +3621,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SearchResult"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3549,19 +3656,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.InviteSettingsResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "409": {
                         "description": "Returned when no channel could be found to create invite for.",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3585,7 +3692,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.InviteSettingsRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest"
                         }
                     }
                 ],
@@ -3593,25 +3700,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.APITokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "409": {
                         "description": "Returned when no channel could be found to create invite for.",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3634,13 +3741,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/presence.Presence"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Presence"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3664,7 +3771,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/presence.Presence"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Presence"
                         }
                     }
                 ],
@@ -3672,19 +3779,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.APITokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Is returned when no token was generated before.",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3707,7 +3814,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SystemInfo"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo"
                         }
                     }
                 }
@@ -3730,19 +3837,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.APITokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Is returned when no token was generated before.",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3763,13 +3870,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.APITokenResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3790,13 +3897,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3821,20 +3928,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.RichUnbanRequest"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3858,7 +3965,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UnbanRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequest"
                         }
                     }
                 ],
@@ -3866,25 +3973,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.RichUnbanRequest"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3909,20 +4016,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.GuildReduced"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -3945,7 +4052,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User"
                         }
                     }
                 }
@@ -3968,19 +4075,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsOTA"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4003,19 +4110,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsOTA"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4039,7 +4146,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsOTA"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA"
                         }
                     }
                 ],
@@ -4047,25 +4154,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsOTA"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4088,19 +4195,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsPrivacy"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4124,7 +4231,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsPrivacy"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy"
                         }
                     }
                 ],
@@ -4132,25 +4239,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UsersettingsPrivacy"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4212,7 +4319,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.LandingPageResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse"
                         }
                     }
                 }
@@ -4237,7 +4344,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.SlashCommandInfo"
+                                "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo"
                             }
                         }
                     }
@@ -4261,7 +4368,7 @@
                     "200": {
                         "description": "Update info response",
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateInfoResponse"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse"
                         }
                     }
                 }
@@ -4284,7 +4391,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CaptchaSiteKey"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey"
                         }
                     }
                 }
@@ -4307,13 +4414,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Status"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/models.Error"
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error"
                         }
                     }
                 }
@@ -4321,20 +4428,6 @@
         }
     },
     "definitions": {
-        "backupmodels.Entry": {
-            "type": "object",
-            "properties": {
-                "file_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                }
-            }
-        },
         "discordgo.ApplicationCommandOption": {
             "type": "object",
             "properties": {
@@ -4345,8 +4438,7 @@
                 "channel_types": {
                     "type": "array",
                     "items": {
-                        "description": "The type of the channel.",
-                        "type": "integer"
+                        "$ref": "#/definitions/discordgo.ChannelType"
                     }
                 },
                 "choices": {
@@ -4399,7 +4491,7 @@
                     "type": "boolean"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.ApplicationCommandOptionType"
                 }
             }
         },
@@ -4417,6 +4509,35 @@
                 },
                 "value": {}
             }
+        },
+        "discordgo.ApplicationCommandOptionType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ],
+            "x-enum-varnames": [
+                "ApplicationCommandOptionSubCommand",
+                "ApplicationCommandOptionSubCommandGroup",
+                "ApplicationCommandOptionString",
+                "ApplicationCommandOptionInteger",
+                "ApplicationCommandOptionBoolean",
+                "ApplicationCommandOptionUser",
+                "ApplicationCommandOptionChannel",
+                "ApplicationCommandOptionRole",
+                "ApplicationCommandOptionMentionable",
+                "ApplicationCommandOptionNumber",
+                "ApplicationCommandOptionAttachment"
+            ]
         },
         "discordgo.Channel": {
             "type": "object",
@@ -4497,11 +4618,19 @@
                 },
                 "thread_member": {
                     "description": "Thread member object for the current user, if they have joined the thread, only included on certain API endpoints",
-                    "$ref": "#/definitions/discordgo.ThreadMember"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ThreadMember"
+                        }
+                    ]
                 },
                 "thread_metadata": {
                     "description": "Thread-specific fields not needed by other channels",
-                    "$ref": "#/definitions/discordgo.ThreadMetadata"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ThreadMetadata"
+                        }
+                    ]
                 },
                 "topic": {
                     "description": "The topic of the channel.",
@@ -4509,13 +4638,65 @@
                 },
                 "type": {
                     "description": "The type of the channel.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ChannelType"
+                        }
+                    ]
                 },
                 "user_limit": {
                     "description": "The user limit of the voice channel.",
                     "type": "integer"
                 }
             }
+        },
+        "discordgo.ChannelType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                10,
+                11,
+                12,
+                13
+            ],
+            "x-enum-varnames": [
+                "ChannelTypeGuildText",
+                "ChannelTypeDM",
+                "ChannelTypeGuildVoice",
+                "ChannelTypeGroupDM",
+                "ChannelTypeGuildCategory",
+                "ChannelTypeGuildNews",
+                "ChannelTypeGuildStore",
+                "ChannelTypeGuildNewsThread",
+                "ChannelTypeGuildPublicThread",
+                "ChannelTypeGuildPrivateThread",
+                "ChannelTypeGuildStageVoice"
+            ]
+        },
+        "discordgo.EmbedType": {
+            "type": "string",
+            "enum": [
+                "rich",
+                "image",
+                "video",
+                "gifv",
+                "article",
+                "link"
+            ],
+            "x-enum-varnames": [
+                "EmbedTypeRich",
+                "EmbedTypeImage",
+                "EmbedTypeVideo",
+                "EmbedTypeGifv",
+                "EmbedTypeArticle",
+                "EmbedTypeLink"
+            ]
         },
         "discordgo.Emoji": {
             "type": "object",
@@ -4548,6 +4729,23 @@
                     "$ref": "#/definitions/discordgo.User"
                 }
             }
+        },
+        "discordgo.InteractionType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "x-enum-varnames": [
+                "InteractionPing",
+                "InteractionApplicationCommand",
+                "InteractionMessageComponent",
+                "InteractionApplicationCommandAutocomplete",
+                "InteractionModalSubmit"
+            ]
         },
         "discordgo.Member": {
             "type": "object",
@@ -4602,7 +4800,11 @@
                 },
                 "user": {
                     "description": "The underlying user on which the member is based.",
-                    "$ref": "#/definitions/discordgo.User"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.User"
+                        }
+                    ]
                 }
             }
         },
@@ -4611,11 +4813,19 @@
             "properties": {
                 "activity": {
                     "description": "Is sent with Rich Presence-related chat embeds",
-                    "$ref": "#/definitions/discordgo.MessageActivity"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageActivity"
+                        }
+                    ]
                 },
                 "application": {
                     "description": "Is sent with Rich Presence-related chat embeds",
-                    "$ref": "#/definitions/discordgo.MessageApplication"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageApplication"
+                        }
+                    ]
                 },
                 "attachments": {
                     "description": "A list of attachments present in the message.",
@@ -4626,7 +4836,11 @@
                 },
                 "author": {
                     "description": "The author of the message. This is not guaranteed to be a\nvalid user (webhook-sent messages do not possess a full author).",
-                    "$ref": "#/definitions/discordgo.User"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.User"
+                        }
+                    ]
                 },
                 "channel_id": {
                     "description": "The ID of the channel in which the message was sent.",
@@ -4649,7 +4863,11 @@
                 },
                 "flags": {
                     "description": "The flags of the message, which describe extra features of a message.\nThis is a combination of bit masks; the presence of a certain permission can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageFlags"
+                        }
+                    ]
                 },
                 "guild_id": {
                     "description": "The ID of the guild in which the message was sent.",
@@ -4661,11 +4879,19 @@
                 },
                 "interaction": {
                     "description": "Is sent when the message is a response to an Interaction, without an existing message.\nThis means responses to message component interactions do not include this property,\ninstead including a MessageReference, as components exist on preexisting messages.",
-                    "$ref": "#/definitions/discordgo.MessageInteraction"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageInteraction"
+                        }
+                    ]
                 },
                 "member": {
                     "description": "Member properties for this message's author,\ncontains only partial information",
-                    "$ref": "#/definitions/discordgo.Member"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.Member"
+                        }
+                    ]
                 },
                 "mention_channels": {
                     "description": "Channels specifically mentioned in this message\nNot all channel mentions in a message will appear in mention_channels.\nOnly textual channels that are visible to everyone in a lurkable guild will ever be included.\nOnly crossposted messages (via Channel Following) currently include mention_channels at all.\nIf no mentions in the message meet these requirements, this field will not be sent.",
@@ -4694,7 +4920,11 @@
                 },
                 "message_reference": {
                     "description": "MessageReference contains reference data sent with crossposted or reply messages.\nThis does not contain the reference *to* this message; this is for when *this* message references another.\nTo generate a reference to this message, use (*Message).Reference().",
-                    "$ref": "#/definitions/discordgo.MessageReference"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageReference"
+                        }
+                    ]
                 },
                 "pinned": {
                     "description": "Whether the message is pinned or not.",
@@ -4709,7 +4939,11 @@
                 },
                 "referenced_message": {
                     "description": "The message associated with the message_reference\nNOTE: This field is only returned for messages with a type of 19 (REPLY) or 21 (THREAD_STARTER_MESSAGE).\nIf the message is a reply but the referenced_message field is not present,\nthe backend did not attempt to fetch the message that was being replied to, so its state is unknown.\nIf the field exists but is null, the referenced message was deleted.",
-                    "$ref": "#/definitions/discordgo.Message"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.Message"
+                        }
+                    ]
                 },
                 "sticker_items": {
                     "description": "An array of Sticker objects, if any were sent.",
@@ -4720,7 +4954,11 @@
                 },
                 "thread": {
                     "description": "The thread that was started from this message, includes thread member object",
-                    "$ref": "#/definitions/discordgo.Channel"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.Channel"
+                        }
+                    ]
                 },
                 "timestamp": {
                     "description": "The time at which the messsage was sent.\nCAUTION: this field may be removed in a\nfuture API version; it is safer to calculate\nthe creation time via the ID.",
@@ -4732,7 +4970,11 @@
                 },
                 "type": {
                     "description": "The type of the message.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.MessageType"
+                        }
+                    ]
                 },
                 "webhook_id": {
                     "description": "The webhook ID of the message, if it was generated by a webhook",
@@ -4747,9 +4989,24 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.MessageActivityType"
                 }
             }
+        },
+        "discordgo.MessageActivityType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                5
+            ],
+            "x-enum-varnames": [
+                "MessageActivityTypeJoin",
+                "MessageActivityTypeSpectate",
+                "MessageActivityTypeListen",
+                "MessageActivityTypeJoinRequest"
+            ]
         },
         "discordgo.MessageApplication": {
             "type": "object",
@@ -4840,7 +5097,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/discordgo.EmbedType"
                 },
                 "url": {
                     "type": "string"
@@ -4954,6 +5211,33 @@
                 }
             }
         },
+        "discordgo.MessageFlags": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128,
+                256
+            ],
+            "x-enum-varnames": [
+                "MessageFlagsCrossPosted",
+                "MessageFlagsIsCrossPosted",
+                "MessageFlagsSuppressEmbeds",
+                "MessageFlagsSupressEmbeds",
+                "MessageFlagsSourceMessageDeleted",
+                "MessageFlagsUrgent",
+                "MessageFlagsHasThread",
+                "MessageFlagsEphemeral",
+                "MessageFlagsLoading",
+                "MessageFlagsFailedToMentionSomeRolesInThread"
+            ]
+        },
         "discordgo.MessageInteraction": {
             "type": "object",
             "properties": {
@@ -4962,13 +5246,17 @@
                 },
                 "member": {
                     "description": "Member is only present when the interaction is from a guild.",
-                    "$ref": "#/definitions/discordgo.Member"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.Member"
+                        }
+                    ]
                 },
                 "name": {
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.InteractionType"
                 },
                 "user": {
                     "$ref": "#/definitions/discordgo.User"
@@ -5003,6 +5291,64 @@
                 }
             }
         },
+        "discordgo.MessageType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                14,
+                15,
+                18,
+                19,
+                20,
+                21,
+                23
+            ],
+            "x-enum-varnames": [
+                "MessageTypeDefault",
+                "MessageTypeRecipientAdd",
+                "MessageTypeRecipientRemove",
+                "MessageTypeCall",
+                "MessageTypeChannelNameChange",
+                "MessageTypeChannelIconChange",
+                "MessageTypeChannelPinnedMessage",
+                "MessageTypeGuildMemberJoin",
+                "MessageTypeUserPremiumGuildSubscription",
+                "MessageTypeUserPremiumGuildSubscriptionTierOne",
+                "MessageTypeUserPremiumGuildSubscriptionTierTwo",
+                "MessageTypeUserPremiumGuildSubscriptionTierThree",
+                "MessageTypeChannelFollowAdd",
+                "MessageTypeGuildDiscoveryDisqualified",
+                "MessageTypeGuildDiscoveryRequalified",
+                "MessageTypeThreadCreated",
+                "MessageTypeReply",
+                "MessageTypeChatInputCommand",
+                "MessageTypeThreadStarterMessage",
+                "MessageTypeContextMenuCommand"
+            ]
+        },
+        "discordgo.MfaLevel": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "MfaLevelNone",
+                "MfaLevelElevated"
+            ]
+        },
         "discordgo.PermissionOverwrite": {
             "type": "object",
             "properties": {
@@ -5018,9 +5364,35 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.PermissionOverwriteType"
                 }
             }
+        },
+        "discordgo.PermissionOverwriteType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "PermissionOverwriteTypeRole",
+                "PermissionOverwriteTypeMember"
+            ]
+        },
+        "discordgo.PremiumTier": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-varnames": [
+                "PremiumTierNone",
+                "PremiumTier1",
+                "PremiumTier2",
+                "PremiumTier3"
+            ]
         },
         "discordgo.Role": {
             "type": "object",
@@ -5070,7 +5442,7 @@
                     "type": "string"
                 },
                 "format_type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.StickerFormat"
                 },
                 "guild_id": {
                     "type": "string"
@@ -5091,12 +5463,36 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.StickerType"
                 },
                 "user": {
                     "$ref": "#/definitions/discordgo.User"
                 }
             }
+        },
+        "discordgo.StickerFormat": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-varnames": [
+                "StickerFormatTypePNG",
+                "StickerFormatTypeAPNG",
+                "StickerFormatTypeLottie"
+            ]
+        },
+        "discordgo.StickerType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "StickerTypeStandard",
+                "StickerTypeGuild"
+            ]
         },
         "discordgo.ThreadMember": {
             "type": "object",
@@ -5193,7 +5589,11 @@
                 },
                 "public_flags": {
                     "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.UserFlags"
+                        }
+                    ]
                 },
                 "system": {
                     "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
@@ -5213,7 +5613,312 @@
                 }
             }
         },
-        "models.APITokenResponse": {
+        "discordgo.UserFlags": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                8,
+                64,
+                128,
+                256,
+                512,
+                1024,
+                4096,
+                16384,
+                65536,
+                131072,
+                262144
+            ],
+            "x-enum-varnames": [
+                "UserFlagDiscordEmployee",
+                "UserFlagDiscordPartner",
+                "UserFlagHypeSquadEvents",
+                "UserFlagBugHunterLevel1",
+                "UserFlagHouseBravery",
+                "UserFlagHouseBrilliance",
+                "UserFlagHouseBalance",
+                "UserFlagEarlySupporter",
+                "UserFlagTeamUser",
+                "UserFlagSystem",
+                "UserFlagBugHunterLevel2",
+                "UserFlagVerifiedBot",
+                "UserFlagVerifiedBotDeveloper",
+                "UserFlagDiscordCertifiedModerator"
+            ]
+        },
+        "discordgo.VerificationLevel": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-varnames": [
+                "VerificationLevelNone",
+                "VerificationLevelLow",
+                "VerificationLevelMedium",
+                "VerificationLevelHigh",
+                "VerificationLevelVeryHigh"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.Contact": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings": {
+            "type": "object",
+            "properties": {
+                "allowed_origins": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "protected": {
+                    "type": "boolean"
+                },
+                "token_hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.GuildLogEntry": {
+            "type": "object",
+            "properties": {
+                "guildid": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "module": {
+                    "type": "string"
+                },
+                "severity": {
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity": {
+            "type": "integer",
+            "enum": [
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-varnames": [
+                "GLAll",
+                "GLDebug",
+                "GLInfo",
+                "GLWarn",
+                "GLError",
+                "GLFatal"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry": {
+            "type": "object",
+            "properties": {
+                "account_created": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.KarmaAction": {
+            "type": "string",
+            "enum": [
+                "TOGGLE_ROLE",
+                "KICK",
+                "BAN",
+                "SEND_MESSAGE"
+            ],
+            "x-enum-varnames": [
+                "KarmaActionToggleRole",
+                "KarmaActionKick",
+                "KarmaActionBan",
+                "KarmaActionSendMessage"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.KarmaRule": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaAction"
+                },
+                "argument": {
+                    "type": "string"
+                },
+                "guildid": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "trigger": {
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "KarmaTriggerBelow",
+                "KarmaTriggerAbove",
+                "karmaTriggerMax"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.Privacy": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.Contact"
+                    }
+                },
+                "noticeurl": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.ReportType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                3
+            ],
+            "x-enum-varnames": [
+                "TypeKick",
+                "TypeBan",
+                "TypeMute",
+                "TypeWarn",
+                "TypeAd",
+                "TypesReserved"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.UnbanRequest": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "processed": {
+                    "type": "string"
+                },
+                "processed_by": {
+                    "type": "string"
+                },
+                "processed_message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "user_tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "UnbanRequestStatePending",
+                "UnbanRequestStateDeclined",
+                "UnbanRequestStateAccepted"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry": {
+            "type": "object",
+            "properties": {
+                "file_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "explicit": {
+                    "type": "boolean"
+                },
+                "term": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse": {
             "type": "object",
             "properties": {
                 "created": {
@@ -5233,7 +5938,7 @@
                 }
             }
         },
-        "models.AccessTokenResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse": {
             "type": "object",
             "properties": {
                 "expires": {
@@ -5244,7 +5949,7 @@
                 }
             }
         },
-        "models.AntiraidAction": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction": {
             "type": "object",
             "properties": {
                 "ids": {
@@ -5258,7 +5963,7 @@
                 }
             }
         },
-        "models.AntiraidSettings": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings": {
             "type": "object",
             "properties": {
                 "burst": {
@@ -5275,7 +5980,7 @@
                 }
             }
         },
-        "models.CaptchaSiteKey": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey": {
             "type": "object",
             "properties": {
                 "sitekey": {
@@ -5283,21 +5988,7 @@
                 }
             }
         },
-        "models.Contact": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Count": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count": {
             "type": "object",
             "properties": {
                 "count": {
@@ -5305,7 +5996,7 @@
                 }
             }
         },
-        "models.EnableStatus": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -5313,7 +6004,7 @@
                 }
             }
         },
-        "models.Error": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -5327,7 +6018,7 @@
                 }
             }
         },
-        "models.FlatUser": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser": {
             "type": "object",
             "properties": {
                 "avatar_url": {
@@ -5347,7 +6038,7 @@
                 }
             }
         },
-        "models.FlushGuildRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest": {
             "type": "object",
             "properties": {
                 "leave_after": {
@@ -5358,7 +6049,7 @@
                 }
             }
         },
-        "models.Guild": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild": {
             "type": "object",
             "properties": {
                 "afk_channel_id": {
@@ -5404,7 +6095,7 @@
                     "type": "integer"
                 },
                 "mfa_level": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.MfaLevel"
                 },
                 "name": {
                     "type": "string"
@@ -5416,7 +6107,7 @@
                     "type": "integer"
                 },
                 "premium_tier": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.PremiumTier"
                 },
                 "region": {
                     "type": "string"
@@ -5428,7 +6119,7 @@
                     }
                 },
                 "self_member": {
-                    "$ref": "#/definitions/models.Member"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                 },
                 "splash": {
                     "type": "string"
@@ -5437,28 +6128,11 @@
                     "type": "boolean"
                 },
                 "verification_level": {
-                    "type": "integer"
+                    "$ref": "#/definitions/discordgo.VerificationLevel"
                 }
             }
         },
-        "models.GuildAPISettings": {
-            "type": "object",
-            "properties": {
-                "allowed_origins": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "protected": {
-                    "type": "boolean"
-                },
-                "token_hash": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.GuildAPISettingsRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest": {
             "type": "object",
             "properties": {
                 "allowed_origins": {
@@ -5481,41 +6155,18 @@
                 }
             }
         },
-        "models.GuildKarmaEntry": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry": {
             "type": "object",
             "properties": {
                 "member": {
-                    "$ref": "#/definitions/models.Member"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                 },
                 "value": {
                     "type": "integer"
                 }
             }
         },
-        "models.GuildLogEntry": {
-            "type": "object",
-            "properties": {
-                "guildid": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "module": {
-                    "type": "string"
-                },
-                "severity": {
-                    "type": "integer"
-                },
-                "timestamp": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.GuildReduced": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced": {
             "type": "object",
             "properties": {
                 "icon": {
@@ -5547,7 +6198,7 @@
                 }
             }
         },
-        "models.GuildSettings": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings": {
             "type": "object",
             "properties": {
                 "autoroles": {
@@ -5588,7 +6239,7 @@
                 }
             }
         },
-        "models.InviteSettingsRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -5602,11 +6253,11 @@
                 }
             }
         },
-        "models.InviteSettingsResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse": {
             "type": "object",
             "properties": {
                 "guild": {
-                    "$ref": "#/definitions/models.Guild"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild"
                 },
                 "invite_url": {
                     "type": "string"
@@ -5616,50 +6267,7 @@
                 }
             }
         },
-        "models.JoinLogEntry": {
-            "type": "object",
-            "properties": {
-                "account_created": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "tag": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.KarmaRule": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "argument": {
-                    "type": "string"
-                },
-                "guildid": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "trigger": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.KarmaSettings": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings": {
             "type": "object",
             "properties": {
                 "emotes_decrease": {
@@ -5685,7 +6293,7 @@
                 }
             }
         },
-        "models.LandingPageResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse": {
             "type": "object",
             "properties": {
                 "localinvite": {
@@ -5699,7 +6307,7 @@
                 }
             }
         },
-        "models.Member": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -5773,11 +6381,15 @@
                 },
                 "user": {
                     "description": "The underlying user on which the member is based.",
-                    "$ref": "#/definitions/discordgo.User"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.User"
+                        }
+                    ]
                 }
             }
         },
-        "models.PermissionsMap": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap": {
             "type": "object",
             "additionalProperties": {
                 "type": "array",
@@ -5786,7 +6398,7 @@
                 }
             }
         },
-        "models.PermissionsResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse": {
             "type": "object",
             "properties": {
                 "permissions": {
@@ -5797,9 +6409,12 @@
                 }
             }
         },
-        "models.PermissionsUpdate": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate": {
             "type": "object",
             "properties": {
+                "override": {
+                    "type": "boolean"
+                },
                 "perm": {
                     "type": "string"
                 },
@@ -5811,21 +6426,7 @@
                 }
             }
         },
-        "models.Privacy": {
-            "type": "object",
-            "properties": {
-                "contact": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Contact"
-                    }
-                },
-                "noticeurl": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ReasonRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest": {
             "type": "object",
             "properties": {
                 "attachment": {
@@ -5842,7 +6443,7 @@
                 }
             }
         },
-        "models.Report": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report": {
             "type": "object",
             "properties": {
                 "attachment_url": {
@@ -5852,7 +6453,7 @@
                     "type": "string"
                 },
                 "executor": {
-                    "$ref": "#/definitions/models.FlatUser"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser"
                 },
                 "executor_id": {
                     "type": "string"
@@ -5870,20 +6471,20 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.ReportType"
                 },
                 "type_name": {
                     "type": "string"
                 },
                 "victim": {
-                    "$ref": "#/definitions/models.FlatUser"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser"
                 },
                 "victim_id": {
                     "type": "string"
                 }
             }
         },
-        "models.ReportRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest": {
             "type": "object",
             "properties": {
                 "attachment": {
@@ -5899,18 +6500,18 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.ReportType"
                 }
             }
         },
-        "models.RichUnbanRequest": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest": {
             "type": "object",
             "properties": {
                 "created": {
                     "type": "string"
                 },
                 "creator": {
-                    "$ref": "#/definitions/models.FlatUser"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser"
                 },
                 "guild_id": {
                     "type": "string"
@@ -5931,10 +6532,10 @@
                     "type": "string"
                 },
                 "processor": {
-                    "$ref": "#/definitions/models.FlatUser"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser"
                 },
                 "status": {
-                    "type": "integer"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState"
                 },
                 "user_id": {
                     "type": "string"
@@ -5944,24 +6545,24 @@
                 }
             }
         },
-        "models.SearchResult": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult": {
             "type": "object",
             "properties": {
                 "guilds": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.GuildReduced"
+                        "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced"
                     }
                 },
                 "members": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Member"
+                        "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member"
                     }
                 }
             }
         },
-        "models.SlashCommandInfo": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo": {
             "type": "object",
             "properties": {
                 "description": {
@@ -5988,7 +6589,7 @@
                 "subdomains": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/permissions.SubPermission"
+                        "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission"
                     }
                 },
                 "version": {
@@ -5996,7 +6597,7 @@
                 }
             }
         },
-        "models.StarboardEntryResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse": {
             "type": "object",
             "properties": {
                 "author_avatar_url": {
@@ -6037,7 +6638,7 @@
                 }
             }
         },
-        "models.State": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State": {
             "type": "object",
             "properties": {
                 "state": {
@@ -6045,7 +6646,7 @@
                 }
             }
         },
-        "models.Status": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status": {
             "type": "object",
             "properties": {
                 "code": {
@@ -6053,7 +6654,7 @@
                 }
             }
         },
-        "models.SystemInfo": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo": {
             "type": "object",
             "properties": {
                 "arch": {
@@ -6109,46 +6710,11 @@
                 }
             }
         },
-        "models.UnbanRequest": {
-            "type": "object",
-            "properties": {
-                "created": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "processed": {
-                    "type": "string"
-                },
-                "processed_by": {
-                    "type": "string"
-                },
-                "processed_message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                },
-                "user_tag": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UpdateInfoResponse": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse": {
             "type": "object",
             "properties": {
                 "current": {
-                    "$ref": "#/definitions/versioncheck.Semver"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver"
                 },
                 "current_str": {
                     "type": "string"
@@ -6157,14 +6723,14 @@
                     "type": "boolean"
                 },
                 "latest": {
-                    "$ref": "#/definitions/versioncheck.Semver"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver"
                 },
                 "latest_str": {
                     "type": "string"
                 }
             }
         },
-        "models.User": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User": {
             "type": "object",
             "properties": {
                 "accent_color": {
@@ -6225,7 +6791,11 @@
                 },
                 "public_flags": {
                     "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.UserFlags"
+                        }
+                    ]
                 },
                 "system": {
                     "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
@@ -6245,7 +6815,7 @@
                 }
             }
         },
-        "models.UsersettingsOTA": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -6253,7 +6823,7 @@
                 }
             }
         },
-        "models.UsersettingsPrivacy": {
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy": {
             "type": "object",
             "properties": {
                 "starboard_optout": {
@@ -6261,32 +6831,33 @@
                 }
             }
         },
-        "permissions.SubPermission": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "explicit": {
-                    "type": "boolean"
-                },
-                "term": {
-                    "type": "string"
-                }
-            }
-        },
-        "presence.Presence": {
+        "github_com_zekroTJA_shinpuru_internal_util_presence.Presence": {
             "type": "object",
             "properties": {
                 "game": {
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_util_presence.Status"
                 }
             }
         },
-        "versioncheck.Semver": {
+        "github_com_zekroTJA_shinpuru_internal_util_presence.Status": {
+            "type": "string",
+            "enum": [
+                "online",
+                "dnd",
+                "idle",
+                "invisible"
+            ],
+            "x-enum-varnames": [
+                "StatusOnline",
+                "StatusDnD",
+                "StatusIdle",
+                "StatusInvisible"
+            ]
+        },
+        "github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver": {
             "type": "object",
             "properties": {
                 "attachment": {

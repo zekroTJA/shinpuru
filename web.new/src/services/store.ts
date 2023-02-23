@@ -1,9 +1,10 @@
-import create from 'zustand';
-import { Notification } from '../components/Notifications';
-import { ModalState } from '../hooks/useModal';
+import { AppTheme, getSystemTheme } from '../theme/theme';
 import { Guild, User } from '../lib/shinpuru-ts/src';
-import { AppTheme } from '../theme/theme';
+
 import LocalStorageUtil from '../util/localstorage';
+import { ModalState } from '../hooks/useModal';
+import { Notification } from '../components/Notifications';
+import create from 'zustand';
 
 export type FetchLocked<T> = {
   value: T | undefined;
@@ -14,11 +15,14 @@ export interface Store {
   theme: AppTheme;
   setTheme: (v: AppTheme) => void;
 
+  accentColor?: string;
+  setAccentColor: (v?: string) => void;
+
   selfUser: FetchLocked<User>;
   setSelfUser: (selfUser: Partial<FetchLocked<User>>) => void;
 
   guilds?: Guild[];
-  setGuilds: (guilds: Guild[]) => void;
+  setGuilds: (guilds?: Guild[]) => void;
 
   selectedGuild?: Guild;
   setSelectedGuild: (selectedGuild: Guild) => void;
@@ -31,13 +35,17 @@ export interface Store {
 }
 
 export const useStore = create<Store>((set, get) => ({
-  theme: LocalStorageUtil.get(
-    'shnp.theme',
-    window.matchMedia('(prefers-color-scheme: dark)').matches ? AppTheme.DARK : AppTheme.LIGHT,
-  )!,
+  theme: LocalStorageUtil.get('shnp.theme', getSystemTheme())!,
   setTheme: (theme) => {
     set({ theme });
     LocalStorageUtil.set('shnp.theme', theme);
+  },
+
+  accentColor: LocalStorageUtil.get('shnp.accentcolor'),
+  setAccentColor: (accentColor) => {
+    set({ accentColor });
+    if (accentColor === undefined) LocalStorageUtil.del('shnp.accentcolor');
+    else LocalStorageUtil.set('shnp.accentcolor', accentColor);
   },
 
   selfUser: { value: undefined, isFetching: false },

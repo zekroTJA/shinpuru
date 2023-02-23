@@ -1,10 +1,11 @@
-import styled, { css, Keyframes, keyframes } from 'styled-components';
-import { ReactComponent as CloseIcon } from '../../assets/close.svg';
+import { Notification, NotificationMeta } from './models';
+import styled, { Keyframes, css, keyframes } from 'styled-components';
+
 import { ANIMATION_DELAY } from '../../hooks/useNotifications';
+import { ReactComponent as CloseIcon } from '../../assets/close.svg';
 import { Container } from '../Container';
 import { Heading } from '../Heading';
 import { LinearGradient } from '../styleParts';
-import { Notification, NotificationMeta, NotificationType } from './models';
 
 type Props = {
   n: Notification;
@@ -59,11 +60,11 @@ const NotificationContainer = styled(Container)<NotificationMeta>`
 
   ${(p) => {
     switch (p.type) {
-      case NotificationType.ERROR:
+      case 'ERROR':
         return LinearGradient(p.theme.red);
-      case NotificationType.WARNING:
+      case 'WARNING':
         return LinearGradient(p.theme.orange);
-      case NotificationType.SUCCESS:
+      case 'SUCCESS':
         return LinearGradient(p.theme.green);
       default:
         return LinearGradient(p.theme.blurple);

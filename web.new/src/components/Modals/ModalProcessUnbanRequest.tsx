@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { useApi } from '../../hooks/useApi';
-import { useNotifications } from '../../hooks/useNotifications';
+import { ControlProps, Modal } from '../Modal/Modal';
+import { ModalContainer, ModalTextArea } from './modalParts';
 import { Report, UnbanRequest, UnbanRequestState } from '../../lib/shinpuru-ts/src';
+import { Trans, useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+
 import { Button } from '../Button';
 import { Heading } from '../Heading';
 import { Loader } from '../Loader';
-import { ControlProps, Modal } from '../Modal/Modal';
-import { NotificationType } from '../Notifications';
 import { ReportTile } from '../Report';
-import { ModalContainer, ModalTextArea } from './modalParts';
+import styled from 'styled-components';
+import { useApi } from '../../hooks/useApi';
+import { useNotifications } from '../../hooks/useNotifications';
 
 export type UnbanRequestWrapper = UnbanRequest & {
   isAccept: boolean;
@@ -73,7 +73,7 @@ export const ModalProcessUnbanRequest: React.FC<Props> = ({
       .then((res) => {
         pushNotification({
           message: t(`notifications.${type}`),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
         onProcessed(res);
         onClose();

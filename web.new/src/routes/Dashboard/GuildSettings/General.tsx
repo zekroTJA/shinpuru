@@ -1,7 +1,8 @@
+import { Channel, ChannelType, GuildSettings, Role } from '../../../lib/shinpuru-ts/src';
+import { Element, Select } from '../../../components/Select';
 import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
-import styled from 'styled-components';
+
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
 import { Embed } from '../../../components/Embed';
@@ -9,15 +10,14 @@ import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
 import { RoleInput } from '../../../components/RoleInput';
-import { Element, Select } from '../../../components/Select';
 import { Small } from '../../../components/Small';
+import styled from 'styled-components';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';
+import { useParams } from 'react-router';
 import { usePerms } from '../../../hooks/usePerms';
-import { Channel, ChannelType, GuildSettings, Role } from '../../../lib/shinpuru-ts/src';
 
 type Props = {};
 
@@ -153,7 +153,7 @@ const GeneralRoute: React.FC<Props> = () => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();

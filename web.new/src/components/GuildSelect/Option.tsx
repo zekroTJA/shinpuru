@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { Guild } from '../../lib/shinpuru-ts/src';
 import { DiscordImage } from '../DiscordImage';
+import { Guild } from '../../lib/shinpuru-ts/src';
+import styled from 'styled-components';
 
 type Props = {
   guild: Guild;

@@ -39,3 +39,7 @@ export const LightTheme: Theme = {
 
 export const DefaultTheme = DarkTheme;
 export type Theme = typeof DefaultTheme;
+
+export const getSystemTheme = () => {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? AppTheme.DARK : AppTheme.LIGHT;
+};

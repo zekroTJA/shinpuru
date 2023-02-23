@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { useParams } from 'react-router';
-import styled from 'styled-components';
+import { useNavigate, useParams } from 'react-router';
+
 import { Button } from '../../../components/Button';
 import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { Modal } from '../../../components/Modal';
-import { NotificationType } from '../../../components/Notifications';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Switch } from '../../../components/Switch';
+import styled from 'styled-components';
 import { useApi } from '../../../hooks/useApi';
 import { useGuild } from '../../../hooks/useGuild';
 import { useNotifications } from '../../../hooks/useNotifications';
@@ -31,6 +31,7 @@ const DataRoute: React.FC<Props> = ({}) => {
   const { guildid } = useParams();
   const guild = useGuild(guildid);
   const fetch = useApi();
+  const nav = useNavigate();
   const [kick, setKick] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [guildName, setGuildName] = useState('');
@@ -39,7 +40,8 @@ const DataRoute: React.FC<Props> = ({}) => {
     if (!guildid || !guildName) return;
     fetch((c) => c.guilds.settings(guildid).flushData(kick, guildName))
       .then(() => {
-        pushNotification({ message: t('notifications.success'), type: NotificationType.SUCCESS });
+        pushNotification({ message: t('notifications.success'), type: 'SUCCESS' });
+        if (kick) nav('/db');
       })
       .catch()
       .finally(() => setShowModal(false));

@@ -1,45 +1,48 @@
-import { Client } from './client';
-import { GuildLogEntry, GuildSettingsVerification, User } from './models';
 import {
-  AccessTokenModel,
   APIToken,
-  CodeResponse,
-  CommandInfo,
-  LandingPageInfo,
-  ListReponse as ListResponse,
-  PrivacyInfo,
-  SearchResult,
-  SystemInfo,
-  Guild,
-  InviteSettingsRequest,
-  InviteSettingsResponse,
-  JoinlogEntry,
-  PermissionResponse,
-  Presence,
-  ReasonRequest,
-  Report,
+  AccessTokenModel,
   AntiraidAction,
   AntiraidSettings,
+  Channel,
   CodeExecSettings,
+  CodeResponse,
+  CommandInfo,
   Count,
+  Guild,
   GuildBackup,
   GuildScoreboardEntry,
   GuildSettings,
   GuildSettingsApi,
   GuildStarboardEntry,
+  InviteSettingsRequest,
+  InviteSettingsResponse,
+  JoinlogEntry,
   KarmaRule,
   KarmaSettings,
+  LandingPageInfo,
+  ListResponse,
   Member,
+  MessageEmbed,
+  PermissionResponse,
   PermissionsMap,
   PermissionsUpdate,
+  Presence,
+  PrivacyInfo,
+  ReasonRequest,
+  Report,
+  ReportRequest,
+  SearchResult,
   StarboardSortOrder,
   State,
+  SystemInfo,
   UnbanRequest,
-  Channel,
-  MessageEmbed,
-  ReportRequest,
+  UserSettingsOTA,
+  UserSettingsPrivacy,
   VerificationSiteKey,
 } from './models';
+import { GuildLogEntry, GuildSettingsVerification, User } from './models';
+
+import { Client } from './client';
 import { SubClient } from './subclient';
 
 export class EtcClient extends SubClient {
@@ -57,6 +60,10 @@ export class EtcClient extends SubClient {
 
   sysinfo(): Promise<SystemInfo> {
     return this.req('GET', 'sysinfo');
+  }
+
+  allpermissions(): Promise<ListResponse<string>> {
+    return this.req('GET', 'allpermissions');
   }
 }
 
@@ -78,7 +85,7 @@ export class UtilClient extends SubClient {
   }
 
   slashcommands(): Promise<ListResponse<CommandInfo>> {
-    return this.req('GET', 'landingpageinfo');
+    return this.req('GET', 'slashcommands');
   }
 }
 
@@ -116,7 +123,7 @@ export class SearchClient extends SubClient {
 
 export class TokensClient extends SubClient {
   constructor(client: Client) {
-    super(client, 'tokens');
+    super(client, 'token');
   }
 
   delete(): Promise<CodeResponse> {
@@ -239,7 +246,7 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/permissions`);
   }
 
-  applyPermission(id: string, update: PermissionsUpdate): Promise<CodeResponse> {
+  applyPermission(id: string, update: PermissionsUpdate): Promise<PermissionsMap> {
     return this.req('POST', `${id}/permissions`, update);
   }
 
@@ -264,8 +271,16 @@ export class GuildsClient extends SubClient {
     return this.req('GET', `${id}/starboard?limit=${limit}&offset=${offset}&sort=${sort}`);
   }
 
-  unbanrequests(id: string): Promise<ListResponse<UnbanRequest>> {
-    return this.req('GET', `${id}/unbanrequests`);
+  starboardCount(id: string): Promise<Count> {
+    return this.req('GET', `${id}/starboard/count`);
+  }
+
+  unbanrequests(
+    id: string,
+    limit: number = 20,
+    offset: number = 0,
+  ): Promise<ListResponse<UnbanRequest>> {
+    return this.req('GET', `${id}/unbanrequests?limit=${limit}&offset=${offset}`);
   }
 
   unbanrequestsCount(id: string): Promise<Count> {
@@ -497,5 +512,31 @@ export class UsersClient extends SubClient {
 
   get(id: string): Promise<User> {
     return this.req('GET', id);
+  }
+}
+
+export class UserSettingsClient extends SubClient {
+  constructor(client: Client) {
+    super(client, 'usersettings');
+  }
+
+  ota(): Promise<UserSettingsOTA> {
+    return this.req('GET', 'ota');
+  }
+
+  setOta(state: UserSettingsOTA): Promise<CodeResponse> {
+    return this.req('POST', 'ota', state);
+  }
+
+  privacy(): Promise<UserSettingsPrivacy> {
+    return this.req('GET', 'privacy');
+  }
+
+  setPrivacy(state: UserSettingsPrivacy): Promise<CodeResponse> {
+    return this.req('POST', 'privacy', state);
+  }
+
+  flush(): Promise<CodeResponse> {
+    return this.req('POST', 'flush');
   }
 }

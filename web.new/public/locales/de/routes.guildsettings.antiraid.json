@@ -1,0 +1,40 @@
+{
+  "heading": "Antiraid Settings",
+  "notifications": {
+    "saved": "Settings saved.",
+    "kicked": "{{count}} users have been kicked!",
+    "banned": "{{count}} users have been banned!"
+  },
+  "explanation": "The antiraid system monitors the influx rate of users to your guild depending on the specified values below. If the rate exceeds the parameters, the guilds verification level is set to highest and all new members joining after that are recorded in the list below. Also, all admins of the guild will be notified about the event via DM.",
+  "enable": "Enable antiraid system",
+  "save": "Save Settings",
+  "regeneration": {
+    "label": "Regeneration Duration",
+    "explanation": "The estimated usual time between two users joining your guild."
+  },
+  "burst": {
+    "label": "Burst Amount",
+    "explanation": "The amount of users who shold be able to join in a short period of time without triggering the antiraid system."
+  },
+  "verification": {
+    "label": "User Verification",
+    "explanation": "Automatically enables the requirement of account verification for ner members joining the guild.",
+    "switch_label": "Enable Verification"
+  },
+  "log": {
+    "controls": {
+      "download": "Download",
+      "refresh": "Refresh",
+      "clear": "Clear",
+      "kick": "Kick",
+      "ban": "Ban"
+    },
+    "entries": {
+      "id": "User ID",
+      "tag": "User Tag",
+      "created": "Account created",
+      "joined": "Joined at"
+    },
+    "empty": "No one is on this list at the moment. 👻"
+  }
+}

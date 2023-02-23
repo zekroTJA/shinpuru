@@ -167,8 +167,9 @@ type GuildSettings struct {
 // PermissionsUpdate is the request model to
 // update a permissions array.
 type PermissionsUpdate struct {
-	Perm    string   `json:"perm"`
-	RoleIDs []string `json:"role_ids"`
+	Perm     string   `json:"perm"`
+	RoleIDs  []string `json:"role_ids"`
+	Override bool     `json:"override"`
 }
 
 // ReasonRequest is a request model wrapping a
@@ -464,7 +465,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 		VerificationLevel:        g.VerificationLevel,
 
 		SelfMember: selfmm,
-		IconURL:    g.IconURL(),
+		IconURL:    g.IconURL(""),
 	}
 
 	if db != nil {
@@ -513,7 +514,7 @@ func GuildReducedFromGuild(g *discordgo.Guild) *GuildReduced {
 		ID:          g.ID,
 		Name:        g.Name,
 		Icon:        g.Icon,
-		IconURL:     g.IconURL(),
+		IconURL:     g.IconURL(""),
 		Region:      g.Region,
 		OwnerID:     g.OwnerID,
 		JoinedAt:    g.JoinedAt,

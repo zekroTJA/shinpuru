@@ -1,10 +1,11 @@
+import { ControlProps, Modal } from '../Modal';
+
+import { Button } from '../Button';
+import { Report } from '../../lib/shinpuru-ts/src';
+import { TextArea } from '../TextArea';
+import styled from 'styled-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { Report } from '../../lib/shinpuru-ts/src';
-import { Button } from '../Button';
-import { ControlProps, Modal } from '../Modal';
-import { TextArea } from '../TextArea';
 
 type Props = ControlProps & {
   report?: Report;

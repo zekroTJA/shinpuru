@@ -1,0 +1,9 @@
+{
+  "heading": "One Time Authentication",
+  "explanation": "OTA (One Time Authentication) allows logging in via single use tokens generated, in example, using the <code>/login</code> command. OTA is disabled by default for security reasons. <1>Here</1> you can read more about how OTA works in shinpuru.",
+  "toggle": "Enable OTA",
+  "save": "Save settings",
+  "notifications": {
+    "saved": "Settings have been saved."
+  }
+}

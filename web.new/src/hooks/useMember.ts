@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Member } from '../lib/shinpuru-ts/src';
+
 import { GuildMemberClient } from '../lib/shinpuru-ts/src/bindings';
+import { Member } from '../lib/shinpuru-ts/src';
 import { useApi } from './useApi';
 
 type MemberRequester = <T>(req: (c: GuildMemberClient) => Promise<T>) => Promise<T>;

@@ -1,6 +1,6 @@
+import { useApi } from './useApi';
 import { useEffect } from 'react';
 import { useStore } from '../services/store';
-import { useApi } from './useApi';
 
 export const useSelfUser = () => {
   const [selfUser, setSelfUser] = useStore((s) => [s.selfUser, s.setSelfUser]);

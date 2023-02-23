@@ -1,22 +1,22 @@
+import { Element, Select } from '../../../components/Select';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import { uid } from 'react-uid';
-import styled from 'styled-components';
+
 import { ReactComponent as ArrowIcon } from '../../../assets/arrow.svg';
-import { ReactComponent as DeleteIcon } from '../../../assets/delete.svg';
 import { Button } from '../../../components/Button';
+import { ReactComponent as DeleteIcon } from '../../../assets/delete.svg';
+import { GuildLogEntry } from '../../../lib/shinpuru-ts/src';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { Modal } from '../../../components/Modal';
-import { NotificationType } from '../../../components/Notifications';
-import { Element, Select } from '../../../components/Select';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
+import { formatDate } from '../../../util/date';
+import styled from 'styled-components';
+import { uid } from 'react-uid';
 import { useApi } from '../../../hooks/useApi';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { GuildLogEntry } from '../../../lib/shinpuru-ts/src';
-import { formatDate } from '../../../util/date';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 14;
 
@@ -116,7 +116,7 @@ const LogsRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: v ? t('notifications.enabled') : t('notifications.disabled'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch(() => setEnabled(!v));
@@ -147,7 +147,7 @@ const LogsRoute: React.FC<Props> = ({}) => {
         setPage(0);
         pushNotification({
           message: t('notifications.deleted'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         });
       })
       .catch();

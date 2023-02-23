@@ -7,18 +7,28 @@
       "guilds": {
         "title": "Guilds",
         "members": "Mitglieder",
-        "modlog": "Modlog"
+        "modlog": "Modlog",
+        "starboard": "Starboard",
+        "karma": "Karma"
       },
       "guildsettings": {
         "title": "Guild Einstellungen",
         "general": "Allgemein",
         "backup": "Backups",
         "antiraid": "Antiraid",
-        "codeexec": "Code Ausführung"
+        "codeexec": "Code Ausführung",
+        "permissions": "Permissions",
+        "linkblocking": "Link Blocking",
+        "verification": "Verifizierung",
+        "karma": "Karma",
+        "logs": "Logbuch",
+        "data": "Daten",
+        "api": "API"
       }
     },
-    "logout": "Logout",
-    "user-settings": "Benutzereinstellungen"
+    "logout": "Ausloggen",
+    "user-settings": "Benutzereinstellungen",
+    "info": "Info"
   },
   "sincedate": {
     "since": "vor <1>{{dateSince}}</1>n"
@@ -120,6 +130,71 @@
     "notifications": {
       "accept": "Der Entbannungsantrag wurde erfolgreich akzeptiert und der Nutzer ist jetzt entbannt.",
       "decline": "Der Entbannungsantrag wurde erfolgreich abgelehnt und der Nutzer bleibt gebannt."
+    }
+  },
+  "navbar-usersettings": {
+    "back": "Zurück zum Dashboard",
+    "section": {
+      "default": {
+        "apitoken": "API Token",
+        "ota": "OTA",
+        "privacy": "Datenschutz",
+        "language": "Sprache"
+      }
+    }
+  },
+  "navbar-settings": {
+    "back": "Zurück zum Dashboard",
+    "section": {
+      "default": {
+        "presence": "Statusanzeige"
+      }
+    }
+  },
+  "navbar-info": {
+    "back": "Zurück zum Dashboard",
+    "section": {
+      "default": {
+        "general": "Generelle Infos",
+        "commands": "Kommandos",
+        "system": "Systeminformationen"
+      }
+    }
+  },
+  "karmarule": {
+    "text": "Wenn das Karma eines Nutzers <1/> <2/> Punkte ist, dann <3/> <4/>.",
+    "trigger": {
+      "dropsbelow": "unter",
+      "risesabove": "über"
+    },
+    "action": {
+      "togglerole": "setze die Rolle",
+      "kick": "kick das Mitglied",
+      "ban": "ban das Mitglied",
+      "sendmessage": "sende die Nachricht"
+    },
+    "apply": "Regel anwenden"
+  },
+  "permissionselector": {
+    "apply": "Anwenden",
+    "placeholder": {
+      "roles": "Rollen",
+      "perms": "sp.guild.mod.*"
+    }
+  },
+  "commandtile": {
+    "description": "Beschreibung",
+    "subdomains": "Sub Domains",
+    "arguments": "Argumente",
+    "subcommands": "Unterkommandos",
+    "dmcapable": "Dieses Kommando kann in Direktnachrichten benutzt werden.",
+    "args": {
+      "argument": "Argument",
+      "type": "Typ",
+      "required": "Benötigt",
+      "description": "Beschreibung",
+      "yes": "Ja",
+      "no": "Nein"
     }
   }
 }

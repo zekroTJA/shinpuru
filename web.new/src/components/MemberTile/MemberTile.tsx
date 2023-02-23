@@ -1,10 +1,10 @@
-import styled from 'styled-components';
 import { ReactComponent as BotIcon } from '../../assets/bot.svg';
-import { Member } from '../../lib/shinpuru-ts/src';
-import { memberName } from '../../util/users';
+import { Clickable } from '../styleParts';
 import { Container } from '../Container';
 import { DiscordImage } from '../DiscordImage';
-import { Clickable } from '../styleParts';
+import { Member } from '../../lib/shinpuru-ts/src';
+import { memberName } from '../../util/users';
+import styled from 'styled-components';
 
 type Props = {
   member: Member;

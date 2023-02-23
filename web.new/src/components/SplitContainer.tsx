@@ -13,4 +13,3 @@ export const SplitContainer = styled.div`
     flex-direction: column;
   }
 `;
-

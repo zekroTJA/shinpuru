@@ -1,16 +1,16 @@
 import React, { useEffect, useReducer } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
+import { GuildSettingsVerification } from '../../../lib/shinpuru-ts/src';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { NotificationType } from '../../../components/Notifications';
 import { Small } from '../../../components/Small';
 import { Switch } from '../../../components/Switch';
 import { useApi } from '../../../hooks/useApi';
 import { useNotifications } from '../../../hooks/useNotifications';
-import { GuildSettingsVerification } from '../../../lib/shinpuru-ts/src';
+import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
@@ -45,7 +45,7 @@ const CodeexecRoute: React.FC<Props> = ({}) => {
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
-          type: NotificationType.SUCCESS,
+          type: 'SUCCESS',
         }),
       )
       .catch();

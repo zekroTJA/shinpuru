@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { Tag } from '../Tag';
 import { LinearGradient } from '../styleParts';
+import { Tag } from '../Tag';
 import { isAllowed } from './util';
+import styled from 'styled-components';
 
 type Props = {
   perm: string;

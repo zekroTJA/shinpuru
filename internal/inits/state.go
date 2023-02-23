@@ -22,8 +22,8 @@ func InitState(container di.Container) (s *dgrs.State, err error) {
 		FetchAndStore:  true,
 		Lifetimes: dgrs.Lifetimes{
 			Message:  30 * day,
-			Member:   30 * day,
-			User:     30 * day,
+			Member:   90 * day,
+			User:     90 * day,
 			Presence: 30 * day,
 		},
 	})

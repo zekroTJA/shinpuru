@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { TextArea } from '../TextArea';
+import styled from 'styled-components';
 
 export const ModalTextArea = styled(TextArea)`
   background-color: ${(p) => p.theme.background3};

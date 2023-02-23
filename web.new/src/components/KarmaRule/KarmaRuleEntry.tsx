@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { ReactComponent as IconDelete } from '../../assets/delete.svg';
 import { Guild, KarmaRule } from '../../lib/shinpuru-ts/src';
+import { Trans, useTranslation } from 'react-i18next';
+import { getActionOptions, getTriggerOptions } from './shared';
+
 import { Container } from '../Container';
 import { EmbedWrapper } from '../Embed';
-import { getActionOptions, getTriggerOptions } from './shared';
+import { ReactComponent as IconDelete } from '../../assets/delete.svg';
+import styled from 'styled-components';
+import { useMemo } from 'react';
 
 type Props = {
   guild: Guild;
