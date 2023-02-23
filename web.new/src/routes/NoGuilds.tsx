@@ -1,6 +1,7 @@
 import { Trans, useTranslation } from 'react-i18next';
 
 import { ReactComponent as ArrowIcon } from '../assets/back.svg';
+import { BottomContainer } from '../components/Navbar';
 import { Button } from '../components/Button';
 import React from 'react';
 import styled from 'styled-components';
@@ -27,6 +28,16 @@ const InviteButton = styled(Button)`
   }
 `;
 
+const StyledBottomContainer = styled(BottomContainer)`
+  margin: 0;
+  width: 14rem;
+  position: absolute;
+  bottom: 2em;
+  font-size: 1rem;
+  text-align: start;
+  font-weight: normal;
+`;
+
 const NoGuildsRoute: React.FC<Props> = ({}) => {
   const { t } = useTranslation('routes.noguilds');
 
@@ -45,6 +56,7 @@ const NoGuildsRoute: React.FC<Props> = ({}) => {
           <span>{t('invite')}</span>
         </InviteButton>
       </a>
+      <StyledBottomContainer />
     </Container>
   );
 };

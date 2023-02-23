@@ -1,24 +1,18 @@
+import { BottomContainer, SelfContainer } from './BottomContainer';
 import { useNavigate, useParams } from 'react-router';
 
 import { ReactComponent as APIIcon } from '../../assets/api.svg';
 import { ReactComponent as AntiraidIcon } from '../../assets/antiraid.svg';
 import { ReactComponent as BackupIcon } from '../../assets/backup.svg';
 import { ReactComponent as BlockIcon } from '../../assets/block.svg';
-import { Button } from '../Button';
 import { ReactComponent as CodeIcon } from '../../assets/code.svg';
 import { ReactComponent as DataIcon } from '../../assets/data.svg';
-import { DiscordImage } from '../DiscordImage';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
-import { ReactComponent as GlobalSettingsIcon } from '../../assets/settings.svg';
 import { Guild } from '../../lib/shinpuru-ts/src';
 import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
-import { Hoverplate } from '../Hoverplate';
-import { ReactComponent as InfoIcon } from '../../assets/info.svg';
 import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
-import { Loader } from '../Loader';
-import { ReactComponent as LogoutIcon } from '../../assets/logout.svg';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
 import { Navbar } from './Navbar';
 import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
@@ -26,91 +20,21 @@ import { ReactComponent as ScoreboardIcon } from '../../assets/scoreboard.svg';
 import { Section } from './Section';
 import { ReactComponent as SettingsIcon } from '../../assets/settings.svg';
 import { ReactComponent as StarboardIcon } from '../../assets/star.svg';
-import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
-import { ReactComponent as UserSettingsIcon } from '../../assets/tool.svg';
 import { ReactComponent as UsersIcon } from '../../assets/users.svg';
 import { ReactComponent as VerificationIcon } from '../../assets/verification.svg';
 import styled from 'styled-components';
-import { useApi } from '../../hooks/useApi';
 import { useEffect } from 'react';
 import { useGuilds } from '../../hooks/useGuilds';
 import { usePerms } from '../../hooks/usePerms';
-import { useSelfUser } from '../../hooks/useSelfUser';
 import { useStore } from '../../services/store';
 import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
-const StyledHoverplate = styled(Hoverplate)`
-  width: 100%;
-`;
-
-const HoverplateContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-  width: 30vw;
-  max-width: 13rem;
-`;
-
-const BottomContainer = styled.div`
-  margin-top: auto;
-  gap: 0.5em;
-  display: flex;
-  padding-top: 1em;
-
-  > ${Button} {
-    padding: 0.7em;
-    border-radius: 8px;
-
-    > svg {
-      width: 1.5em;
-      height: 1.5em;
-    }
-  }
-
-  @media (orientation: portrait) {
-    flex-direction: column;
-  }
-`;
-
 const StyledEntry = styled(Entry)``;
 
 const StyledGuildSelect = styled(GuildSelect)`
   margin-top: 1em;
-`;
-
-const SelfContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  background-color: ${(p) => p.theme.background3};
-  border-radius: 8px;
-  padding: 0.5em;
-
-  > img {
-    width: 2em;
-    height: 2em;
-  }
-
-  > span {
-    display: flex;
-    align-items: center;
-    width: 100%;
-
-    > svg {
-      width: 0.5em;
-      height: 0.5em;
-      margin: 0 1em 0 auto;
-    }
-  }
-`;
-
-const HoverplateButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5em;
 `;
 
 const StyledNavbar = styled(Navbar)`
@@ -120,6 +44,10 @@ const StyledNavbar = styled(Navbar)`
       span {
         display: none;
       }
+    }
+
+    ${SelfContainer} > svg {
+      display: none;
     }
 
     ${StyledGuildSelect} > div > div {
@@ -134,10 +62,8 @@ const StyledNavbar = styled(Navbar)`
 export const NavbarDashboard: React.FC<Props> = ({}) => {
   const { t } = useTranslation('components', { keyPrefix: 'navbar' });
   const nav = useNavigate();
-  const fetch = useApi();
   const { guildid } = useParams();
   const guilds = useGuilds();
-  const self = useSelfUser();
   const { isAllowed } = usePerms(guildid);
   const [selectedGuild, setSelectedGuild] = useStore((s) => [s.selectedGuild, s.setSelectedGuild]);
 
@@ -148,12 +74,6 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
   const _onGuildSelect = (g: Guild) => {
     setSelectedGuild(g);
     nav(`guilds/${g.id}/members`);
-  };
-
-  const _logout = () => {
-    fetch((c) => c.auth.logout())
-      .then(() => nav('/start'))
-      .catch();
   };
 
   return (
@@ -253,41 +173,7 @@ export const NavbarDashboard: React.FC<Props> = ({}) => {
           </Section>
         )}
       </EntryContainer>
-
-      <BottomContainer>
-        <StyledHoverplate
-          hoverContent={
-            <HoverplateContent>
-              <HoverplateButton onClick={() => nav('/usersettings')}>
-                <UserSettingsIcon />
-                <span>{t('user-settings')}</span>
-              </HoverplateButton>
-              <HoverplateButton variant="blue" onClick={() => nav('/info')}>
-                <InfoIcon />
-                <span>{t('info')}</span>
-              </HoverplateButton>
-              <HoverplateButton variant="orange" onClick={_logout}>
-                <LogoutIcon />
-                <span>{t('logout')}</span>
-              </HoverplateButton>
-            </HoverplateContent>
-          }>
-          {(self && (
-            <SelfContainer>
-              <DiscordImage src={self?.avatar_url} round />
-              <span>
-                {self?.username}
-                <TriangleIcon />
-              </span>
-            </SelfContainer>
-          )) || <Loader width="100%" height="2em" borderRadius="8px" />}
-        </StyledHoverplate>
-        {self?.bot_owner && (
-          <Button variant="gray" onClick={() => nav('/settings')}>
-            <GlobalSettingsIcon />
-          </Button>
-        )}
-      </BottomContainer>
+      <BottomContainer />
     </StyledNavbar>
   );
 };
