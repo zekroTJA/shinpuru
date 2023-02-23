@@ -1,0 +1,28 @@
+{
+  "heading": "API",
+  "explanation": "When enabled, this exposes a public API endpoint which returns general information about this guild via the following endpoint.",
+  "save": "Save settings",
+  "reset": "Reset token",
+  "settings": {
+    "heading": "Settings",
+    "enable": "Enable Guild API",
+    "allowedorigins": {
+      "heading": "Allowed Origins",
+      "description": "A comma separated list of origin URLs set via the <1>Access-Control-Allow-Origin</1> header in the API response. That means, that the information provided via this API endpoint are only requestable in a browser on a website which has one of the given URLs. If nothing is set, <2>*</2> is used as value for the header which allows every website to request the resource."
+    },
+    "token": {
+      "heading": "Access Token",
+      "description": "Specify a token to protect the endpoint against unauthorized access. When set, you need to pass the token either as a value of the <1>Authorization</1> header with the token type <2>bearer</2> or via the <3>token</3> URL parameter on reqeusting the resource.",
+      "unprotected": "The endpoint is currently unprotected!",
+      "protected": "The endpoint is protected.",
+      "placeholder": {
+        "protected": "New Access Token",
+        "unprotected": "Access Token"
+      }
+    }
+  },
+  "notifications": {
+    "saved": "Settings saved.",
+    "reset": "Token has been reset. The endpoint is now unprotected!"
+  }
+}
