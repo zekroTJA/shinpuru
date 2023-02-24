@@ -123,7 +123,7 @@ export const BottomContainer: React.FC<Props> = ({ ...props }) => {
           </SelfContainer>
         )) || <Loader width="100%" height="2em" borderRadius="8px" />}
       </StyledHoverplate>
-      {self?.bot_owner || (
+      {self?.bot_owner && (
         <Button variant="gray" onClick={() => nav('/settings')}>
           <GlobalSettingsIcon />
         </Button>
