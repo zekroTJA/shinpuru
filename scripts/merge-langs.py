@@ -37,6 +37,7 @@ def main():
             os.makedirs(path.dirname(target_file), exist_ok=True)
             with open(target_file, mode='w') as f:
                 json.dump(target_data, f, indent=2, ensure_ascii=False)
+                f.write('\n')
 
 
 def merge(base: dict, target: dict):
