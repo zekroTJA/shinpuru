@@ -408,6 +408,19 @@ type RichUnbanRequest struct {
 	Processor *FlatUser `json:"processor"`
 }
 
+type HealthcheckStatus struct {
+	Ok      bool   `json:"ok"`
+	Message string `json:"message,omitempty"`
+}
+
+type HealthcheckResponse struct {
+	Database HealthcheckStatus `json:"database"`
+	Storage  HealthcheckStatus `json:"storage"`
+	Redis    HealthcheckStatus `json:"redis"`
+	Discord  HealthcheckStatus `json:"discord"`
+	AllOk    bool              `json:"all_ok"`
+}
+
 // Validate returns true, when the ReasonRequest is valid.
 // Otherwise, false is returned and an error response is
 // returned.
@@ -581,4 +594,15 @@ func FlatUserFromUser(u *discordgo.User) (fu *FlatUser) {
 		AvatarURL:     u.AvatarURL(""),
 		Bot:           u.Bot,
 	}
+}
+
+func HealthcheckStatusFromError(err error) HealthcheckStatus {
+	s := HealthcheckStatus{}
+
+	s.Ok = err == nil
+	if err != nil {
+		s.Message = err.Error()
+	}
+
+	return s
 }

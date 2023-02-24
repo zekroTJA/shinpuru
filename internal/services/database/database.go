@@ -21,10 +21,11 @@ var ErrDatabaseNotFound = errors.New("value not found")
 // driver.
 type Database interface {
 	//////////////////////////////////////////////////////
-	//// INITIALIZATION
+	//// GENERAL
 
 	Connect(credentials ...interface{}) error
 	Close()
+	Status() error
 
 	//////////////////////////////////////////////////////
 	//// GUILD SETTINGS

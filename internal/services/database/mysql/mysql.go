@@ -71,7 +71,7 @@ var userTables = []tableColumn{
 }
 
 func (m *MysqlMiddleware) setup() (err error) {
-	if err = m.Db.Ping(); err != nil {
+	if err = m.Status(); err != nil {
 		return
 	}
 
@@ -444,6 +444,10 @@ func (m *MysqlMiddleware) Close() {
 	if m.Db != nil {
 		m.Db.Close()
 	}
+}
+
+func (m *MysqlMiddleware) Status() error {
+	return m.Db.Ping()
 }
 
 func (m *MysqlMiddleware) getGuildSetting(guildID, key string) (string, error) {

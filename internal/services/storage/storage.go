@@ -10,6 +10,7 @@ import (
 // access an object storage driver.
 type Storage interface {
 	Connect(cfg config.Provider) error
+	Status() error
 
 	BucketExists(name string) (bool, error)
 	CreateBucket(name string, location ...string) error
