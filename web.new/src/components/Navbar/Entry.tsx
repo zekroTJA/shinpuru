@@ -16,7 +16,7 @@ const StyledDiv = styled.div<{ activated: boolean }>`
   gap: 0.5em;
   align-items: center;
   padding: 0.5em;
-  background-color: ${(p) => (p.activated ? p.theme.accentDarker : p.theme.background)};
+  background-color: ${(p) => (p.activated ? p.theme.accentDarker : p.theme.background3)};
   border-radius: 8px;
   margin-top: 0.5em;
   cursor: pointer;

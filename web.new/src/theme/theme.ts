@@ -31,9 +31,9 @@ export const DarkTheme = {
 export const LightTheme: Theme = {
   ...DarkTheme,
 
-  background: '#fffffe',
-  background2: '#e2e2e2',
-  background3: '#d0d0d0',
+  background3: 'rgb(250, 250, 250)',
+  background2: 'rgb(235, 235, 235)',
+  background: 'rgb(225, 225, 225)',
 
   text: '#212121',
   textAlt: '#f4f4f5',
