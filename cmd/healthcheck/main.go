@@ -32,10 +32,6 @@ func main() {
 	err = json.NewDecoder(resp.Body).Decode(&status)
 	checkErr(err)
 
-	status.AllOk = false
-	status.Discord.Ok = false
-	status.Discord.Message = "fuck lol"
-
 	printStatus(status)
 
 	if !status.AllOk {
