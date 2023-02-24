@@ -20,7 +20,7 @@ type Props = {
 export const Button = styled.button<Props>`
   font-size: 1rem;
   font-family: 'Roboto', sans-serif;
-  color: ${(p) => p.theme.text};
+  color: ${(p) => p.theme.textAlt};
   border: none;
   padding: ${(p) => (p.nvp ? '0' : '0.8em')} 1em;
   border-radius: 3px;

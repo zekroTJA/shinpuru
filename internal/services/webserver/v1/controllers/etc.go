@@ -1,17 +1,22 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/models"
 	_ "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	apiModels "github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -27,8 +32,10 @@ type EtcController struct {
 	cfg        config.Provider
 	authMw     auth.Middleware
 	st         *dgrs.State
+	storage    storage.Storage
 	db         database.Database
 	cmdHandler *ken.Ken
+	rd         *redis.Client
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
@@ -36,13 +43,16 @@ func (c *EtcController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)
+	c.storage = container.Get(static.DiObjectStorage).(storage.Storage)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
+	c.rd = container.Get(static.DiRedis).(*redis.Client)
 
 	router.Get("/me", c.authMw.Handle, c.getMe)
 	router.Get("/sysinfo", c.getSysinfo)
 	router.Get("/privacyinfo", c.getPrivacyinfo)
 	router.Get("/allpermissions", c.getAllPermissions)
+	router.Get("/healthcheck", c.getHealthcheck)
 }
 
 // @Summary Me
@@ -152,4 +162,28 @@ func (c *EtcController) getPrivacyinfo(ctx *fiber.Ctx) error {
 func (c *EtcController) getAllPermissions(ctx *fiber.Ctx) error {
 	all := util.GetAllPermissions(c.cmdHandler)
 	return ctx.JSON(apiModels.NewListResponse(all.Unwrap()))
+}
+
+// @Summary Healthcheck
+// @Description General system healthcheck.
+// @Tags Etc
+// @Accept json
+// @Produce json
+// @Success 200 {array} string "Wrapped in models.ListResponse"
+// @Router /healthcheck [get]
+func (c *EtcController) getHealthcheck(ctx *fiber.Ctx) error {
+	var hc models.HealthcheckResponse
+
+	hc.Database = models.HealthcheckStatusFromError(c.db.Status())
+	hc.Storage = models.HealthcheckStatusFromError(c.storage.Status())
+	hc.Redis = models.HealthcheckStatusFromError(c.rd.Ping(context.Background()).Err())
+
+	hc.Discord.Ok = atomic.LoadInt32(&util.ConnectedState) == 1
+	if !hc.Discord.Ok {
+		hc.Discord.Message = "gateway connection has been disconnected"
+	}
+
+	hc.AllOk = hc.Database.Ok && hc.Storage.Ok && hc.Redis.Ok && hc.Discord.Ok
+
+	return ctx.JSON(hc)
 }

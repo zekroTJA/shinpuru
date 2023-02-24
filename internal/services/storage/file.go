@@ -15,9 +15,16 @@ type File struct {
 	location string
 }
 
+var _ (Storage) = (*File)(nil)
+
 func (f *File) Connect(cfg config.Provider) (err error) {
 	f.location = cfg.Config().Storage.File.Location
 	return nil
+}
+
+func (f *File) Status() error {
+	_, err := os.Stat(f.location)
+	return err
 }
 
 func (f *File) BucketExists(name string) (bool, error) {

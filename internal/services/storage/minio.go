@@ -15,11 +15,18 @@ type Minio struct {
 	location string
 }
 
+var _ Storage = (*Minio)(nil)
+
 func (m *Minio) Connect(cfg config.Provider) (err error) {
 	c := cfg.Config().Storage.Minio
 	m.client, err = minio.New(c.Endpoint, c.AccessKey, c.AccessSecret, c.Secure)
 	m.location = c.Location
 	return
+}
+
+func (m *Minio) Status() error {
+	_, err := m.client.ListBuckets()
+	return err
 }
 
 func (m *Minio) BucketExists(name string) (bool, error) {

@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # --- STAGE 1: Build Backend and Go Tools
-FROM golang:1.19-alpine AS build-be
+FROM golang:1.20-alpine AS build-be
 WORKDIR /build
 
 # Copy source files
@@ -13,10 +13,12 @@ COPY go.sum .
 RUN go mod download
 # Build shinpuru backend
 RUN go build -o ./bin/shinpuru ./cmd/shinpuru/main.go
+# Build shinpuru backend
+RUN go build -o ./bin/healthcheck ./cmd/healthcheck/main.go
 
 # ------------------------------------------------------------
 # --- STAGE 2.1: Build Web App Package
-FROM node:16-alpine AS build-fe
+FROM node:18-alpine AS build-fe
 WORKDIR /build
 
 # Copy web source files
@@ -29,7 +31,7 @@ RUN npx ng build --configuration production \
 
 # ------------------------------------------------------------
 # --- STAGE 2.2: Build Web App Package
-FROM node:16-alpine AS build-fenew
+FROM node:18-alpine AS build-fenew
 WORKDIR /build
 
 # Copy web source files
@@ -53,6 +55,9 @@ RUN apk add ca-certificates
 # Prepare directories
 RUN mkdir -p /etc/config \
   && mkdir -p /etc/db
+
+HEALTHCHECK --interval=30s --start-period=60s --timeout=10s --retries=3 \
+    CMD /app/healthcheck -addr localhost:8080
 
 EXPOSE 8080
 ENTRYPOINT ["/app/shinpuru", "-docker"]

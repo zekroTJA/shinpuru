@@ -2743,6 +2743,20 @@ func (_m *Database) SetUserVerified(userID string, enabled bool) error {
 	return r0
 }
 
+// Status provides a mock function with given fields:
+func (_m *Database) Status() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateKarma provides a mock function with given fields: userID, guildID, diff
 func (_m *Database) UpdateKarma(userID string, guildID string, diff int) error {
 	ret := _m.Called(userID, guildID, diff)
