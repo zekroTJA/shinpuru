@@ -57,7 +57,7 @@ RUN mkdir -p /etc/config \
   && mkdir -p /etc/db
 
 HEALTHCHECK --interval=30s --start-period=60s --timeout=10s --retries=3 \
-    CMD /app/healthcheck -addr localhost:8080
+    CMD /app/healthcheck -addr http://localhost:8080
 
 EXPOSE 8080
 ENTRYPOINT ["/app/shinpuru", "-docker"]
