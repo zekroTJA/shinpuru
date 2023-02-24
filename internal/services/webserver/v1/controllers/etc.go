@@ -12,6 +12,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
+	"github.com/zekroTJA/shinpuru/internal/models"
 	_ "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -171,11 +172,11 @@ func (c *EtcController) getAllPermissions(ctx *fiber.Ctx) error {
 // @Success 200 {array} string "Wrapped in models.ListResponse"
 // @Router /healthcheck [get]
 func (c *EtcController) getHealthcheck(ctx *fiber.Ctx) error {
-	var hc apiModels.HealthcheckResponse
+	var hc models.HealthcheckResponse
 
-	hc.Database = apiModels.HealthcheckStatusFromError(c.db.Status())
-	hc.Storage = apiModels.HealthcheckStatusFromError(c.storage.Status())
-	hc.Redis = apiModels.HealthcheckStatusFromError(c.rd.Ping(context.Background()).Err())
+	hc.Database = models.HealthcheckStatusFromError(c.db.Status())
+	hc.Storage = models.HealthcheckStatusFromError(c.storage.Status())
+	hc.Redis = models.HealthcheckStatusFromError(c.rd.Ping(context.Background()).Err())
 
 	hc.Discord.Ok = atomic.LoadInt32(&util.ConnectedState) == 1
 	if !hc.Discord.Ok {
