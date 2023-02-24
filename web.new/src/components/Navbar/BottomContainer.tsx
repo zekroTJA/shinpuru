@@ -84,6 +84,10 @@ export const SelfContainer = styled.div`
   }
 `;
 
+const SettingsButton = styled(Button)`
+  color: ${(p) => p.theme.text};
+`;
+
 export const BottomContainer: React.FC<Props> = ({ ...props }) => {
   const { t } = useTranslation('components', { keyPrefix: 'navbar' });
   const nav = useNavigate();
@@ -124,9 +128,9 @@ export const BottomContainer: React.FC<Props> = ({ ...props }) => {
         )) || <Loader width="100%" height="2em" borderRadius="8px" />}
       </StyledHoverplate>
       {self?.bot_owner && (
-        <Button variant="gray" onClick={() => nav('/settings')}>
+        <SettingsButton variant="gray" onClick={() => nav('/settings')}>
           <GlobalSettingsIcon />
-        </Button>
+        </SettingsButton>
       )}
     </Container>
   );

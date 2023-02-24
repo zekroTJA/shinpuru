@@ -9,6 +9,7 @@ export const DarkTheme = {
   background3: '#25282c',
 
   text: '#f4f4f5',
+  textAlt: '#f4f4f5',
 
   accent: '#fe281f',
   accentDarker: '#b33a2d',
@@ -31,10 +32,13 @@ export const LightTheme: Theme = {
   ...DarkTheme,
 
   background: '#fffffe',
-  background2: '#dddddd',
-  background3: '#cecece',
+  background2: '#e2e2e2',
+  background3: '#d0d0d0',
 
   text: '#212121',
+  textAlt: '#f4f4f5',
+
+  accentDarker: '#fd756f',
 };
 
 export const DefaultTheme = DarkTheme;

@@ -60,6 +60,7 @@ const Tile = styled(Container)`
 `;
 
 const TileDiscord = styled(Tile)`
+  color: ${(p) => p.theme.textAlt};
   ${(p) => LinearGradient(p.theme.blurple)};
 
   ${Button} {
