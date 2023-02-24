@@ -382,14 +382,14 @@ func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
 			"typ": rep.Type,
 		}).Debug("REPORTS :: expiring report")
 		err = r.revokeReportOnExpiration(rep)
-		if err == nil {
-			expIDs = append(expIDs, rep.ID.String())
-		} else {
+		if err != nil && !discordutil.IsErrCode(err, discordgo.ErrCodeUnknownBan) {
 			mErr.Append(&ReportError{
 				error:  err,
 				Report: rep,
 			})
+			continue
 		}
+		expIDs = append(expIDs, rep.ID.String())
 	}
 
 	mErr.Append(
