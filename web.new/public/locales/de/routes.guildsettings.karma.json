@@ -1,0 +1,44 @@
+{
+  "heading": "Karma",
+  "explanation": "Dieses System erlaubt es Nutzern nachrichten hoch und runter zu \"voten\" indem man die dazu eingestellten Reaktionen auf die Nachrichten benutzt. Jeder Vote beeinflusst das Karma des Nutzers, welcher die Nachricht verfasst hat.",
+  "settings": "Einstellungen",
+  "enable": "Karma-System einschalten",
+  "save": "Einstellungen speichern",
+  "notifications": {
+    "saved": "Einstellungen wurden gespeichert.",
+    "ruleapplied": "Karma-Regel wurde angewandt.",
+    "ruleremoved": "Karma-Regel wurde entfernt.",
+    "blocklistadded": "Blocklisteneintrag wurde hinzugefügt.",
+    "blocklistremoved": "Blocklisteneintrag wurde entfernt."
+  },
+  "emotes": {
+    "heading": "Emoticons",
+    "description": "Die Emoticons mit welchen Nutzer reagieren können um Karma zu verteilen.",
+    "increase": "Karma erhöhen",
+    "decrease": "Karma veringern"
+  },
+  "limit": {
+    "heading": "Limit",
+    "description": "Die Menge an Downvotes die ein Nutzer pro Stunde verteilen kann."
+  },
+  "penalty": {
+    "heading": "Downvote-Preis",
+    "description": "Wenn eingeschalten wird dem Nutzer, welcher einen Downvote verteilt, gleichzeitig ein Karma-Punkt von seinem eigenen Konto abgezogen.",
+    "switch": "Downvote-Preis einschalten"
+  },
+  "rules": {
+    "heading": "Regeln",
+    "description": "Aktionen, welche automatisch ausgeführt werden sollen, wenn ein Nutzer eine gewisse Karmapunktegrenze über- oder unterschreitet."
+  },
+  "blocklist": {
+    "heading": "Blockliste",
+    "description": "Blockierte Nutzer können weder Karma verteilen oder entfernen noch können sie selber Karma erhalten oder abgezogen bekommen.",
+    "addmember": "Nutzer hinzufügen",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "nick": "Nick",
+      "unblock": "Entblocken"
+    }
+  }
+}

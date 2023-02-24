@@ -17,7 +17,7 @@
         "backup": "Backups",
         "antiraid": "Antiraid",
         "codeexec": "Code Ausführung",
-        "permissions": "Permissions",
+        "permissions": "Berechtigungen",
         "linkblocking": "Link Blocking",
         "verification": "Verifizierung",
         "karma": "Karma",
@@ -139,7 +139,8 @@
         "apitoken": "API Token",
         "ota": "OTA",
         "privacy": "Datenschutz",
-        "language": "Sprache"
+        "language": "Sprache",
+        "theme": "Farbthema"
       }
     }
   },
@@ -169,9 +170,9 @@
     },
     "action": {
       "togglerole": "setze die Rolle",
-      "kick": "kick das Mitglied",
-      "ban": "ban das Mitglied",
-      "sendmessage": "sende die Nachricht"
+      "kick": "kick den Nutzer",
+      "ban": "ban den Nutzer",
+      "sendmessage": "sende die Nachricht an den Nutzer"
     },
     "apply": "Regel anwenden"
   },

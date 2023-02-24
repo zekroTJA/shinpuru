@@ -1,0 +1,31 @@
+{
+  "heading": "Logbuch",
+  "explanation": "Ereignisse und Fehler, welche auf der Guild aufgetreten sind.",
+  "enabled": {
+    "heading": "Status",
+    "enabled": "Guild-Logbuch einschalten"
+  },
+  "entries": {
+    "heading": "Einträge",
+    "deleteall": "Alle Einträge löschen",
+    "table": {
+      "timestamp": "Zeitstempel",
+      "severity": "Gewitchtsgrad",
+      "module": "Modul",
+      "message": "Nachricht"
+    }
+  },
+  "notifications": {
+    "enabled": "Guild-Logbuch wurde eingeschalten.",
+    "disabled": "Guild-Logbuch wurde ausgeschalten.",
+    "deleted": "Alle Einträge wurden gelöscht."
+  },
+  "deletemodal": {
+    "heading": "Alle Logeinträge löschen",
+    "content": "Möchtest du wirklich alle Logeinträge löschen? Dieser Vorgang kann nicht rückgängig gemacht werden!",
+    "controls": {
+      "delete": "Alle Logeinträge löschen",
+      "cancel": "Abbrechen"
+    }
+  }
+}
