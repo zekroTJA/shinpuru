@@ -86,6 +86,7 @@ export const SelfContainer = styled.div`
 
 const SettingsButton = styled(Button)`
   color: ${(p) => p.theme.text};
+  z-index: 1;
 `;
 
 export const BottomContainer: React.FC<Props> = ({ ...props }) => {
