@@ -82,7 +82,7 @@ const settingsReducer = (
   }
 };
 
-const APIRoute: React.FC<Props> = ({}) => {
+const APIRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.api');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

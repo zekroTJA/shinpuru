@@ -14,7 +14,7 @@ type Props = {};
 
 type CommandMap = { [key: string]: CommandInfo[] };
 
-const CommandsRoute: React.FC<Props> = ({}) => {
+const CommandsRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.info.commands');
   const fetch = useApi();
   const location = useLocation();

@@ -47,7 +47,7 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const VerificationRoute: React.FC<Props> = ({}) => {
+const VerificationRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.verification');
   const nav = useNavigate();
   const fetch = useApi();

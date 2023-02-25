@@ -25,7 +25,7 @@ const GuildNameInput = styled(Input)`
   background-color: ${(p) => p.theme.background3};
 `;
 
-const DataRoute: React.FC<Props> = ({}) => {
+const DataRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.data');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

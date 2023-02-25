@@ -108,7 +108,7 @@ const ActionButton = styled(Button)`
   }
 `;
 
-const AntiraidRoute: React.FC<Props> = ({}) => {
+const AntiraidRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.antiraid');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

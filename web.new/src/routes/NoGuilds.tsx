@@ -38,7 +38,7 @@ const StyledBottomContainer = styled(BottomContainer)`
   font-weight: normal;
 `;
 
-const NoGuildsRoute: React.FC<Props> = ({}) => {
+const NoGuildsRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.noguilds');
 
   return (

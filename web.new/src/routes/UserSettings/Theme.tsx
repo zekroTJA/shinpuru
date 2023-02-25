@@ -32,7 +32,7 @@ const AccentColorContainer = styled.div`
   }
 `;
 
-const ThemeRoute: React.FC<Props> = ({}) => {
+const ThemeRoute: React.FC<Props> = () => {
   const { t, i18n } = useTranslation('routes.usersettings.theme');
   const currentTheme = useStoredTheme();
   const [lang, setLang] = useState<string>();

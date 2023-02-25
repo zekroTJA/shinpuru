@@ -17,7 +17,7 @@ const RouterOutlet = styled.main`
   overflow-y: auto;
 `;
 
-const InfoRoute: React.FC<Props> = ({}) => {
+const InfoRoute: React.FC<Props> = () => {
   return (
     <RouteContainer>
       <NavbarInfo />

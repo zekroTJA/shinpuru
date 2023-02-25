@@ -102,7 +102,7 @@ const StyledTable = styled.table`
   }
 `;
 
-const KarmaRoute: React.FC<Props> = ({}) => {
+const KarmaRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.karma');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

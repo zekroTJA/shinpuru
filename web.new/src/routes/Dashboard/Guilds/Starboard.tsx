@@ -39,7 +39,7 @@ const Header = styled.div`
   }
 `;
 
-const StarboardRoute: React.FC<Props> = ({}) => {
+const StarboardRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildstarboard');
   const { guildid } = useParams();
   const fetch = useApi();

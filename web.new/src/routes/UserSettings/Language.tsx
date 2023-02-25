@@ -20,7 +20,7 @@ const LANGUAGE_OPTIONS: Element<string>[] = [
   },
 ];
 
-const LanguageRoute: React.FC<Props> = ({}) => {
+const LanguageRoute: React.FC<Props> = () => {
   const { t, i18n } = useTranslation('routes.usersettings.language');
   const [lang, setLang] = useState<string>();
 

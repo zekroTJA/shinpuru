@@ -17,7 +17,7 @@ const RouterOutlet = styled.main`
   overflow-y: auto;
 `;
 
-const SettingsRoute: React.FC<Props> = ({}) => {
+const SettingsRoute: React.FC<Props> = () => {
   return (
     <RouteContainer>
       <NavbarSettings />

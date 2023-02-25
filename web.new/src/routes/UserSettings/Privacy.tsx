@@ -51,7 +51,7 @@ const privacyReducer = (
   }
 };
 
-const PrivacyRoute: React.FC<Props> = ({}) => {
+const PrivacyRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.usersettings.privacy');
   const { pushNotification } = useNotifications();
   const theme = useTheme();

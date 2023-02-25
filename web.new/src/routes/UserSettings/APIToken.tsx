@@ -50,7 +50,7 @@ const StyledCard = styled(Card)`
   }
 `;
 
-const APITokenRoute: React.FC<Props> = ({}) => {
+const APITokenRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.usersettings.apitoken');
   const { pushNotification } = useNotifications();
   const theme = useTheme();

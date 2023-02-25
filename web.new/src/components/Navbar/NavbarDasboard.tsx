@@ -59,7 +59,7 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
-export const NavbarDashboard: React.FC<Props> = ({}) => {
+export const NavbarDashboard: React.FC<Props> = () => {
   const { t } = useTranslation('components', { keyPrefix: 'navbar' });
   const nav = useNavigate();
   const { guildid } = useParams();

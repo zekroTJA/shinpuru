@@ -97,7 +97,7 @@ const LoginRoute: React.FC<Props> = () => {
   const [pushCode, setPushCode] = useState('');
   const fetch = useApi();
   const nav = useNavigate();
-  const [params, _] = useSearchParams();
+  const [params] = useSearchParams();
 
   useEffect(() => {
     _pushCodeLoop();

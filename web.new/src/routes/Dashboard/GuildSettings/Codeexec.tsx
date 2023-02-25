@@ -56,7 +56,7 @@ const MarginSmall = styled(Small)`
   margin-top: 1.5em;
 `;
 
-const VerificationRoute: React.FC<Props> = ({}) => {
+const VerificationRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.codeexec');
   const theme = useTheme();
   const { pushNotification } = useNotifications();

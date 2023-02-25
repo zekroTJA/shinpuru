@@ -32,7 +32,7 @@ const linkBlockingReducer = (
   }
 };
 
-const LinkBlockingRoute: React.FC<Props> = ({}) => {
+const LinkBlockingRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.linkblocking');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

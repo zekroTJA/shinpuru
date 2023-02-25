@@ -53,7 +53,7 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
-export const NavbarUserSettings: React.FC<Props> = ({}) => {
+export const NavbarUserSettings: React.FC<Props> = () => {
   const { t } = useTranslation('components', { keyPrefix: 'navbar-usersettings' });
   const nav = useNavigate();
 

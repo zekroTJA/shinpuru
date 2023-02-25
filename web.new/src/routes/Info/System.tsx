@@ -33,7 +33,7 @@ const Table = styled.table`
   }
 `;
 
-const SystemRoute: React.FC<Props> = ({}) => {
+const SystemRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.info.system');
   const fetch = useApi();
 

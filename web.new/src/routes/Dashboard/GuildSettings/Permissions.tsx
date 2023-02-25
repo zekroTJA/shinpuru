@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {};
 
-const PermissionsRoute: React.FC<Props> = ({}) => {
+const PermissionsRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.permissions');
   const { guildid } = useParams();
   const guild = useGuild(guildid);

@@ -45,7 +45,7 @@ const DetailsList = styled.ul`
   }
 `;
 
-const GeneralRoute: React.FC<Props> = ({}) => {
+const GeneralRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.info.general');
   const fetch = useApi();
   const nav = useNavigate();

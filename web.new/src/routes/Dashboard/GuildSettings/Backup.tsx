@@ -56,7 +56,7 @@ const BackupTile = styled.div<{ latest: boolean }>`
   }
 `;
 
-const BackupRoute: React.FC<Props> = ({}) => {
+const BackupRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.backups');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

@@ -96,7 +96,7 @@ const Table = styled.table`
 
 type Props = {};
 
-const LogsRoute: React.FC<Props> = ({}) => {
+const LogsRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.guildsettings.logs');
   const { pushNotification } = useNotifications();
   const { guildid } = useParams();

@@ -13,7 +13,7 @@ import { useNotifications } from '../../hooks/useNotifications';
 
 type Props = {};
 
-const OTARoute: React.FC<Props> = ({}) => {
+const OTARoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.usersettings.ota');
   const { pushNotification } = useNotifications();
   const fetch = useApi();

@@ -42,7 +42,7 @@ const presenceReducer = (
   }
 };
 
-const PresenceRoute: React.FC<Props> = ({}) => {
+const PresenceRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.settings.presence');
   const { pushNotification } = useNotifications();
   const fetch = useApi();
