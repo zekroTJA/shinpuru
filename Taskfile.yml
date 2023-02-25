@@ -233,6 +233,15 @@ tasks:
           --out pkg/discordutil/isession.go
           --format
 
+  lint-fe:
+    desc:
+      Runs the vite development server for the new React web app.
+    deps:
+      - deps-fe-new
+    dir: web.new
+    cmds:
+      - yarn lint
+
   refresh-mocks:
     desc:
       Refreshes the mock implementations in ./mock.
