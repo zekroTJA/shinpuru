@@ -26,6 +26,8 @@ export const DarkTheme = {
   lime: '#57f287',
   cyan: '#03a9f4',
   pink: '#eb459e',
+
+  _isDark: true,
 };
 
 export const LightTheme: Theme = {
@@ -39,6 +41,8 @@ export const LightTheme: Theme = {
   textAlt: '#f4f4f5',
 
   accentDarker: '#fd756f',
+
+  _isDark: false,
 };
 
 export const DefaultTheme = DarkTheme;

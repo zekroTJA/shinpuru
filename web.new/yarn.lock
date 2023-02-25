@@ -8507,6 +8507,13 @@ react-uid@^2.3.1:
   dependencies:
     tslib "^2.0.0"
 
+react-wavify@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-wavify/-/react-wavify-1.7.0.tgz#d2476d6eca28869e3e3374a2fc6b5f02e72486e7"
+  integrity sha512-NHGZ7s7ba4z+ytr730pEc+ZAdGA7WVg8UQwqwELtW1wXEq00hB6ogo2OvIUJZPFDKwYT0PoaSIvvl5hmzdS/UQ==
+  dependencies:
+    prop-types "^15.8.1"
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"

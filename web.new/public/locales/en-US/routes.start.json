@@ -1,0 +1,14 @@
+{
+  "login": "Login",
+  "header": {
+    "under": "Your simple multi purpose Discord bot. Free and <1>open source</1> forever.",
+    "invite": "Invite",
+    "selfhost": "Self Host"
+  },
+  "features": {
+    "codeexecution": {
+      "heading": "Code Execution",
+      "description": "Paste your code directly into the chat and execute it with shinpuru. The output will then be presented right in place!"
+    }
+  }
+}
