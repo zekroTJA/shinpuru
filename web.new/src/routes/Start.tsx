@@ -105,7 +105,8 @@ const Features = styled.div`
     max-width: 80em;
     padding: 2em;
     border-radius: 12px;
-    background-color: ${(p) => p.theme.background2};
+    background-color: ${(p) => Color(p.theme.background2).alpha(0.8).hexa()};
+    backdrop-filter: blur(5em);
 
     > img {
       max-width: 20em;
@@ -159,6 +160,7 @@ const LoginButton = styled(Button)`
   overflow: hidden;
   background: ${(p) => p.theme.background3};
   opacity: 0.5;
+  color: ${(p) => p.theme.text};
 
   transition: all 0.25s ease;
   transform: none !important;
@@ -172,10 +174,32 @@ const LoginButton = styled(Button)`
     width: 8em;
     background: ${(p) => p.theme.accent};
     opacity: 1;
+    color: ${(p) => p.theme.textAlt};
   }
 `;
 
-const Footer = styled.footer``;
+const Footer = styled.footer`
+  display: flex;
+  gap: 5em;
+  padding: 2em;
+  justify-content: center;
+  color: ${(p) => p.theme.text};
+  background-color: ${(p) => Color(p.theme.background2).alpha(0.5).hexa()};
+  backdrop-filter: blur(5em);
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  > div {
+    > span,
+    a {
+      display: block;
+      line-height: 1.8rem;
+    }
+  }
+`;
 
 export const StartRoute: React.FC<Props> = () => {
   const { t } = useTranslation('routes.start');
@@ -258,7 +282,56 @@ export const StartRoute: React.FC<Props> = () => {
           </div>
         </Features>
       </main>
-      <Footer></Footer>
+      <Footer>
+        <div>
+          <span>shinpuru</span>
+          <span>© {new Date().getFullYear()} Ringo Hoffmann</span>
+
+          <a
+            href="https://github.com/zekroTJA/shinpuru/blob/master/LICENCE"
+            target="_blank"
+            rel="noreferrer">
+            Covered by the MIT Licence.
+          </a>
+        </div>
+        <div>
+          <a href="https://shnp.de/invite" target="_blank" rel="noreferrer">
+            Invite Stable
+          </a>
+          <a href="https://c.shnp.de/invite" target="_blank" rel="noreferrer">
+            Invite Canary
+          </a>
+        </div>
+        <div>
+          <a href="https://github.com/zekroTJA/shinpuru/wiki" target="_blank" rel="noreferrer">
+            Wiki
+          </a>
+          <a
+            href="https://github.com/zekroTJA/shinpuru/wiki/Self-Hosting"
+            target="_blank"
+            rel="noreferrer">
+            Self Host
+          </a>
+          <a
+            href="https://github.com/zekroTJA/shinpuru/wiki/Commands"
+            target="_blank"
+            rel="noreferrer">
+            Commands
+          </a>
+          <a
+            href="https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide"
+            target="_blank"
+            rel="noreferrer">
+            Permissions Guide
+          </a>
+          <a
+            href="https://github.com/zekroTJA/shinpuru/wiki/REST-API-Docs"
+            target="_blank"
+            rel="noreferrer">
+            REST API
+          </a>
+        </div>
+      </Footer>
     </StartContainer>
   );
 };
