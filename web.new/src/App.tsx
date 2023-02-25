@@ -68,6 +68,10 @@ const GlobalStyle = createGlobalStyle`
   a {
     color: ${(p) => p.theme.accent};
   }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Cantarell';
+  }
 `;
 
 const AppContainer = styled.div`
