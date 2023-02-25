@@ -61,6 +61,18 @@ const GlobalStyle = createGlobalStyle`
     color: ${(p) => p.theme.text};
   }
 
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${(p) => p.theme.background};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${(p) => p.theme.background3};
+  }
+
   * {
     box-sizing: border-box;
   }

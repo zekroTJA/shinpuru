@@ -1,3 +1,4 @@
+import { EntryContainer } from './EntryContainer';
 import { Heading } from '../Heading';
 import { PropsWithChildren } from 'react';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
@@ -44,6 +45,12 @@ const StyledNav = styled.nav`
 
     ${Heading} {
       display: none;
+    }
+  }
+
+  > ${EntryContainer} {
+    &::-webkit-scrollbar {
+      width: 5px;
     }
   }
 `;
