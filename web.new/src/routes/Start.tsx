@@ -286,12 +286,14 @@ export const StartRoute: React.FC<Props> = () => {
         <div>
           <span>shinpuru</span>
           <span>© {new Date().getFullYear()} Ringo Hoffmann</span>
-
           <a
             href="https://github.com/zekroTJA/shinpuru/blob/master/LICENCE"
             target="_blank"
             rel="noreferrer">
             Covered by the MIT Licence.
+          </a>
+          <a href="https://github.com/zekroTJA/shinpuru" target="_blank" rel="noreferrer">
+            GitHub Repository
           </a>
         </div>
         <div>
