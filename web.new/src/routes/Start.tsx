@@ -7,6 +7,8 @@ import { LinearGradient } from '../components/styleParts';
 import { ReactComponent as LoginIcon } from '../assets/login.svg';
 import MockupCodeExecDark from '../assets/mockups/dark/code-execution.svg';
 import MockupCodeExecLight from '../assets/mockups/light/code-execution.svg';
+import MockupKarmaDark from '../assets/mockups/dark/karma.svg';
+import MockupKarmaLight from '../assets/mockups/light/karma.svg';
 import { ReactComponent as SPBrand } from '../assets/sp-brand.svg';
 import SPIcon from '../assets/sp-icon.png';
 import Wave from 'react-wavify';
@@ -267,17 +269,10 @@ export const StartRoute: React.FC<Props> = () => {
             </div>
           </div>
           <div>
-            <img src={theme._isDark ? MockupCodeExecDark : MockupCodeExecLight} alt="" />
+            <img src={theme._isDark ? MockupKarmaDark : MockupKarmaLight} alt="" />
             <div>
-              <h1>{t('features.codeexecution.heading')}</h1>
-              <span>{t('features.codeexecution.description')}</span>
-            </div>
-          </div>
-          <div>
-            <img src={theme._isDark ? MockupCodeExecDark : MockupCodeExecLight} alt="" />
-            <div>
-              <h1>{t('features.codeexecution.heading')}</h1>
-              <span>{t('features.codeexecution.description')}</span>
+              <h1>{t('features.karma.heading')}</h1>
+              <span>{t('features.karma.description')}</span>
             </div>
           </div>
         </Features>

@@ -9,6 +9,10 @@
     "codeexecution": {
       "heading": "Code Execution",
       "description": "Paste your code directly into the chat and execute it with shinpuru. The output will then be presented right in place!"
+    },
+    "karma": {
+      "heading": "Karma",
+      "description": "Just like on Reddit, you can up and down vote messages. This affects the karma count of the people of your Guild so you and your mates always know right away who is the most trustworthy."
     }
   }
 }
