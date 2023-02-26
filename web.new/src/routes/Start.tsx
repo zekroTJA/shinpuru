@@ -161,6 +161,12 @@ const Features = styled.div`
 
 const DiscoverMore = styled.div`
   margin: 0em 4em 4em 4em;
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 50em) {
+    margin: 0em 1em 4em 1em;
+  }
 
   > ${Card} {
     > h1 {
@@ -170,6 +176,7 @@ const DiscoverMore = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 
     > div {
       width: 100%;
