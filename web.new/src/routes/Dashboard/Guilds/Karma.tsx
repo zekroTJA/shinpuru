@@ -1,5 +1,6 @@
 import { KarmaType, getKarmaType } from '../../../util/karma';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import styled, { css } from 'styled-components';
 import { useNavigate, useParams } from 'react-router';
 
@@ -11,7 +12,6 @@ import { GuildScoreboardEntry } from '../../../lib/shinpuru-ts/src';
 import { Link } from 'react-router-dom';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
-import { Trans } from 'react-i18next';
 import { range } from '../../../util/utils';
 import { uid } from 'react-uid';
 import { useApi } from '../../../hooks/useApi';
@@ -91,6 +91,8 @@ const SelfKarmaEntry = styled(KarmaEntry)`
 `;
 
 const KarmaRoute: React.FC<Props> = () => {
+  useTranslation('routes.guildkarma');
+
   const { guildid } = useParams();
   const fetch = useApi();
   const nav = useNavigate();
