@@ -286,7 +286,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 			},
 			{
 				Inline: true,
-				Name:   "Victim",
+				Name:   "Target",
 				Value:  fmt.Sprintf("<@%s>", victimID),
 			},
 			{

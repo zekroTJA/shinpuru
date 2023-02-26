@@ -91,7 +91,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 			},
 			{
 				Inline: true,
-				Name:   "Victim",
+				Name:   "Target",
 				Value:  fmt.Sprintf("<@%s>", r.VictimID),
 			},
 			{
@@ -138,7 +138,7 @@ func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 
 	return &discordgo.MessageEmbedField{
 		Name: "Case " + r.ID.String(),
-		Value: fmt.Sprintf("Time: %s\nExecutor: <@%s>\nVictim: <@%s>\nType: `%s`\n%s__Reason__:\n%s",
+		Value: fmt.Sprintf("Time: %s\nExecutor: <@%s>\nTarget: <@%s>\nType: `%s`\n%s__Reason__:\n%s",
 			r.GetTimestamp().Format("2006/01/02 15:04:05"), r.ExecutorID, r.VictimID, ReportTypes[r.Type], attachmentTxt, r.Msg),
 	}
 }
