@@ -21,6 +21,30 @@
     "roleselect": {
       "heading": "Role Select",
       "description": "Send messages where users can toggle their roles - fully automatically!"
+    },
+    "votes": {
+      "heading": "Votes",
+      "description": "Want to settle a heated diskussion or simply get to know what your community wants or likes? Then the vote system is the perfect tool for you!"
+    },
+    "starboard": {
+      "heading": "Starboard",
+      "description": "Honor and highlight memorable, funny, deep or simply dumb messages with the starboard. This can also be tied to the karma system so that starred users will earn karma points!"
     }
+  },
+  "discover": {
+    "header": "And much more to be discovered ...",
+    "features": [
+      "backups",
+      "guild logs",
+      "web interface",
+      "granular permission system",
+      "antiraid system",
+      "link blocking",
+      "user verification",
+      "public Guild API",
+      "responsive web interface",
+      "slash commands",
+      "message components"
+    ]
   }
 }

@@ -1,10 +1,11 @@
 import { Trans, useTranslation } from 'react-i18next';
-import styled, { useTheme } from 'styled-components';
+import styled, { css, useTheme } from 'styled-components';
 
 import { Button } from '../components/Button';
 import Color from 'color';
 import { LinearGradient } from '../components/styleParts';
 import { ReactComponent as LoginIcon } from '../assets/login.svg';
+import Marquee from 'react-fast-marquee';
 import MockupCodeExecDark from '../assets/mockups/dark/code-execution.svg';
 import MockupCodeExecLight from '../assets/mockups/light/code-execution.svg';
 import MockupKarmaDark from '../assets/mockups/dark/karma.svg';
@@ -13,6 +14,10 @@ import MockupReportsDark from '../assets/mockups/dark/reports.svg';
 import MockupReportsLight from '../assets/mockups/light/reports.svg';
 import MockupRoleselectDark from '../assets/mockups/dark/roleselect.svg';
 import MockupRoleselectLight from '../assets/mockups/light/roleselect.svg';
+import MockupStarboardDark from '../assets/mockups/dark/starboard.svg';
+import MockupStarboardLight from '../assets/mockups/light/starboard.svg';
+import MockupVotesDark from '../assets/mockups/dark/votes.svg';
+import MockupVotesLight from '../assets/mockups/light/votes.svg';
 import { ReactComponent as SPBrand } from '../assets/sp-brand.svg';
 import SPIcon from '../assets/sp-icon.png';
 import Wave from 'react-wavify';
@@ -92,6 +97,17 @@ const Background = styled(Wave)`
   z-index: -1;
 `;
 
+const Card = styled.div`
+  display: flex;
+  gap: 2em;
+  width: 100%;
+  max-width: 80em;
+  padding: 2em;
+  border-radius: 12px;
+  background-color: ${(p) => Color(p.theme.background2).alpha(0.8).hexa()};
+  backdrop-filter: blur(5em);
+`;
+
 const Features = styled.div`
   display: flex;
   flex-direction: column;
@@ -104,16 +120,7 @@ const Features = styled.div`
     opacity: 0.8;
   }
 
-  > div {
-    display: flex;
-    gap: 2em;
-    width: 100%;
-    max-width: 80em;
-    padding: 2em;
-    border-radius: 12px;
-    background-color: ${(p) => Color(p.theme.background2).alpha(0.8).hexa()};
-    backdrop-filter: blur(5em);
-
+  > ${Card} {
     > img {
       max-width: 20em;
       width: 40vw;
@@ -147,6 +154,56 @@ const Features = styled.div`
         max-width: 100%;
         width: 100%;
         height: auto;
+      }
+    }
+  }
+`;
+
+const DiscoverMore = styled.div`
+  margin: 0em 4em 4em 4em;
+
+  > ${Card} {
+    > h1 {
+      margin: 0;
+    }
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > div {
+      width: 100%;
+      ${(p) => css`
+        background: linear-gradient(
+          90deg,
+          ${Color(p.theme.text).alpha(0).hexa()} 0%,
+          ${Color(p.theme.text).alpha(0.6).hexa()} 10%,
+          ${Color(p.theme.text).alpha(0.6).hexa()} 90%,
+          ${Color(p.theme.text).alpha(0).hexa()} 100%
+        );
+      `}
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    span {
+      text-transform: uppercase;
+      font-size: 2rem;
+      font-weight: lighter;
+      white-space: nowrap;
+      margin-right: 1em;
+
+      @keyframes scroll {
+        from {
+          transform: translateX(-151ch);
+        }
+        to {
+          transform: translateX(0ch);
+        }
       }
     }
   }
@@ -265,35 +322,61 @@ export const StartRoute: React.FC<Props> = () => {
       </Header>
       <main>
         <Features>
-          <div>
+          <Card>
             <img src={theme._isDark ? MockupCodeExecDark : MockupCodeExecLight} alt="" />
             <div>
               <h1>{t('features.codeexecution.heading')}</h1>
               <span>{t('features.codeexecution.description')}</span>
             </div>
-          </div>
-          <div>
+          </Card>
+          <Card>
             <img src={theme._isDark ? MockupRoleselectDark : MockupRoleselectLight} alt="" />
             <div>
               <h1>{t('features.roleselect.heading')}</h1>
               <span>{t('features.roleselect.description')}</span>
             </div>
-          </div>
-          <div>
+          </Card>
+          <Card>
             <img src={theme._isDark ? MockupKarmaDark : MockupKarmaLight} alt="" />
             <div>
               <h1>{t('features.karma.heading')}</h1>
               <span>{t('features.karma.description')}</span>
             </div>
-          </div>
-          <div>
+          </Card>
+          <Card>
             <img src={theme._isDark ? MockupReportsDark : MockupReportsLight} alt="" />
             <div>
               <h1>{t('features.reports.heading')}</h1>
               <span>{t('features.reports.description')}</span>
             </div>
-          </div>
+          </Card>
+          <Card>
+            <img src={theme._isDark ? MockupVotesDark : MockupVotesLight} alt="" />
+            <div>
+              <h1>{t('features.votes.heading')}</h1>
+              <span>{t('features.votes.description')}</span>
+            </div>
+          </Card>
+          <Card>
+            <img src={theme._isDark ? MockupStarboardDark : MockupStarboardLight} alt="" />
+            <div>
+              <h1>{t('features.starboard.heading')}</h1>
+              <span>{t('features.starboard.description')}</span>
+            </div>
+          </Card>
         </Features>
+        <DiscoverMore>
+          <Card>
+            <h1>{t('discover.header')}</h1>
+            <div>
+              <Marquee gradient={false} speed={150}>
+                {(t('discover.features', { returnObjects: true }) as string[]).map((v) => (
+                  <span>{v}</span>
+                ))}
+              </Marquee>
+            </div>
+          </Card>
+        </DiscoverMore>
       </main>
       <Footer>
         <div>
