@@ -9,6 +9,10 @@ import MockupCodeExecDark from '../assets/mockups/dark/code-execution.svg';
 import MockupCodeExecLight from '../assets/mockups/light/code-execution.svg';
 import MockupKarmaDark from '../assets/mockups/dark/karma.svg';
 import MockupKarmaLight from '../assets/mockups/light/karma.svg';
+import MockupReportsDark from '../assets/mockups/dark/reports.svg';
+import MockupReportsLight from '../assets/mockups/light/reports.svg';
+import MockupRoleselectDark from '../assets/mockups/dark/roleselect.svg';
+import MockupRoleselectLight from '../assets/mockups/light/roleselect.svg';
 import { ReactComponent as SPBrand } from '../assets/sp-brand.svg';
 import SPIcon from '../assets/sp-icon.png';
 import Wave from 'react-wavify';
@@ -125,7 +129,7 @@ const Features = styled.div`
       font-weight: lighter;
     }
 
-    &:nth-child(2) {
+    &:nth-child(odd) {
       flex-direction: row-reverse;
     }
   }
@@ -269,10 +273,24 @@ export const StartRoute: React.FC<Props> = () => {
             </div>
           </div>
           <div>
+            <img src={theme._isDark ? MockupRoleselectDark : MockupRoleselectLight} alt="" />
+            <div>
+              <h1>{t('features.roleselect.heading')}</h1>
+              <span>{t('features.roleselect.description')}</span>
+            </div>
+          </div>
+          <div>
             <img src={theme._isDark ? MockupKarmaDark : MockupKarmaLight} alt="" />
             <div>
               <h1>{t('features.karma.heading')}</h1>
               <span>{t('features.karma.description')}</span>
+            </div>
+          </div>
+          <div>
+            <img src={theme._isDark ? MockupReportsDark : MockupReportsLight} alt="" />
+            <div>
+              <h1>{t('features.reports.heading')}</h1>
+              <span>{t('features.reports.description')}</span>
             </div>
           </div>
         </Features>

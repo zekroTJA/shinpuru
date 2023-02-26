@@ -1,5 +1,5 @@
 import { KarmaType, getKarmaType } from '../../../util/karma';
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled, { css } from 'styled-components';
 import { useNavigate, useParams } from 'react-router';

@@ -13,6 +13,14 @@
     "karma": {
       "heading": "Karma",
       "description": "Just like on Reddit, you can up and down vote messages. This affects the karma count of the people of your Guild so you and your mates always know right away who is the most trustworthy."
+    },
+    "reports": {
+      "heading": "Report System",
+      "description": "Extensive report system with a modlog channel, unban requests, warns, revocations and ban timeouts. Reports are permanently bound to members, so you can always see what a user has on their plate."
+    },
+    "roleselect": {
+      "heading": "Role Select",
+      "description": "Send messages where users can toggle their roles - fully automatically!"
     }
   }
 }
