@@ -26,7 +26,7 @@ COPY web .
 # Get dependencies
 RUN yarn
 # Build static web app files
-RUN yarn build --base=/beta/ --outDir=dist
+RUN yarn build --base=/ --outDir=dist
 
 # ------------------------------------------------------------
 # --- STAGE 3: Final runtime environment
@@ -42,7 +42,7 @@ RUN apk add ca-certificates
 RUN mkdir -p /etc/config \
   && mkdir -p /etc/db
 
-HEALTHCHECK --interval=30s --start-period=60s --timeout=10s --retries=3 \
+HEALTHCHECK --interval=15s --start-period=60s --timeout=10s --retries=3 \
     CMD /app/healthcheck -addr http://localhost:8080
 
 EXPOSE 8080
