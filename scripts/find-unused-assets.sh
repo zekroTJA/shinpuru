@@ -12,10 +12,10 @@ which rg > /dev/null || {
   exit 1
 }
 
-for f in $(find web.new/src/assets -type f); do
-  rg "'.*${f#web.new\/src\/*}'" "$1" > /dev/null || {
+for f in $(find web/src/assets -type f); do
+  rg "'.*${f#web\/src\/*}'" "$1" > /dev/null || {
     echo "moving $f ..."
-    BASE="${f#web.new\/src\/assets\/*}"
+    BASE="${f#web\/src\/assets\/*}"
     DIR=$(dirname $BASE)
     mkdir -p "$OUTPUT_DIR/$DIR"
     mv "$f" "$OUTPUT_DIR/$BASE"

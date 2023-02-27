@@ -17,4 +17,3 @@ ci/*
 Gopkg.lock
 web/dist/
 web/node_modules/
-web.new/node_modules/
