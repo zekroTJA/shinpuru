@@ -1,4 +1,5 @@
 import { BottomContainer, SelfContainer } from './BottomContainer';
+import { NAVBAR_WIDTH, Navbar } from './Navbar';
 import { useNavigate, useParams } from 'react-router';
 
 import { ReactComponent as APIIcon } from '../../assets/api.svg';
@@ -14,7 +15,7 @@ import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as HammerIcon } from '../../assets/hammer.svg';
 import { ReactComponent as KarmaIcon } from '../../assets/karma.svg';
 import { ReactComponent as LogsIcon } from '../../assets/logs.svg';
-import { Navbar } from './Navbar';
+import { MAX_WIDTH } from '../MaxWidthContainer';
 import { ReactComponent as PermissionsIcon } from '../../assets/lock-open.svg';
 import { ReactComponent as ScoreboardIcon } from '../../assets/scoreboard.svg';
 import { Section } from './Section';
@@ -38,7 +39,7 @@ const StyledGuildSelect = styled(GuildSelect)`
 `;
 
 const StyledNavbar = styled(Navbar)`
-  @media (orientation: portrait) {
+  @media (orientation: portrait) and (max-width: calc(${NAVBAR_WIDTH} + ${MAX_WIDTH})) {
     ${StyledEntry}, ${SelfContainer} {
       justify-content: center;
       span {

@@ -5,6 +5,8 @@ import { Hoverplate } from '../Hoverplate';
 import { ReactComponent as InfoIcon } from '../../assets/info.svg';
 import { Loader } from '../Loader';
 import { ReactComponent as LogoutIcon } from '../../assets/logout.svg';
+import { MAX_WIDTH } from '../MaxWidthContainer';
+import { NAVBAR_WIDTH } from './Navbar';
 import { Styled } from '../props';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UserSettingsIcon } from '../../assets/tool.svg';
@@ -51,7 +53,7 @@ const Container = styled.div`
     }
   }
 
-  @media (orientation: portrait) {
+  @media (orientation: portrait) and (max-width: calc(${NAVBAR_WIDTH} + ${MAX_WIDTH})) {
     flex-direction: column;
   }
 `;

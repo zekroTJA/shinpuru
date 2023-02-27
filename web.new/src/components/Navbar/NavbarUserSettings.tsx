@@ -1,3 +1,5 @@
+import { NAVBAR_WIDTH, Navbar } from './Navbar';
+
 import { ReactComponent as APITokenIcon } from '../../assets/key.svg';
 import { ReactComponent as BackIcon } from '../../assets/back.svg';
 import { Button } from '../Button';
@@ -5,7 +7,7 @@ import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
 import { GuildSelect } from '../GuildSelect';
 import { ReactComponent as LanguageIcon } from '../../assets/language.svg';
-import { Navbar } from './Navbar';
+import { MAX_WIDTH } from '../MaxWidthContainer';
 import { ReactComponent as ShieldIcon } from '../../assets/shield.svg';
 import { ReactComponent as ThemeIcon } from '../../assets/brush.svg';
 import { ReactComponent as TicketIcon } from '../../assets/ticket.svg';
@@ -32,7 +34,7 @@ const BackButton = styled(Button)`
 `;
 
 const StyledNavbar = styled(Navbar)`
-  @media (orientation: portrait) {
+  @media (orientation: portrait) and (max-width: calc(${NAVBAR_WIDTH} + ${MAX_WIDTH})) {
     ${StyledEntry} {
       justify-content: center;
       span {

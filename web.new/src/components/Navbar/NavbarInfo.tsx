@@ -1,3 +1,5 @@
+import { NAVBAR_WIDTH, Navbar } from './Navbar';
+
 import { ReactComponent as BackIcon } from '../../assets/back.svg';
 import { ReactComponent as BookIcon } from '../../assets/book.svg';
 import { Button } from '../Button';
@@ -5,7 +7,7 @@ import { ReactComponent as CommandsIcon } from '../../assets/command.svg';
 import { Entry } from './Entry';
 import { EntryContainer } from './EntryContainer';
 import { GuildSelect } from '../GuildSelect';
-import { Navbar } from './Navbar';
+import { MAX_WIDTH } from '../MaxWidthContainer';
 import { ReactComponent as SystemIcon } from '../../assets/cpu.svg';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router';
@@ -30,7 +32,7 @@ const BackButton = styled(Button)`
 `;
 
 const StyledNavbar = styled(Navbar)`
-  @media (orientation: portrait) {
+  @media (orientation: portrait) and (max-width: calc(${NAVBAR_WIDTH} + ${MAX_WIDTH})) {
     ${StyledEntry} {
       justify-content: center;
       span {

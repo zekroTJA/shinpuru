@@ -1,5 +1,6 @@
 import { EntryContainer } from './EntryContainer';
 import { Heading } from '../Heading';
+import { MAX_WIDTH } from '../MaxWidthContainer';
 import { PropsWithChildren } from 'react';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
@@ -7,6 +8,8 @@ import { Styled } from '../props';
 import styled from 'styled-components';
 
 type Props = PropsWithChildren & Styled & {};
+
+export const NAVBAR_WIDTH = '15rem';
 
 const Brand = styled.div`
   display: flex;
@@ -36,7 +39,7 @@ const StyledNav = styled.nav`
   width: 30vw;
   max-width: 15rem;
 
-  @media (orientation: portrait) {
+  @media (orientation: portrait) and (max-width: calc(${NAVBAR_WIDTH} + ${MAX_WIDTH})) {
     width: fit-content;
 
     ${Brand} > svg {
