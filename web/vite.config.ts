@@ -25,10 +25,11 @@ export default defineConfig({
           'locales/**/*.json',
         ],
         cacheId: 'shinpuru-v1',
+        navigateFallbackDenylist: [/^\/api\/auth\/.*/],
         runtimeCaching: [
           {
             urlPattern: /\/api\/(?:v\d\/)?guilds\/\d+\/(members|\d+)/,
-            handler: 'CacheFirst' as const,
+            handler: 'CacheFirst',
             options: {
               cacheName: 'guild-members-cache',
               expiration: {
@@ -38,6 +39,10 @@ export default defineConfig({
                 statuses: [200],
               },
             },
+          },
+          {
+            urlPattern: /\/api\/.*/,
+            handler: 'NetworkOnly',
           },
           {
             urlPattern: /^https:\/\/cdn\.discordapp\.com\/.*/i,
