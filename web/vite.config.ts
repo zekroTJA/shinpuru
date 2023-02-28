@@ -19,12 +19,67 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['assets/*.{js,css,html,ico,png,svg,jpeg,jpg}'],
+        globPatterns: [
+          'index.html',
+          'assets/*.{js,css,html,ico,png,svg,jpeg,jpg}',
+          'locales/**/*.json',
+        ],
         cacheId: 'shinpuru-v1',
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: 'NetworkOnly',
+            urlPattern: /\/api\/(?:v\d\/)?guilds\/\d+\/(members|\d+)/,
+            handler: 'CacheFirst' as const,
+            options: {
+              cacheName: 'guild-members-cache',
+              expiration: {
+                maxAgeSeconds: 60,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/cdn\.discordapp\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'discord-cdn-cache',
+              expiration: {
+                maxEntries: 5000,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
           },
         ],
       },
