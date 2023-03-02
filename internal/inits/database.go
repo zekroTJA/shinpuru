@@ -5,12 +5,12 @@ import (
 
 	goredis "github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/database/mysql"
 	"github.com/zekroTJA/shinpuru/internal/services/database/redis"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitDatabase(container di.Container) database.Database {
@@ -19,37 +19,42 @@ func InitDatabase(container di.Container) database.Database {
 
 	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	switch strings.ToLower(cfg.Config().Database.Type) {
+	log := log.Tagged("Database")
+
+	drv := strings.ToLower(cfg.Config().Database.Type)
+	log.Info().Field("driver", drv).Msg("Initializing database ...")
+
+	switch drv {
 	case "mysql", "mariadb":
-		db = new(mysql.MysqlMiddleware)
+		db = mysql.New()
 		err = db.Connect(cfg.Config().Database.MySql)
 	default:
-		logrus.Fatal("Unsupported database driver specified")
+		log.Fatal().Field("driver", drv).Msg("Unsupported database driver")
 	}
 
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed connecting to database")
+		log.Fatal().Err(err).Msg("Failed connecting to database")
 	}
 
 	if m, ok := db.(database.Migration); ok {
-		logrus.Info("Checking database for migrations and apply if needed...")
+		log.Info().Msg("Checking database for migrations and apply if needed...")
 		if err = m.Migrate(); err != nil {
-			logrus.WithError(err).Fatal("Database migration failed")
+			log.Fatal().Err(err).Msg("Database migration failed")
 		}
 	} else {
-		logrus.Warning("Skip database migration: middleware does not support migrations")
+		log.Warn().Msg("Skip database migration: middleware does not support migrations")
 	}
 
 	// Redis Database Cache
 	if cfg.Config().Cache.CacheDatabase {
 		rd := container.Get(static.DiRedis).(*goredis.Client)
 		db = redis.NewRedisMiddleware(db, rd)
-		logrus.Info("Enabled redis as database cache")
+		log.Info().Msg("Enabled Redis as database cache")
 	} else {
-		logrus.Warning("Database cache is disabled! You can enbale it in the config (.cache.cachedatabase).")
+		log.Warn().Msg("Database cache is disabled! You can enbale it in the config (.cache.cachedatabase).")
 	}
 
-	logrus.Info("Connected to database")
+	log.Info().Msg("Connected to database")
 
 	return db
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
@@ -101,7 +100,7 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 
 	ident, err := c.rth.ValidateRefreshToken(refreshToken)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).Error("WEBSERVER :: failed validating refresh token")
+		ctlLog.Error().Err(err).Msg("Failed validating refresh token")
 	}
 	if ident == "" {
 		return fiber.ErrUnauthorized
@@ -173,7 +172,7 @@ func (c *AuthController) pushCode(ctx *fiber.Ctx) (err error) {
 		pcw.subscription = c.st.Subscribe("dms", func(scan func(v interface{}) error) {
 			var msg discordgo.Message
 			if err = scan(&msg); err != nil {
-				logrus.WithError(err).Error("failed scanning message from 'dms' event bus")
+				ctlLog.Error().Err(err).Msg("failed scanning message from 'dms' event bus")
 				return
 			}
 			if msg.Content == pcw.code && msg.Author != nil {

@@ -6,7 +6,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/messagecommands"
 	"github.com/zekroTJA/shinpuru/internal/middleware"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
@@ -20,6 +19,7 @@ import (
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 	"github.com/zekrotja/ken/state"
 	"github.com/zekrotja/ken/store"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
@@ -27,6 +27,9 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	st := container.Get(static.DiState).(*dgrs.State)
 	perms := container.Get(static.DiPermissions).(*permissions.Permissions)
 	rd, _ := container.Get(static.DiRedis).(*redis.Client)
+
+	log := log.Tagged("CmdHandler")
+	log.Info().Msg("Initializing command handler ...")
 
 	var cmdStore store.CommandStore
 	if rd != nil {
@@ -116,7 +119,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 }
 
 func systemErrorHandler(context string, err error, args ...interface{}) {
-	logrus.WithField("ctx", context).WithError(err).Error("ken error")
+	log.Error().Err(err).Field("ctx", context).Msg("Ken System Error")
 }
 
 func commandErrorHandler(err error, ctx *ken.Ctx) {

@@ -2,12 +2,12 @@ package inits
 
 import (
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
@@ -19,6 +19,9 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 	if cfg.Config().TwitchApp.ClientID == "" || cfg.Config().TwitchApp.ClientSecret == "" {
 		return nil
 	}
+
+	log := log.Tagged("TwitchNotify")
+	log.Info().Msg("Initializing twitch notifications ...")
 
 	tnw, err := twitchnotify.New(
 		twitchnotify.Credentials{
@@ -33,7 +36,7 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 	)
 
 	if err != nil {
-		logrus.WithError(err).Fatal("twitch app credentials are invalid")
+		log.Fatal().Err(err).Msg("Twitch app credentials are invalid")
 	}
 
 	notifies, err := db.GetAllTwitchNotifies("")
@@ -44,7 +47,7 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 			}
 		}
 	} else {
-		logrus.WithError(err).Fatal("failed getting Twitch notify entreis")
+		log.Fatal().Err(err).Msg("Failed getting Twitch notify entreis")
 	}
 
 	return tnw

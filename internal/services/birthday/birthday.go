@@ -9,7 +9,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -19,6 +18,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/giphy"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 )
 
@@ -29,6 +30,7 @@ type BirthdayService struct {
 	session *discordgo.Session
 	gl      guildlog.Logger
 	tp      timeprovider.Provider
+	log     *rogu.Logger
 }
 
 func New(ctn di.Container) *BirthdayService {
@@ -38,6 +40,7 @@ func New(ctn di.Container) *BirthdayService {
 		session: ctn.Get(static.DiDiscordSession).(*discordgo.Session),
 		gl:      ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("birthday"),
 		tp:      ctn.Get(static.DiTimeProvider).(timeprovider.Provider),
+		log:     log.Tagged("Birthdays"),
 	}
 
 	cfg := ctn.Get(static.DiConfig).(config.Provider)
@@ -92,7 +95,7 @@ func (b *BirthdayService) Schedule() (err error) {
 
 		bdayChan, err := b.db.GetGuildBirthdayChan(guild.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", guild.ID).Error("failed getting birthday channel")
+			b.log.Error().Err(err).Field("gid", guild.ID).Msg("Failed getting birthday channel")
 			b.gl.Errorf(guild.ID, "Failed getting birthday channel: %s", err.Error())
 			continue
 		}
@@ -117,7 +120,7 @@ func (b *BirthdayService) Schedule() (err error) {
 				err = b.sendMessage(memb, bdayChan, v)
 			}
 			if err != nil {
-				logrus.WithError(err).WithField("gid", guild.ID).Error("failed handling birthday")
+				b.log.Error().Err(err).Field("gid", guild.ID).Msg("Failed handling birthday")
 				b.gl.Errorf(guild.ID, "Failed handling birthday: %s", err.Error())
 			}
 		})
@@ -172,7 +175,7 @@ func (b *BirthdayService) randomGif() (img *giphy.Image) {
 	rng := rand.Intn(100)
 	res, err := b.gif.Search("birthday", 1, rng, "pg")
 	if err != nil {
-		logrus.WithError(err).Error("failed searching for birthday gif")
+		b.log.Error().Err(err).Msg("Failed searching for birthday gif")
 		return
 	}
 	if len(res) != 0 {

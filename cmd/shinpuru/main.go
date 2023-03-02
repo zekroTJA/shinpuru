@@ -13,8 +13,10 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/level"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
@@ -147,7 +149,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			database := obj.(database.Database)
-			logrus.Info("Shutting down database connection...")
+			log.Info().Msg("Shutting down database connection...")
 			database.Close()
 			return nil
 		},
@@ -161,7 +163,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			listener := obj.(*listeners.ListenerTwitchNotify)
-			logrus.Info("Shutting down twitch notify listener...")
+			log.Info().Msg("Shutting down twitch notify listener...")
 			listener.TearDown()
 			return nil
 		},
@@ -207,7 +209,7 @@ func main() {
 		},
 		Close: func(obj interface{}) error {
 			session := obj.(*discordgo.Session)
-			logrus.Info("Shutting down bot session...")
+			log.Info().Msg("Shutting down bot session...")
 			session.Close()
 			return nil
 		},
@@ -286,7 +288,7 @@ func main() {
 			return inits.InitCommandHandler(ctn)
 		},
 		Close: func(obj interface{}) error {
-			logrus.Info("Unegister commands ...")
+			log.Info().Msg("Unegister commands ...")
 			return obj.(*ken.Ken).Unregister()
 		},
 	})
@@ -370,30 +372,30 @@ func main() {
 	// Setting log level from config
 	cfg := ctn.Get(static.DiConfig).(config.Provider)
 	if err := cfg.Parse(); err != nil {
-		logrus.WithError(err).Fatal("Failed to parse config")
+		log.Fatal().Err(err).Msg("Failed to parse config")
 	}
-	logrus.SetLevel(logrus.Level(cfg.Config().Logging.LogLevel))
-	logrus.SetFormatter(&logrus.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006/01/02 15:04:05 MST",
-	})
+
+	log.SetLevel(level.Level(cfg.Config().Logging.LogLevel))
+	logWriter := rogu.NewPrettyWriter()
+	logWriter.StyleTag.Width(12)
+	log.SetWriter(logWriter)
+
 	if err := config.Validate(cfg); err != nil {
-		entry := logrus.NewEntry(logrus.StandardLogger())
+		entry := log.Fatal()
 		if validationError, ok := err.(config.ValidationError); ok {
-			entry = entry.WithField("key", validationError.Key())
+			entry = entry.Field("key", validationError.Key())
 		}
-		entry.WithError(err).Fatal("Invalid config")
+		entry.Err(err).Msg("Invalid config")
 	}
 
 	// Initial log output
-	logrus.Info("Starting up...")
+	log.Info().Msg("Starting up...")
 
 	if old, curr, latest := util.CheckForUpdate(); old {
-		logrus.
-			WithField("current", curr.String()).
-			WithField("latest", latest.String()).
-			Warn("Update available")
+		log.Warn().
+			Field("current", curr.String()).
+			Field("latest", latest.String()).
+			Msg("Update available")
 	}
 
 	if profLoc := util.GetEnv(envKeyProfile, flagProfile); profLoc != "" {
@@ -423,9 +425,9 @@ func main() {
 
 	// Block main go routine until one of the following
 	// specified exit syscalls occure.
-	logrus.Info("Started event loop. Stop with CTRL-C...")
+	log.Info().Msg("Started event loop. Stop with CTRL-C...")
 
-	logrus.WithField("took", startuptime.Took().String()).Info("Initialization finished")
+	log.Info().Field("took", startuptime.Took()).Msg("Initialization finished")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -433,7 +435,7 @@ func main() {
 
 func setupDevMode() {
 	if embedded.IsRelease() {
-		logrus.Fatal("development mode is not available in production builds")
+		log.Fatal().Msg("Development mode is not available in production builds")
 	}
 
 	util.DevModeEnabled = true
@@ -445,12 +447,12 @@ func setupDevMode() {
 		Cd:     "web",
 		Port:   8081,
 	})
-	logrus.Info("Starting Angular dev server...")
+	log.Info().Msg("Starting Angular dev server...")
 	if err := angServ.Start(); err != nil {
-		logrus.WithError(err).Fatal("Failed starting Angular dev server")
+		log.Fatal().Err(err).Msg("Failed starting Angular dev server")
 	}
 	defer func() {
-		logrus.Info("Shutting down Angular dev server...")
+		log.Info().Msg("Shutting down Angular dev server...")
 		angServ.Stop()
 	}()
 }
@@ -458,9 +460,9 @@ func setupDevMode() {
 func setupProfiler(profLoc string) {
 	f, err := os.Create(profLoc)
 	if err != nil {
-		logrus.WithError(err).Fatal("failed starting profiler")
+		log.Fatal().Err(err).Msg("Failed starting profiler")
 	}
 	pprof.StartCPUProfile(f)
-	logrus.WithField("location", profLoc).Warning("CPU profiling is active")
+	log.Warn().Field("location", profLoc).Msg("CPU profiling is active")
 	defer pprof.StopCPUProfile()
 }

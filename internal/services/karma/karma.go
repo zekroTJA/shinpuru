@@ -5,22 +5,24 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 // Service provides functionalities to check karma state,
 // karma blocklist and alter karma of a user.
 type Service struct {
-	s  *discordgo.Session
-	db database.Database
-	gl guildlog.Logger
-	st *dgrs.State
+	s   *discordgo.Session
+	db  database.Database
+	gl  guildlog.Logger
+	st  *dgrs.State
+	log *rogu.Logger
 }
 
 var _ Provider = (*Service)(nil)
@@ -34,6 +36,7 @@ func NewKarmaService(container di.Container) (k *Service) {
 	k.db = container.Get(static.DiDatabase).(database.Database)
 	k.gl = container.Get(static.DiGuildLog).(guildlog.Logger).Section("karma")
 	k.st = container.Get(static.DiState).(*dgrs.State)
+	k.log = log.Tagged("Karma")
 
 	return
 }
@@ -82,12 +85,12 @@ func (k *Service) Update(guildID, userID, executorID string, value int) (err err
 				case models.KarmaActionToggleRole:
 					if rule.Trigger == models.KarmaTriggerAbove && valBefore <= rule.Value && valAfter > rule.Value {
 						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
-							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+							k.log.Error().Err(err).Fields("gid", guildID, "uid", userID).Msg("Failed adding role")
 							k.gl.Errorf(guildID, "Failed adding role to user (%s): %s", userID, err.Error())
 						}
 					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore < rule.Value && valAfter >= rule.Value {
 						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
-							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+							k.log.Error().Err(err).Fields("gid", guildID, "uid", userID).Msg("Failed removing role")
 							k.gl.Errorf(guildID, "Failed removing role to user (%s): %s", userID, err.Error())
 						}
 					}
@@ -109,12 +112,12 @@ func (k *Service) Update(guildID, userID, executorID string, value int) (err err
 				case models.KarmaActionToggleRole:
 					if rule.Trigger == models.KarmaTriggerAbove && valBefore > rule.Value && valAfter <= rule.Value {
 						if err = k.s.GuildMemberRoleRemove(guildID, userID, rule.Argument); err != nil {
-							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed removing role")
+							k.log.Error().Err(err).Fields("gid", guildID, "uid", userID).Msg("Failed removing role")
 							k.gl.Errorf(guildID, "Failed removing role to user (%s): %s", userID, err.Error())
 						}
 					} else if rule.Trigger == models.KarmaTriggerBelow && valBefore >= rule.Value && valAfter < rule.Value {
 						if err = k.s.GuildMemberRoleAdd(guildID, userID, rule.Argument); err != nil {
-							logrus.WithError(err).WithField("gid", guildID).WithField("uid", userID).Error("KARMA :: failed adding role")
+							k.log.Error().Err(err).Fields("gid", guildID, "uid", userID).Msg("Failed adding role")
 							k.gl.Errorf(guildID, "Failed adding role to user (%s): %s", userID, err.Error())
 						}
 					}
@@ -185,13 +188,13 @@ func (k *Service) CheckAndUpdate(guildID, executorID string, object *discordgo.U
 func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value int, content string) {
 	ch, err := k.s.UserChannelCreate(userID)
 	if err != nil {
-		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed opening dm channel")
+		k.log.Error().Err(err).Fields("uid", userID, "gid", guildID).Msg("Failed opening dm channel")
 		return
 	}
 
 	guild, err := k.st.Guild(guildID, true)
 	if err != nil {
-		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed getting guild details")
+		k.log.Error().Err(err).Fields("uid", userID, "gid", guildID).Msg("Failed getting guild details")
 		k.gl.Errorf(guildID, "Failed getting guild details: %s", err.Error())
 		return
 	}
@@ -213,7 +216,7 @@ func (k *Service) trySendKarmaMessage(userID, guildID string, added bool, value 
 
 	_, err = k.s.ChannelMessageSendEmbed(ch.ID, emb.Build())
 	if err != nil {
-		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed sending dm")
+		k.log.Error().Err(err).Fields("uid", userID, "gid", guildID).Msg("Failed sending dm")
 		k.gl.Errorf(guildID, "Failed sending DM to user (%s): %s", userID, err.Error())
 	}
 }
@@ -229,7 +232,7 @@ func (k *Service) tryKick(userID, guildID string, added bool, value int) {
 	reason := fmt.Sprintf("Karma %s %d points", pre, value)
 
 	if err := k.s.GuildMemberDeleteWithReason(guildID, userID, reason); err != nil {
-		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed kicking member")
+		k.log.Error().Err(err).Fields("uid", userID, "gid", guildID).Msg("Failed kicking member")
 		k.gl.Errorf(guildID, "Failed kicking user (%s): %s", userID, err.Error())
 	}
 }
@@ -245,7 +248,7 @@ func (k *Service) tryBan(userID, guildID string, added bool, value int) {
 	reason := fmt.Sprintf("Karma %s %d points", pre, value)
 
 	if err := k.s.GuildBanCreateWithReason(guildID, userID, reason, 7); err != nil {
-		logrus.WithError(err).WithField("uid", userID).WithField("gid", guildID).Error("KARMA :: failed banning member")
+		k.log.Error().Err(err).Fields("uid", userID, "gid", guildID).Msg("Failed banning member")
 		k.gl.Errorf(guildID, "Failed banning user (%s): %s", userID, err.Error())
 	}
 }

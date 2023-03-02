@@ -3,9 +3,9 @@ package listeners
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 )
 
 type ListenerDMSync struct {
@@ -26,6 +26,6 @@ func (l *ListenerDMSync) Handler(s *discordgo.Session, e *discordgo.MessageCreat
 
 	err := l.st.Publish("dms", e)
 	if err != nil {
-		logrus.WithError(err).Error("Failed publishing DM to state")
+		log.Error().Tag("DMSync").Err(err).Msg("Failed publishing DM to state")
 	}
 }

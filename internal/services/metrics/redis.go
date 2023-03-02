@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 type redisWatcher struct {
@@ -16,6 +17,7 @@ type redisWatcher struct {
 	redis redis.Cmdable
 	m     map[string]float64
 	timer *time.Ticker
+	log   *rogu.Logger
 }
 
 func newRedisWatcher(redis redis.Cmdable) (rw *redisWatcher) {
@@ -23,6 +25,7 @@ func newRedisWatcher(redis redis.Cmdable) (rw *redisWatcher) {
 		m:     make(map[string]float64),
 		timer: time.NewTicker(30 * time.Second),
 		redis: redis,
+		log:   log.Tagged("Metrics"),
 	}
 
 	go rw.loop()
@@ -40,13 +43,13 @@ func (rw *redisWatcher) loop() {
 func (rw *redisWatcher) collect() {
 	res := rw.redis.Info(context.Background())
 	if res.Err() != nil {
-		logrus.WithError(res.Err()).Error("Failed collecting redis information")
+		rw.log.Error().Err(res.Err()).Msg("Failed collecting redis information")
 		return
 	}
 
 	kcres := rw.redis.DBSize(context.Background())
 	if res.Err() != nil {
-		logrus.WithError(res.Err()).Error("Failed collecting redis db size")
+		rw.log.Error().Err(res.Err()).Msg("Failed collecting redis db size")
 		return
 	}
 

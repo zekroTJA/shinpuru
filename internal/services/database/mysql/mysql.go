@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -16,6 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/bwmarrin/snowflake"
 	mySqlDriver "github.com/go-sql-driver/mysql"
@@ -24,10 +25,17 @@ import (
 // MysqlMiddleware implements the Database interface for
 // MariaDB or MysqlMiddleware.
 type MysqlMiddleware struct {
-	Db *sql.DB
+	Db  *sql.DB
+	log *rogu.Logger
 }
 
 var _ database.Database = (*MysqlMiddleware)(nil)
+
+func New() *MysqlMiddleware {
+	return &MysqlMiddleware{
+		log: log.Tagged("Database"),
+	}
+}
 
 var guildTables = []string{
 	"antiraidJoinlog",
@@ -853,7 +861,7 @@ func (m *MysqlMiddleware) GetVotes() (map[string]vote.Vote, error) {
 		var voteID, rawData string
 		err := rows.Scan(&voteID, &rawData)
 		if err != nil {
-			logrus.WithError(err).Error("An error occured reading vote from database")
+			m.log.Error().Err(err).Msg("An error occured reading vote from database")
 			continue
 		}
 		vote, err := vote.Unmarshal(rawData)

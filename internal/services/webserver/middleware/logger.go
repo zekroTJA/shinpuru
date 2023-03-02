@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
+	"github.com/zekrotja/rogu/log"
 )
+
+var mwLog = log.Tagged("WebServer")
 
 // Logger returns a middleware handler to log incoming
 // requests on the debug log channel.
@@ -18,20 +19,18 @@ func Logger() fiber.Handler {
 
 		d := time.Since(start)
 
-		entry := logrus.WithFields(logrus.Fields{
-			"code":     ctx.Response().StatusCode(),
-			"method":   ctx.Method(),
-			"duration": d,
-			"ip":       ctx.IP(),
-		})
-
-		line := fmt.Sprintf("WS :: %-5s %s", ctx.Method(), ctx.Path())
+		entry := mwLog.Debug().Fields(
+			"code", ctx.Response().StatusCode(),
+			"method", ctx.Method(),
+			"duration", d,
+			"ip", ctx.IP(),
+		)
 
 		if err != nil {
-			entry = entry.WithError(err)
+			entry = entry.Err(err)
 		}
 
-		entry.Debug(line)
+		entry.Msgf("%-5s %s", ctx.Method(), ctx.Path())
 
 		return
 	}

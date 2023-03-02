@@ -4,10 +4,10 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/storage"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitStorage(container di.Container) storage.Storage {
@@ -16,18 +16,25 @@ func InitStorage(container di.Container) storage.Storage {
 
 	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	switch strings.ToLower(cfg.Config().Storage.Type) {
+	log := log.Tagged("Storage")
+
+	drv := strings.ToLower(cfg.Config().Storage.Type)
+	log.Info().Field("driver", drv).Msg("Initializing storage ...")
+
+	switch drv {
 	case "minio", "s3", "googlecloud":
 		st = new(storage.Minio)
 	case "file":
 		st = new(storage.File)
+	default:
+		log.Fatal().Field("driver", drv).Msg("Invalid or unsupported storage driver")
 	}
 
 	if err = st.Connect(cfg); err != nil {
-		logrus.WithError(err).Fatal("Failed connecting to storage device")
+		log.Fatal().Err(err).Msg("Failed connecting to storage device")
 	}
 
-	logrus.Info("Connected to storage device")
+	log.Info().Msg("Connected to storage device")
 
 	return st
 }

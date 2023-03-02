@@ -5,12 +5,12 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/timeprovider"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 )
 
 type ListenerGuilds struct {
@@ -47,11 +47,12 @@ func (l *ListenerGuilds) HandlerCreate(s *discordgo.Session, e *discordgo.GuildC
 	time.Sleep(2 * time.Second)
 	g, err := l.st.Guilds()
 	if err != nil {
-		logrus.WithError(err).Error("GUILDLIMIT :: failed getting guild list")
+		log.Error().Tag("GuildLimit").Err(err).Msg("Failed getting guild list")
 		return
 	}
 
-	logrus.WithField("ng", len(g)).WithField("limit", limit).Debug("GUILDLIMIT :: status")
+	log.Debug().Tag("GuildLimit").Field("ng", len(g)).Msg("Status")
+
 	if len(g) <= limit {
 		return
 	}
@@ -64,7 +65,7 @@ func (l *ListenerGuilds) HandlerCreate(s *discordgo.Session, e *discordgo.GuildC
 	})
 
 	if err = s.GuildLeave(e.Guild.ID); err != nil {
-		logrus.WithError(err).Error("GUILDLIMIT :: failed leaving guild")
+		log.Error().Tag("GuildLimit").Err(err).Msg("Failed leaving guild")
 		return
 	}
 }

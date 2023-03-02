@@ -10,10 +10,12 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
+	"github.com/zekrotja/rogu/log"
 )
+
+var wsLog = log.Tagged("WebServer")
 
 // GetQueryInt tries to get a value from request query
 // and transforms it to an integer value.
@@ -89,7 +91,7 @@ func GetFS() (f http.FileSystem, err error) {
 	}
 	_, err = fsys.Open("index.html")
 	if os.IsNotExist(err) {
-		logrus.Info("WS :: using web files form web/dist/web")
+		wsLog.Info().Msg("Using web files from web/dist/web")
 		f = http.Dir("web/dist/web")
 		err = nil
 		return
@@ -97,7 +99,7 @@ func GetFS() (f http.FileSystem, err error) {
 	if err != nil {
 		return
 	}
-	logrus.Info("WS :: using embedded web files")
+	wsLog.Info().Msg("Using embedded web files")
 	f = http.FS(fsys)
 	return
 }

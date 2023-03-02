@@ -6,8 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -67,7 +67,7 @@ func (l *ListenerVoiceUpdate) sendLeaveMsg(s *discordgo.Session, voiceLogChan, u
 func (l *ListenerVoiceUpdate) isBlocked(guildID, chanID string) (ok bool) {
 	ok, err := l.db.IsGuildVoiceLogIgnored(guildID, chanID)
 	if err != nil {
-		logrus.WithError(err).Error("VOICELOG :: failed getting blocked state")
+		log.Error().Tag("VoiceLog").Err(err).Msg("Failed getting blocked state")
 		l.gl.Errorf(guildID, "Failed getting blocked state: %s", err.Error())
 	}
 	return
