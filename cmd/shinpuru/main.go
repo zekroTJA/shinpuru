@@ -50,6 +50,10 @@ const (
 func init() {
 	rand.Seed(time.Now().UnixNano())
 	snowflake.Epoch = static.DefEpoche
+
+	logWriter := rogu.NewPrettyWriter()
+	logWriter.StyleTag.Width(12)
+	log.SetWriter(logWriter)
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -376,9 +380,6 @@ func main() {
 	}
 
 	log.SetLevel(level.Level(cfg.Config().Logging.LogLevel))
-	logWriter := rogu.NewPrettyWriter()
-	logWriter.StyleTag.Width(12)
-	log.SetWriter(logWriter)
 
 	if err := config.Validate(cfg); err != nil {
 		entry := log.Fatal()

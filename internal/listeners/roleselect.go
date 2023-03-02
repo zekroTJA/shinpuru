@@ -19,7 +19,7 @@ type ListenerRoleselect struct {
 	db  database.Database
 	ken ken.IKen
 	st  dgrs.IState
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 func NewListenerRoleselect(container di.Container) *ListenerRoleselect {

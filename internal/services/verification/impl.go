@@ -28,7 +28,7 @@ type impl struct {
 	cfg config.Provider
 	gl  guildlog.Logger
 	tp  timeprovider.Provider
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 var _ Provider = (*impl)(nil)

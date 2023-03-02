@@ -15,7 +15,7 @@ type ListenerVerifications struct {
 	db  database.Database
 	vs  verification.Provider
 	gl  guildlog.Logger
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 func NewListenerVerifications(container di.Container) *ListenerVerifications {

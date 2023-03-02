@@ -25,7 +25,7 @@ type ListenerPostBan struct {
 	gl  guildlog.Logger
 	rep report.Provider
 	pmw permissions.Provider
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 func NewListenerPostBan(ctn di.Container) ListenerPostBan {

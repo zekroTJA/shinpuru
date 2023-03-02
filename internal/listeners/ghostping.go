@@ -28,7 +28,7 @@ type ListenerGhostPing struct {
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 	st              *dgrs.State
-	log             *rogu.Logger
+	log             rogu.Logger
 }
 
 func NewListenerGhostPing(container di.Container) *ListenerGhostPing {

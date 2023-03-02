@@ -27,7 +27,7 @@ type ListenerInviteBlock struct {
 	db  database.Database
 	gl  guildlog.Logger
 	pmw permissions.Provider
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {

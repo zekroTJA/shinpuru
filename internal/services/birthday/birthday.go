@@ -30,7 +30,7 @@ type BirthdayService struct {
 	session *discordgo.Session
 	gl      guildlog.Logger
 	tp      timeprovider.Provider
-	log     *rogu.Logger
+	log     rogu.Logger
 }
 
 func New(ctn di.Container) *BirthdayService {

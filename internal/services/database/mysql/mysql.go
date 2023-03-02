@@ -26,7 +26,7 @@ import (
 // MariaDB or MysqlMiddleware.
 type MysqlMiddleware struct {
 	Db  *sql.DB
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 var _ database.Database = (*MysqlMiddleware)(nil)

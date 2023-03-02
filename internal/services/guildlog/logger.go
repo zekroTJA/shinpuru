@@ -17,7 +17,7 @@ type loggerImpl struct {
 	db     database.Database
 	module string
 	tp     timeprovider.Provider
-	l      *rogu.Logger
+	l      rogu.Logger
 }
 
 func New(container di.Container) Logger {

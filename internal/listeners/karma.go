@@ -45,7 +45,7 @@ type ListenerKarma struct {
 	gl    guildlog.Logger
 	karma karma.Provider
 	st    dgrs.IState
-	log   *rogu.Logger
+	log   rogu.Logger
 
 	cache       *timedmap.TimedMap
 	msgsApplied timedmap.Section

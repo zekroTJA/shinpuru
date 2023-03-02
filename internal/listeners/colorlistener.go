@@ -36,7 +36,7 @@ type ColorListener struct {
 	gl         guildlog.Logger
 	pmw        *permissions.Permissions
 	st         *dgrs.State
-	log        *rogu.Logger
+	log        rogu.Logger
 	publicAddr string
 
 	emojiCache *timedmap.TimedMap

@@ -25,7 +25,7 @@ type ListenerReady struct {
 	sched scheduler.Provider
 	st    *dgrs.State
 	tp    timeprovider.Provider
-	log   *rogu.Logger
+	log   rogu.Logger
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {

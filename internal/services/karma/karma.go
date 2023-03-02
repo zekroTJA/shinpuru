@@ -22,7 +22,7 @@ type Service struct {
 	db  database.Database
 	gl  guildlog.Logger
 	st  *dgrs.State
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 var _ Provider = (*Service)(nil)

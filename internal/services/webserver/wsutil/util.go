@@ -15,8 +15,6 @@ import (
 	"github.com/zekrotja/rogu/log"
 )
 
-var wsLog = log.Tagged("WebServer")
-
 // GetQueryInt tries to get a value from request query
 // and transforms it to an integer value.
 //
@@ -91,7 +89,7 @@ func GetFS() (f http.FileSystem, err error) {
 	}
 	_, err = fsys.Open("index.html")
 	if os.IsNotExist(err) {
-		wsLog.Info().Msg("Using web files from web/dist/web")
+		log.Info().Tag("WebServer").Msg("Using web files from web/dist/web")
 		f = http.Dir("web/dist/web")
 		err = nil
 		return
@@ -99,7 +97,7 @@ func GetFS() (f http.FileSystem, err error) {
 	if err != nil {
 		return
 	}
-	wsLog.Info().Msg("Using embedded web files")
+	log.Info().Tag("WebServer").Msg("Using embedded web files")
 	f = http.FS(fsys)
 	return
 }

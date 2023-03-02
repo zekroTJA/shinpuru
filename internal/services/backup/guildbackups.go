@@ -38,7 +38,7 @@ type GuildBackups struct {
 	st      storage.Storage
 	state   *dgrs.State
 	tp      timeprovider.Provider
-	log     *rogu.Logger
+	log     rogu.Logger
 }
 
 // asyncWriteStatus writes the passed status to the

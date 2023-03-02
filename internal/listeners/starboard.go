@@ -46,7 +46,7 @@ type ListenerStarboard struct {
 	st    storage.Storage
 	karma *karma.Service
 	state *dgrs.State
-	log   *rogu.Logger
+	log   rogu.Logger
 }
 
 func NewListenerStarboard(container di.Container) *ListenerStarboard {

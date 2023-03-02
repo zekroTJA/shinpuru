@@ -36,7 +36,7 @@ type ReportService struct {
 	cfg config.Provider
 	st  dgrs.IState
 	tp  timeprovider.Provider
-	log *rogu.Logger
+	log rogu.Logger
 }
 
 type ReportError struct {

@@ -17,7 +17,7 @@ type ListenerTwitchNotify struct {
 	db      database.Database
 	gl      guildlog.Logger
 	session *discordgo.Session
-	log     *rogu.Logger
+	log     rogu.Logger
 
 	mx        *sync.RWMutex
 	notMsgIDs map[string][]*discordgo.Message

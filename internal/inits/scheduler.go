@@ -141,7 +141,7 @@ func InitScheduler(container di.Container) scheduler.Provider {
 	return sched
 }
 
-func schedule(log *rogu.Logger, sched scheduler.Provider, name string, specGetter func() string, job func()) {
+func schedule(log rogu.Logger, sched scheduler.Provider, name string, specGetter func() string, job func()) {
 	spec := specGetter()
 	if spec == "" {
 		return

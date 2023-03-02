@@ -37,7 +37,7 @@ type ListenerAntiraid struct {
 	st  dgrs.IState
 	vs  verification.Provider
 	tp  timeprovider.Provider
-	log *rogu.Logger
+	log rogu.Logger
 
 	mtx         sync.Mutex
 	guildStates map[string]*guildState

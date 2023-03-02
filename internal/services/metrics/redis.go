@@ -17,7 +17,7 @@ type redisWatcher struct {
 	redis redis.Cmdable
 	m     map[string]float64
 	timer *time.Ticker
-	log   *rogu.Logger
+	log   rogu.Logger
 }
 
 func newRedisWatcher(redis redis.Cmdable) (rw *redisWatcher) {
