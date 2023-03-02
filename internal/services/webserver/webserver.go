@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -41,7 +42,6 @@ func New(container di.Container) (ws *WebServer, err error) {
 		ServerHeader:          fmt.Sprintf("shinpuru v%s", embedded.AppVersion),
 		DisableStartupMessage: true,
 		ProxyHeader:           "X-Forwarded-For",
-		ETag:                  true,
 	})
 
 	if !embedded.IsRelease() {
@@ -53,7 +53,7 @@ func New(container di.Container) (ws *WebServer, err error) {
 		}))
 	}
 
-	ws.app.Use(mw.NewMetrics(), mw.Logger())
+	ws.app.Use(etag.New(), mw.NewMetrics(), mw.Logger())
 
 	rlc := ws.cfg.Config().WebServer.RateLimit
 	rlh := limiter.New(limiter.Config{
