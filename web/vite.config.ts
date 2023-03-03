@@ -33,7 +33,46 @@ export default defineConfig({
             options: {
               cacheName: 'guild-members-cache',
               expiration: {
-                maxAgeSeconds: 60,
+                maxAgeSeconds: 60 * 5,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/me/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'self-cache',
+              expiration: {
+                maxAgeSeconds: 60 * 5,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/guilds\/(?:\d+)\/(?:\d+)\/permissions\/allowed/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'permissions-cache',
+              expiration: {
+                maxAgeSeconds: 60 * 5,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/allpermissions/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'all-permissions-cache',
+              expiration: {
+                maxAgeSeconds: 24 * 3600,
               },
               cacheableResponse: {
                 statuses: [200],
