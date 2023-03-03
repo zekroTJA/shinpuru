@@ -14,7 +14,7 @@ func InitMetrics(container di.Container) (ms *metrics.MetricsServer) {
 
 	cfg := container.Get(static.DiConfig).(config.Provider)
 
-	log := log.Tagged("METRICS")
+	log := log.Tagged("Metrics")
 
 	if cfg.Config().Metrics.Enable {
 		log.Info().Msg("Initializing metrics server ...")
