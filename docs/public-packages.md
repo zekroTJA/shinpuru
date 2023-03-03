@@ -58,6 +58,9 @@
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/lokiwriter`**](pkg/lokiwriter)  
+  *Package lokiwriter implements rogu.Writer to push logs to a Grafana Loki instance.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 

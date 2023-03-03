@@ -35,7 +35,7 @@ require (
 	github.com/zekrotja/dgrs v0.5.7
 	github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9
 	github.com/zekrotja/ken v0.18.0
-	github.com/zekrotja/rogu v0.2.1-0.20230302215931-c41ba35408f5
+	github.com/zekrotja/rogu v0.3.0
 	github.com/zekrotja/sop v0.3.1
 	golang.org/x/image v0.5.0
 	golang.org/x/sys v0.5.0
@@ -86,6 +86,7 @@ require (
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb // indirect
 	golang.org/x/net v0.7.0 // indirect

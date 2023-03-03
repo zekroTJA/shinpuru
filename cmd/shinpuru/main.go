@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"runtime"
 	"runtime/pprof"
 	"syscall"
 	"time"
@@ -37,6 +38,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/startupmsg"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/argp"
+	"github.com/zekroTJA/shinpuru/pkg/lokiwriter"
 	"github.com/zekroTJA/shinpuru/pkg/onetimeauth/v2"
 	"github.com/zekroTJA/shinpuru/pkg/startuptime"
 
@@ -75,6 +77,25 @@ func init() {
 //////////////////////////////////////////////////////////////////////
 
 func main() {
+	// Ensure that all loggers are closed before exiting.
+	// This is especially important to send out all logs
+	// to loki, if enabled.
+	defer log.Close()
+	defer func() {
+		// Recover panics so that they can be logged to all
+		// registered writers correctly.
+
+		err := recover()
+		entry := log.Panic()
+
+		_, file, line, ok := runtime.Caller(2)
+		if ok {
+			entry.Fields("file", file, "line", line)
+		}
+
+		entry.Msgf("panic: %v", err)
+	}()
+
 	// Parse command line flags
 	flagConfig, _ := argp.String("-c", "config.yml", "Optional config file location.")
 	flagDevMode, _ := argp.Bool("-devmode", false, "Enable development mode.")
@@ -380,6 +401,15 @@ func main() {
 	}
 
 	log.SetLevel(level.Level(cfg.Config().Logging.LogLevel))
+
+	if lokiCfg := cfg.Config().Logging.Loki; lokiCfg.Enabled {
+		w, err := lokiwriter.NewWriter(lokiCfg.Options)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Loki writer initialization failed")
+		}
+		log.AddWriter(w)
+		log.Info().Field("target", lokiCfg.Address).Msg("Loki log writer enabled")
+	}
 
 	if err := config.Validate(cfg); err != nil {
 		entry := log.Fatal()

@@ -230,6 +230,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
+- [**`github.com/zekroTJA/shinpuru/pkg/lokiwriter`**](pkg/lokiwriter)  
+  *Package lokiwriter implements rogu.Writer to push logs to a Grafana Loki instance.*
+
 - [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
@@ -311,43 +314,43 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 ### Back End
 
 <!-- start:REQUIREMENTS -->
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.24.0)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.0)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.1.0)`
-- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.0)`
+- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.1)`
 - [generaltso/vibrant](https://github.com/generaltso/vibrant) `(v0.0.0-20200703055536-90f922bee78c)`
-- [go-ping/ping](https://github.com/go-ping/ping) `(v0.0.0-20211130115550-779d1e919534)`
+- [go-ping/ping](https://github.com/go-ping/ping) `(v1.1.0)`
 - [redis/v8](https://github.com/go-redis/redis/v8) `(v8.11.5)`
-- [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.6.0)`
-- [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.29.0)`
-- [jwt/v4](https://github.com/golang-jwt/jwt/v4) `(v4.4.0)`
-- [joho/godotenv](https://github.com/joho/godotenv) `(v1.4.0)`
-- [kataras/hcaptcha](https://github.com/kataras/hcaptcha) `(v0.0.0-20200711031247-2927d4faf32f)`
+- [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.7.0)`
+- [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.42.0)`
+- [jwt/v4](https://github.com/golang-jwt/jwt/v4) `(v4.5.0)`
+- [joho/godotenv](https://github.com/joho/godotenv) `(v1.5.1)`
+- [kataras/hcaptcha](https://github.com/kataras/hcaptcha) `(v0.0.2)`
 - [makeworld-the-better-one/go-isemoji](https://github.com/makeworld-the-better-one/go-isemoji) `(v1.3.0)`
 - [manifoldco/promptui](https://github.com/manifoldco/promptui) `(v0.9.0)`
 - [minio/minio-go](https://github.com/minio/minio-go) `(v6.0.14+incompatible)`
-- [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20220127184443-140af28a266e)`
-- [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.12.1)`
+- [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20221212191103-ba83bed45a1a)`
+- [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.14.0)`
 - [qiangxue/fasthttp-routing](https://github.com/qiangxue/fasthttp-routing) `(v0.0.0-20160225050629-6ccdc2a18d87)`
 - [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.3.0)`
 - [cron/v3](https://github.com/robfig/cron/v3) `(v3.0.1)`
-- [sahilm/fuzzy](https://github.com/sahilm/fuzzy) `(v0.1.0)`
+- [rs/xid](https://github.com/rs/xid) `(v1.4.0)`
 - [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
-- [sirupsen/logrus](https://github.com/sirupsen/logrus) `(v1.8.1)`
-- [stretchr/testify](https://github.com/stretchr/testify) `(v1.7.1)`
-- [traefik/paerser](https://github.com/traefik/paerser) `(v0.1.5)`
-- [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.34.0)`
+- [stretchr/testify](https://github.com/stretchr/testify) `(v1.8.1)`
+- [traefik/paerser](https://github.com/traefik/paerser) `(v0.2.0)`
+- [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.44.0)`
 - [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart) `(v2.0.1+incompatible)`
 - [zekroTJA/colorname](https://github.com/zekroTJA/colorname) `(v1.0.0)`
-- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.0.0)`
-- [zekroTJA/shireikan](https://github.com/zekroTJA/shireikan) `(v0.7.0)`
+- [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.1.1)`
 - [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
-- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.3)`
-- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.13.0)`
+- [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.7)`
+- [zekrotja/jwt](https://github.com/zekrotja/jwt) `(v0.0.0-20220515133240-d66362c9fbc9)`
+- [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.18.0)`
+- [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.3.0)`
 - [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
-- [x/image](https://golang.org/x/image) `(v0.0.0-20220302094943-723b81ca9867)`
-- [x/sys](https://golang.org/x/sys) `(v0.0.0-20220317061510-51cd9980dadf)`
-- [x/time](https://golang.org/x/time) `(v0.0.0-20220224211638-0e9765cccd65)`
+- [x/image](https://golang.org/x/image) `(v0.5.0)`
+- [x/sys](https://golang.org/x/sys) `(v0.5.0)`
+- [x/time](https://golang.org/x/time) `(v0.3.0)`
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) `(v2.4.0)`
 <!-- end:REQUIREMENTS -->
 
