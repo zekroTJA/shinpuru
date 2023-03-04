@@ -1,6 +1,10 @@
 # shinpuru main API
 The shinpuru main REST API.
 
+> **Warning**
+> This document is currently outdated (see [syroegkin/swagger-markdown](https://github.com/syroegkin/swagger-markdown/issues/198)).
+> Please refer to the [Swagger API Docs](https://app.swaggerhub.com/apis-docs/zekroTJA/shinpuru-main-api/1.0) for recent documentation about the REST API.
+
 ## Version: 1.0
 
 ### /auth/accesstoken

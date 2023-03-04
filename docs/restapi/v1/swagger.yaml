@@ -88,9 +88,45 @@ definitions:
         description: ApplicationID of the DM creator Zeroed if guild channel or not
           a bot user
         type: string
+      applied_tags:
+        description: The IDs of the set of tags that have been applied to a thread
+          in a forum channel.
+        items:
+          type: string
+        type: array
+      available_tags:
+        description: The set of tags that can be used in a forum channel.
+        items:
+          $ref: '#/definitions/discordgo.ForumTag'
+        type: array
       bitrate:
         description: The bitrate of the channel, if it is a voice channel.
         type: integer
+      default_forum_layout:
+        allOf:
+        - $ref: '#/definitions/discordgo.ForumLayout'
+        description: |-
+          The default forum layout view used to display posts in forum channels.
+          Defaults to ForumLayoutNotSet, which indicates a layout view has not been set by a channel admin.
+      default_reaction_emoji:
+        allOf:
+        - $ref: '#/definitions/discordgo.ForumDefaultReaction'
+        description: Emoji to use as the default reaction to a forum post.
+      default_sort_order:
+        allOf:
+        - $ref: '#/definitions/discordgo.ForumSortOrderType'
+        description: |-
+          The default sort order type used to order posts in forum channels.
+          Defaults to null, which indicates a preferred sort order hasn't been set by a channel admin.
+      default_thread_rate_limit_per_user:
+        description: |-
+          The initial RateLimitPerUser to set on newly created threads in a channel.
+          This field is copied to the thread at creation time and does not live update.
+        type: integer
+      flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.ChannelFlags'
+        description: Channel flags.
       guild_id:
         description: |-
           The ID of the guild to which the channel belongs, if it is in a guild.
@@ -171,6 +207,14 @@ definitions:
         description: The user limit of the voice channel.
         type: integer
     type: object
+  discordgo.ChannelFlags:
+    enum:
+    - 2
+    - 16
+    type: integer
+    x-enum-varnames:
+    - ChannelFlagPinned
+    - ChannelFlagRequireTag
   discordgo.ChannelType:
     enum:
     - 0
@@ -184,6 +228,7 @@ definitions:
     - 11
     - 12
     - 13
+    - 15
     type: integer
     x-enum-varnames:
     - ChannelTypeGuildText
@@ -197,6 +242,7 @@ definitions:
     - ChannelTypeGuildPublicThread
     - ChannelTypeGuildPrivateThread
     - ChannelTypeGuildStageVoice
+    - ChannelTypeGuildForum
   discordgo.EmbedType:
     enum:
     - rich
@@ -233,6 +279,46 @@ definitions:
         type: array
       user:
         $ref: '#/definitions/discordgo.User'
+    type: object
+  discordgo.ForumDefaultReaction:
+    properties:
+      emoji_id:
+        description: The id of a guild's custom emoji.
+        type: string
+      emoji_name:
+        description: The unicode character of the emoji.
+        type: string
+    type: object
+  discordgo.ForumLayout:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - ForumLayoutNotSet
+    - ForumLayoutListView
+    - ForumLayoutGalleryView
+  discordgo.ForumSortOrderType:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - ForumSortOrderLatestActivity
+    - ForumSortOrderCreationDate
+  discordgo.ForumTag:
+    properties:
+      emoji_id:
+        type: string
+      emoji_name:
+        type: string
+      id:
+        type: string
+      moderated:
+        type: boolean
+      name:
+        type: string
     type: object
   discordgo.InteractionType:
     enum:
@@ -1465,6 +1551,11 @@ definitions:
           type: string
         type: array
     type: object
+  github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest:
+    properties:
+      code:
+        type: string
+    type: object
   github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest:
     properties:
       attachment:
@@ -1855,6 +1946,37 @@ paths:
           schema:
             $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
       summary: Logout
+      tags:
+      - Authorization
+  /auth/pushcode:
+    post:
+      consumes:
+      - application/json
+      description: Send a login push code resulting in a long-fetch request waiting
+        for the code to be sent to shinpurus DMs.
+      parameters:
+      - description: The push code.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
+        "410":
+          description: Gone
+          schema:
+            $ref: '#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status'
+      summary: Pushcode
       tags:
       - Authorization
   /channels/{guildid}:
@@ -4033,6 +4155,23 @@ paths:
       summary: Get Guild Unbanrequests Count
       tags:
       - Guilds
+  /healthcheck:
+    get:
+      consumes:
+      - application/json
+      description: General system healthcheck.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Wrapped in models.ListResponse
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Healthcheck
+      tags:
+      - Etc
   /me:
     get:
       consumes:
