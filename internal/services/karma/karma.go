@@ -157,7 +157,6 @@ func (k *Service) ApplyPenalty(guildID, userID string) (err error) {
 	if err != nil || !enabled {
 		return
 	}
-	fmt.Println(enabled, guildID, userID)
 
 	err = k.Update(guildID, userID, "", -1)
 	return

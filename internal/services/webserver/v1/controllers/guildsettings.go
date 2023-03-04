@@ -348,7 +348,6 @@ func (c *GuildsSettingsController) postGuildSettingsKarma(ctx *fiber.Ctx) error 
 		return err
 	}
 
-	fmt.Printf("%+v\n", settings)
 	if err = c.db.SetKarmaPenalty(guildID, settings.Penalty); err != nil {
 		return err
 	}

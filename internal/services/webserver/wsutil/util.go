@@ -116,7 +116,6 @@ func ParseBase64Data(b64Data string) (mime string, data []byte, err error) {
 		if i := strings.IndexRune(mime, ';'); i != -1 {
 			mime = mime[:i]
 		}
-		fmt.Println(mime)
 		dataS = split[1]
 	}
 
