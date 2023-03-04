@@ -106,7 +106,7 @@ const LoginRoute: React.FC<Props> = () => {
   const redirect = params.get('redirect');
 
   const _generatePushCode = async () => {
-    const code = getCryptoRandomString(16);
+    const code = getCryptoRandomString(8);
     setPushCode(code);
     try {
       await fetch((c) => c.auth.pushCode(code), true);
