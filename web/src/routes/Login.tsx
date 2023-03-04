@@ -110,7 +110,7 @@ const LoginRoute: React.FC<Props> = () => {
     setPushCode(code);
     try {
       await fetch((c) => c.auth.pushCode(code), true);
-      nav('/' + redirect ?? 'db');
+      nav(redirect ?? '/db');
       return false;
     } catch {}
     return true;
