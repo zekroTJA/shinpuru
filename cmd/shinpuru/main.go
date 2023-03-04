@@ -86,13 +86,15 @@ func main() {
 		// registered writers correctly.
 
 		err := recover()
-		entry := log.Panic()
+		if err == nil {
+			return
+		}
 
+		entry := log.Panic()
 		_, file, line, ok := runtime.Caller(2)
 		if ok {
 			entry.Fields("file", file, "line", line)
 		}
-
 		entry.Msgf("panic: %v", err)
 	}()
 
