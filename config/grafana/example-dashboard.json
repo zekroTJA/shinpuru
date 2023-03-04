@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1677872366817,
+  "iteration": 1677943791639,
   "links": [],
   "panels": [
     {
@@ -68,7 +68,7 @@
       "pluginVersion": "8.0.3",
       "targets": [
         {
-          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"WARN\"}[14d]))",
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"WARN\"}[$__interval]))",
           "legendFormat": "{{logLevel}}",
           "refId": "A"
         }
@@ -125,7 +125,7 @@
       "pluginVersion": "8.0.3",
       "targets": [
         {
-          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"ERROR\"}[14d]))",
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"ERROR\"}[$__interval]))",
           "legendFormat": "{{logLevel}}",
           "refId": "A"
         }
@@ -182,7 +182,7 @@
       "pluginVersion": "8.0.3",
       "targets": [
         {
-          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=~\"(FATAL|PANIC)\"}[14d]))",
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=~\"(FATAL|PANIC)\"}[$__interval]))",
           "legendFormat": "{{logLevel}}",
           "refId": "A"
         }
@@ -210,6 +210,7 @@
       "targets": [
         {
           "expr": "{app=\"shinpuru\", instance=\"$instance\"}",
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1181,7 +1182,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "5s",
+  "refresh": "30s",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -1190,7 +1191,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "shinpuru-canary",
           "value": "shinpuru-canary"
         },
@@ -1303,12 +1304,12 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "shinpuru",
   "uid": "88P0Omznk",
-  "version": 12
+  "version": 15
 }
