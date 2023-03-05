@@ -25,7 +25,7 @@ export default defineConfig({
           'locales/**/*.json',
         ],
         cacheId: 'shinpuru-v1',
-        navigateFallbackDenylist: [/^\/api\/auth\/.*/],
+        navigateFallbackDenylist: [/^\/api\/auth\/.*/, /^\/invite/],
         runtimeCaching: [
           {
             urlPattern: /\/api\/(?:v\d\/)?guilds\/\d+\/(members|\d+)/,
