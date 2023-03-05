@@ -254,7 +254,7 @@ func prompts() {
 			"trace",
 		},
 	}).Run())
-	spSvc.Environment["SP_LOGGING_LOGLEVEL"] = strconv.Itoa(loglevel)
+	spSvc.Environment["SP_LOGGING_LOGLEVEL"] = strconv.Itoa(loglevel + 1)
 
 	// ----------------------
 	// --- WEBSERVER
