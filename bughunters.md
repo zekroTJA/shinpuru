@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **35** different wonderful people contributed a sum of **84** issues and **21** pull requests (with 1222 added and 160 deleted lines of code in 74 different files)! 🎉
+In total, **36** different wonderful people contributed a sum of **84** issues and **22** pull requests (with 1223 added and 161 deleted lines of code in 75 different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -24,6 +24,7 @@ In total, **35** different wonderful people contributed a sum of **84** issues a
 |  [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309), [#387](https://github.com/zekroTJA/shinpuru/issues/387) |  | `3` |
 |  [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `3` |
 |  [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `3` |
+|  [Dodo1213](https://github.com/Dodo1213) |  | [#413](https://github.com/zekroTJA/shinpuru/pull/413) | `3` |
 |  [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90), [#405](https://github.com/zekroTJA/shinpuru/issues/405) |  | `2` |
 |  [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `2` |
 |  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378) |  | `2` |
