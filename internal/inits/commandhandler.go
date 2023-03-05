@@ -113,6 +113,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		perms,
 		cmdhelp.New("help"),
 		middleware.NewCommandStatsMiddleware(),
+		middleware.NewCommandLoggingMiddleware(container),
 	)
 
 	return
