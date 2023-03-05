@@ -49,7 +49,6 @@ export const ReportsList: React.FC<Props> = ({
       .then(() => {
         const i = reports.findIndex((r) => r.id === rep.id);
         if (i !== -1) reports.splice(i, 1);
-        reports.splice(i, 1);
         onReportsUpdated(reports);
         pushNotification({
           heading: t('notifications.reportrevoked.heading'),
