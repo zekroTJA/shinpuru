@@ -53,7 +53,11 @@ func New(container di.Container) (ws *WebServer, err error) {
 		}))
 	}
 
-	ws.app.Use(etag.New(), mw.NewMetrics(), mw.Logger())
+	ws.app.Use(
+		etag.New(),
+		mw.NewMetrics(mw.MetricsOptions{IgnorePatterns: []string{`^\/api\/(?:v\d\/)?healthcheck`}}),
+		mw.Logger(),
+	)
 
 	rlc := ws.cfg.Config().WebServer.RateLimit
 	rlh := limiter.New(limiter.Config{
