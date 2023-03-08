@@ -34,18 +34,18 @@ func NewMetrics(opts ...MetricsOptions) fiber.Handler {
 	}
 
 	return func(c *fiber.Ctx) error {
+		start := time.Now()
+
+		err := c.Next()
+
 		for _, rx := range ignore {
 			if rx.MatchString(c.Path()) {
 				log.Debug().Tag("Metrics").
 					Field("path", c.Path()).
 					Msg("Reqeust has been ignored")
-				continue
+				return err
 			}
 		}
-
-		start := time.Now()
-
-		err := c.Next()
 
 		status := c.Response().StatusCode()
 
