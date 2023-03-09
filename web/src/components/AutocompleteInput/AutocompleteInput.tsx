@@ -111,7 +111,7 @@ export const AutocompleteInput: React.FC<Props> = ({
   }, [selections]);
 
   useEffect(() => {
-    if (!fuseRef.current) return;
+    if (!fuseRef.current || !value) return;
     const res = fuseRef.current.search(value);
     const selectables = res
       .sort((a, b) => a.score! - b.score!)
