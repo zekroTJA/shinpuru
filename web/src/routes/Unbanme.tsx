@@ -59,7 +59,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
     }
 
     const queue = await fetch((c) => c.unbanrequests.list());
-    setQueue(queue.data);
+    setQueue(queue.data.reverse());
 
     const g = await fetch((c) => c.unbanrequests.guilds());
     setBannedGuilds(

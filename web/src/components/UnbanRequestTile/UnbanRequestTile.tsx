@@ -136,7 +136,7 @@ export const UnbanRequestTile: React.FC<Props> = ({
         {request.processed_by && (
           <section>
             <Heading>{t('decisionreason')}</Heading>
-            <span>{request.message}</span>
+            <span>{request.processed_message}</span>
           </section>
         )}
         {showControls && request.status === UnbanRequestState.PENDING && (

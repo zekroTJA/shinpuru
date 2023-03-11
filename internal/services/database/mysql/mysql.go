@@ -1549,12 +1549,14 @@ func (m *MysqlMiddleware) RemoveAntiraidJoinList(guildID, userID string) (err er
 }
 
 func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset int) (r []models.UnbanRequest, err error) {
-	rows, err := m.Db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
+	rows, err := m.Db.Query(`
+		SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE guildID = ?
+		ORDER BY id DESC
 		LIMIT ?
-		OFFSET ?`, guildID, limit, offset)
+		OFFSET ?
+	`, guildID, limit, offset)
 	err = wrapNotFoundError(err)
 	if err != nil {
 		return
