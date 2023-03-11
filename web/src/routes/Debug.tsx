@@ -3,6 +3,7 @@ import { Notification, NotificationType } from '../components/Notifications';
 import { randomFrom, randomNumber } from '../util/rand';
 import { useRef, useState } from 'react';
 
+import { ActionButton } from '../components/ActionButton';
 import { Button } from '../components/Button';
 import { Heading } from '../components/Heading';
 import { Input } from '../components/Input';
@@ -13,6 +14,7 @@ import { useNotifications } from '../hooks/useNotifications';
 type Props = {};
 
 const DebugContainer = styled.div`
+  padding: 2em;
   > section {
     margin-bottom: 2em;
     > * {
@@ -90,6 +92,11 @@ export const DebugRoute: React.FC<Props> = () => {
     }).then(console.log);
   };
 
+  const timeoutPromise = () =>
+    new Promise((resolve, _) => {
+      setTimeout(resolve, 3000);
+    });
+
   return (
     <DebugContainer>
       <section>
@@ -131,6 +138,11 @@ export const DebugRoute: React.FC<Props> = () => {
       <section>
         <Heading>Modals</Heading>
         <Button onClick={_openModal}>Open</Button>
+      </section>
+
+      <section>
+        <Heading>Buttons</Heading>
+        <ActionButton onClick={timeoutPromise}>Some Action!</ActionButton>
       </section>
     </DebugContainer>
   );

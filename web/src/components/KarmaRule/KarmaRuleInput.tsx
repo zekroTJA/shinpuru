@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { getActionOptions, getRoleOptions, getTriggerOptions } from './shared';
 import { useMemo, useReducer } from 'react';
 
+import { ActionButton } from '../ActionButton';
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { Select } from '../Select';
@@ -10,7 +11,7 @@ import styled from 'styled-components';
 
 type Props = {
   guild: Guild;
-  onApply: (r: KarmaRule) => void;
+  onApply: (r: KarmaRule) => Promise<any> | undefined;
 };
 
 const ruleReducer = (
@@ -116,7 +117,7 @@ export const KarmaRuleInput: React.FC<Props> = ({ guild, onApply }) => {
           '4': argumentInput,
         }}
       />
-      <Button onClick={() => onApply(rule)}>{t('karmarule.apply')}</Button>
+      <ActionButton onClick={() => onApply(rule)}>{t('karmarule.apply')}</ActionButton>
     </RuleContainer>
   );
 };

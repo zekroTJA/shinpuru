@@ -31,8 +31,6 @@ const PermissionsRoute: React.FC<Props> = () => {
       .then(setPerms)
       .catch();
 
-    // TODO: Maybe add new route to get all available permissions
-    //       instead of depending on allowed permissions for current user.
     fetch((c) => c.etc.allpermissions())
       .then((r) => {
         const rules = r.data.filter(

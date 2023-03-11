@@ -7,7 +7,7 @@ import { Loader } from '../Loader';
 import { ReactComponent as LogoutIcon } from '../../assets/logout.svg';
 import { MAX_WIDTH } from '../MaxWidthContainer';
 import { NAVBAR_WIDTH } from './Navbar';
-import { Styled } from '../props';
+import { PropsWithStyle } from '../props';
 import { ReactComponent as TriangleIcon } from '../../assets/triangle.svg';
 import { ReactComponent as UserSettingsIcon } from '../../assets/tool.svg';
 import styled from 'styled-components';
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router';
 import { useSelfUser } from '../../hooks/useSelfUser';
 import { useTranslation } from 'react-i18next';
 
-type Props = Styled & {};
+type Props = PropsWithStyle & {};
 
 const HoverplateButton = styled(Button)`
   display: flex;

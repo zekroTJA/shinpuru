@@ -264,7 +264,6 @@ export const App: React.FC = () => {
                   </RouteSuspense>
                 }
               />
-              {import.meta.env.DEV && <Route path="debug" element={<DebugRoute />} />}
             </Route>
 
             <Route
@@ -368,6 +367,8 @@ export const App: React.FC = () => {
               />
               <Route path="" element={<Navigate to="general" />} />
             </Route>
+
+            {import.meta.env.DEV && <Route path="debug" element={<DebugRoute />} />}
 
             <Route path="*" element={<Navigate to="db" />} />
           </Routes>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Button } from '../../components/Button';
+import { ActionButton } from '../../components/ActionButton';
 import { Controls } from '../../components/Controls';
 import { Embed } from '../../components/Embed';
 import { Loader } from '../../components/Loader';
@@ -21,7 +21,7 @@ const OTARoute: React.FC<Props> = () => {
 
   const _saveSettings = () => {
     if (enabled === undefined) return;
-    fetch((c) => c.usersettings.setOta({ enabled }))
+    return fetch((c) => c.usersettings.setOta({ enabled }))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -60,9 +60,9 @@ const OTARoute: React.FC<Props> = () => {
         <Switch enabled={enabled} onChange={setEnabled} labelAfter={t('toggle')} />
       )) || <Loader width="15em" height="2.5em" />}
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
     </MaxWidthContainer>
   );

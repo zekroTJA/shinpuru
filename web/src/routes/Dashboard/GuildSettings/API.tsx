@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled, { css } from 'styled-components';
 
-import { Button } from '../../../components/Button';
+import { ActionButton } from '../../../components/ActionButton';
 import { Controls } from '../../../components/Controls';
 import { Embed } from '../../../components/Embed';
 import { Flex } from '../../../components/Flex';
@@ -102,7 +102,7 @@ const APIRoute: React.FC<Props> = () => {
   const _saveSettings = () => {
     if (!guildid) return;
 
-    fetch((c) => c.guilds.settings(guildid).setApi(settings as GuildSettingsApi))
+    return fetch((c) => c.guilds.settings(guildid).setApi(settings as GuildSettingsApi))
       .then(_refresh)
       .then(() =>
         pushNotification({
@@ -116,7 +116,7 @@ const APIRoute: React.FC<Props> = () => {
   const _resetToken = () => {
     if (!guildid || !settings.protected) return;
 
-    fetch((c) =>
+    return fetch((c) =>
       c.guilds.settings(guildid).setApi({ ...settings, reset_token: true } as GuildSettingsApi),
     )
       .then(_refresh)
@@ -217,12 +217,12 @@ const APIRoute: React.FC<Props> = () => {
       </Settings>
 
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
-        <Button disabled={!settings.protected} variant="orange" onClick={_resetToken}>
+        </ActionButton>
+        <ActionButton disabled={!settings.protected} variant="orange" onClick={_resetToken}>
           {t('reset')}
-        </Button>
+        </ActionButton>
       </Controls>
     </MaxWidthContainer>
   );

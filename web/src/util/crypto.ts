@@ -4,14 +4,6 @@ export function getCryptoRandomString(ln: number): string {
   return encode(array);
 }
 
-const ASCII_START = 33;
-const ASCII_END = 126;
-
-// function encode(v: Uint8Array): string {
-//   const _v = v.map((c) => Math.floor((c / 256) * (ASCII_END - ASCII_START + 1) + ASCII_START));
-//   return String.fromCharCode(..._v);
-// }
-
 const DEFAULT_CHARSET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 function encode(v: Uint8Array, charset = DEFAULT_CHARSET): string {

@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 
-import { Button } from '../../../components/Button';
+import { ActionButton } from '../../../components/ActionButton';
 import { Controls } from '../../../components/Controls';
 import { Loader } from '../../../components/Loader';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
@@ -42,7 +42,7 @@ const LinkBlockingRoute: React.FC<Props> = () => {
 
   const _saveSettings = () => {
     if (!guildid) return;
-    fetch((c) => c.guilds.setInviteBlock(guildid, state.enabled))
+    return fetch((c) => c.guilds.setInviteBlock(guildid, state.enabled))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -69,9 +69,9 @@ const LinkBlockingRoute: React.FC<Props> = () => {
         />
       )) || <Loader height="4em" />}
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
     </MaxWidthContainer>
   );

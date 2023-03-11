@@ -2,12 +2,12 @@ import { EntryContainer } from './EntryContainer';
 import { Heading } from '../Heading';
 import { MAX_WIDTH } from '../MaxWidthContainer';
 import { PropsWithChildren } from 'react';
+import { PropsWithStyle } from '../props';
 import { ReactComponent as SPBrand } from '../../assets/sp-brand.svg';
 import SPIcon from '../../assets/sp-icon.png';
-import { Styled } from '../props';
 import styled from 'styled-components';
 
-type Props = PropsWithChildren & Styled & {};
+type Props = PropsWithChildren & PropsWithStyle & {};
 
 export const NAVBAR_WIDTH = '15rem';
 

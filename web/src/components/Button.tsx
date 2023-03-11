@@ -11,13 +11,13 @@ export type ButtonVariant =
   | 'gray'
   | 'pink';
 
-type Props = {
+export type ButtonProps = {
   variant?: ButtonVariant;
   nvp?: boolean;
   margin?: string;
 };
 
-export const Button = styled.button<Props>`
+export const Button = styled.button<ButtonProps>`
   font-size: 1rem;
   font-family: 'Roboto', sans-serif;
   color: ${(p) => p.theme.textAlt};

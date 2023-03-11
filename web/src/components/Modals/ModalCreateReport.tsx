@@ -3,6 +3,7 @@ import { ModalContainer, ModalTextArea } from './modalParts';
 import { Trans, useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 
+import { ActionButton } from '../ActionButton';
 import { Button } from '../Button';
 import { ControlProps } from '../Modal/Modal';
 import { DurationPicker } from '../DurationPicker';
@@ -123,11 +124,11 @@ export const ModalCreateReport: React.FC<Props> = ({
       heading={action}
       controls={
         <>
-          <Button disabled={!reason} onClick={_submit}>
+          <ActionButton disabled={!reason} onClick={_submit}>
             <Trans ns="components" i18nKey="modalcreatereport.controls.execute">
               {{ action }}
             </Trans>
-          </Button>
+          </ActionButton>
           <Button variant="gray" onClick={onClose}>
             {t('components:modalcreatereport.controls.cancel')}
           </Button>

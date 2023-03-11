@@ -2,9 +2,9 @@ import { Guild, PermissionsMap, Role } from '../../lib/shinpuru-ts/src';
 import styled, { css, useTheme } from 'styled-components';
 import { useMemo, useState } from 'react';
 
+import { ActionButton } from '../ActionButton';
 import { ReactComponent as AllowIcon } from '../../assets/check.svg';
 import { AutocompleteInput } from '../AutocompleteInput';
-import { Button } from '../Button';
 import Color from 'color';
 import { ReactComponent as DeleteIcon } from '../../assets/delete.svg';
 import { ReactComponent as DisallowIcon } from '../../assets/ban.svg';
@@ -35,7 +35,7 @@ const StyledSwitch = styled(Switch)`
   }
 `;
 
-const StyledButton = styled(Button)`
+const StyledButton = styled(ActionButton)`
   padding: 0 0.8em;
 `;
 
@@ -127,7 +127,7 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
   const applyRule = () => {
     const sign = allow ? '+' : '-';
 
-    fetch((c) =>
+    return fetch((c) =>
       c.guilds.applyPermission(guild.id, {
         perm: sign + permission,
         role_ids: roles.map((r) => r.id),
@@ -151,8 +151,6 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
       .then((r) => setPerms(r))
       .catch();
   };
-
-  console.debug(permsKV);
 
   return (
     <Flex direction="column" gap="1em">

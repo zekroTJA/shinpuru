@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 
+import { ActionButton } from '../../components/ActionButton';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { Controls } from '../../components/Controls';
@@ -63,7 +64,7 @@ const PrivacyRoute: React.FC<Props> = () => {
   const [purgeUsername, setPurgeUsername] = useState('');
 
   const _saveSettings = () => {
-    fetch((c) => c.usersettings.setPrivacy(state as UserSettingsPrivacy))
+    return fetch((c) => c.usersettings.setPrivacy(state as UserSettingsPrivacy))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -143,9 +144,9 @@ const PrivacyRoute: React.FC<Props> = () => {
         </section>
 
         <Controls>
-          <Button variant="green" onClick={_saveSettings}>
+          <ActionButton variant="green" onClick={_saveSettings}>
             {t('starboard.save')}
-          </Button>
+          </ActionButton>
         </Controls>
 
         <section>

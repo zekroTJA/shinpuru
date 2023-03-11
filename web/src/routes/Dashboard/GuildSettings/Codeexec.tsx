@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components';
 
-import { Button } from '../../../components/Button';
+import { ActionButton } from '../../../components/ActionButton';
 import { CodeExecSettings } from '../../../lib/shinpuru-ts/src';
 import { Controls } from '../../../components/Controls';
 import { Hint } from '../../../components/Hint';
@@ -67,7 +67,7 @@ const VerificationRoute: React.FC<Props> = () => {
   const _saveSettings = () => {
     if (!guildid) return;
 
-    fetch((c) => c.guilds.settings(guildid).setCodeexec(settings as CodeExecSettings))
+    return fetch((c) => c.guilds.settings(guildid).setCodeexec(settings as CodeExecSettings))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -150,9 +150,9 @@ const VerificationRoute: React.FC<Props> = () => {
       )}
 
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
     </MaxWidthContainer>
   );

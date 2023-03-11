@@ -2,6 +2,7 @@ import { AntiraidActionType, AntiraidSettings, JoinlogEntry } from '../../../lib
 import React, { useEffect, useReducer, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { ActionButton } from '../../../components/ActionButton';
 import { ReactComponent as BanIcon } from '../../../assets/ban.svg';
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
@@ -89,7 +90,7 @@ const JoinlogEntries = styled.div`
   }
 `;
 
-const ActionButton = styled(Button)`
+const AnimButton = styled(ActionButton)`
   @keyframes action_anim {
     from {
       transform: rotate(0deg);
@@ -120,7 +121,7 @@ const AntiraidRoute: React.FC<Props> = () => {
   const _saveSettings = () => {
     if (!guildid) return;
 
-    fetch((c) => c.guilds.settings(guildid).setAntiraid(settings as AntiraidSettings))
+    return fetch((c) => c.guilds.settings(guildid).setAntiraid(settings as AntiraidSettings))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -154,14 +155,14 @@ const AntiraidRoute: React.FC<Props> = () => {
 
   const _refresh = () => {
     if (!guildid) return;
-    fetch((c) => c.guilds.antiraidJoinlog(guildid))
+    return fetch((c) => c.guilds.antiraidJoinlog(guildid))
       .then((r) => setEntries(r.data))
       .catch();
   };
 
   const _clear = () => {
     if (!guildid) return;
-    fetch((c) => c.guilds.deleteAntiraidJoinlog(guildid))
+    return fetch((c) => c.guilds.deleteAntiraidJoinlog(guildid))
       .then(() => {
         setEntries([]);
         setSelected([]);
@@ -252,9 +253,9 @@ const AntiraidRoute: React.FC<Props> = () => {
       </InputContainer>
 
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
 
       <JoinlogContainer>
@@ -264,14 +265,14 @@ const AntiraidRoute: React.FC<Props> = () => {
             <DownloadIcon />
             {t('log.controls.download')}
           </Button>
-          <ActionButton variant="gray" onClick={_refresh}>
+          <AnimButton variant="gray" onClick={_refresh}>
             <RefreshIcon />
             {t('log.controls.refresh')}
-          </ActionButton>
-          <ActionButton variant="gray" disabled={!entries?.length} onClick={_clear}>
+          </AnimButton>
+          <AnimButton variant="gray" disabled={!entries?.length} onClick={_clear}>
             <DeleteIcon />
             {t('log.controls.clear')}
-          </ActionButton>
+          </AnimButton>
           <Button
             margin="0 0 0 auto"
             variant="orange"

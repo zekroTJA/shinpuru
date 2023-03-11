@@ -3,6 +3,7 @@ import { Element, Select } from '../../../components/Select';
 import React, { useEffect, useReducer } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { ActionButton } from '../../../components/ActionButton';
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
 import { Embed } from '../../../components/Embed';
@@ -149,7 +150,7 @@ const GeneralRoute: React.FC<Props> = () => {
       gs.leavemessagetext = settings.leavemessagetext || '__RESET__';
     }
 
-    fetch((c) => c.guilds.settings(guildid).setSettings(gs))
+    return fetch((c) => c.guilds.settings(guildid).setSettings(gs))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -367,9 +368,9 @@ const GeneralRoute: React.FC<Props> = () => {
           )}
 
           <Controls>
-            <Button variant="green" onClick={_saveSettings}>
+            <ActionButton variant="green" onClick={_saveSettings}>
               {t('save')}
-            </Button>
+            </ActionButton>
           </Controls>
         </Container>
       )) || (

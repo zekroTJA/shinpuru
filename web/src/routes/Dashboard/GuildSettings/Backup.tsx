@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { ActionButton } from '../../../components/ActionButton';
 import { Button } from '../../../components/Button';
 import { ReactComponent as DownloadIcon } from '../../../assets/download.svg';
 import { Embed } from '../../../components/Embed';
@@ -68,7 +69,7 @@ const BackupRoute: React.FC<Props> = () => {
 
   const _applyEnabled = () => {
     if (!guildid) return;
-    fetch((c) => c.guilds.backups(guildid).toggle(enabled))
+    return fetch((c) => c.guilds.backups(guildid).toggle(enabled))
       .then(() => {
         currStateRef.current = enabled;
         pushNotification({
@@ -118,12 +119,12 @@ const BackupRoute: React.FC<Props> = () => {
         {(guild && (
           <>
             <Switch enabled={enabled} onChange={setEnabled} labelAfter={t('toggle')} />
-            <Button
+            <ActionButton
               disabled={enabled === currStateRef.current}
               variant="green"
               onClick={_applyEnabled}>
               {t('apply')}
-            </Button>
+            </ActionButton>
           </>
         )) || (
           <>

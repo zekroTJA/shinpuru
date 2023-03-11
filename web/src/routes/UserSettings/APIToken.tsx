@@ -4,7 +4,7 @@ import styled, { useTheme } from 'styled-components';
 
 import { APIError } from '../../lib/shinpuru-ts/src/errors';
 import { APIToken } from '../../lib/shinpuru-ts/src';
-import { Button } from '../../components/Button';
+import { ActionButton } from '../../components/ActionButton';
 import { Card } from '../../components/Card';
 import { Controls } from '../../components/Controls';
 import { Flex } from '../../components/Flex';
@@ -66,7 +66,7 @@ const APITokenRoute: React.FC<Props> = () => {
   }, []);
 
   const _generateToken = () => {
-    fetch((c) => c.tokens.generate())
+    return fetch((c) => c.tokens.generate())
       .then((r) => {
         setToken({ ...r, hasToken: true });
         pushNotification({
@@ -78,7 +78,7 @@ const APITokenRoute: React.FC<Props> = () => {
   };
 
   const _resetToken = () => {
-    fetch((c) => c.tokens.delete())
+    return fetch((c) => c.tokens.delete())
       .then((r) => {
         setToken({ hasToken: false });
         pushNotification({
@@ -110,12 +110,12 @@ const APITokenRoute: React.FC<Props> = () => {
       <TokenControls>
         {(token && (
           <>
-            <Button onClick={_generateToken}>
+            <ActionButton onClick={_generateToken}>
               {token.hasToken ? t('regenerate') : t('generate')}
-            </Button>
-            <Button onClick={_resetToken} disabled={!token.hasToken} variant="orange">
+            </ActionButton>
+            <ActionButton onClick={_resetToken} disabled={!token.hasToken} variant="orange">
               {t('reset')}
-            </Button>
+            </ActionButton>
           </>
         )) || <Loader height="3em" />}
       </TokenControls>

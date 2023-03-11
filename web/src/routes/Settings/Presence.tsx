@@ -2,7 +2,7 @@ import { Element, Select } from '../../components/Select';
 import { Presence, Status } from '../../lib/shinpuru-ts/src';
 import React, { useEffect, useReducer } from 'react';
 
-import { Button } from '../../components/Button';
+import { ActionButton } from '../../components/ActionButton';
 import { Controls } from '../../components/Controls';
 import { Flex } from '../../components/Flex';
 import { Input } from '../../components/Input';
@@ -49,7 +49,7 @@ const PresenceRoute: React.FC<Props> = () => {
   const [state, dispatchState] = useReducer(presenceReducer, {});
 
   const _saveSettings = () => {
-    fetch((c) => c.settings.setPresence(state as Presence))
+    return fetch((c) => c.settings.setPresence(state as Presence))
       .then(() => {
         pushNotification({
           message: t('notifications.saved'),
@@ -95,9 +95,9 @@ const PresenceRoute: React.FC<Props> = () => {
             />
           </Section>
           <Controls>
-            <Button variant="green" onClick={_saveSettings}>
+            <ActionButton variant="green" onClick={_saveSettings}>
               {t('save')}
-            </Button>
+            </ActionButton>
           </Controls>
         </Flex>
       )}

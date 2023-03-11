@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Styled } from '../props';
+import { PropsWithStyle } from '../props';
 import styled from 'styled-components';
 
 type Theme = {
@@ -7,7 +7,7 @@ type Theme = {
   enabledColor: string;
 };
 
-type Props = Styled &
+type Props = PropsWithStyle &
   PropsWithChildren<{
     enabled: boolean;
     onChange?: (s: boolean) => void;

@@ -23,6 +23,8 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1em;
   padding: 2em;
+  align-items: center;
+  padding-top: 5em;
 
   > span {
     display: block;
@@ -88,6 +90,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
     )
       .then((r) => {
         setQueue([r, ...queue]);
+        setBannedGuilds(bannedGuilds?.filter((g) => g.id !== selectedGuild.id));
         pushNotification({
           message: t('notifications.sent'),
           type: 'SUCCESS',
@@ -109,7 +112,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
 
       {authorized === undefined && (
         <>
-          <Loader />
+          <Loader width="30em" height="5em" />
         </>
       )}
       {authorized === false && (

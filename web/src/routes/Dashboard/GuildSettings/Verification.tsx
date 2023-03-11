@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 
-import { Button } from '../../../components/Button';
+import { ActionButton } from '../../../components/ActionButton';
 import { Controls } from '../../../components/Controls';
 import { GuildSettingsVerification } from '../../../lib/shinpuru-ts/src';
 import { Loader } from '../../../components/Loader';
@@ -41,7 +41,9 @@ const CodeexecRoute: React.FC<Props> = () => {
   const _saveSettings = () => {
     if (!guildid) return;
 
-    fetch((c) => c.guilds.settings(guildid).setVerification(settings as GuildSettingsVerification))
+    return fetch((c) =>
+      c.guilds.settings(guildid).setVerification(settings as GuildSettingsVerification),
+    )
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -74,9 +76,9 @@ const CodeexecRoute: React.FC<Props> = () => {
       )) || <Loader width="20em" height="2em" />}
 
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
     </MaxWidthContainer>
   );

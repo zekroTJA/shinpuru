@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import { uid } from 'react-uid';
 import styled from 'styled-components';
+import { ActionButton } from '../../../components/ActionButton';
 import { Button } from '../../../components/Button';
 import { Controls } from '../../../components/Controls';
 import { Input } from '../../../components/Input';
@@ -116,7 +117,7 @@ const KarmaRoute: React.FC<Props> = () => {
   const _saveSettings = () => {
     if (!guildid) return;
 
-    fetch((c) => c.guilds.settings(guildid).setKarma(settings as KarmaSettings))
+    return fetch((c) => c.guilds.settings(guildid).setKarma(settings as KarmaSettings))
       .then(() =>
         pushNotification({
           message: t('notifications.saved'),
@@ -128,7 +129,7 @@ const KarmaRoute: React.FC<Props> = () => {
 
   const _addKarmaRule = (r: KarmaRule) => {
     if (!guildid) return;
-    fetch((c) => c.guilds.settings(guildid).addKarmaRule(r))
+    return fetch((c) => c.guilds.settings(guildid).addKarmaRule(r))
       .then((res) => {
         dispatchRules(['add', res]);
         pushNotification({
@@ -141,7 +142,7 @@ const KarmaRoute: React.FC<Props> = () => {
 
   const _removeKarmaRule = (r: KarmaRule) => {
     if (!guildid) return;
-    fetch((c) => c.guilds.settings(guildid).removeKarmaRule(r.id)).then((res) => {
+    return fetch((c) => c.guilds.settings(guildid).removeKarmaRule(r.id)).then((res) => {
       dispatchRules(['remove', r]);
       pushNotification({
         message: t('notifications.ruleremoved'),
@@ -152,7 +153,7 @@ const KarmaRoute: React.FC<Props> = () => {
 
   const _addBlocklist = (v: string) => {
     if (!guildid) return;
-    fetch((c) => c.guilds.settings(guildid).addKarmaBlocklist(v))
+    return fetch((c) => c.guilds.settings(guildid).addKarmaBlocklist(v))
       .then((res) => {
         dispatchBlocklist(['add', res]);
         setBlocklistInput('');
@@ -166,7 +167,7 @@ const KarmaRoute: React.FC<Props> = () => {
 
   const _removeBlocklist = (v: Member) => {
     if (!guildid) return;
-    fetch((c) => c.guilds.settings(guildid).removeKarmaBlocklist(v.user.id))
+    return fetch((c) => c.guilds.settings(guildid).removeKarmaBlocklist(v.user.id))
       .then((res) => {
         dispatchBlocklist(['remove', v]);
         pushNotification({
@@ -265,9 +266,9 @@ const KarmaRoute: React.FC<Props> = () => {
       </InputContainer>
 
       <Controls>
-        <Button variant="green" onClick={_saveSettings}>
+        <ActionButton variant="green" onClick={_saveSettings}>
           {t('save')}
-        </Button>
+        </ActionButton>
       </Controls>
 
       <h2>{t('rules.heading')}</h2>
@@ -290,9 +291,9 @@ const KarmaRoute: React.FC<Props> = () => {
       <Small>{t('blocklist.description')}</Small>
       <BlocklistInputContainer>
         <Input value={blocklistInput} onChange={(e) => setBlocklistInput(e.currentTarget.value)} />
-        <Button disabled={!blocklistInput} onClick={() => _addBlocklist(blocklistInput)}>
+        <ActionButton disabled={!blocklistInput} onClick={() => _addBlocklist(blocklistInput)}>
           {t('blocklist.addmember')}
-        </Button>
+        </ActionButton>
       </BlocklistInputContainer>
       <StyledTable>
         <tbody>
@@ -310,7 +311,9 @@ const KarmaRoute: React.FC<Props> = () => {
               </td>
               <td>{m.nick || m.user.username}</td>
               <td>
-                <Button onClick={() => _removeBlocklist(m)}>{t('blocklist.table.unblock')}</Button>
+                <ActionButton onClick={() => _removeBlocklist(m)}>
+                  {t('blocklist.table.unblock')}
+                </ActionButton>
               </td>
             </tr>
           ))}
