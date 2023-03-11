@@ -13,6 +13,7 @@ const NotificationsContainer = styled.div`
   flex-direction: column;
   gap: 1em;
   padding: 1em;
+  z-index: 1000;
 `;
 
 export const Notifications: React.FC<Props> = () => {
