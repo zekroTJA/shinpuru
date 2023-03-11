@@ -19,18 +19,23 @@ const (
 	TypeMute
 	TypeWarn
 	TypeAd
+	TypeUnban
+	TypeUnbanRejected
 
-	TypeMax       = iota - 1
-	TypesReserved = TypeWarn
+	TypeMax = iota - 1
 )
+
+const UnbanRequestCooldown = 14 * 24 * time.Hour // 14 days
 
 var (
 	ReportTypes = []string{
-		"KICK", // 0
-		"BAN",  // 1
-		"MUTE", // 2
-		"WARN", // 3
-		"AD",   // 4
+		"KICK",           // 0
+		"BAN",            // 1
+		"MUTE",           // 2
+		"WARN",           // 3
+		"AD",             // 4
+		"UNBAN ACCEPTED", // 5,
+		"UNBAN REJECTED", // 6
 	}
 
 	ReportColors = []int{
@@ -39,6 +44,8 @@ var (
 		0x009688, // 2
 		0xFB8C00, // 3
 		0x8E24AA, // 4
+		0x18dd8e, // 5
+		0x9518dd, // 6
 	}
 )
 

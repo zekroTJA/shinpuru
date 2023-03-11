@@ -26,6 +26,7 @@ type UnbanRequest struct {
 	Processed        time.Time         `json:"processed"`
 	ProcessedMessage string            `json:"processed_message"`
 	Created          time.Time         `json:"created"`
+	ReportID         snowflake.ID      `json:"reportID"`
 }
 
 func (r *UnbanRequest) Validate() error {

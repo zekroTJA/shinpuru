@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
@@ -267,7 +268,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 		return
 	}
 
-	if err = r.ExpireLastReport(guildID, victimID, int(models.TypeMute)); err != nil {
+	if err = r.ExpireLastReport(guildID, victimID, models.TypeMute); err != nil {
 		return
 	}
 
@@ -316,7 +317,10 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 	return
 }
 
-func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
+func (r *ReportService) RevokeReport(
+	rep models.Report,
+	executorID string,
+	reason string,
 	wsPublicAddr string,
 	db database.Database,
 	s discordutil.ISession,
@@ -360,7 +364,32 @@ func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
 	return
 }
 
-func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err error) {
+func (r *ReportService) UnbanReport(
+	unbanReq models.UnbanRequest,
+	executorID string,
+	reason string,
+	isUnban bool,
+	db database.Database,
+	s discordutil.ISession,
+) (emb *discordgo.MessageEmbed, err error) {
+
+	newRep := models.Report{
+		Type:       inline.II(isUnban, models.TypeUnban, models.TypeUnbanRejected),
+		GuildID:    unbanReq.GuildID,
+		ExecutorID: executorID,
+		VictimID:   unbanReq.UserID,
+		Msg:        reason,
+	}
+
+	_, err = r.PushReport(newRep)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (r *ReportService) ExpireLastReport(guildID, victimID string, typ models.ReportType) (err error) {
 	reps, err := r.db.GetReportsFiltered(guildID, victimID, typ, 0, 1)
 	if err != nil {
 		return

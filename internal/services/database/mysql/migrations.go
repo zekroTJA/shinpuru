@@ -17,6 +17,7 @@ var migrationFuncs = []migrationFunc{
 	migration_9,
 	migration_10,
 	migration_11,
+	migration_12,
 }
 
 // VERSION 0:
@@ -127,4 +128,22 @@ func migration_11(m *sql.Tx) (err error) {
 	err = createTableColumnIfNotExists(m,
 		"guilds", "`autovc` text NOT NULL DEFAULT ''")
 	return
+}
+
+// VERSION 12:
+// - add relation `reportID` to `unbanRequests`
+func migration_12(m *sql.Tx) (err error) {
+	err = createTableColumnIfNotExists(m,
+		"unbanRequests", "`reportID` varchar(25) NOT NULL")
+	if err != nil {
+		return err
+	}
+
+	_, err = m.Exec(`
+		ALTER TABLE unbanRequests
+		ADD CONSTRAINT FK_reportID
+		FOREIGN KEY (reportID) REFERENCES reports(id)
+	`)
+
+	return err
 }

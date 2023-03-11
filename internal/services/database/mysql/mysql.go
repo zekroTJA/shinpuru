@@ -319,7 +319,9 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`status` int(8) NOT NULL DEFAULT '0'," +
 		"`processed` timestamp," +
 		"`processedMessage` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`id`)" +
+		"`reportID` varchar(25) NOT NULL, " +
+		"PRIMARY KEY (`id`)," +
+		"FOREIGN KEY (reportID) REFERENCES reports(id)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
 		return
@@ -750,7 +752,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	return results, nil
 }
 
-func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]models.Report, error) {
+func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType models.ReportType, offset, limit int) ([]models.Report, error) {
 	args := []interface{}{}
 	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout FROM reports WHERE true`
 	if guildID != "" {
@@ -1548,7 +1550,7 @@ func (m *MysqlMiddleware) RemoveAntiraidJoinList(guildID, userID string) (err er
 
 func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset int) (r []models.UnbanRequest, err error) {
 	rows, err := m.Db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE guildID = ?
 		LIMIT ?
@@ -1564,6 +1566,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset in
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
 			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+			&req.ReportID,
 		); err != nil {
 			return
 		}
@@ -1587,7 +1590,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequestsCount(guildID string, state *mode
 }
 
 func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []models.UnbanRequest, err error) {
-	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE userID = ?`
 	params := []interface{}{userID}
@@ -1609,6 +1612,7 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
 			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+			&req.ReportID,
 		); err != nil {
 			return
 		}
@@ -1620,13 +1624,14 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 
 func (m *MysqlMiddleware) GetUnbanRequest(id string) (r models.UnbanRequest, err error) {
 	row := m.Db.QueryRow(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE id = ?`, id)
 
 	err = row.Scan(
 		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
 		&r.ProcessedBy, &r.Status, &r.Processed, &r.ProcessedMessage,
+		&r.ReportID,
 	)
 	err = wrapNotFoundError(err)
 	return
@@ -1635,10 +1640,10 @@ func (m *MysqlMiddleware) GetUnbanRequest(id string) (r models.UnbanRequest, err
 func (m *MysqlMiddleware) AddUnbanRequest(r models.UnbanRequest) (err error) {
 	_, err = m.Db.Exec(
 		`INSERT INTO unbanRequests
-		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy,
-		r.Status, r.Processed, r.ProcessedMessage)
+		r.Status, r.Processed, r.ProcessedMessage, r.ReportID)
 
 	return
 }

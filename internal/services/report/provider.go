@@ -19,6 +19,14 @@ type Provider interface {
 		db database.Database,
 		s discordutil.ISession,
 	) (emb *discordgo.MessageEmbed, err error)
-	ExpireLastReport(guildID, victimID string, typ int) (err error)
+	UnbanReport(
+		unbanReq models.UnbanRequest,
+		executorID string,
+		reason string,
+		isUnban bool,
+		db database.Database,
+		s discordutil.ISession,
+	) (emb *discordgo.MessageEmbed, err error)
+	ExpireLastReport(guildID, victimID string, typ models.ReportType) (err error)
 	ExpireExpiredReports() (mErr *multierror.MultiError)
 }
