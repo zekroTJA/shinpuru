@@ -45,6 +45,10 @@ const TypeHead = styled.div<{ type: number }>`
         return LinearGradient(p.theme.red);
       case ReportType.MUTE:
         return LinearGradient(p.theme.pink);
+      case ReportType.UNBAN:
+        return LinearGradient(p.theme.lime);
+      case ReportType.UNBAN_REJECTED:
+        return LinearGradient(p.theme.pink);
       default:
         return LinearGradient(p.theme.orange);
     }

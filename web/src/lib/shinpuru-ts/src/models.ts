@@ -107,6 +107,8 @@ export enum ReportType {
   MUTE,
   WARN,
   AD,
+  UNBAN,
+  UNBAN_REJECTED,
 }
 
 export interface Report {
