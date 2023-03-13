@@ -4,10 +4,6 @@ package mocks
 
 import (
 	discordgo "github.com/bwmarrin/discordgo"
-	database "github.com/zekroTJA/shinpuru/internal/services/database"
-
-	discordutil "github.com/zekroTJA/shinpuru/pkg/discordutil"
-
 	mock "github.com/stretchr/testify/mock"
 
 	models "github.com/zekroTJA/shinpuru/internal/models"
@@ -172,25 +168,25 @@ func (_m *ReportProvider) RevokeMute(guildID string, executorID string, victimID
 	return r0, r1
 }
 
-// RevokeReport provides a mock function with given fields: rep, executorID, reason, wsPublicAddr, db, s
-func (_m *ReportProvider) RevokeReport(rep models.Report, executorID string, reason string, wsPublicAddr string, db database.Database, s discordutil.ISession) (*discordgo.MessageEmbed, error) {
-	ret := _m.Called(rep, executorID, reason, wsPublicAddr, db, s)
+// RevokeReport provides a mock function with given fields: rep, executorID, reason, wsPublicAddr
+func (_m *ReportProvider) RevokeReport(rep models.Report, executorID string, reason string, wsPublicAddr string) (*discordgo.MessageEmbed, error) {
+	ret := _m.Called(rep, executorID, reason, wsPublicAddr)
 
 	var r0 *discordgo.MessageEmbed
 	var r1 error
-	if rf, ok := ret.Get(0).(func(models.Report, string, string, string, database.Database, discordutil.ISession) (*discordgo.MessageEmbed, error)); ok {
-		return rf(rep, executorID, reason, wsPublicAddr, db, s)
+	if rf, ok := ret.Get(0).(func(models.Report, string, string, string) (*discordgo.MessageEmbed, error)); ok {
+		return rf(rep, executorID, reason, wsPublicAddr)
 	}
-	if rf, ok := ret.Get(0).(func(models.Report, string, string, string, database.Database, discordutil.ISession) *discordgo.MessageEmbed); ok {
-		r0 = rf(rep, executorID, reason, wsPublicAddr, db, s)
+	if rf, ok := ret.Get(0).(func(models.Report, string, string, string) *discordgo.MessageEmbed); ok {
+		r0 = rf(rep, executorID, reason, wsPublicAddr)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.MessageEmbed)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(models.Report, string, string, string, database.Database, discordutil.ISession) error); ok {
-		r1 = rf(rep, executorID, reason, wsPublicAddr, db, s)
+	if rf, ok := ret.Get(1).(func(models.Report, string, string, string) error); ok {
+		r1 = rf(rep, executorID, reason, wsPublicAddr)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -198,25 +194,25 @@ func (_m *ReportProvider) RevokeReport(rep models.Report, executorID string, rea
 	return r0, r1
 }
 
-// UnbanReport provides a mock function with given fields: unbanReq, executorID, reason, isUnban, db, s
-func (_m *ReportProvider) UnbanReport(unbanReq models.UnbanRequest, executorID string, reason string, isUnban bool, db database.Database, s discordutil.ISession) (*discordgo.MessageEmbed, error) {
-	ret := _m.Called(unbanReq, executorID, reason, isUnban, db, s)
+// UnbanReport provides a mock function with given fields: unbanReq, executorID, reason, isUnban
+func (_m *ReportProvider) UnbanReport(unbanReq models.UnbanRequest, executorID string, reason string, isUnban bool) (*discordgo.MessageEmbed, error) {
+	ret := _m.Called(unbanReq, executorID, reason, isUnban)
 
 	var r0 *discordgo.MessageEmbed
 	var r1 error
-	if rf, ok := ret.Get(0).(func(models.UnbanRequest, string, string, bool, database.Database, discordutil.ISession) (*discordgo.MessageEmbed, error)); ok {
-		return rf(unbanReq, executorID, reason, isUnban, db, s)
+	if rf, ok := ret.Get(0).(func(models.UnbanRequest, string, string, bool) (*discordgo.MessageEmbed, error)); ok {
+		return rf(unbanReq, executorID, reason, isUnban)
 	}
-	if rf, ok := ret.Get(0).(func(models.UnbanRequest, string, string, bool, database.Database, discordutil.ISession) *discordgo.MessageEmbed); ok {
-		r0 = rf(unbanReq, executorID, reason, isUnban, db, s)
+	if rf, ok := ret.Get(0).(func(models.UnbanRequest, string, string, bool) *discordgo.MessageEmbed); ok {
+		r0 = rf(unbanReq, executorID, reason, isUnban)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*discordgo.MessageEmbed)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(models.UnbanRequest, string, string, bool, database.Database, discordutil.ISession) error); ok {
-		r1 = rf(unbanReq, executorID, reason, isUnban, db, s)
+	if rf, ok := ret.Get(1).(func(models.UnbanRequest, string, string, bool) error); ok {
+		r1 = rf(unbanReq, executorID, reason, isUnban)
 	} else {
 		r1 = ret.Error(1)
 	}
