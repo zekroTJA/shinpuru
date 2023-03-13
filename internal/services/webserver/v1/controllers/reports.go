@@ -102,8 +102,7 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 		uid,
 		reason.Reason,
 		c.cfg.Config().WebServer.Addr,
-		c.db,
-		c.session)
+	)
 
 	if err != nil {
 		return err

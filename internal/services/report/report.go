@@ -322,11 +322,9 @@ func (r *ReportService) RevokeReport(
 	executorID string,
 	reason string,
 	wsPublicAddr string,
-	db database.Database,
-	s discordutil.ISession,
 ) (emb *discordgo.MessageEmbed, err error) {
 
-	if err = db.DeleteReport(rep.ID); err != nil {
+	if err = r.db.DeleteReport(rep.ID); err != nil {
 		return
 	}
 
@@ -353,12 +351,12 @@ func (r *ReportService) RevokeReport(
 		},
 	}
 
-	if modlogChan, err := db.GetGuildModLog(rep.GuildID); err == nil {
-		s.ChannelMessageSendEmbed(modlogChan, emb)
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
+		r.s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
-	dmChan, err := s.UserChannelCreate(rep.VictimID)
+	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
 	if err == nil {
-		s.ChannelMessageSendEmbed(dmChan.ID, emb)
+		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
 	return
@@ -369,8 +367,6 @@ func (r *ReportService) UnbanReport(
 	executorID string,
 	reason string,
 	isUnban bool,
-	db database.Database,
-	s discordutil.ISession,
 ) (emb *discordgo.MessageEmbed, err error) {
 
 	newRep := models.Report{

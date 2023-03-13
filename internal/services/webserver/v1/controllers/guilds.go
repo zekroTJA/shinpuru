@@ -683,7 +683,6 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 	_, err = c.rep.UnbanReport(
 		request, uid, rUpdate.ProcessedMessage,
 		request.Status == sharedmodels.UnbanRequestStateAccepted,
-		c.db, c.session,
 	)
 	if err != nil {
 		return err

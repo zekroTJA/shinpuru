@@ -237,8 +237,7 @@ func (c *Report) revoke(ctx ken.SubCommandContext) (err error) {
 				ctx.User().ID,
 				reason,
 				cfg.Config().WebServer.PublicAddr,
-				db,
-				ctx.GetSession())
+			)
 
 			if err != nil {
 				return
