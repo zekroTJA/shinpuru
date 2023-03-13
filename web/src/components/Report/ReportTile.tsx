@@ -112,6 +112,8 @@ export const ReportTile: React.FC<Props> = ({
   ...props
 }) => {
   const { t } = useTranslation('components', { keyPrefix: 'report' });
+  const revokable =
+    revokeAllowed && report.type !== ReportType.UNBAN && report.type !== ReportType.UNBAN_REJECTED;
   return (
     <ReportTileContainer {...props}>
       <TypeHead type={report.type}>{report.type_name}</TypeHead>
@@ -135,7 +137,7 @@ export const ReportTile: React.FC<Props> = ({
         </span>
         <Spacer />
         <span>{formatDate(report.created)}</span>
-        {revokeAllowed && (
+        {revokable && (
           <>
             <Spacer />
             <LinkButton onClick={onRevoke}>{t('revoke')}</LinkButton>
