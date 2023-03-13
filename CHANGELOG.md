@@ -7,7 +7,16 @@
 
 This release finally brings a huge update to the web interface of shinpuru. Because the old web interface had no clear style concept while also growing with each new feature, it got more and more cluttered, unstructured, obscure and simply uglier. So I decided [almost a year ago](https://github.com/zekroTJA/shinpuru/issues/370) to rewrite the whole web interface, which has now come to the final stage. There is still a lot to do and - especially translation-wise - a lot missing, but the feature set is now 100% ported and so I decided to finally port it over.
 
+## Unban Request Improvements
 
+The unban request received a small "rework". First of all, special reports are created in the mod log which display if an unban request has been accepted or rejected and who has processed the unban request.
+
+<img src="https://user-images.githubusercontent.com/16734205/224785247-fa1a48fc-eb8b-49a5-ad07-4caeb59f201c.png" height="300px"/>
+<img src="https://user-images.githubusercontent.com/16734205/224786746-76d584c5-9c97-474f-91ec-7b3749714513.png" height="300px"/>
+
+Additionally, people will not be able to re-request an unban for 14 days after being rejected. After that period has passed, the banned user can try another unban request.
+
+Also, a bug has been fixed where people were able to request unbans for guilds where they were already unbanned from.
 
 ## New Logger
 
@@ -65,7 +74,7 @@ Because there is a potential risk that the pushcode login system could be abused
 
 The docker image now includes a healthcheck which shows and monitors the state of the shinpuru instance using the [`GET /healthcheck`](https://app.swaggerhub.com/apis-docs/zekroTJA/shinpuru-main-api/1.0#/Etc/get_healthcheck) API endpoint.
 
-## Etc
+## Other Stuff
 
 - The state cache duration for users and members has now be increased from 30 days to 90 days for better performance.
 
