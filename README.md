@@ -44,7 +44,7 @@ This bot is mainly used as administration and security tool on my [development d
 
 shinpuru mainly uses slash commands to interact with the bot. In the [**wiki**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of commands, their descriptions and how to use them.
 
-You can also find a searchable list in the [**web interface**](https://shnp.de/commands) of shinpuru.
+You can also find a searchable list in the [**web interface**](https://shnp.de/info/commands) of shinpuru.
 
 https://user-images.githubusercontent.com/16734205/138589141-1cc18316-0d07-4526-b86a-be5aa91bbc5a.mp4
 
