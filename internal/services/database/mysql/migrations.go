@@ -140,14 +140,6 @@ func migration_12(m *sql.Tx) (err error) {
 	}
 
 	_, err = m.Exec(`
-		ALTER TABLE reports
-		CHANGE id id VARCHAR(25) CHARACTER SET utf8 COLLATE utf8mb4_general_ci NOT NULL;
-	`)
-	if err != nil {
-		return err
-	}
-
-	_, err = m.Exec(`
 		ALTER TABLE unbanRequests
 		ADD CONSTRAINT FK_reportID
 		FOREIGN KEY (reportID) REFERENCES reports(id)
