@@ -141,7 +141,6 @@ func (c *Voicelog) set(ctx ken.SubCommandContext) (err error) {
 				err = cctx.FollowUpEmbed(&discordgo.MessageEmbed{
 					Description: "Set this channel as voicelog channel.",
 				}).Send().Error
-				fmt.Println(err)
 				return
 			},
 		}

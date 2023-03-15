@@ -115,6 +115,52 @@
                 }
             }
         },
+        "/auth/pushcode": {
+            "post": {
+                "description": "Send a login push code resulting in a long-fetch request waiting for the code to be sent to shinpurus DMs.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Pushcode",
+                "parameters": [
+                    {
+                        "description": "The push code.",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
+                        }
+                    },
+                    "410": {
+                        "description": "Gone",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status"
+                        }
+                    }
+                }
+            }
+        },
         "/channels/{guildid}": {
             "get": {
                 "description": "Returns a list of channels the user has access to.",
@@ -3373,6 +3419,32 @@
                 }
             }
         },
+        "/healthcheck": {
+            "get": {
+                "description": "General system healthcheck.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Etc"
+                ],
+                "summary": "Healthcheck",
+                "responses": {
+                    "200": {
+                        "description": "Wrapped in models.ListResponse",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "description": "Returns the user object of the currently authenticated user.",
@@ -4546,9 +4618,59 @@
                     "description": "ApplicationID of the DM creator Zeroed if guild channel or not a bot user",
                     "type": "string"
                 },
+                "applied_tags": {
+                    "description": "The IDs of the set of tags that have been applied to a thread in a forum channel.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "available_tags": {
+                    "description": "The set of tags that can be used in a forum channel.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discordgo.ForumTag"
+                    }
+                },
                 "bitrate": {
                     "description": "The bitrate of the channel, if it is a voice channel.",
                     "type": "integer"
+                },
+                "default_forum_layout": {
+                    "description": "The default forum layout view used to display posts in forum channels.\nDefaults to ForumLayoutNotSet, which indicates a layout view has not been set by a channel admin.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ForumLayout"
+                        }
+                    ]
+                },
+                "default_reaction_emoji": {
+                    "description": "Emoji to use as the default reaction to a forum post.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ForumDefaultReaction"
+                        }
+                    ]
+                },
+                "default_sort_order": {
+                    "description": "The default sort order type used to order posts in forum channels.\nDefaults to null, which indicates a preferred sort order hasn't been set by a channel admin.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ForumSortOrderType"
+                        }
+                    ]
+                },
+                "default_thread_rate_limit_per_user": {
+                    "description": "The initial RateLimitPerUser to set on newly created threads in a channel.\nThis field is copied to the thread at creation time and does not live update.",
+                    "type": "integer"
+                },
+                "flags": {
+                    "description": "Channel flags.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.ChannelFlags"
+                        }
+                    ]
                 },
                 "guild_id": {
                     "description": "The ID of the guild to which the channel belongs, if it is in a guild.\nElse, this ID is empty (e.g. DM channels).",
@@ -4650,6 +4772,17 @@
                 }
             }
         },
+        "discordgo.ChannelFlags": {
+            "type": "integer",
+            "enum": [
+                2,
+                16
+            ],
+            "x-enum-varnames": [
+                "ChannelFlagPinned",
+                "ChannelFlagRequireTag"
+            ]
+        },
         "discordgo.ChannelType": {
             "type": "integer",
             "enum": [
@@ -4663,7 +4796,8 @@
                 10,
                 11,
                 12,
-                13
+                13,
+                15
             ],
             "x-enum-varnames": [
                 "ChannelTypeGuildText",
@@ -4676,7 +4810,8 @@
                 "ChannelTypeGuildNewsThread",
                 "ChannelTypeGuildPublicThread",
                 "ChannelTypeGuildPrivateThread",
-                "ChannelTypeGuildStageVoice"
+                "ChannelTypeGuildStageVoice",
+                "ChannelTypeGuildForum"
             ]
         },
         "discordgo.EmbedType": {
@@ -4727,6 +4862,63 @@
                 },
                 "user": {
                     "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "discordgo.ForumDefaultReaction": {
+            "type": "object",
+            "properties": {
+                "emoji_id": {
+                    "description": "The id of a guild's custom emoji.",
+                    "type": "string"
+                },
+                "emoji_name": {
+                    "description": "The unicode character of the emoji.",
+                    "type": "string"
+                }
+            }
+        },
+        "discordgo.ForumLayout": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "ForumLayoutNotSet",
+                "ForumLayoutListView",
+                "ForumLayoutGalleryView"
+            ]
+        },
+        "discordgo.ForumSortOrderType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "ForumSortOrderLatestActivity",
+                "ForumSortOrderCreationDate"
+            ]
+        },
+        "discordgo.ForumTag": {
+            "type": "object",
+            "properties": {
+                "emoji_id": {
+                    "type": "string"
+                },
+                "emoji_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "moderated": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -6423,6 +6615,14 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
                 }
             }
         },

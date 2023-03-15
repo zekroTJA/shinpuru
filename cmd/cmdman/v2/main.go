@@ -12,7 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/inits"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -21,6 +20,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu/log"
 )
 
 var (
@@ -96,9 +96,9 @@ func main() {
 
 	cmdHandler := ctn.Get(static.DiCommandHandler).(*ken.Ken)
 	if err := exportCommandManual(cmdHandler, *flagExportFile); err != nil {
-		logrus.WithError(err).Fatal("Failed exporting command manual")
+		log.Fatal().Err(err).Msg("Failed exporting command manual")
 	}
-	logrus.Info("Successfully exported command manual file to " + *flagExportFile)
+	log.Info().Msgf("Successfully exported command manual file to %s", *flagExportFile)
 }
 
 // exportCommandManual generates a markdown text file
@@ -178,7 +178,7 @@ func writeCommandDetails(document *strings.Builder, cmd *ken.CommandInfo) {
 
 	domain := cmd.Implementations["Domain"][0].(string)
 
-	logrus.Infof("Writing command %s.%s", domain, cmd.ApplicationCommand.Name)
+	log.Info().Msgf("Writing command %s.%s", domain, cmd.ApplicationCommand.Name)
 
 	fmt.Fprintf(document, "### %s\n\n", cmd.ApplicationCommand.Name)
 	fmt.Fprintf(document, "%s\n\n", cmd.ApplicationCommand.Description)

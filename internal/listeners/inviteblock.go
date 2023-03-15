@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
@@ -13,6 +12,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -26,6 +27,7 @@ type ListenerInviteBlock struct {
 	db  database.Database
 	gl  guildlog.Logger
 	pmw permissions.Provider
+	log rogu.Logger
 }
 
 func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
@@ -33,6 +35,7 @@ func NewListenerInviteBlock(container di.Container) *ListenerInviteBlock {
 		db:  container.Get(static.DiDatabase).(database.Database),
 		gl:  container.Get(static.DiGuildLog).(guildlog.Logger).Section("inviteblock"),
 		pmw: container.Get(static.DiPermissions).(permissions.Provider),
+		log: log.Tagged("InviteBlock"),
 	}
 }
 
@@ -57,7 +60,7 @@ func (l *ListenerInviteBlock) invokeCheck(s discordutil.ISession, msg *discordgo
 	if link != "" {
 		ok, matches, err := l.followLinkDeep(link, 100, 0)
 		if err != nil {
-			logrus.WithError(err).WithField("link", link).Error("Failed following link")
+			l.log.Error().Err(err).Field("link", link).Msg("Failed following link")
 			return
 		}
 		if ok {
@@ -123,7 +126,7 @@ func (l *ListenerInviteBlock) detected(s discordutil.ISession, e *discordgo.Mess
 			}
 		}
 	} else {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("INVITEBLOCK :: failed getting guild invites")
+		l.log.Error().Err(err).Field("gid", e.GuildID).Msg("Failed getting guild invites")
 		l.gl.Errorf(e.GuildID, "Failed getting guild invites: %s", err.Error())
 	}
 

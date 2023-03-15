@@ -5,12 +5,12 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
+	"github.com/zekrotja/rogu/log"
 )
 
 type ListenerMemberAdd struct {
@@ -28,7 +28,7 @@ func NewListenerMemberAdd(container di.Container) *ListenerMemberAdd {
 func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
 	autoRoleIDs, err := l.db.GetGuildAutoRole(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild autorole from database")
+		log.Error().Tag("Autorole").Err(err).Field("gid", e.GuildID).Msg("Failed getting guild autorole from database")
 		l.gl.Errorf(e.GuildID, "Failed getting guild autorole from database: %s", err.Error())
 	}
 	invalidAutoRoleIDs := make([]string, 0)
@@ -37,7 +37,7 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 		if apiErr, ok := err.(*discordgo.RESTError); ok && apiErr.Message.Code == discordgo.ErrCodeUnknownRole {
 			invalidAutoRoleIDs = append(invalidAutoRoleIDs, rid)
 		} else if err != nil {
-			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed setting autorole for member")
+			log.Error().Tag("Autorole").Err(err).Fields("gid", e.GuildID, "uid", e.User.ID).Msg("Failed setting autorole for member")
 			l.gl.Errorf(e.GuildID, "Failed getting autorole for member (%s): %s", e.User.ID, err.Error())
 		}
 	}
@@ -50,7 +50,7 @@ func (l *ListenerMemberAdd) Handler(s *discordgo.Session, e *discordgo.GuildMemb
 		}
 		err = l.db.SetGuildAutoRole(e.GuildID, newAutoRoleIDs)
 		if err != nil {
-			logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed updating auto role settings")
+			log.Error().Tag("Autorole").Err(err).Fields("gid", e.GuildID, "uid", e.User.ID).Msg("Failed updating auto role settings")
 			l.gl.Errorf(e.GuildID, "Failed updating auto role settings: %s", e.User.ID, err.Error())
 		}
 	}

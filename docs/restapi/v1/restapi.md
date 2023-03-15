@@ -3,1594 +3,42 @@ The shinpuru main REST API.
 
 ## Version: 1.0
 
-### /auth/accesstoken
+## Etc
+General root API functionalities.
 
-#### POST
-##### Summary
-
-Access Token Exchange
-
-##### Description
-
-Exchanges the cookie-passed refresh token with a generated access token.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-
-### /auth/check
+### /allpermissions
 
 #### GET
 ##### Summary
 
-Authorization Check
+All Permissions
 
 ##### Description
 
-Returns OK if the request is authorized.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-
-### /auth/logout
-
-#### POST
-##### Summary
-
-Logout
-
-##### Description
-
-Reovkes the currently used access token and clears the refresh token.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-
-### /channels/{guildid}
-
-#### GET
-##### Summary
-
-Get Allowed Channels
-
-##### Description
-
-Returns a list of channels the user has access to.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| guildid | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 201 | Created | [discordgo.Message](#discordgomessage) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /channels/{guildid}/{id}
-
-#### POST
-##### Summary
-
-Send Embed Message
-
-##### Description
-
-Send an Embed Message into a specified Channel.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| guildid | path | The ID of the guild. | Yes | string |
-| id | path | The ID of the channel. | Yes | string |
-| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 201 | Created | [discordgo.Message](#discordgomessage) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /channels/{guildid}/{id}/{msgid}
-
-#### POST
-##### Summary
-
-Update Embed Message
-
-##### Description
-
-Update an Embed Message in a specified Channel with the given message ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| guildid | path | The ID of the guild. | Yes | string |
-| id | path | The ID of the channel. | Yes | string |
-| msgid | path | The ID of the message. | Yes | string |
-| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [discordgo.Message](#discordgomessage) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds
-
-#### GET
-##### Summary
-
-List Guilds
-
-##### Description
-
-Returns a list of guilds the authenticated user has in common with shinpuru.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.GuildReduced](#modelsguildreduced) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-
-### /guilds/{id}
-
-#### GET
-##### Summary
-
-Get Guild
-
-##### Description
-
-Returns a single guild object by it's ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Guild](#modelsguild) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/antiraid/joinlog
-
-#### GET
-##### Summary
-
-Get Antiraid Joinlog
-
-##### Description
-
-Returns a list of joined members during an antiraid trigger.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.JoinLogEntry](#modelsjoinlogentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Reset Antiraid Joinlog
-
-##### Description
-
-Deletes all entries of the antiraid joinlog.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/backups
-
-#### GET
-##### Summary
-
-Get Guild Backups
-
-##### Description
-
-Returns a list of guild backups.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [backupmodels.Entry](#backupmodelsentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/backups/toggle
-
-#### POST
-##### Summary
-
-Toggle Guild Backup Enable
-
-##### Description
-
-Toggle guild backup enable state.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | Enable state payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/backups/{backupid}/download
-
-#### GET
-##### Summary
-
-Download Backup File
-
-##### Description
-
-Download a single gziped backup file.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| backupid | path | The ID of the backup. | Yes | string |
-| ota_token | query | The previously obtained OTA token to authorize the download. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | file |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 403 | Forbidden | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Obtain Backup Download OTA Key
-
-##### Description
-
-Returns an OTA key which is used to download a backup entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| backupid | path | The ID of the backup. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AccessTokenResponse](#modelsaccesstokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/inviteblock
-
-#### POST
-##### Summary
-
-Toggle Guild Inviteblock Enable
-
-##### Description
-
-Toggle enabled state of the guild invite block system.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The enable status payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/members
-
-#### GET
-##### Summary
-
-Get Guild Member List
-
-##### Description
-
-Returns a list of guild members.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| after | query | Request members after the given member ID. | No | string |
-| limit | query | The amount of results returned. | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wraped in models.ListResponse | [ [models.Member](#modelsmember) ] |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/permissions
-
-#### GET
-##### Summary
-
-Get Guild Permission Settings
-
-##### Description
-
-Returns the specified guild permission settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.PermissionsMap](#modelspermissionsmap) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Apply Guild Permission Rule
-
-##### Description
-
-Apply a new guild permission rule for a specified role.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The permission rule payload. | Yes | [models.PermissionsUpdate](#modelspermissionsupdate) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/reports
-
-#### GET
-##### Summary
-
-Get Guild Modlog
-
-##### Description
-
-Returns a list of guild modlog entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| offset | query | The offset of returned entries | No | integer |
-| limit | query | The amount of returned entries (0 = all) | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.Report](#modelsreport) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/reports/count
-
-#### GET
-##### Summary
-
-Get Guild Modlog Count
-
-##### Description
-
-Returns the total count of entries in the guild mod log.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/scoreboard
-
-#### GET
-##### Summary
-
-Get Guild Scoreboard
-
-##### Description
-
-Returns a list of scoreboard entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| limit | query | Limit the amount of result values | No | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.GuildKarmaEntry](#modelsguildkarmaentry) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings
-
-#### GET
-##### Summary
-
-Get Guild Settings
-
-##### Description
-
-Returns the specified general guild settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GuildSettings](#modelsguildsettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Get Guild Settings
-
-##### Description
-
-Returns the specified general guild settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | Modified guild settings payload. | Yes | [models.GuildSettings](#modelsguildsettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/antiraid
-
-#### GET
-##### Summary
-
-Get Guild Antiraid Settings
-
-##### Description
-
-Returns the specified guild antiraid settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AntiraidSettings](#modelsantiraidsettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Antiraid Settings
-
-##### Description
-
-Update the guild antiraid settings specification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild antiraid settings payload. | Yes | [models.AntiraidSettings](#modelsantiraidsettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/antiraid/action
-
-#### POST
-##### Summary
-
-Guild Antiraid Bulk Action
-
-##### Description
-
-Execute a specific action on antiraid listed users
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The antiraid action payload. | Yes | [models.AntiraidAction](#modelsantiraidaction) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/api
-
-#### GET
-##### Summary
-
-Get Guild Settings API State
-
-##### Description
-
-Returns the settings state of the Guild API.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GuildAPISettings](#modelsguildapisettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Set Guild Settings API State
-
-##### Description
-
-Set the settings state of the Guild API.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild API settings payload. | Yes | [models.GuildAPISettingsRequest](#modelsguildapisettingsrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GuildAPISettings](#modelsguildapisettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/codeexec
-
-#### GET
-##### Summary
-
-Get Guild Settings Code Exec State
-
-##### Description
-
-Returns the settings state of the Guild Code Exec.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Set Guild Settings Code Exec State
-
-##### Description
-
-Set the settings state of the Guild Code Exec.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild API settings payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/flushguilddata
-
-#### POST
-##### Summary
-
-Flush Guild Data
-
-##### Description
-
-Flushes all guild data from the database.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild flush payload. | Yes | [models.FlushGuildRequest](#modelsflushguildrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/karma
-
-#### GET
-##### Summary
-
-Get Guild Karma Settings
-
-##### Description
-
-Returns the specified guild karma settings.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaSettings](#modelskarmasettings) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Karma Settings
-
-##### Description
-
-Update the guild karma settings specification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild karma settings payload. | Yes | [models.KarmaSettings](#modelskarmasettings) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/karma/blocklist
-
-#### GET
-##### Summary
-
-Get Guild Karma Blocklist
-
-##### Description
-
-Returns the specified guild karma blocklist entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.Member](#modelsmember) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/karma/blocklist/{memberid}
-
-#### PUT
-##### Summary
-
-Add Guild Karma Blocklist Entry
-
-##### Description
-
-Add a guild karma blocklist entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Remove Guild Karma Blocklist Entry
-
-##### Description
-
-Remove a guild karma blocklist entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/karma/rules
-
-#### GET
-##### Summary
-
-Get Guild Settings Karma Rules
-
-##### Description
-
-Returns a list of specified guild karma rules.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.KarmaRule](#modelskarmarule) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Create Guild Settings Karma
-
-##### Description
-
-Create a guild karma rule.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The karma rule payload. | Yes | [models.KarmaRule](#modelskarmarule) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaRule](#modelskarmarule) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/karma/rules/{ruleid}
-
-#### POST
-##### Summary
-
-Update Guild Settings Karma
-
-##### Description
-
-Update a karma rule by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| ruleid | path | The ID of the rule. | Yes | string |
-| payload | body | The karma rule update payload. | Yes | [models.KarmaRule](#modelskarmarule) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.KarmaRule](#modelskarmarule) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Remove Guild Settings Karma
-
-##### Description
-
-Remove a guild karma rule by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| ruleid | path | The ID of the rule. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/logs
-
-#### GET
-##### Summary
-
-Get Guild Log Count
-
-##### Description
-
-Returns the total or filtered count of guild log entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### DELETE
-##### Summary
-
-Delete Guild Log Entries
-
-##### Description
-
-Delete all guild log entries.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/logs/state
-
-#### GET
-##### Summary
-
-Get Guild Settings Log State
-
-##### Description
-
-Returns the enabled state of the guild log setting.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Update Guild Settings Log State
-
-##### Description
-
-Update the enabled state of the log state guild setting.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The state payload. | Yes | [models.State](#modelsstate) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/logs/{entryid}
-
-#### DELETE
-##### Summary
-
-Delete Guild Log Entries
-
-##### Description
-
-Delete a single log entry.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| entryid | path | The ID of the entry to be deleted. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.State](#modelsstate) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/settings/verification
-
-#### GET
-##### Summary
-
-Get Guild Settings Verification State
-
-##### Description
-
-Returns the settings state of the Guild Verification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Set Guild Settings Verification State
-
-##### Description
-
-Set the settings state of the Guild Verification.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| payload | body | The guild API settings payload. | Yes | [models.EnableStatus](#modelsenablestatus) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.EnableStatus](#modelsenablestatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/starboard
-
-#### GET
-##### Summary
-
-Get Guild Starboard
-
-##### Description
-
-Returns a list of starboard entries for the given guild.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.StarboardEntryResponse](#modelsstarboardentryresponse) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/unbanrequests
-
-#### GET
-##### Summary
-
-Get Guild Unbanrequests
-
-##### Description
-
-Returns the list of the guild unban requests.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListReponse | [ [models.RichUnbanRequest](#modelsrichunbanrequest) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/unbanrequests/count
-
-#### GET
-##### Summary
-
-Get Guild Unbanrequests Count
-
-##### Description
-
-Returns the total or filtered count of guild unban requests.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/unbanrequests/{requestid}
-
-#### GET
-##### Summary
-
-Get Single Guild Unbanrequest
-
-##### Description
-
-Returns a single guild unban request by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| requestid | path | The ID of the unbanrequest. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Process Guild Unbanrequest
-
-##### Description
-
-Process a guild unban request.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| requestid | path | The ID of the unbanrequest. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}
-
-#### GET
-##### Summary
-
-Get Guild Member
-
-##### Description
-
-Returns a single guild member by ID.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Member](#modelsmember) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/ban
-
-#### POST
-##### Summary
-
-Create A Member Ban Report
-
-##### Description
-
-Creates a member ban report.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the victim member. | Yes | string |
-| payload | body | The report payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Report](#modelsreport) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/kick
-
-#### POST
-##### Summary
-
-Create A Member Kick Report
-
-##### Description
-
-Creates a member kick report.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the victim member. | Yes | string |
-| payload | body | The report payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Report](#modelsreport) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/mute
-
-#### POST
-##### Summary
-
-Unmute A Member
-
-##### Description
-
-Unmute a muted member.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the victim member. | Yes | string |
-| payload | body | The unmute payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/permissions
-
-#### GET
-##### Summary
-
-Get Guild Member Permissions
-
-##### Description
-
-Returns the permission array of the given user.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.PermissionsResponse](#modelspermissionsresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/permissions/allowed
-
-#### GET
-##### Summary
-
-Get Guild Member Allowed Permissions
-
-##### Description
-
-Returns all detailed permission DNS which the member is alloed to perform.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
+Return a list of all available permissions.
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | Wrapped in models.ListResponse | [ string ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
 
-### /guilds/{id}/{memberid}/reports
+### /healthcheck
 
 #### GET
 ##### Summary
 
-Get Guild Member Reports
+Healthcheck
 
 ##### Description
 
-Returns a list of reports of the given member.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-| limit | query | The amount of results returned. | No | integer |
-| offset | query | The amount of results to be skipped. | No | integer |
+General system healthcheck.
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.Report](#modelsreport) ] |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-#### POST
-##### Summary
-
-Create A Member Report
-
-##### Description
-
-Creates a member report.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the victim member. | Yes | string |
-| payload | body | The report payload. | Yes | [models.ReportRequest](#modelsreportrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Report](#modelsreport) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/reports/count
-
-#### GET
-##### Summary
-
-Get Guild Member Reports Count
-
-##### Description
-
-Returns the total count of reports of the given user.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/unbanrequests
-
-#### GET
-##### Summary
-
-Get Guild Member Unban Requests
-
-##### Description
-
-Returns the list of unban requests of the given member
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.UnbanRequest](#modelsunbanrequest) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
-
-### /guilds/{id}/{memberid}/unbanrequests/count
-
-#### GET
-##### Summary
-
-Get Guild Member Unban Requests Count
-
-##### Description
-
-Returns the total or filtered count of unban requests of the given member.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | The ID of the guild. | Yes | string |
-| memberid | path | The ID of the member. | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Count](#modelscount) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | Wrapped in models.ListResponse | [ string ] |
 
 ### /me
 
@@ -1607,7 +55,1762 @@ Returns the user object of the currently authenticated user.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.User](#modelsuser) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsuser) |
+
+### /privacyinfo
+
+#### GET
+##### Summary
+
+Privacy Information
+
+##### Description
+
+Returns general global privacy information.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_models.Privacy](#github_com_zekrotja_shinpuru_internal_modelsprivacy) |
+
+### /sysinfo
+
+#### GET
+##### Summary
+
+System Information
+
+##### Description
+
+Returns general global system information.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelssysteminfo) |
+
+## Authorization
+Authorization endpoints.
+
+### /auth/accesstoken
+
+#### POST
+##### Summary
+
+Access Token Exchange
+
+##### Description
+
+Exchanges the cookie-passed refresh token with a generated access token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsaccesstokenresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /auth/check
+
+#### GET
+##### Summary
+
+Authorization Check
+
+##### Description
+
+Returns OK if the request is authorized.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /auth/logout
+
+#### POST
+##### Summary
+
+Logout
+
+##### Description
+
+Reovkes the currently used access token and clears the refresh token.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+
+### /auth/pushcode
+
+#### POST
+##### Summary
+
+Pushcode
+
+##### Description
+
+Send a login push code resulting in a long-fetch request waiting for the code to be sent to shinpurus DMs.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | The push code. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelspushcoderequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 410 | Gone | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+
+## Channels
+Channels specific endpoints.
+
+### /channels/{guildid}
+
+#### GET
+##### Summary
+
+Get Allowed Channels
+
+##### Description
+
+Returns a list of channels the user has access to.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| guildid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Created | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /channels/{guildid}/{id}
+
+#### POST
+##### Summary
+
+Send Embed Message
+
+##### Description
+
+Send an Embed Message into a specified Channel.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| guildid | path | The ID of the guild. | Yes | string |
+| id | path | The ID of the channel. | Yes | string |
+| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Created | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /channels/{guildid}/{id}/{msgid}
+
+#### POST
+##### Summary
+
+Update Embed Message
+
+##### Description
+
+Update an Embed Message in a specified Channel with the given message ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| guildid | path | The ID of the guild. | Yes | string |
+| id | path | The ID of the channel. | Yes | string |
+| msgid | path | The ID of the message. | Yes | string |
+| payload | body | The message embed object. | Yes | [discordgo.MessageEmbed](#discordgomessageembed) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [discordgo.Message](#discordgomessage) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Guilds
+Guild specific endpoints.
+
+### /guilds
+
+#### GET
+##### Summary
+
+List Guilds
+
+##### Description
+
+Returns a list of guilds the authenticated user has in common with shinpuru.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildreduced) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}
+
+#### GET
+##### Summary
+
+Get Guild
+
+##### Description
+
+Returns a single guild object by it's ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguild) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/antiraid/joinlog
+
+#### GET
+##### Summary
+
+Get Antiraid Joinlog
+
+##### Description
+
+Returns a list of joined members during an antiraid trigger.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry](#github_com_zekrotja_shinpuru_internal_modelsjoinlogentry) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### DELETE
+##### Summary
+
+Reset Antiraid Joinlog
+
+##### Description
+
+Deletes all entries of the antiraid joinlog.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/inviteblock
+
+#### POST
+##### Summary
+
+Toggle Guild Inviteblock Enable
+
+##### Description
+
+Toggle enabled state of the guild invite block system.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The enable status payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/permissions
+
+#### GET
+##### Summary
+
+Get Guild Permission Settings
+
+##### Description
+
+Returns the specified guild permission settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelspermissionsmap) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Apply Guild Permission Rule
+
+##### Description
+
+Apply a new guild permission rule for a specified role.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The permission rule payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelspermissionsupdate) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelspermissionsmap) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/reports
+
+#### GET
+##### Summary
+
+Get Guild Modlog
+
+##### Description
+
+Returns a list of guild modlog entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| offset | query | The offset of returned entries | No | integer |
+| limit | query | The amount of returned entries (0 = all) | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/reports/count
+
+#### GET
+##### Summary
+
+Get Guild Modlog Count
+
+##### Description
+
+Returns the total count of entries in the guild mod log.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/scoreboard
+
+#### GET
+##### Summary
+
+Get Guild Scoreboard
+
+##### Description
+
+Returns a list of scoreboard entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| limit | query | Limit the amount of result values | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildkarmaentry) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/starboard
+
+#### GET
+##### Summary
+
+Get Guild Starboard
+
+##### Description
+
+Returns a list of starboard entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstarboardentryresponse) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/starboard/count
+
+#### GET
+##### Summary
+
+Get Guild Starboard Count
+
+##### Description
+
+Returns the count of starboard entries for the given guild.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/unbanrequests
+
+#### GET
+##### Summary
+
+Get Guild Unbanrequests
+
+##### Description
+
+Returns the list of the guild unban requests.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListReponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsrichunbanrequest) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/unbanrequests/count
+
+#### GET
+##### Summary
+
+Get Guild Unbanrequests Count
+
+##### Description
+
+Returns the total or filtered count of guild unban requests.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| state | query | Filter count by given state. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/unbanrequests/{requestid}
+
+#### GET
+##### Summary
+
+Get Single Guild Unbanrequest
+
+##### Description
+
+Returns a single guild unban request by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| requestid | path | The ID of the unbanrequest. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsrichunbanrequest) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Process Guild Unbanrequest
+
+##### Description
+
+Process a guild unban request.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| requestid | path | The ID of the unbanrequest. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsrichunbanrequest) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Guild Backups
+Guild backup endpoints.
+
+### /guilds/{id}/backups
+
+#### GET
+##### Summary
+
+Get Guild Backups
+
+##### Description
+
+Returns a list of guild backups.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry](#github_com_zekrotja_shinpuru_internal_services_backup_backupmodelsentry) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/backups/toggle
+
+#### POST
+##### Summary
+
+Toggle Guild Backup Enable
+
+##### Description
+
+Toggle guild backup enable state.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | Enable state payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/backups/{backupid}/download
+
+#### GET
+##### Summary
+
+Download Backup File
+
+##### Description
+
+Download a single gziped backup file.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+| ota_token | query | The previously obtained OTA token to authorize the download. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | file |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 403 | Forbidden | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Obtain Backup Download OTA Key
+
+##### Description
+
+Returns an OTA key which is used to download a backup entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| backupid | path | The ID of the backup. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsaccesstokenresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Members
+Members specific endpoints.
+
+### /guilds/{id}/members
+
+#### GET
+##### Summary
+
+Get Guild Member List
+
+##### Description
+
+Returns a list of guild members.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| after | query | Request members after the given member ID. | No | string |
+| limit | query | The amount of results returned. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wraped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) ] |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}
+
+#### GET
+##### Summary
+
+Get Guild Member
+
+##### Description
+
+Returns a single guild member by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/permissions
+
+#### GET
+##### Summary
+
+Get Guild Member Permissions
+
+##### Description
+
+Returns the permission array of the given user.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelspermissionsresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/permissions/allowed
+
+#### GET
+##### Summary
+
+Get Guild Member Allowed Permissions
+
+##### Description
+
+Returns all detailed permission DNS which the member is alloed to perform.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ string ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/reports
+
+#### GET
+##### Summary
+
+Get Guild Member Reports
+
+##### Description
+
+Returns a list of reports of the given member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+| limit | query | The amount of results returned. | No | integer |
+| offset | query | The amount of results to be skipped. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) ] |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Create A Member Report
+
+##### Description
+
+Creates a member report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreportrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/reports/count
+
+#### GET
+##### Summary
+
+Get Guild Member Reports Count
+
+##### Description
+
+Returns the total count of reports of the given user.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/unbanrequests
+
+#### GET
+##### Summary
+
+Get Guild Member Unban Requests
+
+##### Description
+
+Returns the list of unban requests of the given member
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_models.UnbanRequest](#github_com_zekrotja_shinpuru_internal_modelsunbanrequest) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/unbanrequests/count
+
+#### GET
+##### Summary
+
+Get Guild Member Unban Requests Count
+
+##### Description
+
+Returns the total or filtered count of unban requests of the given member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+| state | query | Filter unban requests by state. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Guild Settings
+Guild specific settings endpoints.
+
+### /guilds/{id}/settings
+
+#### GET
+##### Summary
+
+Get Guild Settings
+
+##### Description
+
+Returns the specified general guild settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildsettings) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Get Guild Settings
+
+##### Description
+
+Returns the specified general guild settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | Modified guild settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildsettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/antiraid
+
+#### GET
+##### Summary
+
+Get Guild Antiraid Settings
+
+##### Description
+
+Returns the specified guild antiraid settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsantiraidsettings) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Antiraid Settings
+
+##### Description
+
+Update the guild antiraid settings specification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild antiraid settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsantiraidsettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/antiraid/action
+
+#### POST
+##### Summary
+
+Guild Antiraid Bulk Action
+
+##### Description
+
+Execute a specific action on antiraid listed users
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The antiraid action payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsantiraidaction) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/api
+
+#### GET
+##### Summary
+
+Get Guild Settings API State
+
+##### Description
+
+Returns the settings state of the Guild API.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings](#github_com_zekrotja_shinpuru_internal_modelsguildapisettings) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings API State
+
+##### Description
+
+Set the settings state of the Guild API.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildapisettingsrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings](#github_com_zekrotja_shinpuru_internal_modelsguildapisettings) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/codeexec
+
+#### GET
+##### Summary
+
+Get Guild Settings Code Exec State
+
+##### Description
+
+Returns the settings state of the Guild Code Exec.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings Code Exec State
+
+##### Description
+
+Set the settings state of the Guild Code Exec.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/flushguilddata
+
+#### POST
+##### Summary
+
+Flush Guild Data
+
+##### Description
+
+Flushes all guild data from the database.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild flush payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsflushguildrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/karma
+
+#### GET
+##### Summary
+
+Get Guild Karma Settings
+
+##### Description
+
+Returns the specified guild karma settings.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelskarmasettings) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Karma Settings
+
+##### Description
+
+Update the guild karma settings specification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild karma settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelskarmasettings) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/karma/blocklist
+
+#### GET
+##### Summary
+
+Get Guild Karma Blocklist
+
+##### Description
+
+Returns the specified guild karma blocklist entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/karma/blocklist/{memberid}
+
+#### PUT
+##### Summary
+
+Add Guild Karma Blocklist Entry
+
+##### Description
+
+Add a guild karma blocklist entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### DELETE
+##### Summary
+
+Remove Guild Karma Blocklist Entry
+
+##### Description
+
+Remove a guild karma blocklist entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/karma/rules
+
+#### GET
+##### Summary
+
+Get Guild Settings Karma Rules
+
+##### Description
+
+Returns a list of specified guild karma rules.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_models.KarmaRule](#github_com_zekrotja_shinpuru_internal_modelskarmarule) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Create Guild Settings Karma
+
+##### Description
+
+Create a guild karma rule.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The karma rule payload. | Yes | [github_com_zekroTJA_shinpuru_internal_models.KarmaRule](#github_com_zekrotja_shinpuru_internal_modelskarmarule) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_models.KarmaRule](#github_com_zekrotja_shinpuru_internal_modelskarmarule) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/karma/rules/{ruleid}
+
+#### POST
+##### Summary
+
+Update Guild Settings Karma
+
+##### Description
+
+Update a karma rule by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| ruleid | path | The ID of the rule. | Yes | string |
+| payload | body | The karma rule update payload. | Yes | [github_com_zekroTJA_shinpuru_internal_models.KarmaRule](#github_com_zekrotja_shinpuru_internal_modelskarmarule) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_models.KarmaRule](#github_com_zekrotja_shinpuru_internal_modelskarmarule) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### DELETE
+##### Summary
+
+Remove Guild Settings Karma
+
+##### Description
+
+Remove a guild karma rule by ID.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| ruleid | path | The ID of the rule. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/logs
+
+#### GET
+##### Summary
+
+Get Guild Log Count
+
+##### Description
+
+Returns the total or filtered count of guild log entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| severity | query | Filter by log severity. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscount) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### DELETE
+##### Summary
+
+Delete Guild Log Entries
+
+##### Description
+
+Delete all guild log entries.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/logs/state
+
+#### GET
+##### Summary
+
+Get Guild Settings Log State
+
+##### Description
+
+Returns the enabled state of the guild log setting.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Update Guild Settings Log State
+
+##### Description
+
+Update the enabled state of the log state guild setting.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The state payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/logs/{entryid}
+
+#### DELETE
+##### Summary
+
+Delete Guild Log Entries
+
+##### Description
+
+Delete a single log entry.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| entryid | path | The ID of the entry to be deleted. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstate) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/settings/verification
+
+#### GET
+##### Summary
+
+Get Guild Settings Verification State
+
+##### Description
+
+Returns the settings state of the Guild Verification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Set Guild Settings Verification State
+
+##### Description
+
+Set the settings state of the Guild Verification.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| payload | body | The guild API settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsenablestatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Member Reporting
+Member reporting endpoints.
+
+### /guilds/{id}/{memberid}/ban
+
+#### POST
+##### Summary
+
+Create A Member Ban Report
+
+##### Description
+
+Creates a member ban report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/kick
+
+#### POST
+##### Summary
+
+Create A Member Kick Report
+
+##### Description
+
+Creates a member kick report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/mute
+
+#### POST
+##### Summary
+
+Unmute A Member
+
+##### Description
+
+Unmute a muted member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The unmute payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreasonrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+### /guilds/{id}/{memberid}/reports
+
+#### GET
+##### Summary
+
+Get Guild Member Reports
+
+##### Description
+
+Returns a list of reports of the given member.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the member. | Yes | string |
+| limit | query | The amount of results returned. | No | integer |
+| offset | query | The amount of results to be skipped. | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) ] |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+#### POST
+##### Summary
+
+Create A Member Report
+
+##### Description
+
+Creates a member report.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path | The ID of the guild. | Yes | string |
+| memberid | path | The ID of the victim member. | Yes | string |
+| payload | body | The report payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreportrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## OTA
+One Time Auth token endpoints.
 
 ### /ota
 
@@ -1625,24 +1828,10 @@ Logs in the current browser session by using the passed pre-obtained OTA token.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK |  |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
-### /privacyinfo
-
-#### GET
-##### Summary
-
-Privacy Information
-
-##### Description
-
-Returns general global privacy information.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.Privacy](#modelsprivacy) |
+## Public
+Public API endpoints.
 
 ### /public/guilds/{id}
 
@@ -1658,14 +1847,17 @@ Returns public guild information, if enabled by guild config.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
+| ---- | ---------- | ----------- | -------- | ------ |
 | id | path | The Guild ID. | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.GuildReduced](#modelsguildreduced) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildreduced) |
+
+## Reports
+General reports endpoints.
 
 ### /reports/{id}
 
@@ -1681,17 +1873,17 @@ Returns a single report object by its ID.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
+| ---- | ---------- | ----------- | -------- | ------ |
 | id | path | The report ID. | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.Report](#modelsreport) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### /reports/{id}/revoke
 
@@ -1707,18 +1899,21 @@ Revokes a given report by ID.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
+| ---- | ---------- | ----------- | -------- | ------ |
 | id | path | The report ID. | Yes | string |
-| payload | body | The revoke reason payload. | Yes | [models.ReasonRequest](#modelsreasonrequest) |
+| payload | body | The revoke reason payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreasonrequest) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.Report](#modelsreport) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsreport) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Search
+Search endpoints.
 
 ### /search
 
@@ -1734,7 +1929,7 @@ Search through guilds and members by ID, name or displayname.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
+| ---- | ---------- | ----------- | -------- | ------ |
 | query | query | The search query (either ID, name or displayname). | Yes | string |
 | limit | query | The maximum amount of result items (per group). | No | integer |
 
@@ -1742,9 +1937,12 @@ Search through guilds and members by ID, name or displayname.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.SearchResult](#modelssearchresult) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelssearchresult) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Global Settings
+Global bot settings endpoints.
 
 ### /settings/noguildinvite
 
@@ -1761,9 +1959,9 @@ Returns the settings status for the suggested guild invite when the logged in us
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.InviteSettingsResponse](#modelsinvitesettingsresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 409 | Returned when no channel could be found to create invite for. | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsinvitesettingsresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 409 | Returned when no channel could be found to create invite for. | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -1777,17 +1975,17 @@ Set the status for the suggested guild invite when the logged in user is not on 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| payload | body | Invite Settings Payload | Yes | [models.InviteSettingsRequest](#modelsinvitesettingsrequest) |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | Invite Settings Payload | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsinvitesettingsrequest) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 409 | Returned when no channel could be found to create invite for. | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsapitokenresponse) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 409 | Returned when no channel could be found to create invite for. | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### /settings/presence
 
@@ -1804,8 +2002,8 @@ Returns the bot's displayed presence status.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [presence.Presence](#presencepresence) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_util_presence.Presence](#github_com_zekrotja_shinpuru_internal_util_presencepresence) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -1819,33 +2017,19 @@ Set the bot's displayed presence status.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| payload | body | Presence Payload | Yes | [presence.Presence](#presencepresence) |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | Presence Payload | Yes | [github_com_zekroTJA_shinpuru_internal_util_presence.Presence](#github_com_zekrotja_shinpuru_internal_util_presencepresence) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Is returned when no token was generated before. | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsapitokenresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Is returned when no token was generated before. | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
-### /sysinfo
-
-#### GET
-##### Summary
-
-System Information
-
-##### Description
-
-Returns general global system information.
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.SystemInfo](#modelssysteminfo) |
+## Tokens
+API token endpoints.
 
 ### /token
 
@@ -1862,9 +2046,9 @@ Returns general metadata information about a generated API token. The response d
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Is returned when no token was generated before. | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsapitokenresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Is returned when no token was generated before. | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -1879,8 +2063,8 @@ API Token Generation
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.APITokenResponse](#modelsapitokenresponse) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsapitokenresponse) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### DELETE
 ##### Summary
@@ -1895,8 +2079,11 @@ Invalidates the currently generated API token.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Unban Requests
+Unban requests endpoints.
 
 ### /unbanrequests
 
@@ -1913,9 +2100,9 @@ Returns a list of unban requests created by the authenticated user.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.RichUnbanRequest](#modelsrichunbanrequest) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsrichunbanrequest) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -1929,17 +2116,17 @@ Create an unban reuqest.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| payload | body | The unban request payload. | Yes | [models.UnbanRequest](#modelsunbanrequest) |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | The unban request payload. | Yes | [github_com_zekroTJA_shinpuru_internal_models.UnbanRequest](#github_com_zekrotja_shinpuru_internal_modelsunbanrequest) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.RichUnbanRequest](#modelsrichunbanrequest) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsrichunbanrequest) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### /unbanrequests/bannedguilds
 
@@ -1956,9 +2143,11 @@ Returns a list of guilds where the currently authenticated user is banned.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.GuildReduced](#modelsguildreduced) ] |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildreduced) ] |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## default
 
 ### /users/{id}
 
@@ -1975,7 +2164,10 @@ Returns the information of a user by ID.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.User](#modelsuser) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsuser) |
+
+## User Settings
+User specific settings endpoints.
 
 ### /usersettings/flush
 
@@ -1992,9 +2184,9 @@ Flush all user data.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsota) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### /usersettings/ota
 
@@ -2011,9 +2203,9 @@ Returns the current state of the OTA user setting.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsota) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -2027,17 +2219,17 @@ Update the OTA user settings state.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| payload | body | The OTA settings payload. | Yes | [models.UsersettingsOTA](#modelsusersettingsota) |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | The OTA settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsota) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UsersettingsOTA](#modelsusersettingsota) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsota) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### /usersettings/privacy
 
@@ -2054,9 +2246,9 @@ Returns the current Privacy user settinga.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsprivacy) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 #### POST
 ##### Summary
@@ -2070,17 +2262,20 @@ Update the Privacy user settings.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| payload | body | The privacy settings payload. | Yes | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
+| ---- | ---------- | ----------- | -------- | ------ |
+| payload | body | The privacy settings payload. | Yes | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsprivacy) |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.UsersettingsPrivacy](#modelsusersettingsprivacy) |
-| 400 | Bad Request | [models.Error](#modelserror) |
-| 401 | Unauthorized | [models.Error](#modelserror) |
-| 404 | Not Found | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsusersettingsprivacy) |
+| 400 | Bad Request | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 401 | Unauthorized | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+| 404 | Not Found | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
+
+## Utilities
+General utility functionalities.
 
 ### /util/color/{hexcode}
 
@@ -2096,7 +2291,7 @@ Produces a square image of the given color and size.
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
+| ---- | ---------- | ----------- | -------- | ------ |
 | hexcode | path | Hex Code of the Color to produce | Yes | string |
 | size | query | The dimension of the square image | No | integer |
 
@@ -2121,7 +2316,7 @@ Returns general information for the landing page like the local invite parameter
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.LandingPageResponse](#modelslandingpageresponse) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelslandingpageresponse) |
 
 ### /util/slashcommands
 
@@ -2138,7 +2333,7 @@ Returns a list of registered slash commands and their description.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Wrapped in models.ListResponse | [ [models.SlashCommandInfo](#modelsslashcommandinfo) ] |
+| 200 | Wrapped in models.ListResponse | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsslashcommandinfo) ] |
 
 ### /util/updateinfo
 
@@ -2155,7 +2350,10 @@ Returns update information.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Update info response | [models.UpdateInfoResponse](#modelsupdateinforesponse) |
+| 200 | Update info response | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsupdateinforesponse) |
+
+## Verification
+User verification endpoints.
 
 ### /verification/sitekey
 
@@ -2172,7 +2370,7 @@ Returns the sitekey for the captcha
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.CaptchaSiteKey](#modelscaptchasitekey) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelscaptchasitekey) |
 
 ### /verification/verify
 
@@ -2189,25 +2387,17 @@ Verify a returned verification token.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.Status](#modelsstatus) |
-| 403 | Forbidden | [models.Error](#modelserror) |
+| 200 | OK | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsstatus) |
+| 403 | Forbidden | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelserror) |
 
 ### Models
-
-#### backupmodels.Entry
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| file_id | string |  | No |
-| guild_id | string |  | No |
-| timestamp | string |  | No |
 
 #### discordgo.ApplicationCommandOption
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | autocomplete | boolean | NOTE: mutually exclusive with Choices. | No |
-| channel_types | [ integer ] |  | No |
+| channel_types | [ [discordgo.ChannelType](#discordgochanneltype) ] |  | No |
 | choices | [ [discordgo.ApplicationCommandOptionChoice](#discordgoapplicationcommandoptionchoice) ] |  | No |
 | description | string |  | No |
 | description_localizations | object |  | No |
@@ -2219,7 +2409,7 @@ Verify a returned verification token.
 | name_localizations | object |  | No |
 | options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
 | required | boolean |  | No |
-| type | integer |  | No |
+| type | [discordgo.ApplicationCommandOptionType](#discordgoapplicationcommandoptiontype) |  | No |
 
 #### discordgo.ApplicationCommandOptionChoice
 
@@ -2229,12 +2419,25 @@ Verify a returned verification token.
 | name_localizations | object |  | No |
 | value |  |  | No |
 
+#### discordgo.ApplicationCommandOptionType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.ApplicationCommandOptionType | integer |  |  |
+
 #### discordgo.Channel
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | application_id | string | ApplicationID of the DM creator Zeroed if guild channel or not a bot user | No |
+| applied_tags | [ string ] | The IDs of the set of tags that have been applied to a thread in a forum channel. | No |
+| available_tags | [ [discordgo.ForumTag](#discordgoforumtag) ] | The set of tags that can be used in a forum channel. | No |
 | bitrate | integer | The bitrate of the channel, if it is a voice channel. | No |
+| default_forum_layout | [discordgo.ForumLayout](#discordgoforumlayout) | The default forum layout view used to display posts in forum channels. Defaults to ForumLayoutNotSet, which indicates a layout view has not been set by a channel admin. | No |
+| default_reaction_emoji | [discordgo.ForumDefaultReaction](#discordgoforumdefaultreaction) | Emoji to use as the default reaction to a forum post. | No |
+| default_sort_order | [discordgo.ForumSortOrderType](#discordgoforumsortordertype) | The default sort order type used to order posts in forum channels. Defaults to null, which indicates a preferred sort order hasn't been set by a channel admin. | No |
+| default_thread_rate_limit_per_user | integer | The initial RateLimitPerUser to set on newly created threads in a channel. This field is copied to the thread at creation time and does not live update. | No |
+| flags | [discordgo.ChannelFlags](#discordgochannelflags) | Channel flags. | No |
 | guild_id | string | The ID of the guild to which the channel belongs, if it is in a guild. Else, this ID is empty (e.g. DM channels). | No |
 | icon | string | Icon of the group DM channel. | No |
 | id | string | The ID of the channel. | No |
@@ -2253,8 +2456,26 @@ Verify a returned verification token.
 | thread_member | [discordgo.ThreadMember](#discordgothreadmember) | Thread member object for the current user, if they have joined the thread, only included on certain API endpoints | No |
 | thread_metadata | [discordgo.ThreadMetadata](#discordgothreadmetadata) | Thread-specific fields not needed by other channels | No |
 | topic | string | The topic of the channel. | No |
-| type | integer | The type of the channel. | No |
+| type | [discordgo.ChannelType](#discordgochanneltype) | The type of the channel. | No |
 | user_limit | integer | The user limit of the voice channel. | No |
+
+#### discordgo.ChannelFlags
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.ChannelFlags | integer |  |  |
+
+#### discordgo.ChannelType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.ChannelType | integer |  |  |
+
+#### discordgo.EmbedType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.EmbedType | string |  |  |
 
 #### discordgo.Emoji
 
@@ -2269,6 +2490,41 @@ Verify a returned verification token.
 | roles | [ string ] |  | No |
 | user | [discordgo.User](#discordgouser) |  | No |
 
+#### discordgo.ForumDefaultReaction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| emoji_id | string | The id of a guild's custom emoji. | No |
+| emoji_name | string | The unicode character of the emoji. | No |
+
+#### discordgo.ForumLayout
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.ForumLayout | integer |  |  |
+
+#### discordgo.ForumSortOrderType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.ForumSortOrderType | integer |  |  |
+
+#### discordgo.ForumTag
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| emoji_id | string |  | No |
+| emoji_name | string |  | No |
+| id | string |  | No |
+| moderated | boolean |  | No |
+| name | string |  | No |
+
+#### discordgo.InteractionType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.InteractionType | integer |  |  |
+
 #### discordgo.Member
 
 | Name | Type | Description | Required |
@@ -2281,7 +2537,7 @@ Verify a returned verification token.
 | mute | boolean | Whether the member is muted at a guild level. | No |
 | nick | string | The nickname of the member, if they have one. | No |
 | pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
-| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>_Example:_ `"0"` | No |
+| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>*Example:* `"0"` | No |
 | premium_since | string | When the user used their Nitro boost on the server | No |
 | roles | [ string ] | A list of IDs of the roles which are possessed by the member. | No |
 | user | [discordgo.User](#discordgouser) | The underlying user on which the member is based. | No |
@@ -2298,7 +2554,7 @@ Verify a returned verification token.
 | content | string | The content of the message. | No |
 | edited_timestamp | string | The time at which the last edit of the message occurred, if it has been edited. | No |
 | embeds | [ [discordgo.MessageEmbed](#discordgomessageembed) ] | A list of embeds present in the message. | No |
-| flags | integer | The flags of the message, which describe extra features of a message. This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the flag. | No |
+| flags | [discordgo.MessageFlags](#discordgomessageflags) | The flags of the message, which describe extra features of a message. This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the flag. | No |
 | guild_id | string | The ID of the guild in which the message was sent. | No |
 | id | string | The ID of the message. | No |
 | interaction | [discordgo.MessageInteraction](#discordgomessageinteraction) | Is sent when the message is a response to an Interaction, without an existing message. This means responses to message component interactions do not include this property, instead including a MessageReference, as components exist on preexisting messages. | No |
@@ -2315,7 +2571,7 @@ Verify a returned verification token.
 | thread | [discordgo.Channel](#discordgochannel) | The thread that was started from this message, includes thread member object | No |
 | timestamp | string | The time at which the messsage was sent. CAUTION: this field may be removed in a future API version; it is safer to calculate the creation time via the ID. | No |
 | tts | boolean | Whether the message is text-to-speech. | No |
-| type | integer | The type of the message. | No |
+| type | [discordgo.MessageType](#discordgomessagetype) | The type of the message. | No |
 | webhook_id | string | The webhook ID of the message, if it was generated by a webhook | No |
 
 #### discordgo.MessageActivity
@@ -2323,7 +2579,13 @@ Verify a returned verification token.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | party_id | string |  | No |
-| type | integer |  | No |
+| type | [discordgo.MessageActivityType](#discordgomessageactivitytype) |  | No |
+
+#### discordgo.MessageActivityType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.MessageActivityType | integer |  |  |
 
 #### discordgo.MessageApplication
 
@@ -2363,7 +2625,7 @@ Verify a returned verification token.
 | thumbnail | [discordgo.MessageEmbedThumbnail](#discordgomessageembedthumbnail) |  | No |
 | timestamp | string |  | No |
 | title | string |  | No |
-| type | string |  | No |
+| type | [discordgo.EmbedType](#discordgoembedtype) |  | No |
 | url | string |  | No |
 | video | [discordgo.MessageEmbedVideo](#discordgomessageembedvideo) |  | No |
 
@@ -2425,6 +2687,12 @@ Verify a returned verification token.
 | url | string |  | No |
 | width | integer |  | No |
 
+#### discordgo.MessageFlags
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.MessageFlags | integer |  |  |
+
 #### discordgo.MessageInteraction
 
 | Name | Type | Description | Required |
@@ -2432,7 +2700,7 @@ Verify a returned verification token.
 | id | string |  | No |
 | member | [discordgo.Member](#discordgomember) | Member is only present when the interaction is from a guild. | No |
 | name | string |  | No |
-| type | integer |  | No |
+| type | [discordgo.InteractionType](#discordgointeractiontype) |  | No |
 | user | [discordgo.User](#discordgouser) |  | No |
 
 #### discordgo.MessageReactions
@@ -2451,14 +2719,38 @@ Verify a returned verification token.
 | guild_id | string |  | No |
 | message_id | string |  | No |
 
+#### discordgo.MessageType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.MessageType | integer |  |  |
+
+#### discordgo.MfaLevel
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.MfaLevel | integer |  |  |
+
 #### discordgo.PermissionOverwrite
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| allow | string | _Example:_ `"0"` | No |
-| deny | string | _Example:_ `"0"` | No |
+| allow | string | *Example:* `"0"` | No |
+| deny | string | *Example:* `"0"` | No |
 | id | string |  | No |
-| type | integer |  | No |
+| type | [discordgo.PermissionOverwriteType](#discordgopermissionoverwritetype) |  | No |
+
+#### discordgo.PermissionOverwriteType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.PermissionOverwriteType | integer |  |  |
+
+#### discordgo.PremiumTier
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.PremiumTier | integer |  |  |
 
 #### discordgo.Role
 
@@ -2470,7 +2762,7 @@ Verify a returned verification token.
 | managed | boolean | Whether this role is managed by an integration, and thus cannot be manually added to, or taken from, members. | No |
 | mentionable | boolean | Whether this role is mentionable. | No |
 | name | string | The name of the role. | No |
-| permissions | string | The permissions of the role on the guild (doesn't include channel overrides). This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the permission.<br>_Example:_ `"0"` | No |
+| permissions | string | The permissions of the role on the guild (doesn't include channel overrides). This is a combination of bit masks; the presence of a certain permission can be checked by performing a bitwise AND between this int and the permission.<br>*Example:* `"0"` | No |
 | position | integer | The position of this role in the guild's role hierarchy. | No |
 
 #### discordgo.Sticker
@@ -2479,15 +2771,27 @@ Verify a returned verification token.
 | ---- | ---- | ----------- | -------- |
 | available | boolean |  | No |
 | description | string |  | No |
-| format_type | integer |  | No |
+| format_type | [discordgo.StickerFormat](#discordgostickerformat) |  | No |
 | guild_id | string |  | No |
 | id | string |  | No |
 | name | string |  | No |
 | pack_id | string |  | No |
 | sort_value | integer |  | No |
 | tags | string |  | No |
-| type | integer |  | No |
+| type | [discordgo.StickerType](#discordgostickertype) |  | No |
 | user | [discordgo.User](#discordgouser) |  | No |
+
+#### discordgo.StickerFormat
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.StickerFormat | integer |  |  |
+
+#### discordgo.StickerType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.StickerType | integer |  |  |
 
 #### discordgo.ThreadMember
 
@@ -2523,13 +2827,142 @@ Verify a returned verification token.
 | locale | string | The user's chosen language option. | No |
 | mfa_enabled | boolean | Whether the user has multi-factor authentication enabled. | No |
 | premium_type | integer | The type of Nitro subscription on a user's account. Only available when the request is authorized via a Bearer token. | No |
-| public_flags | integer | The public flags on a user's account. This is a combination of bit masks; the presence of a certain flag can be checked by performing a bitwise AND between this int and the flag. | No |
+| public_flags | [discordgo.UserFlags](#discordgouserflags) | The public flags on a user's account. This is a combination of bit masks; the presence of a certain flag can be checked by performing a bitwise AND between this int and the flag. | No |
 | system | boolean | Whether the user is an Official Discord System user (part of the urgent message system). | No |
 | token | string | The token of the user. This is only present for the user represented by the current session. | No |
 | username | string | The user's username. | No |
 | verified | boolean | Whether the user's email is verified. | No |
 
-#### models.APITokenResponse
+#### discordgo.UserFlags
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.UserFlags | integer |  |  |
+
+#### discordgo.VerificationLevel
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| discordgo.VerificationLevel | integer |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_models.Contact
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| title | string |  | No |
+| url | string |  | No |
+| value | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.GuildAPISettings
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| allowed_origins | string |  | No |
+| enabled | boolean |  | No |
+| protected | boolean |  | No |
+| token_hash | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.GuildLogEntry
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| guildid | string |  | No |
+| id | integer |  | No |
+| message | string |  | No |
+| module | string |  | No |
+| severity | [github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity](#github_com_zekrotja_shinpuru_internal_modelsguildlogseverity) |  | No |
+| timestamp | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_models.GuildLogSeverity | integer |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_models.JoinLogEntry
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| account_created | string |  | No |
+| guild_id | string |  | No |
+| tag | string |  | No |
+| timestamp | string |  | No |
+| user_id | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.KarmaAction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_models.KarmaAction | string |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_models.KarmaRule
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| action | [github_com_zekroTJA_shinpuru_internal_models.KarmaAction](#github_com_zekrotja_shinpuru_internal_modelskarmaaction) |  | No |
+| argument | string |  | No |
+| guildid | string |  | No |
+| id | integer |  | No |
+| trigger | [github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType](#github_com_zekrotja_shinpuru_internal_modelskarmatriggertype) |  | No |
+| value | integer |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_models.KarmaTriggerType | integer |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_models.Privacy
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| contact | [ [github_com_zekroTJA_shinpuru_internal_models.Contact](#github_com_zekrotja_shinpuru_internal_modelscontact) ] |  | No |
+| noticeurl | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.ReportType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_models.ReportType | integer |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_models.UnbanRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| created | string |  | No |
+| guild_id | string |  | No |
+| id | integer |  | No |
+| message | string |  | No |
+| processed | string |  | No |
+| processed_by | string |  | No |
+| processed_message | string |  | No |
+| status | [github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState](#github_com_zekrotja_shinpuru_internal_modelsunbanrequeststate) |  | No |
+| user_id | string |  | No |
+| user_tag | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState | integer |  |  |
+
+#### github_com_zekroTJA_shinpuru_internal_services_backup_backupmodels.Entry
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| file_id | string |  | No |
+| guild_id | string |  | No |
+| timestamp | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| description | string |  | No |
+| explicit | boolean |  | No |
+| term | string |  | No |
+
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.APITokenResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2539,21 +2972,21 @@ Verify a returned verification token.
 | last_access | string |  | No |
 | token | string |  | No |
 
-#### models.AccessTokenResponse
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AccessTokenResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | expires | string |  | No |
 | token | string |  | No |
 
-#### models.AntiraidAction
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidAction
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | ids | [ string ] |  | No |
 | type | integer |  | No |
 
-#### models.AntiraidSettings
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.AntiraidSettings
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2562,33 +2995,25 @@ Verify a returned verification token.
 | state | boolean |  | No |
 | verification | boolean |  | No |
 
-#### models.CaptchaSiteKey
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.CaptchaSiteKey
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sitekey | string |  | No |
 
-#### models.Contact
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| title | string |  | No |
-| url | string |  | No |
-| value | string |  | No |
-
-#### models.Count
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Count
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | count | integer |  | No |
 
-#### models.EnableStatus
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.EnableStatus
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | enabled | boolean |  | No |
 
-#### models.Error
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Error
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2596,7 +3021,7 @@ Verify a returned verification token.
 | context | string |  | No |
 | error | string |  | No |
 
-#### models.FlatUser
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2606,14 +3031,14 @@ Verify a returned verification token.
 | id | string |  | No |
 | username | string |  | No |
 
-#### models.FlushGuildRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlushGuildRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | leave_after | boolean |  | No |
 | validation | string |  | No |
 
-#### models.Guild
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2630,28 +3055,19 @@ Verify a returned verification token.
 | large | boolean |  | No |
 | latest_backup_entry | string |  | No |
 | member_count | integer |  | No |
-| mfa_level | integer |  | No |
+| mfa_level | [discordgo.MfaLevel](#discordgomfalevel) |  | No |
 | name | string |  | No |
 | owner_id | string |  | No |
 | premium_subscription_count | integer |  | No |
-| premium_tier | integer |  | No |
+| premium_tier | [discordgo.PremiumTier](#discordgopremiumtier) |  | No |
 | region | string |  | No |
 | roles | [ [discordgo.Role](#discordgorole) ] |  | No |
-| self_member | [models.Member](#modelsmember) |  | No |
+| self_member | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) |  | No |
 | splash | string |  | No |
 | unavailable | boolean |  | No |
-| verification_level | integer |  | No |
+| verification_level | [discordgo.VerificationLevel](#discordgoverificationlevel) |  | No |
 
-#### models.GuildAPISettings
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| allowed_origins | string |  | No |
-| enabled | boolean |  | No |
-| protected | boolean |  | No |
-| token_hash | string |  | No |
-
-#### models.GuildAPISettingsRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildAPISettingsRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2662,25 +3078,14 @@ Verify a returned verification token.
 | token | string |  | No |
 | token_hash | string |  | No |
 
-#### models.GuildKarmaEntry
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildKarmaEntry
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| member | [models.Member](#modelsmember) |  | No |
+| member | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) |  | No |
 | value | integer |  | No |
 
-#### models.GuildLogEntry
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| guildid | string |  | No |
-| id | integer |  | No |
-| message | string |  | No |
-| module | string |  | No |
-| severity | integer |  | No |
-| timestamp | string |  | No |
-
-#### models.GuildReduced
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2694,7 +3099,7 @@ Verify a returned verification token.
 | owner_id | string |  | No |
 | region | string |  | No |
 
-#### models.GuildSettings
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildSettings
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2708,7 +3113,7 @@ Verify a returned verification token.
 | prefix | string |  | No |
 | voicelogchannel | string |  | No |
 
-#### models.InviteSettingsRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2716,36 +3121,15 @@ Verify a returned verification token.
 | invite_code | string |  | No |
 | message | string |  | No |
 
-#### models.InviteSettingsResponse
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.InviteSettingsResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| guild | [models.Guild](#modelsguild) |  | No |
+| guild | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Guild](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguild) |  | No |
 | invite_url | string |  | No |
 | message | string |  | No |
 
-#### models.JoinLogEntry
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| account_created | string |  | No |
-| guild_id | string |  | No |
-| tag | string |  | No |
-| timestamp | string |  | No |
-| user_id | string |  | No |
-
-#### models.KarmaRule
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| action | string |  | No |
-| argument | string |  | No |
-| guildid | string |  | No |
-| id | integer |  | No |
-| trigger | integer |  | No |
-| value | integer |  | No |
-
-#### models.KarmaSettings
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.KarmaSettings
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2755,7 +3139,7 @@ Verify a returned verification token.
 | state | boolean |  | No |
 | tokens | integer |  | No |
 
-#### models.LandingPageResponse
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.LandingPageResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2763,7 +3147,7 @@ Verify a returned verification token.
 | publiccaranyinvite | string |  | No |
 | publicmaininvite | string |  | No |
 
-#### models.Member
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2782,38 +3166,38 @@ Verify a returned verification token.
 | mute | boolean | Whether the member is muted at a guild level. | No |
 | nick | string | The nickname of the member, if they have one. | No |
 | pending | boolean | Is true while the member hasn't accepted the membership screen. | No |
-| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>_Example:_ `"0"` | No |
+| permissions | string | Total permissions of the member in the channel, including overrides, returned when in the interaction object.<br>*Example:* `"0"` | No |
 | premium_since | string | When the user used their Nitro boost on the server | No |
 | roles | [ string ] | A list of IDs of the roles which are possessed by the member. | No |
 | user | [discordgo.User](#discordgouser) | The underlying user on which the member is based. | No |
 
-#### models.PermissionsMap
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| models.PermissionsMap | object |  |  |
+| github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsMap | object |  |  |
 
-#### models.PermissionsResponse
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | permissions | [ string ] |  | No |
 
-#### models.PermissionsUpdate
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PermissionsUpdate
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| override | boolean |  | No |
 | perm | string |  | No |
 | role_ids | [ string ] |  | No |
 
-#### models.Privacy
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.PushCodeRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| contact | [ [models.Contact](#modelscontact) ] |  | No |
-| noticeurl | string |  | No |
+| code | string |  | No |
 
-#### models.ReasonRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReasonRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2822,24 +3206,24 @@ Verify a returned verification token.
 | reason | string |  | No |
 | timeout | string |  | No |
 
-#### models.Report
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Report
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | attachment_url | string |  | No |
 | created | string |  | No |
-| executor | [models.FlatUser](#modelsflatuser) |  | No |
+| executor | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsflatuser) |  | No |
 | executor_id | string |  | No |
 | guild_id | string |  | No |
 | id | integer |  | No |
 | message | string |  | No |
 | timeout | string |  | No |
-| type | integer |  | No |
+| type | [github_com_zekroTJA_shinpuru_internal_models.ReportType](#github_com_zekrotja_shinpuru_internal_modelsreporttype) |  | No |
 | type_name | string |  | No |
-| victim | [models.FlatUser](#modelsflatuser) |  | No |
+| victim | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsflatuser) |  | No |
 | victim_id | string |  | No |
 
-#### models.ReportRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.ReportRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2847,33 +3231,33 @@ Verify a returned verification token.
 | attachment_data | string |  | No |
 | reason | string |  | No |
 | timeout | string |  | No |
-| type | integer |  | No |
+| type | [github_com_zekroTJA_shinpuru_internal_models.ReportType](#github_com_zekrotja_shinpuru_internal_modelsreporttype) |  | No |
 
-#### models.RichUnbanRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.RichUnbanRequest
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | created | string |  | No |
-| creator | [models.FlatUser](#modelsflatuser) |  | No |
+| creator | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsflatuser) |  | No |
 | guild_id | string |  | No |
 | id | integer |  | No |
 | message | string |  | No |
 | processed | string |  | No |
 | processed_by | string |  | No |
 | processed_message | string |  | No |
-| processor | [models.FlatUser](#modelsflatuser) |  | No |
-| status | integer |  | No |
+| processor | [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.FlatUser](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsflatuser) |  | No |
+| status | [github_com_zekroTJA_shinpuru_internal_models.UnbanRequestState](#github_com_zekrotja_shinpuru_internal_modelsunbanrequeststate) |  | No |
 | user_id | string |  | No |
 | user_tag | string |  | No |
 
-#### models.SearchResult
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SearchResult
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| guilds | [ [models.GuildReduced](#modelsguildreduced) ] |  | No |
-| members | [ [models.Member](#modelsmember) ] |  | No |
+| guilds | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.GuildReduced](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsguildreduced) ] |  | No |
+| members | [ [github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Member](#github_com_zekrotja_shinpuru_internal_services_webserver_v1_modelsmember) ] |  | No |
 
-#### models.SlashCommandInfo
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SlashCommandInfo
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2883,10 +3267,10 @@ Verify a returned verification token.
 | group | string |  | No |
 | name | string |  | No |
 | options | [ [discordgo.ApplicationCommandOption](#discordgoapplicationcommandoption) ] |  | No |
-| subdomains | [ [permissions.SubPermission](#permissionssubpermission) ] |  | No |
+| subdomains | [ [github_com_zekroTJA_shinpuru_internal_services_permissions.SubPermission](#github_com_zekrotja_shinpuru_internal_services_permissionssubpermission) ] |  | No |
 | version | string |  | No |
 
-#### models.StarboardEntryResponse
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.StarboardEntryResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2902,19 +3286,19 @@ Verify a returned verification token.
 | score | integer |  | No |
 | starboard_id | string |  | No |
 
-#### models.State
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.State
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | state | boolean |  | No |
 
-#### models.Status
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.Status
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | code | integer |  | No |
 
-#### models.SystemInfo
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.SystemInfo
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2936,32 +3320,17 @@ Verify a returned verification token.
 | uptime_str | string |  | No |
 | version | string |  | No |
 
-#### models.UnbanRequest
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UpdateInfoResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| created | string |  | No |
-| guild_id | string |  | No |
-| id | integer |  | No |
-| message | string |  | No |
-| processed | string |  | No |
-| processed_by | string |  | No |
-| processed_message | string |  | No |
-| status | integer |  | No |
-| user_id | string |  | No |
-| user_tag | string |  | No |
-
-#### models.UpdateInfoResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| current | [versioncheck.Semver](#versionchecksemver) |  | No |
+| current | [github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver](#github_com_zekrotja_shinpuru_pkg_versionchecksemver) |  | No |
 | current_str | string |  | No |
 | isold | boolean |  | No |
-| latest | [versioncheck.Semver](#versionchecksemver) |  | No |
+| latest | [github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver](#github_com_zekrotja_shinpuru_pkg_versionchecksemver) |  | No |
 | latest_str | string |  | No |
 
-#### models.User
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.User
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -2980,40 +3349,38 @@ Verify a returned verification token.
 | locale | string | The user's chosen language option. | No |
 | mfa_enabled | boolean | Whether the user has multi-factor authentication enabled. | No |
 | premium_type | integer | The type of Nitro subscription on a user's account. Only available when the request is authorized via a Bearer token. | No |
-| public_flags | integer | The public flags on a user's account. This is a combination of bit masks; the presence of a certain flag can be checked by performing a bitwise AND between this int and the flag. | No |
+| public_flags | [discordgo.UserFlags](#discordgouserflags) | The public flags on a user's account. This is a combination of bit masks; the presence of a certain flag can be checked by performing a bitwise AND between this int and the flag. | No |
 | system | boolean | Whether the user is an Official Discord System user (part of the urgent message system). | No |
 | token | string | The token of the user. This is only present for the user represented by the current session. | No |
 | username | string | The user's username. | No |
 | verified | boolean | Whether the user's email is verified. | No |
 
-#### models.UsersettingsOTA
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsOTA
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | enabled | boolean |  | No |
 
-#### models.UsersettingsPrivacy
+#### github_com_zekroTJA_shinpuru_internal_services_webserver_v1_models.UsersettingsPrivacy
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | starboard_optout | boolean |  | No |
 
-#### permissions.SubPermission
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| description | string |  | No |
-| explicit | boolean |  | No |
-| term | string |  | No |
-
-#### presence.Presence
+#### github_com_zekroTJA_shinpuru_internal_util_presence.Presence
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | game | string |  | No |
-| status | string |  | No |
+| status | [github_com_zekroTJA_shinpuru_internal_util_presence.Status](#github_com_zekrotja_shinpuru_internal_util_presencestatus) |  | No |
 
-#### versioncheck.Semver
+#### github_com_zekroTJA_shinpuru_internal_util_presence.Status
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| github_com_zekroTJA_shinpuru_internal_util_presence.Status | string |  |  |
+
+#### github_com_zekroTJA_shinpuru_pkg_versioncheck.Semver
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |

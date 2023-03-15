@@ -1106,7 +1106,7 @@ func TestRevokeMute(t *testing.T) {
 		Once().
 		Return(nil)
 
-	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", models.TypeMute, mock.AnythingOfType("int"), mock.AnythingOfType("int")).
 		Once().
 		Return([]models.Report{
 			{
@@ -1152,7 +1152,7 @@ func TestRevokeMute(t *testing.T) {
 		Once().
 		Return(nil)
 
-	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", models.TypeMute, mock.AnythingOfType("int"), mock.AnythingOfType("int")).
 		Once().
 		Return([]models.Report{
 			{
@@ -1200,7 +1200,7 @@ func TestRevokeMute(t *testing.T) {
 		Once().
 		Return(nil)
 
-	m.db.On("GetReportsFiltered", "guild-id", "victim-id", int(models.TypeMute), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+	m.db.On("GetReportsFiltered", "guild-id", "victim-id", models.TypeMute, mock.AnythingOfType("int"), mock.AnythingOfType("int")).
 		Once().
 		Return(nil, nil)
 

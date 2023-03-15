@@ -7,7 +7,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/listeners"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/util"
@@ -15,14 +14,18 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitDiscordBotSession(container di.Container) (release func()) {
 	release = func() {}
 
+	log := log.Tagged("Discord")
+	log.Info().Msg("Initializing bot session ...")
+
 	err := snowflakenodes.Setup()
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed setting up snowflake nodes")
+		log.Fatal().Err(err).Msg("Failed setting up snowflake nodes")
 	}
 
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
@@ -38,30 +41,31 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 		var id int
 		if shardCfg.AutoID {
 			d := time.Duration(rand.Int63n(int64(5 * time.Second)))
-			logrus.
-				WithField("d", d.Round(time.Millisecond).String()).
-				Info("Sleeping before retrieving shard ID")
+			log.Info().
+				Field("d", d.Round(time.Millisecond)).
+				Msg("Sleeping before retrieving shard ID")
 			time.Sleep(d)
 			if id, err = st.ReserveShard(shardCfg.Pool); err != nil {
-				logrus.WithError(err).Fatal("Failed receiving alive shards from state")
+				log.Fatal().Err(err).Msg("Failed receiving alive shards from state")
 			}
 			release = func() {
-				logrus.WithField("id", id).Info("Releasing shard ID")
+				log.Info().Field("id", id).Msg("Releasing shard ID")
 				if err = st.ReleaseShard(shardCfg.Pool, id); err != nil {
-					logrus.WithError(err).Error("Failed releasing shard ID")
+					log.Error().Err(err).Msg("Failed releasing shard ID")
 				}
 			}
 		} else {
 			id = shardCfg.ID
 			if id < 0 || id >= shardCfg.Total {
-				logrus.Fatalf("Shard ID must be in range [0, %d)", shardCfg.Total)
+				log.Fatal().Msgf("Shard ID must be in range [0, %d)", shardCfg.Total)
 			}
 		}
 
-		logrus.
-			WithField("id", id).
-			WithField("total", shardCfg.Total).
-			Info("Running in sharded mode")
+		log.Info().
+			Field("id", id).
+			Field("total", shardCfg.Total).
+			Msg("Running in sharded mode")
+
 		session.Identify.Shard = &[2]int{id, shardCfg.Total}
 	}
 
@@ -71,7 +75,7 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 
 	listenerJDoodle, err := listeners.NewListenerJdoodle(container)
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed setting up code execution listener")
+		log.Fatal().Err(err).Msg("Failed setting up code execution listener")
 	}
 
 	listenerStarboard := listeners.NewListenerStarboard(container)
@@ -135,7 +139,7 @@ func InitDiscordBotSession(container di.Container) (release func()) {
 
 	err = session.Open()
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed connecting Discord bot session")
+		log.Fatal().Err(err).Msg("Failed connecting Discord bot session")
 	}
 
 	return

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -16,6 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/bwmarrin/snowflake"
 	mySqlDriver "github.com/go-sql-driver/mysql"
@@ -24,10 +25,17 @@ import (
 // MysqlMiddleware implements the Database interface for
 // MariaDB or MysqlMiddleware.
 type MysqlMiddleware struct {
-	Db *sql.DB
+	Db  *sql.DB
+	log rogu.Logger
 }
 
 var _ database.Database = (*MysqlMiddleware)(nil)
+
+func New() *MysqlMiddleware {
+	return &MysqlMiddleware{
+		log: log.Tagged("Database"),
+	}
+}
 
 var guildTables = []string{
 	"antiraidJoinlog",
@@ -311,7 +319,9 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`status` int(8) NOT NULL DEFAULT '0'," +
 		"`processed` timestamp," +
 		"`processedMessage` text NOT NULL DEFAULT ''," +
-		"PRIMARY KEY (`id`)" +
+		"`reportID` varchar(25) NOT NULL, " +
+		"PRIMARY KEY (`id`)," +
+		"FOREIGN KEY (reportID) REFERENCES reports(id)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
 		return
@@ -742,7 +752,7 @@ func (m *MysqlMiddleware) GetReportsGuild(guildID string, offset, limit int) ([]
 	return results, nil
 }
 
-func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]models.Report, error) {
+func (m *MysqlMiddleware) GetReportsFiltered(guildID, memberID string, repType models.ReportType, offset, limit int) ([]models.Report, error) {
 	args := []interface{}{}
 	query := `SELECT id, type, guildID, executorID, victimID, msg, attachment, timeout FROM reports WHERE true`
 	if guildID != "" {
@@ -853,7 +863,7 @@ func (m *MysqlMiddleware) GetVotes() (map[string]vote.Vote, error) {
 		var voteID, rawData string
 		err := rows.Scan(&voteID, &rawData)
 		if err != nil {
-			logrus.WithError(err).Error("An error occured reading vote from database")
+			m.log.Error().Err(err).Msg("An error occured reading vote from database")
 			continue
 		}
 		vote, err := vote.Unmarshal(rawData)
@@ -1539,12 +1549,14 @@ func (m *MysqlMiddleware) RemoveAntiraidJoinList(guildID, userID string) (err er
 }
 
 func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset int) (r []models.UnbanRequest, err error) {
-	rows, err := m.Db.Query(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+	rows, err := m.Db.Query(`
+		SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE guildID = ?
+		ORDER BY id DESC
 		LIMIT ?
-		OFFSET ?`, guildID, limit, offset)
+		OFFSET ?
+	`, guildID, limit, offset)
 	err = wrapNotFoundError(err)
 	if err != nil {
 		return
@@ -1556,6 +1568,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequests(guildID string, limit, offset in
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
 			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+			&req.ReportID,
 		); err != nil {
 			return
 		}
@@ -1579,7 +1592,7 @@ func (m *MysqlMiddleware) GetGuildUnbanRequestsCount(guildID string, state *mode
 }
 
 func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r []models.UnbanRequest, err error) {
-	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+	query := `SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE userID = ?`
 	params := []interface{}{userID}
@@ -1601,6 +1614,7 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 		if err = rows.Scan(
 			&req.ID, &req.UserID, &req.GuildID, &req.UserTag, &req.Message,
 			&req.ProcessedBy, &req.Status, &req.Processed, &req.ProcessedMessage,
+			&req.ReportID,
 		); err != nil {
 			return
 		}
@@ -1612,13 +1626,14 @@ func (m *MysqlMiddleware) GetGuildUserUnbanRequests(userID, guildID string) (r [
 
 func (m *MysqlMiddleware) GetUnbanRequest(id string) (r models.UnbanRequest, err error) {
 	row := m.Db.QueryRow(
-		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage
+		`SELECT id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID
 		FROM unbanRequests
 		WHERE id = ?`, id)
 
 	err = row.Scan(
 		&r.ID, &r.UserID, &r.GuildID, &r.UserTag, &r.Message,
 		&r.ProcessedBy, &r.Status, &r.Processed, &r.ProcessedMessage,
+		&r.ReportID,
 	)
 	err = wrapNotFoundError(err)
 	return
@@ -1627,10 +1642,10 @@ func (m *MysqlMiddleware) GetUnbanRequest(id string) (r models.UnbanRequest, err
 func (m *MysqlMiddleware) AddUnbanRequest(r models.UnbanRequest) (err error) {
 	_, err = m.Db.Exec(
 		`INSERT INTO unbanRequests
-		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		(id, userID, guildID, userTag, message, processedBy, status, processed, processedMessage, reportID)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		r.ID, r.UserID, r.GuildID, r.UserTag, r.Message, r.ProcessedBy,
-		r.Status, r.Processed, r.ProcessedMessage)
+		r.Status, r.Processed, r.ProcessedMessage, r.ReportID)
 
 	return
 }

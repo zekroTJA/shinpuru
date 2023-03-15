@@ -8,7 +8,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/sirupsen/logrus"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -18,6 +17,7 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/versioncheck"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu/log"
 )
 
 var Ok = &Status{200}
@@ -498,7 +498,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 
 		status, err := db.GetGuildInviteBlock(g.ID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", g.ID).Error("Failed getting inviteblock status")
+			log.Error().Tag("WebServer").Err(err).Field("gid", g.ID).Msg("Failed getting inviteblock status")
 		} else {
 			ng.InviteBlockEnabled = status != ""
 		}

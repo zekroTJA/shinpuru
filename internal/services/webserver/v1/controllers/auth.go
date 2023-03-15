@@ -7,17 +7,22 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/xid"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/auth"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/discordoauth/v2"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu/log"
 )
+
+const pushcodeTimeout = 60 * time.Second
 
 var errTimeout = errors.New("timeout")
 
@@ -28,6 +33,7 @@ type AuthController struct {
 	authMw       auth.Middleware
 	st           *dgrs.State
 	session      *discordgo.Session
+	cmdHandler   *ken.Ken
 	oauthHandler auth.RequestHandler
 
 	pushcodeSubs *timedmap.TimedMap
@@ -36,9 +42,9 @@ type AuthController struct {
 type pushCodeWaiter struct {
 	mtx          sync.Mutex
 	code         string
+	am           *acceptmsg.AcceptMessage
 	subscription func() error
-	res          *discordgo.Message
-	fin          chan struct{}
+	fin          chan *discordgo.Message
 	closed       bool
 }
 
@@ -46,10 +52,26 @@ func (pcw *pushCodeWaiter) close() bool {
 	pcw.mtx.Lock()
 	defer pcw.mtx.Unlock()
 
+	if pcw.am != nil {
+		pcw.am.Ken.Session().ChannelMessageEditComplex(&discordgo.MessageEdit{
+			Channel: pcw.am.ChannelID,
+			ID:      pcw.am.ID,
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Login",
+					Description: "The code has been timed out.",
+				},
+			},
+			Components: []discordgo.MessageComponent{},
+		})
+		pcw.am = nil
+	}
+
 	if !pcw.closed {
 		close(pcw.fin)
 		pcw.subscription()
 		pcw.closed = true
+
 		return true
 	}
 
@@ -64,6 +86,7 @@ func (c *AuthController) Setup(container di.Container, router fiber.Router) {
 	c.st = container.Get(static.DiState).(*dgrs.State)
 	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.oauthHandler = container.Get(static.DiOAuthHandler).(auth.RequestHandler)
+	c.cmdHandler = container.Get(static.DiCommandHandler).(*ken.Ken)
 
 	c.pushcodeSubs = timedmap.New(10 * time.Second)
 
@@ -101,7 +124,7 @@ func (c *AuthController) postAccessToken(ctx *fiber.Ctx) error {
 
 	ident, err := c.rth.ValidateRefreshToken(refreshToken)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).Error("WEBSERVER :: failed validating refresh token")
+		ctlLog.Error().Err(err).Msg("Failed validating refresh token")
 	}
 	if ident == "" {
 		return fiber.ErrUnauthorized
@@ -150,6 +173,16 @@ func (c *AuthController) postLogout(ctx *fiber.Ctx) error {
 	return ctx.JSON(models.Ok)
 }
 
+// @Summary Pushcode
+// @Description Send a login push code resulting in a long-fetch request waiting for the code to be sent to shinpurus DMs.
+// @Tags Authorization
+// @Accept json
+// @Produce json
+// @Param payload body models.PushCodeRequest true "The push code."
+// @Success 200 {object} models.Status
+// @Success 400 {object} models.Status
+// @Success 410 {object} models.Status
+// @Router /auth/pushcode [post]
 func (c *AuthController) pushCode(ctx *fiber.Ctx) (err error) {
 	var req models.PushCodeRequest
 	if err = ctx.BodyParser(&req); err != nil {
@@ -161,43 +194,70 @@ func (c *AuthController) pushCode(ctx *fiber.Ctx) (err error) {
 	}
 
 	ipaddr := ctx.IP()
+	if ipaddr == "" {
+		// When the IP address is empty, which might happen, just
+		// generate a new pcw for each request to avoid conflicts.
+		ipaddr = xid.New().String()
+	}
+
 	pcw, ok := c.pushcodeSubs.GetValue(ipaddr).(*pushCodeWaiter)
 	if !ok {
 		pcw = new(pushCodeWaiter)
-		c.pushcodeSubs.Set(ipaddr, pcw, 30*time.Second, func(_ interface{}) {
+		c.pushcodeSubs.Set(ipaddr, pcw, pushcodeTimeout, func(_ any) {
 			pcw.close()
 		})
 
 		pcw.code = req.Code
-		pcw.fin = make(chan struct{}, 1)
-		pcw.subscription = c.st.Subscribe("dms", func(scan func(v interface{}) error) {
+		pcw.fin = make(chan *discordgo.Message)
+		pcw.subscription = c.st.Subscribe("dms", func(scan func(v any) error) {
 			var msg discordgo.Message
 			if err = scan(&msg); err != nil {
-				logrus.WithError(err).Error("failed scanning message from 'dms' event bus")
+				ctlLog.Error().Err(err).Msg("failed scanning message from 'dms' event bus")
 				return
 			}
 			if msg.Content == pcw.code && msg.Author != nil {
-				pcw.res = &msg
-				pcw.fin <- struct{}{}
+				am, err := acceptmsg.New().
+					WithKen(c.cmdHandler).
+					DeleteAfterAnswer().WithEmbed(&discordgo.MessageEmbed{
+					Title: "Login",
+					Description: "Do you really want to log in to the web interface using this " +
+						"login code?\n\n⚠️ **Never __ever__ enter a login code here you got from someone else!**\n" +
+						"If you got this login code from someone else, press `Cancel` or do nothing!",
+					Color: static.ColorEmbedOrange,
+				}).WithAcceptButton(discordgo.Button{
+					Label: "Accept",
+					Style: discordgo.SuccessButton,
+				}).WithDeclineButton(discordgo.Button{
+					Label: "Cancel",
+					Style: discordgo.DangerButton,
+				}).DoOnAccept(func(ctx ken.ComponentContext) error {
+					pcw.am = nil
+					pcw.fin <- &msg
+					return nil
+				}).Send(msg.ChannelID)
+				if err == nil {
+					pcw.am = am
+				}
 			}
 		})
 	} else {
+		log.Debug().Field("ipaddr", ipaddr).Msg("Reusing pushcode handler for this client")
 		pcw.code = req.Code
 	}
 
-	<-pcw.fin
-	if pcw.res == nil {
+	res := <-pcw.fin
+	if res == nil {
 		err = fiber.NewError(fiber.StatusGone, "timeout")
 		return
 	}
 
 	c.pushcodeSubs.Remove(ipaddr)
 	if pcw.close() {
-		util.SendEmbed(c.session, pcw.res.ChannelID,
-			"You will now being logged in!", "", static.ColorEmbedGreen)
+		util.SendEmbed(c.session, res.ChannelID,
+			"You are now being logged in!", "", static.ColorEmbedGreen)
 	}
 
-	err = c.oauthHandler.BindRefreshToken(ctx, pcw.res.Author.ID)
+	err = c.oauthHandler.BindRefreshToken(ctx, res.Author.ID)
 	if err != nil {
 		return
 	}

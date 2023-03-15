@@ -1,9 +1,9 @@
 package util
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 	"github.com/zekroTJA/shinpuru/pkg/versioncheck"
+	"github.com/zekrotja/rogu/log"
 )
 
 var (
@@ -18,7 +18,7 @@ func CheckForUpdate() (isOld bool, current, latest versioncheck.Semver) {
 
 	latest, err := versionProvider.GetLatestVersion()
 	if err != nil {
-		logrus.WithError(err).Error("VERSIONCHECK :: Failed retrieving latest version")
+		log.Error().Tag("VersionCheck").Err(err).Msg("Failed retrieving latest version")
 		return
 	}
 
@@ -30,7 +30,7 @@ func CheckForUpdate() (isOld bool, current, latest versioncheck.Semver) {
 func mustCurrSemver() *versioncheck.Semver {
 	curr, err := versioncheck.ParseSemver(embedded.AppVersion)
 	if err != nil {
-		logrus.WithError(err).WithField("retrieved", embedded.AppVersion).Error("VERSIONCHECK :: Failed parsing current version - versioncheck skipped")
+		log.Error().Tag("VersionCheck").Err(err).Field("retrieved", embedded.AppVersion).Msg("Failed parsing current version - versioncheck skipped")
 		return nil
 	}
 	return &curr

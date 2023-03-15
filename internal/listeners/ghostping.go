@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/timedmap"
@@ -27,6 +28,7 @@ type ListenerGhostPing struct {
 	msgCache        *timedmap.TimedMap
 	recentlyDeleted map[string]struct{}
 	st              *dgrs.State
+	log             rogu.Logger
 }
 
 func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
@@ -35,6 +37,7 @@ func NewListenerGhostPing(container di.Container) *ListenerGhostPing {
 		gl:       container.Get(static.DiGuildLog).(guildlog.Logger).Section("ghostping"),
 		st:       container.Get(static.DiState).(*dgrs.State),
 		msgCache: timedmap.New(gpTick),
+		log:      log.Tagged("Ghostping"),
 	}
 }
 
@@ -83,7 +86,7 @@ func (l *ListenerGhostPing) HandlerMessageDelete(s *discordgo.Session, e *discor
 	gpMsg, err := l.db.GetGuildGhostpingMsg(deletedMsg.GuildID)
 	if err != nil {
 		if !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", deletedMsg.GuildID).Error("GHOSTPING :: failed getting ghost ping msg")
+			l.log.Error().Err(err).Field("gid", deletedMsg.GuildID).Msg("Failed getting ghost ping msg")
 			l.gl.Errorf(deletedMsg.GuildID, "Failed getting ghost ping message: %s", err.Error())
 		}
 		return

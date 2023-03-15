@@ -7,7 +7,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -17,6 +16,8 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 const timeout = 48 * time.Hour
@@ -27,6 +28,7 @@ type impl struct {
 	cfg config.Provider
 	gl  guildlog.Logger
 	tp  timeprovider.Provider
+	log rogu.Logger
 }
 
 var _ Provider = (*impl)(nil)
@@ -38,6 +40,7 @@ func New(ctn di.Container) Provider {
 		cfg: ctn.Get(static.DiConfig).(config.Provider),
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("verification"),
 		tp:  ctn.Get(static.DiTimeProvider).(timeprovider.Provider),
+		log: log.Tagged("Verification"),
 	}
 }
 
@@ -124,7 +127,7 @@ func (p *impl) Verify(userID string) (err error) {
 func (p *impl) KickRoutine() {
 	queue, err := p.db.GetVerificationQueue("", "")
 	if err != nil {
-		logrus.WithError(err).Error("Failed getting verification queue from database")
+		p.log.Error().Err(err).Msg("Failed getting verification queue from database")
 		return
 	}
 
@@ -138,20 +141,20 @@ func (p *impl) KickRoutine() {
 		if err = p.s.GuildMemberTimeout(e.GuildID, e.UserID, nil); err != nil {
 			unknownMember = discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMember)
 			if !unknownMember {
-				logrus.WithError(err).Error("Failed removing member timeout")
+				p.log.Error().Err(err).Msg("Failed removing member timeout")
 				p.gl.Errorf(e.GuildID, "Failed removing member timeout: %s", err.Error())
 			}
 		}
 
 		if !unknownMember {
 			if err = p.s.GuildMemberDelete(e.GuildID, e.UserID); err != nil {
-				logrus.WithError(err).Error("Failed kicking member")
+				p.log.Error().Err(err).Msg("Failed kicking member")
 				p.gl.Errorf(e.GuildID, "Failed kicking member: %s", err.Error())
 			}
 		}
 
 		if _, err = p.db.RemoveVerificationQueue(e.GuildID, e.UserID); err != nil {
-			logrus.WithError(err).Error("Failed removing member from verification queue")
+			p.log.Error().Err(err).Msg("Failed removing member from verification queue")
 			p.gl.Errorf(e.GuildID, "Failed removing member from verification queue: %s", err.Error())
 		}
 	}

@@ -17,7 +17,7 @@ RUN go build -o ./bin/shinpuru ./cmd/shinpuru/main.go
 RUN go build -o ./bin/healthcheck ./cmd/healthcheck/main.go
 
 # ------------------------------------------------------------
-# --- STAGE 2.1: Build Web App Package
+# --- STAGE 2.2: Build Web App Package
 FROM node:18-alpine AS build-fe
 WORKDIR /build
 
@@ -26,20 +26,7 @@ COPY web .
 # Get dependencies
 RUN yarn
 # Build static web app files
-RUN npx ng build --configuration production \
-  --output-path dist
-
-# ------------------------------------------------------------
-# --- STAGE 2.2: Build Web App Package
-FROM node:18-alpine AS build-fenew
-WORKDIR /build
-
-# Copy web source files
-COPY web.new .
-# Get dependencies
-RUN yarn
-# Build static web app files
-RUN yarn build --base=/beta/ --outDir=dist
+RUN yarn build --base=/ --outDir=dist
 
 # ------------------------------------------------------------
 # --- STAGE 3: Final runtime environment
@@ -49,14 +36,13 @@ WORKDIR /app
 # Copy build artifacts from previous stages
 COPY --from=build-be /build/bin .
 COPY --from=build-fe /build/dist web/dist/web
-COPY --from=build-fenew /build/dist web.new/dist/web
 # Add CA certificates
 RUN apk add ca-certificates
 # Prepare directories
 RUN mkdir -p /etc/config \
   && mkdir -p /etc/db
 
-HEALTHCHECK --interval=30s --start-period=60s --timeout=10s --retries=3 \
+HEALTHCHECK --interval=15s --start-period=60s --timeout=10s --retries=3 \
     CMD /app/healthcheck -addr http://localhost:8080
 
 EXPOSE 8080

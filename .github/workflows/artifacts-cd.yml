@@ -25,12 +25,12 @@ jobs:
         run: yarn
       - name: Build Web App
         working-directory: ./web
-        run: npx ng build --configuration production --output-path ../bin/web/dist/web
+        run: yarn run build --base=/
       - name: Upload Artifcats
         uses: actions/upload-artifact@v2
         with:
           name: frontend
-          path: bin/web/dist/web
+          path: web/dist/web
 
   backend:
     name: Build Backend Artifacts

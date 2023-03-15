@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup/backupmodels"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -18,6 +17,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 
 	"github.com/bwmarrin/discordgo"
@@ -37,6 +38,7 @@ type GuildBackups struct {
 	st      storage.Storage
 	state   *dgrs.State
 	tp      timeprovider.Provider
+	log     rogu.Logger
 }
 
 // asyncWriteStatus writes the passed status to the
@@ -79,6 +81,7 @@ func New(container di.Container) *GuildBackups {
 	bck.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	bck.state = container.Get(static.DiState).(*dgrs.State)
 	bck.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
+	bck.log = log.Tagged("GuildBackup")
 	return bck
 }
 
@@ -90,17 +93,17 @@ func New(container di.Container) *GuildBackups {
 func (bck *GuildBackups) BackupAllGuilds() {
 	guilds, err := bck.guilds()
 
-	logrus.WithField("nGuilds", len(guilds)).Infof("Initializing guild backups")
+	bck.log.Info().Fields("nGuilds", len(guilds)).Msg("Backing up guilds ...")
 
 	if err != nil {
-		logrus.WithError(err).Error("failed getting backup guilds")
+		bck.log.Error().Err(err).Msg("Failed getting guilds to back up")
 		return
 	}
 
 	for _, g := range guilds {
 		err = bck.BackupGuild(g)
 		if err != nil {
-			logrus.WithError(err).WithField("gid", g).Error("Failed creating backup for guild")
+			bck.log.Error().Err(err).Field("gid", g).Msg("Failed creating backup for guild")
 			bck.gl.Errorf(g, "Failed creating guild backup: %s", err.Error())
 		}
 		time.Sleep(1 * time.Second)

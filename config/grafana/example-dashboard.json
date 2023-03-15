@@ -16,9 +16,207 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1625737916818,
+  "iteration": 1677943791639,
   "links": [],
   "panels": [
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 23,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.0.3",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"WARN\"}[$__interval]))",
+          "legendFormat": "{{logLevel}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Warn Log Entries",
+      "type": "stat"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 3,
+        "y": 0
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.0.3",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=\"ERROR\"}[$__interval]))",
+          "legendFormat": "{{logLevel}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Error Log Entries",
+      "type": "stat"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 6,
+        "y": 0
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.0.3",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({app=\"shinpuru\", instance=\"$instance\", logLevel=~\"(FATAL|PANIC)\"}[$__interval]))",
+          "legendFormat": "{{logLevel}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Fatal Log Entries",
+      "type": "stat"
+    },
+    {
+      "datasource": "Loki",
+      "gridPos": {
+        "h": 7,
+        "w": 15,
+        "x": 9,
+        "y": 0
+      },
+      "id": 27,
+      "options": {
+        "dedupStrategy": "numbers",
+        "enableLogDetails": true,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "expr": "{app=\"shinpuru\", instance=\"$instance\"}",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest Logs",
+      "type": "logs"
+    },
     {
       "aliasColors": {},
       "bars": false,
@@ -29,9 +227,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 12,
+        "w": 8,
         "x": 0,
-        "y": 0
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 4,
@@ -61,9 +259,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(restapi_requests_total{job=\"$instance\"}[$interval])",
+          "exemplar": true,
+          "expr": "sum by (method) (rate(restapi_requests_total{job=\"$instance\"}[$interval]))",
           "interval": "",
-          "legendFormat": "{{method}} {{endpoint}}",
+          "legendFormat": "{{method}}",
           "refId": "A"
         }
       ],
@@ -72,6 +271,97 @@
       "timeRegions": [],
       "timeShift": null,
       "title": "REST API Request Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 7
+      },
+      "hiddenSeries": false,
+      "id": 21,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.0.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum by (status) (rate(restapi_requests_total{job=\"$instance\"}[$interval]))",
+          "interval": "",
+          "legendFormat": "{{method}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "REST API Request Rate (by status)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -125,9 +415,9 @@
       "datasource": null,
       "gridPos": {
         "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 0
+        "w": 8,
+        "x": 16,
+        "y": 7
       },
       "heatmap": {},
       "hideZeroBuckets": false,
@@ -187,7 +477,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 2,
@@ -276,7 +566,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 12,
@@ -306,7 +596,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(discord_commands_prcessed_total{job=\"$instance\"}[$interval])",
+          "exemplar": true,
+          "expr": "rate(discord_commands_processed_total{job=\"$instance\"}[$interval])",
           "interval": "",
           "legendFormat": "{{command}}",
           "refId": "A"
@@ -365,7 +656,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 18
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 6,
@@ -460,7 +751,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 18
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 8,
@@ -520,7 +811,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Panel Title",
+      "title": "Memory Usage",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -569,7 +860,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 18
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 10,
@@ -703,7 +994,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 26
+        "y": 33
       },
       "id": 16,
       "options": {
@@ -784,7 +1075,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 26
+        "y": 33
       },
       "id": 18,
       "options": {
@@ -865,7 +1156,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 26
+        "y": 33
       },
       "id": 20,
       "options": {
@@ -881,7 +1172,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(redis_commands_executed_total[$interval])",
+          "expr": "rate(redis_commands_executed_total{job=\"$instance\"}[$interval])",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -900,7 +1191,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "shinpuru-canary",
           "value": "shinpuru-canary"
         },
@@ -1013,12 +1304,12 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "shinpuru",
   "uid": "88P0Omznk",
-  "version": 5
+  "version": 15
 }

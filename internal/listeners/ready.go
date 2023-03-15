@@ -5,8 +5,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -24,6 +25,7 @@ type ListenerReady struct {
 	sched scheduler.Provider
 	st    *dgrs.State
 	tp    timeprovider.Provider
+	log   rogu.Logger
 }
 
 func NewListenerReady(container di.Container) *ListenerReady {
@@ -33,16 +35,17 @@ func NewListenerReady(container di.Container) *ListenerReady {
 		sched: container.Get(static.DiScheduler).(scheduler.Provider),
 		st:    container.Get(static.DiState).(*dgrs.State),
 		tp:    container.Get(static.DiTimeProvider).(timeprovider.Provider),
+		log:   log.Tagged("Ready"),
 	}
 }
 
 func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
-	logrus.WithFields(logrus.Fields{
-		"username": e.User.String(),
-		"id":       e.User.ID,
-		"nGuilds":  len(e.Guilds),
-	})
-	logrus.Infof("Invite link: %s", util.GetInviteLink(e.User.ID))
+	l.log.Info().Fields(
+		"username", e.User.String(),
+		"id", e.User.ID,
+		"nGuilds", len(e.Guilds),
+	).Msg("Discord Connection ready")
+	l.log.Info().Msgf("Invite link: %s", util.GetInviteLink(e.User.ID))
 
 	s.UpdateGameStatus(0, static.StdMotd)
 
@@ -58,7 +61,7 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 
 	votes, err := l.db.GetVotes()
 	if err != nil {
-		logrus.WithError(err).Error("Failed getting votes from DB")
+		l.log.Error().Err(err).Msg("Failed getting votes from DB")
 	} else {
 		vote.VotesRunning = votes
 		_, err = l.sched.Schedule("*/10 * * * * *", func() {
@@ -67,35 +70,35 @@ func (l *ListenerReady) Handler(s *discordgo.Session, e *discordgo.Ready) {
 				if (v.Expires != time.Time{}) && v.Expires.Before(now) {
 					v.Close(s, vote.VoteStateExpired)
 					if err = l.db.DeleteVote(v.ID); err != nil {
-						logrus.WithError(err).WithField("gid", v.GuildID).WithField("vid", v.ID).Error("Failed updating vote")
+						log.Error().Tag("LCT").Err(err).Fields("gid", v.GuildID, "vid", v.ID).Msg("Failed updating vote")
 						l.gl.Errorf(v.GuildID, "Failed updating vote (%s): %s", v.ID, err.Error())
 					}
 				}
 			}
 		})
 		if err != nil {
-			logrus.WithError(err).Error("LCT :: failed scheduling votes job")
+			log.Error().Tag("LCT").Err(err).Msg("Failed scheduling votes job")
 		}
 	}
 
 	time.Sleep(1 * time.Second)
 
-	logrus.WithField("n", len(e.Guilds)).Info("READY :: caching members of guilds ...")
+	l.log.Info().Field("n", len(e.Guilds)).Msg("Start caching members of guilds ...")
 	for _, g := range e.Guilds {
 		gs, _ := l.st.Guild(g.ID)
 		if gs != nil && gs.MemberCount > 0 {
 			membs, _ := l.st.Members(g.ID)
 			if len(membs) >= gs.MemberCount {
-				logrus.WithField("gid", g.ID).Debug("READY :: skip fetching members because state is hydrated")
+				l.log.Debug().Field("gid", g.ID).Msg("Skip fetching members because state is hydrated")
 				continue
 			}
 		}
 
 		if _, err := l.st.Members(g.ID, true); err != nil {
-			logrus.WithError(err).WithField("gid", g.ID).Error("READY :: failed fetchting members")
+			l.log.Error().Err(err).Field("gid", g.ID).Msg("Failed fetchting members")
 		} else {
-			logrus.WithField("gid", g.ID).Debug("READY :: fetched members")
+			l.log.Debug().Field("gid", g.ID).Msg("Fetched members")
 		}
 	}
-	logrus.Info("READY :: caching members finished")
+	l.log.Info().Msg("Caching members finished")
 }

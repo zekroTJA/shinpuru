@@ -7,7 +7,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/ratelimit"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -19,6 +18,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/voidbuffer/v2"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 const (
@@ -31,11 +32,12 @@ type guildState struct {
 }
 
 type ListenerAntiraid struct {
-	db database.Database
-	gl guildlog.Logger
-	st dgrs.IState
-	vs verification.Provider
-	tp timeprovider.Provider
+	db  database.Database
+	gl  guildlog.Logger
+	st  dgrs.IState
+	vs  verification.Provider
+	tp  timeprovider.Provider
+	log rogu.Logger
 
 	mtx         sync.Mutex
 	guildStates map[string]*guildState
@@ -51,19 +53,20 @@ func NewListenerAntiraid(container di.Container) *ListenerAntiraid {
 		st:          container.Get(static.DiState).(dgrs.IState),
 		vs:          container.Get(static.DiVerification).(verification.Provider),
 		tp:          container.Get(static.DiTimeProvider).(timeprovider.Provider),
+		log:         log.Tagged("Antiraid"),
 	}
 }
 
 func (l *ListenerAntiraid) addToJoinlog(e *discordgo.GuildMemberAdd) {
 	creation, err := discordutil.GetDiscordSnowflakeCreationTime(e.User.ID)
 	if err != nil {
-		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed getting creation date from user snowflake")
+		l.log.Error().Err(err).Fields("gid", e.GuildID, "uid", e.User.ID).Msg("Failed getting creation date from user snowflake")
 		l.gl.Errorf(e.GuildID, "Failed getting creation date from user snowflake (%s): %s", e.User.ID, err.Error())
 		return
 	}
 
 	if err = l.db.AddToAntiraidJoinList(e.GuildID, e.User.ID, e.User.String(), creation); err != nil {
-		logrus.WithError(err).WithField("gid", e.GuildID).WithField("uid", e.User.ID).Error("Failed adding user to joinlist")
+		l.log.Error().Err(err).Fields("gid", e.GuildID, "uid", e.User.ID).Msg("Failed adding user to joinlist")
 		l.gl.Errorf(e.GuildID, "Failed adding user to joinlist (%s): %s", e.User.ID, err.Error())
 	}
 }
@@ -123,7 +126,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 
 	guild, err := l.st.Guild(e.GuildID, true)
 	if err != nil {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild")
+		l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed getting guild")
 		return
 	}
 
@@ -149,14 +152,14 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 
 	members, err := l.st.Members(e.GuildID)
 	if err != nil {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed getting guild members")
+		l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed getting guild members")
 		l.gl.Errorf(e.GuildID, "Failed getting guild members: %s", err.Error())
 		return
 	}
 
 	l.triggers.Set(e.GuildID, l.tp.Now(), antiraid.TriggerLifetime, func(v interface{}) {
 		if err = l.db.FlushAntiraidJoinList(e.GuildID); err != nil && !database.IsErrDatabaseNotFound(err) {
-			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed flushing joinlist")
+			l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed flushing joinlist")
 			l.gl.Errorf(e.GuildID, "Failed flushing joinlist: %s", err.Error())
 		}
 	})
@@ -185,13 +188,13 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 
 	ok, err = l.db.GetAntiraidVerification(e.GuildID)
 	if err != nil {
-		logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed gettings antiraid verification state")
+		l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed gettings antiraid verification state")
 		l.gl.Errorf(e.GuildID, "Failed gettings antiraid verification state: %s", err.Error())
 	}
 	if ok {
 		err = l.vs.SetEnabled(e.GuildID, true)
 		if err != nil {
-			logrus.WithError(err).WithField("gid", e.GuildID).Error("Failed enabling verification")
+			l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed enabling verification")
 			l.gl.Errorf(e.GuildID, "Failed enabling verification: %s", err.Error())
 		}
 	}
@@ -205,7 +208,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	state, err = l.db.GetAntiraidState(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid state")
+		l.log.Error().Err(err).Fields("gid", gid).Msg("Failed getting antiraid state")
 		l.gl.Errorf(gid, "Failed getting antiraid state: %s", err.Error())
 		return
 	}
@@ -215,7 +218,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	limit, err = l.db.GetAntiraidRegeneration(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid regeneration")
+		l.log.Error().Err(err).Fields("gid", gid).Msg("Failed getting antiraid regeneration")
 		l.gl.Errorf(gid, "Failed getting antiraid regeneration: %s", err.Error())
 		return
 	}
@@ -225,7 +228,7 @@ func (l *ListenerAntiraid) getGuildSettings(gid string) (ok bool, limit, burst i
 
 	burst, err = l.db.GetAntiraidBurst(gid)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).WithField("gid", gid).Error("Failed getting antiraid burst")
+		l.log.Error().Err(err).Fields("gid", gid).Msg("Failed getting antiraid burst")
 		l.gl.Errorf(gid, "Failed getting antiraid burst: %s", err.Error())
 		return
 	}

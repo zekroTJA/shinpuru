@@ -105,8 +105,24 @@ logging:
   commandlogging: true
   # Set the log level of the logger
   # Log levels can be found here:
-  # https://github.com/op/go-logging/blob/master/level.go#L20
+  # https://github.com/zekroTJA/rogu/blob/main/level/level.go
   loglevel: 4
+  # Specify Grafana Loki configuration
+  # for log aggregation
+  loki:
+    # Whether to enable sending logs to loki or not
+    enabled: false
+    # The address of the loki instance
+    address: "https://loki.example.com"
+    # The basic auth user name (leave empty if not used)
+    username: "username"
+    # The basic auth password (leave empty if not used)
+    password: "2374n8er7nt8034675782345"
+    # Additional labels set to all log entries.
+    labels:
+      # Some examples ...
+      app: "shinpuru"
+      instance: "main"
 
 # Storage interface configuration
 storage:

@@ -5,19 +5,21 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 type ListenerRoleselect struct {
 	db  database.Database
 	ken ken.IKen
 	st  dgrs.IState
+	log rogu.Logger
 }
 
 func NewListenerRoleselect(container di.Container) *ListenerRoleselect {
@@ -25,6 +27,7 @@ func NewListenerRoleselect(container di.Container) *ListenerRoleselect {
 		db:  container.Get(static.DiDatabase).(database.Database),
 		ken: container.Get(static.DiCommandHandler).(ken.IKen),
 		st:  container.Get(static.DiState).(dgrs.IState),
+		log: log.Tagged("RoleSelect"),
 	}
 }
 
@@ -41,7 +44,7 @@ func (t *ListenerRoleselect) HandlerMessageBulkDelete(s discordutil.ISession, e 
 func (t *ListenerRoleselect) Ready(s discordutil.ISession, e *discordgo.Ready) {
 	roleSelects, err := t.db.GetRoleSelects()
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).Error("ROLESELECT :: Retrieving stored selects failed")
+		t.log.Error().Err(err).Msg("Retrieving stored selects failed")
 	}
 
 	type perMessage struct {
@@ -65,7 +68,7 @@ func (t *ListenerRoleselect) Ready(s discordutil.ISession, e *discordgo.Ready) {
 	}
 
 	if len(perMessages) > 0 {
-		logrus.WithField("n-messages", len(perMessages)).Info("ROLESELECT :: Re-attaching button handlers ...")
+		t.log.Info().Field("n-messages", len(perMessages)).Msg("Re-attaching button handlers ...")
 	}
 
 	for _, pm := range perMessages {
@@ -81,20 +84,19 @@ func (t *ListenerRoleselect) Ready(s discordutil.ISession, e *discordgo.Ready) {
 		_, err = util.AttachRoleSelectButtons(b, roles)
 		if err != nil {
 			if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownMessage) {
-				logrus.
-					WithField("guild", pm.GuildID).
-					WithField("channel", pm.ChannelID).
-					WithField("message", pm.MessageID).
-					Info("ROLESELECT :: Removing role select entries for deleted message")
+				t.log.Info().Fields(
+					"guild", pm.GuildID,
+					"channel", pm.ChannelID,
+					"message", pm.MessageID,
+				).Msg("Removing role select entries for deleted message")
 				t.db.RemoveRoleSelect(pm.GuildID, pm.ChannelID, pm.MessageID)
 				continue
 			}
-			logrus.
-				WithError(err).
-				WithField("guild", pm.GuildID).
-				WithField("channel", pm.ChannelID).
-				WithField("message", pm.MessageID).
-				Error("ROLESELECT :: Re-Attaching failed")
+			t.log.Error().Fields(
+				"guild", pm.GuildID,
+				"channel", pm.ChannelID,
+				"message", pm.MessageID,
+			).Err(err).Msg("Re-Attaching failed")
 		}
 	}
 }
@@ -102,6 +104,6 @@ func (t *ListenerRoleselect) Ready(s discordutil.ISession, e *discordgo.Ready) {
 func (t *ListenerRoleselect) deleteForMessage(guildID, channelID, messageID string) {
 	err := t.db.RemoveRoleSelect(guildID, channelID, messageID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
-		logrus.WithError(err).WithField("guild", guildID).Error("ROLESELECT :: Removing etries failed")
+		t.log.Error().Err(err).Field("guild", guildID).Msg("Removing etries failed")
 	}
 }

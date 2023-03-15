@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -100,13 +102,16 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	rep, err := c.db.GetReportsFiltered(req.GuildID, uid, 1, 0, 10000)
-	if err != nil && !database.IsErrDatabaseNotFound(err) {
+	applicableReps, err := c.getUserApplicableReports(uid)
+	if err != nil {
 		return err
 	}
 
-	if rep == nil || len(rep) == 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "you have no filed ban reports on this guild")
+	rep, i := sop.Slice(applicableReps).First(func(v sharedmodels.Report, i int) bool {
+		return v.GuildID == req.GuildID
+	})
+	if i == -1 {
+		return fiber.NewError(fiber.StatusBadRequest, "you are not able to create an unban request for this guild")
 	}
 
 	requests, err := c.db.GetGuildUserUnbanRequests(uid, req.GuildID)
@@ -123,12 +128,13 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 	}
 
 	finalReq := sharedmodels.UnbanRequest{
-		ID:      snowflakenodes.NodeUnbanRequests.Generate(),
-		UserID:  uid,
-		GuildID: req.GuildID,
-		UserTag: user.String(),
-		Message: req.Message,
-		Status:  sharedmodels.UnbanRequestStatePending,
+		ID:       snowflakenodes.NodeUnbanRequests.Generate(),
+		UserID:   uid,
+		GuildID:  req.GuildID,
+		UserTag:  user.String(),
+		Message:  req.Message,
+		Status:   sharedmodels.UnbanRequestStatePending,
+		ReportID: rep.ID,
 	}
 
 	if err := c.db.AddUnbanRequest(finalReq); err != nil && !database.IsErrDatabaseNotFound(err) {
@@ -155,35 +161,21 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
-	guildsArr, err := c.getUserBannedGuilds(uid)
+	applicableReps, err := c.getUserApplicableReports(uid)
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(models.NewListResponse(guildsArr))
-}
-
-// --- HELPERS ------------
-
-func (c *UnbanrequestsController) getUserBannedGuilds(userID string) ([]*models.GuildReduced, error) {
-	reps, err := c.db.GetReportsFiltered("", userID, 1, 0, 100000)
-	if err != nil {
-		if database.IsErrDatabaseNotFound(err) {
-			return []*models.GuildReduced{}, nil
-		}
-		return nil, err
-	}
-
 	guilds := make(map[string]*models.GuildReduced)
-	for _, r := range reps {
-		if _, ok := guilds[r.GuildID]; ok {
+	for _, rep := range applicableReps {
+		if _, ok := guilds[rep.GuildID]; ok {
 			continue
 		}
-		guild, err := c.st.Guild(r.GuildID)
+		guild, err := c.st.Guild(rep.GuildID)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		guilds[r.GuildID] = models.GuildReducedFromGuild(guild)
+		guilds[rep.GuildID] = models.GuildReducedFromGuild(guild)
 	}
 
 	guildsArr := make([]*models.GuildReduced, len(guilds))
@@ -193,5 +185,63 @@ func (c *UnbanrequestsController) getUserBannedGuilds(userID string) ([]*models.
 		i++
 	}
 
-	return guildsArr, nil
+	return ctx.JSON(models.NewListResponse(guildsArr))
+}
+
+// --- HELPERS ------------
+
+func (c *UnbanrequestsController) getUserApplicableReports(userID string) ([]sharedmodels.Report, error) {
+	// Get all ban reports
+	banReps, err := c.db.GetReportsFiltered(
+		"", userID, sharedmodels.TypeBan, 0, 100000)
+	if err != nil {
+		if database.IsErrDatabaseNotFound(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	// Get all unban accepted reports
+	unbanAcceptedReps, err := c.db.GetReportsFiltered(
+		"", userID, sharedmodels.TypeUnban, 0, 100000)
+	if err != nil {
+		if database.IsErrDatabaseNotFound(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	// Get all unban rejected reports
+	unbanRejectedReps, err := c.db.GetReportsFiltered(
+		"", userID, sharedmodels.TypeUnbanRejected, 0, 100000)
+	if err != nil {
+		if database.IsErrDatabaseNotFound(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	applicableReps := make([]sharedmodels.Report, 0, len(banReps))
+	for _, banRep := range banReps {
+		_, i := sop.Slice(unbanAcceptedReps).First(func(v sharedmodels.Report, i int) bool {
+			return v.GuildID == banRep.GuildID &&
+				time.UnixMilli(banRep.ID.Time()).Before(time.UnixMilli(v.ID.Time()))
+		})
+		if i != -1 {
+			continue
+		}
+		_, i = sop.Slice(unbanRejectedReps).First(func(v sharedmodels.Report, i int) bool {
+			return v.GuildID == banRep.GuildID &&
+				time.UnixMilli(banRep.ID.Time()).Before(time.UnixMilli(v.ID.Time())) &&
+				time.UnixMilli(v.ID.Time()).
+					Add(sharedmodels.UnbanRequestCooldown).
+					After(time.Now())
+		})
+		if i != -1 {
+			continue
+		}
+		applicableReps = append(applicableReps, banRep)
+	}
+
+	return applicableReps, nil
 }

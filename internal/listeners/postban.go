@@ -6,7 +6,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/xid"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
@@ -16,6 +15,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 type ListenerPostBan struct {
@@ -24,6 +25,7 @@ type ListenerPostBan struct {
 	gl  guildlog.Logger
 	rep report.Provider
 	pmw permissions.Provider
+	log rogu.Logger
 }
 
 func NewListenerPostBan(ctn di.Container) ListenerPostBan {
@@ -33,6 +35,7 @@ func NewListenerPostBan(ctn di.Container) ListenerPostBan {
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("postban"),
 		rep: ctn.Get(static.DiReport).(report.Provider),
 		pmw: ctn.Get(static.DiPermissions).(permissions.Provider),
+		log: log.Tagged("PostBan"),
 	}
 }
 
@@ -62,8 +65,7 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 		}
 	}
 	if banEntry == nil {
-		logrus.WithField("guildid", e.GuildID).
-			Warn("could not find any ban entry in audit log")
+		t.log.Warn().Field("guildid", e.GuildID).Msg("Could not find any ban entry in audit log")
 		return
 	}
 
@@ -158,8 +160,6 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 }
 
 func (t ListenerPostBan) error(guildID string, msg string, err error) {
-	logrus.WithError(err).
-		WithField("guild", guildID).
-		Error(msg)
+	t.log.Error().Err(err).Field("guild", guildID).Msg(msg)
 	t.gl.Errorf(guildID, "%s: %s", msg, err.Error())
 }

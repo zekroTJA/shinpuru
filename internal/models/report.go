@@ -19,18 +19,23 @@ const (
 	TypeMute
 	TypeWarn
 	TypeAd
+	TypeUnban
+	TypeUnbanRejected
 
-	TypeMax       = iota - 1
-	TypesReserved = TypeWarn
+	TypeMax = iota - 1
 )
+
+const UnbanRequestCooldown = 14 * 24 * time.Hour // 14 days
 
 var (
 	ReportTypes = []string{
-		"KICK", // 0
-		"BAN",  // 1
-		"MUTE", // 2
-		"WARN", // 3
-		"AD",   // 4
+		"KICK",           // 0
+		"BAN",            // 1
+		"MUTE",           // 2
+		"WARN",           // 3
+		"AD",             // 4
+		"UNBAN ACCEPTED", // 5,
+		"UNBAN REJECTED", // 6
 	}
 
 	ReportColors = []int{
@@ -39,6 +44,8 @@ var (
 		0x009688, // 2
 		0xFB8C00, // 3
 		0x8E24AA, // 4
+		0x18dd8e, // 5
+		0x9518dd, // 6
 	}
 )
 
@@ -91,7 +98,7 @@ func (r *Report) AsEmbed(publicAddr string) *discordgo.MessageEmbed {
 			},
 			{
 				Inline: true,
-				Name:   "Victim",
+				Name:   "Target",
 				Value:  fmt.Sprintf("<@%s>", r.VictimID),
 			},
 			{
@@ -138,7 +145,7 @@ func (r *Report) AsEmbedField(publicAddr string) *discordgo.MessageEmbedField {
 
 	return &discordgo.MessageEmbedField{
 		Name: "Case " + r.ID.String(),
-		Value: fmt.Sprintf("Time: %s\nExecutor: <@%s>\nVictim: <@%s>\nType: `%s`\n%s__Reason__:\n%s",
+		Value: fmt.Sprintf("Time: %s\nExecutor: <@%s>\nTarget: <@%s>\nType: `%s`\n%s__Reason__:\n%s",
 			r.GetTimestamp().Format("2006/01/02 15:04:05"), r.ExecutorID, r.VictimID, ReportTypes[r.Type], attachmentTxt, r.Msg),
 	}
 }

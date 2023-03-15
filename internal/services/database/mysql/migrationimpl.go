@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
 )
 
@@ -25,25 +24,24 @@ func (m *MysqlMiddleware) Migrate() (err error) {
 			Version: -1,
 		}
 	} else if err != nil {
-		return
+		return err
 	}
 
 	tx, err := m.Db.Begin()
 	if err != nil {
-		return
+		return err
 	}
 	for i := mig.Version + 1; i < len(migrationFuncs); i++ {
-		logrus.WithField("version", i).Info("DATABASE :: applying migration")
+		m.log.Info().Field("version", i).Msg("Applying migration ...")
 		if err = migrationFuncs[i](tx); err != nil {
-			return
+			return err
 		}
 		if err = putMigrationVersion(tx, i); err != nil {
-			return
+			return err
 		}
 	}
-	err = tx.Commit()
 
-	return
+	return tx.Commit()
 }
 
 func (m *MysqlMiddleware) getLatestMigration() (mig *migration, err error) {
@@ -76,5 +74,5 @@ func createTableColumnIfNotExists(m *sql.Tx, table, definition string) (err erro
 		err = nil
 	}
 
-	return
+	return err
 }

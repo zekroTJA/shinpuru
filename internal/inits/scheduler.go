@@ -4,7 +4,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/robfig/cron/v3"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/backup"
 	"github.com/zekroTJA/shinpuru/internal/services/birthday"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -20,6 +19,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/twitchnotify"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 func InitScheduler(container di.Container) scheduler.Provider {
@@ -39,7 +40,10 @@ func InitScheduler(container di.Container) scheduler.Provider {
 
 	sched := &scheduler.CronScheduler{C: cron.New(cron.WithSeconds())}
 
-	schedule(sched, "refresh token cleanup",
+	log := log.Tagged("LCT")
+	log.Info().Msg("Initializing lifecycle timer ...")
+
+	schedule(log, sched, "refresh token cleanup",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -49,13 +53,13 @@ func InitScheduler(container di.Container) scheduler.Provider {
 		func() {
 			n, err := db.CleanupExpiredRefreshTokens()
 			if err != nil {
-				logrus.WithError(err).Error("LCT :: failed cleaning up expired refresh tokens")
+				log.Error().Err(err).Msg("Failed cleaning up expired refresh tokens")
 			} else if n > 0 {
-				logrus.WithField("n", n).Info("LCT :: cleaned up expired refresh tokens")
+				log.Info().Field("n", n).Msg("Cleaned up expired refresh tokens")
 			}
 		})
 
-	schedule(sched, "guild backup",
+	schedule(log, sched, "guild backup",
 		func() string {
 			return cfg.Config().Schedules.GuildBackups
 		},
@@ -63,7 +67,7 @@ func InitScheduler(container di.Container) scheduler.Provider {
 			go gb.BackupAllGuilds()
 		})
 
-	schedule(sched, "twitch notify",
+	schedule(log, sched, "twitch notify",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -75,11 +79,11 @@ func InitScheduler(container di.Container) scheduler.Provider {
 				return
 			}
 			if err := tnw.Handle(); err != nil {
-				logrus.WithError(err).Error("LCT :: failed executing twitch notify handler")
+				log.Error().Err(err).Msg("Failed executing twitch notify handler")
 			}
 		})
 
-	schedule(sched, "report expiration",
+	schedule(log, sched, "report expiration",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -88,18 +92,19 @@ func InitScheduler(container di.Container) scheduler.Provider {
 		},
 		func() {
 			rep.ExpireExpiredReports().ForEach(func(err error, _ int) {
-				lentry := logrus.WithError(err)
+				entry := log.Error().Err(err)
 				if repErr, ok := err.(*report.ReportError); ok {
-					lentry = lentry.
-						WithField("repID", repErr.ID).
-						WithField("gid", repErr.GuildID)
+					entry.Fields(
+						"repID", repErr.ID,
+						"gid", repErr.GuildID,
+					)
 					gl.Section("lct").Errorf(repErr.ID.String(), "Failed expiring report: %s", err.Error())
 				}
-				lentry.Error("LCT :: failed expiring report")
+				entry.Msg("Failed expiring report")
 			})
 		})
 
-	schedule(sched, "verification kick routine",
+	schedule(log, sched, "verification kick routine",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -107,7 +112,7 @@ func InitScheduler(container di.Container) scheduler.Provider {
 			return cfg.Config().Schedules.VerificationKick
 		}, vs.KickRoutine)
 
-	schedule(sched, "antiraid joinlog flush",
+	schedule(log, sched, "antiraid joinlog flush",
 		func() string {
 			if shardTotal > 1 && shardID != 0 {
 				return ""
@@ -115,37 +120,37 @@ func InitScheduler(container di.Container) scheduler.Provider {
 			return "@every 1h"
 		}, antiraid.FlushExpired(db, gl, tp))
 
-	schedule(sched, "birthday notifications",
+	schedule(log, sched, "birthday notifications",
 		func() string {
 			return "0 0 * * * *"
 		}, func() {
 			bd.Schedule()
 		})
 
-	schedule(sched, "guild membercount refresh",
+	schedule(log, sched, "guild membercount refresh",
 		staticSpec("@every 24h"),
 		func() {
 			err := util.UpdateGuildMemberStats(st, s)
 			if err != nil {
-				logrus.WithError(err).Error("Failed refreshing guild member stats")
+				log.Error().Err(err).Msg("Failed refreshing guild member stats")
 			} else {
-				logrus.Debug("Refreshed guild member stats")
+				log.Debug().Msg("Refreshed guild member stats")
 			}
 		})
 
 	return sched
 }
 
-func schedule(sched scheduler.Provider, name string, specGetter func() string, job func()) {
+func schedule(log rogu.Logger, sched scheduler.Provider, name string, specGetter func() string, job func()) {
 	spec := specGetter()
 	if spec == "" {
 		return
 	}
 	_, err := sched.Schedule(spec, job)
 	if err != nil {
-		logrus.WithError(err).WithField("name", name).Fatalf("LCT :: failed scheduling job")
+		log.Fatal().Err(err).Field("name", name).Msg("Failed scheduling job")
 	}
-	logrus.WithField("name", name).WithField("spec", spec).Info("LCT :: scheduled job")
+	log.Info().Fields("name", name, "spec", spec).Msg("Scheduled job")
 }
 
 func staticSpec(v string) func() string {

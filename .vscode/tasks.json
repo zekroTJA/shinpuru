@@ -17,7 +17,7 @@
       "command": "yarn",
       "args": ["start"],
       "options": {
-        "cwd": "${workspaceFolder}/web.new/"
+        "cwd": "${workspaceFolder}/web/"
       },
       "isBackground": true
     }

@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/util/embedded"
+	"github.com/zekrotja/rogu/log"
 )
 
 // GetQueryInt tries to get a value from request query
@@ -89,7 +89,7 @@ func GetFS() (f http.FileSystem, err error) {
 	}
 	_, err = fsys.Open("index.html")
 	if os.IsNotExist(err) {
-		logrus.Info("WS :: using web files form web/dist/web")
+		log.Info().Tag("WebServer").Msg("Using web files from web/dist/web")
 		f = http.Dir("web/dist/web")
 		err = nil
 		return
@@ -97,7 +97,7 @@ func GetFS() (f http.FileSystem, err error) {
 	if err != nil {
 		return
 	}
-	logrus.Info("WS :: using embedded web files")
+	log.Info().Tag("WebServer").Msg("Using embedded web files")
 	f = http.FS(fsys)
 	return
 }
@@ -116,7 +116,6 @@ func ParseBase64Data(b64Data string) (mime string, data []byte, err error) {
 		if i := strings.IndexRune(mime, ';'); i != -1 {
 			mime = mime[:i]
 		}
-		fmt.Println(mime)
 		dataS = split[1]
 	}
 

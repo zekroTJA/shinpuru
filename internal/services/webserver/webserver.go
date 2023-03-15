@@ -3,11 +3,11 @@ package webserver
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
@@ -42,7 +42,6 @@ func New(container di.Container) (ws *WebServer, err error) {
 		ServerHeader:          fmt.Sprintf("shinpuru v%s", embedded.AppVersion),
 		DisableStartupMessage: true,
 		ProxyHeader:           "X-Forwarded-For",
-		ETag:                  true,
 	})
 
 	if !embedded.IsRelease() {
@@ -54,7 +53,11 @@ func New(container di.Container) (ws *WebServer, err error) {
 		}))
 	}
 
-	ws.app.Use(mw.NewMetrics(), mw.Logger())
+	ws.app.Use(
+		etag.New(),
+		mw.NewMetrics(mw.MetricsOptions{IgnorePatterns: []string{`^\/api\/(?:v\d\/)?healthcheck`}}),
+		mw.Logger(),
+	)
 
 	rlc := ws.cfg.Config().WebServer.RateLimit
 	rlh := limiter.New(limiter.Config{
@@ -75,14 +78,6 @@ func New(container di.Container) (ws *WebServer, err error) {
 	new(controllers.ImagestoreController).Setup(ws.container, ws.app.Group("/imagestore"))
 	new(controllers.InviteController).Setup(ws.container, ws.app.Group("/invite"))
 	ws.registerRouter(new(v1.Router), []string{"/api/v1", "/api"}, rlh)
-
-	ws.app.Group("/beta").Use(filesystem.New(filesystem.Config{
-		Root:         http.Dir("web.new/dist/web"),
-		Browse:       true,
-		Index:        "index.html",
-		MaxAge:       3600,
-		NotFoundFile: "index.html",
-	}))
 
 	fs, err := wsutil.GetFS()
 	if err != nil {

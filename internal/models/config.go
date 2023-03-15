@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/lokiwriter"
 	"github.com/zekroTJA/shinpuru/pkg/random"
 )
 
@@ -150,11 +151,19 @@ type Cache struct {
 	CacheDatabase bool       `json:"cachedatabase"`
 }
 
+// LokiLogging holds configuration to push
+// logs to a loki instance.
+type LokiLogging struct {
+	Enabled bool `json:"enabled"`
+	lokiwriter.Options
+}
+
 // Loging holds configuration values for the
 // main logger.
 type Logging struct {
-	CommandLogging bool `json:"commandlogging"`
-	LogLevel       int  `json:"loglevel"`
+	CommandLogging bool        `json:"commandlogging"`
+	LogLevel       int         `json:"loglevel"`
+	Loki           LokiLogging `json:"loki"`
 }
 
 // TwitchApp holds credentials to connect to

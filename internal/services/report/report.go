@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sarulabs/di/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -17,10 +16,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
+	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekroTJA/shinpuru/pkg/multierror"
 	"github.com/zekroTJA/shinpuru/pkg/roleutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 )
 
 var (
@@ -35,6 +37,7 @@ type ReportService struct {
 	cfg config.Provider
 	st  dgrs.IState
 	tp  timeprovider.Provider
+	log rogu.Logger
 }
 
 type ReportError struct {
@@ -56,6 +59,7 @@ func New(container di.Container) (t *ReportService, err error) {
 		cfg: container.Get(static.DiConfig).(config.Provider),
 		st:  container.Get(static.DiState).(dgrs.IState),
 		tp:  container.Get(static.DiTimeProvider).(timeprovider.Provider),
+		log: log.Tagged("Reports"),
 	}, nil
 }
 
@@ -264,7 +268,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 		return
 	}
 
-	if err = r.ExpireLastReport(guildID, victimID, int(models.TypeMute)); err != nil {
+	if err = r.ExpireLastReport(guildID, victimID, models.TypeMute); err != nil {
 		return
 	}
 
@@ -286,7 +290,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 			},
 			{
 				Inline: true,
-				Name:   "Victim",
+				Name:   "Target",
 				Value:  fmt.Sprintf("<@%s>", victimID),
 			},
 			{
@@ -313,13 +317,14 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 	return
 }
 
-func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
+func (r *ReportService) RevokeReport(
+	rep models.Report,
+	executorID string,
+	reason string,
 	wsPublicAddr string,
-	db database.Database,
-	s discordutil.ISession,
 ) (emb *discordgo.MessageEmbed, err error) {
 
-	if err = db.DeleteReport(rep.ID); err != nil {
+	if err = r.db.DeleteReport(rep.ID); err != nil {
 		return
 	}
 
@@ -346,18 +351,41 @@ func (r *ReportService) RevokeReport(rep models.Report, executorID, reason,
 		},
 	}
 
-	if modlogChan, err := db.GetGuildModLog(rep.GuildID); err == nil {
-		s.ChannelMessageSendEmbed(modlogChan, emb)
+	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
+		r.s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
-	dmChan, err := s.UserChannelCreate(rep.VictimID)
+	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
 	if err == nil {
-		s.ChannelMessageSendEmbed(dmChan.ID, emb)
+		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
 	return
 }
 
-func (r *ReportService) ExpireLastReport(guildID, victimID string, typ int) (err error) {
+func (r *ReportService) UnbanReport(
+	unbanReq models.UnbanRequest,
+	executorID string,
+	reason string,
+	isUnban bool,
+) (emb *discordgo.MessageEmbed, err error) {
+
+	newRep := models.Report{
+		Type:       inline.II(isUnban, models.TypeUnban, models.TypeUnbanRejected),
+		GuildID:    unbanReq.GuildID,
+		ExecutorID: executorID,
+		VictimID:   unbanReq.UserID,
+		Msg:        reason,
+	}
+
+	_, err = r.PushReport(newRep)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (r *ReportService) ExpireLastReport(guildID, victimID string, typ models.ReportType) (err error) {
 	reps, err := r.db.GetReportsFiltered(guildID, victimID, typ, 0, 1)
 	if err != nil {
 		return
@@ -373,14 +401,14 @@ func (r *ReportService) ExpireExpiredReports() (mErr *multierror.MultiError) {
 
 	reps, err := r.db.GetExpiredReports()
 	mErr.Append(err)
-	logrus.WithField("n", len(reps)).Debug("REPORTS :: start expiring cleanup ...")
+	r.log.Debug().Field("n", len(reps)).Msg("Start expiring cleanup ...")
 
 	expIDs := make([]string, 0, len(reps))
 	for _, rep := range reps {
-		logrus.WithFields(logrus.Fields{
-			"id":  rep.ID,
-			"typ": rep.Type,
-		}).Debug("REPORTS :: expiring report")
+		r.log.Debug().Fields(
+			"id", rep.ID,
+			"typ", rep.Type,
+		).Msg("Expiring report")
 		err = r.revokeReportOnExpiration(rep)
 		if err != nil && !discordutil.IsErrCode(err, discordgo.ErrCodeUnknownBan) {
 			mErr.Append(&ReportError{

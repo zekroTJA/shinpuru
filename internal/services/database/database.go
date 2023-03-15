@@ -121,7 +121,7 @@ type Database interface {
 	DeleteReport(id snowflake.ID) error
 	GetReport(id snowflake.ID) (models.Report, error)
 	GetReportsGuild(guildID string, offset, limit int) ([]models.Report, error)
-	GetReportsFiltered(guildID, memberID string, repType, offset, limit int) ([]models.Report, error)
+	GetReportsFiltered(guildID, memberID string, repType models.ReportType, offset, limit int) ([]models.Report, error)
 	GetReportsGuildCount(guildID string) (int, error)
 	GetReportsFilteredCount(guildID, memberID string, repType int) (int, error)
 	GetExpiredReports() ([]models.Report, error)

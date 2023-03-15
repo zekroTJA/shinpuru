@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -61,8 +60,6 @@ func (c *PublicController) getGuild(ctx *fiber.Ctx) error {
 			return fiber.ErrNotFound
 		}
 	}
-
-	fmt.Println(state)
 
 	if state.AllowedOrigins == "" {
 		state.AllowedOrigins = "*"

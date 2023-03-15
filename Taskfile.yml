@@ -28,8 +28,6 @@ tasks:
       - cp {{.BIN_DIR}}/shinpuru{{exeExt}} {{.RELEASE_DIR}}
       - mkdir {{.RELEASE_DIR}}/web
       - cp -R web/dist {{.RELEASE_DIR}}/web
-      - mkdir {{.RELEASE_DIR}}/web.new
-      - cp -R web.new/dist {{.RELEASE_DIR}}/web.new
       - cp {{.BIN_DIR}}/setup{{exeExt}} {{.RELEASE_DIR}}
 
   embed-versions:
@@ -59,6 +57,12 @@ tasks:
           -o {{.BIN_DIR}}/shinpuru{{exeExt}}
           cmd/shinpuru/main.go
 
+  embed-fe:
+    deps:
+      - build-fe
+    cmds:
+      - cp -R web/dist/web/* {{.EMBED_DIR}}/webdist
+
   deps-fe:
     dir: web
     sources:
@@ -69,42 +73,17 @@ tasks:
 
   build-fe:
     desc:
-      Builds the frontend artifacts of the Angular web app.
+      Builds the frontend artifacts of the new React web app.
+    dir: web
     deps:
       - deps-fe
-    dir: web
-    sources:
-      - src/**
-    cmds:
-      - yarn run build
-
-  embed-fe:
-    deps:
-      - build-fe
-    cmds:
-      - cp -R web/dist/web/* {{.EMBED_DIR}}/webdist
-
-  deps-fe-new:
-    dir: web.new
-    sources:
-      - package.json
-      - yarn.lock
-    cmds:
-      - yarn
-
-  build-fe-new:
-    desc:
-      Builds the frontend artifacts of the new React web app.
-    dir: web.new
-    deps:
-      - deps-fe-new
     sources:
       - public/**
       - src/**
       - index.html
       - "*.png"
     cmds:
-      - yarn run build --base=/beta/
+      - yarn run build --base=/
 
   init-dev:
     desc:
@@ -146,9 +125,9 @@ tasks:
       Runs the vite development server for the new React web app.
     deps:
       - deps-fe-new
-    dir: web.new
+    dir: web
     cmds:
-      - yarn start --base=/beta/
+      - yarn start --base=/
 
   test:
     desc:
@@ -232,6 +211,15 @@ tasks:
           --import '. "github.com/bwmarrin/discordgo"'
           --out pkg/discordutil/isession.go
           --format
+
+  lint-fe:
+    desc:
+      Runs the vite development server for the new React web app.
+    deps:
+      - deps-fe
+    dir: web
+    cmds:
+      - yarn lint
 
   refresh-mocks:
     desc:
