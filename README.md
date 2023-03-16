@@ -15,10 +15,10 @@
 
 ---
 
-| Branch | Main CI | Docker CD | Releases CD |
+| Branch | Tests CI | Docker CD | Releases CD |
 |--------|---------|-----------|-------------|
-| stable | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Latest/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Releases%20CD/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Releases+CD%22+branch%3Amaster)
-| canary    | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Adev) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Canary/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%dev) | |
+| `master` (stable) | [![](https://github.com/zekroTJA/shinpuru/workflows/Unit%20Tests/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Unit+Tests%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Releases%20CD/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Releases+CD%22)
+| `dev` (canary)    | [![](https://github.com/zekroTJA/shinpuru/workflows/Unit%20Tests/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Unit+Tests%22+branch%3Adev) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%dev) | |
 
 ---
 
@@ -32,9 +32,9 @@ Here you can choose between the stable or canary version of shinpuru:
 
 # Intro
 
-シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [ken](https://github.com/zekroTJA/ken) as slash command framework. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability.
+シンプル (shinpuru), a simple *([as the name says](https://www.deepl.com/translator#ja/en/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB))*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [ken](https://github.com/zekroTJA/ken) as slash command and interaction framework. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability in focus.
 
-This bot is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Drop by to see shinpuru in action! 😉
+shinpuru is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Feel free to drop by to see shinpuru in action! 😉
 
 ---
 
@@ -42,7 +42,7 @@ This bot is mainly used as administration and security tool on my [development d
 
 ## Slash Commands
 
-shinpuru mainly uses slash commands to interact with the bot. In the [**wiki**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of commands, their descriptions and how to use them.
+shinpuru mainly uses slash commands to interact with the bot. In the [**wiki**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of commands, their descriptions and how to use them (or [here](https://shnp.de/info/commands) you can find a more interactive list in the web interface).
 
 You can also find a searchable list in the [**web interface**](https://shnp.de/info/commands) of shinpuru.
 
@@ -50,11 +50,11 @@ https://user-images.githubusercontent.com/16734205/138589141-1cc18316-0d07-4526-
 
 ## Web Interface
 
-If you are sick of using chat commands, you can also use the web interface of shinpuru. Simply log in with your Discord Account (alternatively, you can also use the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command).
+If you are sick of using commands, you can also use the web interface of shinpuru. Simply log in with your Discord Account (alternatively, you can also use the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command).
 
 Most features of shinpuru available via slash commands are also accessible in the web interface with additional visualization and information provided.
 
-https://user-images.githubusercontent.com/16734205/138589590-87301377-463d-43c3-8441-98ec84a1304c.mp4
+https://user-images.githubusercontent.com/16734205/225418408-beecb181-5dbe-4c0b-9110-94b8e715f308.mp4
 
 ## REST API
 
