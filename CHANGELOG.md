@@ -10,19 +10,21 @@ This release finally brings a huge update to the web interface of shinpuru. Beca
 Here you can see a very small demo of the new web interface.
 
 https://user-images.githubusercontent.com/16734205/225418408-beecb181-5dbe-4c0b-9110-94b8e715f308.mp4
-
+<br />
 
 The whole web interface is now also more optimized for mobile usage!
 
 https://user-images.githubusercontent.com/16734205/225419824-63543e4a-bca8-40bb-8312-3b14a588e7b7.mp4
-
+<br />
 
 And because the web app is now a [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps) as well, you can even install it on your device when you are using a chromium browser!
 
 https://user-images.githubusercontent.com/16734205/225420680-12dbc648-7768-490e-8707-1c92da804854.mp4
-
+<br />
 
 But feel free to [discover](https://shnp.de) the new web interface on your own. It is still far from perfect, so if you spot an issue or have an idea for improvement, feel free to [create an issue](https://github.com/zekroTJA/shinpuru/issues/new/choose)!
+
+Also, there are still a lot of [german translations](https://github.com/zekroTJA/shinpuru/tree/dev/web/public/locales/de) missing. So if you want to contribute some translations, feel free to do so. In the [Contributing](https://github.com/zekroTJA/shinpuru/blob/master/CONTRIBUTING.md) document, you can find some useful information on how to work with the language files.
 
 ## Unban Request Improvements
 
