@@ -1,4 +1,4 @@
-<!-- insert:REQUIREMENTS -->
+<!-- insert:REQUIREMENTS_BE -->
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.0)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.1.0)`
@@ -31,6 +31,7 @@
 - [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.7)`
 - [zekrotja/jwt](https://github.com/zekrotja/jwt) `(v0.0.0-20220515133240-d66362c9fbc9)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.18.0)`
+- [zekrotja/promtail](https://github.com/zekrotja/promtail) `(v0.0.0-20230303162843-4e609d577b74)`
 - [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.3.0)`
 - [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.5.0)`

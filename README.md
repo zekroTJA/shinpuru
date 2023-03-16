@@ -313,7 +313,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ### Back End
 
-<!-- start:REQUIREMENTS -->
+<!-- start:REQUIREMENTS_BE -->
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.0)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.1.0)`
@@ -346,23 +346,44 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.7)`
 - [zekrotja/jwt](https://github.com/zekrotja/jwt) `(v0.0.0-20220515133240-d66362c9fbc9)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.18.0)`
+- [zekrotja/promtail](https://github.com/zekrotja/promtail) `(v0.0.0-20230303162843-4e609d577b74)`
 - [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.3.0)`
 - [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.5.0)`
 - [x/sys](https://golang.org/x/sys) `(v0.5.0)`
 - [x/time](https://golang.org/x/time) `(v0.3.0)`
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) `(v2.4.0)`
-<!-- end:REQUIREMENTS -->
+<!-- end:REQUIREMENTS_BE -->
 
 ### Web Front End
 
-- [Angular 9](https://angular.io)
-- [Bootstrap](https://ng-bootstrap.github.io)
-- [dateformat](https://www.npmjs.com/package/dateformat)
-- [core-js](https://www.npmjs.com/package/core-js)
-- [rxjs](https://www.npmjs.com/package/rxjs)
-- [tslib](https://www.npmjs.com/package/tslib)
-- [zone.js](https://www.npmjs.com/package/zone.js)
+<!-- start:REQUIREMENTS_FE -->
+- [@hcaptcha/react-hcaptcha](https://github.com/hCaptcha/react-hcaptcha#readme) `(^1.4.4)`
+- [byte-formatter](None) `(^1.0.1)`
+- [color](https://github.com/Qix-/color#readme) `(^4.2.1)`
+- [date-fns](https://github.com/date-fns/date-fns#readme) `(^2.28.0)`
+- [debounce](https://github.com/component/debounce#readme) `(^1.2.1)`
+- [emoji.json](https://github.com/amio/emoji.json#readme) `(^13.1.0)`
+- [fuse.js](http://fusejs.io) `(^6.6.2)`
+- [i18next](https://www.i18next.com) `(^21.6.14)`
+- [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) `(^6.1.3)`
+- [i18next-http-backend](https://github.com/i18next/i18next-http-backend) `(^1.4.0)`
+- [react](https://reactjs.org/) `(^18.2.0)`
+- [react-dom](https://reactjs.org/) `(^18.2.0)`
+- [react-fast-marquee](https://github.com/justin-chu/react-fast-marquee#readme) `(^1.3.5)`
+- [react-i18next](https://github.com/i18next/react-i18next) `(^11.15.7)`
+- [react-markdown](https://github.com/remarkjs/react-markdown#readme) `(^8.0.1)`
+- [react-router](https://github.com/remix-run/react-router#readme) `(^6.0.2)`
+- [react-router-dom](https://github.com/remix-run/react-router#readme) `(^6.2.1)`
+- [react-scripts](https://github.com/facebook/create-react-app#readme) `(5.0.0)`
+- [react-spinners](https://www.davidhu.io/react-spinners/) `(^0.13.8)`
+- [react-uid](https://github.com/thearnica/react-uid#readme) `(^2.3.1)`
+- [react-wavify](https://github.com/woofers/react-wavify#readme) `(^1.7.0)`
+- [sass](https://github.com/sass/dart-sass) `(^1.49.0)`
+- [styled-components](https://styled-components.com) `(^5.3.0)`
+- [web-vitals](https://github.com/GoogleChrome/web-vitals#readme) `(^2.1.2)`
+- [zustand](https://github.com/pmndrs/zustand) `(^3.7.0)`
+<!-- end:REQUIREMENTS_FE -->
 
 ### Assets
 
