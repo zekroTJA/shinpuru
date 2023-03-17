@@ -136,6 +136,20 @@ The shinpuru web frontend is a [**React**](https://reactjs.org/) SPA, which is d
 
 For communication with the API, a [custom package](https://github.com/zekroTJA/shinpuru/tree/master/web/src/lib/shinpuru-ts) has been written (which will soon also be available as NPM package). With the use of the custom [useApi](https://github.com/zekroTJA/shinpuru/blob/master/web/src/hooks/useApi.ts) hook, you can access the API from anywhere in the app. There are also a lot of [more custom hooks](https://github.com/zekroTJA/shinpuru/tree/master/web/src/hooks) available, which you can use. Also, feel free to add your owns if you want.
 
+#### Translations
+
+Translation files for the web app can be found in [web/public/locales/](web/public/locales/). If you want to ad missing translations or add a translation for a new language, you can use the provided [`merge-langs`](scripts/merge-langs.py) script. It takes a `--base` language pack and applies it to the `--target` language pack by inserting missing language keys from the base pack or adding missing translation files from the base pack to the target pack.
+
+Here is an example how to execute the script.
+```
+python3 scripts/merge-langs.py --base web/public/locales/en-US --target web/public/locales/de
+```
+
+If you want to add translations for a new language, just use a new folder as target path.
+```
+python3 scripts/merge-langs.py --base web/public/locales/en-US --target web/public/locales/it
+```
+
 ## Preparing a Development Environment
 
 There are two main ways to set up a development environment for shinpuru.

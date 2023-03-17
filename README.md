@@ -15,10 +15,10 @@
 
 ---
 
-| Branch | Main CI | Docker CD | Releases CD |
+| Branch | Tests CI | Docker CD | Releases CD |
 |--------|---------|-----------|-------------|
-| stable | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Latest/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Releases%20CD/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Releases+CD%22+branch%3Amaster)
-| canary    | [![](https://github.com/zekroTJA/shinpuru/workflows/Main%20CI/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Main+CI%22+branch%3Adev) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD%20Canary/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%dev) | |
+| `master` (stable) | [![](https://github.com/zekroTJA/shinpuru/workflows/Unit%20Tests/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Unit+Tests%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD/badge.svg?branch=master)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%3Amaster) | [![](https://github.com/zekroTJA/shinpuru/workflows/Releases%20CD/badge.svg)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Releases+CD%22)
+| `dev` (canary)    | [![](https://github.com/zekroTJA/shinpuru/workflows/Unit%20Tests/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Unit+Tests%22+branch%3Adev) | [![](https://github.com/zekroTJA/shinpuru/workflows/Docker%20CD/badge.svg?branch=dev)](https://github.com/zekroTJA/shinpuru/actions?query=workflow%3A%22Docker+CD%22+branch%dev) | |
 
 ---
 
@@ -32,9 +32,9 @@ Here you can choose between the stable or canary version of shinpuru:
 
 # Intro
 
-シンプル (shinpuru), a simple *(as the name says)*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [ken](https://github.com/zekroTJA/ken) as slash command framework. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability.
+シンプル (shinpuru), a simple *([as the name says](https://www.deepl.com/translator#ja/en/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB))*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [ken](https://github.com/zekroTJA/ken) as slash command and interaction framework. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability in focus.
 
-This bot is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Drop by to see shinpuru in action! 😉
+shinpuru is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Feel free to drop by to see shinpuru in action! 😉
 
 ---
 
@@ -42,19 +42,19 @@ This bot is mainly used as administration and security tool on my [development d
 
 ## Slash Commands
 
-shinpuru mainly uses slash commands to interact with the bot. In the [**wiki**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of commands, their descriptions and how to use them.
+shinpuru mainly uses slash commands to interact with the bot. In the [**wiki**](https://github.com/zekroTJA/shinpuru/wiki/Commands), you can find an automatically generated list of commands, their descriptions and how to use them (or [here](https://shnp.de/info/commands) you can find a more interactive list in the web interface).
 
-You can also find a searchable list in the [**web interface**](https://shnp.de/commands) of shinpuru.
+You can also find a searchable list in the [**web interface**](https://shnp.de/info/commands) of shinpuru.
 
 https://user-images.githubusercontent.com/16734205/138589141-1cc18316-0d07-4526-b86a-be5aa91bbc5a.mp4
 
 ## Web Interface
 
-If you are sick of using chat commands, you can also use the web interface of shinpuru. Simply log in with your Discord Account (alternatively, you can also use the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command).
+If you are sick of using commands, you can also use the web interface of shinpuru. Simply log in with your Discord Account (alternatively, you can also use the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command).
 
 Most features of shinpuru available via slash commands are also accessible in the web interface with additional visualization and information provided.
 
-https://user-images.githubusercontent.com/16734205/138589590-87301377-463d-43c3-8441-98ec84a1304c.mp4
+https://user-images.githubusercontent.com/16734205/225418408-beecb181-5dbe-4c0b-9110-94b8e715f308.mp4
 
 ## REST API
 
@@ -313,7 +313,7 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ### Back End
 
-<!-- start:REQUIREMENTS -->
+<!-- start:REQUIREMENTS_BE -->
 - [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.0)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.1.0)`
@@ -346,23 +346,44 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.7)`
 - [zekrotja/jwt](https://github.com/zekrotja/jwt) `(v0.0.0-20220515133240-d66362c9fbc9)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.18.0)`
+- [zekrotja/promtail](https://github.com/zekrotja/promtail) `(v0.0.0-20230303162843-4e609d577b74)`
 - [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.3.0)`
 - [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
 - [x/image](https://golang.org/x/image) `(v0.5.0)`
 - [x/sys](https://golang.org/x/sys) `(v0.5.0)`
 - [x/time](https://golang.org/x/time) `(v0.3.0)`
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) `(v2.4.0)`
-<!-- end:REQUIREMENTS -->
+<!-- end:REQUIREMENTS_BE -->
 
 ### Web Front End
 
-- [Angular 9](https://angular.io)
-- [Bootstrap](https://ng-bootstrap.github.io)
-- [dateformat](https://www.npmjs.com/package/dateformat)
-- [core-js](https://www.npmjs.com/package/core-js)
-- [rxjs](https://www.npmjs.com/package/rxjs)
-- [tslib](https://www.npmjs.com/package/tslib)
-- [zone.js](https://www.npmjs.com/package/zone.js)
+<!-- start:REQUIREMENTS_FE -->
+- [@hcaptcha/react-hcaptcha](https://github.com/hCaptcha/react-hcaptcha#readme) `(^1.4.4)`
+- [byte-formatter](None) `(^1.0.1)`
+- [color](https://github.com/Qix-/color#readme) `(^4.2.1)`
+- [date-fns](https://github.com/date-fns/date-fns#readme) `(^2.28.0)`
+- [debounce](https://github.com/component/debounce#readme) `(^1.2.1)`
+- [emoji.json](https://github.com/amio/emoji.json#readme) `(^13.1.0)`
+- [fuse.js](http://fusejs.io) `(^6.6.2)`
+- [i18next](https://www.i18next.com) `(^21.6.14)`
+- [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) `(^6.1.3)`
+- [i18next-http-backend](https://github.com/i18next/i18next-http-backend) `(^1.4.0)`
+- [react](https://reactjs.org/) `(^18.2.0)`
+- [react-dom](https://reactjs.org/) `(^18.2.0)`
+- [react-fast-marquee](https://github.com/justin-chu/react-fast-marquee#readme) `(^1.3.5)`
+- [react-i18next](https://github.com/i18next/react-i18next) `(^11.15.7)`
+- [react-markdown](https://github.com/remarkjs/react-markdown#readme) `(^8.0.1)`
+- [react-router](https://github.com/remix-run/react-router#readme) `(^6.0.2)`
+- [react-router-dom](https://github.com/remix-run/react-router#readme) `(^6.2.1)`
+- [react-scripts](https://github.com/facebook/create-react-app#readme) `(5.0.0)`
+- [react-spinners](https://www.davidhu.io/react-spinners/) `(^0.13.8)`
+- [react-uid](https://github.com/thearnica/react-uid#readme) `(^2.3.1)`
+- [react-wavify](https://github.com/woofers/react-wavify#readme) `(^1.7.0)`
+- [sass](https://github.com/sass/dart-sass) `(^1.49.0)`
+- [styled-components](https://styled-components.com) `(^5.3.0)`
+- [web-vitals](https://github.com/GoogleChrome/web-vitals#readme) `(^2.1.2)`
+- [zustand](https://github.com/pmndrs/zustand) `(^3.7.0)`
+<!-- end:REQUIREMENTS_FE -->
 
 ### Assets
 

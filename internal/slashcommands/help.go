@@ -70,7 +70,7 @@ func (c *Help) Run(ctx ken.Context) (err error) {
 	cmdHelp := "[Here](https://github.com/zekroTJA/shinpuru/wiki/Commands) you can find a list of all commands " +
 		"and detailed meta and help information."
 	if webEnabled {
-		cmdHelp += fmt.Sprintf("\nThere is also an interactive [web view](%s/commands) where you can "+
+		cmdHelp += fmt.Sprintf("\nThere is also an interactive [web view](%s/info/commands) where you can "+
 			"discover and look up command information.", webAddr)
 	} else {
 		webAddr = ""
@@ -146,7 +146,7 @@ func (c *Help) cmdHelp(ctx ken.Context, webAddr, name string) (err error) {
 	}
 
 	if webAddr != "" {
-		emb.WithURL(fmt.Sprintf("%s/commands/#%s", webAddr, name))
+		emb.WithURL(fmt.Sprintf("%s/info/commands/#%s", webAddr, name))
 	}
 
 	options := info.ApplicationCommand.Options

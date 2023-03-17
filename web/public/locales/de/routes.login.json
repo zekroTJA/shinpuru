@@ -1,11 +1,11 @@
 {
   "discord": {
-    "title": "Loggen Sie ich entweder über Ihren Discord Account via OAuth2 ein",
-    "action": "Via Discord einloggen",
-    "subline": "Wir speichern weder Ihre E-Mail-Addresse noch irgend etwas anderes und wir verifizieren nur Ihre Discord ID."
+    "title": "Logge dich entweder mit deinem Discord-Account via OAuth2 ein ...",
+    "action": "Mit Discord einloggen",
+    "subline": "Wir speichern weder deine E-Mail-Addresse noch irgendetwas anderes und wir verifizieren nur deine Discord-ID."
   },
   "alternative": {
-    "title": "Oder schicke den folgenden Code via Direktnachricht an shinpuru",
-    "subline": "Alternativ können Sie auch den <1>/login</1> Command benutzen."
+    "title": "... oder schicke den folgenden Code via Direktnachricht an shinpuru.",
+    "subline": "Alternativ kannst du auch den <1>/login</1> Befehl benutzen."
   }
 }

@@ -22,6 +22,7 @@ insert_final_newline = false
 [*.py]
 indent_style = space
 indent_size = 4
+end_of_line = lf
 
 [*.bash]
 [*.sh]

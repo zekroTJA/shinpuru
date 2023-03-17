@@ -41,7 +41,7 @@ const SwitchContainer = styled.div<{ enabled: boolean; theaming?: Partial<Theme>
     > div {
       height: 100%;
       border-radius: 2em;
-      background-color: ${(p) => p.theme.white};
+      background-color: ${(p) => (p.enabled ? p.theme.textAlt : p.theme.text)};
       margin-left: ${(p) => (p.enabled ? '2em' : '0')};
       margin-right: ${(p) => (p.enabled ? '0' : '2em')};
 
