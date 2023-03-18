@@ -240,7 +240,7 @@ func (c *Report) revoke(ctx ken.SubCommandContext) (err error) {
 			)
 
 			if err != nil {
-				return
+				return err
 			}
 
 			return cctx.FollowUpEmbed(emb).Send().Error
