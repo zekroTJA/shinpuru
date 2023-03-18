@@ -79,11 +79,14 @@ func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 	}
 
 	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil && modlogChan != "" {
-		r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
+		_, err = r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
+	}
+	if err != nil {
+		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
 	}
 
-	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
-	if err == nil && dmChan != nil {
+	dmChan, errDm := r.s.UserChannelCreate(rep.VictimID)
+	if errDm == nil && dmChan != nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
@@ -306,11 +309,14 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 	}
 
 	if modlogChan, err := r.db.GetGuildModLog(guildID); err == nil {
-		r.s.ChannelMessageSendEmbed(modlogChan, emb)
+		_, err = r.s.ChannelMessageSendEmbed(modlogChan, emb)
+	}
+	if err != nil {
+		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
 	}
 
-	dmChan, err := r.s.UserChannelCreate(victimID)
-	if err == nil {
+	dmChan, errDm := r.s.UserChannelCreate(victimID)
+	if errDm == nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
@@ -352,14 +358,18 @@ func (r *ReportService) RevokeReport(
 	}
 
 	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
-		r.s.ChannelMessageSendEmbed(modlogChan, emb)
+		_, err = r.s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
-	dmChan, err := r.s.UserChannelCreate(rep.VictimID)
-	if err == nil {
+	if err != nil {
+		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+	}
+
+	dmChan, errDm := r.s.UserChannelCreate(rep.VictimID)
+	if errDm == nil {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
-	return
+	return emb, nil
 }
 
 func (r *ReportService) UnbanReport(

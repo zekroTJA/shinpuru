@@ -1,6 +1,7 @@
 package permissions
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -82,6 +83,12 @@ func (pmw *Permissions) HandleWs(s discordutil.ISession, required string) fiber.
 
 		if uid == "" {
 			return fiber.ErrForbidden
+		}
+
+		if guildID == "" {
+			return errors.New("guildId is not set (this should actually not happen - " +
+				"if it does so, please create an issue including details where and how this " +
+				"missbehaviour occured)")
 		}
 
 		ok, _, err := pmw.CheckPermissions(s, guildID, uid, required)

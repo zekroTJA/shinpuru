@@ -18,6 +18,7 @@ type ReportsController struct {
 	cfg     config.Provider
 	db      database.Database
 	repSvc  *report.ReportService
+	pmw     *permissions.Permissions
 }
 
 func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
@@ -25,11 +26,10 @@ func (c *ReportsController) Setup(container di.Container, router fiber.Router) {
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.repSvc = container.Get(static.DiReport).(*report.ReportService)
-
-	pmw := container.Get(static.DiPermissions).(*permissions.Permissions)
+	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 
 	router.Get("/:id", c.getReport)
-	router.Post("/:id/revoke", pmw.HandleWs(c.session, "sp.guild.mod.report"), c.postRevoke)
+	router.Post("/:id/revoke", c.postRevoke)
 }
 
 // @Summary Get Report
@@ -90,6 +90,14 @@ func (c *ReportsController) postRevoke(ctx *fiber.Ctx) (err error) {
 	}
 	if err != nil {
 		return err
+	}
+
+	ok, _, err := c.pmw.CheckPermissions(c.session, rep.GuildID, uid, "sp.guild.mod.report.revoke")
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fiber.ErrForbidden
 	}
 
 	var reason models.ReasonRequest
