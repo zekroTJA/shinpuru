@@ -31,10 +31,9 @@ Here you can choose between the stable or canary version of shinpuru:
 <a href="https://c.shnp.de/invite"><img src="https://img.shields.io/badge/%20-INVITE%20CANARY-FFA726.svg?style=for-the-badge&logo=discord" height="30" /></a>
 
 # Intro
+Introducing シンプル [shinpuru](https://www.deepl.com/translator#ja/en/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB) - a simple yet powerful multi-purpose Discord bot written in Go. Built using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper, and ken as slash command and interaction framework, shinpuru is designed to provide a range of general purpose, administration, and security tools while prioritizing stability, reliability, and maintainability.
 
-シンプル (shinpuru), a simple *([as the name says](https://www.deepl.com/translator#ja/en/%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB))*, multi-purpose Discord Bot written in Go, using bwmarrin's package [discord.go](https://github.com/bwmarrin/discordgo) as API and gateway wrapper and [ken](https://github.com/zekroTJA/ken) as slash command and interaction framework. The focus on this bot is to provide general purpose, administration and security tools while keeping stability, reliability and maintainability in focus.
-
-shinpuru is mainly used as administration and security tool on my [development discord](https://discord.zekro.de). Feel free to drop by to see shinpuru in action! 😉
+Our bot is widely used as an administration and security tool on our [development Discord](https://discord.zekro.de) server. If you'd like to see shinpuru in action, feel free to drop by and check us out! 😉
 
 ---
 
