@@ -10,19 +10,19 @@
     "deleteall": "Alle Einträge löschen",
     "table": {
       "timestamp": "Zeitstempel",
-      "severity": "Gewitchtsgrad",
+      "severity": "Priorität",
       "module": "Modul",
       "message": "Nachricht"
     }
   },
   "notifications": {
-    "enabled": "Guild-Logbuch wurde eingeschalten.",
-    "disabled": "Guild-Logbuch wurde ausgeschalten.",
+    "enabled": "Guild-Logbuch wurde eingeschaltet.",
+    "disabled": "Guild-Logbuch wurde ausgeschaltet.",
     "deleted": "Alle Einträge wurden gelöscht."
   },
   "deletemodal": {
     "heading": "Alle Logeinträge löschen",
-    "content": "Möchtest du wirklich alle Logeinträge löschen? Dieser Vorgang kann nicht rückgängig gemacht werden!",
+    "content": "Möchtest Du wirklich alle Logeinträge löschen? Dieser Vorgang kann nicht rückgängig gemacht werden!",
     "controls": {
       "delete": "Alle Logeinträge löschen",
       "cancel": "Abbrechen"

@@ -1,6 +1,6 @@
 {
   "heading": "Link Blocking",
-  "explanation": "Entfernt Nachrichten in Chats welche unerlaubte Links beinhalten. Aktuell blockt diese Implementation nur Einladungslinks zu anderen Guilds.",
+  "explanation": "Entfernt Nachrichten in Chats, welche unerlaubte Links beinhalten. Aktuell blockt diese Implementation nur Einladungslinks zu anderen Guilds.",
   "toggle": "Link-Blocking einschalten",
   "save": "Einstellungen speichern",
   "notifications": {

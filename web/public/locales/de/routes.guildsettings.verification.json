@@ -1,7 +1,7 @@
 {
   "heading": "Benutzerverifizierung",
-  "explanation": "Wenn eingeschalten werden alle Nutzer, welche die Guild betreten automatisch getimeouted und bekommen eine Nachricht, dass sie ihren Account bestätigen müssen. Dies ist möglich im Web Interface von shinpuru. Dieses System beschützt die Guild vor den meisten Angriffen mit gebotteten Accounts welche schädliche oder nervige Aktionen auf der Guild vollführen könnten.",
-  "enable": "benutzerverifizierung einschalten",
+  "explanation": "Wenn eingeschaltet, werden alle Nutzer, welche die Guild neu betreten, automatisch mit einem Discord-Timeout (Stummschaltung) versehen und bekommen eine Nachricht, dass sie ihren Account bestätigen müssen. Dies ist möglich im Web Interface von shinpuru. Dieses System beschützt die Guild vor den meisten Angriffen mit gebotteten Accounts welche schädliche oder nervige Aktionen auf der Guild vollführen könnten.",
+  "enable": "Benutzerverifizierung einschalten",
   "save": "Einstellungen speichern",
   "notifications": {
     "saved": "Einstellungen wurden gespeichert."
