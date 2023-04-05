@@ -1,11 +1,11 @@
 {
-  "toggle": "Enable automatic guild backups",
-  "apply": "Apply",
-  "heading": "Guild Backups",
+  "toggle": "Automatische Guild-Sicherungen aktivieren",
+  "apply": "Anwenden",
+  "heading": "Guild-Sicherungen",
   "notifications": {
-    "enabled": "Guild backups are now enabled.",
-    "disabled": "Guild backups are now disabled."
+    "enabled": "Guild-Sicherungen sind jetzt aktiviert.",
+    "disabled": "Guild-Sicherungen sind jetzt deaktiviert."
   },
-  "settings": "Settings",
-  "backups": "Backups"
+  "settings": "Einstellungen",
+  "backups": "Sicherung"
 }
