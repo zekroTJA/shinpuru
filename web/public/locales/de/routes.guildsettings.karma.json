@@ -1,6 +1,6 @@
 {
   "heading": "Karma",
-  "explanation": "Dieses System erlaubt es Nutzernn Nachrichten hoch und runter zu \"voten\", indem man die dazu eingestellten Reaktionen auf die Nachrichten benutzt. Jeder Vote beeinflusst das Karma des Nutzers, welcher die Nachricht verfasst hat.",
+  "explanation": "Dieses System erlaubt es Nutzern, Nachrichten hoch und runter zu \"voten\", indem man die dazu eingestellten Reaktionen auf die Nachrichten benutzt. Jeder Vote beeinflusst das Karma des Nutzers, welcher die Nachricht verfasst hat.",
   "settings": "Einstellungen",
   "enable": "Karma-System einschalten",
   "save": "Einstellungen speichern",

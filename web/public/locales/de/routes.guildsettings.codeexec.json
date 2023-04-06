@@ -1,6 +1,6 @@
 {
-  "heading": "Code Ausführung",
-  "explanation": "Lorem ipsum",
+  "heading": "Code Sandbox",
+  "explanation": "Die Code Sandbox lässt shinpuru in Discord eingebettete Code-Schnipsel erkennen und fügt eine Reaktion auf die entpr. Nachricht hinzu, die bei einem Klick den entsp. Code ausführt und das Ergebnis ausgibt.",
   "enable": "Code Ausführung einschalten",
   "save": "Einstellungen speichern",
   "notifications": {
