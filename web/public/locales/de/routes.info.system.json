@@ -1,0 +1,18 @@
+{
+  "heading": "Systeminformationen",
+  "version": "Version",
+  "commit": "Commit",
+  "builddate": "Build-Datum",
+  "goversion": "Go-Version",
+  "uptime": "Betriebszeit",
+  "os": "Hostbetriebssystem",
+  "arch": "Architektur",
+  "cpus": "CPU-Kerne",
+  "goroutines": "Go Routines",
+  "stackuse": "Stack",
+  "heapuse": "Heap",
+  "botid": "Bot Benutzer-ID",
+  "invite": "Einladungsink",
+  "guilds": "Anzahl der Guilds",
+  "duration": "vor {{time}}"
+}
