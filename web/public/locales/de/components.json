@@ -187,8 +187,8 @@
     "description": "Beschreibung",
     "subdomains": "Sub Domains",
     "arguments": "Argumente",
-    "subcommands": "Unterkommandos",
-    "dmcapable": "Dieses Kommando kann in Direktnachrichten benutzt werden.",
+    "subcommands": "UnterBefehle",
+    "dmcapable": "Dieser Befehl kann in Direktnachrichten benutzt werden.",
     "args": {
       "argument": "Argument",
       "type": "Typ",
