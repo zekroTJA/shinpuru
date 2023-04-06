@@ -1,6 +1,5 @@
 # flake8: noqa: E501
 
-import itertools
 import requests
 import json
 import os
@@ -15,8 +14,9 @@ HEADERS = {
     'Authorization': f"bearer {os.environ.get('GITHUB_TOKEN')}"
 }
 
-POINTS_FOR_ISSUE = 1
-POINTS_FOR_PR = 3
+POINTS_FOR_ISSUE = 3
+POINTS_FOR_PR = 5
+POINTS_FOR_ADDITIONS = 0.1
 
 
 class BHEntry:
@@ -31,7 +31,8 @@ class BHEntry:
 
     def add_pr(self, pr):
         self.prs.append(pr)
-        self.points += POINTS_FOR_PR
+        self.points += round(POINTS_FOR_PR + pr.get("additions")
+                             * POINTS_FOR_ADDITIONS)
 
     def sort_items(self):
         self.issues.sort(key=lambda n: int(n.get("number")))
@@ -189,8 +190,8 @@ if __name__ == "__main__":
            "A list to honor all people who found some bugs, had some great ideas " \
            "or contributed directly to shinpuru. ❤️\n\n" \
            f"In total, **{len(bhs)}** different wonderful people contributed a sum of " \
-           f"**{len(issues)}** issues and **{len(prs)}** pull requests (with {additions} " \
-           f"added and {deletions} deleted lines of code in {changedFiles} different files)! 🎉\n\n" \
+           f"**{len(issues)}** issues and **{len(prs)}** pull requests (with **{additions}** " \
+           f"added and **{deletions}** deleted lines of code in **{changedFiles}** different files)! 🎉\n\n" \
            "| GitHub | Issues | PRs | Points* |\n" \
            "|--------|--------|-----|---------|\n"
 
@@ -206,7 +207,8 @@ if __name__ == "__main__":
         i += 1
 
     data += f'\n\n---\n*For explanation: A contributor gets `{POINTS_FOR_ISSUE}` point(s) for each ' \
-        f'created issue and `{POINTS_FOR_PR}` point(s) for each **merged** pull request.'
+        f'created issue and `{POINTS_FOR_PR}` point(s) + `{POINTS_FOR_ADDITIONS}` for each addition for each **merged** pull request.\n\n' \
+        'The exact mechanism for generating this scoreboard can be found in [this script](scripts/bughunters.py).'
 
     with codecs.open(OUTPUT_FILE, 'w', 'utf-8') as f:
         f.write(data)

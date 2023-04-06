@@ -19,3 +19,4 @@ web_old/
 .task/
 release/
 .unused-assets/
+.vscode/settings.json
