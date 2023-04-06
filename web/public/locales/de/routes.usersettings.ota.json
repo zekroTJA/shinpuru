@@ -1,0 +1,9 @@
+{
+  "heading": "Einmalanmeldung (OTA)",
+  "explanation": "OTA (One Time Authentication) erlaubt es dir, dich mit generierten Einmalpasswörtern einzuloggen, bspw. durch den <code>/login</code>-Befehl. OTA ist aus Sicherheitgründen standardmäßig deaktiviert. <1>Hier</1> kannst Du mehr darüber lesen, wie OTA in shinpuru funktioniert.",
+  "toggle": "OTA aktivieren",
+  "save": "Einstellungen speichern",
+  "notifications": {
+    "saved": "Einstellungen wurden gespeichert."
+  }
+}
