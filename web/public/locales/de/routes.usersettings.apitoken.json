@@ -1,0 +1,13 @@
+{
+  "heading": "API Token",
+  "explanation": "Verwalte dein persönliches API-Token. <1>Hier</1> kannst du shinpuru's API-Dokumentation finden (Englisch).",
+  "generate": "Token generieren",
+  "regenerate": "Token regenerieren",
+  "reset": "Token zurücksetzen",
+  "tokenwarning": "Das Token wird dir nach der Generierung nur ein mal angezeigt. Danach wird es aus Sicherheitgründen versteckt bleiben, also bewahre es sicher auf.",
+  "tokeninfo": "Ein API-Token ist aktiv.<br />Das Token wurde <b>{{created}}</b> erstellt und wird <b>{{expires}}</b> auslaufen. Das Token wurde <b>{{hits}}</b>-mal benutzt.",
+  "notifications": {
+    "generated": "Ein API-Token wurde generiert.",
+    "reset": "Das API-Token wurte zurückgesetzt."
+  }
+}
