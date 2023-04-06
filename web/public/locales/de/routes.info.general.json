@@ -1,0 +1,17 @@
+{
+  "documentation": "Dokumentation (Englisch)",
+  "about": "Über",
+  "privacy": "Datenschutz",
+  "contact": "Kontakt",
+  "links": {
+    "wiki": "Wiki",
+    "permissions": "Berechtigungsanleitung (Englisch)",
+    "api": "REST API Doku (Englisch)",
+    "selfhosting": "Selbst hosten",
+    "githubrepo": "GitHub Repository",
+    "issues": "Issue Tracker",
+    "bughunters": "Kammerjäger",
+    "privacynotice": "Datenschutzerklärung",
+    "clearuserdata": "Deine Benutzerdaten löschen"
+  }
+}
