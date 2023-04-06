@@ -1,0 +1,9 @@
+{
+  "heading": "Starboard",
+  "sort": {
+    "latest": "Neueste zuerst",
+    "top": "Meiste Sterne zuerst"
+  },
+  "loadmore": "Mehr laden...",
+  "empty": "Hm, hier passiert noch nichts...<br />Hast du das Starboard schon eingerichtet? Wenn nicht, benutze das <code>/starboard</code>-Kommando, um dies zu tun."
+}
