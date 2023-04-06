@@ -14,7 +14,7 @@ HEADERS = {
     'Authorization': f"bearer {os.environ.get('GITHUB_TOKEN')}"
 }
 
-POINTS_FOR_ISSUE = 3
+POINTS_FOR_ISSUE = 5
 POINTS_FOR_PR = 5
 POINTS_FOR_ADDITIONS = 0.1
 
