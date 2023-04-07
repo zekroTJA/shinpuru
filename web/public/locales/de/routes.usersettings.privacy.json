@@ -9,11 +9,11 @@
   },
   "purge": {
     "heading": "Benutzerdaten löschen",
-    "explanation": "Hiermit hast du die Möglichkeit, alle persönlichen Daten, die mit deiner Discord-ID im Zusammenhang stehen, aus shinpuru's Datenbank zu löschen.\n\nBeachte, dass die folgenden Daten dabei nicht gelöscht werden:\n\n- Meldungen, die gegen Dich erstellt wurden.\n- Meldungen, die Du erstellt hast - Deine ID wird bei diesen aber anonymisiert.\n- Karmapunkte, sollte dein Konto unter 0 sein.\n- Daten, die temporär zwischengespeichert sind.\n\nNicht alle Daten und Einstellungen werden sofort verschwinden, da manche Daten in der Datenbank zwischengespeichert sind, um die Performance zu verbessern.",
+    "explanation": "Hiermit hast Du die Möglichkeit, alle persönlichen Daten, die mit Deiner Discord-ID im Zusammenhang stehen, aus shinpuru's Datenbank zu löschen.\n\nBeachte, dass die folgenden Daten dabei nicht gelöscht werden:\n\n- Meldungen, die gegen Dich erstellt wurden.\n- Meldungen, die Du erstellt hast - Deine ID wird bei diesen aber anonymisiert.\n- Karmapunkte, sollte Dein Konto unter 0 sein.\n- Daten, die temporär zwischengespeichert sind.\n\nNicht alle Daten und Einstellungen werden sofort verschwinden, da manche Daten in der Datenbank zwischengespeichert sind, um die Performance zu verbessern.",
     "purge": "Meine Benutzerdaten löschen",
     "modal": {
       "heading": "Bestätige die Löschung deiner Daten",
-      "explanation": "Willst du wirklich **alle deine Nutzerdaten in shinpuru für immer löschen**?\n\n**Diese Aktion kann nicht rückgängig gemacht werden!**\n\nDie folgenden Informationen werden gelöscht:\n- Starboard-Einträge\n- API-Token\n- Refresh-Token\n- Tags, die von Dir erstellt wurden\n- Entbannungsanträge, die von Dir erstellt oder bearbeitet wurden\n- Deine Benutzereinstellungen\n- Dein Verifizierungsstatus\n\nWegen der Löschung des Refresh-Tokens wirst du nach dem Löschvorgang ausgeloggt.\n\nBitte tippe zur Bestätigung deinen Benutzernamen unten ein.",
+      "explanation": "Willst Du wirklich **alle Deine Nutzerdaten in shinpuru für immer löschen**?\n\n**Diese Aktion kann nicht rückgängig gemacht werden!**\n\nDie folgenden Informationen werden gelöscht:\n- Starboard-Einträge\n- API-Token\n- Refresh-Token\n- Tags, die von Dir erstellt wurden\n- Entbannungsanträge, die von Dir erstellt oder bearbeitet wurden\n- Deine Benutzereinstellungen\n- Dein Verifizierungsstatus\n\nWegen der Löschung des Refresh-Tokens wirst Du nach dem Löschvorgang ausgeloggt.\n\nBitte tippe zur Bestätigung Deinen Benutzernamen unten ein.",
       "placeholder": "Benutzername",
       "confirm": "Meine Benutzerdaten FÜR IMMER löschen",
       "cancel": "Abbrechen"

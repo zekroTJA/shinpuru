@@ -8,7 +8,7 @@
   "features": {
     "codeexecution": {
       "heading": "Code-Sandbox",
-      "description": "Lasse deinen Code direkt im Chat von shinpuru ausführen. Der Output wird dir direkt angezeigt!"
+      "description": "Lasse Deinen Code direkt im Chat von shinpuru ausführen. Der Output wird dir direkt angezeigt!"
     },
     "karma": {
       "heading": "Karma",

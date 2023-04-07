@@ -5,16 +5,16 @@
     "kicked": "{{count}} Nutzer wurden gekickt!",
     "banned": "{{count}} Nutzer wurden gebannt!"
   },
-  "explanation": "Das Antiraid-System beobachtet im Hintergrund die Rate, mit welcher neue Nutzer deiner Guild beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Rate diese Parameter, wird das Guild-Verifizierungslevel auf \"Höchstes\" gestellt und alle neu beitretenden Nutzer werden in die Liste unten aufgenommen. Zusätzlich werden Alle Nutzer mit Administratorrechten der Guild per Direktnachricht informiert.",
+  "explanation": "Das Antiraid-System beobachtet im Hintergrund die Rate, mit welcher neue Nutzer Deiner Guild beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Rate diese Parameter, wird das Guild-Verifizierungslevel auf \"Höchstes\" gestellt und alle neu beitretenden Nutzer werden in die Liste unten aufgenommen. Zusätzlich werden Alle Nutzer mit Administratorrechten der Guild per Direktnachricht informiert.",
   "enable": "Antiraid-System aktivieren",
   "save": "Einstellungen speichern",
   "regeneration": {
     "label": "Regenerierungsintervall",
-    "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern deiner Guild vergeht."
+    "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern Deiner Guild vergeht."
   },
   "burst": {
     "label": "Salve",
-    "explanation": "Die Anzahl an Nutzern, die kurz nacheinander deiner Guild beitreten können sollen, ohne das System zu alarmieren."
+    "explanation": "Die Anzahl an Nutzern, die kurz nacheinander Deiner Guild beitreten können sollen, ohne das System zu alarmieren."
   },
   "verification": {
     "label": "Nutzerverifizierung",
