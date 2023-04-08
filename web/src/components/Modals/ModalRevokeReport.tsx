@@ -35,7 +35,7 @@ export const ModalRevokeReport: React.FC<Props> = ({ report, onClose = () => {},
     <Modal
       show={!!report}
       onClose={_onClose}
-      heading={t('heading')}
+      heading={t<string>('heading')}
       controls={
         <>
           <Button disabled={!reason} onClick={_onConfirm}>

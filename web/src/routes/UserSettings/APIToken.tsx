@@ -70,7 +70,7 @@ const APITokenRoute: React.FC<Props> = () => {
       .then((r) => {
         setToken({ ...r, hasToken: true });
         pushNotification({
-          message: t('notifications.generated'),
+          message: t<string>('notifications.generated'),
           type: 'SUCCESS',
         });
       })
@@ -82,7 +82,7 @@ const APITokenRoute: React.FC<Props> = () => {
       .then((r) => {
         setToken({ hasToken: false });
         pushNotification({
-          message: t('notifications.reset'),
+          message: t<string>('notifications.reset'),
           type: 'SUCCESS',
         });
       })

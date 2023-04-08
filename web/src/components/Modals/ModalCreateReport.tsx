@@ -73,7 +73,7 @@ export const ModalCreateReport: React.FC<Props> = ({
         rep.attachment_data = await readToBase64(attachment);
       } catch (e) {
         pushNotification({
-          message: t('components:modalcreatereport.errors.attachment-convert-failed'),
+          message: t<string>('components:modalcreatereport.errors.attachment-convert-failed'),
           type: 'ERROR',
         });
       }
@@ -109,7 +109,7 @@ export const ModalCreateReport: React.FC<Props> = ({
       onClose();
       if (goBack) nav(-1);
       pushNotification({
-        message: t('components:modalcreatereport.successful'),
+        message: t<string>('components:modalcreatereport.successful'),
         type: 'SUCCESS',
       });
     } catch (e) {}

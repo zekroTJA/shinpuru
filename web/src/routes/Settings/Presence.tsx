@@ -52,7 +52,7 @@ const PresenceRoute: React.FC<Props> = () => {
     return fetch((c) => c.settings.setPresence(state as Presence))
       .then(() => {
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         });
       })

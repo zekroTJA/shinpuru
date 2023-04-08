@@ -24,7 +24,7 @@ const OTARoute: React.FC<Props> = () => {
     return fetch((c) => c.usersettings.setOta({ enabled }))
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -57,7 +57,7 @@ const OTARoute: React.FC<Props> = () => {
           }}></Trans>
       </Small>
       {(enabled !== undefined && (
-        <Switch enabled={enabled} onChange={setEnabled} labelAfter={t('toggle')} />
+        <Switch enabled={enabled} onChange={setEnabled} labelAfter={t<string>('toggle')} />
       )) || <Loader width="15em" height="2.5em" />}
       <Controls>
         <ActionButton variant="green" onClick={_saveSettings}>

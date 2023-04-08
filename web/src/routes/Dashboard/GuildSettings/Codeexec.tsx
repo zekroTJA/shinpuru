@@ -70,7 +70,7 @@ const VerificationRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).setCodeexec(settings as CodeExecSettings))
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -95,7 +95,7 @@ const VerificationRoute: React.FC<Props> = () => {
         <Switch
           enabled={settings.enabled}
           onChange={(e) => dispatchSettings(['set_enabled', e])}
-          labelAfter={t('enable')}
+          labelAfter={t<string>('enable')}
         />
       )) || <Loader width="20em" height="2em" />}
 

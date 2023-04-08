@@ -72,7 +72,7 @@ export const ModalProcessUnbanRequest: React.FC<Props> = ({
     )
       .then((res) => {
         pushNotification({
-          message: t(`notifications.${type}`),
+          message: t<string>(`notifications.${type}`),
           type: 'SUCCESS',
         });
         onProcessed(res);
@@ -85,7 +85,7 @@ export const ModalProcessUnbanRequest: React.FC<Props> = ({
     <Modal
       show={show}
       onClose={onClose}
-      heading={t(`title.${type}`)}
+      heading={t<string>(`title.${type}`)}
       controls={
         <>
           <Button disabled={!setReason} onClick={_process}>
