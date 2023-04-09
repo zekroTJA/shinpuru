@@ -41,7 +41,7 @@
     "heading": "Meldung widerrufen",
     "description": {
       "kick": "Bitte gib an, warum Du diese Meldung widerrufst.",
-      "ban": "Bitte gib an, warum Du diesen Ban widerrufst. Diese Aktion entfernt auch den Nutzer von der Ban-Liste der Guild.",
+      "ban": "Bitte gib an, warum Du diesen Ban widerrufst. Diese Aktion entfernt auch den Nutzer von der Ban-Liste des Servers.",
       "mute": "Bitte gib an, warum Du diese Stummschaltung widerrufst. Diese Aktion hebt auch die Stummschaltung auf.",
       "warn": "Bitte gib an, warum Du diese Meldung widerrufst.",
       "ad": "Bitte gib an, warum Du diese Meldung widerrufst."
