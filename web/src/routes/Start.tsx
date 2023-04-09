@@ -180,19 +180,7 @@ const DiscoverMore = styled.div`
 
     > div {
       width: 100%;
-      ${(p) => css`
-        background: linear-gradient(
-          90deg,
-          ${Color(p.theme.text).alpha(0).hexa()} 0%,
-          ${Color(p.theme.text).alpha(0.6).hexa()} 10%,
-          ${Color(p.theme.text).alpha(0.6).hexa()} 90%,
-          ${Color(p.theme.text).alpha(0).hexa()} 100%
-        );
-      `}
-
-      -webkit-background-clip: text;
       background-clip: text;
-      -webkit-text-fill-color: transparent;
       display: inline-block;
       text-decoration: none;
     }
