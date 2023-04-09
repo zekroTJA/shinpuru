@@ -13,8 +13,8 @@
     "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern deines Servers vergeht."
   },
   "burst": {
-    "label": "Salve",
-    "explanation": "Die Anzahl an Nutzern, die kurz nacheinander Deiner Guild beitreten können sollen, ohne das System zu alarmieren."
+    "label": "Salvenwert",
+    "explanation": "Die Anzahl an Nutzern, die kurz nacheinander deinem Server beitreten können sollen, ohne das System zu alarmieren."
   },
   "verification": {
     "label": "Nutzerverifizierung",
