@@ -5,7 +5,7 @@
     "kicked": "{{count}} Nutzer wurden gekickt!",
     "banned": "{{count}} Nutzer wurden gebannt!"
   },
-  "explanation": "Das Antiraid-System beobachtet im Hintergrund die Rate, mit welcher neue Nutzer Deiner Guild beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Rate diese Parameter, wird das Guild-Verifizierungslevel auf \"Höchstes\" gestellt und alle neu beitretenden Nutzer werden in die Liste unten aufgenommen. Zusätzlich werden Alle Nutzer mit Administratorrechten der Guild per Direktnachricht informiert.",
+  "explanation": "Das Antiraid-System beobachtet im Hintergrund die Häufigkeit, mit welcher neue Nutzer deinem Server beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Häufigkeit diese Werte, wird die Server-Verifizierungsstufe auf \"Höchstes\" gestellt und alle neu beitretenden Mitglieder werden in die Liste unten aufgenommen. Zusätzlich werden alle Mitglieder mit Administratorrechten des Servers per Direktnachricht informiert.",
   "enable": "Antiraid-System aktivieren",
   "save": "Einstellungen speichern",
   "regeneration": {
