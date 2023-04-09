@@ -1,0 +1,53 @@
+name: Auto Upgrade
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+
+  webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: dev
+      - name: 'Upgrade web dependencies'
+        working-directory: web
+        run: yarn upgrade
+      - name: 'Check prod build'
+        working-directory: web
+        run: yarn build
+      - name: Commit & Push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: upgrade web dependencies
+          branch: dev
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: dev
+      - name: 'Upgrade Go dependencies'
+        run: go get -v -u ./...
+      - name: Check tests
+        run:  task test
+      - name: Check build
+        run: task build-be
+      - name: Commit & Push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: upgrade go packages
+          branch: dev
+
