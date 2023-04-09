@@ -10,7 +10,7 @@
   "save": "Einstellungen speichern",
   "regeneration": {
     "label": "Regenerierungsintervall",
-    "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern Deiner Guild vergeht."
+    "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern deines Servers vergeht."
   },
   "burst": {
     "label": "Salve",
