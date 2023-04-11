@@ -387,11 +387,12 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 ### Assets
 
-- Avatar used from album [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) made by [瑞希](https://www.pixiv.net/member.php?id=137253)
-- Icons uded from [Material Icons Set](https://material.io/resources/icons/?style=baseline)
+- Icons uded from [Tabler Icons](https://tabler-icons.io/) as well as from [Hero Icons](https://heroicons.dev/)
 - Discord Icon used from [Discord's Branding Resources](https://discord.com/new/branding)
+
+The mascot artwork is created by the wonderful artist [Kuglu](https://twitter.com/kugluu). Please feel free to give them a visit. 💖
 
 ---
 
-Copyright © 2018-2022 zekro Development (Ringo Hoffmann).  
-Covered by MIT License.
+Copyright © 2018-present zekro Development (Ringo Hoffmann).  
+Covered by the [MIT License](LICENCE).

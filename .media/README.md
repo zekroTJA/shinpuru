@@ -1,10 +1,11 @@
 # `.media`
 
-Here you can find rendered images as well as design project files (`*.afdesign` → Affinity Designer project file; `*.afphoto` → Affinity Photo project file) for assets and logos of shinpuru.
+Here you can find everything about the "brand" of shinpuru including the official [design CI](.media/design-ci.pdf).
 
-Here you can also find the "mascot" of shinpuru, which is also used in the logo and avatars.
+Below, you can find the project's mascot. She is also called shinpuru. 
 
-<img src="shinpuru-original-mascot.jpg" height="300"/>
+![](rendered/mascot.png)
 
-It's an artwork form the album [御中元 魔法少女詰め合わせ](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=44692506) made by [瑞希](https://www.pixiv.net/member.php?id=137253). Feel free take a look at their wonderful work. 😉
+The artwork is created by the wonderful artist [Kuglu](https://twitter.com/kugluu). Please feel free to give them a visit. 💖
 
+All of the media and brand files listed in this directory and used across the application are licensed under the [Creative Commons Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)](https://creativecommons.org/licenses/by-sa/2.0/) license.
