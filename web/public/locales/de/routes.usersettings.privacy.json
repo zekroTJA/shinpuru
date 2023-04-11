@@ -3,7 +3,7 @@
   "explanation": "shinpuru nimmt den Schutz Deiner persönlichen Daten sehr ernst. Deshalb hast Du hier zusätzlich die Möglichkeit, deine Optionen anzupassen.",
   "starboard": {
     "heading": "Starboard",
-    "explanation": "Das Starboard erlaubt es Nutzern, hochqualitative oder lustige Nachrichten in einen dedizierten Kanal zu \"voten\", wo sie mitsamt ihrer Anzahl der Votes prästentiert werden. Dieses Starboard wird sowohl in einem Kanal auf der Guild als auch teilweise auf der Weboberfläche präsentiert. Das bedeutet, dass der Inhalt der Nachricht in der Datenbank gespeichert werden muss. Wenn Du nicht möchtest, dass deine Nachrichten im Starboard landen, kannst Du dich hier global davon abmelden.",
+    "explanation": "Das Starboard erlaubt es Nutzern, hochqualitative oder lustige Nachrichten in einen dedizierten Kanal zu \"voten\", wo sie mitsamt ihrer Anzahl der Votes prästentiert werden. Dieses Starboard wird sowohl in einem Kanal auf dem Server als auch teilweise auf der Weboberfläche präsentiert. Das bedeutet, dass der Inhalt der Nachricht in der Datenbank gespeichert werden muss. Wenn Du nicht möchtest, dass deine Nachrichten im Starboard landen, kannst Du dich hier global davon abmelden.",
     "toggle": "Meine Nachrichten vom Starboard abmelden",
     "save": "Einstellungen speichern"
   },
