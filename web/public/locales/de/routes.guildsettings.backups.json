@@ -1,10 +1,10 @@
 {
-  "toggle": "Automatische Guild-Sicherungen aktivieren",
+  "toggle": "Automatische Server-Sicherungen aktivieren",
   "apply": "Anwenden",
-  "heading": "Guild-Sicherungen",
+  "heading": "Server-Sicherungen",
   "notifications": {
-    "enabled": "Guild-Sicherungen sind jetzt aktiviert.",
-    "disabled": "Guild-Sicherungen sind jetzt deaktiviert."
+    "enabled": "Server-Sicherungen sind jetzt aktiviert.",
+    "disabled": "Server-Sicherungen sind jetzt deaktiviert."
   },
   "settings": "Einstellungen",
   "backups": "Sicherung"

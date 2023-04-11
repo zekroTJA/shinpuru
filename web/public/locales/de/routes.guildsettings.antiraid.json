@@ -3,7 +3,7 @@
   "notifications": {
     "saved": "Einstellungen gespeichert.",
     "kicked": "{{count}} Mitglieder wurden gekickt!",
-    "banned": "{{count}} Nutzer wurden gebannt!"
+    "banned": "{{count}} Mitglieder wurden gebannt!"
   },
   "explanation": "Das Antiraid-System beobachtet im Hintergrund die Häufigkeit, mit welcher neue Nutzer deinem Server beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Häufigkeit diese Werte, wird die Server-Verifizierungsstufe auf \"Höchstes\" gestellt und alle neu beitretenden Mitglieder werden in die Liste unten aufgenommen. Zusätzlich werden alle Mitglieder mit Administratorrechten des Servers per Direktnachricht informiert.",
   "enable": "Antiraid-System aktivieren",

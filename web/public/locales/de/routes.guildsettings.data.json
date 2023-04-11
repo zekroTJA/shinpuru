@@ -1,13 +1,13 @@
 {
   "heading": "Daten",
-  "explanation": "Hier kannst Du ALLE daten löschen, welche in der Datenbank und in dem Object-Storage von shinpuru gespeichert und mit Deiner Guild verbunden sind. Das beinhaltet die folgenden Daten:\n\n- **Alle Meldungen und dazugehörige Bilder**\n- **Alle Backups und dazugehörige Daten**\n- **Karma-Punkte, -Regeln, -Einstellungen und -Blocklisten**\n- Alle Einträge im Starboard und diesbezügliche Einstellungen\n- Alle Guild-Logeinträge\n- Guild-Einstellungen\n- Berechtigungseinstellungen\n- Tags\n- Antiraid-Einstellungen und Logs\n- Entbannungsanträge\n\n*Diese Aktion kann nur ein mal alle 24 Stunden ausgeführt werden.*",
-  "delete": "Alle Guild-Daten permanent löschen",
-  "remove": "Entferne den Bot von der Guild nach dem löschen",
+  "explanation": "Hier kannst Du ALLE Daten löschen, welche in der Datenbank und in dem Objektspeicher von shinpuru gespeichert und mit Deinem Server verbunden sind. Das beinhaltet die folgenden Daten:\n\n- **Alle Meldungen und dazugehörigen Bilder**\n- **Alle Backups und dazugehörige Daten**\n- **Karma-Punkte, -Regeln, -Einstellungen und -Blocklisten**\n- Alle Einträge im Starboard und diesbezügliche Einstellungen\n- Alle Server-Logeinträge\n- Server-Einstellungen\n- Berechtigungseinstellungen\n- Tags\n- Antiraid-Einstellungen und Logs\n- Entbannungsanträge\n\n*Diese Aktion kann nur einmal alle 24 Stunden ausgeführt werden.*",
+  "delete": "Alle Server-Daten permanent löschen",
+  "remove": "Entferne den Bot von dem Server nach dem Löschen",
   "modal": {
-    "heading": "Alle Guild-Daten löschen",
-    "content": "Bitte bestätige, dass Du wirklich <1>alle</1> Guild-Daten, welche vorher erwähnt wurden, permanent löschen möchtest, indem Du den Namen der Guild unten einträgst und auf 'Bestätigen' klickst."
+    "heading": "Alle Server-Daten löschen",
+    "content": "Bitte bestätige, dass Du wirklich <1>alle</1> Server-Daten, welche vorher erwähnt wurden, permanent löschen möchtest, indem Du den Namen des Servers unten einträgst und auf 'Bestätigen' klickst."
   },
   "notifications": {
-    "success": "Guild-Daten wurden erfolgreich entfernt."
+    "success": "Server-Daten wurden erfolgreich entfernt."
   }
 }

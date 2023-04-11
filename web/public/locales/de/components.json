@@ -52,10 +52,10 @@
     }
   },
   "modalbetagreeter": {
-    "heading": "Beta Version",
+    "heading": "Vorschau-Version",
     "message": "Dies ist eine sehr frühe Vorschau-Version der neuen Web-Oberfläche von shinpuru. Dies gibt Dir die Möglichkeit, mit dieser Version herumzuspielen und zu testen, während sich die Version noch in aktiver Entwicklung befindet.\n\nSolltest Du Probleme finden oder Vorschläge haben, wie man das Interface verbessern könnte, erstelle gern ein [**Issue**](https://github.com/zekroTJA/shinpuru/issues/new/choose) oder kontaktiere mich direkt über meinem [Discord Server](https://dc.zekro.de).\n\nBitte fahre nur fort, wenn Du dir der folgenden Implikationen der Nutzung der Vorschau-Oberfläche bewusst bist:\n1. Nur eine geringe Anzahl der Funktionen ist bis jetzt in der Vorschau-Version implementiert.\n2. Bereits implementierte Funktionen können voller Fehler oder inkomplett sein oder können die Benutzererfahrung beeinflussen.\n3. Unvorhergesehenes Verhalten der Oberfläche könnte zur Beeinflussung maßgeblicher Sicherheitsfunktionen oder Moderationsfunktionen führen.",
     "controls": {
-      "back": "Bring mich zurück zu der stabilen Version",
+      "back": "Bringe mich zurück zu der stabilen Version",
       "accept": "Akzeptieren und fortfahren zur Beta-Version"
     }
   },
@@ -91,8 +91,8 @@
   },
   "modalunbanrequest": {
     "heading": "Entbannungsantrag Erstellen",
-    "sub": "Erstelle einen Entbannungsantrag für die Guild <1>{{guildname}}</1>.",
-    "description": "Bitte beschreibe detailliert, wieso Du auf der Guild entbannt werden solltest.",
+    "sub": "Erstelle einen Entbannungsantrag für dem Server <1>{{guildname}}</1>.",
+    "description": "Bitte beschreibe detailliert, wieso Du auf dem Server entbannt werden solltest.",
     "controls": {
       "cancel": "Abbrechen",
       "send": "Absenden"
@@ -185,7 +185,7 @@
   },
   "commandtile": {
     "description": "Beschreibung",
-    "subdomains": "Sub Domains",
+    "subdomains": "Unterdomänen",
     "arguments": "Argumente",
     "subcommands": "Unterbefehle",
     "dmcapable": "Dieser Befehl kann in Direktnachrichten verwendet werden.",

@@ -16,8 +16,10 @@
     }
   },
   "notifications": {
-    "enabled": "Guild-Logbuch wurde eingeschaltet.",
-    "disabled": "Guild-Logbuch wurde ausgeschaltet.",
+    "enabled": "Server-Logbuch wurde eingeschaltet.",
+
+    "disabled": "Server-Logbuch wurde ausgeschaltet.",
+
     "deleted": "Alle Einträge wurden gelöscht."
   },
   "deletemodal": {

@@ -1,19 +1,19 @@
 {
   "heading": "Code Sandbox",
   "explanation": "Die Code Sandbox lässt shinpuru in Discord eingebettete Code-Schnipsel erkennen und fügt eine Reaktion auf die entpr. Nachricht hinzu, die bei einem Klick den entsp. Code ausführt und das Ergebnis ausgibt.",
-  "enable": "Code Ausführung einschalten",
+  "enable": "Code Sandbox einschalten",
   "save": "Einstellungen speichern",
   "notifications": {
     "saved": "Einstellungen wurden gespeichert."
   },
   "jdoodle": {
     "heading": "JDoodle Einstellungen",
-    "explanation": "shinpuru is global eingestellt, <1>JDoodle</1> als Code-Sandbox zu nutzen. Deswegen müssen die Zugangsdaten für jede Guild separat definiert werden, sodass auch eigene Abonnements genutzt werden können. <2>Hier</2> können die Zugangsdaten eingesehen werden.",
-    "settingswarn": "Die Code Executon is ausgeschaltet, solange keine JDoodle Zugangsdaten angegeben sind.",
+    "explanation": "shinpuru ist global eingestellt, <1>JDoodle</1> als Code-Sandbox zu nutzen. Deswegen müssen die Zugangsdaten für jedem Server separat definiert werden, sodass auch eigene Abonnements genutzt werden können. <2>Hier</2> können die Zugangsdaten eingesehen werden.",
+    "settingswarn": "Die Code-Sandbox ist ausgeschaltet, solange keine JDoodle Zugangsdaten angegeben sind.",
     "clientid": "Client ID",
     "clientsecret": "Client Secret"
   },
   "ranna": {
-    "explanation": "shinpuru ist global eingestellt, <1>ranna</1> als Code Execution Engine zu nutzen. So, nichts muss hier weiter eingestellt werden. 🥳"
+    "explanation": "shinpuru ist global eingestellt, <1>ranna</1> als Code-Sandbox  zu nutzen. Somit muss hier nichts weiter eingestellt werden. 🥳"
   }
 }

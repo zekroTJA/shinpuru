@@ -1,7 +1,7 @@
 {
   "login": "Einloggen",
   "header": {
-    "under": "Dein simpler Mehrzweckbot für Discord. Gratis und <1>open source</1> forever.",
+    "under": "Dein einfacher, vielseitige Bot für Discord. Kostenlos und <1>open source</1> für immer.",
     "invite": "Einladen",
     "selfhost": "Selbst hosten"
   },
@@ -12,11 +12,11 @@
     },
     "karma": {
       "heading": "Karma",
-      "description": "Wie auf Reddit kannst Du Nachrichten hoch- und downvoten. Das beeinflusst das Karma-Konto der Guildmitglieder, sodass jeder sofort sehen kann, wer am vertrauenswürdigsten ist."
+      "description": "Wie auf Reddit kannst Du Nachrichten hoch- und runtervoten. Das beeinflusst das Karma-Konto der Servermitglieder, sodass jeder sofort sehen kann, wer am vertrauenswürdigsten ist."
     },
     "reports": {
       "heading": "Meldesystem",
-      "description": "Ausgeprägtes Meldesystem mit ModLog-Kanal, Entbannungsanfragen, Warnungen, Widerrufungen und zeitlichen Bans. Meldungen sind immer an Mitglieder gebunden, sodass Du immer sehen kannst, was ein Mitglied schon alles angestellt hat."
+      "description": "Ausgeprägtes Meldesystem mit ModLog-Kanal, Entbannungsanfragen, Warnungen, Widerrufungen und temporäre Bans. Meldungen sind immer an Mitglieder gebunden, sodass Du immer sehen kannst, was ein Mitglied schon alles angestellt hat."
     },
     "roleselect": {
       "heading": "Rollenauswahl",
@@ -41,7 +41,7 @@
       "antiraid-system",
       "link blocking",
       "nutzerverifizierung",
-      "öffentliche Guild API",
+      "öffentliche Server API",
       "mobile weboberfläche",
       "slash-befehle",
       "nachrichten-elemente"

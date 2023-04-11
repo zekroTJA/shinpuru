@@ -13,6 +13,6 @@
   "heapuse": "Heap",
   "botid": "Bot Benutzer-ID",
   "invite": "Einladungsink",
-  "guilds": "Anzahl der Guilds",
+  "guilds": "Anzahl der Server",
   "duration": "vor {{time}}"
 }

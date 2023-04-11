@@ -1,14 +1,14 @@
 {
   "heading": "API",
-  "explanation": "Wenn aktiviert, gibt shinpuru einen API-Endpunkt frei, der generelle Informationen über die Guild ausgibt.",
+  "explanation": "Wenn aktiviert, gibt shinpuru einen API-Endpunkt frei, der allgemeine Informationen über den Server ausgibt.",
   "save": "Einstellungen speichern",
   "reset": "Token zurücksetzen",
   "settings": {
     "heading": "Einstellungen",
-    "enable": "Guild API aktivieren",
+    "enable": "Server API aktivieren",
     "allowedorigins": {
-      "heading": "Zugelassene Origins",
-      "description": "Eine Kommaseparierte Liste von Herkunfts-URLs, die in der API-Antwort über den <1>Access-Control-Allow-Origin</1>-Header gesetzt werden. Das bedeutet, dass die Informationen, die von dieser API angefragt werden, nur in einem Browser von einer Website abgerufen kann, die eine dieser URLs hat. Ist hier nichts gesetzt, wird <2>*</2> als Wert für den Header genutzt, was jeder Website erlaubt, auf diese Ressource zuzugreifen."
+      "heading": "Zulässige Quellen",
+      "description": "Eine Kommaseparierte Liste von Quellen-URLs, die in der API-Antwort über den <1>Access-Control-Allow-Origin</1>-Header gesetzt werden. Das bedeutet, dass die Informationen, die von dieser API angefragt werden, nur von einer Website abgerufen werden kann, die eine dieser URLs hat. Ist hier nichts gesetzt, wird <2>*</2> als Wert für den Header genutzt, was jeder Website erlaubt, auf diese Informationen zuzugreifen."
     },
     "token": {
       "heading": "Zugriffstoken",
