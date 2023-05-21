@@ -1,0 +1,50 @@
+{
+  "login": "Einloggen",
+  "header": {
+    "under": "Dein einfacher, vielseitige Bot für Discord. Kostenlos und <1>open source</1> für immer.",
+    "invite": "Einladen",
+    "selfhost": "Selbst hosten"
+  },
+  "features": {
+    "codeexecution": {
+      "heading": "Code-Sandbox",
+      "description": "Lasse Deinen Code direkt im Chat von shinpuru ausführen. Der Output wird dir direkt angezeigt!"
+    },
+    "karma": {
+      "heading": "Karma",
+      "description": "Wie auf Reddit kannst Du Nachrichten hoch- und runtervoten. Das beeinflusst das Karma-Konto der Servermitglieder, sodass jeder sofort sehen kann, wer am vertrauenswürdigsten ist."
+    },
+    "reports": {
+      "heading": "Meldesystem",
+      "description": "Ausgeprägtes Meldesystem mit ModLog-Kanal, Entbannungsanfragen, Warnungen, Widerrufungen und temporäre Bans. Meldungen sind immer an Mitglieder gebunden, sodass Du immer sehen kannst, was ein Mitglied schon alles angestellt hat."
+    },
+    "roleselect": {
+      "heading": "Rollenauswahl",
+      "description": "Sende eine Nachricht unter denen Mitglieder ihre Rollen auswählen können - vollautomatisch!"
+    },
+    "votes": {
+      "heading": "Umfragen",
+      "description": "Du möchtest eine Hitzige Diskussion in deiner Community ein für alle mal klären? Dann ist das Umfragewerkzeug genau das richtige für Dich!"
+    },
+    "starboard": {
+      "heading": "Starboard",
+      "description": "Ehre und hebe mit dem Starboard einprägsame, lustige, \"deepe\" oder einfach dumme Nachrichten hervor. Das Starboard funktioniert Hand in Hand mit dem Karmasystem, sodass Verfasser von Starboard-Nachrichten automatisch Karma erhalten!"
+    }
+  },
+  "discover": {
+    "header": "Und noch viel mehr zu entdecken...",
+    "features": [
+      "sicherungen",
+      "logbuch",
+      "weboberfläche",
+      "präzises berechtigungssystem",
+      "antiraid-system",
+      "link blocking",
+      "nutzerverifizierung",
+      "öffentliche Server API",
+      "mobile weboberfläche",
+      "slash-befehle",
+      "nachrichten-elemente"
+    ]
+  }
+}

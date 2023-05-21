@@ -1,0 +1,14 @@
+{
+  "heading": "Erscheinungsbild",
+  "explanation": "Hier kannst Du das Aussehen der Weboberfläche für dich anpassen.",
+  "scheme": {
+    "heading": "Farbschema",
+    "light": "Blendgranate",
+    "dark": "Entwickler",
+    "system": "System"
+  },
+  "accent": {
+    "heading": "Akzentfarbe",
+    "reset": "Zurücksetzen"
+  }
+}

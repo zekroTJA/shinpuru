@@ -1,0 +1,26 @@
+{
+  "heading": "Persönliche Datenschutzeinstellungen",
+  "explanation": "shinpuru nimmt den Schutz Deiner persönlichen Daten sehr ernst. Deshalb hast Du hier zusätzlich die Möglichkeit, deine Optionen anzupassen.",
+  "starboard": {
+    "heading": "Starboard",
+    "explanation": "Das Starboard erlaubt es Nutzern, hochqualitative oder lustige Nachrichten in einen dedizierten Kanal zu \"voten\", wo sie mitsamt ihrer Anzahl der Votes prästentiert werden. Dieses Starboard wird sowohl in einem Kanal auf dem Server als auch teilweise auf der Weboberfläche präsentiert. Das bedeutet, dass der Inhalt der Nachricht in der Datenbank gespeichert werden muss. Wenn Du nicht möchtest, dass deine Nachrichten im Starboard landen, kannst Du dich hier global davon abmelden.",
+    "toggle": "Meine Nachrichten vom Starboard abmelden",
+    "save": "Einstellungen speichern"
+  },
+  "purge": {
+    "heading": "Benutzerdaten löschen",
+    "explanation": "Hiermit hast Du die Möglichkeit, alle persönlichen Daten, die mit Deiner Discord-ID im Zusammenhang stehen, aus shinpuru's Datenbank zu löschen.\n\nBeachte, dass die folgenden Daten dabei nicht gelöscht werden:\n\n- Meldungen, die gegen Dich erstellt wurden.\n- Meldungen, die Du erstellt hast - Deine ID wird bei diesen aber anonymisiert.\n- Karmapunkte, sollte Dein Konto unter 0 sein.\n- Daten, die temporär zwischengespeichert sind.\n\nNicht alle Daten und Einstellungen werden sofort verschwinden, da manche Daten in der Datenbank zwischengespeichert sind, um die Performance zu verbessern.",
+    "purge": "Meine Benutzerdaten löschen",
+    "modal": {
+      "heading": "Bestätige die Löschung deiner Daten",
+      "explanation": "Willst Du wirklich **alle Deine Nutzerdaten in shinpuru für immer löschen**?\n\n**Diese Aktion kann nicht rückgängig gemacht werden!**\n\nDie folgenden Informationen werden gelöscht:\n- Starboard-Einträge\n- API-Token\n- Refresh-Token\n- Tags, die von Dir erstellt wurden\n- Entbannungsanträge, die von Dir erstellt oder bearbeitet wurden\n- Deine Benutzereinstellungen\n- Dein Verifizierungsstatus\n\nWegen der Löschung des Refresh-Tokens wirst Du nach dem Löschvorgang ausgeloggt.\n\nBitte tippe zur Bestätigung Deinen Benutzernamen unten ein.",
+      "placeholder": "Benutzername",
+      "confirm": "Meine Benutzerdaten FÜR IMMER löschen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "notifications": {
+    "saved": "Einstellungen wurden gespeichert.",
+    "purged": "Deine Benutzerdaten wurden entfernt. Du wirst jetzt ausgeloggt."
+  }
+}

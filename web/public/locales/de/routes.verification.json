@@ -1,0 +1,10 @@
+{
+  "notloggedin": "Du musst Dich einloggen, um deinen Account zu verifizieren.",
+  "login": "Einloggen",
+  "needverify": "Bitte löse das untenstehende Captcha, um Deinen Account zu verifizieren.",
+  "verified": "Dein Account wurde verifiziert. Du kannst loslegen!",
+  "continue": "Zum Dashboard fortfahren",
+  "notifications": {
+    "verified": "Dein Account wurde verifiziert."
+  }
+}

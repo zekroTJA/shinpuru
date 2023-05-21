@@ -1,6 +1,7 @@
 {
   "heading": "Karma",
-  "explanation": "Dieses System erlaubt es Nutzern nachrichten hoch und runter zu \"voten\" indem man die dazu eingestellten Reaktionen auf die Nachrichten benutzt. Jeder Vote beeinflusst das Karma des Nutzers, welcher die Nachricht verfasst hat.",
+  "explanation": "Dieses System erlaubt es Nutzern, Nachrichten hoch und runter zu \"voten\", indem man die dazu eingestellten Reaktionen auf die Nachrichten verwendet. Jeder Vote beeinflusst das Karma des Nutzers, welcher die Nachricht verfasst hat.",
+
   "settings": "Einstellungen",
   "enable": "Karma-System einschalten",
   "save": "Einstellungen speichern",
@@ -13,17 +14,18 @@
   },
   "emotes": {
     "heading": "Emoticons",
-    "description": "Die Emoticons mit welchen Nutzer reagieren können um Karma zu verteilen.",
+    "description": "Die Emoticons, mit welchen Nutzer reagieren können, um Karma zu verteilen.",
     "increase": "Karma erhöhen",
     "decrease": "Karma veringern"
   },
   "limit": {
     "heading": "Limit",
-    "description": "Die Menge an Downvotes die ein Nutzer pro Stunde verteilen kann."
+    "description": "Die Menge an Downvotes, die ein Mitglied pro Stunde verteilen kann."
+
   },
   "penalty": {
     "heading": "Downvote-Preis",
-    "description": "Wenn eingeschalten wird dem Nutzer, welcher einen Downvote verteilt, gleichzeitig ein Karma-Punkt von seinem eigenen Konto abgezogen.",
+    "description": "Wenn eingeschaltet, wird dem Nutzer, welcher einen Downvote verteilt, gleichzeitig ein Karma-Punkt von seinem eigenen Konto abgezogen.",
     "switch": "Downvote-Preis einschalten"
   },
   "rules": {
@@ -32,8 +34,10 @@
   },
   "blocklist": {
     "heading": "Blockliste",
-    "description": "Blockierte Nutzer können weder Karma verteilen oder entfernen noch können sie selber Karma erhalten oder abgezogen bekommen.",
-    "addmember": "Nutzer hinzufügen",
+    "description": "Blockierte Mitglieder können weder Karma verteilen oder entfernen, noch können sie selber Karma erhalten oder abgezogen bekommen.",
+
+    "addmember": "Mitglieder hinzufügen",
+
     "table": {
       "id": "ID",
       "name": "Name",

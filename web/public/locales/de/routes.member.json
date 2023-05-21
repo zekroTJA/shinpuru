@@ -1,9 +1,9 @@
 {
-  "isbot": "Dieser Nutzer ist ein Bot-Account.",
-  "isyou": "Hey, das sind Sie! 👀",
+  "isbot": "Dieses Mitglied ist ein Bot-Account.",
+  "isyou": "Hey, das bist Du! 👀",
   "info": {
-    "heading": "Generelle Nutzerinformationen",
-    "guild-joined": "Guild beigetreten",
+    "heading": "Allgemeine Mitgliedsinformationen",
+    "guild-joined": "Server beigetreten",
     "account-created": "Account erstellt"
   },
   "karma": {

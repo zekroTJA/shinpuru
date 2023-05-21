@@ -1,40 +1,40 @@
 {
-  "heading": "Antiraid Settings",
+  "heading": "Antiraid-Einstellungen",
   "notifications": {
-    "saved": "Settings saved.",
-    "kicked": "{{count}} users have been kicked!",
-    "banned": "{{count}} users have been banned!"
+    "saved": "Einstellungen gespeichert.",
+    "kicked": "{{count}} Mitglieder wurden gekickt!",
+    "banned": "{{count}} Mitglieder wurden gebannt!"
   },
-  "explanation": "The antiraid system monitors the influx rate of users to your guild depending on the specified values below. If the rate exceeds the parameters, the guilds verification level is set to highest and all new members joining after that are recorded in the list below. Also, all admins of the guild will be notified about the event via DM.",
-  "enable": "Enable antiraid system",
-  "save": "Save Settings",
+  "explanation": "Das Antiraid-System beobachtet im Hintergrund die Häufigkeit, mit welcher neue Nutzer deinem Server beitreten, abhängig von den unten angegebenen Werten. Übersteigt die Häufigkeit diese Werte, wird die Server-Verifizierungsstufe auf \"Höchstes\" gestellt und alle neu beitretenden Mitglieder werden in die Liste unten aufgenommen. Zusätzlich werden alle Mitglieder mit Administratorrechten des Servers per Direktnachricht informiert.",
+  "enable": "Antiraid-System aktivieren",
+  "save": "Einstellungen speichern",
   "regeneration": {
-    "label": "Regeneration Duration",
-    "explanation": "The estimated usual time between two users joining your guild."
+    "label": "Regenerierungsintervall",
+    "explanation": "Die Zeit, die normalerweise zwischen zwei neu beitretenden Mitgliedern deines Servers vergeht."
   },
   "burst": {
-    "label": "Burst Amount",
-    "explanation": "The amount of users who shold be able to join in a short period of time without triggering the antiraid system."
+    "label": "Salvenwert",
+    "explanation": "Die Anzahl an Nutzern, die kurz nacheinander deinem Server beitreten können sollen, ohne das System zu alarmieren."
   },
   "verification": {
-    "label": "User Verification",
-    "explanation": "Automatically enables the requirement of account verification for ner members joining the guild.",
-    "switch_label": "Enable Verification"
+    "label": "Nutzerverifizierung",
+    "explanation": "Aktiviert shinpuru's Benutzerverifizierung, wenn das System alarmiert ist.",
+    "switch_label": "Benutzerverifizierung aktivieren"
   },
   "log": {
     "controls": {
-      "download": "Download",
-      "refresh": "Refresh",
-      "clear": "Clear",
+      "download": "Herunterladen",
+      "refresh": "Neu laden",
+      "clear": "Löschen",
       "kick": "Kick",
       "ban": "Ban"
     },
     "entries": {
-      "id": "User ID",
-      "tag": "User Tag",
-      "created": "Account created",
-      "joined": "Joined at"
+      "id": "Nutzer-ID",
+      "tag": "Nutzer-Tag",
+      "created": "Account erstellt",
+      "joined": "Beigetreten"
     },
-    "empty": "No one is on this list at the moment. 👻"
+    "empty": "Keiner ist aktuell auf dieser Liste. 👻"
   }
 }
