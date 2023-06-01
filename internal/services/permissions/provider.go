@@ -17,19 +17,43 @@ type Provider interface {
 	// permissions array is returned as well as the override,
 	// which is true when the specified user is the bot owner,
 	// guild owner or an admin of the guild.
-	GetPermissions(s discordutil.ISession, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error)
+	GetPermissions(
+		s discordutil.ISession,
+		guildID string,
+		userID string,
+	) (perm permissions.PermissionArray, overrideExplicits bool, err error)
 
 	// CheckPermissions tries to fetch the permissions of the specified user
-	// on the specified guild and returns true, if the passed dn matches the
-	// fetched permissions array. Also, the override status is returned as
+	// on the specified guild and returns true, if any of the passed dns match
+	// the fetched permissions array. Also, the override status is returned as
 	// well as errors occured during permissions fetching.
-	CheckPermissions(s discordutil.ISession, guildID, userID, dn string) (bool, bool, error)
+	//
+	// If the userID matches the configured bot owner, all bot owner permissions
+	// will be added to the fetched permissions array.
+	//
+	// If guildID is passed as non-mepty string, all configured guild owner
+	// permissions will be added to the fetched permissions array as well.
+	CheckPermissions(
+		s discordutil.ISession,
+		guildID string,
+		userID string,
+		dns ...string,
+	) (bool, bool, error)
 
 	// GetMemberPermissions returns a PermissionsArray based on the passed
 	// members roles permissions rulesets for the given guild.
-	GetMemberPermission(s discordutil.ISession, guildID string, memberID string) (permissions.PermissionArray, error)
+	GetMemberPermission(
+		s discordutil.ISession,
+		guildID string,
+		memberID string,
+	) (permissions.PermissionArray, error)
 
 	// CheckSubPerm takes a command context and checks is the given
 	// subDN is permitted.
-	CheckSubPerm(ctx ken.Context, subDN string, explicit bool, message ...string) (ok bool, err error)
+	CheckSubPerm(
+		ctx ken.Context,
+		subDN string,
+		explicit bool,
+		message ...string,
+	) (ok bool, err error)
 }

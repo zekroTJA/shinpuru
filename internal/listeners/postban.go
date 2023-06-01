@@ -104,7 +104,8 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 
 	_, err = t.ken.Components().Add(msg.ID, msg.ChannelID).
 		Condition(func(ctx ken.ComponentContext) bool {
-			ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.User().ID, "sp.guild.mod.report")
+			ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.User().ID,
+				"sp.guild.mod.report", "sp.guild.mod.ban")
 			return ok && err == nil
 		}).
 		AddActionsRow(func(b ken.ComponentAssembler) {

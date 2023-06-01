@@ -156,16 +156,28 @@ func (m *Permissions) GetPermissions(s discordutil.ISession, guildID, userID str
 }
 
 // CheckPermissions tries to fetch the permissions of the specified user
-// on the specified guild and returns true, if the passed dn matches the
-// fetched permissions array. Also, the override status is returned as
+// on the specified guild and returns true, if any of the passed dns match
+// the fetched permissions array. Also, the override status is returned as
 // well as errors occured during permissions fetching.
-func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID, userID, dn string) (bool, bool, error) {
+//
+// If the userID matches the configured bot owner, all bot owner permissions
+// will be added to the fetched permissions array.
+//
+// If guildID is passed as non-mepty string, all configured guild owner
+// permissions will be added to the fetched permissions array as well.
+func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID string, userID string, dns ...string) (bool, bool, error) {
 	perms, overrideExplicits, err := m.GetPermissions(s, guildID, userID)
 	if err != nil {
 		return false, false, err
 	}
 
-	return perms.Check(dn), overrideExplicits, nil
+	for _, dn := range dns {
+		if perms.Check(dn) {
+			return true, overrideExplicits, nil
+		}
+	}
+
+	return false, overrideExplicits, nil
 }
 
 // GetMemberPermissions returns a PermissionsArray based on the passed
