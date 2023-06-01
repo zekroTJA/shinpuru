@@ -21,6 +21,7 @@ import MockupVotesLight from '../assets/mockups/light/votes.svg';
 import { ReactComponent as SPBrand } from '../assets/sp-brand.svg';
 import SPIcon from '../assets/sp-icon.png';
 import Wave from 'react-wavify';
+import { uid } from 'react-uid';
 import { useNavigate } from 'react-router';
 
 type Props = {};
@@ -366,7 +367,7 @@ export const StartRoute: React.FC<Props> = () => {
             <div>
               <Marquee gradient={false} speed={150}>
                 {(t('discover.features', { returnObjects: true }) as string[]).map((v) => (
-                  <span>{v}</span>
+                  <span key={uid(v)}>{v}</span>
                 ))}
               </Marquee>
             </div>
