@@ -4,7 +4,7 @@ import { Guild, User } from '../lib/shinpuru-ts/src';
 import LocalStorageUtil from '../util/localstorage';
 import { ModalState } from '../hooks/useModal';
 import { Notification } from '../components/Notifications';
-import create from 'zustand';
+import { create } from 'zustand';
 
 export type FetchLocked<T> = {
   value: T | undefined;
