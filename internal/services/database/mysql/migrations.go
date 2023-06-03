@@ -18,6 +18,7 @@ var migrationFuncs = []migrationFunc{
 	migration_10,
 	migration_11,
 	migration_12,
+	migration_13,
 }
 
 // VERSION 0:
@@ -144,6 +145,18 @@ func migration_12(m *sql.Tx) (err error) {
 		ADD CONSTRAINT FK_reportID
 		FOREIGN KEY (reportID) REFERENCES reports(id)
 	`)
+
+	return err
+}
+
+// VERSION 13:
+// - add property `modnotchanID` to `guilds`
+func migration_13(m *sql.Tx) (err error) {
+	err = createTableColumnIfNotExists(m,
+		"guilds", "`modnotchanID` varchar(25) NOT NULL DEFAULT ''")
+	if err != nil {
+		return err
+	}
 
 	return err
 }

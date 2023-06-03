@@ -118,6 +118,7 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`guildlogDisable` text NOT NULL DEFAULT ''," +
 		"`requireUserVerification` text NOT NULL DEFAULT ''," +
 		"`birthdaychanID` text NOT NULL DEFAULT ''," +
+		"`modnotchanID` varchar(25) NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`guildID`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	if err != nil {
@@ -2360,6 +2361,15 @@ func (m *MysqlMiddleware) RemoveRoleSelect(guildID, channelID, messageID string)
 		WHERE guildID = ? AND channelID = ? AND messageID = ?
 	`, guildID, channelID, messageID)
 	return wrapNotFoundError(err)
+}
+
+func (m *MysqlMiddleware) GetGuildModNot(guildID string) (string, error) {
+	val, err := m.getGuildSetting(guildID, "modnotchanID")
+	return val, err
+}
+
+func (m *MysqlMiddleware) SetGuildModNot(guildID, chanID string) error {
+	return m.setGuildSetting(guildID, "modnotchanID", chanID)
 }
 
 /////////// HELPER ///////////////
