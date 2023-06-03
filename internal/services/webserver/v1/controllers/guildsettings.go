@@ -114,6 +114,10 @@ func (c *GuildsSettingsController) getGuildSettings(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if gs.ModNotChannel, err = c.db.GetGuildModNot(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
+		return err
+	}
+
 	if gs.VoiceLogChannel, err = c.db.GetGuildVoiceLog(guildID); err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
 	}
@@ -152,6 +156,8 @@ func (c *GuildsSettingsController) postGuildSettings(ctx *fiber.Ctx) error {
 	if err = ctx.BodyParser(gs); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
+
+	// TODO: Change `fiber.ErrUnauthorized` to `fiber.ErrForbidden` 👇
 
 	if gs.AutoRoles != nil {
 		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.autorole"); err != nil {
@@ -196,6 +202,22 @@ func (c *GuildsSettingsController) postGuildSettings(ctx *fiber.Ctx) error {
 		}
 
 		if err = c.db.SetGuildModLog(guildID, gs.ModLogChannel); err != nil {
+			return wsutil.ErrInternalOrNotFound(err)
+		}
+	}
+
+	if gs.ModNotChannel != "" {
+		if ok, _, err := c.pmw.CheckPermissions(c.session, guildID, uid, "sp.guild.config.modnot"); err != nil {
+			return wsutil.ErrInternalOrNotFound(err)
+		} else if !ok {
+			return fiber.ErrForbidden
+		}
+
+		if gs.ModNotChannel == "__RESET__" {
+			gs.ModNotChannel = ""
+		}
+
+		if err = c.db.SetGuildModNot(guildID, gs.ModNotChannel); err != nil {
 			return wsutil.ErrInternalOrNotFound(err)
 		}
 	}
