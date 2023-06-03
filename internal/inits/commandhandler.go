@@ -96,6 +96,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		new(slashcommands.Kick),
 		new(slashcommands.Ban),
 		new(slashcommands.Roleselect),
+		new(slashcommands.Modnot),
 	)
 	if err != nil {
 		return
