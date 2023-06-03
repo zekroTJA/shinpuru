@@ -95,6 +95,9 @@ type Database interface {
 	GetGuildBirthdayChan(guildID string) (string, error)
 	SetGuildBirthdayChan(guildID string, chanID string) error
 
+	GetGuildModNot(guildID string) (string, error)
+	SetGuildModNot(guildID string, chanID string) error
+
 	//////////////////////////////////////////////////////
 	//// USER SETTINGS
 

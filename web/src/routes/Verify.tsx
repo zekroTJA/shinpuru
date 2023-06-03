@@ -66,7 +66,7 @@ const VerificationRoute: React.FC<Props> = () => {
     fetch((c) => c.verification.verify(token))
       .then(() => {
         setVerified(true);
-        pushNotification({ message: t('notifications.verified'), type: 'SUCCESS' });
+        pushNotification({ message: t<string>('notifications.verified'), type: 'SUCCESS' });
       })
       .catch();
   };

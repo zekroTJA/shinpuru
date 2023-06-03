@@ -12,7 +12,7 @@ export const useGuilds = () => {
       fetch((c) => c.guilds.list())
         .then((res) => {
           setGuilds(res.data);
-          console.log(res);
+          console.debug('guild response:', res);
         })
         .catch();
     }

@@ -53,7 +53,7 @@ const GuildMembersRoute: React.FC<Props> = () => {
       )}
       {(members && selfMember && (
         <MembersSection>
-          <SearchBar onValueChange={_onSearchInput} placeholder={t('searchplaceholder')} />
+          <SearchBar onValueChange={_onSearchInput} placeholder={t<string>('searchplaceholder')} />
           <MemberTiles>
             {members
               .filter((m) => m.user.id !== selfMember.user.id)

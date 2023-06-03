@@ -21,6 +21,7 @@ import MockupVotesLight from '../assets/mockups/light/votes.svg';
 import { ReactComponent as SPBrand } from '../assets/sp-brand.svg';
 import SPIcon from '../assets/sp-icon.png';
 import Wave from 'react-wavify';
+import { uid } from 'react-uid';
 import { useNavigate } from 'react-router';
 
 type Props = {};
@@ -180,19 +181,7 @@ const DiscoverMore = styled.div`
 
     > div {
       width: 100%;
-      ${(p) => css`
-        background: linear-gradient(
-          90deg,
-          ${Color(p.theme.text).alpha(0).hexa()} 0%,
-          ${Color(p.theme.text).alpha(0.6).hexa()} 10%,
-          ${Color(p.theme.text).alpha(0.6).hexa()} 90%,
-          ${Color(p.theme.text).alpha(0).hexa()} 100%
-        );
-      `}
-
-      -webkit-background-clip: text;
       background-clip: text;
-      -webkit-text-fill-color: transparent;
       display: inline-block;
       text-decoration: none;
     }
@@ -378,7 +367,7 @@ export const StartRoute: React.FC<Props> = () => {
             <div>
               <Marquee gradient={false} speed={150}>
                 {(t('discover.features', { returnObjects: true }) as string[]).map((v) => (
-                  <span>{v}</span>
+                  <span key={uid(v)}>{v}</span>
                 ))}
               </Marquee>
             </div>

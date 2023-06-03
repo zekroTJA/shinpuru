@@ -92,7 +92,7 @@ const UnbanmeRoute: React.FC<Props> = () => {
         setQueue([r, ...queue]);
         setBannedGuilds(bannedGuilds?.filter((g) => g.id !== selectedGuild.id));
         pushNotification({
-          message: t('notifications.sent'),
+          message: t<string>('notifications.sent'),
           type: 'SUCCESS',
         });
       })

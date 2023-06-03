@@ -106,7 +106,7 @@ const APIRoute: React.FC<Props> = () => {
       .then(_refresh)
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -122,7 +122,7 @@ const APIRoute: React.FC<Props> = () => {
       .then(_refresh)
       .then(() =>
         pushNotification({
-          message: t('notifications.reset'),
+          message: t<string>('notifications.reset'),
           type: 'WARNING',
         }),
       )
@@ -157,7 +157,7 @@ const APIRoute: React.FC<Props> = () => {
           <Switch
             enabled={settings.enabled}
             onChange={(e) => dispatchSettings(['set_enabled', e])}
-            labelAfter={t('settings.enable')}
+            labelAfter={t<string>('settings.enable')}
           />
         )) || <Loader width="20em" height="2em" />}
         <div>
@@ -200,7 +200,7 @@ const APIRoute: React.FC<Props> = () => {
               )}
               <Input
                 type="password"
-                placeholder={t(
+                placeholder={t<string>(
                   `settings.token.placeholder.${settings.protected ? 'protected' : 'unprotected'}`,
                 )}
                 value={settings.token}

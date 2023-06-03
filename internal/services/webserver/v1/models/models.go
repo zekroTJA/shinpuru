@@ -157,6 +157,7 @@ type GuildSettings struct {
 	Perms               map[string]permissions.PermissionArray `json:"perms"`
 	AutoRoles           []string                               `json:"autoroles"`
 	ModLogChannel       string                                 `json:"modlogchannel"`
+	ModNotChannel       string                                 `json:"modnotchannel"`
 	VoiceLogChannel     string                                 `json:"voicelogchannel"`
 	JoinMessageChannel  string                                 `json:"joinmessagechannel"`
 	JoinMessageText     string                                 `json:"joinmessagetext"`

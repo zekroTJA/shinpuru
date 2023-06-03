@@ -4,14 +4,15 @@ import './i18n';
 import React, { Suspense } from 'react';
 
 import App from './App';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(
   <React.StrictMode>
     {/* TODO: Use better fallback for language suspense */}
     <Suspense fallback="loading...">
       <App />
     </Suspense>
   </React.StrictMode>,
-  document.getElementById('root'),
 );

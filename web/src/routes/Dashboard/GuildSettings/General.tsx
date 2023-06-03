@@ -25,6 +25,7 @@ type Props = {};
 type GuildSettingsVM = {
   autoroles: Role[];
   modlogchannel?: Element<Channel>;
+  modnotchannel?: Element<Channel>;
   voicelogchannel?: Element<Channel>;
   joinmessagechannel?: Element<Channel>;
   joinmessagetext?: string;
@@ -40,6 +41,7 @@ const guildSettingsReducer = (
     | [
         (
           | 'set_modlogchannel'
+          | 'set_modnotchannel'
           | 'set_voicelogchannel'
           | 'set_joinmessagechannel'
           | 'set_leavemessagechannel'
@@ -49,6 +51,7 @@ const guildSettingsReducer = (
     | ['set_joinmessagetext' | 'set_leavemessagetext', string]
     | [
         | 'reset_modlogchannel'
+        | 'reset_modnotchannel'
         | 'reset_voicelogchannel'
         | 'reset_joinmessagechannel'
         | 'reset_leavemessagechannel'
@@ -63,6 +66,8 @@ const guildSettingsReducer = (
       return { ...state, autoroles: payload };
     case 'set_modlogchannel':
       return { ...state, modlogchannel: payload };
+    case 'set_modnotchannel':
+      return { ...state, modnotchannel: payload };
     case 'set_voicelogchannel':
       return { ...state, voicelogchannel: payload };
     case 'set_joinmessagechannel':
@@ -75,6 +80,8 @@ const guildSettingsReducer = (
       return { ...state, leavemessagetext: payload };
     case 'reset_modlogchannel':
       return { ...state, modlogchannel: undefined };
+    case 'reset_modnotchannel':
+      return { ...state, modnotchannel: undefined };
     case 'reset_voicelogchannel':
       return { ...state, voicelogchannel: undefined };
     case 'reset_joinmessagechannel':
@@ -140,6 +147,9 @@ const GeneralRoute: React.FC<Props> = () => {
     if (isAllowed('sp.guild.config.modlog'))
       gs.modlogchannel = settings.modlogchannel?.value.id ?? '__RESET__';
 
+    if (isAllowed('sp.guild.config.modnot'))
+      gs.modnotchannel = settings.modnotchannel?.value.id ?? '__RESET__';
+
     if (isAllowed('sp.guild.config.voicelog'))
       gs.voicelogchannel = settings.voicelogchannel?.value.id ?? '__RESET__';
 
@@ -153,7 +163,7 @@ const GeneralRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).setSettings(gs))
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -182,6 +192,17 @@ const GeneralRoute: React.FC<Props> = () => {
               id: modlogchannel.id,
               value: modlogchannel,
               display: modlogchannel.name,
+            },
+          ]);
+
+        const modnotchannel = guild.channels!.find((c) => c.id === res.modnotchannel)!;
+        if (modnotchannel)
+          dispatchSettings([
+            'set_modnotchannel',
+            {
+              id: modnotchannel.id,
+              value: modnotchannel,
+              display: modnotchannel.name,
             },
           ]);
 
@@ -252,7 +273,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 guild={guild}
                 selected={settings.autoroles}
                 onChange={(v) => dispatchSettings(['set_autoroles', v])}
-                placeholder={t('autoroles.placeholder')}
+                placeholder={t<string>('autoroles.placeholder')}
               />
             </Section>
           )}
@@ -266,9 +287,27 @@ const GeneralRoute: React.FC<Props> = () => {
                   options={textChannelOptions!}
                   value={settings.modlogchannel}
                   onElementSelect={(e) => dispatchSettings(['set_modlogchannel', e])}
-                  placeholder={t('modlog.channel_placeholder')}
+                  placeholder={t<string>('modlog.channel_placeholder')}
                 />
                 <Button onClick={() => dispatchSettings(['reset_modlogchannel'])}>
+                  {t('reset')}
+                </Button>
+              </div>
+            </Section>
+          )}
+
+          {isAllowed('sp.guild.config.modnot') && (
+            <Section>
+              <h2>{t('modnot.title')}</h2>
+              <label>{t('modnot.channel_label')}</label>
+              <div>
+                <Select
+                  options={textChannelOptions!}
+                  value={settings.modnotchannel}
+                  onElementSelect={(e) => dispatchSettings(['set_modnotchannel', e])}
+                  placeholder={t<string>('modnot.channel_placeholder')}
+                />
+                <Button onClick={() => dispatchSettings(['reset_modnotchannel'])}>
                   {t('reset')}
                 </Button>
               </div>
@@ -284,7 +323,7 @@ const GeneralRoute: React.FC<Props> = () => {
                   options={textChannelOptions!}
                   value={settings.voicelogchannel}
                   onElementSelect={(e) => dispatchSettings(['set_voicelogchannel', e])}
-                  placeholder={t('voicelog.channel_placeholder')}
+                  placeholder={t<string>('voicelog.channel_placeholder')}
                 />
                 <Button onClick={() => dispatchSettings(['reset_voicelogchannel'])}>
                   {t('reset')}
@@ -303,7 +342,7 @@ const GeneralRoute: React.FC<Props> = () => {
                     options={textChannelOptions!}
                     value={settings.joinmessagechannel}
                     onElementSelect={(e) => dispatchSettings(['set_joinmessagechannel', e])}
-                    placeholder={t('joinmessage.channel_placeholder')}
+                    placeholder={t<string>('joinmessage.channel_placeholder')}
                   />
                   <Button onClick={() => dispatchSettings(['reset_joinmessagechannel'])}>
                     {t('reset')}
@@ -319,7 +358,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 <div>
                   <Input
                     value={settings.joinmessagetext}
-                    placeholder={t('joinmessage.message_placeholder')}
+                    placeholder={t<string>('joinmessage.message_placeholder')}
                     onInput={(e) =>
                       dispatchSettings(['set_joinmessagetext', e.currentTarget.value])
                     }
@@ -338,13 +377,13 @@ const GeneralRoute: React.FC<Props> = () => {
                     options={textChannelOptions!}
                     value={settings.leavemessagechannel}
                     onElementSelect={(e) => dispatchSettings(['set_leavemessagechannel', e])}
-                    placeholder={t('leavemessage.channel_placeholder')}
+                    placeholder={t<string>('leavemessage.channel_placeholder')}
                   />
                   <Button onClick={() => dispatchSettings(['reset_leavemessagetext'])}>
                     {t('reset')}
                   </Button>
                 </div>
-                <label>{t('leavemessage.message_label')}</label>
+                <label>{t<string>('leavemessage.message_label')}</label>
                 <Small>
                   <Trans ns="routes.guildsettings.general" i18nKey="leavemessage.message_hint">
                     <Embed>[user]</Embed>
@@ -354,7 +393,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 <div>
                   <Input
                     value={settings.leavemessagetext}
-                    placeholder={t('leavemessage.message_placeholder')}
+                    placeholder={t<string>('leavemessage.message_placeholder')}
                     onInput={(e) =>
                       dispatchSettings(['set_leavemessagetext', e.currentTarget.value])
                     }

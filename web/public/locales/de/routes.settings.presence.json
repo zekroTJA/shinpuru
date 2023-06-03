@@ -1,0 +1,16 @@
+{
+  "heading": "Aktivitätsstaus",
+  "explanation": "lorem ipsum",
+  "status": {
+    "label": "Status",
+    "online": "Online",
+    "dnd": "Bitte nicht stören",
+    "idle": "Inaktiv",
+    "invisible": "Unsichtbar"
+  },
+  "game": "Spiel",
+  "save": "Einstellungen übernehmen",
+  "notifications": {
+    "saved": "Aktivitätsstatus wurde gespeichert und übernommen."
+  }
+}

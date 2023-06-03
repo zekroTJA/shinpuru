@@ -84,7 +84,7 @@ export const CommandInfoTile: React.FC<Props> = ({ cmd }) => {
         <Embed>{cmd.domain}</Embed>
         <Embed>{cmd.version}</Embed>
         {cmd.dm_capable && (
-          <DMCapable title={t('dmcapable')}>
+          <DMCapable title={t<string>('dmcapable')}>
             <MailIcon />
           </DMCapable>
         )}

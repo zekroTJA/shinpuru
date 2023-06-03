@@ -17,6 +17,11 @@
     "channel_label": "Channel",
     "channel_placeholder": "Please select a channel ..."
   },
+  "modnot": {
+    "title": "Mod Notifications",
+    "channel_label": "Channel",
+    "channel_placeholder": "Please select a channel ..."
+  },
   "voicelog": {
     "title": "Voice Log",
     "channel_label": "Channel",

@@ -1,7 +1,7 @@
 {
   "reset": "Zurücksetzen",
   "save": "Einstellungen speichern",
-  "heading": "Generelle Guild Einstellungen",
+  "heading": "Allgemeine Server-Einstellungen",
   "notifications": {
     "saved": "Einstellungen gespeichert."
   },
@@ -11,28 +11,34 @@
   },
   "modlog": {
     "title": "Mod Log",
+    "channel_label": "Kanal",
+    "channel_placeholder": "Bitte wähle einen Kanal aus ..."
+  },
+  "modnot": {
+    "title": "Mod Benachrichtigungen",
     "channel_label": "Channel",
-    "channel_placeholder": "Bitte wählen Sie einen Channel aus ..."
+    "channel_placeholder": "Bitte wähle einen Kanal aus ..."
   },
   "voicelog": {
     "title": "Voice Log",
-    "channel_label": "Channel",
-    "channel_placeholder": "Bitte wählen Sie einen Channel aus ..."
+    "channel_label": "Kanal",
+    "channel_placeholder": "Bitte wähle einen Kanal aus ..."
   },
   "joinmessage": {
-    "title": "Begrüßung neuer Member",
-    "channel_label": "Channel",
-    "channel_placeholder": "Bitte wählen Sie einen Channel aus ...",
+    "title": "Begrüßung neuer Mitglieder",
+    "channel_label": "Kanal",
+    "channel_placeholder": "Bitte wähle einen Kanal aus ...",
     "message_label": "Begrüßungsnachricht",
-    "message_hint": "<1>[user]</1> wird mit dem Benutzername und <1>[ment]</1> wird mit der User Mention ersetzt.",
+    "message_hint": "<1>[user]</1> wird mit dem Benutzernamen und <1>[ment]</1> wird mit einer Erwähnung des Nutzers ersetzt.",
     "message_placeholder": "Willkommen auf dem Server, [user]!"
   },
   "leavemessage": {
-    "title": "Nachricht wenn Member verlassen",
-    "channel_label": "Channel",
-    "channel_placeholder": "Bitte wählen Sie einen Channel aus ...",
-    "message_label": "Benachrichtigungsnachricht",
-    "message_hint": "<1>[user]</1> wird mit dem Benutzername und <1>[ment]</1> wird mit der User Mention ersetzt.",
-    "message_placeholder": "[user] hat die Guild verlassen."
+    "title": "Verabschiedung von Mitgliedern",
+    "channel_label": "Kanal",
+    "channel_placeholder": "Bitte wähle einen Kanal aus ...",
+    "message_label": "Abschiedsnachricht",
+    "message_hint": "<1>[user]</1> wird mit dem Benutzernamen und <1>[ment]</1> wird mit einer Erwähnung des Nutzers ersetzt.",
+    "message_placeholder": "[user] hat den Server verlassen."
   }
 }
+

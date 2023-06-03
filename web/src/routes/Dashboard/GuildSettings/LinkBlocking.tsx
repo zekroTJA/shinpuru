@@ -45,7 +45,7 @@ const LinkBlockingRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.setInviteBlock(guildid, state.enabled))
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -63,7 +63,7 @@ const LinkBlockingRoute: React.FC<Props> = () => {
       <Small>{t('explanation')}</Small>
       {(guild && (
         <Switch
-          labelAfter={t('toggle')}
+          labelAfter={t<string>('toggle')}
           enabled={state.enabled}
           onChange={(v) => dispatchState(['set_enabled', v])}
         />

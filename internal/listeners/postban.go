@@ -14,6 +14,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
+	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/rogu"
 	"github.com/zekrotja/rogu/log"
@@ -25,6 +26,7 @@ type ListenerPostBan struct {
 	gl  guildlog.Logger
 	rep report.Provider
 	pmw permissions.Provider
+	st  *dgrs.State
 	log rogu.Logger
 }
 
@@ -35,6 +37,7 @@ func NewListenerPostBan(ctn di.Container) ListenerPostBan {
 		gl:  ctn.Get(static.DiGuildLog).(guildlog.Logger).Section("postban"),
 		rep: ctn.Get(static.DiReport).(report.Provider),
 		pmw: ctn.Get(static.DiPermissions).(permissions.Provider),
+		st:  ctn.Get(static.DiState).(*dgrs.State),
 		log: log.Tagged("PostBan"),
 	}
 }
@@ -69,6 +72,17 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 		return
 	}
 
+	self, err := t.st.SelfUser()
+	if err != nil {
+		t.log.Error().Err(err).Msg("Failed getting self user")
+		return
+	}
+
+	if banEntry.UserID == self.ID {
+		t.log.Debug().Msg("Postban skipped because sender was the bot user")
+		return
+	}
+
 	rep := models.Report{
 		Type:       models.TypeBan,
 		GuildID:    e.GuildID,
@@ -90,7 +104,8 @@ func (t ListenerPostBan) Handler(s discordutil.ISession, e *discordgo.GuildBanAd
 
 	_, err = t.ken.Components().Add(msg.ID, msg.ChannelID).
 		Condition(func(ctx ken.ComponentContext) bool {
-			ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.User().ID, "sp.guild.mod.report")
+			ok, _, err := t.pmw.CheckPermissions(s, e.GuildID, ctx.User().ID,
+				"sp.guild.mod.report", "sp.guild.mod.ban")
 			return ok && err == nil
 		}).
 		AddActionsRow(func(b ken.ComponentAssembler) {

@@ -197,8 +197,8 @@ const MemberRoute: React.FC<Props> = () => {
         <Section hide={member.user.bot}>
           <Heading>{t('karma.heading')}</Heading>
           <Flex gap="1em">
-            <KarmaTile heading={t('karma.guild')} points={member.karma} />
-            <KarmaTile heading={t('karma.total')} points={member.karma_total} />
+            <KarmaTile heading={t<string>('karma.guild')} points={member.karma} />
+            <KarmaTile heading={t<string>('karma.total')} points={member.karma_total} />
           </Flex>
         </Section>
         <Section hide={member.user.bot}>

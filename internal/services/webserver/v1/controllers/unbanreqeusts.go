@@ -1,18 +1,24 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
 	sharedmodels "github.com/zekroTJA/shinpuru/internal/models"
+	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
+	"github.com/zekroTJA/shinpuru/internal/util/modnot"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 )
 
@@ -21,6 +27,8 @@ type UnbanrequestsController struct {
 	db      database.Database
 	pmw     *permissions.Permissions
 	st      *dgrs.State
+	cfg     config.Provider
+	gl      guildlog.Logger
 }
 
 func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Router) {
@@ -28,6 +36,8 @@ func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Rou
 	c.db = container.Get(static.DiDatabase).(database.Database)
 	c.pmw = container.Get(static.DiPermissions).(*permissions.Permissions)
 	c.st = container.Get(static.DiState).(*dgrs.State)
+	c.cfg = container.Get(static.DiConfig).(config.Provider)
+	c.gl = container.Get(static.DiGuildLog).(guildlog.Logger)
 
 	router.Get("", c.getUnbanrequests)
 	router.Post("", c.postUnbanrequests)
@@ -143,6 +153,31 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 
 	finalReq.Hydrate()
 
+	err = modnot.Send(c.db, c.session, req.GuildID, &discordgo.MessageEmbed{
+		Color: static.ColorEmbedViolett,
+		Title: "New unban request",
+		URL: fmt.Sprintf("%s/db/guilds/%s/modlog",
+			c.cfg.Config().WebServer.PublicAddr, finalReq.GuildID),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "User",
+				Value: fmt.Sprintf("%s (`%s`)", user.String(), user.ID),
+			},
+			{
+				Name:  "Message",
+				Value: finalReq.Message,
+			},
+		},
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("ID: %s", finalReq.ID),
+		},
+		Timestamp: finalReq.Created.Format(time.RFC3339),
+	})
+	if err != nil {
+		log.Error().Err(err).Tag("WebServer").Msg("Failed sending mod notification")
+		c.gl.Section("modnot").Errorf(finalReq.GuildID, "Failed sending mod notification: %s", err.Error())
+	}
+
 	return ctx.JSON(models.RichUnbanRequest{
 		UnbanRequest: finalReq,
 		Creator:      models.FlatUserFromUser(user),
@@ -172,6 +207,9 @@ func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 			continue
 		}
 		guild, err := c.st.Guild(rep.GuildID)
+		if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownGuild) {
+			continue
+		}
 		if err != nil {
 			return err
 		}

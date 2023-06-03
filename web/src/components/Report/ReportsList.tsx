@@ -51,8 +51,8 @@ export const ReportsList: React.FC<Props> = ({
         if (i !== -1) reports.splice(i, 1);
         onReportsUpdated(reports);
         pushNotification({
-          heading: t('notifications.reportrevoked.heading'),
-          message: t('notifications.reportrevoked.message'),
+          heading: t<string>('notifications.reportrevoked.heading'),
+          message: t<string>('notifications.reportrevoked.message'),
           type: 'SUCCESS',
         });
       })

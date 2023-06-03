@@ -131,6 +131,7 @@ export interface GuildSettings {
   perms: Map<string, string[]>;
   autoroles: string[];
   modlogchannel: string;
+  modnotchannel: string;
   voicelogchannel: string;
   joinmessagechannel: string;
   joinmessagetext: string;

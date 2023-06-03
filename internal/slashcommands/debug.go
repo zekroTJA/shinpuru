@@ -1,10 +1,13 @@
 package slashcommands
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
+	"github.com/zekroTJA/shinpuru/internal/util/modnot"
+	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/ken"
 )
 
@@ -44,5 +47,23 @@ func (c *Debug) SubDomains() []permissions.SubPermission {
 }
 
 func (c *Debug) Run(ctx ken.Context) (err error) {
-	return fmt.Errorf("test 123")
+	if err = ctx.Defer(); err != nil {
+		return err
+	}
+
+	db := ctx.Get(static.DiDatabase).(database.Database)
+
+	err = modnot.Send(db, ctx.GetSession(), ctx.GetEvent().GuildID, &discordgo.MessageEmbed{
+		Color:       static.ColorEmbedDefault,
+		Description: "Just a test.",
+	})
+	if err != nil {
+		return err
+	}
+
+	return ctx.
+		FollowUpEmbed(&discordgo.MessageEmbed{Description: "Test mod notification sent."}).
+		Send().
+		DeleteAfter(2 * time.Second).
+		Error
 }

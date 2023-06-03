@@ -67,7 +67,7 @@ const PrivacyRoute: React.FC<Props> = () => {
     return fetch((c) => c.usersettings.setPrivacy(state as UserSettingsPrivacy))
       .then(() =>
         pushNotification({
-          message: t('notifications.saved'),
+          message: t<string>('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -84,7 +84,7 @@ const PrivacyRoute: React.FC<Props> = () => {
       .then(() => {
         nav('/login');
         pushNotification({
-          message: t('notifications.purged'),
+          message: t<string>('notifications.purged'),
           type: 'SUCCESS',
         });
       })
@@ -102,7 +102,7 @@ const PrivacyRoute: React.FC<Props> = () => {
       <Modal
         show={showPurgeModal}
         onClose={() => setShowPurgeModal(false)}
-        heading={t('purge.modal.heading')}
+        heading={t<string>('purge.modal.heading')}
         controls={
           <>
             <Button
@@ -119,7 +119,7 @@ const PrivacyRoute: React.FC<Props> = () => {
         <ReactMarkdown children={t('purge.modal.explanation')} />
         <Embed>{self?.username}</Embed>
         <PurgeModalInput
-          placeholder={t('purge.modal.placeholder')}
+          placeholder={t<string>('purge.modal.placeholder')}
           value={purgeUsername}
           onInput={(e) => setPurgeUsername(e.currentTarget.value)}
         />
@@ -138,7 +138,7 @@ const PrivacyRoute: React.FC<Props> = () => {
             <Switch
               enabled={state.starboard_optout}
               onChange={(v) => dispatchState(['set_optout', v])}
-              labelAfter={t('starboard.toggle')}
+              labelAfter={t<string>('starboard.toggle')}
             />
           )) || <Loader width="15em" height="2.5em" />}
         </section>
