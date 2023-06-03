@@ -14,6 +14,11 @@
     "channel_label": "Kanal",
     "channel_placeholder": "Bitte wähle einen Kanal aus ..."
   },
+  "modnot": {
+    "title": "Mod Benachrichtigungen",
+    "channel_label": "Channel",
+    "channel_placeholder": "Bitte wähle einen Kanal aus ..."
+  },
   "voicelog": {
     "title": "Voice Log",
     "channel_label": "Kanal",
@@ -36,3 +41,4 @@
     "message_placeholder": "[user] hat den Server verlassen."
   }
 }
+
