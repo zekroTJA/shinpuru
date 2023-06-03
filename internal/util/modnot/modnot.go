@@ -6,6 +6,8 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
+// Send embed messages into the mod notification channel
+// specified for the given guildID.
 func Send(
 	db database.Database,
 	s discordutil.ISession,
@@ -13,8 +15,11 @@ func Send(
 	embed *discordgo.MessageEmbed,
 ) error {
 	chanID, err := db.GetGuildModNot(guildID)
-	if err != nil {
+	if err != nil && !database.IsErrDatabaseNotFound(err) {
 		return err
+	}
+	if chanID == "" {
+		return nil
 	}
 
 	_, err = s.ChannelMessageSendEmbed(chanID, embed)
