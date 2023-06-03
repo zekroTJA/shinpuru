@@ -1146,6 +1146,30 @@ func (_m *Database) GetGuildModLog(guildID string) (string, error) {
 	return r0, r1
 }
 
+// GetGuildModNot provides a mock function with given fields: guildID
+func (_m *Database) GetGuildModNot(guildID string) (string, error) {
+	ret := _m.Called(guildID)
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(guildID)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(guildID)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(guildID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetGuildNotifyRole provides a mock function with given fields: guildID
 func (_m *Database) GetGuildNotifyRole(guildID string) (string, error) {
 	ret := _m.Called(guildID)
@@ -2676,6 +2700,20 @@ func (_m *Database) SetGuildLogDisable(guildID string, enabled bool) error {
 
 // SetGuildModLog provides a mock function with given fields: guildID, chanID
 func (_m *Database) SetGuildModLog(guildID string, chanID string) error {
+	ret := _m.Called(guildID, chanID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(guildID, chanID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SetGuildModNot provides a mock function with given fields: guildID, chanID
+func (_m *Database) SetGuildModNot(guildID string, chanID string) error {
 	ret := _m.Called(guildID, chanID)
 
 	var r0 error
