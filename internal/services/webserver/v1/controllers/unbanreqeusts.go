@@ -16,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/modnot"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
@@ -206,6 +207,9 @@ func (c *UnbanrequestsController) getBannedGuilds(ctx *fiber.Ctx) error {
 			continue
 		}
 		guild, err := c.st.Guild(rep.GuildID)
+		if discordutil.IsErrCode(err, discordgo.ErrCodeUnknownGuild) {
+			continue
+		}
 		if err != nil {
 			return err
 		}
