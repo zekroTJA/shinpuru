@@ -42,11 +42,11 @@ func (_m *PermissionsProvider) Before(ctx *ken.Ctx) (bool, error) {
 	return r0, r1
 }
 
-// CheckPermissions provides a mock function with given fields: s, guildID, userID, dn
-func (_m *PermissionsProvider) CheckPermissions(s discordutil.ISession, guildID string, userID string, dn ...string) (bool, bool, error) {
-	_va := make([]interface{}, len(dn))
-	for _i := range dn {
-		_va[_i] = dn[_i]
+// CheckPermissions provides a mock function with given fields: s, guildID, userID, dns
+func (_m *PermissionsProvider) CheckPermissions(s discordutil.ISession, guildID string, userID string, dns ...string) (bool, bool, error) {
+	_va := make([]interface{}, len(dns))
+	for _i := range dns {
+		_va[_i] = dns[_i]
 	}
 	var _ca []interface{}
 	_ca = append(_ca, s, guildID, userID)
@@ -57,22 +57,22 @@ func (_m *PermissionsProvider) CheckPermissions(s discordutil.ISession, guildID 
 	var r1 bool
 	var r2 error
 	if rf, ok := ret.Get(0).(func(discordutil.ISession, string, string, ...string) (bool, bool, error)); ok {
-		return rf(s, guildID, userID, dn...)
+		return rf(s, guildID, userID, dns...)
 	}
 	if rf, ok := ret.Get(0).(func(discordutil.ISession, string, string, ...string) bool); ok {
-		r0 = rf(s, guildID, userID, dn...)
+		r0 = rf(s, guildID, userID, dns...)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	if rf, ok := ret.Get(1).(func(discordutil.ISession, string, string, ...string) bool); ok {
-		r1 = rf(s, guildID, userID, dn...)
+		r1 = rf(s, guildID, userID, dns...)
 	} else {
 		r1 = ret.Get(1).(bool)
 	}
 
 	if rf, ok := ret.Get(2).(func(discordutil.ISession, string, string, ...string) error); ok {
-		r2 = rf(s, guildID, userID, dn...)
+		r2 = rf(s, guildID, userID, dns...)
 	} else {
 		r2 = ret.Error(2)
 	}
