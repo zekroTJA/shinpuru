@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
 	_ "crypto/sha512"
 
@@ -14,6 +16,7 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/codeexec"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
+	"github.com/zekroTJA/shinpuru/internal/services/guildlog"
 	"github.com/zekroTJA/shinpuru/internal/services/kvcache"
 	permservice "github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/report"
@@ -22,11 +25,13 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
+	"github.com/zekroTJA/shinpuru/internal/util/modnot"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekroTJA/shinpuru/pkg/stringutil"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 )
 
@@ -42,6 +47,7 @@ type GuildsController struct {
 	cef     codeexec.Factory
 	tp      timeprovider.Provider
 	rep     report.Provider
+	gl      guildlog.Logger
 }
 
 func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
@@ -56,6 +62,7 @@ func (c *GuildsController) Setup(container di.Container, router fiber.Router) {
 	c.cef = container.Get(static.DiCodeExecFactory).(codeexec.Factory)
 	c.tp = container.Get(static.DiTimeProvider).(timeprovider.Provider)
 	c.rep = container.Get(static.DiReport).(report.Provider)
+	c.gl = container.Get(static.DiGuildLog).(guildlog.Logger)
 
 	router.Get("", c.getGuilds)
 	router.Get("/:guildid", c.getGuild)
@@ -703,10 +710,48 @@ func (c *GuildsController) postGuildUnbanrequest(ctx *fiber.Ctx) error {
 		UnbanRequest: request,
 	}
 	if creator, _ := c.state.User(rub.UserID); creator != nil {
-		rub.Processor = models.FlatUserFromUser(creator)
+		rub.Creator = models.FlatUserFromUser(creator)
 	}
 	if proc, _ := c.state.User(rub.ProcessedBy); proc != nil {
 		rub.Processor = models.FlatUserFromUser(proc)
+	}
+
+	emb := &discordgo.MessageEmbed{
+		URL: fmt.Sprintf("%s/db/guilds/%s/modlog",
+			c.cfg.Config().WebServer.PublicAddr, guildID),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "Target User",
+				Value: fmt.Sprintf("%s (`%s`)", rub.Creator.Username, rub.Creator.ID),
+			},
+			{
+				Name:  "Executed by",
+				Value: fmt.Sprintf("%s (`%s`)", rub.Processor.Username, rub.Processor.ID),
+			},
+			{
+				Name:  "Execution Message",
+				Value: rub.ProcessedMessage,
+			},
+		},
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("ID: %s", rub.ID),
+		},
+		Timestamp: rub.Created.Format(time.RFC3339),
+	}
+
+	switch rub.Status {
+	case sharedmodels.UnbanRequestStateAccepted:
+		emb.Title = "Unban request has been accepted"
+		emb.Color = static.ColorEmbedGreen
+	case sharedmodels.UnbanRequestStateDeclined:
+		emb.Title = "Unban request has been declined"
+		emb.Color = static.ColorEmbedOrange
+	}
+
+	err = modnot.Send(c.db, c.session, guildID, emb)
+	if err != nil {
+		log.Error().Err(err).Tag("WebServer").Msg("Failed sending mod notification")
+		c.gl.Section("modnot").Errorf(guildID, "Failed sending mod notification: %s", err.Error())
 	}
 
 	return ctx.JSON(rub)
