@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **37** different wonderful people contributed a sum of **87** issues and **23** pull requests (with **1542** added and **278** deleted lines of code in **105** different files)! 🎉
+In total, **37** different wonderful people contributed a sum of **89** issues and **23** pull requests (with **1542** added and **278** deleted lines of code in **105** different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -11,10 +11,10 @@ In total, **37** different wonderful people contributed a sum of **87** issues a
 | 🥉  [TomRomeo](https://github.com/TomRomeo) |  | [#357](https://github.com/zekroTJA/shinpuru/pull/357), [#358](https://github.com/zekroTJA/shinpuru/pull/358) | `67` |
 |  [awsdcrafting](https://github.com/awsdcrafting) |  | [#294](https://github.com/zekroTJA/shinpuru/pull/294) | `56` |
 |  [ShowMeYourSkil](https://github.com/ShowMeYourSkil) | [#140](https://github.com/zekroTJA/shinpuru/issues/140), [#171](https://github.com/zekroTJA/shinpuru/issues/171), [#191](https://github.com/zekroTJA/shinpuru/issues/191), [#192](https://github.com/zekroTJA/shinpuru/issues/192), [#211](https://github.com/zekroTJA/shinpuru/issues/211), [#240](https://github.com/zekroTJA/shinpuru/issues/240) |  | `30` |
+|  [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180), [#270](https://github.com/zekroTJA/shinpuru/issues/270), [#284](https://github.com/zekroTJA/shinpuru/issues/284), [#428](https://github.com/zekroTJA/shinpuru/issues/428), [#429](https://github.com/zekroTJA/shinpuru/issues/429) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `30` |
 |  [LiebesWavezLP](https://github.com/LiebesWavezLP) | [#325](https://github.com/zekroTJA/shinpuru/issues/325), [#328](https://github.com/zekroTJA/shinpuru/issues/328), [#340](https://github.com/zekroTJA/shinpuru/issues/340), [#343](https://github.com/zekroTJA/shinpuru/issues/343), [#388](https://github.com/zekroTJA/shinpuru/issues/388) | [#384](https://github.com/zekroTJA/shinpuru/pull/384) | `30` |
 |  [error2507](https://github.com/error2507) | [#28](https://github.com/zekroTJA/shinpuru/issues/28), [#29](https://github.com/zekroTJA/shinpuru/issues/29), [#55](https://github.com/zekroTJA/shinpuru/issues/55) | [#1](https://github.com/zekroTJA/shinpuru/pull/1), [#2](https://github.com/zekroTJA/shinpuru/pull/2) | `25` |
 |  [cloudybyte](https://github.com/cloudybyte) | [#179](https://github.com/zekroTJA/shinpuru/issues/179), [#195](https://github.com/zekroTJA/shinpuru/issues/195), [#219](https://github.com/zekroTJA/shinpuru/issues/219), [#241](https://github.com/zekroTJA/shinpuru/issues/241) |  | `20` |
-|  [Skillkiller](https://github.com/Skillkiller) | [#180](https://github.com/zekroTJA/shinpuru/issues/180), [#270](https://github.com/zekroTJA/shinpuru/issues/270), [#284](https://github.com/zekroTJA/shinpuru/issues/284) | [#79](https://github.com/zekroTJA/shinpuru/pull/79) | `20` |
 |  [Ron31](https://github.com/Ron31) | [#197](https://github.com/zekroTJA/shinpuru/issues/197), [#224](https://github.com/zekroTJA/shinpuru/issues/224) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#181](https://github.com/zekroTJA/shinpuru/pull/181) | `20` |
 |  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346), [#353](https://github.com/zekroTJA/shinpuru/issues/353), [#354](https://github.com/zekroTJA/shinpuru/issues/354) | [#351](https://github.com/zekroTJA/shinpuru/pull/351) | `20` |
 |  [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) | [#389](https://github.com/zekroTJA/shinpuru/pull/389) | `16` |
