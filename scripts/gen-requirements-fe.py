@@ -14,7 +14,8 @@ def main():
     for (name, version) in data.get("dependencies").items():
         print(f"Processing package {name} ...")
         resp = requests.get(f'https://registry.npmjs.com/{name}/latest')
-        homepage = resp.json().get('homepage')
+        homepage = resp.json().get('homepage') or \
+            f"https://www.npmjs.com/package/{name}"
         modules.append(f"[{name}]({homepage}) `({version})`")
 
     with open(OUTPUT, 'w') as f:

@@ -1,4 +1,5 @@
-OUTPUT='./docs/requirements-be.md'
+OUTPUT = './docs/requirements-be.md'
+
 
 class Module:
     def __init__(self, line):
@@ -6,6 +7,10 @@ class Module:
         self.url = split[0]
         self.version = split[1]
         self.name = '/'.join(self.url.split('/')[-2:])
+
+        urlsplit = self.url.split('/')
+        if urlsplit[-1].startswith('v') and urlsplit[-1][1].isdigit():
+            self.url = '/'.join(urlsplit[:-1])
 
     def string(self):
         return '[{}](https://{}) `({})`'.format(self.name, self.url, self.version)

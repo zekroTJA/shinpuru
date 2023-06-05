@@ -173,136 +173,136 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 <!-- start:PUBLIC_PACKAGES -->
 # Public Packages
 
-- [**`github.com/zekroTJA/shinpuru/pkg/validators`**](pkg/validators)  
+- [**`github.com/zekroTJA/shinpuru/pkg/validators`**](/pkg/validators)  
   *Package validators provides some (more or less) general purpose validator functions for user inputs.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/checksum`**](pkg/checksum)  
+- [**`github.com/zekroTJA/shinpuru/pkg/checksum`**](/pkg/checksum)  
   *Package checksum provides functions to generate a hash sum from any given object.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/stringutil`**](pkg/stringutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/stringutil`**](/pkg/stringutil)  
   *Package stringutil provides generl string utility functions.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/thumbnail`**](pkg/thumbnail)  
+- [**`github.com/zekroTJA/shinpuru/pkg/thumbnail`**](/pkg/thumbnail)  
   *Package thumbnail provides simple functionalities to generate thumbnails from images with a max witdh or height.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/multierror`**](pkg/multierror)  
+- [**`github.com/zekroTJA/shinpuru/pkg/multierror`**](/pkg/multierror)  
   *Package multierror impements handling multiple errors as one error object.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/jdoodle`**](pkg/jdoodle)  
+- [**`github.com/zekroTJA/shinpuru/pkg/jdoodle`**](/pkg/jdoodle)  
   *Package jdoodle provides an API wrapper for the jdoodle execute and credit-spent REST API.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](pkg/lctimer)  
+- [**`github.com/zekroTJA/shinpuru/pkg/lctimer`**](/pkg/lctimer)  
   *Package lctimer provides a life cycle timer which calls registered callback handlers on timer elapse. This package is a huge buggy piece of crap, please don't use it. :)*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/rediscmdstore`**](pkg/rediscmdstore)  
+- [**`github.com/zekroTJA/shinpuru/pkg/rediscmdstore`**](/pkg/rediscmdstore)  
   *Package rediscmdstore provides an implementation of github.com/zekrotja/ken/store.CommandStore using a redis client to store the command cache.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/etag`**](pkg/etag)  
+- [**`github.com/zekroTJA/shinpuru/pkg/etag`**](/pkg/etag)  
   *Package etag implements generation functionalities for the ETag specification of RFC7273 2.3. https://tools.ietf.org/html/rfc7232#section-2.3.1*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](pkg/fetch)  
+- [**`github.com/zekroTJA/shinpuru/pkg/fetch`**](/pkg/fetch)  
   *Package fetch provides functionalities to fetch roles, channels, members and users by so called resolavbles. That means, these functions try to match a member, role or channel by their names, displaynames, IDs or mentions as greedy as prossible.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/argp`**](pkg/argp)  
+- [**`github.com/zekroTJA/shinpuru/pkg/argp`**](/pkg/argp)  
   *Package argp is a stupid simple flag (argument) parser which allows to parse flags without panicing when non-registered flags are passed.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/inline`**](pkg/inline)  
+- [**`github.com/zekroTJA/shinpuru/pkg/inline`**](/pkg/inline)  
   *Package inline provides general inline operation functions like inline if or null coalescence.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/timerstack`**](pkg/timerstack)  
+- [**`github.com/zekroTJA/shinpuru/pkg/timerstack`**](/pkg/timerstack)  
   *Package timerstack provides a timer which can execute multiple delayed functions one after one.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](pkg/twitchnotify)  
+- [**`github.com/zekroTJA/shinpuru/pkg/twitchnotify`**](/pkg/twitchnotify)  
   *Package twitchnotify provides functionalities to watch the state of twitch streams and notifying changes by polling the twitch REST API.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](pkg/boolutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/boolutil`**](/pkg/boolutil)  
   *Package boolutil provides simple utility functions around booleans.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/bytecount`**](pkg/bytecount)  
+- [**`github.com/zekroTJA/shinpuru/pkg/bytecount`**](/pkg/bytecount)  
   *Package bytecount provides functionalities to format byte counts.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/timeutil`**](pkg/timeutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/timeutil`**](/pkg/timeutil)  
   *Package timeutil provides some general purpose functionalities around the time package.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](pkg/httpreq)  
+- [**`github.com/zekroTJA/shinpuru/pkg/httpreq`**](/pkg/httpreq)  
   *Package httpreq provides general utilities for around net/http requests for a simpler API and extra utilities for parsing JSON request and response boddies.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](pkg/voidbuffer)  
+- [**`github.com/zekroTJA/shinpuru/pkg/voidbuffer`**](/pkg/voidbuffer)  
   *Package voidbuffer provides a simple, concurrency proof push buffer with a fixed size which "removes" firstly pushed values when fully filled.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/lokiwriter`**](pkg/lokiwriter)  
+- [**`github.com/zekroTJA/shinpuru/pkg/lokiwriter`**](/pkg/lokiwriter)  
   *Package lokiwriter implements rogu.Writer to push logs to a Grafana Loki instance.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](pkg/roleutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/roleutil`**](/pkg/roleutil)  
   *Package roleutil provides general purpose utilities for discordgo.Role objects and arrays.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](pkg/slices)  
+- [**`github.com/zekroTJA/shinpuru/pkg/slices`**](/pkg/slices)  
   *Package slices adds generic utility functionalities for slices.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/logmsg`**](pkg/logmsg)  
+- [**`github.com/zekroTJA/shinpuru/pkg/logmsg`**](/pkg/logmsg)  
   *No package description.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/permissions`**](pkg/permissions)  
+- [**`github.com/zekroTJA/shinpuru/pkg/permissions`**](/pkg/permissions)  
   *Package permissions provides functionalities to calculate, update and merge arrays of permission domain rules. Read this to get more information about how permission domains and rules are working: https://github.com/zekroTJA/shinpuru/wiki/Permissions-Guide*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](pkg/hammertime)  
+- [**`github.com/zekroTJA/shinpuru/pkg/hammertime`**](/pkg/hammertime)  
   *Package hammertime provides functionailities to format a time.Time into a Discord timestamp mention. The name was used after the very useful web app hammertime.djdavid98.art.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/discordutil`**](pkg/discordutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/discordutil`**](/pkg/discordutil)  
   *Package discordutil provides general purpose extensuion functionalities for discordgo.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/onetimeauth`**](pkg/onetimeauth)  
+- [**`github.com/zekroTJA/shinpuru/pkg/onetimeauth`**](/pkg/onetimeauth)  
   *Package onetimeout provides short duration valid JWT tokens which are only valid exactly once.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/limiter`**](pkg/limiter)  
+- [**`github.com/zekroTJA/shinpuru/pkg/limiter`**](/pkg/limiter)  
   *Package limiter provides a fiber middleware for a bucket based request rate limiter.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](pkg/angularservice)  
+- [**`github.com/zekroTJA/shinpuru/pkg/angularservice`**](/pkg/angularservice)  
   *Package angularservice provides bindings to start an Angular development server via the Angular CLI.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/regexputil`**](pkg/regexputil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/regexputil`**](/pkg/regexputil)  
   *Package regexutil provides additional utility functions used with regular expressions.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/colors`**](pkg/colors)  
+- [**`github.com/zekroTJA/shinpuru/pkg/colors`**](/pkg/colors)  
   *Package color provides general utilities for image/color objects and color codes.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/random`**](pkg/random)  
+- [**`github.com/zekroTJA/shinpuru/pkg/random`**](/pkg/random)  
   *Package random provides some general purpose cryptographically pseudo-random utilities.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](pkg/versioncheck)  
+- [**`github.com/zekroTJA/shinpuru/pkg/versioncheck`**](/pkg/versioncheck)  
   *Package versioncheck provides endpoints to retrieve version information via different providers and utilities to compare versions.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/embedbuilder`**](pkg/embedbuilder)  
+- [**`github.com/zekroTJA/shinpuru/pkg/embedbuilder`**](/pkg/embedbuilder)  
   *Package embedbuilder provides a builder pattern to create discordgo message embeds.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/hashutil`**](pkg/hashutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/hashutil`**](/pkg/hashutil)  
   *Package hashutil provides general utility functionalities to generate simple and fast hashes with salt and pepper.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/ctypes`**](pkg/ctypes)  
+- [**`github.com/zekroTJA/shinpuru/pkg/ctypes`**](/pkg/ctypes)  
   *Package ctype provides some custom types with useful function extensions.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/msgcollector`**](pkg/msgcollector)  
+- [**`github.com/zekroTJA/shinpuru/pkg/msgcollector`**](/pkg/msgcollector)  
   *Package msgcollector provides functionalities to collect messages in a channel in conect of a single command request.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/acceptmsg`**](pkg/acceptmsg)  
+- [**`github.com/zekroTJA/shinpuru/pkg/acceptmsg`**](/pkg/acceptmsg)  
   *Package acceptmsg provides a message model for discordgo which can be accepted or declined via message reactions.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](pkg/startuptime)  
+- [**`github.com/zekroTJA/shinpuru/pkg/startuptime`**](/pkg/startuptime)  
   *Package startuptime provides simple functionalities to measure the startup time of an application.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/discordoauth`**](pkg/discordoauth)  
+- [**`github.com/zekroTJA/shinpuru/pkg/discordoauth`**](/pkg/discordoauth)  
   *package discordoauth provides fasthttp handlers to authenticate with via the Discord OAuth2 endpoint.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/giphy`**](pkg/giphy)  
+- [**`github.com/zekroTJA/shinpuru/pkg/giphy`**](/pkg/giphy)  
   *Package giphy provides a crappy and inclomplete - but at least bloat free - Giphy API client.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/mody`**](pkg/mody)  
+- [**`github.com/zekroTJA/shinpuru/pkg/mody`**](/pkg/mody)  
   *Package mody allows to modify fields in an object.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/intutil`**](pkg/intutil)  
+- [**`github.com/zekroTJA/shinpuru/pkg/intutil`**](/pkg/intutil)  
   *Package intutil provides some utility functionalities for integers.*
 
-- [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](pkg/mimefix)  
+- [**`github.com/zekroTJA/shinpuru/pkg/mimefix`**](/pkg/mimefix)  
   *+build windows*
 
 <!-- end:PUBLIC_PACKAGES -->
@@ -314,43 +314,43 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 ### Back End
 
 <!-- start:REQUIREMENTS_BE -->
-- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.0)`
+- [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo) `(v0.27.1)`
 - [bwmarrin/snowflake](https://github.com/bwmarrin/snowflake) `(v0.3.0)`
 - [esimov/stackblur-go](https://github.com/esimov/stackblur-go) `(v1.1.0)`
-- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.1)`
+- [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype) `(v1.4.2)`
 - [generaltso/vibrant](https://github.com/generaltso/vibrant) `(v0.0.0-20200703055536-90f922bee78c)`
 - [go-ping/ping](https://github.com/go-ping/ping) `(v1.1.0)`
-- [redis/v8](https://github.com/go-redis/redis/v8) `(v8.11.5)`
-- [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.7.0)`
-- [fiber/v2](https://github.com/gofiber/fiber/v2) `(v2.42.0)`
-- [jwt/v4](https://github.com/golang-jwt/jwt/v4) `(v4.5.0)`
+- [redis/v8](https://github.com/go-redis/redis) `(v8.11.5)`
+- [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) `(v1.7.1)`
+- [fiber/v2](https://github.com/gofiber/fiber) `(v2.46.0)`
+- [jwt/v4](https://github.com/golang-jwt/jwt) `(v4.5.0)`
 - [joho/godotenv](https://github.com/joho/godotenv) `(v1.5.1)`
 - [kataras/hcaptcha](https://github.com/kataras/hcaptcha) `(v0.0.2)`
 - [makeworld-the-better-one/go-isemoji](https://github.com/makeworld-the-better-one/go-isemoji) `(v1.3.0)`
 - [manifoldco/promptui](https://github.com/manifoldco/promptui) `(v0.9.0)`
 - [minio/minio-go](https://github.com/minio/minio-go) `(v6.0.14+incompatible)`
 - [narqo/go-badge](https://github.com/narqo/go-badge) `(v0.0.0-20221212191103-ba83bed45a1a)`
-- [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.14.0)`
+- [prometheus/client_golang](https://github.com/prometheus/client_golang) `(v1.15.1)`
 - [qiangxue/fasthttp-routing](https://github.com/qiangxue/fasthttp-routing) `(v0.0.0-20160225050629-6ccdc2a18d87)`
 - [ranna-go/ranna](https://github.com/ranna-go/ranna) `(v0.3.0)`
-- [cron/v3](https://github.com/robfig/cron/v3) `(v3.0.1)`
-- [rs/xid](https://github.com/rs/xid) `(v1.4.0)`
-- [di/v2](https://github.com/sarulabs/di/v2) `(v2.4.2)`
-- [stretchr/testify](https://github.com/stretchr/testify) `(v1.8.1)`
+- [cron/v3](https://github.com/robfig/cron) `(v3.0.1)`
+- [rs/xid](https://github.com/rs/xid) `(v1.5.0)`
+- [di/v2](https://github.com/sarulabs/di) `(v2.4.2)`
+- [stretchr/testify](https://github.com/stretchr/testify) `(v1.8.3)`
 - [traefik/paerser](https://github.com/traefik/paerser) `(v0.2.0)`
-- [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.44.0)`
+- [valyala/fasthttp](https://github.com/valyala/fasthttp) `(v1.47.0)`
 - [wcharczuk/go-chart](https://github.com/wcharczuk/go-chart) `(v2.0.1+incompatible)`
 - [zekroTJA/colorname](https://github.com/zekroTJA/colorname) `(v1.0.0)`
 - [zekroTJA/ratelimit](https://github.com/zekroTJA/ratelimit) `(v1.1.1)`
-- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.4.0)`
+- [zekroTJA/timedmap](https://github.com/zekroTJA/timedmap) `(v1.5.1)`
 - [zekrotja/dgrs](https://github.com/zekrotja/dgrs) `(v0.5.7)`
 - [zekrotja/jwt](https://github.com/zekrotja/jwt) `(v0.0.0-20220515133240-d66362c9fbc9)`
 - [zekrotja/ken](https://github.com/zekrotja/ken) `(v0.18.0)`
 - [zekrotja/promtail](https://github.com/zekrotja/promtail) `(v0.0.0-20230303162843-4e609d577b74)`
-- [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.3.0)`
+- [zekrotja/rogu](https://github.com/zekrotja/rogu) `(v0.5.0)`
 - [zekrotja/sop](https://github.com/zekrotja/sop) `(v0.3.1)`
-- [x/image](https://golang.org/x/image) `(v0.5.0)`
-- [x/sys](https://golang.org/x/sys) `(v0.5.0)`
+- [x/image](https://golang.org/x/image) `(v0.7.0)`
+- [x/sys](https://golang.org/x/sys) `(v0.8.0)`
 - [x/time](https://golang.org/x/time) `(v0.3.0)`
 - [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) `(v2.4.0)`
 <!-- end:REQUIREMENTS_BE -->
@@ -359,19 +359,19 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 
 <!-- start:REQUIREMENTS_FE -->
 - [@hcaptcha/react-hcaptcha](https://github.com/hCaptcha/react-hcaptcha#readme) `(^1.4.4)`
-- [byte-formatter](None) `(^1.0.1)`
+- [byte-formatter](https://www.npmjs.com/package/byte-formatter) `(^1.0.1)`
 - [color](https://github.com/Qix-/color#readme) `(^4.2.1)`
 - [date-fns](https://github.com/date-fns/date-fns#readme) `(^2.28.0)`
 - [debounce](https://github.com/component/debounce#readme) `(^1.2.1)`
-- [emoji.json](https://github.com/amio/emoji.json#readme) `(^13.1.0)`
+- [emoji.json](https://github.com/amio/emoji.json#readme) `(^14.0.0)`
 - [fuse.js](http://fusejs.io) `(^6.6.2)`
-- [i18next](https://www.i18next.com) `(^21.6.14)`
-- [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) `(^6.1.3)`
-- [i18next-http-backend](https://github.com/i18next/i18next-http-backend) `(^1.4.0)`
+- [i18next](https://www.i18next.com) `(^22.4.14)`
+- [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) `(^7.0.1)`
+- [i18next-http-backend](https://github.com/i18next/i18next-http-backend) `(^2.2.0)`
 - [react](https://reactjs.org/) `(^18.2.0)`
 - [react-dom](https://reactjs.org/) `(^18.2.0)`
 - [react-fast-marquee](https://github.com/justin-chu/react-fast-marquee#readme) `(^1.3.5)`
-- [react-i18next](https://github.com/i18next/react-i18next) `(^11.15.7)`
+- [react-i18next](https://github.com/i18next/react-i18next) `(^12.2.0)`
 - [react-markdown](https://github.com/remarkjs/react-markdown#readme) `(^8.0.1)`
 - [react-router](https://github.com/remix-run/react-router#readme) `(^6.0.2)`
 - [react-router-dom](https://github.com/remix-run/react-router#readme) `(^6.2.1)`
@@ -380,9 +380,9 @@ Read about self-compiling in the [**wiki article**](https://github.com/zekroTJA/
 - [react-uid](https://github.com/thearnica/react-uid#readme) `(^2.3.1)`
 - [react-wavify](https://github.com/woofers/react-wavify#readme) `(^1.7.0)`
 - [sass](https://github.com/sass/dart-sass) `(^1.49.0)`
-- [styled-components](https://styled-components.com) `(^5.3.0)`
-- [web-vitals](https://github.com/GoogleChrome/web-vitals#readme) `(^2.1.2)`
-- [zustand](https://github.com/pmndrs/zustand) `(^3.7.0)`
+- [styled-components](https://styled-components.com/) `(^5.3.0)`
+- [web-vitals](https://github.com/GoogleChrome/web-vitals#readme) `(^3.3.1)`
+- [zustand](https://github.com/pmndrs/zustand) `(^4.3.7)`
 <!-- end:REQUIREMENTS_FE -->
 
 ### Assets
