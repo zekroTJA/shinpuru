@@ -34,7 +34,7 @@ for pkg in os.listdir(PKG_PATH):
     print(f'Processing package {pkg} ...')
     desc = (get_pkg_description(pkg)
             or 'No package description.').replace('\n', ' ')
-    res += '- [**`{root}/{sub}/{pkg}`**]({sub}/{pkg})  \n  *{desc}*\n\n'.format_map({
+    res += '- [**`{root}/{sub}/{pkg}`**](/{sub}/{pkg})  \n  *{desc}*\n\n'.format_map({
         'root': ROOT_PKG,
         'sub': PKG_PATH,
         'pkg': pkg,
