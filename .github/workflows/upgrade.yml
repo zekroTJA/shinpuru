@@ -3,10 +3,9 @@ name: Auto Upgrade
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * THU'
 
 jobs:
-
   webapp:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +40,7 @@ jobs:
       - name: 'Upgrade Go dependencies'
         run: go get -v -u ./...
       - name: Check tests
-        run:  task test
+        run: task test
       - name: Check build
         run: task build-be
       - name: Commit & Push
@@ -50,4 +49,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: upgrade go packages
           branch: dev
-
