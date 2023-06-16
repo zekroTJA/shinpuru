@@ -133,6 +133,10 @@ func commandErrorHandler(err error, ctx *ken.Ctx) {
 		return
 	}
 
+	log.Tagged("Ken").Error().
+		Err(err).
+		Field("cmd", ctx.Command.Name()).
+		Msg("Unexpected command result")
 	ctx.FollowUpError(
 		fmt.Sprintf("The command execution failed unexpectedly:\n```\n%s\n```", err.Error()),
 		"Command execution failed").Send()
