@@ -60,7 +60,7 @@ func (l *ListenerInviteBlock) invokeCheck(s discordutil.ISession, msg *discordgo
 	if link != "" {
 		ok, matches, err := l.followLinkDeep(link, 100, 0)
 		if err != nil {
-			l.log.Error().Err(err).Field("link", link).Msg("Failed following link")
+			l.log.Debug().Err(err).Field("link", link).Msg("Failed following link")
 			return
 		}
 		if ok {

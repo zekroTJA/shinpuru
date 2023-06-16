@@ -147,8 +147,25 @@ type DatabaseType struct {
 // Cache holds the preferences for caching
 // services.
 type Cache struct {
-	Redis         CacheRedis `json:"redis"`
-	CacheDatabase bool       `json:"cachedatabase"`
+	Redis         CacheRedis     `json:"redis"`
+	CacheDatabase bool           `json:"cachedatabase"`
+	Lifetimes     CacheLifetimes `json:"lifetimes"`
+}
+
+// CacheLifetimes holds a list of duration strings
+// which will later get parsed into durations for
+// caching lifetimes.
+type CacheLifetimes struct {
+	General,
+	Guild,
+	Member,
+	User,
+	Role,
+	Channel,
+	Emoji,
+	Message,
+	VoiceState,
+	Presence string
 }
 
 // LokiLogging holds configuration to push

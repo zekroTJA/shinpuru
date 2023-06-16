@@ -1,11 +1,11 @@
 configVersionPleaseDoNotChange: 6
 
 discord:
-  token: "<your bot token>"
-  generalprefix: ";;"
-  ownerid: "<your user ID>"
-  clientid: "<your bot client id>"
-  clientsecret: "<your bot client secret>"
+  token: '<your bot token>'
+  generalprefix: ';;'
+  ownerid: '<your user ID>'
+  clientid: '<your bot client id>'
+  clientsecret: '<your bot client secret>'
   disabledcommands:
   # globalcommandratelimit:
   #   burst: 1
@@ -13,26 +13,30 @@ discord:
 
 permissions:
   defaultuserrules:
-  - +sp.etc.*
-  - +sp.chat.*
+    - +sp.etc.*
+    - +sp.chat.*
   defaultadminrules:
-  - +sp.guild.*
-  - +sp.etc.*
-  - +sp.chat.*
+    - +sp.guild.*
+    - +sp.etc.*
+    - +sp.chat.*
 
 database:
   type: mysql
   mysql:
-    host: "localhost:3306"
-    user: "root"
-    database: "shinpuru"
-    password: "dev"
+    host: 'localhost:3306'
+    user: 'root'
+    database: 'shinpuru'
+    password: 'dev'
 
 cache:
   redis:
-    addr: "localhost:6379"
+    addr: 'localhost:6379'
     type: 0
   cachedatabase: true
+  lifetimes:
+    general: 30d
+    member: 90d
+    user: 90d
 
 storage:
   type: file
@@ -49,13 +53,13 @@ logging:
   loglevel: 5
 
 twitchapp:
-  clientid: ""
-  clientsecret: ""
+  clientid: ''
+  clientsecret: ''
 
 webserver:
   enabled: true
   addr: :8080
-  apitokenkey: "12345678901234567890123456789012"
+  apitokenkey: '12345678901234567890123456789012'
   tls:
     enabled: false
   publicaddr: http://localhost:8080
@@ -65,8 +69,8 @@ webserver:
     burst: 50
     limitseconds: 3
   captcha:
-    sitekey: "20000000-ffff-ffff-ffff-000000000002"
-    secretkey: "0x0000000000000000000000000000000000000000"
+    sitekey: '20000000-ffff-ffff-ffff-000000000002'
+    secretkey: '0x0000000000000000000000000000000000000000'
 
 # metrics:
 #   enable: true
