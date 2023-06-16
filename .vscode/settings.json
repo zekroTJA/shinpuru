@@ -1,5 +1,9 @@
 {
-  "terminal.integrated.env.linux": {
-    "GITHUB_TOKEN": "05e31267c9937dd676cf2073e4a54df05715c500"
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "args": ["-l"],
+      "icon": "terminal-bash"
+    }
   }
 }
