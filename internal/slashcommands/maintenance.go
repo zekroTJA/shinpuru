@@ -124,6 +124,25 @@ func (c *Maintenance) Options() []*discordgo.ApplicationCommandOption {
 				},
 			},
 		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "leave-guild",
+			Description: "Let shinpuru leave the specified guild.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "id",
+					Description: "The ID of the guild.",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "owner-message",
+					Description: "Send the given message to the owner og the guild.",
+					Required:    false,
+				},
+			},
+		},
 	}
 }
 
@@ -151,6 +170,7 @@ func (c *Maintenance) Run(ctx ken.Context) (err error) {
 		ken.SubCommandHandler{"reload-config", c.reloadConfig},
 		ken.SubCommandHandler{"set-config-value", c.setConfigValue},
 		ken.SubCommandHandler{"guild-info", c.guildInfo},
+		ken.SubCommandHandler{"leave-guild", c.leaveGuild},
 	)
 
 	return
@@ -310,4 +330,54 @@ func (c *Maintenance) guildInfo(ctx ken.SubCommandContext) (err error) {
 		Build()
 
 	return ctx.FollowUpEmbed(emb).Send().Error
+}
+
+func (c *Maintenance) leaveGuild(ctx ken.SubCommandContext) (err error) {
+	id := ctx.Options().GetByName("id").StringValue()
+
+	var ownerMessage string
+	if v, ok := ctx.Options().GetByNameOptional("owner-message"); ok {
+		ownerMessage = v.StringValue()
+	}
+
+	var msgErr error
+
+	if ownerMessage != "" {
+		st := ctx.Get(static.DiState).(dgrs.IState)
+		guild, err := st.Guild(id)
+		if err != nil {
+			return err
+		}
+
+		msgErr = sendMessageToUser(ctx.GetSession(), guild.OwnerID, ownerMessage)
+	}
+
+	err = ctx.GetSession().GuildLeave(id)
+	if err != nil {
+		return err
+	}
+
+	if msgErr != nil {
+		return ctx.FollowUpError(
+			fmt.Sprintf("Sending the message to the owner of the guild failed:\n```\n%s\n```\n"+
+				"The bot has been removed from the guild though.", err.Error()),
+			"Failed sending message to owner").Send().Error
+	}
+
+	return ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Description: "The bot has left the guild.",
+	}).Send().Error
+}
+
+func sendMessageToUser(s *discordgo.Session, userId string, msg string) error {
+	ch, err := s.UserChannelCreate(userId)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.ChannelMessageSendEmbed(ch.ID, &discordgo.MessageEmbed{
+		Title:       "⚠️ Important Information",
+		Description: msg,
+	})
+	return err
 }
