@@ -1,14 +1,20 @@
 package slashcommands
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/config"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
+	"github.com/zekroTJA/shinpuru/pkg/embedbuilder"
+	"github.com/zekroTJA/shinpuru/pkg/md"
 	"github.com/zekroTJA/shinpuru/pkg/mody"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/ken"
@@ -33,7 +39,7 @@ func (c *Maintenance) Description() string {
 }
 
 func (c *Maintenance) Version() string {
-	return "1.1.0"
+	return "1.2.0"
 }
 
 func (c *Maintenance) Type() discordgo.ApplicationCommandType {
@@ -100,6 +106,24 @@ func (c *Maintenance) Options() []*discordgo.ApplicationCommandOption {
 				},
 			},
 		},
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "guild-info",
+			Description: "Display information about a given guild.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "id",
+					Description: "The ID of the guild.",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionBoolean,
+					Name:        "json",
+					Description: "Dispaly output as JSON.",
+				},
+			},
+		},
 	}
 }
 
@@ -126,6 +150,7 @@ func (c *Maintenance) Run(ctx ken.Context) (err error) {
 		ken.SubCommandHandler{"reconnect", c.reconnect},
 		ken.SubCommandHandler{"reload-config", c.reloadConfig},
 		ken.SubCommandHandler{"set-config-value", c.setConfigValue},
+		ken.SubCommandHandler{"guild-info", c.guildInfo},
 	)
 
 	return
@@ -224,4 +249,65 @@ func (c *Maintenance) setConfigValue(ctx ken.SubCommandContext) (err error) {
 			"Keep in mind that not all config value changes will be effective.",
 			field, jsonvalue),
 	}).Send().Error
+}
+
+func (c *Maintenance) guildInfo(ctx ken.SubCommandContext) (err error) {
+	st := ctx.Get(static.DiState).(dgrs.IState)
+
+	id := ctx.Options().GetByName("id").StringValue()
+
+	asJson := false
+	if oAsJson, ok := ctx.Options().GetByNameOptional("json"); ok {
+		asJson = oAsJson.BoolValue()
+	}
+
+	guild, err := st.Guild(id)
+	if err != nil {
+		return err
+	}
+
+	owner, err := st.Member(guild.ID, guild.OwnerID)
+	if err != nil {
+		return err
+	}
+
+	if asJson {
+		guildJson, err := json.MarshalIndent(guild, "", "  ")
+		if err != nil {
+			return err
+		}
+
+		ownerJson, err := json.MarshalIndent(owner, "", "  ")
+		if err != nil {
+			return err
+		}
+
+		return ctx.FollowUp(true, &discordgo.WebhookParams{
+			Files: []*discordgo.File{
+				{
+					Name:        fmt.Sprintf("%s.guild.json", guild.ID),
+					ContentType: "application/json",
+					Reader:      bytes.NewBuffer(guildJson),
+				},
+				{
+					Name:        fmt.Sprintf("%s.%s.owner.json", guild.ID, guild.OwnerID),
+					ContentType: "application/json",
+					Reader:      bytes.NewBuffer(ownerJson),
+				},
+			},
+		}).Send().Error
+	}
+
+	emb := embedbuilder.New().
+		WithTitle(guild.Name).
+		WithAuthor(owner.User.String(), "", owner.AvatarURL("16"), "").
+		AddField("ID", md.CodeBlock(guild.ID)).
+		AddField("Onwer ID", md.CodeBlock(guild.OwnerID)).
+		AddField("Region", guild.Region).
+		AddField("Joined At", guild.JoinedAt.Format(time.RFC1123)).
+		AddField("Membre Count", strconv.Itoa(guild.MemberCount)).
+		WithThumbnail(guild.IconURL("64"), "", 64, 64).
+		Build()
+
+	return ctx.FollowUpEmbed(emb).Send().Error
 }

@@ -7,7 +7,7 @@ require (
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/esimov/stackblur-go v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.2
-	github.com/generaltso/vibrant v0.0.0-20200703055536-90f922bee78c
+	github.com/generaltso/vibrant v0.0.0-20230605224344-08d3d20033fc
 	github.com/go-ping/ping v1.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.7.1
@@ -19,13 +19,13 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/narqo/go-badge v0.0.0-20221212191103-ba83bed45a1a
-	github.com/prometheus/client_golang v1.15.1
+	github.com/prometheus/client_golang v1.16.0
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/ranna-go/ranna v0.3.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.5.0
 	github.com/sarulabs/di/v2 v2.4.2
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/traefik/paerser v0.2.0
 	github.com/valyala/fasthttp v1.47.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
@@ -38,14 +38,14 @@ require (
 	github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74
 	github.com/zekrotja/rogu v0.5.0
 	github.com/zekrotja/sop v0.3.1
-	golang.org/x/image v0.7.0
-	golang.org/x/sys v0.8.0
+	golang.org/x/image v0.8.0
+	golang.org/x/sys v0.9.0
 	golang.org/x/time v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -63,10 +63,10 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/klauspost/compress v1.16.6 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -76,8 +76,8 @@ require (
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
-	github.com/prometheus/common v0.43.0 // indirect
-	github.com/prometheus/procfs v0.9.0 // indirect
+	github.com/prometheus/common v0.44.0 // indirect
+	github.com/prometheus/procfs v0.11.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
@@ -85,11 +85,11 @@ require (
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/exp v0.0.0-20230519143937-03e91628a987 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
+	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+	golang.org/x/net v0.11.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
