@@ -466,7 +466,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	asyncWriteStatus(statusC, "re-positioning channels")
 	for cID, pos := range channelsPos {
 		_, err = bck.session.ChannelEditComplex(cID, &discordgo.ChannelEdit{
-			Position: pos,
+			Position: &pos,
 		})
 		if err != nil {
 			return err
