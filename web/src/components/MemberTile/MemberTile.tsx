@@ -49,9 +49,7 @@ export const MemberTile: React.FC<Props> = ({ member, onClick = () => {} }) => {
         <h4>
           {memberName(member)} {member.user.bot && <StyledBotIcon />}
         </h4>
-        <span>
-          {member.user.username}#{member.user.discriminator}
-        </span>
+        <span>{member.user.username}</span>
       </Details>
     </StyledContainer>
   );

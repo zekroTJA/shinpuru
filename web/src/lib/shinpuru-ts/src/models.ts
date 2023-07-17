@@ -8,7 +8,6 @@ export interface ListResponse<T> {
 export interface FlatUser {
   id: string;
   username: string;
-  discriminator: string;
   bot: boolean;
   avatar_url: string;
 }

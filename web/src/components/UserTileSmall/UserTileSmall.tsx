@@ -34,7 +34,7 @@ export const UserTileSmall: React.FC<Props> = ({ fallbackId, user, icon, hideAva
     <UserContainer>
       {icon}
       {hideAvatar || <DiscordImage src={user?.avatar_url} round />}
-      <span>{user ? `${user.username}#${user.discriminator}` : <i>{fallbackId}</i>}</span>
+      <span>{user ? user.username : <i>{fallbackId}</i>}</span>
     </UserContainer>
   );
 };

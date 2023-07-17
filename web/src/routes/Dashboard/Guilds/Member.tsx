@@ -157,9 +157,7 @@ const MemberRoute: React.FC<Props> = () => {
         <div>
           <HeaderName>
             <h1>{memberName(member)}</h1>
-            <small>
-              {member.user.username}#{member.user.discriminator}
-            </small>
+            <small>{member.user.username}</small>
             <Embed>{member.user.id}</Embed>
           </HeaderName>
           {guild && <RoleList guildroles={guild.roles!} roleids={member.roles} />}

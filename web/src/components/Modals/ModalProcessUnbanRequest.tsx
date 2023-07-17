@@ -99,7 +99,7 @@ export const ModalProcessUnbanRequest: React.FC<Props> = ({
       <StyledModalContainer>
         <section>
           <Trans ns="components" i18nKey={`modalprocessunbanrequest.description.${type}`}>
-            {{ username: `${request?.creator.username}#${request?.creator.discriminator}` }}
+            {{ username: request?.creator.username }}
             {{ userid: request?.creator.id }}
           </Trans>
         </section>
