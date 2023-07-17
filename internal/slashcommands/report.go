@@ -267,8 +267,7 @@ func (c *Report) list(ctx ken.SubCommandContext) (err error) {
 
 	emb := &discordgo.MessageEmbed{
 		Color: static.ColorEmbedDefault,
-		Title: fmt.Sprintf("Reports for %s#%s",
-			victim.Username, victim.Discriminator),
+		Title: fmt.Sprintf("Reports for %s", victim.String()),
 		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users reports in the web interface.",
 			cfg.Config().WebServer.PublicAddr, ctx.GetEvent().GuildID, victim.ID),
 	}

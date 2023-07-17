@@ -143,7 +143,7 @@ func (c *User) Run(ctx ken.Context) (err error) {
 
 	embed := &discordgo.MessageEmbed{
 		Color: roleColor,
-		Title: fmt.Sprintf("Info about member %s#%s", member.User.Username, member.User.Discriminator),
+		Title: fmt.Sprintf("Info about member %s", member.User.String()),
 		Description: fmt.Sprintf("[**Here**](%s/guilds/%s/%s) you can find this users profile in the web interface.",
 			cfg.Config().WebServer.PublicAddr, guild.ID, member.User.ID),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
@@ -153,7 +153,7 @@ func (c *User) Run(ctx ken.Context) (err error) {
 			{
 				Inline: true,
 				Name:   "Tag",
-				Value:  member.User.Username + "#" + member.User.Discriminator,
+				Value:  member.User.String(),
 			},
 			{
 				Inline: true,

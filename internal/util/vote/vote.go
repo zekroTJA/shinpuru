@@ -144,7 +144,7 @@ func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo
 		Description: description,
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: creator.AvatarURL("16x16"),
-			Name:    creator.Username + "#" + creator.Discriminator,
+			Name:    creator.String(),
 		},
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: footerText,

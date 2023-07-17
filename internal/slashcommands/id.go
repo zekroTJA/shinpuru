@@ -98,7 +98,7 @@ func (c *Id) Run(ctx ken.Context) (err error) {
 	if user != nil {
 		emb.Fields = append(emb.Fields, &discordgo.MessageEmbedField{
 			Name:  "Member",
-			Value: fmt.Sprintf("<@%s> (%s#%s)\n```\n%s\n```", user.ID, user.Username, user.Discriminator, user.ID),
+			Value: fmt.Sprintf("<@%s> (%s)\n```\n%s\n```", user.ID, user.String(), user.ID),
 		})
 	}
 	if role != nil {
