@@ -126,9 +126,7 @@ const KarmaRoute: React.FC<Props> = () => {
                       <ArrowIcon />
                     </div>
                     <img src={selfMember.avatar_url} alt="" />
-                    <span>
-                      {selfMember.user.username}#{selfMember.user.discriminator}
-                    </span>
+                    <span>{selfMember.user.username}</span>
                     <span>{selfMember.karma}</span>
                   </SelfKarmaEntry>
                 )}
@@ -140,9 +138,7 @@ const KarmaRoute: React.FC<Props> = () => {
                     onClick={() => nav(`/db/guilds/${guildid}/members/${e.member.user.id}`)}>
                     <div>{rankIcon(e.value, i)}</div>
                     <img src={e.member.avatar_url} alt="" />
-                    <span>
-                      {e.member.user.username}#{e.member.user.discriminator}
-                    </span>
+                    <span>{e.member.user.username}</span>
                     <span>{e.value}</span>
                   </KarmaEntry>
                 ))}

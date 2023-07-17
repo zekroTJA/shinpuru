@@ -93,7 +93,7 @@ type ISession interface {
 	GuildChannelsReorder(guildID string, channels []*Channel, options ...RequestOption) (err error)
 	GuildCreate(name string, options ...RequestOption) (st *Guild, err error)
 	GuildCreateWithTemplate(templateCode, name, icon string, options ...RequestOption) (st *Guild, err error)
-	GuildDelete(guildID string, options ...RequestOption) (st *Guild, err error)
+	GuildDelete(guildID string, options ...RequestOption) (err error)
 	GuildEdit(guildID string, g *GuildParams, options ...RequestOption) (st *Guild, err error)
 	GuildEmbed(guildID string, options ...RequestOption) (st *GuildEmbed, err error)
 	GuildEmbedEdit(guildID string, data *GuildEmbed, options ...RequestOption) (err error)

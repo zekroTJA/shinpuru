@@ -196,10 +196,9 @@ func (c *Quote) Run(ctx ken.Context) (err error) {
 		}
 		if quoteMsg.Author == nil {
 			quoteMsg.Author = &discordgo.User{
-				ID:            "000000000000000000",
-				Username:      "Discord doesn't want to give the author of this message :(",
-				Avatar:        "",
-				Discriminator: "0000",
+				ID:       "000000000000000000",
+				Username: "Discord doesn't want to give the author of this message :(",
+				Avatar:   "",
 			}
 		}
 		st.SetMessage(quoteMsg)

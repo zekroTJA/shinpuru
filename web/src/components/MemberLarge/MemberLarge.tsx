@@ -60,10 +60,8 @@ export const MemberLarge: React.FC<Props> = ({ member, guild, onClick = () => {}
       <DiscordImage src={member.avatar_url} />
       <div>
         <Header>
-          <h2>{memberName(member, false)}</h2>
-          <small>
-            {member.user.username}#{member.user.discriminator}
-          </small>
+          <h2>{memberName(member)}</h2>
+          <small>{member.user.username}</small>
           <Embed>{member.user.id}</Embed>
         </Header>
         <RoleList guildroles={guild.roles!} roleids={member.roles} />

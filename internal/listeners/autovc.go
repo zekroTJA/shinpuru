@@ -119,7 +119,7 @@ func (l *ListenerAutoVoice) createAutoVC(s *discordgo.Session, userID, guildID, 
 	}
 	ch, err = s.ChannelEditComplex(ch.ID, &discordgo.ChannelEdit{
 		ParentID: parentCh.ParentID,
-		Position: parentCh.Position,
+		Position: &parentCh.Position,
 	})
 	if err != nil {
 		return err

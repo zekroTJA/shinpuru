@@ -2456,7 +2456,7 @@ func (_m *ISession) GuildCreateWithTemplate(templateCode string, name string, ic
 }
 
 // GuildDelete provides a mock function with given fields: guildID, options
-func (_m *ISession) GuildDelete(guildID string, options ...discordgo.RequestOption) (*discordgo.Guild, error) {
+func (_m *ISession) GuildDelete(guildID string, options ...discordgo.RequestOption) error {
 	_va := make([]interface{}, len(options))
 	for _i := range options {
 		_va[_i] = options[_i]
@@ -2466,26 +2466,14 @@ func (_m *ISession) GuildDelete(guildID string, options ...discordgo.RequestOpti
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *discordgo.Guild
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, ...discordgo.RequestOption) (*discordgo.Guild, error)); ok {
-		return rf(guildID, options...)
-	}
-	if rf, ok := ret.Get(0).(func(string, ...discordgo.RequestOption) *discordgo.Guild); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, ...discordgo.RequestOption) error); ok {
 		r0 = rf(guildID, options...)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*discordgo.Guild)
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, ...discordgo.RequestOption) error); ok {
-		r1 = rf(guildID, options...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // GuildEdit provides a mock function with given fields: guildID, g, options

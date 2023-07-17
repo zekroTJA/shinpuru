@@ -77,7 +77,7 @@ func (t *Tag) formattedAuthor(s *dgrs.State) *author {
 	authorF := new(author)
 	author, err := s.Member(t.GuildID, t.CreatorID)
 	if err == nil && author != nil {
-		authorF.nameTag = fmt.Sprintf("%s#%s", author.User.Username, author.User.Discriminator)
+		authorF.nameTag = fmt.Sprintf("%s", author.User.String())
 		authorF.imageURL = author.User.AvatarURL("")
 	} else {
 		authorF.nameTag = fmt.Sprintf("<not on guild> (%s)", t.CreatorID)

@@ -42,7 +42,7 @@ func (l *ListenerVoiceUpdate) sendVLCMessage(s *discordgo.Session, channelID, us
 		Color:       color,
 		Description: content,
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    user.Username + "#" + user.Discriminator,
+			Name:    user.String(),
 			IconURL: user.AvatarURL("16x16"),
 		},
 		Timestamp: l.tp.Now().Format(time.RFC3339),

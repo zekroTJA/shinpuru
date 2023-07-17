@@ -306,9 +306,7 @@ const KarmaRoute: React.FC<Props> = () => {
           {blocklist.map((m) => (
             <tr>
               <td>{m.user.id}</td>
-              <td>
-                {m.user.username}#{m.user.discriminator}
-              </td>
+              <td>m.user.username</td>
               <td>{m.nick || m.user.username}</td>
               <td>
                 <ActionButton onClick={() => _removeBlocklist(m)}>
