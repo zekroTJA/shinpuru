@@ -3,9 +3,9 @@
 > **Note**  
 > This is a hotfix patch. If you want to see the changelog for release 1.40.0, please look [**here**](https://github.com/zekroTJA/shinpuru/releases/tag/1.40.0).
 
-# Bug Fixes
+# Bug Fixes and Minor Changes
 
-- Fixed a bug which prevented login links from the [`/login`](https://github.com/zekroTJA/shinpuru/wiki/Commands#login) command from logging in properly when the web SPA has been loaded. [#431]
+- Discriminators have been removed from the command UI as well as from the web UI in order of [Discord's usernam migration](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names).
 
 # Docker
 
