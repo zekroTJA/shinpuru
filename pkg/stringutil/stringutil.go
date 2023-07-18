@@ -34,7 +34,7 @@ func FromBool(cond bool, ifTrue, ifFalse string) string {
 	return ifFalse
 }
 
-// IndexOfStringArray returns the index of the
+// IndexOf returns the index of the
 // passed str in the passed arr. If str is not
 // in arr, -1 is returned.
 func IndexOf(str string, arr []string) int {

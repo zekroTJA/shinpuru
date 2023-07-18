@@ -31,7 +31,7 @@ func NewRannaFactory(container di.Container) (e *RannaFactory, err error) {
 		return
 	}
 
-	if e.cfg.Token != "" && strings.Index(e.cfg.Token, " ") == -1 {
+	if e.cfg.Token != "" && !strings.Contains(e.cfg.Token, " ") {
 		e.cfg.Token = "basic " + e.cfg.Token
 	}
 

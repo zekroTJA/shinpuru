@@ -1,27 +1,31 @@
 package permissions
 
-// PermissionsArray describes a set of permission
+// PermissionArray describes a set of permission
 // rules.
 //
 // Example:
-//   +sp.guild.config.*
-//   +sp.*
-//   +sp.guild.*
-//   -sp.guild.mod.ban
-//   +sp.etc.*
-//   +sp.chat.*
+//
+//	+sp.guild.config.*
+//	+sp.*
+//	+sp.guild.*
+//	-sp.guild.mod.ban
+//	+sp.etc.*
+//	+sp.chat.*
 type PermissionArray []string
 
-// Updates "adds" the passed newPerm to the permission array
+// Update "adds" the passed newPerm to the permission array
 // p by merging the permissions and returns the result as
 // new permission array.
 //
 // This means, if p looks like following
-//   +sp.guild.*
-//   +sp.guild.mod.ban
+//
+//	+sp.guild.*
+//	+sp.guild.mod.ban
+//
 // and newPerm is '-sp.guild.mod.ban', the
 // returned permission array will be
-//   +sp.guild.*
+//
+//	+sp.guild.*
 func (p PermissionArray) Update(newPerm string, override bool) (newPermsArray PermissionArray, changed bool) {
 	newPermsArray = make(PermissionArray, len(p)+1)
 

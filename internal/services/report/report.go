@@ -26,8 +26,8 @@ import (
 )
 
 var (
-	ErrRoleDiff       = errors.New("You can only ban or kick members with lower permissions than yours.")
-	ErrMemberHasLeft  = errors.New("This user is no more a member of this guild.")
+	ErrRoleDiff       = errors.New("you can only ban or kick members with lower permissions than yours")
+	ErrMemberHasLeft  = errors.New("this user is no more a member of this guild")
 	ErrInvalidTimeout = errors.New("timeout must be in the future")
 )
 
@@ -78,11 +78,16 @@ func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 		return models.Report{}, err
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil && modlogChan != "" {
+	var modlogChan string
+	if modlogChan, err = r.db.GetGuildModLog(rep.GuildID); err == nil && modlogChan != "" {
 		_, err = r.s.ChannelMessageSendEmbed(modlogChan, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 	if err != nil {
-		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		if database.IsErrDatabaseNotFound(err) {
+			err = nil
+		} else {
+			err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		}
 	}
 
 	dmChan, errDm := r.s.UserChannelCreate(rep.VictimID)
@@ -90,7 +95,7 @@ func (r *ReportService) PushReport(rep models.Report) (models.Report, error) {
 		r.s.ChannelMessageSendEmbed(dmChan.ID, rep.AsEmbed(r.cfg.Config().WebServer.PublicAddr))
 	}
 
-	return rep, nil
+	return rep, errors.Join(err, errDm)
 }
 
 // PushKick is shorthand for PushReport as member kick action and also
@@ -308,11 +313,16 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 		Timestamp: time.Unix(repID.Time()/1000, 0).Format(time.RFC3339),
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(guildID); err == nil {
+	var modlogChan string
+	if modlogChan, err = r.db.GetGuildModLog(guildID); err == nil {
 		_, err = r.s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
 	if err != nil {
-		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		if database.IsErrDatabaseNotFound(err) {
+			err = nil
+		} else {
+			err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		}
 	}
 
 	dmChan, errDm := r.s.UserChannelCreate(victimID)
@@ -320,7 +330,7 @@ func (r *ReportService) RevokeMute(guildID, executorID, victimID, reason string)
 		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
-	return
+	return emb, errors.Join(err, errDm)
 }
 
 func (r *ReportService) RevokeReport(
@@ -357,11 +367,16 @@ func (r *ReportService) RevokeReport(
 		},
 	}
 
-	if modlogChan, err := r.db.GetGuildModLog(rep.GuildID); err == nil {
+	var modlogChan string
+	if modlogChan, err = r.db.GetGuildModLog(rep.GuildID); err == nil {
 		_, err = r.s.ChannelMessageSendEmbed(modlogChan, emb)
 	}
 	if err != nil {
-		err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		if database.IsErrDatabaseNotFound(err) {
+			err = nil
+		} else {
+			err = fmt.Errorf("failed sending message to modlog channel: %s", err)
+		}
 	}
 
 	dmChan, errDm := r.s.UserChannelCreate(rep.VictimID)
@@ -369,7 +384,7 @@ func (r *ReportService) RevokeReport(
 		r.s.ChannelMessageSendEmbed(dmChan.ID, emb)
 	}
 
-	return emb, nil
+	return emb, errors.Join(err, errDm)
 }
 
 func (r *ReportService) UnbanReport(

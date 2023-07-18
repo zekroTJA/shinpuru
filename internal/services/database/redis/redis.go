@@ -48,11 +48,7 @@ const (
 
 	keyUserAPIToken  = "USER:APITOKEN"
 	keyUserEnableOTA = "USER:ENABLEOTA"
-
-	keyAPISession = "API:SESSION"
 )
-
-type getterFunc func() (interface{}, error)
 
 // RedisMiddleware implements the Database interface for
 // Redis.
@@ -418,7 +414,7 @@ func (r *RedisMiddleware) SetSetting(setting, value string) error {
 	return r.Database.SetSetting(setting, value)
 }
 
-func (m *RedisMiddleware) SetAPIToken(token models.APITokenEntry) (err error) {
+func (r *RedisMiddleware) SetAPIToken(token models.APITokenEntry) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, token.UserID)
 
 	data, err := json.Marshal(token)
@@ -426,19 +422,19 @@ func (m *RedisMiddleware) SetAPIToken(token models.APITokenEntry) (err error) {
 		return
 	}
 
-	if err = m.client.Set(context.Background(), key, data, 0).Err(); err != nil {
+	if err = r.client.Set(context.Background(), key, data, 0).Err(); err != nil {
 		return
 	}
 
-	return m.Database.SetAPIToken(token)
+	return r.Database.SetAPIToken(token)
 }
 
-func (m *RedisMiddleware) GetAPIToken(userID string) (t models.APITokenEntry, err error) {
+func (r *RedisMiddleware) GetAPIToken(userID string) (t models.APITokenEntry, err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
 
-	resStr, err := m.client.Get(context.Background(), key).Result()
+	resStr, err := r.client.Get(context.Background(), key).Result()
 	if err == redis.Nil {
-		if t, err = m.Database.GetAPIToken(userID); err != nil {
+		if t, err = r.Database.GetAPIToken(userID); err != nil {
 			return
 		}
 		var resB []byte
@@ -446,7 +442,7 @@ func (m *RedisMiddleware) GetAPIToken(userID string) (t models.APITokenEntry, er
 		if err != nil {
 			return
 		}
-		if err = m.client.Set(context.Background(), key, resB, 0).Err(); err != nil {
+		if err = r.client.Set(context.Background(), key, resB, 0).Err(); err != nil {
 			return
 		}
 		return
@@ -457,64 +453,64 @@ func (m *RedisMiddleware) GetAPIToken(userID string) (t models.APITokenEntry, er
 	return
 }
 
-func (m *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
+func (r *RedisMiddleware) DeleteAPIToken(userID string) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyUserAPIToken, userID)
 
-	if err = m.client.Del(context.Background(), key).Err(); err != nil {
+	if err = r.client.Del(context.Background(), key).Err(); err != nil {
 		return
 	}
 
-	return m.Database.DeleteAPIToken(userID)
+	return r.Database.DeleteAPIToken(userID)
 }
 
-func (m *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
+func (r *RedisMiddleware) SetKarmaState(guildID string, state bool) error {
 	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
 
-	if err := m.client.Set(context.Background(), key, state, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, state, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetKarmaState(guildID, state)
+	return r.Database.SetKarmaState(guildID, state)
 }
 
-func (m *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
+func (r *RedisMiddleware) GetKarmaState(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaState, guildID)
-	return Get(m, key, func() (bool, error) {
-		return m.Database.GetKarmaState(guildID)
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetKarmaState(guildID)
 	})
 }
 
-func (m *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) error {
+func (r *RedisMiddleware) SetKarmaEmotes(guildID, emotesInc, emotesDec string) error {
 	var key = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
-	if err := m.client.Set(context.Background(), key, emotesInc, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, emotesInc, 0).Err(); err != nil {
 		return err
 	}
 
 	key = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
-	if err := m.client.Set(context.Background(), key, emotesDec, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, emotesDec, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetKarmaEmotes(guildID, emotesInc, emotesDec)
+	return r.Database.SetKarmaEmotes(guildID, emotesInc, emotesDec)
 }
 
-func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
+func (r *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec string, err error) {
 	var keyEnc = fmt.Sprintf("%s:%s", keyKarmaemotesInc, guildID)
-	emotesInc, err1 := m.client.Get(context.Background(), keyEnc).Result()
+	emotesInc, err1 := r.client.Get(context.Background(), keyEnc).Result()
 
 	var keyDec = fmt.Sprintf("%s:%s", keyKarmaEmotesDec, guildID)
-	emotesDec, err2 := m.client.Get(context.Background(), keyDec).Result()
+	emotesDec, err2 := r.client.Get(context.Background(), keyDec).Result()
 
 	if err1 == redis.Nil || err2 == redis.Nil {
-		emotesInc, emotesDec, err = m.Database.GetKarmaEmotes(guildID)
+		emotesInc, emotesDec, err = r.Database.GetKarmaEmotes(guildID)
 		if err != nil {
 			return
 		}
 
-		if err = m.client.Set(context.Background(), keyEnc, emotesInc, 0).Err(); err != nil {
+		if err = r.client.Set(context.Background(), keyEnc, emotesInc, 0).Err(); err != nil {
 			return
 		}
-		if err = m.client.Set(context.Background(), keyDec, emotesDec, 0).Err(); err != nil {
+		if err = r.client.Set(context.Background(), keyDec, emotesDec, 0).Err(); err != nil {
 			return
 		}
 	}
@@ -525,149 +521,149 @@ func (m *RedisMiddleware) GetKarmaEmotes(guildID string) (emotesInc, emotesDec s
 	return
 }
 
-func (m *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
+func (r *RedisMiddleware) SetKarmaTokens(guildID string, tokens int) error {
 	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
 
-	if err := m.client.Set(context.Background(), key, tokens, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, tokens, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetKarmaTokens(guildID, tokens)
+	return r.Database.SetKarmaTokens(guildID, tokens)
 }
 
-func (m *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
+func (r *RedisMiddleware) GetKarmaTokens(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaTokens, guildID)
-	return Get(m, key, func() (int, error) {
-		return m.Database.GetKarmaTokens(guildID)
+	return Get(r, key, func() (int, error) {
+		return r.Database.GetKarmaTokens(guildID)
 	})
 }
 
-func (m *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
+func (r *RedisMiddleware) SetKarmaPenalty(guildID string, state bool) error {
 	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
 
-	if err := m.client.Set(context.Background(), key, state, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, state, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetKarmaPenalty(guildID, state)
+	return r.Database.SetKarmaPenalty(guildID, state)
 }
 
-func (m *RedisMiddleware) GetKarmaPenalty(guildID string) (bool, error) {
+func (r *RedisMiddleware) GetKarmaPenalty(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyKarmaPenalty, guildID)
-	return Get(m, key, func() (bool, error) {
-		return m.Database.GetKarmaPenalty(guildID)
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetKarmaPenalty(guildID)
 	})
 }
 
-func (m *RedisMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
+func (r *RedisMiddleware) IsKarmaBlockListed(guildID, userID string) (ok bool, err error) {
 	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
-	return Get(m, key, func() (bool, error) {
-		return m.Database.IsKarmaBlockListed(guildID, userID)
+	return Get(r, key, func() (bool, error) {
+		return r.Database.IsKarmaBlockListed(guildID, userID)
 	})
 }
 
-func (m *RedisMiddleware) AddKarmaBlockList(guildID, userID string) (err error) {
+func (r *RedisMiddleware) AddKarmaBlockList(guildID, userID string) (err error) {
 	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
 
-	if err = m.client.Set(context.Background(), key, true, 0).Err(); err != nil {
+	if err = r.client.Set(context.Background(), key, true, 0).Err(); err != nil {
 		return
 	}
 
-	return m.Database.AddKarmaBlockList(guildID, userID)
+	return r.Database.AddKarmaBlockList(guildID, userID)
 }
 
-func (m *RedisMiddleware) RemoveKarmaBlockList(guildID, userID string) (err error) {
+func (r *RedisMiddleware) RemoveKarmaBlockList(guildID, userID string) (err error) {
 	var key = fmt.Sprintf("%s:%s:%s", keyKarmaBlockListed, guildID, userID)
 
-	if err = m.client.Set(context.Background(), key, false, 0).Err(); err != nil {
+	if err = r.client.Set(context.Background(), key, false, 0).Err(); err != nil {
 		return
 	}
 
-	return m.Database.RemoveKarmaBlockList(guildID, userID)
+	return r.Database.RemoveKarmaBlockList(guildID, userID)
 }
 
-func (m *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
+func (r *RedisMiddleware) SetAntiraidState(guildID string, state bool) error {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidState, guildID)
 
-	if err := m.client.Set(context.Background(), key, state, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, state, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetAntiraidState(guildID, state)
+	return r.Database.SetAntiraidState(guildID, state)
 }
 
-func (m *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
+func (r *RedisMiddleware) GetAntiraidState(guildID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidState, guildID)
-	return Get(m, key, func() (bool, error) {
-		return m.Database.GetAntiraidState(guildID)
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetAntiraidState(guildID)
 	})
 }
 
-func (m *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) error {
+func (r *RedisMiddleware) SetAntiraidRegeneration(guildID string, limit int) error {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidLimit, guildID)
 
-	if err := m.client.Set(context.Background(), key, limit, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, limit, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetKarmaTokens(guildID, limit)
+	return r.Database.SetKarmaTokens(guildID, limit)
 }
 
-func (m *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
+func (r *RedisMiddleware) GetAntiraidRegeneration(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidLimit, guildID)
-	return Get(m, key, func() (int, error) {
-		return m.Database.GetAntiraidRegeneration(guildID)
+	return Get(r, key, func() (int, error) {
+		return r.Database.GetAntiraidRegeneration(guildID)
 	})
 }
 
-func (m *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
+func (r *RedisMiddleware) SetAntiraidBurst(guildID string, burst int) error {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidBurst, guildID)
 
-	if err := m.client.Set(context.Background(), key, burst, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, burst, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetAntiraidBurst(guildID, burst)
+	return r.Database.SetAntiraidBurst(guildID, burst)
 }
 
-func (m *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
+func (r *RedisMiddleware) GetAntiraidBurst(guildID string) (int, error) {
 	var key = fmt.Sprintf("%s:%s", keyAntiraidBurst, guildID)
-	return Get(m, key, func() (int, error) {
-		return m.Database.GetAntiraidBurst(guildID)
+	return Get(r, key, func() (int, error) {
+		return r.Database.GetAntiraidBurst(guildID)
 	})
 }
 
-func (m *RedisMiddleware) GetUserOTAEnabled(userID string) (bool, error) {
+func (r *RedisMiddleware) GetUserOTAEnabled(userID string) (bool, error) {
 	var key = fmt.Sprintf("%s:%s", keyUserEnableOTA, userID)
-	return Get(m, key, func() (bool, error) {
-		return m.Database.GetUserOTAEnabled(userID)
+	return Get(r, key, func() (bool, error) {
+		return r.Database.GetUserOTAEnabled(userID)
 	})
 }
 
-func (m *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
+func (r *RedisMiddleware) SetUserOTAEnabled(userID string, enabled bool) error {
 	var key = fmt.Sprintf("%s:%s", keyUserEnableOTA, userID)
 
-	if err := m.client.Set(context.Background(), key, enabled, 0).Err(); err != nil {
+	if err := r.client.Set(context.Background(), key, enabled, 0).Err(); err != nil {
 		return err
 	}
 
-	return m.Database.SetUserOTAEnabled(userID, enabled)
+	return r.Database.SetUserOTAEnabled(userID, enabled)
 }
 
-func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config models.StarboardConfig, err error) {
+func (r *RedisMiddleware) GetStarboardConfig(guildID string) (config models.StarboardConfig, err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, guildID)
 
 	var configB []byte
-	err = m.client.Get(context.Background(), key).Scan(&configB)
+	err = r.client.Get(context.Background(), key).Scan(&configB)
 	if err == redis.Nil {
-		config, err = m.Database.GetStarboardConfig(guildID)
+		config, err = r.Database.GetStarboardConfig(guildID)
 		if err != nil {
 			return
 		}
 		if configB, err = json.Marshal(config); err != nil {
 			return
 		}
-		err = m.client.Set(context.Background(), key, configB, 0).Err()
+		err = r.client.Set(context.Background(), key, configB, 0).Err()
 		return
 	}
 	if err != nil {
@@ -678,16 +674,16 @@ func (m *RedisMiddleware) GetStarboardConfig(guildID string) (config models.Star
 	return
 }
 
-func (m *RedisMiddleware) SetStarboardConfig(config models.StarboardConfig) (err error) {
+func (r *RedisMiddleware) SetStarboardConfig(config models.StarboardConfig) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildStarboardConfig, config.GuildID)
 	configB, err := json.Marshal(config)
 	if err != nil {
 		return
 	}
-	if err = m.client.Set(context.Background(), key, configB, 0).Err(); err != nil {
+	if err = r.client.Set(context.Background(), key, configB, 0).Err(); err != nil {
 		return
 	}
-	err = m.Database.SetStarboardConfig(config)
+	err = r.Database.SetStarboardConfig(config)
 	return
 }
 
@@ -708,7 +704,7 @@ func (r *RedisMiddleware) SetGuildLogDisable(guildID string, enabled bool) error
 	return r.Database.SetGuildLogDisable(guildID, enabled)
 }
 
-func (m *RedisMiddleware) SetGuildAPI(guildID string, settings models.GuildAPISettings) (err error) {
+func (r *RedisMiddleware) SetGuildAPI(guildID string, settings models.GuildAPISettings) (err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
 
 	data, err := json.Marshal(settings)
@@ -716,19 +712,19 @@ func (m *RedisMiddleware) SetGuildAPI(guildID string, settings models.GuildAPISe
 		return
 	}
 
-	if err = m.client.Set(context.Background(), key, data, 0).Err(); err != nil {
+	if err = r.client.Set(context.Background(), key, data, 0).Err(); err != nil {
 		return
 	}
 
-	return m.Database.SetGuildAPI(guildID, settings)
+	return r.Database.SetGuildAPI(guildID, settings)
 }
 
-func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings models.GuildAPISettings, err error) {
+func (r *RedisMiddleware) GetGuildAPI(guildID string) (settings models.GuildAPISettings, err error) {
 	var key = fmt.Sprintf("%s:%s", keyGuildAPI, guildID)
 
-	resStr, err := m.client.Get(context.Background(), key).Result()
+	resStr, err := r.client.Get(context.Background(), key).Result()
 	if err == redis.Nil {
-		if settings, err = m.Database.GetGuildAPI(guildID); err != nil {
+		if settings, err = r.Database.GetGuildAPI(guildID); err != nil {
 			return
 		}
 		var resB []byte
@@ -736,7 +732,7 @@ func (m *RedisMiddleware) GetGuildAPI(guildID string) (settings models.GuildAPIS
 		if err != nil {
 			return
 		}
-		if err = m.client.Set(context.Background(), key, resB, 0).Err(); err != nil {
+		if err = r.client.Set(context.Background(), key, resB, 0).Err(); err != nil {
 			return
 		}
 		return

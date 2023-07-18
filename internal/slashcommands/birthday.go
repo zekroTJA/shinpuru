@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	dateRe  = regexp.MustCompile(`^(?:(\d{4})[\/\-\.])?(\d{1,2})[\/\-\.](\d{1,2})([\+\-](?:\d{1,2}))?$`)
-	errYear = errors.New("You need to specify a year when you want to show your birthday year.")
+	dateRe = regexp.MustCompile(`^(?:(\d{4})[\/\-\.])?(\d{1,2})[\/\-\.](\d{1,2})([\+\-](?:\d{1,2}))?$`)
+
+	errYear = errors.New("you need to specify a year when you want to show your birthday year")
 )
 
 type Birthday struct {
@@ -231,7 +232,7 @@ func (c *Birthday) remove(ctx ken.SubCommandContext) (err error) {
 }
 
 func parseDate(matches []string, showYear bool) (date time.Time, err error) {
-	var y, m, d, offset int = 1970, 0, 0, 0
+	var y, m, d, offset = 1970, 0, 0, 0
 	if matches[1] != "" {
 		if y, err = strconv.Atoi(matches[1]); err != nil {
 			return

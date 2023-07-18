@@ -23,12 +23,11 @@ const (
 )
 
 type ListenerGhostPing struct {
-	db              database.Database
-	gl              guildlog.Logger
-	msgCache        *timedmap.TimedMap
-	recentlyDeleted map[string]struct{}
-	st              *dgrs.State
-	log             rogu.Logger
+	db       database.Database
+	gl       guildlog.Logger
+	msgCache *timedmap.TimedMap
+	st       *dgrs.State
+	log      rogu.Logger
 }
 
 func NewListenerGhostPing(container di.Container) *ListenerGhostPing {

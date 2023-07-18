@@ -148,7 +148,7 @@ func (c *GuildBackupsController) getDownloadBackup(ctx *fiber.Ctx) error {
 	zf.Close()
 
 	// 24 hours browser caching
-	ctx.Set("Cache-Control", "public, max-age=86400‬, immutable")
+	ctx.Set("Cache-Control", "public, max-age=86400, immutable")
 	ctx.Set("Content-Type", "application/gzip")
 	ctx.Set("Content-Disposition", fmt.Sprintf(`filename="backup_%s_%s.gz"`, guildID, backupID))
 	return ctx.SendStream(buff)

@@ -9,6 +9,8 @@ import (
 	"github.com/sarulabs/di/v2"
 	"github.com/zekroTJA/timedmap"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
+	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 	"golang.org/x/time/rate"
 
@@ -57,6 +59,8 @@ type ListenerCodeexec struct {
 	specs  models.SpecMap
 	limits *timedmap.TimedMap
 	msgMap *timedmap.TimedMap
+
+	log rogu.Logger
 }
 
 type execMessage struct {
@@ -82,6 +86,8 @@ func NewListenerJdoodle(container di.Container) (l *ListenerCodeexec, err error)
 	l.msgMap = timedmap.New(removeHandlerCleanupInterval)
 
 	l.specs, err = l.execFact.Specs()
+
+	l.log = log.Tagged("CodeExec")
 
 	return
 }
@@ -122,6 +128,7 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	enabled, err := l.db.GetGuildCodeExecEnabled(e.GuildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {
+		l.log.Error().Err(err).Field("guildID", e.GuildID).Msg("failed getting setting from database")
 		return
 	}
 	if !enabled {
@@ -129,24 +136,31 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 	}
 
 	wrapper, err := l.execFact.NewExecutor(e.GuildID)
-	if err != nil || wrapper == nil {
+	if err != nil {
+		l.log.Error().Err(err).Field("guildID", e.GuildID).Msg("failed getting execution wrapper")
+		return
+	}
+	if wrapper == nil {
 		return
 	}
 
 	err = s.MessageReactionAdd(e.ChannelID, e.ID, runReactionEmoji)
 	if err != nil {
+		l.log.Warn().Err(err).Field("guildID", e.GuildID).Msg("failed adding message reaction")
 		return
 	}
 
 	if spec.SupportsTemplating() {
 		err = s.MessageReactionAdd(e.ChannelID, e.ID, inlineReactionEmoji)
 		if err != nil {
+			l.log.Warn().Err(err).Field("guildID", e.GuildID).Msg("failed adding message reaction")
 			return
 		}
 	}
 
 	err = s.MessageReactionAdd(e.ChannelID, e.ID, helpReactionEmoji)
 	if err != nil {
+		l.log.Warn().Err(err).Field("guildID", e.GuildID).Msg("failed adding message reaction")
 		return
 	}
 
@@ -160,6 +174,7 @@ func (l *ListenerCodeexec) handler(s *discordgo.Session, e *discordgo.Message) {
 
 	self, err := l.st.SelfUser()
 	if err != nil {
+		l.log.Error().Err(err).Field("guildID", e.GuildID).Msg("failed setting self user")
 		return
 	}
 
@@ -205,6 +220,13 @@ func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *disc
 	}
 
 	allowed, err := l.checkPermission(s, eReact.GuildID, eReact.UserID)
+	if err != nil {
+		l.log.Error().Err(err).
+			Fields("guildID", eReact.GuildID,
+				"userID", eReact.UserID).
+			Msg("failed checking user permission")
+		return
+	}
 	if !allowed || !l.checkLimit(eReact.UserID) {
 		s.MessageReactionRemove(eReact.ChannelID, eReact.MessageID, eReact.Emoji.Name, eReact.UserID)
 		return
@@ -214,6 +236,10 @@ func (l *ListenerCodeexec) HandlerReactionAdd(s *discordgo.Session, eReact *disc
 
 	resMsg := util.SendEmbed(s, eReact.ChannelID, "Executing...", "", static.ColorEmbedGray)
 	if resMsg.Error() != nil {
+		l.log.Warn().Err(err).
+			Fields("guildID", eReact.GuildID,
+				"userID", eReact.UserID).
+			Msg("failed sending execute embed")
 		return
 	}
 

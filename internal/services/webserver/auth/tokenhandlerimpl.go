@@ -104,12 +104,12 @@ func (ath *JWTAccessTokenHandler) GetAccessToken(ident string) (token string, ex
 	now := ath.tp.Now()
 	expires = now.Add(ath.sessionExpiration)
 
-	claims := jwt.StandardClaims{}
+	claims := jwt.RegisteredClaims{}
 	claims.Issuer = fmt.Sprintf("shinpuru v.%s", embedded.AppVersion)
 	claims.Subject = ident
-	claims.ExpiresAt = expires.Unix()
-	claims.NotBefore = now.Unix()
-	claims.IssuedAt = now.Unix()
+	claims.ExpiresAt = jwt.NewNumericDate(expires)
+	claims.NotBefore = jwt.NewNumericDate(now)
+	claims.IssuedAt = jwt.NewNumericDate(now)
 
 	token, err = jwt.NewWithClaims(jwtGenerationMethod, claims).
 		SignedString(ath.sessionSecret)
@@ -136,14 +136,14 @@ func (ath *JWTAccessTokenHandler) ValidateAccessToken(token string) (ident strin
 }
 
 type apiTokenClaims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 
 	Salt string `json:"sp_salt,omitempty"`
 }
 
 func apiTokenClaimsFromMap(m jwt.MapClaims) apiTokenClaims {
 	c := apiTokenClaims{
-		StandardClaims: standardClaimsFromMap(m),
+		RegisteredClaims: standardClaimsFromMap(m),
 	}
 
 	c.Salt, _ = m["sp_salt"].(string)
@@ -151,14 +151,14 @@ func apiTokenClaimsFromMap(m jwt.MapClaims) apiTokenClaims {
 	return c
 }
 
-func standardClaimsFromMap(m jwt.MapClaims) jwt.StandardClaims {
-	c := jwt.StandardClaims{}
+func standardClaimsFromMap(m jwt.MapClaims) jwt.RegisteredClaims {
+	c := jwt.RegisteredClaims{}
 
 	c.Issuer, _ = m["iss"].(string)
 	c.Subject, _ = m["sub"].(string)
-	c.ExpiresAt, _ = m["exp"].(int64)
-	c.NotBefore, _ = m["nbf"].(int64)
-	c.IssuedAt, _ = m["iat"].(int64)
+	c.ExpiresAt, _ = m["exp"].(*jwt.NumericDate)
+	c.NotBefore, _ = m["nbf"].(*jwt.NumericDate)
+	c.IssuedAt, _ = m["iat"].(*jwt.NumericDate)
 
 	return c
 }
@@ -198,9 +198,9 @@ func (apith *DatabaseAPITokenHandler) GetAPIToken(ident string) (token string, e
 	claims := apiTokenClaims{}
 	claims.Issuer = fmt.Sprintf("shinpuru v.%s", embedded.AppVersion)
 	claims.Subject = ident
-	claims.ExpiresAt = expires.Unix()
-	claims.NotBefore = now.Unix()
-	claims.IssuedAt = now.Unix()
+	claims.ExpiresAt = jwt.NewNumericDate(expires)
+	claims.NotBefore = jwt.NewNumericDate(now)
+	claims.IssuedAt = jwt.NewNumericDate(now)
 	claims.Salt = salt
 
 	token, err = jwt.NewWithClaims(jwtGenerationMethod, claims).

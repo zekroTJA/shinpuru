@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
 )
 
 var migrationFuncs = []migrationFunc{
@@ -108,11 +109,11 @@ func migration_8(m *sql.Tx) (err error) {
 // - add property `codeExecEnabled` to `guilds`
 // - add property `starboardOptout` to `users`
 func migration_9(m *sql.Tx) (err error) {
-	err = createTableColumnIfNotExists(m,
+	err1 := createTableColumnIfNotExists(m,
 		"guilds", "`codeExecEnabled` text NOT NULL DEFAULT ''")
-	err = createTableColumnIfNotExists(m,
+	err2 := createTableColumnIfNotExists(m,
 		"users", "`starboardOptout` text NOT NULL DEFAULT '0'")
-	return
+	return errors.Join(err1, err2)
 }
 
 // VERSION 10:

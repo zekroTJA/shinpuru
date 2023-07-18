@@ -36,7 +36,7 @@ func (l *ListenerAutoVoice) HandlerVoiceUpdate(s *discordgo.Session, e *discordg
 	if err != nil || !allowed {
 		return
 	}
-	vsOld, _ := l.voiceStateCache[e.UserID]
+	vsOld := l.voiceStateCache[e.UserID]
 	vsNew := e.VoiceState
 
 	l.voiceStateCache[e.UserID] = vsNew

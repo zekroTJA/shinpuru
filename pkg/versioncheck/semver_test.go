@@ -52,13 +52,13 @@ func TestParseSemver(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, Semver{12, 3, 456, "beta_1-test"}, v)
 
-	v, err = ParseSemver("invalid semver")
+	_, err = ParseSemver("invalid semver")
 	assert.ErrorIs(t, err, ErrNoMatch)
 
-	v, err = ParseSemver("1.invalidversionnumber.0")
+	_, err = ParseSemver("1.invalidversionnumber.0")
 	assert.ErrorIs(t, err, ErrNoMatch)
 
-	v, err = ParseSemver(" 1.0.0 ")
+	_, err = ParseSemver(" 1.0.0 ")
 	assert.ErrorIs(t, err, ErrNoMatch)
 }
 

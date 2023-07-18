@@ -166,7 +166,7 @@ func (c *Lock) lock(target *discordgo.Channel, ctx ken.Context) error {
 	}
 
 	if err = ctx.GetSession().ChannelPermissionSet(
-		target.ID, self.ID, discordgo.PermissionOverwriteTypeMember, discordgo.PermissionSendMessages&discordgo.PermissionReadMessages, 0); err != nil {
+		target.ID, self.ID, discordgo.PermissionOverwriteTypeMember, discordgo.PermissionSendMessages&discordgo.PermissionViewChannel, 0); err != nil {
 		return err
 	}
 

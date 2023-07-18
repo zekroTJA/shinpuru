@@ -74,7 +74,7 @@ func (l *ListenerVoiceUpdate) isBlocked(guildID, chanID string) (ok bool) {
 }
 
 func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceStateUpdate) {
-	vsOld, _ := voiceStateCashe[e.UserID]
+	vsOld := voiceStateCashe[e.UserID]
 	vsNew := e.VoiceState
 	if vsOld != nil && vsOld.ChannelID == vsNew.ChannelID {
 		return

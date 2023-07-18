@@ -24,7 +24,7 @@ var (
 		},
 		// 3. name lowercased exact match
 		func(r *discordgo.Role, resolvable string) bool {
-			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
+			return strings.EqualFold(r.Name, resolvable)
 		},
 		// 4. name lowercased startswith
 		func(r *discordgo.Role, resolvable string) bool {
@@ -47,11 +47,12 @@ var (
 		},
 		// 3. username lowercased exact match
 		func(r *discordgo.Member, resolvable string) bool {
-			return strings.ToLower(r.User.Username) == strings.ToLower(resolvable)
+			return strings.EqualFold(r.User.Username, resolvable)
 		},
 		// 4. username lowercased startswith
 		func(r *discordgo.Member, resolvable string) bool {
 			return strings.HasPrefix(strings.ToLower(r.User.Username), strings.ToLower(resolvable))
+
 		},
 		// 5. username lowercased contains
 		func(r *discordgo.Member, resolvable string) bool {
@@ -63,7 +64,7 @@ var (
 		},
 		// 7. nick lowercased exact match
 		func(r *discordgo.Member, resolvable string) bool {
-			return r.Nick != "" && strings.ToLower(r.Nick) == strings.ToLower(resolvable)
+			return r.Nick != "" && strings.EqualFold(r.Nick, resolvable)
 		},
 		// 8. nick lowercased starts with
 		func(r *discordgo.Member, resolvable string) bool {
@@ -91,7 +92,7 @@ var (
 		},
 		// 4. name lowercased exact match
 		func(r *discordgo.Channel, resolvable string) bool {
-			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
+			return strings.EqualFold(r.Name, resolvable)
 		},
 		// 5. name lowercased starts with
 		func(r *discordgo.Channel, resolvable string) bool {
@@ -119,7 +120,7 @@ var (
 		},
 		// 4. name lowercased exact match
 		func(r *discordgo.Guild, resolvable string) bool {
-			return strings.ToLower(r.Name) == strings.ToLower(resolvable)
+			return strings.EqualFold(r.Name, resolvable)
 		},
 		// 5. name lowercased starts with
 		func(r *discordgo.Guild, resolvable string) bool {
@@ -132,7 +133,7 @@ var (
 	}
 )
 
-// FetchRoles tries to fetch a role on the specified guild
+// FetchRole tries to fetch a role on the specified guild
 // by given resolvable and returns this role, when found.
 // You can pass a condition function which ignores the result
 // if this functions returns false on the given object.

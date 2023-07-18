@@ -175,7 +175,7 @@ type LokiLogging struct {
 	lokiwriter.Options
 }
 
-// Loging holds configuration values for the
+// Logging holds configuration values for the
 // main logger.
 type Logging struct {
 	CommandLogging bool        `json:"commandlogging"`

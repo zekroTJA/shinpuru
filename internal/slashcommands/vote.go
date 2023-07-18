@@ -332,6 +332,9 @@ func (c *Vote) close(ctx ken.SubCommandContext) (err error) {
 
 	pmw, _ := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 	ok, override, err := pmw.CheckPermissions(ctx.GetSession(), ctx.GetEvent().GuildID, ctx.User().ID, "!"+ctx.GetCommand().(permissions.PermCommand).Domain()+".close")
+	if err != nil {
+		return err
+	}
 	if ivote.CreatorID != ctx.User().ID && !ok && !override {
 		return ctx.FollowUpError(
 			"You do not have the permission to close another ones votes.", "").

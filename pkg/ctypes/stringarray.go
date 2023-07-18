@@ -22,7 +22,7 @@ func (arr StringArray) Contains(v string) bool {
 	return arr.IndexOf(v) > -1
 }
 
-// Slice returns a new array sliced at i by
+// Splice returns a new array sliced at i by
 // the range of r.
 func (arr StringArray) Splice(i, r int) StringArray {
 	l := len(arr)

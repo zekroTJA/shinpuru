@@ -192,7 +192,7 @@ func TestPushReport(t *testing.T) {
 	}
 	res, err = s.PushReport(rep)
 
-	assert.Nil(t, err)
+	assert.EqualError(t, err, "test error")
 	assert.NotEqual(t, rep.ID, res.ID)
 	rep.ID = res.ID
 	assert.Equal(t, rep, res)

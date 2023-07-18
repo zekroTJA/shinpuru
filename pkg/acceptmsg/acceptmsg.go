@@ -74,7 +74,7 @@ func (am *AcceptMessage) LockOnUser(userID string) *AcceptMessage {
 	return am
 }
 
-// DeleteAfterAnser enables that the whole accept
+// DeleteAfterAnswer enables that the whole accept
 // embed message is being deleted after users
 // answer.
 func (am *AcceptMessage) DeleteAfterAnswer() *AcceptMessage {
@@ -143,8 +143,10 @@ func (am *AcceptMessage) send(sender senderFunc) (*AcceptMessage, error) {
 		return nil, err
 	}
 	am.Message = msg
-	err = am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteAccept)
-	err = am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteDecline)
+	err = errors.Join(
+		am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteAccept),
+		am.Session.MessageReactionAdd(msg.ChannelID, msg.ID, acceptMessageEmoteDecline),
+	)
 	if err != nil {
 		return nil, err
 	}

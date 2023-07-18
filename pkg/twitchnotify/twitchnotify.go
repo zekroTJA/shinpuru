@@ -29,9 +29,6 @@ const (
 
 	maxUserCap = 1000
 
-	// clockDuration = 30 * time.Second
-	clockDuration = 60 * time.Second
-
 	oAuth2Endpoint = "https://id.twitch.tv/oauth2/token"
 	helixEndpoint  = "https://api.twitch.tv/helix"
 )
@@ -247,9 +244,7 @@ func (w *NotifyWorker) getStreams() ([]*Stream, error) {
 	}
 
 	streams := make([]*Stream, len(data.Data))
-	for i, s := range data.Data {
-		streams[i] = s
-	}
+	copy(data.Data, streams)
 
 	return streams, nil
 }

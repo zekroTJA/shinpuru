@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"sync"
 	"time"
 
@@ -23,8 +22,6 @@ import (
 )
 
 const pushcodeTimeout = 60 * time.Second
-
-var errTimeout = errors.New("timeout")
 
 type AuthController struct {
 	discordOAuth *discordoauth.DiscordOAuth

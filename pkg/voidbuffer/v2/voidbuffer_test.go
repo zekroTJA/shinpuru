@@ -12,10 +12,10 @@ func TestNewVoidBuffer(t *testing.T) {
 	vb := New[int](size)
 
 	if vb == nil {
-		t.Error("new voidbuffer was nil")
+		t.Fatal("new voidbuffer was nil")
 	}
 	if len(vb.buf) != size {
-		t.Errorf("buffer size does not match (must %d, was %d)", size, len(vb.buf))
+		t.Fatalf("buffer size does not match (must %d, was %d)", size, len(vb.buf))
 	}
 }
 

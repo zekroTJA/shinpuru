@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/xid"
@@ -17,10 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/logmsg"
 	"github.com/zekrotja/ken"
-)
-
-const (
-	timeFormat = time.RFC1123
 )
 
 type Backup struct{}
@@ -398,5 +393,4 @@ func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st
 			success, lnBackups),
 		Color: static.ColorEmbedGreen,
 	}).Send()
-	return
 }

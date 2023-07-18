@@ -24,11 +24,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	// tickRate = 30 * time.Second
-	tickRate = 12 * time.Hour
-)
-
 // GuildBackups provides functionalities to backup
 // and restore a guild to and from a JSON file.
 type GuildBackups struct {

@@ -97,6 +97,9 @@ func (c *Starboard) Run(ctx ken.Context) (err error) {
 
 func (c *Starboard) set(ctx ken.SubCommandContext) (err error) {
 	starboardConfig, err := c.getConfig(ctx)
+	if err != nil {
+		return err
+	}
 
 	if v, ok := ctx.Options().GetByNameOptional("channel"); ok {
 		ch := v.ChannelValue(ctx)
@@ -125,6 +128,9 @@ func (c *Starboard) set(ctx ken.SubCommandContext) (err error) {
 
 func (c *Starboard) disable(ctx ken.SubCommandContext) (err error) {
 	starboardConfig, err := c.getConfig(ctx)
+	if err != nil {
+		return err
+	}
 
 	starboardConfig.ChannelID = ""
 
