@@ -290,6 +290,10 @@ func (w *NotifyWorker) Handle() error {
 	// is now live and was not live in the request before.
 	mErr := multierror.New()
 	for _, stream := range streams {
+		if stream == nil {
+			continue
+		}
+
 		var wasOnline bool
 
 		w.mx.Lock()
