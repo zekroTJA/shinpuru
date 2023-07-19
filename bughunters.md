@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **37** different wonderful people contributed a sum of **89** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
+In total, **37** different wonderful people contributed a sum of **90** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -22,12 +22,12 @@ In total, **37** different wonderful people contributed a sum of **89** issues a
 |  [Eli-Dev](https://github.com/Eli-Dev) | [#45](https://github.com/zekroTJA/shinpuru/issues/45), [#47](https://github.com/zekroTJA/shinpuru/issues/47), [#49](https://github.com/zekroTJA/shinpuru/issues/49) |  | `15` |
 |  [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309), [#387](https://github.com/zekroTJA/shinpuru/issues/387) |  | `15` |
 |  [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `15` |
+|  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378), [#439](https://github.com/zekroTJA/shinpuru/issues/439) |  | `15` |
 |  [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `11` |
 |  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `11` |
 |  [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90), [#405](https://github.com/zekroTJA/shinpuru/issues/405) |  | `10` |
 |  [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128), [#414](https://github.com/zekroTJA/shinpuru/issues/414) |  | `10` |
 |  [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `10` |
-|  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378) |  | `10` |
 |  [boloped](https://github.com/boloped) | [#234](https://github.com/zekroTJA/shinpuru/issues/234), [#399](https://github.com/zekroTJA/shinpuru/issues/399) |  | `10` |
 |  [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `5` |
 |  [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `5` |
