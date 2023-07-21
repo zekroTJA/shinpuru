@@ -26,7 +26,7 @@ func Request(method, url string, headers map[string]string, data interface{}) (r
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
-	res = responsePool.Get().(*Response)
+	res = responsePool.Get()
 
 	req.Header.SetMethod(method)
 	req.SetRequestURI(url)

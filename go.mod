@@ -34,7 +34,7 @@ require (
 	github.com/zekroTJA/timedmap v1.5.1
 	github.com/zekrotja/dgrs v0.5.7
 	github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9
-	github.com/zekrotja/ken v0.18.0
+	github.com/zekrotja/ken v0.19.0
 	github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74
 	github.com/zekrotja/rogu v0.5.1
 	github.com/zekrotja/sop v0.3.1
@@ -81,6 +81,7 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	github.com/zekrotja/safepool v1.1.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/net v0.12.0 // indirect
