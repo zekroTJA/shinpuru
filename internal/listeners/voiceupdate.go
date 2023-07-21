@@ -26,7 +26,7 @@ type ListenerVoiceUpdate struct {
 	cache    map[string]*discordgo.VoiceState
 	cacheMtx sync.RWMutex
 
-	l rogu.Logger
+	log rogu.Logger
 }
 
 func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
@@ -38,7 +38,7 @@ func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 
 		cache: make(map[string]*discordgo.VoiceState),
 
-		l: log.Tagged("VoiceLog"),
+		log: log.Tagged("VoiceLog"),
 	}
 }
 
@@ -108,7 +108,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 	}
 
 	if vsOld == nil || vsOld.ChannelID == "" {
-		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user joined VC")
+		l.log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user joined VC")
 
 		newChan, err := l.st.Channel(e.ChannelID)
 		if err != nil {
@@ -122,7 +122,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		l.sendJoinMsg(s, voiceLogChan, e.UserID, newChan)
 
 	} else if vsOld != nil && vsNew.ChannelID != "" && vsOld.ChannelID != vsNew.ChannelID {
-		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user moved VC")
+		l.log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user moved VC")
 
 		newChan, err := l.st.Channel(vsNew.ChannelID)
 		if err != nil {
@@ -148,7 +148,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		}
 
 	} else if vsOld != nil && vsNew.ChannelID == "" {
-		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user left VC")
+		l.log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user left VC")
 
 		oldChan, err := l.st.Channel(vsOld.ChannelID)
 		if err != nil {
