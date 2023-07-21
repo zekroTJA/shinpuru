@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sahilm/fuzzy"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
 
@@ -84,4 +85,16 @@ func (t *Tag) formattedAuthor(s *dgrs.State) *author {
 	}
 
 	return authorF
+}
+
+type SearchableTagList []Tag
+
+var _ fuzzy.Source = (*SearchableTagList)(nil)
+
+func (t SearchableTagList) String(i int) string {
+	return t[i].Ident
+}
+
+func (t SearchableTagList) Len() int {
+	return len(t)
 }
