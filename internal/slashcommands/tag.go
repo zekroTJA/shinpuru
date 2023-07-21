@@ -182,10 +182,6 @@ func (c *Tag) Autocomplete(ctx *ken.AutocompleteContext) ([]*discordgo.Applicati
 }
 
 func (c *Tag) Run(ctx ken.Context) (err error) {
-	if err = ctx.Defer(); err != nil {
-		return
-	}
-
 	err = ctx.HandleSubCommands(
 		ken.SubCommandHandler{"show", c.show},
 		ken.SubCommandHandler{"list", c.list},
@@ -197,6 +193,10 @@ func (c *Tag) Run(ctx ken.Context) (err error) {
 }
 
 func (c *Tag) show(ctx ken.SubCommandContext) (err error) {
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
@@ -214,6 +214,11 @@ func (c *Tag) show(ctx ken.SubCommandContext) (err error) {
 }
 
 func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
+	ctx.SetEphemeral(true)
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 
@@ -234,6 +239,11 @@ func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
 }
 
 func (c *Tag) set(ctx ken.SubCommandContext) (err error) {
+	ctx.SetEphemeral(true)
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	st := ctx.Get(static.DiState).(*dgrs.State)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
@@ -326,6 +336,11 @@ func (c *Tag) set(ctx ken.SubCommandContext) (err error) {
 }
 
 func (c *Tag) delete(ctx ken.SubCommandContext) (err error) {
+	ctx.SetEphemeral(true)
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
 	db := ctx.Get(static.DiDatabase).(database.Database)
 	pmw := ctx.Get(static.DiPermissions).(*permissions.Permissions)
 
