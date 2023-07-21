@@ -82,7 +82,7 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	github.com/zekrotja/ken v0.19.1-0.20230721144244-0b8f329acdec // indirect
+	github.com/zekrotja/ken v0.19.1-0.20230721145756-874555f2ff12 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/net v0.12.0 // indirect

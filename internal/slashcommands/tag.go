@@ -184,6 +184,7 @@ func (c *Tag) Autocomplete(ctx *ken.AutocompleteContext) ([]*discordgo.Applicati
 func (c *Tag) Run(ctx ken.Context) (err error) {
 	err = ctx.HandleSubCommands(
 		ken.SubCommandHandler{"show", c.show},
+		ken.SubCommandHandler{"raw", c.showRaw},
 		ken.SubCommandHandler{"list", c.list},
 		ken.SubCommandHandler{"set", c.set},
 		ken.SubCommandHandler{"delete", c.delete},
@@ -211,6 +212,26 @@ func (c *Tag) show(ctx ken.SubCommandContext) (err error) {
 	}
 
 	return ctx.FollowUpEmbed(tg.AsEmbed(st)).Send().Error
+}
+
+func (c *Tag) showRaw(ctx ken.SubCommandContext) (err error) {
+	if err = ctx.Defer(); err != nil {
+		return
+	}
+
+	db := ctx.Get(static.DiDatabase).(database.Database)
+
+	ident := strings.ToLower(ctx.Options().GetByName("name").StringValue())
+
+	tg, err := db.GetTagByIdent(ident, ctx.GetEvent().GuildID)
+	if database.IsErrDatabaseNotFound(err) {
+		return ctx.FollowUpError("Tag could not be found.", "").Send().Error
+	}
+	if err != nil {
+		return
+	}
+
+	return ctx.FollowUpMessage(tg.RawContent()).Send().Error
 }
 
 func (c *Tag) list(ctx ken.SubCommandContext) (err error) {
