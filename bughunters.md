@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **37** different wonderful people contributed a sum of **90** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
+In total, **37** different wonderful people contributed a sum of **91** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -18,13 +18,13 @@ In total, **37** different wonderful people contributed a sum of **90** issues a
 |  [Ron31](https://github.com/Ron31) | [#197](https://github.com/zekroTJA/shinpuru/issues/197), [#224](https://github.com/zekroTJA/shinpuru/issues/224) | [#32](https://github.com/zekroTJA/shinpuru/pull/32), [#181](https://github.com/zekroTJA/shinpuru/pull/181) | `20` |
 |  [zordem](https://github.com/zordem) | [#346](https://github.com/zekroTJA/shinpuru/issues/346), [#353](https://github.com/zekroTJA/shinpuru/issues/353), [#354](https://github.com/zekroTJA/shinpuru/issues/354) | [#351](https://github.com/zekroTJA/shinpuru/pull/351) | `20` |
 |  [nanderLP](https://github.com/nanderLP) | [#41](https://github.com/zekroTJA/shinpuru/issues/41), [#217](https://github.com/zekroTJA/shinpuru/issues/217) | [#389](https://github.com/zekroTJA/shinpuru/pull/389) | `16` |
+|  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248), [#440](https://github.com/zekroTJA/shinpuru/issues/440) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `16` |
 |  [SCDerox](https://github.com/SCDerox) | [#280](https://github.com/zekroTJA/shinpuru/issues/280) | [#352](https://github.com/zekroTJA/shinpuru/pull/352), [#355](https://github.com/zekroTJA/shinpuru/pull/355) | `16` |
 |  [Eli-Dev](https://github.com/Eli-Dev) | [#45](https://github.com/zekroTJA/shinpuru/issues/45), [#47](https://github.com/zekroTJA/shinpuru/issues/47), [#49](https://github.com/zekroTJA/shinpuru/issues/49) |  | `15` |
 |  [newtox](https://github.com/newtox) | [#57](https://github.com/zekroTJA/shinpuru/issues/57), [#309](https://github.com/zekroTJA/shinpuru/issues/309), [#387](https://github.com/zekroTJA/shinpuru/issues/387) |  | `15` |
 |  [InterXellar](https://github.com/InterXellar) | [#70](https://github.com/zekroTJA/shinpuru/issues/70), [#73](https://github.com/zekroTJA/shinpuru/issues/73), [#74](https://github.com/zekroTJA/shinpuru/issues/74) |  | `15` |
 |  [Kaktushose](https://github.com/Kaktushose) | [#201](https://github.com/zekroTJA/shinpuru/issues/201), [#378](https://github.com/zekroTJA/shinpuru/issues/378), [#439](https://github.com/zekroTJA/shinpuru/issues/439) |  | `15` |
 |  [Not-Nik](https://github.com/Not-Nik) | [#53](https://github.com/zekroTJA/shinpuru/issues/53) | [#56](https://github.com/zekroTJA/shinpuru/pull/56) | `11` |
-|  [luxtracon](https://github.com/luxtracon) | [#248](https://github.com/zekroTJA/shinpuru/issues/248) | [#228](https://github.com/zekroTJA/shinpuru/pull/228) | `11` |
 |  [lus](https://github.com/lus) | [#90](https://github.com/zekroTJA/shinpuru/issues/90), [#405](https://github.com/zekroTJA/shinpuru/issues/405) |  | `10` |
 |  [Zoriot](https://github.com/Zoriot) | [#128](https://github.com/zekroTJA/shinpuru/issues/128), [#414](https://github.com/zekroTJA/shinpuru/issues/414) |  | `10` |
 |  [okrplay](https://github.com/okrplay) | [#162](https://github.com/zekroTJA/shinpuru/issues/162), [#208](https://github.com/zekroTJA/shinpuru/issues/208) |  | `10` |
