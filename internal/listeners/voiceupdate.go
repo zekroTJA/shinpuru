@@ -2,11 +2,13 @@ package listeners
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sarulabs/di/v2"
 	"github.com/zekrotja/dgrs"
+	"github.com/zekrotja/rogu"
 	"github.com/zekrotja/rogu/log"
 
 	"github.com/zekroTJA/shinpuru/internal/services/database"
@@ -15,13 +17,16 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 )
 
-var voiceStateCashe = map[string]*discordgo.VoiceState{}
-
 type ListenerVoiceUpdate struct {
 	db database.Database
 	gl guildlog.Logger
 	st *dgrs.State
 	tp timeprovider.Provider
+
+	cache    map[string]*discordgo.VoiceState
+	cacheMtx sync.RWMutex
+
+	l rogu.Logger
 }
 
 func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
@@ -30,6 +35,10 @@ func NewListenerVoiceUpdate(container di.Container) *ListenerVoiceUpdate {
 		gl: container.Get(static.DiGuildLog).(guildlog.Logger).Section("voicelog"),
 		st: container.Get(static.DiState).(*dgrs.State),
 		tp: container.Get(static.DiTimeProvider).(timeprovider.Provider),
+
+		cache: make(map[string]*discordgo.VoiceState),
+
+		l: log.Tagged("VoiceLog"),
 	}
 }
 
@@ -74,13 +83,18 @@ func (l *ListenerVoiceUpdate) isBlocked(guildID, chanID string) (ok bool) {
 }
 
 func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceStateUpdate) {
-	vsOld := voiceStateCashe[e.UserID]
+	l.cacheMtx.RLock()
+	vsOld := l.cache[e.UserID]
+	l.cacheMtx.RUnlock()
+
 	vsNew := e.VoiceState
 	if vsOld != nil && vsOld.ChannelID == vsNew.ChannelID {
 		return
 	}
 
-	voiceStateCashe[e.UserID] = vsNew
+	l.cacheMtx.Lock()
+	l.cache[e.UserID] = vsNew
+	l.cacheMtx.Unlock()
 
 	voiceLogChan, err := l.db.GetGuildVoiceLog(e.GuildID)
 	if err != nil || voiceLogChan == "" {
@@ -93,7 +107,9 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		return
 	}
 
-	if vsOld == nil || (vsOld != nil && vsOld.ChannelID == "") {
+	if vsOld == nil || vsOld.ChannelID == "" {
+		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user joined VC")
+
 		newChan, err := l.st.Channel(e.ChannelID)
 		if err != nil {
 			return
@@ -106,7 +122,9 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		l.sendJoinMsg(s, voiceLogChan, e.UserID, newChan)
 
 	} else if vsOld != nil && vsNew.ChannelID != "" && vsOld.ChannelID != vsNew.ChannelID {
-		newChan, err := l.st.Channel(e.ChannelID)
+		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user moved VC")
+
+		newChan, err := l.st.Channel(vsNew.ChannelID)
 		if err != nil {
 			return
 		}
@@ -120,6 +138,7 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		oldChanBlocked := l.isBlocked(vsOld.GuildID, vsOld.ChannelID)
 
 		if newChanBlocked && oldChanBlocked {
+			// send no message
 		} else if newChanBlocked {
 			l.sendLeaveMsg(s, voiceLogChan, e.UserID, oldChan)
 		} else if oldChanBlocked {
@@ -129,6 +148,8 @@ func (l *ListenerVoiceUpdate) Handler(s *discordgo.Session, e *discordgo.VoiceSt
 		}
 
 	} else if vsOld != nil && vsNew.ChannelID == "" {
+		log.Debug().Fields("vsOld", vsOld, "vsNew", vsNew).Msg("user left VC")
+
 		oldChan, err := l.st.Channel(vsOld.ChannelID)
 		if err != nil {
 			return
