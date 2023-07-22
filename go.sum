@@ -910,6 +910,8 @@ github.com/zekrotja/dgrs v0.5.7 h1:CEUMiDI60RU1gP9IjAcL3to2xp49GZmhN+UeklwOBXM=
 github.com/zekrotja/dgrs v0.5.7/go.mod h1:H2yDqIV052TN/1FDo+CKoJgcxxz/6r8MJcxFkxomVBs=
 github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9 h1:9l6wL2Ed+ViHVfC5GiwsI2XH6f+c5HnAdLPpPEcKESA=
 github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9/go.mod h1:/RiMK5BoO+YaH/yqSJ72AYLLOfV9m0rvjfdbfA7AYig=
+github.com/zekrotja/ken v0.19.0 h1:CgeT2GUdwtNHuyepQg1ibbMMO55Gohvdvo4oRn38lHw=
+github.com/zekrotja/ken v0.19.0/go.mod h1:zX7hVShYV5RAXTVtQs5uZ6iFy363yltLNqm30UbeGqs=
 github.com/zekrotja/ken v0.19.1-0.20230721133531-48b8c20082a3 h1:lcVAKzmE7PicQ9dADrMhma8J9BkgTHcOnC8u4VNaUDc=
 github.com/zekrotja/ken v0.19.1-0.20230721133531-48b8c20082a3/go.mod h1:ubT/5aG5v88pOyFHwgp3I4sLb90QeUbCRuR0f/lYqt4=
 github.com/zekrotja/ken v0.19.1-0.20230721134431-7eb54802a027 h1:9VJQgx5nYfEBj1hpXumd6YPGpcERllMnhjnu+wXijIE=
@@ -920,6 +922,8 @@ github.com/zekrotja/ken v0.19.1-0.20230721144244-0b8f329acdec h1:kP4PIvZvDf0HXhH
 github.com/zekrotja/ken v0.19.1-0.20230721144244-0b8f329acdec/go.mod h1:ubT/5aG5v88pOyFHwgp3I4sLb90QeUbCRuR0f/lYqt4=
 github.com/zekrotja/ken v0.19.1-0.20230721145756-874555f2ff12 h1:wEucpG45D/rT4+igSnT8CyFa8QTXY22kVEupI0o98rE=
 github.com/zekrotja/ken v0.19.1-0.20230721145756-874555f2ff12/go.mod h1:ubT/5aG5v88pOyFHwgp3I4sLb90QeUbCRuR0f/lYqt4=
+github.com/zekrotja/ken v0.20.0 h1:qeGvKp10mIBIyPurvIrDwOdkpwERRphryOr128YKiMc=
+github.com/zekrotja/ken v0.20.0/go.mod h1:7Y+H+C1XZPZrA4j7JKpVZoxg10k2Y+t3mDbTy2whcMQ=
 github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74 h1:rpswW7PqwNBGUA5w7h3d1EDgrpIdRZuofT4QSFpl5Mg=
 github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74/go.mod h1:19bfcNBGlBCdz30MvoYX6bc6BlEYIG0aiv2Ji1/WCV4=
 github.com/zekrotja/rogu v0.5.1 h1:uGV2W62+dLt7hR57xGJEBqzEKTW+kWBKlRpFpxIaTms=

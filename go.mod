@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/bwmarrin/discordgo v0.27.2-0.20230704233747-e39e715086d2
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/esimov/stackblur-go v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/generaltso/vibrant v0.0.0-20230605224344-08d3d20033fc
@@ -35,6 +36,7 @@ require (
 	github.com/zekroTJA/timedmap v1.5.1
 	github.com/zekrotja/dgrs v0.5.7
 	github.com/zekrotja/jwt v0.0.0-20220515133240-d66362c9fbc9
+	github.com/zekrotja/ken v0.20.0
 	github.com/zekrotja/promtail v0.0.0-20230303162843-4e609d577b74
 	github.com/zekrotja/rogu v0.5.1
 	github.com/zekrotja/safepool v1.1.0
@@ -54,7 +56,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/charmbracelet/lipgloss v0.7.1 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dayvonjersen/sadbox v0.0.0-20120828195626-27893f92b8ce // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
@@ -82,7 +83,6 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	github.com/zekrotja/ken v0.19.1-0.20230721145756-874555f2ff12 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/net v0.12.0 // indirect
