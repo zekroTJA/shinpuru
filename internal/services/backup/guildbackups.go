@@ -36,20 +36,16 @@ type GuildBackups struct {
 	log     rogu.Logger
 }
 
-// asyncWriteStatus writes the passed status to the
+// writeStatus writes the passed status to the
 // passed channel in a new goroutine.
-func asyncWriteStatus(c chan string, status string) {
-	go func() {
-		c <- status
-	}()
+func writeStatus(c chan string, status string) {
+	c <- status
 }
 
-// asyncWriteError writes the passed error to the
+// writeError writes the passed error to the
 // passed channel in a new goroutine.
-func asyncWriteError(c chan error, err error) {
-	go func() {
-		c <- err
-	}()
+func writeError(c chan error, err error) {
+	c <- err
 }
 
 func (bck *GuildBackups) guilds() (guilds []string, err error) {
@@ -144,7 +140,7 @@ func (bck *GuildBackups) BackupGuild(guildID string) error {
 			ParentID:  c.ParentID,
 			Position:  c.Position,
 			Topic:     c.Topic,
-			Type:      int(c.Type),
+			Type:      c.Type,
 			UserLimit: c.UserLimit,
 		})
 	}
@@ -241,11 +237,15 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 		close(errorsC)
 	}()
 
+	bck.log.Debug().Field("guildId", guildID).Msg("Starting backup restoration ...")
+
 	if bck.session == nil {
 		return errors.New("session is nil")
 	}
 
-	asyncWriteStatus(statusC, "reading backup file")
+	// READING BACKUP FILE
+	bck.log.Debug().Field("guildId", guildID).Msg("Reading backup file ...")
+	writeStatus(statusC, "reading backup file")
 	reader, _, err := bck.st.GetObject(static.StorageBucketBackups, fileID)
 	if err != nil {
 		return err
@@ -265,7 +265,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	// EDIT GUILD
-	asyncWriteStatus(statusC, "editing guild")
+	bck.log.Debug().Field("guildId", guildID).Msg("Editing guild ...")
+	writeStatus(statusC, "editing guild")
 	_verificationLevel := discordgo.VerificationLevel(backup.Guild.VerificationLevel)
 	_, err = bck.session.GuildEdit(guildID, &discordgo.GuildParams{
 		Name:                        backup.Guild.Name,
@@ -284,7 +285,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	orderedRoles := make(map[int]*discordgo.Role)
 
 	// CREATE ROLES
-	asyncWriteStatus(statusC, "updating and creating roles")
+	bck.log.Debug().Field("guildId", guildID).Msg("Create roles ...")
+	writeStatus(statusC, "updating and creating roles")
 	roles, err := bck.session.GuildRoles(guildID)
 	if err != nil {
 		return err
@@ -305,7 +307,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 				Mentionable: &r.Mentionable,
 			})
 			if err != nil {
-				asyncWriteError(errorsC, err)
+				writeError(errorsC, err)
 				continue
 			}
 		}
@@ -315,7 +317,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	// RE-POSITION ROLES
-	asyncWriteStatus(statusC, "re-position roles")
+	bck.log.Debug().Field("guildId", guildID).Msg("Re-positioning roles ...")
+	writeStatus(statusC, "re-position roles")
 	or := sop.Map(sop.MapFlat(orderedRoles).Sort(func(p, q sop.Tuple[int, *discordgo.Role], i int) bool {
 		return p.V1 < q.V1
 	}), func(v sop.Tuple[int, *discordgo.Role], i int) *discordgo.Role {
@@ -323,50 +326,14 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}).Unwrap()
 	_, err = bck.session.GuildRoleReorder(guildID, or)
 	if err != nil {
-		asyncWriteError(errorsC, err)
+		writeError(errorsC, err)
 	}
 
 	// CREATE CATEGORIES
-	asyncWriteStatus(statusC, "updating and creating categories")
+	bck.log.Debug().Field("guildId", guildID).Msg("Updating and eracting guild categories ...")
+	writeStatus(statusC, "updating and creating categories")
 	for _, c := range backup.Channels {
-		if c.Type != int(discordgo.ChannelTypeGuildCategory) {
-			continue
-		}
-		cObj, _ := bck.session.Channel(c.ID)
-		if cObj != nil && cObj.GuildID != guildID {
-			cObj = nil
-		}
-
-		for _, po := range c.PermissionOverwrites {
-			po.ID = ids[po.ID]
-		}
-
-		if cObj == nil {
-			cObj, err = bck.session.GuildChannelCreateComplex(guildID,
-				discordgo.GuildChannelCreateData{
-					Name:                 c.Name,
-					PermissionOverwrites: c.PermissionOverwrites,
-					Type:                 discordgo.ChannelTypeGuildCategory,
-				})
-		} else {
-			_, err = bck.session.ChannelEditComplex(cObj.ID,
-				&discordgo.ChannelEdit{
-					Name:                 c.Name,
-					PermissionOverwrites: c.PermissionOverwrites,
-				})
-		}
-		if err != nil {
-			asyncWriteError(errorsC, err)
-			continue
-		}
-		ids[c.ID] = cObj.ID
-		channelsPos[cObj.ID] = c.Position
-	}
-
-	// CREATE CATEGORIES
-	asyncWriteStatus(statusC, "updating and creating categories")
-	for _, c := range backup.Channels {
-		if c.Type != int(discordgo.ChannelTypeGuildCategory) {
+		if c.Type != discordgo.ChannelTypeGuildCategory {
 			continue
 		}
 
@@ -404,15 +371,19 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 				})
 		}
 		if err != nil {
-			asyncWriteError(errorsC, err)
+			writeError(errorsC, err)
 			continue
 		}
 
 		channelsPos[cObj.ID] = c.Position
 		ids[c.ID] = cObj.ID
 	}
+
+	// CREATE CATEGORIES
+	bck.log.Debug().Field("guildId", guildID).Msg("Updating and eracting guild channels ...")
+	writeStatus(statusC, "updating and creating channels")
 	for _, c := range backup.Channels {
-		if c.Type == int(discordgo.ChannelTypeGuildCategory) {
+		if c.Type == discordgo.ChannelTypeGuildCategory {
 			continue
 		}
 
@@ -450,7 +421,7 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 				})
 		}
 		if err != nil {
-			asyncWriteError(errorsC, err)
+			writeError(errorsC, err)
 			continue
 		}
 
@@ -458,7 +429,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	// RE-POSITION CHANNELS
-	asyncWriteStatus(statusC, "re-positioning channels")
+	bck.log.Debug().Field("guildId", guildID).Msg("Re-positioning channels ...")
+	writeStatus(statusC, "re-positioning channels")
 	for cID, pos := range channelsPos {
 		_, err = bck.session.ChannelEditComplex(cID, &discordgo.ChannelEdit{
 			Position: &pos,
@@ -469,7 +441,8 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 	}
 
 	// UPDATE MEMBERS
-	asyncWriteStatus(statusC, "updating members")
+	bck.log.Debug().Field("guildId", guildID).Msg("Updating members ...")
+	writeStatus(statusC, "updating members")
 	for _, m := range backup.Members {
 		mObj, _ := bck.session.GuildMember(guildID, m.ID)
 
@@ -483,17 +456,20 @@ func (bck *GuildBackups) RestoreBackup(guildID, fileID string, statusC chan stri
 				Roles: &newRoles,
 			})
 			if err != nil {
-				asyncWriteError(errorsC, err)
+				writeError(errorsC, err)
 				continue
 			}
 
 			err = bck.session.GuildMemberNickname(guildID, m.ID, m.Nick)
 			if err != nil {
-				asyncWriteError(errorsC, err)
+				writeError(errorsC, err)
 				continue
 			}
 		}
 	}
+
+	bck.log.Debug().Field("guildId", guildID).Msg("Finished backup restoration")
+	writeStatus(statusC, "Finished ✅")
 
 	return nil
 }

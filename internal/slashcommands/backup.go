@@ -42,44 +42,7 @@ func (c *Backup) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *Backup) Options() []*discordgo.ApplicationCommandOption {
-	return []*discordgo.ApplicationCommandOption{
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "state",
-		// 	Description: "Enable or disable the backup system.",
-		// 	Options: []*discordgo.ApplicationCommandOption{
-		// 		{
-		// 			Type:        discordgo.ApplicationCommandOptionBoolean,
-		// 			Name:        "state",
-		// 			Description: "Dispaly or set the backup state to enabled or disabled",
-		// 			Required:    false,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "list",
-		// 	Description: "List all stored backups.",
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "restore",
-		// 	Description: "Restore a backup.",
-		// 	Options: []*discordgo.ApplicationCommandOption{
-		// 		{
-		// 			Type:        discordgo.ApplicationCommandOptionInteger,
-		// 			Name:        "index",
-		// 			Description: "The index of the backup to be restored.",
-		// 			Required:    true,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "purge",
-		// 	Description: "Delete all stored backups.",
-		// },
-	}
+	return nil
 }
 
 func (c *Backup) Domain() string {
