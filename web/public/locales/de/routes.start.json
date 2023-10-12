@@ -1,14 +1,14 @@
 {
   "login": "Einloggen",
   "header": {
-    "under": "Dein einfacher, vielseitige Bot für Discord. Kostenlos und <1>open source</1> für immer.",
+    "under": "Dein einfacher, vielseitiger Bot für Discord. Kostenlos und <1>open source</1> für immer.",
     "invite": "Einladen",
     "selfhost": "Selbst hosten"
   },
   "features": {
     "codeexecution": {
       "heading": "Code-Sandbox",
-      "description": "Lasse Deinen Code direkt im Chat von shinpuru ausführen. Der Output wird dir direkt angezeigt!"
+      "description": "Lasse Deinen Code direkt im Chat von shinpuru ausführen. Der Output wird Dir direkt angezeigt!"
     },
     "karma": {
       "heading": "Karma",
@@ -20,11 +20,11 @@
     },
     "roleselect": {
       "heading": "Rollenauswahl",
-      "description": "Sende eine Nachricht unter denen Mitglieder ihre Rollen auswählen können - vollautomatisch!"
+      "description": "Sende eine Nachricht unter denen Mitglieder ihre Rollen auswählen können – vollautomatisch!"
     },
     "votes": {
       "heading": "Umfragen",
-      "description": "Du möchtest eine Hitzige Diskussion in deiner Community ein für alle mal klären? Dann ist das Umfragewerkzeug genau das richtige für Dich!"
+      "description": "Du möchtest eine hitzige Diskussion in Deiner Community ein für alle mal klären? Dann ist das Umfragewerkzeug genau das richtige für Dich!"
     },
     "starboard": {
       "heading": "Starboard",
@@ -32,19 +32,19 @@
     }
   },
   "discover": {
-    "header": "Und noch viel mehr zu entdecken...",
+    "header": "Und noch viel mehr zu entdecken ...",
     "features": [
-      "sicherungen",
-      "logbuch",
-      "weboberfläche",
-      "präzises berechtigungssystem",
-      "antiraid-system",
-      "link blocking",
-      "nutzerverifizierung",
-      "öffentliche Server API",
-      "mobile weboberfläche",
-      "slash-befehle",
-      "nachrichten-elemente"
+      "Sicherungen",
+      "Logbuch",
+      "Weboberfläche",
+      "Präzises Berechtigungssystem",
+      "Antiraid-System",
+      "Link-Blocking",
+      "Nutzerverifizierung",
+      "Öffentliche Server-API",
+      "Mobile Weboberfläche",
+      "Slash-Befehle",
+      "Nachrichtenelemente"
     ]
   }
 }
