@@ -41,7 +41,7 @@ In total, **37** different wonderful people contributed a sum of **91** issues a
 |  [davidphay](https://github.com/davidphay) | [#360](https://github.com/zekroTJA/shinpuru/issues/360) |  | `5` |
 |  [AnimeWolfX](https://github.com/AnimeWolfX) | [#371](https://github.com/zekroTJA/shinpuru/issues/371) |  | `5` |
 |  [itsDkiller](https://github.com/itsDkiller) | [#383](https://github.com/zekroTJA/shinpuru/issues/383) |  | `5` |
-|  [DustinDEV2more](https://github.com/DustinDEV2more) | [#421](https://github.com/zekroTJA/shinpuru/issues/421) |  | `5` |
+|  [DustdevDM](https://github.com/DustdevDM) | [#421](https://github.com/zekroTJA/shinpuru/issues/421) |  | `5` |
 |  [Dodo1213](https://github.com/Dodo1213) |  | [#413](https://github.com/zekroTJA/shinpuru/pull/413) | `5` |
 
 
