@@ -72,7 +72,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 	return
 }
 
-func (pmw *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Handler {
+func (m *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Handler {
 	if !stringutil.ContainsAny(required, static.AdditionalPermissions) {
 		static.AdditionalPermissions = append(static.AdditionalPermissions, required)
 	}
@@ -85,13 +85,13 @@ func (pmw *Permissions) HandleWs(s discordutil.ISession, required string) fiber.
 			return fiber.ErrForbidden
 		}
 
-		if guildID == "" {
+		if guildID == "" && strings.HasPrefix(required, "sp.guild") {
 			return errors.New("guildId is not set (this should actually not happen - " +
 				"if it does so, please create an issue including details where and how this " +
 				"missbehaviour occured)")
 		}
 
-		ok, _, err := pmw.CheckPermissions(s, guildID, uid, required)
+		ok, _, err := m.CheckPermissions(s, guildID, uid, required)
 		if err != nil {
 			return err
 		}
@@ -180,7 +180,7 @@ func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID string, u
 	return false, overrideExplicits, nil
 }
 
-// GetMemberPermissions returns a PermissionsArray based on the passed
+// GetMemberPermission returns a PermissionsArray based on the passed
 // members roles permissions rulesets for the given guild.
 func (m *Permissions) GetMemberPermission(s discordutil.ISession, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.db.GetGuildPermissions(guildID)

@@ -36,7 +36,7 @@ type MultiError struct {
 func New(formatFunc ...FormatFunc) (m *MultiError) {
 	m = new(MultiError)
 
-	if formatFunc != nil && len(formatFunc) > 0 && formatFunc[0] != nil {
+	if len(formatFunc) > 0 && formatFunc[0] != nil {
 		m.formatFunc = formatFunc[0]
 	} else {
 		m.formatFunc = defaultFormatFunc
@@ -82,12 +82,10 @@ func (m *MultiError) Len() int {
 	return len(m.errors)
 }
 
-// DEPRECATED
-//
-// Returns the MultiError object as
+// Concat returns the MultiError object as
 // error interface.
 //
-// This function is deprecated. Please simply
+// Deprecated: Please simply
 // use the MultiError object itself as error,
 // because it implements the error interface.
 func (m *MultiError) Concat() error {

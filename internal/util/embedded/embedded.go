@@ -2,7 +2,6 @@ package embedded
 
 import (
 	"embed"
-	_ "embed"
 	"strings"
 )
 

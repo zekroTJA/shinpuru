@@ -2,7 +2,7 @@ import { Input } from '../Input';
 import { ReactComponent as SearchIcon } from '../../assets/search.svg';
 import styled from 'styled-components';
 
-type Props = React.HTMLAttributes<HTMLInputElement> & {
+type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   value?: string;
   onValueChange?: (v: string) => void;
 };

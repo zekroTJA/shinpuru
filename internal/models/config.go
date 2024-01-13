@@ -34,7 +34,7 @@ var DefaultConfig = Config{
 	},
 	Logging: Logging{
 		CommandLogging: true,
-		LogLevel:       4,
+		LogLevel:       "info",
 	},
 	TwitchApp: TwitchApp{},
 	Storage: StorageType{
@@ -175,11 +175,11 @@ type LokiLogging struct {
 	lokiwriter.Options
 }
 
-// Loging holds configuration values for the
+// Logging holds configuration values for the
 // main logger.
 type Logging struct {
 	CommandLogging bool        `json:"commandlogging"`
-	LogLevel       int         `json:"loglevel"`
+	LogLevel       string      `json:"loglevel"` // can be string or int
 	Loki           LokiLogging `json:"loki"`
 }
 

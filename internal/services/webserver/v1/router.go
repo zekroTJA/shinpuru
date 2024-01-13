@@ -17,6 +17,8 @@ func (r *Router) SetContainer(container di.Container) {
 	r.container = container
 }
 
+// Route registrar.
+//
 // @title shinpuru main API
 // @version 1.0
 // @description The shinpuru main REST API.

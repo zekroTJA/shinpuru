@@ -124,6 +124,8 @@ type ISession interface {
 	GuildMemberTimeout(guildID string, userID string, until *time.Time, options ...RequestOption) (err error)
 	GuildMembers(guildID string, after string, limit int, options ...RequestOption) (st []*Member, err error)
 	GuildMembersSearch(guildID, query string, limit int, options ...RequestOption) (st []*Member, err error)
+	GuildOnboarding(guildID string, options ...RequestOption) (onboarding *GuildOnboarding, err error)
+	GuildOnboardingEdit(guildID string, o *GuildOnboarding, options ...RequestOption) (onboarding *GuildOnboarding, err error)
 	GuildPreview(guildID string, options ...RequestOption) (st *GuildPreview, err error)
 	GuildPrune(guildID string, days uint32, options ...RequestOption) (count uint32, err error)
 	GuildPruneCount(guildID string, days uint32, options ...RequestOption) (count uint32, err error)
@@ -179,16 +181,17 @@ type ISession interface {
 	StageInstanceEdit(channelID string, data *StageInstanceParams, options ...RequestOption) (si *StageInstance, err error)
 	ThreadJoin(id string, options ...RequestOption) error
 	ThreadLeave(id string, options ...RequestOption) error
-	ThreadMember(threadID, memberID string, options ...RequestOption) (member *ThreadMember, err error)
+	ThreadMember(threadID, memberID string, withMember bool, options ...RequestOption) (member *ThreadMember, err error)
 	ThreadMemberAdd(threadID, memberID string, options ...RequestOption) error
 	ThreadMemberRemove(threadID, memberID string, options ...RequestOption) error
-	ThreadMembers(threadID string, options ...RequestOption) (members []*ThreadMember, err error)
+	ThreadMembers(threadID string, limit int, withMember bool, afterID string, options ...RequestOption) (members []*ThreadMember, err error)
 	ThreadStart(channelID, name string, typ ChannelType, archiveDuration int, options ...RequestOption) (ch *Channel, err error)
 	ThreadStartComplex(channelID string, data *ThreadStart, options ...RequestOption) (ch *Channel, err error)
 	ThreadsActive(channelID string, options ...RequestOption) (threads *ThreadsList, err error)
 	ThreadsArchived(channelID string, before *time.Time, limit int, options ...RequestOption) (threads *ThreadsList, err error)
 	ThreadsPrivateArchived(channelID string, before *time.Time, limit int, options ...RequestOption) (threads *ThreadsList, err error)
 	ThreadsPrivateJoinedArchived(channelID string, before *time.Time, limit int, options ...RequestOption) (threads *ThreadsList, err error)
+	UpdateCustomStatus(state string) (err error)
 	UpdateGameStatus(idle int, name string) (err error)
 	UpdateListeningStatus(name string) (err error)
 	UpdateStatusComplex(usd UpdateStatusData) (err error)

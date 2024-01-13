@@ -12,10 +12,6 @@ const (
 	expectedJSMimeType = "application/javascript"
 )
 
-type iMimeFixer interface {
-	Fix(expectedMime string) error
-}
-
 // Check gets the detected mime type for .js
 // files and returns it. Also it is checked
 // against the expected mime type so that true

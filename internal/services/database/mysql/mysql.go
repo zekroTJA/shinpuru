@@ -167,6 +167,9 @@ func (m *MysqlMiddleware) setup() (err error) {
 		"`value` text NOT NULL DEFAULT ''," +
 		"PRIMARY KEY (`iid`)" +
 		") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+	if err != nil {
+		return
+	}
 
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS `votes` (" +
 		"`id` varchar(25) NOT NULL," +
@@ -488,7 +491,7 @@ func (m *MysqlMiddleware) setGuildSetting(guildID, key string, value string) (er
 			guildID, value)
 	}
 
-	return nil
+	return err
 }
 
 func (m *MysqlMiddleware) getUserSetting(userID, key string) (string, error) {
@@ -518,7 +521,7 @@ func (m *MysqlMiddleware) setUserSetting(userID, key string, value string) (err 
 			userID, value)
 	}
 
-	return nil
+	return err
 }
 
 func (m *MysqlMiddleware) GetGuildPrefix(guildID string) (string, error) {
@@ -689,6 +692,10 @@ func (m *MysqlMiddleware) GetSetting(setting string) (string, error) {
 
 func (m *MysqlMiddleware) SetSetting(setting, value string) error {
 	res, err := m.Db.Exec("UPDATE settings SET value = ? WHERE setting = ?", value, setting)
+	if err != nil {
+		return err
+	}
+
 	ar, err := res.RowsAffected()
 	if err != nil {
 		return err
@@ -696,6 +703,7 @@ func (m *MysqlMiddleware) SetSetting(setting, value string) error {
 	if ar == 0 {
 		_, err = m.Db.Exec("INSERT INTO settings (setting, value) VALUES (?, ?)", setting, value)
 	}
+
 	return err
 }
 
@@ -2164,7 +2172,7 @@ func (m *MysqlMiddleware) FlushVerificationQueue(guildID string) (err error) {
 		query += " WHERE guildID = ?"
 	}
 	_, err = m.Db.Exec(query, args...)
-	return
+	return err
 }
 
 func (m *MysqlMiddleware) AddVerificationQueue(e models.VerificationQueueEntry) (err error) {
@@ -2173,6 +2181,9 @@ func (m *MysqlMiddleware) AddVerificationQueue(e models.VerificationQueueEntry) 
 		SET timestamp = ?
 		WHERE guildID = ? AND userID = ?
 	`, e.Timestamp, e.GuildID, e.UserID)
+	if err != nil {
+		return err
+	}
 
 	affected, err := res.RowsAffected()
 	if err != nil && err != sql.ErrNoRows {
@@ -2193,10 +2204,13 @@ func (m *MysqlMiddleware) RemoveVerificationQueue(guildID, userID string) (ok bo
 		DELETE FROM verificationQueue
 		WHERE guildID = ? AND userID = ?
 	`, guildID, userID)
-	err = wrapNotFoundError(err)
+	if err != nil {
+		return ok, err
+	}
+
 	affected, err := res.RowsAffected()
 	ok = affected > 0
-	return
+	return ok, wrapNotFoundError(err)
 }
 
 func (m *MysqlMiddleware) FlushUserData(userID string) (res map[string]int, err error) {

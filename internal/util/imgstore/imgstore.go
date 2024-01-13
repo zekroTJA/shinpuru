@@ -3,20 +3,12 @@ package imgstore
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"strings"
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 )
-
-var defClient = http.Client{
-	CheckRedirect: func(r *http.Request, via []*http.Request) error {
-		r.URL.Opaque = r.URL.Path
-		return nil
-	},
-}
 
 // Image wraps metadata and data of an image.
 type Image struct {
@@ -36,6 +28,9 @@ func (img *Image) GenerateID() {
 // occured errors.
 func DownloadFromURL(url string) (img *Image, err error) {
 	body, contentType, err := httpreq.GetFile(url, nil)
+	if err != nil {
+		return nil, err
+	}
 
 	img = new(Image)
 

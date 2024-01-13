@@ -56,7 +56,7 @@ func New() *AcceptMessage {
 	return new(AcceptMessage)
 }
 
-// WithSession sets the discordgo.Session instance.
+// WithKen sets the ken instance.
 func (am *AcceptMessage) WithKen(ken *ken.Ken) *AcceptMessage {
 	am.Ken = ken
 	return am
@@ -86,7 +86,7 @@ func (am *AcceptMessage) LockOnUser(userID string) *AcceptMessage {
 	return am
 }
 
-// DeleteAfterAnser enables that the whole accept
+// DeleteAfterAnswer enables that the whole accept
 // embed message is being deleted after users
 // answer.
 func (am *AcceptMessage) DeleteAfterAnswer() *AcceptMessage {
@@ -129,8 +129,6 @@ func (am *AcceptMessage) WithDeclineButton(btn discordgo.Button) *AcceptMessage 
 	am.DeclineButton = &btn
 	return am
 }
-
-type senderFunc func(emb *discordgo.MessageEmbed) (*discordgo.Message, error)
 
 func (am *AcceptMessage) attachComponents(cb *ken.ComponentBuilder) error {
 	if am.Ken == nil {

@@ -129,11 +129,9 @@ func (c *UnbanrequestsController) postUnbanrequests(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if requests != nil {
-		for _, r := range requests {
-			if r.Status == sharedmodels.UnbanRequestStatePending {
-				return fiber.NewError(fiber.StatusBadRequest, "there is still one open unban request to be proceed")
-			}
+	for _, r := range requests {
+		if r.Status == sharedmodels.UnbanRequestStatePending {
+			return fiber.NewError(fiber.StatusBadRequest, "there is still one open unban request to be proceed")
 		}
 	}
 

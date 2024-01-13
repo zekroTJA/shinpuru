@@ -36,7 +36,7 @@ func ParseDiscordSnowflakeStr(sf string) (dsf *DiscordSnowflake, err error) {
 	return
 }
 
-// ParseDiscordSnowflakeStr recovers a DiscordSnowflake
+// ParseDiscordSnowflake recovers a DiscordSnowflake
 // from the passed snowflake integer.
 func ParseDiscordSnowflake(sfi int) *DiscordSnowflake {
 	dcsf := new(DiscordSnowflake)

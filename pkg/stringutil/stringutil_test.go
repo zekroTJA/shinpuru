@@ -217,3 +217,12 @@ func TestCapitalize(t *testing.T) {
 	assert.Equal(t, "Hey Was Geht Ab", Capitalize("Hey Was Geht Ab", false))
 	assert.Equal(t, "Hey Was Geht Ab", Capitalize("Hey Was Geht Ab", true))
 }
+
+func TestCap(t *testing.T) {
+	assert.Equal(t, "Hello world!", Cap("Hello world!", 20))
+	assert.Equal(t, "Hello world!", Cap("Hello world!", 12))
+	assert.Equal(t, "Hello wor…", Cap("Hello world!", 10))
+	assert.Equal(t, "…", Cap("Hello world!", 1))
+	assert.Equal(t, "", Cap("Hello world!", 0))
+	assert.Equal(t, "Hello world!", Cap("Hello world!", -1))
+}

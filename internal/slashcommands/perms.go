@@ -19,8 +19,6 @@ type Perms struct {
 	ken.EphemeralCommand
 }
 
-type permMode string
-
 const (
 	modeAllow    = "+"
 	modeDisallow = "-"

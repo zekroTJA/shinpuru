@@ -81,29 +81,29 @@ func (v Semver) String() (r string) {
 
 // Equal returns true if the given semver equals
 // the current semver down to the given compare type.
-func (v1 Semver) Equal(v2 Semver, et ...CompareType) (ok bool) {
-	return v1.compare(v2, func(i, j int) bool {
+func (v Semver) Equal(v2 Semver, et ...CompareType) (ok bool) {
+	return v.compare(v2, func(i, j int) bool {
 		return i != j
 	}, et)
 }
 
 // OlderThan returns true if the given semver is older than
 // the current semver down to the given compare type.
-func (v1 Semver) OlderThan(v2 Semver, et ...CompareType) (ok bool) {
-	return !v1.Equal(v2, et...) && v1.compare(v2, func(i, j int) bool {
+func (v Semver) OlderThan(v2 Semver, et ...CompareType) (ok bool) {
+	return !v.Equal(v2, et...) && v.compare(v2, func(i, j int) bool {
 		return i > j
 	}, et)
 }
 
 // LaterThan returns true if the given semver is later than
 // the current semver down to the given compare type.
-func (v1 Semver) LaterThan(v2 Semver, et ...CompareType) (ok bool) {
-	return !v1.Equal(v2, et...) && v1.compare(v2, func(i, j int) bool {
+func (v Semver) LaterThan(v2 Semver, et ...CompareType) (ok bool) {
+	return !v.Equal(v2, et...) && v.compare(v2, func(i, j int) bool {
 		return i < j
 	}, et)
 }
 
-func (v1 Semver) compare(
+func (v Semver) compare(
 	v2 Semver,
 	cf func(i, j int) bool,
 	et []CompareType,
@@ -112,22 +112,22 @@ func (v1 Semver) compare(
 
 	switch e {
 	case Exact:
-		if v1.Attachment != v2.Attachment {
+		if v.Attachment != v2.Attachment {
 			return
 		}
 		fallthrough
 	case Patch:
-		if cf(v1.Patch, v2.Patch) {
+		if cf(v.Patch, v2.Patch) {
 			return
 		}
 		fallthrough
 	case Minor:
-		if cf(v1.Minor, v2.Minor) {
+		if cf(v.Minor, v2.Minor) {
 			return
 		}
 		fallthrough
 	case Major:
-		if cf(v1.Major, v2.Major) {
+		if cf(v.Major, v2.Major) {
 			return
 		}
 	}

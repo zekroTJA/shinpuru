@@ -69,7 +69,7 @@ func (p *Presence) ToUpdateStatusData() discordgo.UpdateStatusData {
 // used for serialization and deserialization.
 func (p *Presence) Validate() error {
 	if strings.Contains(p.Game, presenceSeperator) {
-		return fmt.Errorf("`%s` is used as seperator for the settings saving so it can not be contained in the actual message.",
+		return fmt.Errorf("`%s` is used as seperator for the settings saving so it can not be contained in the actual message",
 			presenceSeperator)
 	}
 

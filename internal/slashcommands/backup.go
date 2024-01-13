@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/xid"
@@ -17,10 +16,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/acceptmsg/v2"
 	"github.com/zekroTJA/shinpuru/pkg/logmsg"
 	"github.com/zekrotja/ken"
-)
-
-const (
-	timeFormat = time.RFC1123
 )
 
 type Backup struct{}
@@ -47,44 +42,7 @@ func (c *Backup) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *Backup) Options() []*discordgo.ApplicationCommandOption {
-	return []*discordgo.ApplicationCommandOption{
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "state",
-		// 	Description: "Enable or disable the backup system.",
-		// 	Options: []*discordgo.ApplicationCommandOption{
-		// 		{
-		// 			Type:        discordgo.ApplicationCommandOptionBoolean,
-		// 			Name:        "state",
-		// 			Description: "Dispaly or set the backup state to enabled or disabled",
-		// 			Required:    false,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "list",
-		// 	Description: "List all stored backups.",
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "restore",
-		// 	Description: "Restore a backup.",
-		// 	Options: []*discordgo.ApplicationCommandOption{
-		// 		{
-		// 			Type:        discordgo.ApplicationCommandOptionInteger,
-		// 			Name:        "index",
-		// 			Description: "The index of the backup to be restored.",
-		// 			Required:    true,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	Type:        discordgo.ApplicationCommandOptionSubCommand,
-		// 	Name:        "purge",
-		// 	Description: "Delete all stored backups.",
-		// },
-	}
+	return nil
 }
 
 func (c *Backup) Domain() string {
@@ -398,5 +356,4 @@ func (c *Backup) purgeBackups(ctx ken.ComponentContext, db database.Database, st
 			success, lnBackups),
 		Color: static.ColorEmbedGreen,
 	}).Send()
-	return
 }

@@ -85,8 +85,8 @@ func (c *Mvall) Run(ctx ken.Context) (err error) {
 	}
 
 	var i int
-	for _, vs := range vss {
-		if vs.ChannelID == vs.ChannelID {
+	for _, cvs := range vss {
+		if cvs.ChannelID == vs.ChannelID {
 			err := ctx.GetSession().GuildMemberMove(ctx.GetEvent().GuildID, vs.UserID, &channel.ID)
 			if err != nil {
 				return err

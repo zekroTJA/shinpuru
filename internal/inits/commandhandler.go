@@ -42,6 +42,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 		DependencyProvider: container,
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
+		OnEventError:       eventErrorHandler,
 		EmbedColors: ken.EmbedColors{
 			Default: static.ColorEmbedDefault,
 			Error:   static.ColorEmbedError,
@@ -122,6 +123,10 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 
 func systemErrorHandler(context string, err error, args ...interface{}) {
 	log.Error().Err(err).Field("ctx", context).Msg("Ken System Error")
+}
+
+func eventErrorHandler(context string, err error) {
+	log.Error().Err(err).Field("context", context).Msg("Ken Event Error")
 }
 
 func commandErrorHandler(err error, ctx *ken.Ctx) {

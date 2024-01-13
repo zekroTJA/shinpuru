@@ -160,6 +160,10 @@ func (c *Notify) setup(ctx ken.SubCommandContext) (err error) {
 	}
 
 	roles, err := st.Roles(ctx.GetEvent().GuildID)
+	if err != nil {
+		return err
+	}
+
 	var notifyRoleExists bool
 	notifyRoleID, err := db.GetGuildNotifyRole(ctx.GetEvent().GuildID)
 	if err == nil {

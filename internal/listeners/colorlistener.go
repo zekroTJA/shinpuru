@@ -207,9 +207,7 @@ func (l *ColorListener) process(s *discordgo.Session, m *discordgo.Message, remo
 func (l *ColorListener) createReaction(s *discordgo.Session, m *discordgo.Message, hexClr string) {
 	// Remove trailing '#' from color code,
 	// when existent
-	if strings.HasPrefix(hexClr, "#") {
-		hexClr = hexClr[1:]
-	}
+	hexClr = strings.TrimPrefix(hexClr, "#")
 
 	// Parse hex color code to color.RGBA object
 	clr, err := colors.FromHex(hexClr)

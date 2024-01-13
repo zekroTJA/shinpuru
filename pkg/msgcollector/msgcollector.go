@@ -87,14 +87,14 @@ func (mc *MessageCollector) Close(reason string) {
 	}
 }
 
-// OnCollected sets a handler function which is called
+// OnColelcted sets a handler function which is called
 // everytime any message was collected in the specified
 // channel.
 func (mc *MessageCollector) OnColelcted(handler func(*discordgo.Message, *MessageCollector)) {
 	mc.onCollected = handler
 }
 
-// OnMatch sets a handler function which is called
+// OnMatched sets a handler function which is called
 // everytime a message was collected which went
 // positively through the specified match filter.
 func (mc *MessageCollector) OnMatched(handler func(*discordgo.Message, *MessageCollector)) {

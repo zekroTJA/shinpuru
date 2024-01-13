@@ -36,7 +36,7 @@ func (b *EmbedBuilder) WithColor(color int) *EmbedBuilder {
 	return b
 }
 
-// WithAuthor adds an author to the embed.
+// WithDescription adds a description to the embed.
 func (b *EmbedBuilder) WithDescription(description string) *EmbedBuilder {
 	b.emb.Description = description
 	return b
@@ -130,7 +130,7 @@ func (b *EmbedBuilder) WithURL(url string) *EmbedBuilder {
 	return b
 }
 
-// WithFooter sets a video to the embed.
+// WithVideo sets a video to the embed.
 func (b *EmbedBuilder) WithVideo(url string, width, height int) *EmbedBuilder {
 	b.emb.Video = &discordgo.MessageEmbedVideo{
 		URL:    url,

@@ -41,6 +41,7 @@ func (t Writer) Write(
 	fields []*rogu.Field,
 	tag string,
 	err error,
+	errFormat string,
 	callerFile string,
 	callerLine int,
 	msg string,

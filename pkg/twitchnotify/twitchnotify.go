@@ -29,9 +29,6 @@ const (
 
 	maxUserCap = 1000
 
-	// clockDuration = 30 * time.Second
-	clockDuration = 60 * time.Second
-
 	oAuth2Endpoint = "https://id.twitch.tv/oauth2/token"
 	helixEndpoint  = "https://api.twitch.tv/helix"
 )
@@ -247,9 +244,7 @@ func (w *NotifyWorker) getStreams() ([]*Stream, error) {
 	}
 
 	streams := make([]*Stream, len(data.Data))
-	for i, s := range data.Data {
-		streams[i] = s
-	}
+	copy(streams, data.Data)
 
 	return streams, nil
 }
@@ -295,6 +290,10 @@ func (w *NotifyWorker) Handle() error {
 	// is now live and was not live in the request before.
 	mErr := multierror.New()
 	for _, stream := range streams {
+		if stream == nil {
+			continue
+		}
+
 		var wasOnline bool
 
 		w.mx.Lock()

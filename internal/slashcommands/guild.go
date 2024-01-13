@@ -75,6 +75,9 @@ func (c *Guild) Run(ctx ken.Context) (err error) {
 	}
 
 	gChans, err := st.Channels(g.ID, true)
+	if err != nil {
+		return
+	}
 
 	nTextChans, nVoiceChans, nCategoryChans := 0, 0, 0
 	for _, c := range gChans {

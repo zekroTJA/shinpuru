@@ -26,7 +26,7 @@ func Request(method, url string, headers map[string]string, data interface{}) (r
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
-	res = responsePool.Get().(*Response)
+	res = responsePool.Get()
 
 	req.Header.SetMethod(method)
 	req.SetRequestURI(url)
@@ -51,7 +51,7 @@ func Get(url string, headers map[string]string) (*Response, error) {
 	return Request("GET", url, headers, nil)
 }
 
-// Get is shorthand for Request using the POST method.
+// Post is shorthand for Request using the POST method.
 func Post(url string, headers map[string]string, data interface{}) (*Response, error) {
 	return Request("POST", url, headers, data)
 }

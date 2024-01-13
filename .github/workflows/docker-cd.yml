@@ -61,7 +61,7 @@ jobs:
         if: ${{ env.TAG == 'canary' || env.TAG == 'latest' }}
         uses: appleboy/ssh-action@master
         with:
-          host: zekro.de
+          host: zerotwo.zekro.de
           port: 22
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}

@@ -2,24 +2,24 @@ package httpreq
 
 import (
 	"encoding/json"
-	"sync"
 
 	"github.com/valyala/fasthttp"
+	"github.com/zekrotja/safepool"
 )
 
-var responsePool = &sync.Pool{
-	New: func() interface{} {
-		return &Response{
-			Response: fasthttp.AcquireResponse(),
-		}
-	},
-}
+var responsePool = safepool.New(func() *Response {
+	return &Response{
+		Response: fasthttp.AcquireResponse(),
+	}
+})
 
 // Response extends http.Response with some extra
 // utility functions.
 type Response struct {
 	*fasthttp.Response
 }
+
+var _ safepool.ResetState = (*Response)(nil)
 
 // JSON parses the response body data to the
 // passed object reference using JSON decoder
@@ -33,3 +33,5 @@ func (r *Response) JSON(v interface{}) error {
 func (r *Response) Release() {
 	responsePool.Put(r)
 }
+
+func (r *Response) ResetState() {}

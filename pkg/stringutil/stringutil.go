@@ -3,6 +3,7 @@
 package stringutil
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -34,7 +35,7 @@ func FromBool(cond bool, ifTrue, ifFalse string) string {
 	return ifFalse
 }
 
-// IndexOfStringArray returns the index of the
+// IndexOf returns the index of the
 // passed str in the passed arr. If str is not
 // in arr, -1 is returned.
 func IndexOf(str string, arr []string) int {
@@ -148,4 +149,20 @@ func Capitalize(v string, all bool) string {
 	} else {
 		return strings.ToUpper(string(v[0])) + v[1:]
 	}
+}
+
+// Cap cuts the string to the given max len if it exceeds
+// it ending the string with '…' if it does.
+//
+// If max is smaller than 0, v is returned as is.
+func Cap(v string, max int) string {
+	if max == 0 {
+		return ""
+	}
+
+	if max < 0 || len(v) <= max {
+		return v
+	}
+
+	return fmt.Sprintf("%s…", v[:max-1])
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sahilm/fuzzy"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
 
@@ -77,11 +78,23 @@ func (t *Tag) formattedAuthor(s *dgrs.State) *author {
 	authorF := new(author)
 	author, err := s.Member(t.GuildID, t.CreatorID)
 	if err == nil && author != nil {
-		authorF.nameTag = fmt.Sprintf("%s", author.User.String())
+		authorF.nameTag = author.User.String()
 		authorF.imageURL = author.User.AvatarURL("")
 	} else {
 		authorF.nameTag = fmt.Sprintf("<not on guild> (%s)", t.CreatorID)
 	}
 
 	return authorF
+}
+
+type SearchableTagList []Tag
+
+var _ fuzzy.Source = (*SearchableTagList)(nil)
+
+func (t SearchableTagList) String(i int) string {
+	return t[i].Ident
+}
+
+func (t SearchableTagList) Len() int {
+	return len(t)
 }

@@ -418,7 +418,7 @@ func (req *ReasonRequest) Validate(acceptEmptyReason bool) (bool, error) {
 	}
 
 	if req.Attachment != "" && !imgstore.ImgUrlSRx.MatchString(req.Attachment) {
-		return false, fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4.")
+		return false, fmt.Errorf("attachment must be a valid url to a file with type of png, jpg, jpeg, gif, ico, tiff, img, bmp or mp4")
 	}
 
 	return true, nil

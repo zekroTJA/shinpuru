@@ -402,7 +402,11 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to parse config")
 	}
 
-	log.SetLevel(level.Level(cfg.Config().Logging.LogLevel))
+	lvl, ok := level.LevelFromString(cfg.Config().Logging.LogLevel)
+	if !ok {
+		log.Fatal().Msgf("invalid log level: %s", cfg.Config().Logging.LogLevel)
+	}
+	log.SetLevel(lvl)
 
 	if lokiCfg := cfg.Config().Logging.Loki; lokiCfg.Enabled {
 		w, err := lokiwriter.NewWriter(lokiCfg.Options)

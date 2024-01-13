@@ -66,6 +66,9 @@ func (k *Service) IsBlockListed(guildID, userID string) (isBlocklisted bool, err
 // specified user.
 func (k *Service) Update(guildID, userID, executorID string, value int) (err error) {
 	err = k.db.UpdateKarma(userID, guildID, value)
+	if err != nil {
+		return err
+	}
 
 	rules, err := k.db.GetKarmaRules(guildID)
 	if err != nil && !database.IsErrDatabaseNotFound(err) {

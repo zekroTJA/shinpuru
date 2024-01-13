@@ -218,6 +218,9 @@ func (c *Mute) list(ctx ken.SubCommandContext) (err error) {
 
 	muteReports, err := db.GetReportsFiltered(ctx.GetEvent().GuildID, "",
 		models.TypeMute, 0, 1000)
+	if err != nil {
+		return err
+	}
 
 	muteReportsMap := make(map[string]models.Report)
 	for _, r := range muteReports {

@@ -54,7 +54,7 @@ type Channel struct {
 	ID                   string                           `json:"id"`
 	Name                 string                           `json:"name"`
 	Topic                string                           `json:"topic"`
-	Type                 int                              `json:"type"`
+	Type                 discordgo.ChannelType            `json:"type"`
 	NSFW                 bool                             `json:"nsfw"`
 	Position             int                              `json:"position"`
 	Bitrate              int                              `json:"bitrate"`

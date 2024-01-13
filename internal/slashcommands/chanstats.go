@@ -253,6 +253,9 @@ func (c *Chanstats) Run(ctx ken.Context) (err error) {
 			},
 		},
 	})
+	if err != nil {
+		return
+	}
 
 	// If `values` has only 1 entry, append another
 	// "empty" value to bypass "invalid data range;

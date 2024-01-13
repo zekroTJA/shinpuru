@@ -1068,6 +1068,9 @@ func (c *GuildsSettingsController) postGuildSettingsAPI(ctx *fiber.Ctx) (err err
 	} else if newState.NewToken != "" {
 		hasher := hashutil.Hasher{HashFunc: crypto.SHA512, SaltSize: 128}
 		newState.TokenHash, err = hasher.Hash(newState.NewToken)
+		if err != nil {
+			return
+		}
 	}
 
 	if err = c.db.SetGuildAPI(guildID, newState.GuildAPISettings); err != nil {

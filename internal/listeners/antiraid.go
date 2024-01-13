@@ -84,9 +84,7 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 
 	ok, limit, burst := l.getGuildSettings(e.GuildID)
 	if !ok {
-		if _, ok := l.guildStates[e.GuildID]; ok {
-			delete(l.guildStates, e.GuildID)
-		}
+		delete(l.guildStates, e.GuildID)
 		return
 	}
 
@@ -123,6 +121,9 @@ func (l *ListenerAntiraid) HandlerMemberAdd(s discordutil.ISession, e *discordgo
 	_, err := s.GuildEdit(e.GuildID, &discordgo.GuildParams{
 		VerificationLevel: &verificationLvl,
 	})
+	if err != nil {
+		l.log.Error().Err(err).Fields("gid", e.GuildID).Msg("Failed setting guild verification level")
+	}
 
 	guild, err := l.st.Guild(e.GuildID, true)
 	if err != nil {
