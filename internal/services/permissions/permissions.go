@@ -85,7 +85,7 @@ func (m *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Ha
 			return fiber.ErrForbidden
 		}
 
-		if guildID == "" {
+		if guildID == "" && strings.HasPrefix(required, "sp.guild") {
 			return errors.New("guildId is not set (this should actually not happen - " +
 				"if it does so, please create an issue including details where and how this " +
 				"missbehaviour occured)")
