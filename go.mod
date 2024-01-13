@@ -3,7 +3,7 @@ module github.com/zekroTJA/shinpuru
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.27.2-0.20230704233747-e39e715086d2
+	github.com/bwmarrin/discordgo v0.27.2-0.20240104191117-afc57886f91a
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/esimov/stackblur-go v1.1.0
