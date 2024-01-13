@@ -244,7 +244,7 @@ func (w *NotifyWorker) getStreams() ([]*Stream, error) {
 	}
 
 	streams := make([]*Stream, len(data.Data))
-	copy(data.Data, streams)
+	copy(streams, data.Data)
 
 	return streams, nil
 }
