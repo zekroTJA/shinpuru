@@ -5,7 +5,11 @@
 
 # Bug Fixes and Minor Changes
 
-- Discriminators have been removed from the command UI as well as from the web UI in order of [Discord's usernam migration](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names).
+- The tag command has been improved to make use of parameter autocompletion. [#439]
+- A bug has been fixed which caused shinpuru to crash on fetching the Twitch API for Twitch notifications. [#445]
+- Added better state caching to the voice log listener to try to fix issue #440. This might need more investigation though.
+- Fixed permission check on routes which do no contain a `guild` URL path parameter. This fixes an issue where the presence page was not able to load in the web frontend because of the failing request.
+- Some German translations have been improved thanks to the contributions made by @luxtracon.
 
 # Docker
 
