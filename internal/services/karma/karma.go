@@ -18,10 +18,10 @@ import (
 // Service provides functionalities to check karma state,
 // karma blocklist and alter karma of a user.
 type Service struct {
-	s   *discordgo.Session
-	db  database.Database
-	gl  guildlog.Logger
-	st  *dgrs.State
+	db  Database
+	s   Session
+	st  State
+	gl  Logger
 	log rogu.Logger
 }
 

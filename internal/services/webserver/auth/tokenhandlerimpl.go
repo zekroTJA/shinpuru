@@ -20,9 +20,9 @@ import (
 // DatabaseRefreshTokenHandler implements RefreshTokenHandler
 // for a base64 encoded token stored in the database
 type DatabaseRefreshTokenHandler struct {
-	db      database.Database
-	session *discordgo.Session
-	tp      timeprovider.Provider
+	db      Database
+	session Session
+	tp      TimeProvider
 }
 
 // NewDatabaseRefreshTokenHandler returns a new instance

@@ -32,12 +32,13 @@ var (
 )
 
 type ReportService struct {
-	s   discordutil.ISession
-	db  database.Database
-	cfg config.Provider
-	st  dgrs.IState
-	tp  timeprovider.Provider
+	db Database
+	s  Session
+	st State
+	tp TimeProvider
+
 	log rogu.Logger
+	cfg config.Provider
 }
 
 type ReportError struct {

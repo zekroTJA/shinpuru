@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/zekrotja/rogu/log"
 	"time"
 
 	"github.com/sarulabs/di/v2"
@@ -18,7 +19,6 @@ import (
 	"github.com/zekroTJA/shinpuru/pkg/inline"
 	"github.com/zekrotja/dgrs"
 	"github.com/zekrotja/rogu"
-	"github.com/zekrotja/rogu/log"
 	"github.com/zekrotja/sop"
 
 	"github.com/bwmarrin/discordgo"
@@ -27,13 +27,13 @@ import (
 // GuildBackups provides functionalities to backup
 // and restore a guild to and from a JSON file.
 type GuildBackups struct {
-	session *discordgo.Session
-	db      database.Database
-	gl      guildlog.Logger
-	st      storage.Storage
-	state   *dgrs.State
-	tp      timeprovider.Provider
 	log     rogu.Logger
+	gl      Logger
+	db      Database
+	st      Storage
+	session Session
+	state   State
+	tp      timeprovider.Provider
 }
 
 // writeStatus writes the passed status to the
@@ -50,7 +50,10 @@ func writeError(c chan error, err error) {
 
 func (bck *GuildBackups) guilds() (guilds []string, err error) {
 	guilds, err = bck.db.GetGuilds()
-	shardID, shardTotal := discordutil.GetShardOfSession(bck.session)
+	// TODO: Better abstraction
+	// This is somewhat dirty, but currently, this whole package depends so much on
+	// the discordgo Dependency, we can just assume that Session is a *discordgo.Session.
+	shardID, shardTotal := discordutil.GetShardOfSession(bck.session.(*discordgo.Session))
 	if shardTotal > 1 {
 		guilds = sop.Slice(guilds).Filter(func(v string, i int) bool {
 			id, err := discordutil.GetShardOfGuild(v, shardTotal)

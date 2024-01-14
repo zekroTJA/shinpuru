@@ -6,8 +6,6 @@ import (
 	"github.com/ranna-go/ranna/pkg/models"
 )
 
-var AvailableFactories = []string{"ranna", "jdoodle"}
-
 type Payload struct {
 	Language    string
 	Code        string

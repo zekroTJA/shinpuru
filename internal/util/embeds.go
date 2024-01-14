@@ -5,15 +5,20 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
+
+type MessageSession interface {
+	ChannelMessageSendEmbed(channelID string, embed *discordgo.MessageEmbed, options ...discordgo.RequestOption) (*discordgo.Message, error)
+	ChannelMessageDelete(channelID, messageID string, options ...discordgo.RequestOption) (err error)
+	ChannelMessageEditEmbed(channelID, messageID string, embed *discordgo.MessageEmbed, options ...discordgo.RequestOption) (*discordgo.Message, error)
+}
 
 // EmbedMessage extends a discordgo.MessageEmbedMessage
 // with extra utilities.
 type EmbedMessage struct {
 	*discordgo.Message
 
-	s   discordutil.ISession
+	s   MessageSession
 	err error
 }
 
@@ -65,7 +70,7 @@ func (emb *EmbedMessage) EditRaw(newEmb *discordgo.MessageEmbed) *EmbedMessage {
 // If color == 0, static.ColorEmbedDefault will be set as color.
 //
 // Occured errors are set to the internal error.
-func SendEmbed(s discordutil.ISession, chanID, content string, title string, color int) *EmbedMessage {
+func SendEmbed(s MessageSession, chanID, content string, title string, color int) *EmbedMessage {
 	emb := &discordgo.MessageEmbed{
 		Description: content,
 		Color:       color,
@@ -82,7 +87,7 @@ func SendEmbed(s discordutil.ISession, chanID, content string, title string, col
 // SendEmbedError is shorthand for SendEmbed with
 // static.ColorEmbedError as color and title "Error"
 // if no title was passed.
-func SendEmbedError(s discordutil.ISession, chanID, content string, title ...string) *EmbedMessage {
+func SendEmbedError(s MessageSession, chanID, content string, title ...string) *EmbedMessage {
 	emb := &discordgo.MessageEmbed{
 		Description: content,
 		Color:       static.ColorEmbedError,
@@ -99,7 +104,7 @@ func SendEmbedError(s discordutil.ISession, chanID, content string, title ...str
 // SendEmbedRaw sends the passed emb to the passed
 // channel and sets occured errors to the internal
 // error.
-func SendEmbedRaw(s discordutil.ISession, chanID string, emb *discordgo.MessageEmbed) *EmbedMessage {
+func SendEmbedRaw(s MessageSession, chanID string, emb *discordgo.MessageEmbed) *EmbedMessage {
 	msg, err := s.ChannelMessageSendEmbed(chanID, emb)
 
 	return &EmbedMessage{msg, s, err}

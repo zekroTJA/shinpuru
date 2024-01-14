@@ -24,13 +24,15 @@ import (
 )
 
 type BirthdayService struct {
-	gif     *giphy.Client
-	db      database.Database
-	st      *dgrs.State
-	session *discordgo.Session
-	gl      guildlog.Logger
-	tp      timeprovider.Provider
-	log     rogu.Logger
+	db      Database
+	st      State
+	gl      Logger
+	tp      TimeProvider
+	session Session
+
+	log rogu.Logger
+
+	gif *giphy.Client
 }
 
 func New(ctn di.Container) *BirthdayService {
@@ -57,7 +59,8 @@ func (b *BirthdayService) Schedule() (err error) {
 		return
 	}
 
-	shardId, shardTotal := discordutil.GetShardOfSession(b.session)
+	// TODO: Better abstraction
+	shardId, shardTotal := discordutil.GetShardOfSession(b.session.(*discordgo.Session))
 	if shardTotal > 1 {
 		bdays = sop.Slice(bdays).
 			Filter(func(v models.Birthday, _ int) bool {

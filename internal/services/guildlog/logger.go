@@ -14,10 +14,12 @@ import (
 )
 
 type loggerImpl struct {
-	db     database.Database
+	db Database
+	tp TimeProvider
+
+	l rogu.Logger
+
 	module string
-	tp     timeprovider.Provider
-	l      rogu.Logger
 }
 
 func New(container di.Container) Logger {

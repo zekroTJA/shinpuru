@@ -21,9 +21,10 @@ import (
 // Permissions is a command handler middleware
 // processing permissions for command execution.
 type Permissions struct {
-	db  database.Database
+	db Database
+	st State
+
 	cfg config.Provider
-	st  *dgrs.State
 }
 
 var _ Provider = (*Permissions)(nil)

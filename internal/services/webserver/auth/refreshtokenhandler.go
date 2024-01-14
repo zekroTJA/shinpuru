@@ -19,10 +19,10 @@ var _ RequestHandler = (*RefreshTokenRequestHandler)(nil)
 // the refresh-access token authentication
 // system.
 type RefreshTokenRequestHandler struct {
-	session             *discordgo.Session
+	session             Session
+	tp                  TimeProvider
 	accessTokenHandler  AccessTokenHandler
 	refreshTokenHandler RefreshTokenHandler
-	tp                  timeprovider.Provider
 }
 
 func NewRefreshTokenRequestHandler(container di.Container) *RefreshTokenRequestHandler {

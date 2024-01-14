@@ -23,12 +23,13 @@ import (
 const timeout = 48 * time.Hour
 
 type impl struct {
-	s   discordutil.ISession
-	db  database.Database
-	cfg config.Provider
-	gl  guildlog.Logger
-	tp  timeprovider.Provider
+	db Database
+	s  Session
+	gl Logger
+	tp TimeProvider
+
 	log rogu.Logger
+	cfg config.Provider
 }
 
 var _ Provider = (*impl)(nil)
@@ -183,7 +184,7 @@ func (p *impl) purgeQeueue(guildID, userID string) (err error) {
 }
 
 func (p *impl) sendDM(
-	s discordutil.ISession,
+	s Session,
 	userID, content, title string,
 	fallback func(content, title string),
 ) {
@@ -203,7 +204,7 @@ func (p *impl) sendDM(
 	}
 }
 
-func (p *impl) sendToJoinMsgChan(s discordutil.ISession, guildID, userID, content, title string) {
+func (p *impl) sendToJoinMsgChan(s Session, guildID, userID, content, title string) {
 	chanID, _, err := p.db.GetGuildJoinMsg(guildID)
 	if err != nil {
 		return
