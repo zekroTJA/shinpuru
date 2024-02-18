@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **37** different wonderful people contributed a sum of **91** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
+In total, **38** different wonderful people contributed a sum of **92** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -42,6 +42,7 @@ In total, **37** different wonderful people contributed a sum of **91** issues a
 |  [AnimeWolfX](https://github.com/AnimeWolfX) | [#371](https://github.com/zekroTJA/shinpuru/issues/371) |  | `5` |
 |  [itsDkiller](https://github.com/itsDkiller) | [#383](https://github.com/zekroTJA/shinpuru/issues/383) |  | `5` |
 |  [DustdevDM](https://github.com/DustdevDM) | [#421](https://github.com/zekroTJA/shinpuru/issues/421) |  | `5` |
+|  [JJGadgets](https://github.com/JJGadgets) | [#446](https://github.com/zekroTJA/shinpuru/issues/446) |  | `5` |
 |  [Dodo1213](https://github.com/Dodo1213) |  | [#413](https://github.com/zekroTJA/shinpuru/pull/413) | `5` |
 
 
