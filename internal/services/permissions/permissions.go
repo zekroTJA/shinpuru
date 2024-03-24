@@ -27,8 +27,6 @@ type Permissions struct {
 	cfg config.Provider
 }
 
-var _ Provider = (*Permissions)(nil)
-
 // NewPermissions returns a new PermissionsMiddleware
 // instance with the passed database and config instances.
 func NewPermissions(container di.Container) *Permissions {
@@ -73,7 +71,7 @@ func (m *Permissions) Before(ctx *ken.Ctx) (next bool, err error) {
 	return
 }
 
-func (m *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Handler {
+func (m *Permissions) HandleWs(s Session, required string) fiber.Handler {
 	if !stringutil.ContainsAny(required, static.AdditionalPermissions) {
 		static.AdditionalPermissions = append(static.AdditionalPermissions, required)
 	}
@@ -109,7 +107,7 @@ func (m *Permissions) HandleWs(s discordutil.ISession, required string) fiber.Ha
 // permissions array is returned as well as the override,
 // which is true when the specified user is the bot owner,
 // guild owner or an admin of the guild.
-func (m *Permissions) GetPermissions(s discordutil.ISession, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
+func (m *Permissions) GetPermissions(s Session, guildID, userID string) (perm permissions.PermissionArray, overrideExplicits bool, err error) {
 	if guildID != "" {
 		perm, err = m.GetMemberPermission(s, guildID, userID)
 		if err != nil && !database.IsErrDatabaseNotFound(err) {
@@ -166,7 +164,7 @@ func (m *Permissions) GetPermissions(s discordutil.ISession, guildID, userID str
 //
 // If guildID is passed as non-mepty string, all configured guild owner
 // permissions will be added to the fetched permissions array as well.
-func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID string, userID string, dns ...string) (bool, bool, error) {
+func (m *Permissions) CheckPermissions(s Session, guildID string, userID string, dns ...string) (bool, bool, error) {
 	perms, overrideExplicits, err := m.GetPermissions(s, guildID, userID)
 	if err != nil {
 		return false, false, err
@@ -183,7 +181,7 @@ func (m *Permissions) CheckPermissions(s discordutil.ISession, guildID string, u
 
 // GetMemberPermission returns a PermissionsArray based on the passed
 // members roles permissions rulesets for the given guild.
-func (m *Permissions) GetMemberPermission(s discordutil.ISession, guildID string, memberID string) (permissions.PermissionArray, error) {
+func (m *Permissions) GetMemberPermission(s Session, guildID string, memberID string) (permissions.PermissionArray, error) {
 	guildPerms, err := m.db.GetGuildPermissions(guildID)
 	if err != nil {
 		return nil, err

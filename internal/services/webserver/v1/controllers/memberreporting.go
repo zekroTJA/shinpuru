@@ -20,12 +20,13 @@ import (
 )
 
 type MemberReportingController struct {
-	session *discordgo.Session
-	cfg     config.Provider
-	db      database.Database
-	st      storage.Storage
-	repSvc  *report.ReportService
-	state   *dgrs.State
+	db      Database
+	session Session
+	st      Storage
+	state   State
+
+	cfg    config.Provider
+	repSvc *report.ReportService
 }
 
 func (c *MemberReportingController) Setup(container di.Container, router fiber.Router) {

@@ -15,7 +15,7 @@ import (
 )
 
 type ImagestoreController struct {
-	st storage.Storage
+	st Storage
 }
 
 func (c *ImagestoreController) Setup(container di.Container, router fiber.Router) {

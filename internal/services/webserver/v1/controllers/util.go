@@ -18,10 +18,11 @@ import (
 )
 
 type UtilController struct {
-	session    *discordgo.Session
+	session Session
+	st      State
+
 	cfg        config.Provider
 	cmdHandler *ken.Ken
-	st         *dgrs.State
 }
 
 func (c *UtilController) Setup(container di.Container, router fiber.Router) {

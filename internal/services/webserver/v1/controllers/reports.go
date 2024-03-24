@@ -14,11 +14,12 @@ import (
 )
 
 type ReportsController struct {
-	session *discordgo.Session
-	cfg     config.Provider
-	db      database.Database
-	repSvc  *report.ReportService
-	pmw     *permissions.Permissions
+	db      Database
+	session Session
+	
+	cfg    config.Provider
+	repSvc *report.ReportService
+	pmw    *permissions.Permissions
 }
 
 func (c *ReportsController) Setup(container di.Container, router fiber.Router) {

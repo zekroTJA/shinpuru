@@ -36,7 +36,7 @@ import (
 )
 
 type GuildsController struct {
-	db      database.Database
+	db      Database
 	st      storage.Storage
 	kvc     kvcache.Provider
 	session *discordgo.Session

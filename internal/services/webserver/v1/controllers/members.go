@@ -21,12 +21,13 @@ import (
 )
 
 type GuildMembersController struct {
-	session    *discordgo.Session
+	db      Database
+	session Session
+	st      State
+
 	cfg        config.Provider
-	db         database.Database
 	pmw        *permissions.Permissions
 	cmdHandler *ken.Ken
-	st         *dgrs.State
 }
 
 func (c *GuildMembersController) Setup(container di.Container, router fiber.Router) {

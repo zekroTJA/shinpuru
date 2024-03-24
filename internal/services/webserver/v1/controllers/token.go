@@ -11,9 +11,10 @@ import (
 )
 
 type TokenController struct {
-	db    database.Database
+	db Database
+	tp TimeProvider
+
 	apith auth.APITokenHandler
-	tp    timeprovider.Provider
 }
 
 func (c *TokenController) Setup(container di.Container, router fiber.Router) {

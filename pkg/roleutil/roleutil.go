@@ -34,7 +34,7 @@ func SortRoles(r []*discordgo.Role, reversed bool) {
 // sorted ascending order by position.
 // If any error occurs, the error is returned as well.
 // If reversed, the order is descending.
-func GetSortedMemberRoles(s discordutil.ISession, guildID, memberID string, reversed bool, includeEveryone bool) ([]*discordgo.Role, error) {
+func GetSortedMemberRoles(s Session, guildID, memberID string, reversed bool, includeEveryone bool) ([]*discordgo.Role, error) {
 	member, err := s.GuildMember(guildID, memberID)
 	if err != nil {
 		return nil, err

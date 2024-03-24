@@ -18,9 +18,10 @@ import (
 )
 
 type OTAController struct {
-	session      *discordgo.Session
+	db      Database
+	session Session
+	
 	cfg          config.Provider
-	db           database.Database
 	ota          onetimeauth.OneTimeAuth
 	oauthHandler auth.RequestHandler
 	tp           timeprovider.Provider

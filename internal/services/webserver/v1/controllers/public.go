@@ -14,9 +14,9 @@ import (
 )
 
 type PublicController struct {
-	session *discordgo.Session
-	db      database.Database
-	st      *dgrs.State
+	db      Database
+	session Session
+	st      State
 }
 
 func (c *PublicController) Setup(container di.Container, router fiber.Router) {

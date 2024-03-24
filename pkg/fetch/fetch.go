@@ -140,7 +140,7 @@ var (
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchRole(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Role) bool) (*discordgo.Role, error) {
+func FetchRole(s Session, guildID, resolvable string, condition ...func(*discordgo.Role) bool) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildID)
 	if err != nil {
 		return nil, err
@@ -171,7 +171,7 @@ func FetchRole(s DataOutlet, guildID, resolvable string, condition ...func(*disc
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchMember(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Member) bool) (*discordgo.Member, error) {
+func FetchMember(s Session, guildID, resolvable string, condition ...func(*discordgo.Member) bool) (*discordgo.Member, error) {
 	rx := regexp.MustCompile("<@|!|>")
 	resolvable = rx.ReplaceAllString(resolvable, "")
 	var lastUserID string
@@ -212,7 +212,7 @@ func FetchMember(s DataOutlet, guildID, resolvable string, condition ...func(*di
 // If no object was found, ErrNotFound is returned.
 // If any other unexpected error occurs during fetching,
 // this error is returned as well.
-func FetchChannel(s DataOutlet, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
+func FetchChannel(s Session, guildID, resolvable string, condition ...func(*discordgo.Channel) bool) (*discordgo.Channel, error) {
 	channels, err := s.GuildChannels(guildID)
 	if err != nil {
 		return nil, err

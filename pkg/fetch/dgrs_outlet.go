@@ -10,7 +10,7 @@ type DgrsDataOutlet struct {
 	forceFetch bool
 }
 
-var _ DataOutlet = (*DgrsDataOutlet)(nil)
+var _ Session = (*DgrsDataOutlet)(nil)
 
 func WrapDrgs(state *dgrs.State, forceFetch ...bool) DgrsDataOutlet {
 	ff := len(forceFetch) > 0 && forceFetch[0]

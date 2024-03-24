@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto"
 	"fmt"
+	"github.com/zekroTJA/shinpuru/internal/util/privacy"
 	"strings"
 	"time"
 
@@ -20,7 +21,6 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/verification"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/wsutil"
-	"github.com/zekroTJA/shinpuru/internal/util"
 	"github.com/zekroTJA/shinpuru/internal/util/snowflakenodes"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekroTJA/shinpuru/pkg/fetch"
@@ -31,15 +31,16 @@ import (
 )
 
 type GuildsSettingsController struct {
-	db      database.Database
-	st      storage.Storage
-	kvc     kvcache.Provider
-	session *discordgo.Session
-	cfg     config.Provider
-	pmw     *permservice.Permissions
-	state   *dgrs.State
-	vs      verification.Provider
-	cef     codeexec.Factory
+	db      Database
+	st      Storage
+	session Session
+	state   State
+	kvc     KvCache
+
+	cfg config.Provider
+	pmw *permservice.Permissions
+	vs  verification.Provider
+	cef codeexec.Factory
 }
 
 func (c *GuildsSettingsController) Setup(container di.Container, router fiber.Router) {
@@ -999,7 +1000,7 @@ func (c *GuildsSettingsController) postFlushGuildData(ctx *fiber.Ctx) (err error
 		return fiber.NewError(fiber.StatusBadRequest, "invalid validation")
 	}
 
-	if err = util.FlushAllGuildData(c.session, c.db, c.st, c.state, guildID); err != nil {
+	if err = privacy.FlushAllGuildData(c.session, c.db, c.st, c.state, guildID); err != nil {
 		return
 	}
 

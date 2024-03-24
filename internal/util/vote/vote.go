@@ -97,7 +97,7 @@ func (v *Vote) Marshal() (string, error) {
 // a pie chart will be generated representing the
 // distribution of vote ticks and sent as image to
 // the channel.
-func (v *Vote) AsEmbed(s *discordgo.Session, voteState ...VoteState) (*discordgo.MessageEmbed, error) {
+func (v *Vote) AsEmbed(s Session, voteState ...VoteState) (*discordgo.MessageEmbed, error) {
 	state := VoteStateOpen
 	if len(voteState) > 0 {
 		state = voteState[0]
@@ -230,7 +230,7 @@ func (v *Vote) AsField() *discordgo.MessageEmbedField {
 // for each selection possibility.
 //
 // Vote emotes are used from VoteEmotes.
-func (v *Vote) AddReactions(s *discordgo.Session) error {
+func (v *Vote) AddReactions(s Session) error {
 	for i := 0; i < len(v.Possibilities); i++ {
 		err := s.MessageReactionAdd(v.ChannelID, v.MsgID, VoteEmotes[i])
 		if err != nil {
@@ -241,7 +241,7 @@ func (v *Vote) AddReactions(s *discordgo.Session) error {
 }
 
 // Tick sets the tick for the specified user to the vote.
-func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) (err error) {
+func (v *Vote) Tick(s Session, userID string, tick int) (err error) {
 	if userID, err = HashUserID(userID, []byte(v.ID)); err != nil {
 		return
 	}
@@ -265,7 +265,7 @@ func (v *Vote) Tick(s *discordgo.Session, userID string, tick int) (err error) {
 }
 
 // SetExpire sets the expiration for a vote.
-func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration, tp timeprovider.Provider) error {
+func (v *Vote) SetExpire(s Session, d time.Duration, tp timeprovider.Provider) error {
 	v.Expires = tp.Now().Add(d)
 
 	emb, err := v.AsEmbed(s)
@@ -279,7 +279,7 @@ func (v *Vote) SetExpire(s *discordgo.Session, d time.Duration, tp timeprovider.
 
 // Close closes the vote and removes it
 // from the VotesRunning map.
-func (v *Vote) Close(s *discordgo.Session, voteState VoteState) error {
+func (v *Vote) Close(s Session, voteState VoteState) error {
 	delete(VotesRunning, v.ID)
 	emb, err := v.AsEmbed(s, voteState)
 	if err != nil {

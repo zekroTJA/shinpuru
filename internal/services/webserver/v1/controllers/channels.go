@@ -17,10 +17,10 @@ import (
 )
 
 type ChannelController struct {
-	session *discordgo.Session
-	st      *dgrs.State
-	pmw     *permissions.Permissions
-	kv      kvcache.Provider
+	session Session
+	st      State
+	pmw     Permissions
+	kv      KvCache
 }
 
 func (c *ChannelController) Setup(container di.Container, router fiber.Router) {

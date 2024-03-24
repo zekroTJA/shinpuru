@@ -8,7 +8,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sarulabs/di/v2"
@@ -27,18 +26,17 @@ import (
 )
 
 type EtcController struct {
-	session    *discordgo.Session
-	cfg        config.Provider
-	authMw     auth.Middleware
-	st         *dgrs.State
-	storage    storage.Storage
-	db         database.Database
+	db      Database
+	st      State
+	storage Storage
+	rd      *redis.Client
+
 	cmdHandler *ken.Ken
-	rd         *redis.Client
+	authMw     auth.Middleware
+	cfg        config.Provider
 }
 
 func (c *EtcController) Setup(container di.Container, router fiber.Router) {
-	c.session = container.Get(static.DiDiscordSession).(*discordgo.Session)
 	c.cfg = container.Get(static.DiConfig).(config.Provider)
 	c.authMw = container.Get(static.DiAuthMiddleware).(auth.Middleware)
 	c.st = container.Get(static.DiState).(*dgrs.State)

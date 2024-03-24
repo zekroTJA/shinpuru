@@ -15,9 +15,9 @@ import (
 )
 
 type GlobalSettingsController struct {
-	session *discordgo.Session
-	db      database.Database
-	st      *dgrs.State
+	session Session
+	db      Database
+	st      State
 }
 
 func (c *GlobalSettingsController) Setup(container di.Container, router fiber.Router) {

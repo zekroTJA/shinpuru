@@ -13,10 +13,11 @@ import (
 )
 
 type UsersController struct {
-	session *discordgo.Session
-	cfg     config.Provider
-	authMw  auth.Middleware
-	st      *dgrs.State
+	session Session
+	st      State
+	
+	cfg    config.Provider
+	authMw auth.Middleware
 }
 
 func (c *UsersController) Setup(container di.Container, router fiber.Router) {

@@ -24,14 +24,16 @@ import (
 const pushcodeTimeout = 60 * time.Second
 
 type AuthController struct {
-	discordOAuth *discordoauth.DiscordOAuth
 	rth          auth.RefreshTokenHandler
 	ath          auth.AccessTokenHandler
 	authMw       auth.Middleware
-	st           *dgrs.State
-	session      *discordgo.Session
-	cmdHandler   *ken.Ken
 	oauthHandler auth.RequestHandler
+
+	st      State
+	session Session
+
+	cmdHandler   *ken.Ken
+	discordOAuth *discordoauth.DiscordOAuth
 
 	pushcodeSubs *timedmap.TimedMap
 }

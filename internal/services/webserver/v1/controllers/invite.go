@@ -15,9 +15,9 @@ import (
 )
 
 type InviteController struct {
-	session *discordgo.Session
-	st      *dgrs.State
-	kv      kvcache.Provider
+	session Session
+	st      State
+	kv      KvCache
 }
 
 func (c *InviteController) Setup(container di.Container, router fiber.Router) {

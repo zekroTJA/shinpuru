@@ -23,12 +23,13 @@ import (
 )
 
 type UnbanrequestsController struct {
-	session *discordgo.Session
-	db      database.Database
-	pmw     *permissions.Permissions
-	st      *dgrs.State
-	cfg     config.Provider
-	gl      guildlog.Logger
+	db      Database
+	session Session
+	st      State
+	
+	pmw *permissions.Permissions
+	cfg config.Provider
+	gl  guildlog.Logger
 }
 
 func (c *UnbanrequestsController) Setup(container di.Container, router fiber.Router) {

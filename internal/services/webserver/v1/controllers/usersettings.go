@@ -7,16 +7,17 @@ import (
 	"github.com/zekroTJA/shinpuru/internal/services/database"
 	"github.com/zekroTJA/shinpuru/internal/services/permissions"
 	"github.com/zekroTJA/shinpuru/internal/services/webserver/v1/models"
-	"github.com/zekroTJA/shinpuru/internal/util"
+	"github.com/zekroTJA/shinpuru/internal/util/privacy"
 	"github.com/zekroTJA/shinpuru/internal/util/static"
 	"github.com/zekrotja/dgrs"
 )
 
 type UsersettingsController struct {
-	session *discordgo.Session
-	db      database.Database
-	state   *dgrs.State
-	pmw     *permissions.Permissions
+	db      Database
+	state   State
+	session Session
+
+	pmw *permissions.Permissions
 }
 
 func (c *UsersettingsController) Setup(container di.Container, router fiber.Router) {
@@ -145,7 +146,7 @@ func (c *UsersettingsController) postPrivacy(ctx *fiber.Ctx) error {
 func (c *UsersettingsController) postFlush(ctx *fiber.Ctx) error {
 	uid := ctx.Locals("uid").(string)
 
-	res, err := util.FlushAllUserData(c.db, c.state, uid)
+	res, err := privacy.FlushAllUserData(c.db, c.state, uid)
 	if err != nil {
 		return err
 	}

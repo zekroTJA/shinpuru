@@ -426,7 +426,7 @@ func (req *ReasonRequest) Validate(acceptEmptyReason bool) (bool, error) {
 
 // GuildFromGuild returns a Guild model from the passed
 // discordgo.Guild g, discordgo.Member m and cmdHandler.
-func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Database, botOwnerID string) (ng *Guild, err error) {
+func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db Database, botOwnerID string) (ng *Guild, err error) {
 	if g == nil {
 		return
 	}
@@ -470,6 +470,7 @@ func GuildFromGuild(g *discordgo.Guild, m *discordgo.Member, db database.Databas
 	}
 
 	if db != nil {
+		// TODO: Transfer the database stuff somewhere else, this has actually nothing to do here
 		selfmm.Karma, err = db.GetKarma(m.User.ID, g.ID)
 		if !database.IsErrDatabaseNotFound(err) && err != nil {
 			return

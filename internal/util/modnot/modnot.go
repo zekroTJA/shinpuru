@@ -3,14 +3,13 @@ package modnot
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/zekroTJA/shinpuru/internal/services/database"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 )
 
 // Send embed messages into the mod notification channel
 // specified for the given guildID.
 func Send(
-	db database.Database,
-	s discordutil.ISession,
+	db Database,
+	s Session,
 	guildID string,
 	embed *discordgo.MessageEmbed,
 ) error {

@@ -20,8 +20,9 @@ import (
 )
 
 type GuildBackupsController struct {
-	db  database.Database
-	st  storage.Storage
+	db Database
+	st Storage
+
 	ota onetimeauth.OneTimeAuth
 }
 

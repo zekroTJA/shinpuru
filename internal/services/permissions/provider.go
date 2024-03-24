@@ -2,7 +2,6 @@ package permissions
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/zekroTJA/shinpuru/pkg/discordutil"
 	"github.com/zekroTJA/shinpuru/pkg/permissions"
 	"github.com/zekrotja/ken"
 )
@@ -10,7 +9,7 @@ import (
 type Provider interface {
 	ken.MiddlewareBefore
 
-	HandleWs(s discordutil.ISession, required string) fiber.Handler
+	HandleWs(s Session, required string) fiber.Handler
 
 	// GetPermissions tries to fetch the permissions array of
 	// the passed user of the specified guild. The merged
@@ -18,7 +17,7 @@ type Provider interface {
 	// which is true when the specified user is the bot owner,
 	// guild owner or an admin of the guild.
 	GetPermissions(
-		s discordutil.ISession,
+		s Session,
 		guildID string,
 		userID string,
 	) (perm permissions.PermissionArray, overrideExplicits bool, err error)
@@ -34,7 +33,7 @@ type Provider interface {
 	// If guildID is passed as non-mepty string, all configured guild owner
 	// permissions will be added to the fetched permissions array as well.
 	CheckPermissions(
-		s discordutil.ISession,
+		s Session,
 		guildID string,
 		userID string,
 		dns ...string,
@@ -43,7 +42,7 @@ type Provider interface {
 	// GetMemberPermissions returns a PermissionsArray based on the passed
 	// members roles permissions rulesets for the given guild.
 	GetMemberPermission(
-		s discordutil.ISession,
+		s Session,
 		guildID string,
 		memberID string,
 	) (permissions.PermissionArray, error)
