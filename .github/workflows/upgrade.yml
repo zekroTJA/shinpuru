@@ -2,8 +2,8 @@ name: Auto Upgrade
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * THU'
+#  schedule:
+#    - cron: '0 0 * * THU'
 
 jobs:
   webapp:
