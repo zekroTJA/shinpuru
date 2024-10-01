@@ -50,16 +50,16 @@ func (pcw *pushCodeWaiter) close() bool {
 	defer pcw.mtx.Unlock()
 
 	if pcw.am != nil {
-		pcw.am.Ken.Session().ChannelMessageEditComplex(&discordgo.MessageEdit{
+		_, _ = pcw.am.Ken.Session().ChannelMessageEditComplex(&discordgo.MessageEdit{
 			Channel: pcw.am.ChannelID,
 			ID:      pcw.am.ID,
-			Embeds: []*discordgo.MessageEmbed{
+			Embeds: &[]*discordgo.MessageEmbed{
 				{
 					Title:       "Login",
 					Description: "The code has been timed out.",
 				},
 			},
-			Components: []discordgo.MessageComponent{},
+			Components: &[]discordgo.MessageComponent{},
 		})
 		pcw.am = nil
 	}

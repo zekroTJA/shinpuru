@@ -22,6 +22,14 @@ import (
 	"github.com/zekrotja/rogu/log"
 )
 
+type ContainerWrapper struct {
+	container di.Container
+}
+
+func (t *ContainerWrapper) Get(key string) any {
+	return t.container.Get(key)
+}
+
 func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	session := container.Get(static.DiDiscordSession).(*discordgo.Session)
 	st := container.Get(static.DiState).(*dgrs.State)
@@ -39,7 +47,7 @@ func InitCommandHandler(container di.Container) (k *ken.Ken, err error) {
 	k, err = ken.New(session, ken.Options{
 		State:              state.NewDgrs(st),
 		CommandStore:       cmdStore,
-		DependencyProvider: container,
+		DependencyProvider: &ContainerWrapper{container},
 		OnSystemError:      systemErrorHandler,
 		OnCommandError:     commandErrorHandler,
 		OnEventError:       eventErrorHandler,
