@@ -42,7 +42,7 @@ jobs:
           FNAME: ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }}
         run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
       - name: Upload Artifcats
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: setup
           path: bin/

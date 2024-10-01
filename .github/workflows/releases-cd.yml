@@ -24,7 +24,7 @@ jobs:
         working-directory: ./web
         run: yarn run build --base=/
       - name: Upload Artifcats
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: frontend
           path: web/dist/web
@@ -71,7 +71,7 @@ jobs:
           FNAME: ./bin/shinpuru-${{ matrix.goos }}-${{ matrix.goarch }}
         run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
       - name: Upload Artifcats
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: backend
           path: bin/
@@ -109,7 +109,7 @@ jobs:
           FNAME: ./bin/setup-${{ matrix.goos }}-${{ matrix.goarch }}
         run: mv ${{ env.FNAME }} ${{ env.FNAME }}.exe
       - name: Upload Artifcats
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: setup
           path: bin/
