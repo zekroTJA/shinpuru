@@ -163,7 +163,7 @@ const GeneralRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).setSettings(gs))
       .then(() =>
         pushNotification({
-          message: t<string>('notifications.saved'),
+          message: t('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -273,7 +273,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 guild={guild}
                 selected={settings.autoroles}
                 onChange={(v) => dispatchSettings(['set_autoroles', v])}
-                placeholder={t<string>('autoroles.placeholder')}
+                placeholder={t('autoroles.placeholder')}
               />
             </Section>
           )}
@@ -287,7 +287,7 @@ const GeneralRoute: React.FC<Props> = () => {
                   options={textChannelOptions!}
                   value={settings.modlogchannel}
                   onElementSelect={(e) => dispatchSettings(['set_modlogchannel', e])}
-                  placeholder={t<string>('modlog.channel_placeholder')}
+                  placeholder={t('modlog.channel_placeholder')}
                 />
                 <Button onClick={() => dispatchSettings(['reset_modlogchannel'])}>
                   {t('reset')}
@@ -305,7 +305,7 @@ const GeneralRoute: React.FC<Props> = () => {
                   options={textChannelOptions!}
                   value={settings.modnotchannel}
                   onElementSelect={(e) => dispatchSettings(['set_modnotchannel', e])}
-                  placeholder={t<string>('modnot.channel_placeholder')}
+                  placeholder={t('modnot.channel_placeholder')}
                 />
                 <Button onClick={() => dispatchSettings(['reset_modnotchannel'])}>
                   {t('reset')}
@@ -323,7 +323,7 @@ const GeneralRoute: React.FC<Props> = () => {
                   options={textChannelOptions!}
                   value={settings.voicelogchannel}
                   onElementSelect={(e) => dispatchSettings(['set_voicelogchannel', e])}
-                  placeholder={t<string>('voicelog.channel_placeholder')}
+                  placeholder={t('voicelog.channel_placeholder')}
                 />
                 <Button onClick={() => dispatchSettings(['reset_voicelogchannel'])}>
                   {t('reset')}
@@ -342,7 +342,7 @@ const GeneralRoute: React.FC<Props> = () => {
                     options={textChannelOptions!}
                     value={settings.joinmessagechannel}
                     onElementSelect={(e) => dispatchSettings(['set_joinmessagechannel', e])}
-                    placeholder={t<string>('joinmessage.channel_placeholder')}
+                    placeholder={t('joinmessage.channel_placeholder')}
                   />
                   <Button onClick={() => dispatchSettings(['reset_joinmessagechannel'])}>
                     {t('reset')}
@@ -358,7 +358,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 <div>
                   <Input
                     value={settings.joinmessagetext}
-                    placeholder={t<string>('joinmessage.message_placeholder')}
+                    placeholder={t('joinmessage.message_placeholder')}
                     onInput={(e) =>
                       dispatchSettings(['set_joinmessagetext', e.currentTarget.value])
                     }
@@ -377,13 +377,13 @@ const GeneralRoute: React.FC<Props> = () => {
                     options={textChannelOptions!}
                     value={settings.leavemessagechannel}
                     onElementSelect={(e) => dispatchSettings(['set_leavemessagechannel', e])}
-                    placeholder={t<string>('leavemessage.channel_placeholder')}
+                    placeholder={t('leavemessage.channel_placeholder')}
                   />
                   <Button onClick={() => dispatchSettings(['reset_leavemessagetext'])}>
                     {t('reset')}
                   </Button>
                 </div>
-                <label>{t<string>('leavemessage.message_label')}</label>
+                <label>{t('leavemessage.message_label')}</label>
                 <Small>
                   <Trans ns="routes.guildsettings.general" i18nKey="leavemessage.message_hint">
                     <Embed>[user]</Embed>
@@ -393,7 +393,7 @@ const GeneralRoute: React.FC<Props> = () => {
                 <div>
                   <Input
                     value={settings.leavemessagetext}
-                    placeholder={t<string>('leavemessage.message_placeholder')}
+                    placeholder={t('leavemessage.message_placeholder')}
                     onInput={(e) =>
                       dispatchSettings(['set_leavemessagetext', e.currentTarget.value])
                     }

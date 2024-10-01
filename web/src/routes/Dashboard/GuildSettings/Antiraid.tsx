@@ -124,7 +124,7 @@ const AntiraidRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).setAntiraid(settings as AntiraidSettings))
       .then(() =>
         pushNotification({
-          message: t<string>('notifications.saved'),
+          message: t('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -210,7 +210,7 @@ const AntiraidRoute: React.FC<Props> = () => {
         <Switch
           enabled={settings.state}
           onChange={(e) => dispatchSettings(['set_enabled', e])}
-          labelAfter={t<string>('enable')}
+          labelAfter={t('enable')}
         />
       )) || <Loader width="20em" height="2em" />}
 
@@ -247,7 +247,7 @@ const AntiraidRoute: React.FC<Props> = () => {
           <Switch
             enabled={settings.verification}
             onChange={(e) => dispatchSettings(['set_verification', e])}
-            labelAfter={t<string>('verification.switch_label')}
+            labelAfter={t('verification.switch_label')}
           />
         )) || <Loader width="20em" height="2em" />}
       </InputContainer>

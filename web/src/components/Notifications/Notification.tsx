@@ -1,10 +1,11 @@
 import { Notification, NotificationMeta } from './models';
-import styled, { Keyframes, css, keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 import { ANIMATION_DELAY } from '../../hooks/useNotifications';
 import { ReactComponent as CloseIcon } from '../../assets/close.svg';
 import { Container } from '../Container';
 import { Heading } from '../Heading';
+import Keyframes from 'styled-components/dist/models/Keyframes';
 import { LinearGradient } from '../styleParts';
 
 type Props = {

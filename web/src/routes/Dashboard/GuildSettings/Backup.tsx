@@ -73,7 +73,7 @@ const BackupRoute: React.FC<Props> = () => {
       .then(() => {
         currStateRef.current = enabled;
         pushNotification({
-          message: t<string>(enabled ? 'notifications.enabled' : 'notifications.disabled'),
+          message: t(enabled ? 'notifications.enabled' : 'notifications.disabled'),
           type: enabled ? 'SUCCESS' : 'WARNING',
         });
       })
@@ -118,7 +118,7 @@ const BackupRoute: React.FC<Props> = () => {
       <ControlContainer>
         {(guild && (
           <>
-            <Switch enabled={enabled} onChange={setEnabled} labelAfter={t<string>('toggle')} />
+            <Switch enabled={enabled} onChange={setEnabled} labelAfter={t('toggle')} />
             <ActionButton
               disabled={enabled === currStateRef.current}
               variant="green"

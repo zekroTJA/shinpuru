@@ -156,7 +156,7 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
     <Flex direction="column" gap="1em">
       {guild && (
         <RoleInput
-          placeholder={t<string>('placeholder.roles')}
+          placeholder={t('placeholder.roles')}
           guild={guild}
           selected={roles}
           onChange={setRoles}
@@ -168,7 +168,7 @@ export const PermissionSelector: React.FC<Props> = ({ perms, setPerms, available
           value={permission}
           setValue={setPermission}
           selections={available}
-          placeholder={t<string>('placeholder.perms')}
+          placeholder={t('placeholder.perms')}
         />
         <StyledSwitch
           enabled={allow}

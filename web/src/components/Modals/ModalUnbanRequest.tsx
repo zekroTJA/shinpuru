@@ -38,7 +38,7 @@ export const ModalUnbanRequest: React.FC<Props> = ({
     <Modal
       show={show}
       onClose={onClose}
-      heading={t<string>('heading')}
+      heading={t('heading')}
       controls={
         <>
           <Button disabled={!message} onClick={_onSend}>

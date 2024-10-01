@@ -9,7 +9,7 @@ import { MaxWidthContainer } from '../../components/MaxWidthContainer';
 import { ReactComponent as MoonIcon } from '../../assets/halfmoon.svg';
 import { Small } from '../../components/Small';
 import { ReactComponent as SunIcon } from '../../assets/sun.svg';
-import { debounce } from 'debounce';
+import debounce from 'debounce';
 import styled from 'styled-components';
 import { useStore } from '../../services/store';
 import { useStoredTheme } from '../../hooks/useStoredTheme';

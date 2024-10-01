@@ -7,7 +7,7 @@ import { Flex } from '../../../components/Flex';
 import { Input } from '../../../components/Input';
 import { MaxWidthContainer } from '../../../components/MaxWidthContainer';
 import { Modal } from '../../../components/Modal';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import { Switch } from '../../../components/Switch';
 import styled from 'styled-components';
 import { useApi } from '../../../hooks/useApi';
@@ -40,7 +40,7 @@ const DataRoute: React.FC<Props> = () => {
     if (!guildid || !guildName) return;
     fetch((c) => c.guilds.settings(guildid).flushData(kick, guildName))
       .then(() => {
-        pushNotification({ message: t<string>('notifications.success'), type: 'SUCCESS' });
+        pushNotification({ message: t('notifications.success'), type: 'SUCCESS' });
         if (kick) nav('/db');
       })
       .catch()
@@ -56,7 +56,7 @@ const DataRoute: React.FC<Props> = () => {
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        heading={t<string>('modal.heading')}
+        heading={t('modal.heading')}
         controls={
           <>
             <Button disabled={guild?.name !== guildName} onClick={_confirmDelete}>
@@ -86,7 +86,7 @@ const DataRoute: React.FC<Props> = () => {
           <Button variant="red" onClick={() => setShowModal(true)}>
             {t('delete')}
           </Button>
-          <Switch labelAfter={t<string>('remove')} enabled={kick} onChange={setKick} />
+          <Switch labelAfter={t('remove')} enabled={kick} onChange={setKick} />
         </Controls>
       </MaxWidthContainer>
     </>

@@ -7,7 +7,7 @@ import { Member } from '../../../lib/shinpuru-ts/src';
 import { MemberLarge } from '../../../components/MemberLarge';
 import { MemberTile } from '../../../components/MemberTile';
 import { SearchBar } from '../../../components/SearchBar';
-import { debounce } from 'debounce';
+import debounce from 'debounce';
 import styled from 'styled-components';
 import { useGuild } from '../../../hooks/useGuild';
 import { useMembers } from '../../../hooks/useMembers';
@@ -53,7 +53,7 @@ const GuildMembersRoute: React.FC<Props> = () => {
       )}
       {(members && selfMember && (
         <MembersSection>
-          <SearchBar onValueChange={_onSearchInput} placeholder={t<string>('searchplaceholder')} />
+          <SearchBar onValueChange={_onSearchInput} placeholder={t('searchplaceholder')} />
           <MemberTiles>
             {members
               .filter((m) => m.user.id !== selfMember.user.id)

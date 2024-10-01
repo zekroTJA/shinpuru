@@ -120,7 +120,7 @@ const KarmaRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).setKarma(settings as KarmaSettings))
       .then(() =>
         pushNotification({
-          message: t<string>('notifications.saved'),
+          message: t('notifications.saved'),
           type: 'SUCCESS',
         }),
       )
@@ -133,7 +133,7 @@ const KarmaRoute: React.FC<Props> = () => {
       .then((res) => {
         dispatchRules(['add', res]);
         pushNotification({
-          message: t<string>('notifications.ruleapplied'),
+          message: t('notifications.ruleapplied'),
           type: 'SUCCESS',
         });
       })
@@ -145,7 +145,7 @@ const KarmaRoute: React.FC<Props> = () => {
     return fetch((c) => c.guilds.settings(guildid).removeKarmaRule(r.id)).then((res) => {
       dispatchRules(['remove', r]);
       pushNotification({
-        message: t<string>('notifications.ruleremoved'),
+        message: t('notifications.ruleremoved'),
         type: 'SUCCESS',
       });
     });
@@ -158,7 +158,7 @@ const KarmaRoute: React.FC<Props> = () => {
         dispatchBlocklist(['add', res]);
         setBlocklistInput('');
         pushNotification({
-          message: t<string>('notifications.blocklistadded'),
+          message: t('notifications.blocklistadded'),
           type: 'SUCCESS',
         });
       })
@@ -171,7 +171,7 @@ const KarmaRoute: React.FC<Props> = () => {
       .then((res) => {
         dispatchBlocklist(['remove', v]);
         pushNotification({
-          message: t<string>('notifications.blocklistremoved'),
+          message: t('notifications.blocklistremoved'),
           type: 'SUCCESS',
         });
       })
@@ -211,7 +211,7 @@ const KarmaRoute: React.FC<Props> = () => {
         <Switch
           enabled={settings.state}
           onChange={(e) => dispatchSettings(['set_enabled', e])}
-          labelAfter={t<string>('enable')}
+          labelAfter={t('enable')}
         />
       )) || <Loader width="20em" height="2em" />}
 
@@ -260,7 +260,7 @@ const KarmaRoute: React.FC<Props> = () => {
           <Switch
             enabled={settings.penalty!}
             onChange={(e) => dispatchSettings(['set_penalty', e])}
-            labelAfter={t<string>('penalty.switch')}
+            labelAfter={t('penalty.switch')}
           />
         )) || <Loader width="20em" height="2em" />}
       </InputContainer>

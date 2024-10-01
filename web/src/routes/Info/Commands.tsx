@@ -74,7 +74,7 @@ const CommandsRoute: React.FC<Props> = () => {
 
   return (
     <MaxWidthContainer>
-      <SearchBar onValueChange={_onSearch} placeholder={t<string>('search')} />
+      <SearchBar onValueChange={_onSearch} placeholder={t('search')} />
       {commandMap &&
         Object.keys(commandMap).map((k) => (
           <>

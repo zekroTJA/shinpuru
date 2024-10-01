@@ -115,7 +115,7 @@ const LogsRoute: React.FC<Props> = () => {
     fetch((c) => c.guilds.settings(guildid).setLogsEnabled(v))
       .then(() =>
         pushNotification({
-          message: v ? t<string>('notifications.enabled') : t<string>('notifications.disabled'),
+          message: v ? t('notifications.enabled') : t('notifications.disabled'),
           type: 'SUCCESS',
         }),
       )
@@ -146,7 +146,7 @@ const LogsRoute: React.FC<Props> = () => {
       .then(() => {
         setPage(0);
         pushNotification({
-          message: t<string>('notifications.deleted'),
+          message: t('notifications.deleted'),
           type: 'SUCCESS',
         });
       })
@@ -184,7 +184,7 @@ const LogsRoute: React.FC<Props> = () => {
       <Modal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        heading={t<string>('deletemodal.heading')}
+        heading={t('deletemodal.heading')}
         controls={
           <>
             <Button onClick={_deleteEntries}>{t('deletemodal.controls.delete')}</Button>
@@ -202,11 +202,7 @@ const LogsRoute: React.FC<Props> = () => {
 
         <h2>{t('enabled.heading')}</h2>
         {(enabled !== undefined && (
-          <Switch
-            enabled={enabled}
-            onChange={_setEnabled}
-            labelAfter={t<string>('enabled.enabled')}
-          />
+          <Switch enabled={enabled} onChange={_setEnabled} labelAfter={t('enabled.enabled')} />
         )) || <Loader width="20em" height="2em" />}
 
         <h2>{t('entries.heading')}</h2>

@@ -1,4 +1,4 @@
-import { de, enUS } from 'date-fns/locale';
+import {de, enUS, Locale} from 'date-fns/locale';
 import { format, formatDistance } from 'date-fns';
 
 const LANG_MAP: { [key: string]: Locale } = {
