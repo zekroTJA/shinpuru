@@ -52,7 +52,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Retrieve frontend files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: frontend
           path: internal/util/embedded/webdist
@@ -125,12 +125,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Retrieve backend binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: backend
           path: bin/
       - name: Retrieve setup binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: setup
           path: bin/
