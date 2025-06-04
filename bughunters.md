@@ -2,7 +2,7 @@
 
 A list to honor all people who found some bugs, had some great ideas or contributed directly to shinpuru. ❤️
 
-In total, **38** different wonderful people contributed a sum of **92** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
+In total, **37** different wonderful people contributed a sum of **91** issues and **24** pull requests (with **1586** added and **322** deleted lines of code in **106** different files)! 🎉
 
 | GitHub | Issues | PRs | Points* |
 |--------|--------|-----|---------|
@@ -33,7 +33,6 @@ In total, **38** different wonderful people contributed a sum of **92** issues a
 |  [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `5` |
 |  [Tetsunokishi](https://github.com/Tetsunokishi) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `5` |
 |  [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `5` |
-|  [PushkarOP](https://github.com/PushkarOP) | [#269](https://github.com/zekroTJA/shinpuru/issues/269) |  | `5` |
 |  [enkeyz](https://github.com/enkeyz) | [#279](https://github.com/zekroTJA/shinpuru/issues/279) |  | `5` |
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `5` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `5` |
