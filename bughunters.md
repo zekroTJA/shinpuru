@@ -32,7 +32,7 @@ In total, **37** different wonderful people contributed a sum of **91** issues a
 |  [anathemamask](https://github.com/anathemamask) | [#85](https://github.com/zekroTJA/shinpuru/issues/85) |  | `5` |
 |  [paulober](https://github.com/paulober) | [#108](https://github.com/zekroTJA/shinpuru/issues/108) |  | `5` |
 |  [Tetsunokishi](https://github.com/Tetsunokishi) | [#184](https://github.com/zekroTJA/shinpuru/issues/184) |  | `5` |
-|  [maxcutie](https://github.com/maxcutie) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `5` |
+|  [kittykkuma](https://github.com/kittykkuma) | [#239](https://github.com/zekroTJA/shinpuru/issues/239) |  | `5` |
 |  [enkeyz](https://github.com/enkeyz) | [#279](https://github.com/zekroTJA/shinpuru/issues/279) |  | `5` |
 |  [MeerBiene](https://github.com/MeerBiene) | [#308](https://github.com/zekroTJA/shinpuru/issues/308) |  | `5` |
 |  [shiipou](https://github.com/shiipou) | [#317](https://github.com/zekroTJA/shinpuru/issues/317) |  | `5` |
