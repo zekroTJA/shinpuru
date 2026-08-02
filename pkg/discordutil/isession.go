@@ -24,6 +24,11 @@ type ISession interface {
 	ApplicationCommands(appID, guildID string, options ...RequestOption) (cmd []*ApplicationCommand, err error)
 	ApplicationCreate(ap *Application) (st *Application, err error)
 	ApplicationDelete(appID string) (err error)
+	ApplicationEmoji(appID, emojiID string, options ...RequestOption) (emoji *Emoji, err error)
+	ApplicationEmojiCreate(appID string, data *EmojiParams, options ...RequestOption) (emoji *Emoji, err error)
+	ApplicationEmojiDelete(appID, emojiID string, options ...RequestOption) (err error)
+	ApplicationEmojiEdit(appID string, emojiID string, data *EmojiParams, options ...RequestOption) (emoji *Emoji, err error)
+	ApplicationEmojis(appID string, options ...RequestOption) (emojis []*Emoji, err error)
 	ApplicationRoleConnectionMetadata(appID string) (st []*ApplicationRoleConnectionMetadata, err error)
 	ApplicationRoleConnectionMetadataUpdate(appID string, metadata []*ApplicationRoleConnectionMetadata) (st []*ApplicationRoleConnectionMetadata, err error)
 	ApplicationUpdate(appID string, ap *Application) (st *Application, err error)
@@ -70,6 +75,10 @@ type ISession interface {
 	ChannelWebhooks(channelID string, options ...RequestOption) (st []*Webhook, err error)
 	Close() error
 	CloseWithCode(closeCode int) (err error)
+	EntitlementConsume(appID, entitlementID string, options ...RequestOption) (err error)
+	EntitlementTestCreate(appID string, data *EntitlementTest, options ...RequestOption) (err error)
+	EntitlementTestDelete(appID, entitlementID string, options ...RequestOption) (err error)
+	Entitlements(appID string, filterOptions *EntitlementFilterOptions, options ...RequestOption) (entitlements []*Entitlement, err error)
 	FollowupMessageCreate(interaction *Interaction, wait bool, data *WebhookParams, options ...RequestOption) (*Message, error)
 	FollowupMessageDelete(interaction *Interaction, messageID string, options ...RequestOption) error
 	FollowupMessageEdit(interaction *Interaction, messageID string, data *WebhookEdit, options ...RequestOption) (*Message, error)
@@ -79,6 +88,7 @@ type ISession interface {
 	ForumThreadStartEmbeds(channelID, name string, archiveDuration int, embeds []*MessageEmbed, options ...RequestOption) (th *Channel, err error)
 	Gateway(options ...RequestOption) (gateway string, err error)
 	GatewayBot(options ...RequestOption) (st *GatewayBotResponse, err error)
+	GatewayWriteStruct(data interface{}) (err error)
 	Guild(guildID string, options ...RequestOption) (st *Guild, err error)
 	GuildApplicationCommandsPermissions(appID, guildID string, options ...RequestOption) (permissions []*GuildApplicationCommandPermissions, err error)
 	GuildAuditLog(guildID, userID, beforeID string, actionType, limit int, options ...RequestOption) (st *GuildAuditLog, err error)
@@ -168,17 +178,23 @@ type ISession interface {
 	MessageThreadStart(channelID, messageID string, name string, archiveDuration int, options ...RequestOption) (ch *Channel, err error)
 	MessageThreadStartComplex(channelID, messageID string, data *ThreadStart, options ...RequestOption) (ch *Channel, err error)
 	Open() error
+	PollAnswerVoters(channelID, messageID string, answerID int) (voters []*User, err error)
+	PollExpire(channelID, messageID string) (msg *Message, err error)
 	Request(method, urlStr string, data interface{}, options ...RequestOption) (response []byte, err error)
 	RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error
 	RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) (err error)
 	RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) (err error)
 	RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error
+	RequestRaw(method, urlStr, contentType string, b []byte, bucketID string, sequence int, options ...RequestOption) (response []byte, err error)
 	RequestWithBucketID(method, urlStr string, data interface{}, bucketID string, options ...RequestOption) (response []byte, err error)
 	RequestWithLockedBucket(method, urlStr, contentType string, b []byte, bucket *Bucket, sequence int, options ...RequestOption) (response []byte, err error)
+	SKUs(appID string) (skus []*SKU, err error)
 	StageInstance(channelID string, options ...RequestOption) (si *StageInstance, err error)
 	StageInstanceCreate(data *StageInstanceParams, options ...RequestOption) (si *StageInstance, err error)
 	StageInstanceDelete(channelID string, options ...RequestOption) (err error)
 	StageInstanceEdit(channelID string, data *StageInstanceParams, options ...RequestOption) (si *StageInstance, err error)
+	Subscription(skuID, subscriptionID, userID string, options ...RequestOption) (subscription *Subscription, err error)
+	Subscriptions(skuID string, userID string, before, after *time.Time, limit int, options ...RequestOption) (subscriptions []*Subscription, err error)
 	ThreadJoin(id string, options ...RequestOption) error
 	ThreadLeave(id string, options ...RequestOption) error
 	ThreadMember(threadID, memberID string, withMember bool, options ...RequestOption) (member *ThreadMember, err error)
@@ -207,7 +223,7 @@ type ISession interface {
 	UserConnections(options ...RequestOption) (conn []*UserConnection, err error)
 	UserGuildMember(guildID string, options ...RequestOption) (st *Member, err error)
 	UserGuilds(limit int, beforeID, afterID string, withCounts bool, options ...RequestOption) (st []*UserGuild, err error)
-	UserUpdate(username, avatar string, options ...RequestOption) (st *User, err error)
+	UserUpdate(username, avatar, banner string, options ...RequestOption) (st *User, err error)
 	VoiceRegions(options ...RequestOption) (st []*VoiceRegion, err error)
 	Webhook(webhookID string, options ...RequestOption) (st *Webhook, err error)
 	WebhookCreate(channelID, name, avatar string, options ...RequestOption) (st *Webhook, err error)

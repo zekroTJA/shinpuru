@@ -380,20 +380,21 @@ func (l *ListenerStarboard) blurImage(sourceURL string) (targetURL string, err e
 		return
 	}
 
-	iimg, _, err := image.Decode(bytes.NewBuffer(img.Data))
+	tnImage, _, err := image.Decode(bytes.NewBuffer(img.Data))
 	if err != nil {
 		return
 	}
 
-	iimg = thumbnail.Make(iimg, int(maxSize))
+	tnImage = thumbnail.Make(tnImage, int(maxSize))
 
-	iimg, err = stackblur.Process(iimg, 50)
-	if err != nil {
+	dst := image.NewNRGBA(tnImage.Bounds())
+	if err = stackblur.Process(dst, tnImage, 50); err != nil {
 		return
 	}
+	tnImage = dst
 
 	newImgData := bytes.NewBuffer([]byte{})
-	err = jpeg.Encode(newImgData, iimg, &jpeg.Options{
+	err = jpeg.Encode(newImgData, tnImage, &jpeg.Options{
 		Quality: 90,
 	})
 	if err != nil {
