@@ -125,7 +125,7 @@ tasks:
   test:
     desc: Executes backend unit tests.
     cmds:
-      - go test -race -v -cover ./...
+      - go test -race -v -cover ./cmd/... ./internal/... ./pkg/...
 
   apidocs:
     desc: Generates API documentation from the controller descriptions.
