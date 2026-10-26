@@ -204,7 +204,7 @@ resource "docker_container" "redis" {
 resource "docker_container" "phpmyadmin" {
   name = "coder-phpmyadmin-${data.coder_workspace.me.owner}-${lower(data.coder_workspace.me.name)}"
   count = 1
-  image = "phpmyadmin/phpmyadmin:latest"
+  image = "phpmyadmin:latest"
   hostname = "phpmyadmin"
   networks_advanced {
     name = docker_network.internal_network.name
