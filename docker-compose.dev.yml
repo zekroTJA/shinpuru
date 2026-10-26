@@ -39,7 +39,7 @@ services:
     restart: 'unless-stopped'
 
   phpmyadmin:
-    image: 'phpmyadmin/phpmyadmin:latest'
+    image: 'phpmyadmin:latest'
     ports:
       - '18080:80'
     environment:
